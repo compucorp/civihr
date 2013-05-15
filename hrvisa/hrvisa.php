@@ -1,6 +1,6 @@
 <?php
 
-require_once 'hrvisa.civix.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrvisa.civix.php';
 
 /**
  * Implementation of hook_civicrm_config

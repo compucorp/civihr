@@ -1,6 +1,6 @@
 <?php
 
-require_once 'hrmed.civix.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrmed.civix.php';
 
 /**
  * Implementation of hook_civicrm_config
