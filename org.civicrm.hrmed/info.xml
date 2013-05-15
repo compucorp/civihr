@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.hrmed" type="module">
   <file>hrmed</file>
-  <name>FIXME</name>
-  <description>FIXME</description>
-  <license>FIXME</license>
+  <name>Medical and Disability (CiviHR)</name>
+  <description>Track medical and disability (Human Resources)</description>
+  <license>AGPL-3.0</license>
   <maintainer>
-    <author>FIXME</author>
-    <email>FIXME@example.com</email>
+    <author>CiviCRM LLC</author>
+    <email>info@civicrm.org</email>
   </maintainer>
   <releaseDate>2013-05-15</releaseDate>
-  <version>1.0</version>
+  <version>0.1</version>
   <develStage>alpha</develStage>
   <compatibility>
-    <ver>4.2</ver>
+    <ver>4.3</ver>
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
-    <namespace>CRM/Hrmed</namespace>
+    <namespace>CRM/HRMed</namespace>
   </civix>
 </extension>
