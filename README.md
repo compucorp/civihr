@@ -8,5 +8,5 @@ See also:
 To enable all extensions at once, run:
 
 ```bash
-drush cvapi extension.install keys=org.civicrm.hrident,org.civicrm.hrjob,org.civicrm.hrmed,org.civicrm.hrqual,org.civicrm.hrreport,org.civicrm.hrvisa
+drush cvapi extension.install keys=org.civicrm.hrident,org.civicrm.hrjob,org.civicrm.hrmed,org.civicrm.hrqual,org.civicrm.hrreport,org.civicrm.hrvisa,org.civicrm.hrui
 ```

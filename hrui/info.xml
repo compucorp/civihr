@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.civicrm.hrui" type="module">
+  <file>hrui</file>
+  <name>UI Tweaks (CiviHR)</name>
+  <description>High-level UI tweaks for human resources</description>
+  <license>AGPL</license>
+  <maintainer>
+    <author>Tim Otten</author>
+    <email>info@civicrm.org</email>
+  </maintainer>
+  <releaseDate>2013-05-06</releaseDate>
+  <version>0.1</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.3</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/HRUI</namespace>
+  </civix>
+</extension>
