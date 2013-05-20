@@ -96,10 +96,10 @@ function _hrreport_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 function _hrreport_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrreport/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRReport/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_Hrreport_Upgrader_Base::instance();
+    return CRM_HRReport_Upgrader_Base::instance();
   }
 }
 

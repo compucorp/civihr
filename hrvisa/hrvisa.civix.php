@@ -96,10 +96,10 @@ function _hrvisa_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 function _hrvisa_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrvisa/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRVisa/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_Hrvisa_Upgrader_Base::instance();
+    return CRM_HRVisa_Upgrader_Base::instance();
   }
 }
 

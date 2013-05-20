@@ -96,10 +96,10 @@ function _hrident_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 function _hrident_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrident/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRIdent/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_Hrident_Upgrader_Base::instance();
+    return CRM_HRIdent_Upgrader_Base::instance();
   }
 }
 

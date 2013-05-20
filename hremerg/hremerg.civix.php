@@ -96,10 +96,10 @@ function _hremerg_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 function _hremerg_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hremerg/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HREmerg/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_Hremerg_Upgrader_Base::instance();
+    return CRM_HREmerg_Upgrader_Base::instance();
   }
 }
 
