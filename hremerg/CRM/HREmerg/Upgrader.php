@@ -10,9 +10,14 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
 
   /**
    * Example: Run an external SQL script when the module is installed
-   *
+   */
   public function install() {
-    $this->executeSqlFile('sql/myinstall.sql');
+    $relationshipTypeId = $this->findCreateEmergencyContactRelationType();
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('hremerg_relationship_type_id', $relationshipTypeId);
+    $this->executeCustomDataTemplateFile('hremerg-customdata.xml.tpl');
+    // $this->executeCustomDataFile('xml/customdata.xml');
+    // $this->executeSqlFile('sql/myinstall.sql');
   }
 
   /**
@@ -111,5 +116,50 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
     }
     return TRUE;
   } // */
+
+
+  /**
+   * @return int
+   * @throws CRM_Core_Exception
+   */
+  public function findCreateEmergencyContactRelationType() {
+    $relationshipType = civicrm_api('RelationshipType', 'getsingle', array(
+      'version' => 3,
+      'label_a_b' => 'Emergency Contact Is',
+    ));
+    if (!empty($relationshipType['id'])) {
+      return $relationshipType['id'];
+    }
+    else {
+      $result = civicrm_api('RelationshipType', 'create', array(
+        'version' => 3,
+        'name_a_b' => 'Emergency Contact',
+        'label_a_b' => 'Emergency Contact is',
+        'name_b_a' => 'Emergency Contact',
+        'label_b_a' => 'Emergency Contact for',
+        'contact_type_a' => 'Individual',
+        'contact_type_b' => 'Individual',
+        'is_active' => '1',
+      ));
+      if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+        CRM_Core_Error::debug_var('relationshipTypeResult', $result);
+        throw new CRM_Core_Exception('Failed to register relationship type');
+      }
+      return $result['id'];
+    }
+  }
+
+  public function executeCustomDataTemplateFile($relativePath) {
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('hremerg_relation_type_id');
+    $xmlCode = $smarty->fetch($relativePath);
+    //x dpm($xmlCode);
+    $xml = simplexml_load_string($xmlCode);
+
+    require_once 'CRM/Utils/Migrate/Import.php';
+    $import = new CRM_Utils_Migrate_Import();
+    $import->runXmlElement($xml);
+    return TRUE;
+  }
 
 }
