@@ -10,9 +10,10 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
 
   /**
    * Example: Run an external SQL script when the module is installed
-   *
+   */
   public function install() {
-    $this->executeSqlFile('sql/myinstall.sql');
+    $this->executeCustomDataFile('xml/customdata.xml');
+    // $this->executeSqlFile('sql/myinstall.sql');
   }
 
   /**

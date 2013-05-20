@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <CustomGroups>
+    <CustomGroup>
+      <name>Immigration</name>
+      <title>Immigration</title>
+      <extends>Individual</extends>
+      <style>Tab</style>
+      <collapse_display>0</collapse_display>
+      <help_pre></help_pre>
+      <help_post></help_post>
+      <weight>4</weight>
+      <is_active>1</is_active>
+      <table_name>civicrm_value_immigration_3</table_name>
+      <is_multiple>1</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <created_date>0000-00-00 00:00:00</created_date>
+    </CustomGroup>
+  </CustomGroups>
+  <CustomFields>
+    <CustomField>
+      <name>Visa_Type</name>
+      <label>Visa Type</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <default_value>green card</default_value>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>25</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>32</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>visa_type_7</column_name>
+      <option_group_name>visa_type_20130502150845</option_group_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+  </CustomFields>
+  <OptionGroups>
+    <OptionGroup>
+      <name>visa_type_20130502150845</name>
+      <title>Visa Type</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+  <OptionValues>
+    <OptionValue>
+      <label>Green Card</label>
+      <value>green card</value>
+      <name>Green_Card</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>visa_type_20130502150845</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>H1-B</label>
+      <value>H1-B</value>
+      <name>H1_B</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>visa_type_20130502150845</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>L1</label>
+      <value>L1</value>
+      <name>L1</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>visa_type_20130502150845</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>J1</label>
+      <value>J1</value>
+      <name>J1</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>visa_type_20130502150845</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>

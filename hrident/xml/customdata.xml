@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <CustomGroups>
+    <CustomGroup>
+      <name>Identify</name>
+      <title>Identification</title>
+      <extends>Individual</extends>
+      <style>Tab</style>
+      <collapse_display>0</collapse_display>
+      <help_pre></help_pre>
+      <help_post></help_post>
+      <weight>3</weight>
+      <is_active>1</is_active>
+      <table_name>civicrm_value_identify_2</table_name>
+      <is_multiple>1</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <created_date>0000-00-00 00:00:00</created_date>
+    </CustomGroup>
+  </CustomGroups>
+  <CustomFields>
+    <CustomField>
+      <name>Type</name>
+      <label>Type</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>1</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>4</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>64</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>type_1</column_name>
+      <option_group_name>type_20130502144049</option_group_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Number</name>
+      <label>Number</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>1</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>78</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>32</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>number_2</column_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Issue_Date</name>
+      <label>Issue Date</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>105</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>M d, yy</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>issue_date_3</column_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Expire_Date</name>
+      <label>Expire Date</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>113</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>M d, yy</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>expire_date_4</column_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Country</name>
+      <label>Country</label>
+      <data_type>Country</data_type>
+      <html_type>Select Country</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>117</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>country_5</column_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>State_Province</name>
+      <label>State/Province</label>
+      <data_type>StateProvince</data_type>
+      <html_type>Select State/Province</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>119</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>state_province_6</column_name>
+      <custom_group_name>Identify</custom_group_name>
+    </CustomField>
+  </CustomFields>
+  <OptionGroups>
+    <OptionGroup>
+      <name>type_20130502144049</name>
+      <title>Type</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+  <OptionValues>
+    <OptionValue>
+      <label>Passport</label>
+      <value>Passport</value>
+      <name>Passport</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Drivers License</label>
+      <value>Drivers License</value>
+      <name>Drivers_License</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Identity Card</label>
+      <value>Identity Card</value>
+      <name>Identity_Card</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Social Security Number</label>
+      <value>SSN</value>
+      <name>Social_Security_Number</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Income Tax ID</label>
+      <value>Income Tax ID</value>
+      <name>Income_Tax_ID</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>
