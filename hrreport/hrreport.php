@@ -22,6 +22,22 @@ function hrreport_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrreport_civicrm_install() {
+  $id     = NULL;
+  $action = CRM_Core_Action::ADD;
+  $params = array(
+    array(
+      'label'       => 'HRDetail',
+      'description' => 'HRDetail Report',
+      'value'       => 'civihr/detail',
+      'name'        => 'CRM_HRReport_Form_HRDetail',
+      'is_active'   => TRUE,
+    ),
+  );
+  $groupParam = array('name' => 'report_template');
+  foreach ($params as $param) {
+    $optionValue = CRM_Core_OptionValue::addOptionValue($param, $groupParam, $action, $id);
+    CRM_Core_Error::debug_var( '$optionValue', $optionValue );
+  }
   return _hrreport_civix_civicrm_install();
 }
 
@@ -29,6 +45,16 @@ function hrreport_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrreport_civicrm_uninstall() {
+  $reportOptVals = array('civihr/detail');
+  
+  foreach ($reportOptVals as $optionVal) {
+    CRM_Core_Error::debug_var( '$optionVal', $optionVal );
+    $templateInfo = CRM_Core_OptionGroup::getRowValues('report_template', "{$optionVal}", 'value');
+    CRM_Core_Error::debug_var( '$templateInfo', $templateInfo );
+    if ($optValID = CRM_Utils_Array::value('id', $templateInfo)) {
+      CRM_Core_BAO_OptionValue::del($optValID);
+    }
+  }
   return _hrreport_civix_civicrm_uninstall();
 }
 
