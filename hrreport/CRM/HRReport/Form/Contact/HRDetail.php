@@ -34,7 +34,7 @@
  * $Id$
  *
  */
-class CRM_HRReport_Form_HRDetail extends CRM_Report_Form {
+class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
   //FIXME: extend should be a subtype suitable for CiviHR applicants
   protected $_customGroupExtends = array('Individual');
 
