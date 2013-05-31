@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<sample_data>
+  <male_name>
+    <item>James</item>
+    <item>Kirk</item>
+    </male_name>
+<female_name>
+    <item>Amy</item>
+    <item>Cristina</item>
+ </female_name>
+
+ <last_name>
+    <item>Hetfield</item>
+    <item>Hammett</item>
+</last_name>
+
+ <street_name>
+    <item>Second</item>
+    <item>Main</item>
+    <item>States</item>
+    <item>Dowlen</item>
+    <item>Maple</item>
+    <item>Pine</item>
+    <item>Bay</item>
+    <item>Woodbridge</item>
+    <item>Martin Luther King</item>
+    <item>Caulder</item>
+    <item>Jackson</item>
+    <item>College</item>
+    <item>El Camino</item>
+    <item>Van Ness</item>
+    <item>Cadell</item>
+    <item>Northpoint</item>
+    <item>Green</item>
+    <item>Beech</item>
+    <item>Lincoln</item>
+  </street_name>
+
+  <street_type>
+    <item>Rd</item>
+    <item>Pl</item>
+    <item>St</item>
+    <item>Ln</item>
+    <item>Ave</item>
+    <item>Way</item>
+    <item>Dr</item>
+    <item>Blvd</item>
+    <item>Path</item>
+  </street_type>
+
+  <supplemental_addresses_1>
+    <item>Attn: Accounting</item>
+    <item>c/o OPDC</item>
+    <item>Urgent</item>
+    <item>c/o PO Plus</item>
+    <item>Cuffe Parade</item>
+    <item>Churchgate</item>
+    <item>Mailstop 101</item>
+    <item>Receiving</item>
+    <item>Subscriptions Dept</item>
+    <item>Editorial Dept</item>
+    <item>Community Relations</item>
+    <item>Attn: Development</item>
+    <item>Disbursements</item>
+    <item>Payables Dept.</item>
+    <item>Donor Relations</item>
+  </supplemental_addresses_1>
+
+  <city>
+    <item>Portland</item>
+    <item>Cleveland</item>
+    <item>Boston</item>
+    <item>Chicago</item>
+    <item>Detroit</item>
+    <item>Des Moines</item>
+    <item>San Francisco</item>
+    <item>New York</item>
+    <item>Seattle</item>
+    <item>Los Angeles</item>
+    <item>Minneapolis</item>
+  </city>
+
+  <address_direction>
+    <item>N</item>
+    <item>W</item>
+    <item>E</item>
+    <item>S</item>
+    <item>NW</item>
+    <item>NE</item>
+    <item>SW</item>
+    <item>SE</item>
+  </address_direction>
+
+  <email_address>
+    <item>info</item>
+    <item>sales</item>
+    <item>contact</item>
+    <item>service</item>
+    <item>feedback</item>
+  </email_address>
+
+  <email_domain>
+    <item>infomail</item>
+    <item>mymail</item>
+    <item>notmail</item>
+    <item>testmail</item>
+    <item>fakemail</item>
+    <item>lol</item>
+    <item>spamalot</item>
+    <item>sample</item>
+    <item>fishmail</item>
+    <item>airmail</item>
+    <item>example</item>
+    <item>testing</item>
+  </email_domain>
+
+  <email_tld>
+    <item>com</item>
+    <item>org</item>
+    <item>net</item>
+    <item>biz</item>
+    <item>info</item>
+    <item>co.in</item>
+    <item>co.pl</item>
+    <item>co.uk</item>
+    <item>co.nz</item>
+  </email_tld>
+
+  <organization_prefix>
+    <item>Community</item>
+    <item>Global</item>
+    <item>Local</item>
+    <item>Sierra</item>
+    <item>United</item>
+    <item>Global</item>
+    <item>Creative</item>
+    <item>Friends</item>
+    <item>Progressive</item>
+    <item>Urban</item>
+    <item>Rural</item>
+  </organization_prefix>
+
+  <organization_name>
+    <item>Arts</item>
+    <item>Poetry</item>
+    <item>Education</item>
+    <item>Software</item>
+    <item>Family</item>
+    <item>Health</item>
+    <item>Wellness</item>
+    <item>Legal</item>
+    <item>Peace</item>
+    <item>Environmental</item>
+    <item>Sustainability</item>
+    <item>Literacy</item>
+    <item>Music</item>
+    <item>Food</item>
+    <item>Agriculture</item>
+    <item>Technology</item>
+    <item>Culture</item>
+    <item>Empowerment</item>
+    <item>Action</item>
+    <item>Advocacy</item>
+    <item>Sports</item>
+    <item>Development</item>
+  </organization_name>
+
+  <organization_suffix>
+    <item>Alliance</item>
+    <item>Partnership</item>
+    <item>Association</item>
+    <item>Fellowship</item>
+    <item>School</item>
+    <item>Trust</item>
+    <item>Services</item>
+    <item>Systems</item>
+    <item>Solutions</item>
+    <item>Center</item>
+    <item>Initiative</item>
+    <item>Collective</item>
+    <item>Partners</item>
+    <item>Network</item>
+    <item>Fund</item>
+    <item>Academy</item>
+  </organization_suffix>
+
+
+</sample_data>
