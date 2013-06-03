@@ -78,7 +78,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>65</weight>
       <is_active>1</is_active>
@@ -96,7 +96,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>82</weight>
       <is_active>1</is_active>
@@ -114,7 +114,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>92</weight>
       <is_active>1</is_active>
@@ -169,7 +169,7 @@
       <html_type>Radio</html_type>
       <default_value>Paid</default_value>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>104</weight>
       <is_active>1</is_active>
@@ -206,7 +206,7 @@
       <data_type>Float</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>108</weight>
       <is_active>1</is_active>
@@ -260,7 +260,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>114</weight>
       <is_active>1</is_active>
@@ -278,7 +278,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>116</weight>
       <is_active>1</is_active>
@@ -313,7 +313,7 @@
       <data_type>Boolean</data_type>
       <html_type>Radio</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>120</weight>
       <is_active>1</is_active>
@@ -434,7 +434,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>127</weight>
       <is_active>1</is_active>
@@ -452,7 +452,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>128</weight>
       <is_active>1</is_active>
@@ -488,7 +488,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>130</weight>
       <is_active>1</is_active>
