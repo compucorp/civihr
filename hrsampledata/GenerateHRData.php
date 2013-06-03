@@ -500,11 +500,11 @@ class GenerateHRData {
         $this->_addEmail($cid, $email, self::HOME);
       }
 
-      /* // Add 0, 1 or 2 phones */
-      /* $count = mt_rand(0, 2); */
-      /* for ($i = 0; $i < $count; ++$i) { */
-      /*   $this->_addPhone($cid); */
-      /* } */
+      // Add 0, 1 or 2 phones
+      $count = mt_rand(0, 2);
+      for ($i = 0; $i < $count; ++$i) {
+        $this->_addPhone($cid);
+      }
 
       // Occasionally you get contacts with just an email in the db
       if ($this->probability(.2) && $email) {
