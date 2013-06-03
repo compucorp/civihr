@@ -523,6 +523,17 @@ class GenerateHRData {
       $contact->hash = crc32($contact->sort_name);
       $contact->id = $cid;
       $this->_update($contact);
+      
+      //if Job(CiviHR) extension is enabled, add the sample data
+      $this->addJobPositions($cid);
+      //if Identification (CiviHR) extension is enabled, add the sample data
+      $this->addIdentificationData($cid);
+      //if Medical and Disability (CiviHR) extension is enabled, add the sample data
+      $this->addMedicalData($cid);
+      //if Qualifications (CiviHR) extension is enabled, add the sample data
+      $this->addQualifications($cid);
+      //if Immigration / Visas (CiviHR) extension is enabled, add the sample data
+      $this->addVisaDetails($cid); 
     }
   }
 
@@ -787,6 +798,152 @@ class GenerateHRData {
     }
   }
 
+  /**
+   * This method populates the Job Positions Custom Table
+   */
+  private function addJobPositions($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Job_Positions', 'id', 'name')) {
+      return;
+    }
+
+    $values = array(
+      'entity_id' => $cid,
+      'job_position_name' => $this->randomItem('job_position_name'),
+      'job_title' => $this->randomItem('job_title'),
+      'is_budget_for_job_position_tied' => $this->randomItem('is_budget_for_job_position_tied'),
+      'contract_type' => $this->randomItem('contract_type'),
+      'contract_term' => $this->randomItem('contract_term'),
+      'contracted_hours' => $this->randomItem('contracted_hours'),
+      'start_date' => $this->randomItem('start_date'),
+      'end_date' => $this->randomItem('end_date'),
+      'paid_unpaid' => $this->randomItem('paid_unpaid'),
+      'standard_hours_per_week' => $this->randomItem('standard_hours_per_week'),
+      'notice_period' => $this->randomItem('notice_period'),
+      'annual_leave_entitlement_days' => $this->randomItem('annual_leave_entitlement_days'),
+      'line_manager' => $this->randomItem('line_manager'),
+      'place_of_work' => $this->randomItem('place_of_work'),
+      'pay_rate_period' => $this->randomItem('pay_rate_period'),
+      'amount_of_pay' => $this->randomItem('amount_of_pay'),
+      'pension_contribution' => $this->randomItem('pension_contribution'),
+      'pension_contribution_percentage' => $this->randomItem('pension_contribution_percentage'),
+      'opted_out_of_automatic_pension' => $this->randomItem('opted_out_of_automatic_pension'),
+      'healthcare_insurance' => $this->randomItem('healthcare_insurance'),
+      'type_of_healthcare_provision' => $this->randomItem('type_of_healthcare_provision'),
+      'job_role_name' => $this->randomItem('job_role_name'),
+      'job_role_description' => $this->randomItem('job_role_description'),
+      'department' => $this->randomItem('department'),
+      'region' => $this->randomItem('region'),
+      'role_manager' => $this->randomItem('role_manager'),
+      'functional_area' => $this->randomItem('functional_area'),
+      'cost_center' => $this->randomItem('cost_center'),
+      'team' => $this->randomItem('team'),
+      'role_hours' => $this->randomItem('role_hours'),
+      'name_of_organisation' => $this->randomItem('name_of_organisation')
+    );
+
+    $this->insertCustomData($gid, $values);
+  }
+
+  
+  /**
+   * This method populates the Identification Custom Table
+   */
+  private function addIdentificationData($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
+      return;
+    }
+
+    $values = array(
+      'entity_id' => $cid,
+      'type' => $this->randomItem('type'),
+      'number' => $this->randomItem('number'),
+      'issue_date' => $this->randomItem('issue_date'),
+      'expire_date' => $this->randomItem('expire_date'),
+      'country' => $this->randomItem('country'),
+      'state_province' => $this->randomItem('state_province')
+    );
+
+    $this->insertCustomData($gid, $values);
+  }
+
+  
+  /**
+   * This method populates the Medical & Disability Custom Table
+   */
+  private function addMedicalData($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'id', 'name')) {
+      return;
+    }
+
+    $values = array(
+      'entity_id' => $cid,
+      'condition' => $this->randomItem('condition'),
+      'medical_type' => $this->randomItem('medical_type'),
+      'special_requirements' => $this->randomItem('special_requirements')
+    );
+
+    $this->insertCustomData($gid, $values);
+  }
+
+  
+  /**
+   * This method populates the Qualifications Custom Table
+   */
+  private function addQualifications($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
+      return;
+    }
+    
+    $values = array(
+      'entity_id' => $cid,
+      'name_of_skill' => $this->randomItem('name_of_skill'),
+      'category_of_skill' => $this->randomItem('category_of_skill'),
+      'level_of_skill' => $this->randomItem('level_of_skill'),
+      'certification_acquired' => $this->randomItem('certification_acquired'),
+      'name_of_certification' => $this->randomItem('name_of_certification'),
+      'certification_authority' => $this->randomItem('certification_authority'),
+      'grade_achieved' => $this->randomItem('grade_achieved'),
+      'expiry_date' => $this->randomItem('expiry_date')
+    );
+
+    $this->insertCustomData($gid, $values);
+  }
+
+  
+  /**
+   * This method populates the Visa/Immigration Custom Table
+   */
+  private function addVisaDetails($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Immigration', 'id', 'name')) {
+      return;
+    }
+    
+    $values = array(
+      'entity_id' => $cid,
+      'visa_type' => $this->randomItem('visa_type')
+    );
+
+    $this->insertCustomData($gid, $values);
+  }
+
+  /**
+   * This is a common method called to insert the data into the custom table
+   */
+  private function insertCustomData($gid, $columnVals) {
+    $groupTree = CRM_Core_BAO_CustomGroup::getTree('Individual', $this, NULL, $gid);
+    foreach ($groupTree[$gid]['fields'] as $fieldID => $value) {
+      $columnNames[] = $value['column_name'];
+    }
+    if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
+      // removing the file field column "evidence_attached" in Qualifications
+      array_pop($columnNames);
+    }
+    $tableName = $groupTree[$gid]['table_name'];
+    $columns = implode("`,`", $columnNames);
+    $columnValues = implode("','", array_values($columnVals));
+    $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
+    $dao = CRM_Core_DAO::executeQuery($query);
+  }
   
 }
 

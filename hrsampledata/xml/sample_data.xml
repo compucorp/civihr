@@ -185,5 +185,325 @@
     <item>Academy</item>
   </organization_suffix>
 
+  <job_position_name>
+    <item>Chief Executive</item>
+    <item>Volunteer Manager</item>
+    <item>Volunteer</item>
+    <item>Administrator</item>
+    <item>Fundraiser</item>
+  </job_position_name>
+
+  <job_title>
+    <item>Manager1</item>
+    <item>Manager2</item>
+  </job_title>
+
+  <is_budget_for_job_position_tied>
+    <item>1</item>
+    <item>0</item>
+  </is_budget_for_job_position_tied>
+
+  <contract_type>
+    <item>Employee</item>
+    <item>Contractor</item>
+    <item>Volunteer</item>
+    <item>Trustee</item>
+    <item>Intern</item>
+    <item>Apprentice</item>
+  </contract_type>
+
+  <contract_term>
+    <item>Permanent</item>
+    <item>Temporary</item>
+    <item>Casual</item>
+  </contract_term>
+
+  <contracted_hours>
+    <item>Full-time</item>
+    <item>Part-time</item>
+    <item>Spare-time</item>
+  </contracted_hours>
+
+  <start_date>
+    <item>2012-06-10</item>
+  </start_date>
+
+  <end_date>
+    <item>2013-09-10</item>
+  </end_date>
+
+  <paid_unpaid>
+    <item>Paid</item>
+    <item>Unpaid</item>
+  </paid_unpaid>
+
+  <standard_hours_per_week>
+    <item>40</item>
+    <item>32</item>
+    <item>24</item>
+    <item>16</item>
+    <item>8</item>
+  </standard_hours_per_week>
+
+  <notice_period>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+  </notice_period>
+
+  <annual_leave_entitlement_days>
+    <item>23</item>
+    <item>20</item>
+    <item>15</item>
+    <item>10</item>
+    <item>05</item>
+  </annual_leave_entitlement_days>
+
+  <line_manager>
+    <item>59</item>
+    <item>60</item>
+    <item>61</item>
+  </line_manager>
+
+  <place_of_work>
+    <item>Main Office</item>
+    <item>Satellite Office</item>
+    <item>Overseas Office</item>
+    <item>Home Office</item>
+  </place_of_work>
+
+  <pay_rate_period>
+    <item>Annual</item>
+    <item>Monthly</item>
+    <item>Daily</item>
+    <item>Hourly</item>
+  </pay_rate_period>
+
+  <amount_of_pay>
+    <item>200.00</item>
+    <item>300.00</item>
+    <item>400.00</item>
+  </amount_of_pay>
+
+  <pension_contribution>
+    <item>1</item>
+    <item>2</item>
+  </pension_contribution>
+
+  <pension_contribution_percentage>
+    <item>10</item>
+    <item>20</item>
+    <item>40</item>
+  </pension_contribution_percentage>
+
+  <opted_out_of_automatic_pension>
+    <item>1</item>
+    <item>2</item>
+  </opted_out_of_automatic_pension>
+
+  <healthcare_insurance>
+    <item>1</item>
+    <item>2</item>
+  </healthcare_insurance>
+
+  <type_of_healthcare_provision>
+    <item>BUPA - Basic</item>
+    <item>BUPA - Premium</item>
+    <item>NHS - Basic</item>
+    <item>NHS Premium</item>
+  </type_of_healthcare_provision>
+
+  <job_role_name>
+    <item>job1</item>
+    <item>job2</item>
+    <item>job3</item>
+    <item>job4</item>
+  </job_role_name>
+
+  <job_role_description>
+    <item>desc1</item>
+    <item>desc2</item>
+    <item>desc3</item>
+    <item>desc4</item>
+  </job_role_description>
+
+  <department>
+    <item>Fundraising</item>
+    <item>Operations</item>
+    <item>Finance</item>
+    <item>HR</item>
+    <item>Advocacy</item>
+  </department>
+
+  <region>
+    <item>North America</item>
+    <item>Europe</item>
+    <item>Africa</item>
+    <item>Asia</item>
+    <item>Australasia</item>
+    <item>South America</item>
+  </region>
+
+  <role_manager>
+    <item>123</item>
+    <item>124</item>
+    <item>125</item>
+  </role_manager>
+
+  <functional_area>
+    <item>Save the Whales</item>
+    <item>Save the Tigers</item>
+    <item>Save the Rhinos</item>
+    <item>Save the Panda</item>
+    <item>Save the Elephant</item>
+  </functional_area>
+
+  <cost_center>
+    <item>001</item>
+    <item>002</item>
+    <item>003</item>
+    <item>004</item>
+    <item>005</item>
+  </cost_center>
+
+  <team>
+    <item>Team A</item>
+    <item>Team B</item>
+    <item>Team C</item>
+    <item>Team D</item>
+    <item>Team E</item>
+  </team>
+
+  <role_hours>
+    <item>6</item>
+    <item>8</item>
+    <item>10</item>
+  </role_hours>
+
+  <name_of_organisation>
+    <item>ZING</item>
+    <item>ZINGIT</item>
+    <item>UP</item>
+  </name_of_organisation>
+
+  <type>
+    <item>Passport</item>
+    <item>Drivers License</item>
+    <item>Identity Card</item>
+    <item>SSN</item>
+    <item>Income Tax ID</item>
+  </type>
+
+  <number>
+    <item>45</item>
+    <item>50</item>
+  </number>
+
+  <issue_date>
+    <item>2012-06-10</item>
+  </issue_date>
+
+  <expire_date>
+    <item>2013-09-10</item>
+  </expire_date>
+
+  <country>
+    <item>1228</item>
+  </country>
+
+  <state_province>
+    <item>1000</item>
+    <item>1001</item>
+    <item>1052</item>
+    <item>1002</item>
+    <item>1003</item>
+    <item>1060</item>
+  </state_province>
+
+  <condition>
+    <item>Condition1</item>
+    <item>Condition2</item>
+    <item>Condition3</item>
+    <item>Condition4</item>
+  </condition>
+
+  <medical_type>
+    <item>Cognitive</item>
+    <item>Sensory</item>
+    <item>Mental</item>
+    <item>Physical</item>
+  </medical_type>
+
+  <special_requirements>
+    <item>Large Screen</item>
+    <item>Special Chair</item>
+    <item>Service Dog</item>
+    <item>Voice Recognition Software</item>
+    <item>Wheelchair Access</item>
+    <item>Other</item>
+  </special_requirements>
+
+  <name_of_skill>
+    <item>Skill1</item>
+    <item>Skill2</item>
+    <item>Skill3</item>
+    <item>Skill4</item>
+    <item>Skill5</item>
+  </name_of_skill>
+
+  <category_of_skill>
+    <item>Language</item>
+    <item>Computing</item>
+    <item>Finance</item>
+    <item>Management</item>
+    <item>Legal</item>
+  </category_of_skill>
+
+  <level_of_skill>
+    <item>Basic</item>
+    <item>Intermediate</item>
+    <item>Advanced</item>
+    <item>Expert</item>
+  </level_of_skill>
+
+  <certification_acquired>
+    <item>1</item>
+    <item>2</item>
+  </certification_acquired>
+
+  <name_of_certification>
+    <item>Cert1</item>
+    <item>Cert2</item>
+    <item>Cert3</item>
+    <item>Cert4</item>
+  </name_of_certification>
+
+  <certification_authority>
+    <item>Cisco</item>
+    <item>IBM</item>
+    <item>Microsoft</item>
+    <item>SAP</item>
+  </certification_authority>
+
+  <grade_achieved>
+    <item>A</item>
+    <item>B</item>
+    <item>C</item>
+    <item>D</item>
+  </grade_achieved>
+
+  <expiry_date>
+    <item>2013-09-10</item>
+  </expiry_date>
+
+  <visa_type>
+    <item>green card</item>
+    <item>H1-B</item>
+    <item>L1</item>
+    <item>J1</item>
+  </visa_type>
 
 </sample_data>
