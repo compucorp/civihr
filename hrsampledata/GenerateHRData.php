@@ -51,7 +51,7 @@ class GenerateHRData {
   CONST DEBUG_LEVEL = 1;
 
   CONST NUM_CONTACT = 20;
-  CONST INDIVIDUAL_PERCENT = 80;
+  CONST INDIVIDUAL_PERCENT = 90;
   CONST ORGANIZATION_PERCENT = 10;
 
   // Location types from the table crm_location_type
@@ -105,8 +105,8 @@ class GenerateHRData {
 
     // may use this function in future if needed to get
     // a consistent pattern of random numbers.
-
-    $this->contact = range(2, self::NUM_CONTACT + 1);
+    $this->addContact();
+    $this->contact = $this->cids;
     shuffle($this->contact);
 
     // get the individual and organizaton contacts
@@ -369,7 +369,6 @@ class GenerateHRData {
     $contact = new CRM_Contact_DAO_Contact();
 
     for ($id = 1; $id <= self::NUM_CONTACT; $id++) {
-      $contact->contact_type = $this->getContactType($id + 1);
       $contact->do_not_phone = $this->probability(.2);
       $contact->do_not_email = $this->probability(.2);
       $contact->do_not_post = $this->probability(.2);
@@ -379,7 +378,9 @@ class GenerateHRData {
         $contact->preferred_communication_method = CRM_Core_DAO::VALUE_SEPARATOR . $this->randomItem($this->preferredCommunicationMethod) . CRM_Core_DAO::VALUE_SEPARATOR;
       }
       $this->_insert($contact);
+      $cids[] = $contact->id;
     }
+    $this->cids = $cids;
   }
 
   /**
@@ -404,6 +405,7 @@ class GenerateHRData {
     $now = time();
 
     foreach ($this->Individual as $cid) {
+      $contact->contact_type = $this->getContactType($cid);
       $contact->is_deceased = $contact->gender_id = $contact->birth_date = $contact->deceased_date = $email = NULL;
       list($gender_id, $gender) = $this->randomKeyValue($this->gender);
       $birth_date = mt_rand($now - 90 * $year, $now - 10 * $year);
@@ -511,6 +513,7 @@ class GenerateHRData {
     foreach ($this->Organization as $key => $id) {
       $org->primary_contact_id = $website = $email = NULL;
       $org->id = $id;
+      $org->contact_type = $this->getContactType($id);
       $address = $this->_addAddress($id);
 
       $namePre = $this->randomItem('organization_prefix');
@@ -901,7 +904,6 @@ class GenerateHRData {
 
 $obj1 = new GenerateHRData();
 $obj1->initID();
-$obj1->generate('Contact');
 $obj1->generate('Individual');
 $obj1->generate('Organization');
 $obj1->generate('Note');
