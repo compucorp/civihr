@@ -39,15 +39,17 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   protected $_customGroupExtends = array('Individual');
 
   function __construct() {
-    $this->_exposeContactID = $this->_emailField = FALSE;
+    $this->_emailField = FALSE;
+    $this->_customGroupJoin = 'INNER JOIN';
     $this->_customGroupGroupBy = TRUE;
 
     $this->_columns = array(
       'civicrm_contact' =>
       array(
         'dao' => 'CRM_Contact_DAO_Contact',
-        'fields' =>
-        array( ),
+        'fields' => array(
+          // _exposeContactID already set by default which will expose contact - ID
+        ),
         'filters' =>
         array(
           'id' =>
@@ -127,7 +129,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}";
 
     if ($this->isTableSelected('civicrm_address')) {
-      //FIXME: work location type clause needs to be added
+      //FIXME: work location type clause needs to be added instead of primary
       $this->_from .= "
                  LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
