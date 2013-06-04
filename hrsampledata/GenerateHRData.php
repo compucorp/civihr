@@ -880,15 +880,16 @@ class GenerateHRData {
    * This is a common method called to insert the data into the custom table
    */
   private function insertCustomData($gid, $columnVals) {
-    $groupTree = CRM_Core_BAO_CustomGroup::getTree('Individual', $this, NULL, $gid);
-    foreach ($groupTree[$gid]['fields'] as $fieldID => $value) {
+    $tableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $gid, 'table_name', 'id');
+    $cfDetails = array();
+    CRM_Core_DAO::commonRetrieveAll('CRM_Core_BAO_CustomField', 'custom_group_id', $gid, $cfDetails);
+    foreach ($cfDetails as $fieldID => $value) {
       $columnNames[] = $value['column_name'];
     }
     if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
       // removing the file field column "evidence_attached" in Qualifications
       array_pop($columnNames);
     }
-    $tableName = $groupTree[$gid]['table_name'];
     $columns = implode("`,`", $columnNames);
     $columnValues = implode("','", array_values($columnVals));
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
