@@ -291,4 +291,173 @@
       <option_group_name>level_of_skill_20130510015934</option_group_name>
     </OptionValue>
   </OptionValues>
+  <ProfileGroups>
+    <ProfileGroup>
+      <is_active>1</is_active>
+      <group_type>Individual</group_type>
+      <title>Qualifications</title>
+      <add_captcha>0</add_captcha>
+      <is_map>0</is_map>
+      <is_edit_link>0</is_edit_link>
+      <is_uf_link>0</is_uf_link>
+      <is_update_dupe>0</is_update_dupe>
+      <name>hrqual_tab</name>
+      <created_date>0000-00-00 00:00:00</created_date>
+      <is_proximity_search>0</is_proximity_search>
+    </ProfileGroup>
+  </ProfileGroups>
+  <ProfileFields>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.name_of_skill_18</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>1</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Name of Skill</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.category_of_skill_19</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>2</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Category of Skill</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.level_of_skill_20</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>3</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Level of Skill</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.certification_acquired__21</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Certification Acquired?</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.name_of_certification_22</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>5</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Name of Certification</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.certification_authority_23</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>6</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Certification Authority</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.grade_achieved_24</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>7</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Grade Achieved</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.expiry_date_25</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>8</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Expiry Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.evidence_attached_26</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>9</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence Attached</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+  </ProfileFields>
+  <ProfileJoins>
+    <ProfileJoin>
+      <is_active>1</is_active>
+      <module>Profile</module>
+      <weight>12</weight>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileJoin>
+  </ProfileJoins>
 </CustomData>
