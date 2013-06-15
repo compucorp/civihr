@@ -16,6 +16,6 @@
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
-    <namespace>CRM/Hrsampledata</namespace>
+    <namespace>CRM/HRSampleData</namespace>
   </civix>
 </extension>
