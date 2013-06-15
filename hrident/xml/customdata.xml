@@ -14,6 +14,7 @@
       <is_active>1</is_active>
       <table_name>civicrm_value_identify_2</table_name>
       <is_multiple>1</is_multiple>
+      <is_reserved>1</is_reserved>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
     </CustomGroup>
@@ -190,4 +191,126 @@
       <option_group_name>type_20130502144049</option_group_name>
     </OptionValue>
   </OptionValues>
+  <ProfileGroups>
+    <ProfileGroup>
+      <is_active>1</is_active>
+      <group_type>Individual</group_type>
+      <title>Identification</title>
+      <add_captcha>0</add_captcha>
+      <is_map>0</is_map>
+      <is_edit_link>0</is_edit_link>
+      <is_uf_link>0</is_uf_link>
+      <is_update_dupe>0</is_update_dupe>
+      <is_reserved>1</is_reserved>
+      <name>hrident_tab</name>
+      <!-- <created_date>2013-06-14 19:17:01</created_date> -->
+      <is_proximity_search>0</is_proximity_search>
+    </ProfileGroup>
+  </ProfileGroups>
+  <ProfileFields>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.type_1</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>1</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Type</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.number_2</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>2</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Number</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.issue_date_3</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>3</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Issue Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.expire_date_4</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Expire Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.country_5</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>6</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Country</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_identify_2.state_province_6</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>5</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>State/Province</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileField>
+  </ProfileFields>
+  <ProfileJoins>
+    <ProfileJoin>
+      <is_active>1</is_active>
+      <module>Profile</module>
+      <weight>10</weight>
+      <profile_group_name>Identification</profile_group_name>
+    </ProfileJoin>
+  </ProfileJoins>
 </CustomData>
