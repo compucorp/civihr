@@ -16,6 +16,7 @@
       <is_multiple>1</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
+      <is_reserved>0</is_reserved>
     </CustomGroup>
   </CustomGroups>
   <CustomFields>
@@ -23,74 +24,106 @@
       <name>Visa_Type</name>
       <label>Visa Type</label>
       <data_type>String</data_type>
-      <html_type>Select</html_type>
+      <html_type>Text</html_type>
       <default_value>green card</default_value>
-      <is_required>0</is_required>
+      <is_required>1</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>25</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
-      <text_length>32</text_length>
+      <text_length>128</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>visa_type_7</column_name>
-      <option_group_name>visa_type_20130502150845</option_group_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Start_Date</name>
+      <label>Start Date</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>27</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>yy-mm-dd</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>start_date_52</column_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>End_Date</name>
+      <label>End Date</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>28</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>yy-mm-dd</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>end_date_53</column_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Conditions</name>
+      <label>Conditions</label>
+      <data_type>Memo</data_type>
+      <html_type>TextArea</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>29</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>conditions_54</column_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Visa_Number</name>
+      <label>Visa Number</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>26</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>128</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>visa_number_55</column_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Comments</name>
+      <label>Comments</label>
+      <data_type>Memo</data_type>
+      <html_type>TextArea</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>30</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>comments_56</column_name>
       <custom_group_name>Immigration</custom_group_name>
     </CustomField>
   </CustomFields>
-  <OptionGroups>
-    <OptionGroup>
-      <name>visa_type_20130502150845</name>
-      <title>Visa Type</title>
-      <is_reserved>1</is_reserved>
-      <is_active>1</is_active>
-    </OptionGroup>
-  </OptionGroups>
-  <OptionValues>
-    <OptionValue>
-      <label>Green Card</label>
-      <value>green card</value>
-      <name>Green_Card</name>
-      <is_default>0</is_default>
-      <weight>1</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>visa_type_20130502150845</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>H1-B</label>
-      <value>H1-B</value>
-      <name>H1_B</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>visa_type_20130502150845</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>L1</label>
-      <value>L1</value>
-      <name>L1</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>visa_type_20130502150845</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>J1</label>
-      <value>J1</value>
-      <name>J1</name>
-      <is_default>0</is_default>
-      <weight>4</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>visa_type_20130502150845</option_group_name>
-    </OptionValue>
-  </OptionValues>
 </CustomData>
