@@ -68,3 +68,31 @@ function hrvisa_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrvisa_civicrm_managed(&$entities) {
   return _hrvisa_civix_civicrm_managed($entities);
 }
+
+
+/**
+ * Implementation of hook_civicrm_tabs
+ */
+function hrvisa_civicrm_tabs(&$tabs, $contactID) {
+  $cgid = hrvisa_getCustomGroupId();
+  foreach ($tabs as $k => $v) {
+    if ($v['id'] == "custom_{$cgid}") {
+      $tabs[$k]['url'] = CRM_Utils_System::url('civicrm/profile/edit', array(
+        'reset' => 1,
+        'gid' => hrvisa_getUFGroupID(),
+        'id' => $contactID,
+        'snippet' => 1,
+      ));
+    }
+  }
+}
+
+function hrvisa_getCustomGroupId() {
+  $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+  return array_search('Immigration', $groups);
+}
+
+function hrvisa_getUFGroupID() {
+  $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+  return array_search('hrvisa_tab', $groups);
+}
