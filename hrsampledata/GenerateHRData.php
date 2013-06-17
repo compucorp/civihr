@@ -873,7 +873,12 @@ class GenerateHRData {
     
     $values = array(
       'entity_id' => $cid,
-      'visa_type' => $this->randomItem('visa_type')
+      'visa_type' => $this->randomItem('visa_type'),
+      'start_date' => $this->randomItem('start_date'),
+      'end_date' => $this->randomItem('end_date'),
+      'conditions' => $this->randomItem('conditions'),
+      'visa_number' => $this->randomItem('visa_number'),
+      'comments' => $this->randomItem('comments')
     );
 
     $this->insertCustomData($gid, $values);
