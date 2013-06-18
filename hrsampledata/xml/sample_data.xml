@@ -267,12 +267,6 @@
     <item>05</item>
   </annual_leave_entitlement_days>
 
-  <line_manager>
-    <item>59</item>
-    <item>60</item>
-    <item>61</item>
-  </line_manager>
-
   <place_of_work>
     <item>Main Office</item>
     <item>Satellite Office</item>
@@ -351,12 +345,6 @@
     <item>Australasia</item>
     <item>South America</item>
   </region>
-
-  <role_manager>
-    <item>123</item>
-    <item>124</item>
-    <item>125</item>
-  </role_manager>
 
   <functional_area>
     <item>Save the Whales</item>
