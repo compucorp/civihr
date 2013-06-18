@@ -151,7 +151,6 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
 
   public function executeCustomDataTemplateFile($relativePath) {
     $smarty = CRM_Core_Smarty::singleton();
-    $smarty->assign('hremerg_relation_type_id');
     $xmlCode = $smarty->fetch($relativePath);
     //x dpm($xmlCode);
     $xml = simplexml_load_string($xmlCode);
