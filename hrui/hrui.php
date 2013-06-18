@@ -30,6 +30,19 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
+  // make sure only relevant components are enabled
+  $params = array(
+    'enableComponents'   => array('CiviMail', 'CiviReport'),
+    'enableComponentsID' => array()
+  );
+  $components = CRM_Core_Component::getComponents();
+  foreach ($components as $comp => $compObj) {
+    if (in_array($comp, $params['enableComponents'])) {
+      $params['enableComponentsID'][] = $compObj->componentID;
+    }
+  }
+  CRM_Core_BAO_ConfigSetting::create($params);
+
   return _hrui_civix_civicrm_install();
 }
 
