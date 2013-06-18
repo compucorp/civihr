@@ -229,14 +229,6 @@
     <item>Spare-time</item>
   </contracted_hours>
 
-  <start_date>
-    <item>2012-06-10</item>
-  </start_date>
-
-  <end_date>
-    <item>2013-09-10</item>
-  </end_date>
-
   <paid_unpaid>
     <item>Paid</item>
     <item>Unpaid</item>
@@ -395,14 +387,6 @@
     <item>50</item>
   </number>
 
-  <issue_date>
-    <item>2012-06-10</item>
-  </issue_date>
-
-  <expire_date>
-    <item>2013-09-10</item>
-  </expire_date>
-
   <country>
     <item>1228</item>
   </country>
@@ -414,6 +398,16 @@
     <item>1002</item>
     <item>1003</item>
     <item>1060</item>
+    <item>1059</item>
+    <item>1061</item>
+    <item>1004</item>
+    <item>1005</item>
+    <item>1006</item>
+    <item>1031</item>
+    <item>1007</item>
+    <item>1050</item>
+    <item>1008</item>
+    <item>1009</item>
   </state_province>
 
   <condition>
@@ -488,10 +482,6 @@
     <item>D</item>
   </grade_achieved>
 
-  <expiry_date>
-    <item>2013-09-10</item>
-  </expiry_date>
-
   <visa_type>
     <item>green card</item>
     <item>H1-B</item>
@@ -514,4 +504,26 @@
     <item>Test Comment1</item>
     <item>Test Comment2</item>
   </comments>
+
+  <priority>
+    <item>Primary</item>
+    <item>Secondary</item>
+  </priority>
+
+  <occupation_type>
+    <item>Salaried Employment</item>
+    <item>Voluntary Work</item>
+    <item>Self-Employment</item>
+    <item>Sickness</item>
+    <item>Study</item>
+    <item>Contract Work</item>
+    <item>Apprenticeship</item>
+    <item>Internship</item>
+    <item>Training</item>
+  </occupation_type>
+
+  <reference_supplied>
+    <item>Reference 1</item>
+    <item>Reference 2</item>
+  </reference_supplied>
 </sample_data>
