@@ -30,18 +30,12 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
-  $domainID = CRM_Core_Config::domainID();
-  $options  = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
+  // get a list of all tab options
+  $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
 
   // get tab options from DB
-  $params = array(
-    'version'   => 3,
-    'domain_id' => $domainID,
-    'return'    => 'contact_view_options',
-  );
-  $result   = civicrm_api('setting', 'get', $params);
-  $options  = array_flip($result['values'][$domainID]['contact_view_options']);
+  $options = hrui_getViewOptionsSetting();
   
   // unset activity & tag tab options
   foreach ($tabsToUnset as $key) {
@@ -50,12 +44,7 @@ function hrui_civicrm_install() {
   $options = array_keys($options);
   
   // set modified options in the DB
-  $params = array(
-    'version'   => 3,
-    'domain_id' => $domainID,
-    'contact_view_options' => $options,
-  );
-  $result = civicrm_api('setting', 'create', $params);
+  hrui_setViewOptionsSetting($options);
 
   return _hrui_civix_civicrm_install();
 }
@@ -64,18 +53,12 @@ function hrui_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrui_civicrm_uninstall() {
-  $domainID = CRM_Core_Config::domainID();
+  // get a list of all tab options
   $options  = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToSet = array($options['Activities'], $options['Tags']);
   
   // get tab options from DB
-  $params = array(
-    'version'   => 3,
-    'domain_id' => $domainID,
-    'return'    => 'contact_view_options',
-  );
-  $result   = civicrm_api('setting', 'get', $params);
-  $options  = array_flip($result['values'][$domainID]['contact_view_options']);
+  $options = hrui_getViewOptionsSetting();
   
   // set activity & tag tab options
   foreach ($tabsToSet as $key) {
@@ -84,14 +67,45 @@ function hrui_civicrm_uninstall() {
   $options = array_keys($options);
   
   // set modified options in the DB
-  $params = array(
+  hrui_setViewOptionsSetting($options);
+
+  return _hrui_civix_civicrm_uninstall();
+}
+
+/**
+ * get tab options from DB using setting-get api
+ */
+function hrui_getViewOptionsSetting() {
+  $domainID = CRM_Core_Config::domainID();
+  $params   = array(
+    'version'   => 3,
+    'domain_id' => $domainID,
+    'return'    => 'contact_view_options',
+  );
+  $result = civicrm_api('setting', 'get', $params);
+  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+    CRM_Core_Error::debug_var('setting-get result for contact_view_options', $result);
+    throw new CRM_Core_Exception('Failed to retrieve settings for contact_view_options');
+  }
+  return array_flip($result['values'][$domainID]['contact_view_options']);
+}
+
+/**
+ * set modified options in the DB using setting-create api
+ */
+function hrui_setViewOptionsSetting($options = array()) {
+  $domainID = CRM_Core_Config::domainID();
+  $params   = array(
     'version'   => 3,
     'domain_id' => $domainID,
     'contact_view_options' => $options,
   );
   $result = civicrm_api('setting', 'create', $params);
-
-  return _hrui_civix_civicrm_uninstall();
+  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+    CRM_Core_Error::debug_var('setting-create result for contact_view_options', $result);
+    throw new CRM_Core_Exception('Failed to create settings for contact_view_options');
+  }
+  return TRUE;
 }
 
 /**
