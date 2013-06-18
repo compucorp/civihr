@@ -6,6 +6,9 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  }
 }
 
 /**
