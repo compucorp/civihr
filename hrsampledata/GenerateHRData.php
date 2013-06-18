@@ -473,7 +473,7 @@ class GenerateHRData {
       $org->primary_contact_id = $website = $email = NULL;
       $org->id = $id;
       $org->contact_type = $this->getContactType($id);
-      $address = $this->_addAddress($id, SELF::MAIN);
+      $address = $this->_addAddress($id, self::MAIN);
 
       $namePre = $this->randomItem('organization_prefix');
       $nameMid = $this->randomItem('organization_name');
