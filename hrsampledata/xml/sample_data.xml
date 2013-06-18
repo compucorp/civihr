@@ -4,18 +4,23 @@
   <male_name>
     <item>James</item>
     <item>Kirk</item>
-    </male_name>
-<female_name>
+    <item>John</item>
+    <item>Peter</item>
+  </male_name>
+  <female_name>
     <item>Amy</item>
     <item>Cristina</item>
- </female_name>
+    <item>Emma</item>
+  </female_name>
 
- <last_name>
+  <last_name>
     <item>Hetfield</item>
     <item>Hammett</item>
-</last_name>
+    <item>Anderson</item>
+    <item>Johnson</item>
+  </last_name>
 
- <street_name>
+  <street_name>
     <item>Second</item>
     <item>Main</item>
     <item>States</item>
@@ -262,12 +267,6 @@
     <item>05</item>
   </annual_leave_entitlement_days>
 
-  <line_manager>
-    <item>59</item>
-    <item>60</item>
-    <item>61</item>
-  </line_manager>
-
   <place_of_work>
     <item>Main Office</item>
     <item>Satellite Office</item>
@@ -346,12 +345,6 @@
     <item>Australasia</item>
     <item>South America</item>
   </region>
-
-  <role_manager>
-    <item>123</item>
-    <item>124</item>
-    <item>125</item>
-  </role_manager>
 
   <functional_area>
     <item>Save the Whales</item>
@@ -506,4 +499,19 @@
     <item>J1</item>
   </visa_type>
 
+  <visa_number>
+    <item>AB1234</item>
+    <item>XZ6572</item>
+    <item>AFR732</item>
+  </visa_number>
+
+  <conditions>
+    <item>Visa Condition1</item>
+    <item>Visa Condition2</item>
+  </conditions>
+
+  <comments>
+    <item>Test Comment1</item>
+    <item>Test Comment2</item>
+  </comments>
 </sample_data>
