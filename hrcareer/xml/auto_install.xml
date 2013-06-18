@@ -338,4 +338,158 @@
       <option_group_name>paid_unpaid_20130617111520</option_group_name>
     </OptionValue>
   </OptionValues>
+  <ProfileGroups>
+    <ProfileGroup>
+      <is_active>1</is_active>
+      <group_type>Individual</group_type>
+      <title>Career</title>
+      <add_captcha>0</add_captcha>
+      <is_map>0</is_map>
+      <is_edit_link>0</is_edit_link>
+      <is_uf_link>0</is_uf_link>
+      <is_update_dupe>0</is_update_dupe>
+      <name>hrcareer_tab</name>
+      <created_date>0000-00-00 00:00:00</created_date>
+      <is_proximity_search>0</is_proximity_search>
+      <is_reserved>1</is_reserved>
+    </ProfileGroup>
+  </ProfileGroups>
+  <ProfileFields>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.start_date_7</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>2</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Start Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.end_date_8</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>3</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>End Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.name_of_organisation_9</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Name of Organisation</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.occupation_type_10</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>5</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Occupation Type</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.job_title_course_name_11</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>6</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Job Title / Course Name</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.full_time_part_time_12</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>7</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Full-time / Part-time</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.paid_unpaid_13</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>1</is_required>
+      <weight>8</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Paid / Unpaid</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.reference_supplied_14</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>9</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Reference Supplied</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+  </ProfileFields>
+  <ProfileJoins>
+    <ProfileJoin>
+      <is_active>1</is_active>
+      <module>Profile</module>
+      <weight>14</weight>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileJoin>
+  </ProfileJoins>
 </CustomData>
