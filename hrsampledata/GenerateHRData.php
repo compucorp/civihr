@@ -538,8 +538,10 @@ class GenerateHRData {
       'street_name' => $this->randomItem('street_name'),
       'street_type' => $this->randomItem('street_type'),
       'street_number_postdirectional' => $this->randomItem('address_direction'),
+      'city' => $this->randomItem('city'),
       'state_province_id' => $this->randomItem('state_province'),
-      'country_id' => $this->randomItem('country')
+      'country_id' => $this->randomItem('country'),
+      'postal_code' => $this->randomItem('postal_code')
     );
 
       $params['street_address'] = $params['street_number'] . $params['street_number_suffix'] . " " . $params['street_name'] . " " . $params['street_type'] . " " . $params['street_number_postdirectional'];
