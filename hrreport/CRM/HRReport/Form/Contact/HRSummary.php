@@ -42,6 +42,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $this->_emailField = FALSE;
     $this->_customGroupJoin = 'INNER JOIN';
     $this->_customGroupGroupBy = TRUE;
+    $this->_exposeContactID    = FALSE;
 
     $this->_columns = array(
       'civicrm_contact' =>
@@ -49,6 +50,11 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' => array(
           // _exposeContactID already set by default which will expose contact - ID
+          'id' =>
+          array('title' => ts('People'),
+            'default' => TRUE,
+            'statistics' => array('count' => ts('People'),),
+          ),
         ),
         'filters' =>
         array(
@@ -93,7 +99,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           array('title' => ts('Work Country'),
           ),
         ),
-        'grouping' => 'location-fields',
+        'grouping' => 'contact-fields',
       ),
       'civicrm_group' =>
       array(
@@ -118,22 +124,65 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
     $customGroupName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Constituent Information', 'table_name', 'title');
     unset($this->_columns[$customGroupName]);
-  }
 
-  function preProcess() {
-    parent::preProcess();
+    $jobPositionTable = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Job Positions', 'table_name', 'title');
+    $jobPositionColumnID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name of Job Position', 'id', 'label');
+
+    $this->_columns[$jobPositionTable]['fields']["custom_{$jobPositionColumnID}_"] =
+      array('name' => 'name_of_job_position_13',
+        'title' => ts('Job Positions'),
+        'default' => TRUE,
+        'statistics' => array('count' => ts('Job Positions'),),
+        'grouping'   => 'contact-fields',
+      );
   }
 
   function from() {
     $this->_from .= "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}";
 
-    if ($this->isTableSelected('civicrm_address')) {
-      //FIXME: work location type clause needs to be added instead of primary
-      $this->_from .= "
+    $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array('flip' => TRUE));
+    $workLocTypeId = CRM_Utils_Array::value('Work', $locationTypes);
+
+    //FIXME: add address join only when required
+    $this->_from  .= "
                  LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
-                               {$this->_aliases['civicrm_address']}.is_primary = 1\n";
+                               {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
+  }
+
+  function statistics(&$rows) {
+    $statistics = parent::statistics($rows);
+
+    if (!empty($this->_statFields)) {
+      // after removing group-by we have
+      $sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_having} {$this->_orderBy} {$this->_limit}";
+      $dao = CRM_Core_DAO::executeQuery($sql);
+      while ($dao->fetch()) {
+        foreach ($this->_statFields as $title => $alias) { 
+          $statistics['counts'][$alias] = array(
+            'title' => $title,
+            'value' => $dao->$alias,
+            'type' => CRM_Utils_Type::T_INT,
+          );
+        }
+      }
+    }
+    return $statistics;
+  }
+
+  function alterDisplay(&$rows) {
+    $entryFound = FALSE;
+
+    foreach ($rows as $rowNum => $row) {
+      $entryFound = 
+        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
+
+      // skip looking further in rows, if first row itself doesn't
+      // have the column we need
+      if (!$entryFound) {
+        break;
+      }
     }
   }
 }
