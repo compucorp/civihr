@@ -53,7 +53,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           'id' =>
           array('title' => ts('People'),
             'default' => TRUE,
-            'statistics' => array('count' => ts('People'),),
+            'statistics' => array('count_distinct' => ts('People'),),
           ),
         ),
         'filters' =>
@@ -132,7 +132,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       array('name' => 'name_of_job_position_13',
         'title' => ts('Job Positions'),
         'default' => TRUE,
-        'statistics' => array('count' => ts('Job Positions'),),
+        'statistics' => array('count_distinct' => ts('Job Positions'),),
         'grouping'   => 'contact-fields',
       );
   }
