@@ -11,6 +11,12 @@ function hrui_civicrm_pageRun($page) {
   }
 }
 
+function hrui_civicrm_buildForm( $formName, &$form ) {
+  if ($form instanceof CRM_Contact_Form_Contact) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  }
+}
+
 /**
  * Implementation of hook_civicrm_config
  */
