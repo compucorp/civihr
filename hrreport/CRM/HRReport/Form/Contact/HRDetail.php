@@ -100,7 +100,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'phone' =>
           array('title' => ts('Applicant Phone'),
-            'default' => TRUE,
             'no_repeat' => TRUE,
           ),
         ),
