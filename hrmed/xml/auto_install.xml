@@ -26,7 +26,7 @@
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>48</weight>
       <is_active>1</is_active>
@@ -43,7 +43,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>99</weight>
       <is_active>1</is_active>
@@ -61,7 +61,7 @@
       <data_type>String</data_type>
       <html_type>CheckBox</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>109</weight>
       <is_active>1</is_active>
