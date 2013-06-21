@@ -40,6 +40,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
 
   function __construct() {
     $this->_exposeContactID = $this->_emailField = FALSE;
+    $this->_customGroupJoin = 'INNER JOIN';
 
     $this->_columns = array(
       'civicrm_contact' =>
@@ -49,6 +50,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'sort_name' =>
           array('title' => ts('Applicant Name'),
+            'required' => TRUE,
+          ),
+          'id' =>
+          array(
+            'no_display' => TRUE,
             'required' => TRUE,
           ),
         ),
@@ -94,7 +100,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'phone' =>
           array('title' => ts('Applicant Phone'),
-            'default' => TRUE,
             'no_repeat' => TRUE,
           ),
         ),
@@ -117,7 +122,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
         ),
       ),
-    );
+    ) + $this->addAddressFields(FALSE, TRUE);
 
     parent::__construct();
   }
@@ -139,6 +144,42 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
                    ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_email']}.contact_id AND
                       {$this->_aliases['civicrm_email']}.is_primary = 1\n";
     }
+
+    $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array('flip' => TRUE));
+    $workLocTypeId = CRM_Utils_Array::value('Work', $locationTypes);
+
+    //FIXME: add address join only when required
+    $this->_from  .= "
+                 LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
+                           ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
+                               {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
+  }
+
+  function alterDisplay(&$rows) {
+    $entryFound = FALSE;
+
+    foreach ($rows as $rowNum => $row) {
+      if (array_key_exists('civicrm_contact_sort_name', $row) &&
+        CRM_Utils_Array::value('civicrm_contact_sort_name', $rows[$rowNum]) &&
+        array_key_exists('civicrm_contact_id', $row)
+      ) {
+        $url = CRM_Utils_System::url("civicrm/contact/view",
+               'reset=1&cid=' . $row['civicrm_contact_id'],
+               $this->_absoluteUrl
+        );
+        $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
+        $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts("View Contact Summary for this Contact.");
+        $entryFound = TRUE;
+       }
+
+      $entryFound = 
+        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
+
+      // skip looking further in rows, if first row itself doesn't
+      // have the column we need
+      if (!$entryFound) {
+        break;
+      }
+    }
   }
 }
-

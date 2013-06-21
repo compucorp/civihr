@@ -684,42 +684,45 @@ class GenerateHRData {
       return;
     }
 
-    $values = array(
-      'entity_id' => $cid,
-      'job_position_name' => $this->randomItem('job_position_name'),
-      'job_title' => $this->randomItem('job_title'),
-      'is_budget_for_job_position_tied' => $this->randomItem('is_budget_for_job_position_tied'),
-      'contract_type' => $this->randomItem('contract_type'),
-      'contract_term' => $this->randomItem('contract_term'),
-      'contracted_hours' => $this->randomItem('contracted_hours'),
-      'start_date' => $this->randomDate('1284267600', '1354514400'),
-      'end_date' => $this->randomDate('1356328800', '1368421200'),
-      'paid_unpaid' => $this->randomItem('paid_unpaid'),
-      'standard_hours_per_week' => $this->randomItem('standard_hours_per_week'),
-      'notice_period' => $this->randomItem('notice_period'),
-      'annual_leave_entitlement_days' => $this->randomItem('annual_leave_entitlement_days'),
-      'line_manager' => $this->randomIndex(array_flip($this->contact)),
-      'place_of_work' => $this->randomItem('place_of_work'),
-      'pay_rate_period' => $this->randomItem('pay_rate_period'),
-      'amount_of_pay' => $this->randomItem('amount_of_pay'),
-      'pension_contribution' => $this->randomItem('pension_contribution'),
-      'pension_contribution_percentage' => $this->randomItem('pension_contribution_percentage'),
-      'opted_out_of_automatic_pension' => $this->randomItem('opted_out_of_automatic_pension'),
-      'healthcare_insurance' => $this->randomItem('healthcare_insurance'),
-      'type_of_healthcare_provision' => $this->randomItem('type_of_healthcare_provision'),
-      'job_role_name' => $this->randomItem('job_role_name'),
-      'job_role_description' => $this->randomItem('job_role_description'),
-      'department' => $this->randomItem('department'),
-      'region' => $this->randomItem('region'),
-      'role_manager' => $this->randomIndex(array_flip($this->contact)),
-      'functional_area' => $this->randomItem('functional_area'),
-      'cost_center' => $this->randomItem('cost_center'),
-      'team' => $this->randomItem('team'),
-      'role_hours' => $this->randomItem('role_hours'),
-      'name_of_organisation' => $this->randomItem('name_of_organisation')
-    );
-
-    $this->insertCustomData($gid, $values);
+    // add 1 or more job positions for a contact
+    $count = mt_rand(1, 3);
+    for ($i = 1; $i <= $count; $i++) {
+      $values = array(
+        'entity_id' => $cid,
+        'job_position_name' => $this->randomItem('job_position_name'),
+        'job_title' => $this->randomItem('job_title'),
+        'is_budget_for_job_position_tied' => $this->randomItem('is_budget_for_job_position_tied'),
+        'contract_type' => $this->randomItem('contract_type'),
+        'contract_term' => $this->randomItem('contract_term'),
+        'contracted_hours' => $this->randomItem('contracted_hours'),
+        'start_date' => $this->randomDate('1284267600', '1354514400'),
+        'end_date' => $this->randomDate('1356328800', '1368421200'),
+        'paid_unpaid' => $this->randomItem('paid_unpaid'),
+        'standard_hours_per_week' => $this->randomItem('standard_hours_per_week'),
+        'notice_period' => $this->randomItem('notice_period'),
+        'annual_leave_entitlement_days' => $this->randomItem('annual_leave_entitlement_days'),
+        'line_manager' => $this->randomIndex(array_flip($this->contact)),
+        'place_of_work' => $this->randomItem('place_of_work'),
+        'pay_rate_period' => $this->randomItem('pay_rate_period'),
+        'amount_of_pay' => $this->randomItem('amount_of_pay'),
+        'pension_contribution' => $this->randomItem('pension_contribution'),
+        'pension_contribution_percentage' => $this->randomItem('pension_contribution_percentage'),
+        'opted_out_of_automatic_pension' => $this->randomItem('opted_out_of_automatic_pension'),
+        'healthcare_insurance' => $this->randomItem('healthcare_insurance'),
+        'type_of_healthcare_provision' => $this->randomItem('type_of_healthcare_provision'),
+        'job_role_name' => $this->randomItem('job_role_name'),
+        'job_role_description' => $this->randomItem('job_role_description'),
+        'department' => $this->randomItem('department'),
+        'region' => $this->randomItem('region'),
+        'role_manager' => $this->randomIndex(array_flip($this->contact)),
+        'functional_area' => $this->randomItem('functional_area'),
+        'cost_center' => $this->randomItem('cost_center'),
+        'team' => $this->randomItem('team'),
+        'role_hours' => $this->randomItem('role_hours'),
+        'name_of_organisation' => $this->randomItem('name_of_organisation')
+      );
+      $this->insertCustomData($gid, $values);
+    }
   }
 
   
