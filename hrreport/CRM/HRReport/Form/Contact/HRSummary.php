@@ -53,7 +53,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           'id' =>
           array('title' => ts('People'),
             'default' => TRUE,
-            'statistics' => array('count' => ts('People'),),
+            'statistics' => array('count_distinct' => ts('People'),),
           ),
         ),
         'filters' =>
@@ -64,7 +64,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'type' => CRM_Utils_Type::T_INT,
           ),
         ),
-        'grouping' => 'contact-fields',
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
       ),
       'civicrm_address' =>
       array(
@@ -128,7 +128,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $jobPositionTable = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Job Positions', 'table_name', 'title');
     $jobPositionColumnID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name of Job Position', 'id', 'label');
 
-    $this->_columns[$jobPositionTable]['fields']["custom_{$jobPositionColumnID}_"] =
+    $this->_columns[$jobPositionTable]['fields']["custom_{$jobPositionColumnID}_1"] =
       array('name' => 'name_of_job_position_13',
         'title' => ts('Job Positions'),
         'default' => TRUE,
@@ -176,7 +176,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
     foreach ($rows as $rowNum => $row) {
       $entryFound = 
-        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
+        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
 
       // skip looking further in rows, if first row itself doesn't
       // have the column we need
