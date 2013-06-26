@@ -5,6 +5,18 @@ See also:
  * Wiki: http://wiki.civicrm.org/confluence/display/CRM/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
 
+# Download
+
+Clone this git repository, e.g.
+
+```bash
+mkdir -p /var/www/drupal/vendor/civicrm
+cd  /var/www/drupal/vendor/civicrm
+git clone git://github.com/civicrm/civihr.git
+```
+
+# Install
+
 To enable all extensions at once, run:
 
 ```bash
