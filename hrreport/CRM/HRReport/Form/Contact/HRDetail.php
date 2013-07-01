@@ -57,6 +57,10 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'no_display' => TRUE,
             'required' => TRUE,
           ),
+          'gender_id' =>
+          array(
+            'title' => ts('Gender'),
+          ),
         ),
         'filters' =>
         array(
@@ -68,6 +72,12 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           array('title' => ts('Contact ID'),
             'no_display' => TRUE,
             'type' => CRM_Utils_Type::T_INT,
+          ),
+          'gender_id' =>
+          array(
+            'title' => ts('Gender'),
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id'),
           ),
         ),
         'order_bys' =>
@@ -104,6 +114,50 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
         ),
         'grouping' => 'contact-fields',
+      ),
+      'civicrm_address' =>
+      array(
+        'dao' => 'CRM_Core_DAO_Address',
+        'fields' =>
+        array(
+          'city' =>
+          array('title' => ts('Work City'),
+          ),
+          'postal_code' =>
+          array('title' => ts('Work Postal Code'),
+          ),
+          'state_province_id' =>
+          array('title' => ts('Work State/Province'),
+          ),
+          'country_id' =>
+          array('title' => ts('Work Country'),
+          ),
+        ),
+        'filters' => 
+        array(
+          'city' =>
+          array('title' => ts('Work City'),
+          ),
+          'postal_code' =>
+          array('title' => ts('Work Postal Code'),
+          ),
+          'state_province_id' =>
+          array('title' => ts('Work State/Province'),
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' =>
+            CRM_Report_Form::OP_MULTISELECT,
+            'options' =>
+            CRM_Core_PseudoConstant::stateProvince(),
+          ),
+          'country_id' =>
+          array('title' => ts('Work Country'),
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' =>
+            CRM_Report_Form::OP_MULTISELECT,
+            'options' =>
+            CRM_Core_PseudoConstant::country(),
+          ),
+        ),
       ),
       'civicrm_group' =>
       array(
@@ -157,6 +211,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
 
   function alterDisplay(&$rows) {
     $entryFound = FALSE;
+    $gender     = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
 
     foreach ($rows as $rowNum => $row) {
       if (array_key_exists('civicrm_contact_sort_name', $row) &&
@@ -174,6 +229,13 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
 
       $entryFound = 
         $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
+
+      if (array_key_exists('civicrm_contact_gender_id', $row)) {
+        if (CRM_Utils_Array::value('civicrm_contact_gender_id', $row)) {
+          $rows[$rowNum]['civicrm_contact_gender_id'] = CRM_Utils_Array::value($row['civicrm_contact_gender_id'], $gender);
+        }
+        $entryFound = TRUE;
+      }
 
       // skip looking further in rows, if first row itself doesn't
       // have the column we need
