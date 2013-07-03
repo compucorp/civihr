@@ -20,9 +20,8 @@ org.civicrm.hrcareer
 ## List of extensions defining applications/UIs on top of the basic entity types
 APP_EXTS=\
 org.civicrm.hrreport,\
-org.civicrm.hrui
-
-#org.civicrm.hrstaffdir,\
+org.civicrm.hrui,\
+org.civicrm.hrstaffdir
 
 ##################################
 ## Main
