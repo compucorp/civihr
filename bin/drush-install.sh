@@ -34,8 +34,12 @@ else
   WITHSAMPLE=
 fi
 
+set -ex
 drush "$@" cvapi extension.install keys=$ENTITY_EXTS,$APP_EXTS
+set +ex
 
 if [ -n "$WITHSAMPLE" ]; then
+  set -ex
   drush "$@" cvapi extension.install keys=org.civicrm.hrsampledata
+  set +ex
 fi
