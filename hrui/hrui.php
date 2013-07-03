@@ -68,6 +68,24 @@ function hrui_civicrm_install() {
   // set modified options in the DB
   hrui_setViewOptionsSetting($options);
 
+  $relationshipTypes = CRM_Core_PseudoConstant::relationshipType();
+  $disableRelationships = array(
+    'Child of',
+    'Spouse of',
+    'Sibling of',
+    'Employee of',
+    'Volunteer for',
+    'Head of Household for',
+    'Household Member of',
+    'Supervised by'
+  );
+
+  foreach ($relationshipTypes as $id => $value) {
+    if (in_array($value['label_a_b'], $disableRelationships)) {
+      CRM_Contact_BAO_RelationshipType::setIsActive($id, FALSE);
+    }
+  }
+
   return _hrui_civix_civicrm_install();
 }
 
