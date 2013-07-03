@@ -17,33 +17,24 @@ git clone git://github.com/civicrm/civihr.git
 
 ## Install
 
-To enable all extensions at once, run:
+If you have Drush installed, then you can enable all the extensions at once:
 
 ```bash
-## Enable major new features
-drush cvapi extension.install keys=org.civicrm.hrident,org.civicrm.hrjob,org.civicrm.hrmed,org.civicrm.hrqual,org.civicrm.hrreport,org.civicrm.hrvisa,org.civicrm.hremerg,org.civicrm.hrcareer,org.civicrm.hrui
-
-## Install sample data
-drush cvapi extension.install keys=org.civicrm.hrsampledata
+cd /var/www/drupal
+bash vendor/civicrm/civihr/bin/drush-install.sh --with-sample-data
 ```
 
-Or you can break them out and install some selected pieces:
+If you're familiar with different ways to call drush, then you can use the same
+techniques with drush-install.sh, e.g.
 
 ```bash
-## Enable major new features piecemeal
-drush cvapi extension.install keys=org.civicrm.hrident
-drush cvapi extension.install keys=org.civicrm.hrjob
-drush cvapi extension.install keys=org.civicrm.hrmed
-drush cvapi extension.install keys=org.civicrm.hrqual
-drush cvapi extension.install keys=org.civicrm.hrreport
-drush cvapi extension.install keys=org.civicrm.hrvisa
-drush cvapi extension.install keys=org.civicrm.hremerg
-drush cvapi extension.install keys=org.civicrm.hrcareer
+cd /var/www/drupal/vendor/civicrm/civihr
+./bin/drush-install.sh --with-sample-data --root=/var/www/drupal
 
-## Enable high-level UI options
-drush cvapi extension.install keys=org.civicrm.hrui
+## or
 
-## Install sample data; requires all the new features
-drush cvapi extension.install keys=org.civicrm.hrsampledata
+cd /var/www/drupal/sites/example.com
+bash /var/www/drupal/vendor/civicrm/civihr/bin/drush-install.sh --with-sample-data
 ```
 
+Read the drush-install.sh for details.

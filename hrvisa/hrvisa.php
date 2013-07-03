@@ -82,6 +82,7 @@ function hrvisa_civicrm_tabs(&$tabs, $contactID) {
         'gid' => hrvisa_getUFGroupID(),
         'id' => $contactID,
         'snippet' => 1,
+        'tabDisplay' => 1,
       ));
     }
   }

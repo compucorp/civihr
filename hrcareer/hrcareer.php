@@ -82,6 +82,7 @@ function hrcareer_civicrm_tabs(&$tabs, $contactID) {
         'gid' => hrcareer_getUFGroupID(),
         'id' => $contactID,
         'snippet' => 1,
+        'tabDisplay' => 1,
       ));
     }
   }

@@ -81,6 +81,7 @@ function hrqual_civicrm_tabs(&$tabs, $contactID) {
         'gid' => hrqual_getUFGroupID(),
         'id' => $contactID,
         'snippet' => 1,
+        'tabDisplay' => 1,
       ));
     }
   }
