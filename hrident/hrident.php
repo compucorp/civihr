@@ -81,7 +81,7 @@ function hrident_civicrm_tabs(&$tabs, $contactID) {
         'gid' => hrident_getUFGroupID(),
         'id' => $contactID,
         'snippet' => 1,
-        'tabDisplay' => 1,
+        'onPopupClose' => 'redirectToTab',
       ));
     }
   }
