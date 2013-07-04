@@ -68,3 +68,20 @@ function hrjob_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrjob_civicrm_managed(&$entities) {
   return _hrjob_civix_civicrm_managed($entities);
 }
+
+/**
+ * Implementation of hook_civicrm_tabs
+ */
+function hrjob_civicrm_tabs(&$tabs, $contactID) {
+  $tab = array(
+    'id' => 'hrjob',
+    'url' => CRM_Utils_System::url('civicrm/contact/view/hrjob', array(
+      'cid' => $contactID,
+      'snippet' => 1,
+    )),
+    'title' => ts('Jobs'),
+    'weight' => 10,
+    'count' => 0, // FIXME
+  );
+  $tabs[] = $tab;
+}
