@@ -85,3 +85,44 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
   );
   $tabs[] = $tab;
 }
+
+/**
+ * Implementation of hook_civicrm_entityTypes
+ */
+function hrjob_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array (
+    'name' => 'HRJob',
+    'class' => 'CRM_HRJob_DAO_HRJob',
+    'table' => 'civicrm_hrjob',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobComp',
+    'class' => 'CRM_HRJob_DAO_HRJobComp',
+    'table' => 'civicrm_hrjobcomp',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobHealth',
+    'class' => 'CRM_HRJob_DAO_HRJobHealth',
+    'table' => 'civicrm_hrjobhealth',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobHours',
+    'class' => 'CRM_HRJob_DAO_HRJobHours',
+    'table' => 'civicrm_hrjobhours',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobLeave',
+    'class' => 'CRM_HRJob_DAO_HRJobLeave',
+    'table' => 'civicrm_hrjob_leave',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobPension',
+    'class' => 'CRM_HRJob_DAO_HRJobPension',
+    'table' => 'civicrm_hrjobpension',
+  );
+  $entityTypes[] = array (
+    'name' => 'HRJobRole',
+    'class' => 'CRM_HRJob_DAO_HRJobRole',
+    'table' => 'civicrm_hrjobrole',
+  );
+}
