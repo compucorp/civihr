@@ -26,13 +26,17 @@ return array (
       'title'   => 'CiviHR Contact Summary Report',
       'description' => 'HR Report with stats on people and job positions.',
       'report_id'   => 'civihr/summary',
-      'fields' => array(
-        'id'         => 1,
-        'custom_14_' => 1, //FIXME: custom name - this is sth we need to find better alternative for
-        'state_province_id' => 1,
-      ),
-      'group_bys' => array(
-        'state_province_id' => 1,
+      'form_values' => serialize(
+        array(
+          'fields' => array(
+            'id'         => 1,
+            'custom_14_1' => 1, //FIXME: custom name - this is sth we need to find better alternative for
+            'state_province_id' => 1,
+          ),
+          'group_bys' => array(
+            'state_province_id' => 1,
+          ),
+        )
       ),
     ),
   ),
