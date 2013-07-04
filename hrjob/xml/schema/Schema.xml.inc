@@ -1,1 +1,1 @@
-<xi:include href="HRJob/files.xml"              parse="xml" />
+<xi:include href="CRM/HRJob/files.xml"              parse="xml" />
