@@ -18,15 +18,39 @@ CREATE TABLE `civicrm_hrjob` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
      `contact_id` int unsigned    COMMENT 'FK to Contact ID',
+     `position` varchar(127)    COMMENT 'HR internal name for the job',
+     `title` varchar(127)    COMMENT 'Negotiated name for the job',
+     `is_tied_to_funding` tinyint   DEFAULT 0 ,
+     `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
+     `seniority` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
+     `period_type` enum('Temporary', 'Permanent')    COMMENT '.',
+     `period_start_date` date    COMMENT 'First day of the job',
+     `period_end_date` date    COMMENT 'Last day of the job',
+     `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
 ,
     PRIMARY KEY ( `id` )
  
-    ,     INDEX `index_is_primary`(
+    ,     INDEX `index_position`(
+        position
+  )
+  ,     INDEX `index_title`(
+        position
+  )
+  ,     INDEX `index_contract_type`(
+        contract_type
+  )
+  ,     INDEX `index_seniority`(
+        seniority
+  )
+  ,     INDEX `index_period_type`(
+        period_type
+  )
+  ,     INDEX `index_is_primary`(
         is_primary
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
