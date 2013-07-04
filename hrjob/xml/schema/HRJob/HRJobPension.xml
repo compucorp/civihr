@@ -2,9 +2,9 @@
 
 <table>
   <base>CRM/HRJob</base>
-  <class>HRJob</class>
-  <name>civicrm_hrjob</name>
-  <comment>Job positions.</comment>
+  <class>HRJobPension</class>
+  <name>civicrm_hrjob_pension</name>
+  <comment>Contract terms relating to pensions</comment>
   <add>4.4</add>
   <log>true</log>
 
@@ -23,7 +23,7 @@
   <field>
     <name>contact_id</name>
     <type>int unsigned</type>
-    <comment>FK to Contact ID</comment>
+    <comment>FK to Contact</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
@@ -35,15 +35,17 @@
   </foreignKey>
 
   <field>
-    <name>is_primary</name>
-    <type>boolean</type>
-    <default>0</default>
-    <comment>Is this the primary?</comment>
+    <name>job_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Job</comment>
     <add>4.4</add>
   </field>
-  <index>
-    <name>index_is_primary</name>
-    <fieldName>is_primary</fieldName>
+  <foreignKey>
+    <name>job_id</name>
+    <table>civicrm_hrjob</table>
+    <key>id</key>
     <add>4.4</add>
-  </index>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
 </table>
