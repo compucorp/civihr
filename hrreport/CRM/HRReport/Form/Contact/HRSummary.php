@@ -143,9 +143,10 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
     $jobPositionTable = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Job Positions', 'table_name', 'title');
     $jobPositionColumnID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name of Job Position', 'id', 'label');
+    $jobPositionColumnName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name of Job Position', 'column_name', 'label');
 
     $this->_columns[$jobPositionTable]['fields']["custom_{$jobPositionColumnID}_1"] =
-      array('name' => 'name_of_job_position_13',
+      array('name' => $jobPositionColumnName,
         'title' => ts('Job Positions'),
         'default' => TRUE,
         'statistics' => array('count' => ts('Job Positions'),),
