@@ -95,17 +95,29 @@ class CRM_HRJob_DAO_HRJobComp extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
-  /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   * Paid, Unpaid, etc
+   *
+   * @var string
+   */
+  public $pay_grade;
+  /**
+   * Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)
+   *
+   * @var float
+   */
+  public $pay_amount;
+  /**
+   * Unit for expressing pay rate (e.g. amount per hour, amount per week)
+   *
+   * @var enum('Hour', 'Day', 'Week', 'Month', 'Year')
+   */
+  public $pay_unit;
   /**
    * class constructor
    *
@@ -128,7 +140,6 @@ class CRM_HRJob_DAO_HRJobComp extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
       );
     }
@@ -149,15 +160,34 @@ class CRM_HRJob_DAO_HRJobComp extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'pay_grade' => array(
+          'name' => 'pay_grade',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Pay Grade') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_pay_grade',
+          )
+        ) ,
+        'pay_amount' => array(
+          'name' => 'pay_amount',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Amount') ,
+          'required' => true,
+        ) ,
+        'pay_unit' => array(
+          'name' => 'pay_unit',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Unit') ,
+          'required' => true,
+          'enumValues' => 'Hour, Day, Week, Month, Year',
         ) ,
       );
     }
@@ -175,8 +205,10 @@ class CRM_HRJob_DAO_HRJobComp extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'pay_grade' => 'pay_grade',
+        'pay_amount' => 'pay_amount',
+        'pay_unit' => 'pay_unit',
       );
     }
     return self::$_fieldKeys;
@@ -249,5 +281,56 @@ class CRM_HRJob_DAO_HRJobComp extends CRM_Core_DAO
       }
     }
     return self::$_export;
+  }
+  /**
+   * returns an array containing the enum fields of the civicrm_hrjob_comp table
+   *
+   * @return array (reference)  the array of enum fields
+   */
+  static function &getEnums()
+  {
+    static $enums = array(
+      'pay_unit',
+    );
+    return $enums;
+  }
+  /**
+   * returns a ts()-translated enum value for display purposes
+   *
+   * @param string $field  the enum field in question
+   * @param string $value  the enum value up for translation
+   *
+   * @return string  the display value of the enum
+   */
+  static function tsEnum($field, $value)
+  {
+    static $translations = null;
+    if (!$translations) {
+      $translations = array(
+        'pay_unit' => array(
+          'Hour' => ts('Hour') ,
+          'Day' => ts('Day') ,
+          'Week' => ts('Week') ,
+          'Month' => ts('Month') ,
+          'Year' => ts('Year') ,
+        ) ,
+      );
+    }
+    return $translations[$field][$value];
+  }
+  /**
+   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob_comp
+   *
+   * @param array $values (reference)  the array up for enhancing
+   * @return void
+   */
+  static function addDisplayEnums(&$values)
+  {
+    $enumFields = & CRM_HRJob_DAO_HRJobComp::getEnums();
+    foreach($enumFields as $enum) {
+      if (isset($values[$enum])) {
+        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJobComp::tsEnum($enum, $values[$enum]);
+      }
+    }
   }
 }

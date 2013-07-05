@@ -2,16 +2,16 @@
 
 <table>
   <base>CRM/HRJob</base>
-  <class>HRJobComp</class>
-  <name>civicrm_hrjob_comp</name>
-  <comment>Contract terms relating to compensation</comment>
+  <class>HRJobHour</class>
+  <name>civicrm_hrjob_hour</name>
+  <comment>Contract terms relating to hours of work</comment>
   <log>true</log>
 
   <field>
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique HRJob ID</comment>
+    <comment>Unique HRJobHour ID</comment>
   </field>
   <primaryKey>
     <name>id</name>
@@ -32,36 +32,42 @@
   </foreignKey>
 
   <field>
-    <name>pay_grade</name>
-    <title>Pay Grade</title>
+    <name>hours_type</name>
+    <title>Hours Type</title>
     <type>varchar</type>
     <length>63</length>
-    <comment>Paid, Unpaid, etc</comment>
+    <comment>Full-Time, Part-Time, Casual</comment>
     <pseudoconstant>
-      <optionGroupName>hrjob_pay_grade</optionGroupName>
+      <optionGroupName>hrjob_hours_type</optionGroupName>
     </pseudoconstant>
   </field>
   <index>
-    <name>index_pay_grade</name>
-    <fieldName>pay_grade</fieldName>
+    <name>index_hours_type</name>
+    <fieldName>hours_type</fieldName>
   </index>
 
   <field>
-    <name>pay_amount</name>
+    <name>hours_amount</name>
     <title>Amount</title>
     <type>decimal</type>
     <default>0</default>
     <required>true</required>
-    <comment>Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)</comment>
+    <comment>Amount of time allocated for work (in given period)</comment>
   </field>
 
   <field>
-    <name>pay_unit</name>
+    <name>hours_unit</name>
     <title>Unit</title>
     <type>enum</type>
-    <values>Hour, Day, Week, Month, Year</values>
+    <values>Day, Week, Month, Year</values>
     <required>true</required>
-    <comment>Unit for expressing pay rate (e.g. amount per hour, amount per week)</comment>
+    <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
   </field>
 
+  <field>
+    <name>hours_fte</name>
+    <title>Full-Time Equivalence</title>
+    <type>decimal</type>
+    <comment>Typically, employment at 40 hr/wk is 1 FTE</comment>
+  </field>
 </table>

@@ -95,17 +95,22 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
-  /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   *
+   * @var boolean
+   */
+  public $is_enrolled;
+  /**
+   * ??
+   *
+   * @var float
+   */
+  public $contrib_pct;
   /**
    * class constructor
    *
@@ -128,7 +133,6 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
       );
     }
@@ -149,15 +153,20 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'is_enrolled' => array(
+          'name' => 'is_enrolled',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+        ) ,
+        'contrib_pct' => array(
+          'name' => 'contrib_pct',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Contribution Percentage') ,
         ) ,
       );
     }
@@ -175,8 +184,9 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'is_enrolled' => 'is_enrolled',
+        'contrib_pct' => 'contrib_pct',
       );
     }
     return self::$_fieldKeys;

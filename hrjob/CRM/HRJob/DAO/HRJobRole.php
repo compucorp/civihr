@@ -95,17 +95,60 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
-  /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   * Negotiated name for the role
+   *
+   * @var string
+   */
+  public $title;
+  /**
+   * Negotiated name for the role
+   *
+   * @var text
+   */
+  public $description;
+  /**
+   * Amount of time allocated for work (in a given week)
+   *
+   * @var float
+   */
+  public $hours;
+  /**
+   *
+   * @var string
+   */
+  public $region;
+  /**
+   *
+   * @var string
+   */
+  public $department;
+  /**
+   * FK to Contact ID
+   *
+   * @var int unsigned
+   */
+  public $manager_contact_id;
+  /**
+   *
+   * @var string
+   */
+  public $functional_area;
+  /**
+   *
+   * @var string
+   */
+  public $organization;
+  /**
+   *
+   * @var string
+   */
+  public $cost_center;
   /**
    * class constructor
    *
@@ -128,8 +171,8 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'manager_contact_id', 'civicrm_contact', 'id') ,
       );
     }
     return self::$_links;
@@ -149,15 +192,68 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'title' => array(
+          'name' => 'title',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Title') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
+        'description' => array(
+          'name' => 'description',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Description') ,
+        ) ,
+        'hours' => array(
+          'name' => 'hours',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Amount') ,
+        ) ,
+        'region' => array(
+          'name' => 'region',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Region') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
+        'department' => array(
+          'name' => 'department',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Department') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
+        'manager_contact_id' => array(
+          'name' => 'manager_contact_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
+        ) ,
+        'functional_area' => array(
+          'name' => 'functional_area',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Functional Area') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
+        'organization' => array(
+          'name' => 'organization',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Organization') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
+        'cost_center' => array(
+          'name' => 'cost_center',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Cost Center') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
         ) ,
       );
     }
@@ -175,8 +271,16 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'title' => 'title',
+        'description' => 'description',
+        'hours' => 'hours',
+        'region' => 'region',
+        'department' => 'department',
+        'manager_contact_id' => 'manager_contact_id',
+        'functional_area' => 'functional_area',
+        'organization' => 'organization',
+        'cost_center' => 'cost_center',
       );
     }
     return self::$_fieldKeys;

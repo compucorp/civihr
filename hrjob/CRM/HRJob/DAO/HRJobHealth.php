@@ -95,17 +95,33 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
-  /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   * The organization or company which manages healthcare service
+   *
+   * @var string
+   */
+  public $provider;
+  /**
+   * .
+   *
+   * @var enum('Family', 'Individual')
+   */
+  public $plan_type;
+  /**
+   *
+   * @var text
+   */
+  public $description;
+  /**
+   *
+   * @var text
+   */
+  public $dependents;
   /**
    * class constructor
    *
@@ -128,7 +144,6 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
       );
     }
@@ -149,15 +164,37 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'provider' => array(
+          'name' => 'provider',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Healthcare Provider') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_health_provider',
+          )
+        ) ,
+        'plan_type' => array(
+          'name' => 'plan_type',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Plan Type') ,
+          'enumValues' => 'Family, Individual',
+        ) ,
+        'description' => array(
+          'name' => 'description',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Description') ,
+        ) ,
+        'dependents' => array(
+          'name' => 'dependents',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Dependents') ,
         ) ,
       );
     }
@@ -175,8 +212,11 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'provider' => 'provider',
+        'plan_type' => 'plan_type',
+        'description' => 'description',
+        'dependents' => 'dependents',
       );
     }
     return self::$_fieldKeys;
@@ -249,5 +289,53 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
       }
     }
     return self::$_export;
+  }
+  /**
+   * returns an array containing the enum fields of the civicrm_hrjob_health table
+   *
+   * @return array (reference)  the array of enum fields
+   */
+  static function &getEnums()
+  {
+    static $enums = array(
+      'plan_type',
+    );
+    return $enums;
+  }
+  /**
+   * returns a ts()-translated enum value for display purposes
+   *
+   * @param string $field  the enum field in question
+   * @param string $value  the enum value up for translation
+   *
+   * @return string  the display value of the enum
+   */
+  static function tsEnum($field, $value)
+  {
+    static $translations = null;
+    if (!$translations) {
+      $translations = array(
+        'plan_type' => array(
+          'Family' => ts('Family') ,
+          'Individual' => ts('Individual') ,
+        ) ,
+      );
+    }
+    return $translations[$field][$value];
+  }
+  /**
+   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob_health
+   *
+   * @param array $values (reference)  the array up for enhancing
+   * @return void
+   */
+  static function addDisplayEnums(&$values)
+  {
+    $enumFields = & CRM_HRJob_DAO_HRJobHealth::getEnums();
+    foreach($enumFields as $enum) {
+      if (isset($values[$enum])) {
+        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJobHealth::tsEnum($enum, $values[$enum]);
+      }
+    }
   }
 }

@@ -89,23 +89,41 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
    */
   static $_log = true;
   /**
-   * Unique HRJob ID
+   * Unique HRJobHour ID
    *
    * @var int unsigned
    */
   public $id;
-  /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
   /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   * Full-Time, Part-Time, Casual
+   *
+   * @var string
+   */
+  public $hours_type;
+  /**
+   * Amount of time allocated for work (in given period)
+   *
+   * @var float
+   */
+  public $hours_amount;
+  /**
+   * Period during which hours are allocated (eg 5 hours per day; 5 hours per week)
+   *
+   * @var enum('Day', 'Week', 'Month', 'Year')
+   */
+  public $hours_unit;
+  /**
+   * Typically, employment at 40 hr/wk is 1 FTE
+   *
+   * @var float
+   */
+  public $hours_fte;
   /**
    * class constructor
    *
@@ -128,7 +146,6 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
       );
     }
@@ -149,15 +166,39 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'hours_type' => array(
+          'name' => 'hours_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Hours Type') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_hours_type',
+          )
+        ) ,
+        'hours_amount' => array(
+          'name' => 'hours_amount',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Amount') ,
+          'required' => true,
+        ) ,
+        'hours_unit' => array(
+          'name' => 'hours_unit',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Unit') ,
+          'required' => true,
+          'enumValues' => 'Day, Week, Month, Year',
+        ) ,
+        'hours_fte' => array(
+          'name' => 'hours_fte',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Full-Time Equivalence') ,
         ) ,
       );
     }
@@ -175,8 +216,11 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'hours_type' => 'hours_type',
+        'hours_amount' => 'hours_amount',
+        'hours_unit' => 'hours_unit',
+        'hours_fte' => 'hours_fte',
       );
     }
     return self::$_fieldKeys;
@@ -249,5 +293,55 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
       }
     }
     return self::$_export;
+  }
+  /**
+   * returns an array containing the enum fields of the civicrm_hrjob_hour table
+   *
+   * @return array (reference)  the array of enum fields
+   */
+  static function &getEnums()
+  {
+    static $enums = array(
+      'hours_unit',
+    );
+    return $enums;
+  }
+  /**
+   * returns a ts()-translated enum value for display purposes
+   *
+   * @param string $field  the enum field in question
+   * @param string $value  the enum value up for translation
+   *
+   * @return string  the display value of the enum
+   */
+  static function tsEnum($field, $value)
+  {
+    static $translations = null;
+    if (!$translations) {
+      $translations = array(
+        'hours_unit' => array(
+          'Day' => ts('Day') ,
+          'Week' => ts('Week') ,
+          'Month' => ts('Month') ,
+          'Year' => ts('Year') ,
+        ) ,
+      );
+    }
+    return $translations[$field][$value];
+  }
+  /**
+   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob_hour
+   *
+   * @param array $values (reference)  the array up for enhancing
+   * @return void
+   */
+  static function addDisplayEnums(&$values)
+  {
+    $enumFields = & CRM_HRJob_DAO_HRJobHour::getEnums();
+    foreach($enumFields as $enum) {
+      if (isset($values[$enum])) {
+        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJobHour::tsEnum($enum, $values[$enum]);
+      }
+    }
   }
 }

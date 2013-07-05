@@ -89,23 +89,29 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
    */
   static $_log = true;
   /**
-   * Unique HRJob ID
+   * Unique HRJobLeave ID
    *
    * @var int unsigned
    */
   public $id;
-  /**
-   * FK to Contact
-   *
-   * @var int unsigned
-   */
-  public $contact_id;
   /**
    * FK to Job
    *
    * @var int unsigned
    */
   public $job_id;
+  /**
+   * The purpose for which leave may be taken (sickness, vacation, etc)
+   *
+   * @var string
+   */
+  public $leave_type;
+  /**
+   * The number of leave days
+   *
+   * @var int unsigned
+   */
+  public $leave_amount;
   /**
    * class constructor
    *
@@ -128,7 +134,6 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
       );
     }
@@ -149,15 +154,26 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
-          'name' => 'contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'leave_type' => array(
+          'name' => 'leave_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Leave Type') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_leave_type',
+          )
+        ) ,
+        'leave_amount' => array(
+          'name' => 'leave_amount',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Leave Amount') ,
         ) ,
       );
     }
@@ -175,8 +191,9 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
         'job_id' => 'job_id',
+        'leave_type' => 'leave_type',
+        'leave_amount' => 'leave_amount',
       );
     }
     return self::$_fieldKeys;

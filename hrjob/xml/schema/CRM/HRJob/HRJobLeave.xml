@@ -5,15 +5,13 @@
   <class>HRJobLeave</class>
   <name>civicrm_hrjob_leave</name>
   <comment>Contract terms relating to leave-entitlements</comment>
-  <add>4.4</add>
   <log>true</log>
 
   <field>
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique HRJob ID</comment>
-     <add>4.4</add>
+    <comment>Unique HRJobLeave ID</comment>
   </field>
   <primaryKey>
     <name>id</name>
@@ -21,31 +19,38 @@
   </primaryKey>
 
   <field>
-    <name>contact_id</name>
-    <type>int unsigned</type>
-    <comment>FK to Contact</comment>
-    <add>4.4</add>
-  </field>
-  <foreignKey>
-    <name>contact_id</name>
-    <table>civicrm_contact</table>
-    <key>id</key>
-    <add>4.4</add>
-    <onDelete>CASCADE</onDelete>
-  </foreignKey>
-
-  <field>
     <name>job_id</name>
     <type>int unsigned</type>
+    <required>true</required>
     <comment>FK to Job</comment>
-    <add>4.4</add>
   </field>
   <foreignKey>
     <name>job_id</name>
     <table>civicrm_hrjob</table>
     <key>id</key>
-    <add>4.4</add>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
 
+  <field>
+    <name>leave_type</name>
+    <title>Leave Type</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>The purpose for which leave may be taken (sickness, vacation, etc)</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_leave_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>UI_leave_type</name>
+    <fieldName>job_id</fieldName>
+    <fieldName>leave_type</fieldName>
+    <unique>true</unique>
+  </index>
+
+  <field>
+      <name>leave_amount</name>
+      <type>int unsigned</type>
+      <comment>The number of leave days</comment>
+  </field>
 </table>

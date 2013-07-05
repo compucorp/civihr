@@ -49,7 +49,7 @@
   </field>
   <index>
     <name>index_title</name>
-    <fieldName>position</fieldName>
+    <fieldName>title</fieldName>
   </index>
 
   <field>

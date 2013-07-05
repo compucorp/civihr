@@ -1,16 +1,16 @@
 <?php
 
-class CRM_HRJob_BAO_HRJobHours extends CRM_HRJob_DAO_HRJobHours {
+class CRM_HRJob_BAO_HRJobHour extends CRM_HRJob_DAO_HRJobHour {
 
   /**
-   * Create a new HRJobHours based on array-data
+   * Create a new HRJobHour based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobHours|NULL
+   * @return CRM_HRJob_DAO_HRJobHour|NULL
    *
   public static function create($params) {
-    $className = 'CRM_HRJob_DAO_HRJobHours';
-    $entityName = 'HRJobHours';
+    $className = 'CRM_HRJob_DAO_HRJobHour';
+    $entityName = 'HRJobHour';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);

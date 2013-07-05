@@ -5,7 +5,6 @@
   <class>HRJobHealth</class>
   <name>civicrm_hrjob_health</name>
   <comment>Contract terms relating to healthcare</comment>
-  <add>4.4</add>
   <log>true</log>
 
   <field>
@@ -13,7 +12,6 @@
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJob ID</comment>
-     <add>4.4</add>
   </field>
   <primaryKey>
     <name>id</name>
@@ -21,31 +19,51 @@
   </primaryKey>
 
   <field>
-    <name>contact_id</name>
-    <type>int unsigned</type>
-    <comment>FK to Contact</comment>
-    <add>4.4</add>
-  </field>
-  <foreignKey>
-    <name>contact_id</name>
-    <table>civicrm_contact</table>
-    <key>id</key>
-    <add>4.4</add>
-    <onDelete>CASCADE</onDelete>
-  </foreignKey>
-
-  <field>
     <name>job_id</name>
     <type>int unsigned</type>
+    <required>true</required>
     <comment>FK to Job</comment>
-    <add>4.4</add>
   </field>
   <foreignKey>
     <name>job_id</name>
     <table>civicrm_hrjob</table>
     <key>id</key>
-    <add>4.4</add>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
 
+  <field>
+    <name>provider</name>
+    <title>Healthcare Provider</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>The organization or company which manages healthcare service</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_health_provider</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_provider</name>
+    <fieldName>provider</fieldName>
+  </index>
+
+  <field>
+    <name>plan_type</name>
+    <type>enum</type>
+    <values>Family, Individual</values>
+    <comment>.</comment>
+  </field>
+  <index>
+    <name>index_plan_type</name>
+    <fieldName>plan_type</fieldName>
+  </index>
+
+  <field>
+    <name>description</name>
+    <type>text</type>
+  </field>
+
+  <field>
+    <name>dependents</name>
+    <type>text</type>
+  </field>
 </table>

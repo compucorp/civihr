@@ -98,17 +98,17 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array (
     'name' => 'HRJobComp',
     'class' => 'CRM_HRJob_DAO_HRJobComp',
-    'table' => 'civicrm_hrjobcomp',
+    'table' => 'civicrm_hrjob_comp',
   );
   $entityTypes[] = array (
     'name' => 'HRJobHealth',
     'class' => 'CRM_HRJob_DAO_HRJobHealth',
-    'table' => 'civicrm_hrjobhealth',
+    'table' => 'civicrm_hrjob_health',
   );
   $entityTypes[] = array (
-    'name' => 'HRJobHours',
-    'class' => 'CRM_HRJob_DAO_HRJobHours',
-    'table' => 'civicrm_hrjobhours',
+    'name' => 'HRJobHour',
+    'class' => 'CRM_HRJob_DAO_HRJobHour',
+    'table' => 'civicrm_hrjob_hour',
   );
   $entityTypes[] = array (
     'name' => 'HRJobLeave',
@@ -118,11 +118,11 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array (
     'name' => 'HRJobPension',
     'class' => 'CRM_HRJob_DAO_HRJobPension',
-    'table' => 'civicrm_hrjobpension',
+    'table' => 'civicrm_hrjob_pension',
   );
   $entityTypes[] = array (
     'name' => 'HRJobRole',
     'class' => 'CRM_HRJob_DAO_HRJobRole',
-    'table' => 'civicrm_hrjobrole',
+    'table' => 'civicrm_hrjob_role',
   );
 }
