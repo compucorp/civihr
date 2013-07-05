@@ -38,3 +38,30 @@ bash /var/www/drupal/vendor/civicrm/civihr/bin/drush-install.sh --with-sample-da
 ```
 
 Read the drush-install.sh for details.
+
+## Test
+
+To run the unit-tests, one must configure CiviCRM to run unit-tests, install
+civix, and link civix to CiviCRM. To validate that the link is setup, run:
+
+```bash
+user@host:/path/to/civihr/hrjob$ civix civicrm:ping
+Ping successful
+```
+
+To execute particular tests, use "civix test":
+
+```bash
+user@host:/path/to/civihr/hrjob$ civix test api_v3_HRJobTest
+Adding Individual
+Adding Organization
+PHPUnit 3.6.10 by Sebastian Bergmann.
+
+.
+Installing civicrm_tests_dev database
+
+
+Time: 24 seconds, Memory: 28.25Mb
+
+OK (1 test, 4 assertions)
+```
