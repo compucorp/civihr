@@ -65,3 +65,8 @@ Time: 24 seconds, Memory: 28.25Mb
 
 OK (1 test, 4 assertions)
 ```
+
+(Note: Civix's design assumes that there are two databases. The "live database"
+used with "civix civicrm:ping" is part of a fully-functioning CiviCRM/CiviHR installation.
+The "headless testing database" is only used for testing -- it is conventionally
+called "civicrm_tests_dev".)
