@@ -11,7 +11,7 @@
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique HRJob ID</comment>
+    <comment>Unique HRJobHealth ID</comment>
   </field>
   <primaryKey>
     <name>id</name>
@@ -30,6 +30,11 @@
     <key>id</key>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
+  <index>
+    <name>UI_job_id</name>
+    <fieldName>job_id</fieldName>
+    <unique>true</unique>
+  </index>
 
   <field>
     <name>provider</name>

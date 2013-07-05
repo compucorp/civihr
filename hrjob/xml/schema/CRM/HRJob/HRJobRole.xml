@@ -11,7 +11,7 @@
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique HRJob ID</comment>
+    <comment>Unique HRJobRole ID</comment>
   </field>
   <primaryKey>
     <name>id</name>

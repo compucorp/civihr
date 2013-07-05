@@ -30,6 +30,11 @@
     <key>id</key>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
+  <index>
+    <name>UI_job_id</name>
+    <fieldName>job_id</fieldName>
+    <unique>true</unique>
+  </index>
 
   <field>
     <name>hours_type</name>

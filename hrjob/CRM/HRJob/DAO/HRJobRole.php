@@ -89,7 +89,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
    */
   static $_log = true;
   /**
-   * Unique HRJob ID
+   * Unique HRJobRole ID
    *
    * @var int unsigned
    */

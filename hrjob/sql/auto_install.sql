@@ -63,7 +63,7 @@ CREATE TABLE `civicrm_hrjob` (
 CREATE TABLE `civicrm_hrjob_pay` (
 
 
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPay ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
@@ -71,7 +71,10 @@ CREATE TABLE `civicrm_hrjob_pay` (
 ,
     PRIMARY KEY ( `id` )
  
-    ,     INDEX `index_pay_grade`(
+    ,     UNIQUE INDEX `UI_job_id`(
+        job_id
+  )
+  ,     INDEX `index_pay_grade`(
         pay_grade
   )
   
@@ -88,7 +91,7 @@ CREATE TABLE `civicrm_hrjob_pay` (
 CREATE TABLE `civicrm_hrjob_health` (
 
 
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHealth ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `provider` varchar(63)    COMMENT 'The organization or company which manages healthcare service',
      `plan_type` enum('Family', 'Individual')    COMMENT '.',
@@ -97,7 +100,10 @@ CREATE TABLE `civicrm_hrjob_health` (
 ,
     PRIMARY KEY ( `id` )
  
-    ,     INDEX `index_provider`(
+    ,     UNIQUE INDEX `UI_job_id`(
+        job_id
+  )
+  ,     INDEX `index_provider`(
         provider
   )
   ,     INDEX `index_plan_type`(
@@ -126,7 +132,10 @@ CREATE TABLE `civicrm_hrjob_hour` (
 ,
     PRIMARY KEY ( `id` )
  
-    ,     INDEX `index_hours_type`(
+    ,     UNIQUE INDEX `UI_job_id`(
+        job_id
+  )
+  ,     INDEX `index_hours_type`(
         hours_type
   )
   
@@ -168,14 +177,17 @@ CREATE TABLE `civicrm_hrjob_leave` (
 CREATE TABLE `civicrm_hrjob_pension` (
 
 
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPension ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `is_enrolled` tinyint   DEFAULT 0 ,
      `contrib_pct` decimal(20,2)   DEFAULT 0 COMMENT '??' 
 ,
     PRIMARY KEY ( `id` )
  
-    ,     INDEX `index_is_enrolled`(
+    ,     UNIQUE INDEX `UI_job_id`(
+        job_id
+  )
+  ,     INDEX `index_is_enrolled`(
         is_enrolled
   )
   
@@ -192,7 +204,7 @@ CREATE TABLE `civicrm_hrjob_pension` (
 CREATE TABLE `civicrm_hrjob_role` (
 
 
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobRole ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `title` varchar(127)    COMMENT 'Negotiated name for the role',
      `description` text    COMMENT 'Negotiated name for the role',
