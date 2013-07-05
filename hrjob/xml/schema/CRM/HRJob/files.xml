@@ -2,7 +2,7 @@
 
 <tables xmlns:xi="http://www.w3.org/2001/XInclude">
   <xi:include href="HRJob.xml" parse="xml" />
-  <xi:include href="HRJobComp.xml" parse="xml" />
+  <xi:include href="HRJobPay.xml" parse="xml" />
   <xi:include href="HRJobHealth.xml" parse="xml" />
   <xi:include href="HRJobHour.xml" parse="xml" />
   <xi:include href="HRJobLeave.xml" parse="xml" />

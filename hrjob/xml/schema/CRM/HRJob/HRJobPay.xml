@@ -2,8 +2,8 @@
 
 <table>
   <base>CRM/HRJob</base>
-  <class>HRJobComp</class>
-  <name>civicrm_hrjob_comp</name>
+  <class>HRJobPay</class>
+  <name>civicrm_hrjob_pay</name>
   <comment>Contract terms relating to compensation</comment>
   <log>true</log>
 

@@ -96,9 +96,9 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
     'table' => 'civicrm_hrjob',
   );
   $entityTypes[] = array (
-    'name' => 'HRJobComp',
-    'class' => 'CRM_HRJob_DAO_HRJobComp',
-    'table' => 'civicrm_hrjob_comp',
+    'name' => 'HRJobPay',
+    'class' => 'CRM_HRJob_DAO_HRJobPay',
+    'table' => 'civicrm_hrjob_pay',
   );
   $entityTypes[] = array (
     'name' => 'HRJobHealth',

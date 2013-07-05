@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `civicrm_hrjob_pension`;
 DROP TABLE IF EXISTS `civicrm_hrjob_leave`;
 DROP TABLE IF EXISTS `civicrm_hrjob_hour`;
 DROP TABLE IF EXISTS `civicrm_hrjob_health`;
-DROP TABLE IF EXISTS `civicrm_hrjob_comp`;
+DROP TABLE IF EXISTS `civicrm_hrjob_pay`;
 DROP TABLE IF EXISTS `civicrm_hrjob`;
 
 -- /*******************************************************
@@ -55,12 +55,12 @@ CREATE TABLE `civicrm_hrjob` (
 
 -- /*******************************************************
 -- *
--- * civicrm_hrjob_comp
+-- * civicrm_hrjob_pay
 -- *
 -- * Contract terms relating to compensation
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_hrjob_comp` (
+CREATE TABLE `civicrm_hrjob_pay` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJob ID',
@@ -75,7 +75,7 @@ CREATE TABLE `civicrm_hrjob_comp` (
         pay_grade
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_comp_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_hrjob_pay_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
