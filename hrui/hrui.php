@@ -49,6 +49,9 @@ function hrui_civicrm_install() {
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
+  } else {
+    // reset navigation per enabled components
+    CRM_Core_BAO_Navigation::resetNavigation();
   }
 
   // get a list of all tab options
