@@ -41,16 +41,18 @@ function hrui_civicrm_xmlMenu(&$files) {
 function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
-    'enableComponents'   => array('CiviMail', 'CiviReport'),
-    'enableComponentsID' => array()
+    'version'   => 3,
+    'domain_id' => CRM_Core_Config::domainID(),
+    'enable_components' => array('CiviMail', 'CiviReport'),
   );
-  $components = CRM_Core_Component::getComponents();
-  foreach ($components as $comp => $compObj) {
-    if (in_array($comp, $params['enableComponents'])) {
-      $params['enableComponentsID'][] = $compObj->componentID;
-    }
+  $result = civicrm_api('setting', 'create', $params);
+  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+    CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
+    throw new CRM_Core_Exception('Failed to create settings for enable_components');
+  } else {
+    // reset navigation per enabled components
+    CRM_Core_BAO_Navigation::resetNavigation();
   }
-  CRM_Core_BAO_ConfigSetting::create($params);
 
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
