@@ -1,0 +1,12 @@
+.hrjob-tree-region {
+    border: 1px solid black;
+    background: #ccc;
+    width: 25%;
+}
+
+.hrjob-main-region {
+    border: 1px solid black;
+    background: #ccc;
+    width: 73%;
+    float: right;
+}
