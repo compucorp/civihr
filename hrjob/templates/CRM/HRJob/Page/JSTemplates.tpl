@@ -1,5 +1,5 @@
-<script id="hrjob-blank-template" type="text/template">
-  {ts}No jobs found.{/ts}
+<script id="hrjob-intro-template" type="text/template">
+  {ts}This is the CiviHR Job tab{/ts}
 </script>
 
 <script id="hrjob-tree-template" type="text/template">

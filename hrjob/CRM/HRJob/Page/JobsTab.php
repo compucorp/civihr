@@ -27,6 +27,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
+        'jobTabApp' => array(
+          'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
+        ),
       );
     })
       ->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE)
@@ -38,6 +41,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp.js', 160, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_controller.js', 160, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_views.js', 160, 'html-header')
       ;
     /*
       ->addScriptFile('civicrm', 'js/crm.backbone.js', 150)
