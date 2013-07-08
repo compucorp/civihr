@@ -36,7 +36,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/jquery/plugins/jstree/jquery.jstree.js', 0, 'html-header', FALSE)
       ->addStyleFile('civicrm', 'packages/jquery/plugins/jstree/themes/default/style.css', 0, 'html-header')
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
-      ->addScriptFile('org.civicrm.hrjob', 'js/app.js', 150, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
       ;
     /*
