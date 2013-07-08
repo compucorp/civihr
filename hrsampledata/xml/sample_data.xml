@@ -202,23 +202,23 @@
     <item>Academy</item>
   </organization_suffix>
 
-  <job_position_name>
+  <position>
     <item>Chief Executive</item>
     <item>Volunteer Manager</item>
     <item>Volunteer</item>
     <item>Administrator</item>
     <item>Fundraiser</item>
-  </job_position_name>
+  </position>
 
-  <job_title>
+  <title>
     <item>Manager1</item>
     <item>Manager2</item>
-  </job_title>
+  </title>
 
-  <is_budget_for_job_position_tied>
+  <is_tied_to_funding>
     <item>1</item>
     <item>0</item>
-  </is_budget_for_job_position_tied>
+  </is_tied_to_funding>
 
   <contract_type>
     <item>Employee</item>
@@ -229,11 +229,105 @@
     <item>Apprentice</item>
   </contract_type>
 
-  <contract_term>
+  <seniority>
+    <item>Senior Manager</item>
+    <item>Junior Manager</item>
+    <item>Senior Staff</item>
+    <item>Junior Staff</item>
+  </seniority>
+
+  <period_type>
     <item>Permanent</item>
     <item>Temporary</item>
-    <item>Casual</item>
-  </contract_term>
+  </period_type>
+
+  <is_primary>
+    <item>1</item>
+    <item>0</item>
+  </is_primary>
+
+  <provider>
+    <item>Unknown</item>
+  </provider>
+
+  <plan_type>
+    <item>Family</item>
+    <item>Individual</item>
+  </plan_type>
+
+  <description>
+    <item>Description1</item>
+    <item>Description2</item>
+  </description>
+
+  <dependents>
+    <item>dependents1</item>
+    <item>dependents2</item>
+  </dependents>
+
+  <hours_type>
+    <item>full</item>
+    <item>part</item>
+    <item>casual</item>
+  </hours_type>
+
+  <hours_amount>
+    <item>40</item>
+    <item>32</item>
+    <item>24</item>
+    <item>16</item>
+    <item>8</item>
+  </hours_amount>
+
+  <hours_unit>
+    <item>Day</item>
+    <item>Week</item>
+    <item>Month</item>
+    <item>Year</item>
+  </hours_unit>
+
+  <hours_fte>
+    <item>1</item>
+    <item>1.5</item>
+    <item>2</item>
+    <item>3</item>
+  </hours_fte>
+
+  <pay_amount>
+    <item>40</item>
+    <item>80</item>
+    <item>90</item>
+    <item>120</item>
+    <item>200</item>
+  </pay_amount>
+
+  <pay_unit>
+    <item>Hour</item>
+    <item>Day</item>
+    <item>Week</item>
+    <item>Month</item>
+    <item>Year</item>
+  </pay_unit>
+
+  <is_enrolled>
+    <item>1</item>
+    <item>0</item>
+  </is_enrolled>
+
+  <contrib_pct>
+    <item>100</item>
+    <item>200</item>
+    <item>300</item>
+    <item>400</item>
+  </contrib_pct>
+
+  <leave_amount>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+  </leave_amount>
 
   <contracted_hours>
     <item>Full-time</item>
@@ -245,86 +339,6 @@
     <item>Paid</item>
     <item>Unpaid</item>
   </paid_unpaid>
-
-  <standard_hours_per_week>
-    <item>40</item>
-    <item>32</item>
-    <item>24</item>
-    <item>16</item>
-    <item>8</item>
-  </standard_hours_per_week>
-
-  <notice_period>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-    <item>5</item>
-    <item>6</item>
-  </notice_period>
-
-  <annual_leave_entitlement_days>
-    <item>23</item>
-    <item>20</item>
-    <item>15</item>
-    <item>10</item>
-    <item>05</item>
-  </annual_leave_entitlement_days>
-
-  <place_of_work>
-    <item>Main Office</item>
-    <item>Satellite Office</item>
-    <item>Overseas Office</item>
-    <item>Home Office</item>
-  </place_of_work>
-
-  <pay_rate_period>
-    <item>Annual</item>
-    <item>Monthly</item>
-    <item>Daily</item>
-    <item>Hourly</item>
-  </pay_rate_period>
-
-  <amount_of_pay>
-    <item>200.00</item>
-    <item>300.00</item>
-    <item>400.00</item>
-  </amount_of_pay>
-
-  <pension_contribution>
-    <item>1</item>
-    <item>2</item>
-  </pension_contribution>
-
-  <pension_contribution_percentage>
-    <item>10</item>
-    <item>20</item>
-    <item>40</item>
-  </pension_contribution_percentage>
-
-  <opted_out_of_automatic_pension>
-    <item>1</item>
-    <item>2</item>
-  </opted_out_of_automatic_pension>
-
-  <healthcare_insurance>
-    <item>1</item>
-    <item>2</item>
-  </healthcare_insurance>
-
-  <type_of_healthcare_provision>
-    <item>BUPA - Basic</item>
-    <item>BUPA - Premium</item>
-    <item>NHS - Basic</item>
-    <item>NHS Premium</item>
-  </type_of_healthcare_provision>
-
-  <job_role_name>
-    <item>job1</item>
-    <item>job2</item>
-    <item>job3</item>
-    <item>job4</item>
-  </job_role_name>
 
   <job_role_description>
     <item>desc1</item>
@@ -365,20 +379,6 @@
     <item>004</item>
     <item>005</item>
   </cost_center>
-
-  <team>
-    <item>Team A</item>
-    <item>Team B</item>
-    <item>Team C</item>
-    <item>Team D</item>
-    <item>Team E</item>
-  </team>
-
-  <role_hours>
-    <item>6</item>
-    <item>8</item>
-    <item>10</item>
-  </role_hours>
 
   <name_of_organisation>
     <item>ZING</item>
