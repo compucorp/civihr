@@ -1,20 +1,20 @@
 CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $, _){
   JobTabApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
-      "hrjob" : "showIntro"
+      ":cid/hrjob" : "showIntro"
     }
   });
 
   var API = {
-    showIntro: function(){
-      JobTabApp.Intro.Controller.showIntro();
+    showIntro: function(cid){
+      JobTabApp.Intro.Controller.showIntro(cid);
       // ContactManager.HeaderApp.List.Controller.setActiveHeader("intro");
     }
   };
 
-  HRApp.on("intro:show", function(){
-    HRApp.navigate("hrjob");
-    API.showIntro();
+  HRApp.on("intro:show", function(cid){
+    HRApp.navigate(cid + "/hrjob");
+    API.showIntro(cid);
   });
 
   HRApp.addInitializer(function(){

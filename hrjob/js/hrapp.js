@@ -24,7 +24,7 @@ CRM.HRApp.on("initialize:after", function(){
     CRM.HRApp.treeRegion.show(exampleTreeView);
 
     if(this.getCurrentRoute() === ""){
-      CRM.HRApp.trigger("intro:show");
+      CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
     }
   }
 });
