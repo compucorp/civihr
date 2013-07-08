@@ -40,6 +40,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   var API = {
     getHRJobEntities: function(){
+      return initializeHRJobs();
+      /*
       var defer = $.Deferred();
       setTimeout(function(){
         var data = initializeHRJobs();
@@ -47,6 +49,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       }, 500);
       var promise = defer.promise();
       return promise;
+      */
     }
   };
 
