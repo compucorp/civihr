@@ -902,7 +902,7 @@ class GenerateHRData {
       'end_date' => $this->randomDate('1356328800', '1368421200'),
       'name_of_organisation' => $this->randomItem('name_of_organisation'),
       'occupation_type' => $this->randomItem('occupation_type'),
-      'job_title_course_name' => $this->randomItem('job_title'),
+      'job_title_course_name' => $this->randomItem('job_title_course_name'),
       'full_time_part_time' => $this->randomItem('contracted_hours'),
       'paid_unpaid' => $this->randomItem('paid_unpaid'),
       'reference_supplied' => $this->randomItem('reference_supplied')

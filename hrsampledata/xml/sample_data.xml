@@ -538,4 +538,11 @@
     <item>Reference 1</item>
     <item>Reference 2</item>
   </reference_supplied>
+
+  <job_title_course_name>
+    <item>Major in mathematics</item>
+    <item>Major in creative writing</item>
+    <item>Sales clerk</item>
+    <item>Sales management</item>
+  </job_title_course_name>
 </sample_data>
