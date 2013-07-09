@@ -35,7 +35,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       { id: 2, position: 'Dancer', contract_type: 'Contractor' },
       { id: 3, position: 'Dentist', contract_type: 'Volunteer' }
     ]);
-    return jobs.models;
+    return jobs;
   };
 
   var API = {
