@@ -25,9 +25,9 @@
       <label>Visa Type</label>
       <data_type>String</data_type>
       <html_type>Text</html_type>
-      <default_value>green card</default_value>
+      <default_value></default_value>
       <is_required>1</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>25</weight>
       <is_active>1</is_active>
@@ -44,8 +44,8 @@
       <data_type>Date</data_type>
       <html_type>Select Date</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
-      <is_search_range>0</is_search_range>
+      <is_searchable>1</is_searchable>
+      <is_search_range>1</is_search_range>
       <weight>27</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
@@ -62,8 +62,8 @@
       <data_type>Date</data_type>
       <html_type>Select Date</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
-      <is_search_range>0</is_search_range>
+      <is_searchable>1</is_searchable>
+      <is_search_range>1</is_search_range>
       <weight>28</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
@@ -80,7 +80,7 @@
       <data_type>Memo</data_type>
       <html_type>TextArea</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>29</weight>
       <attributes>rows=4, cols=60</attributes>
@@ -97,7 +97,7 @@
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>26</weight>
       <is_active>1</is_active>
@@ -114,7 +114,7 @@
       <data_type>Memo</data_type>
       <html_type>TextArea</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>30</weight>
       <attributes>rows=4, cols=60</attributes>
