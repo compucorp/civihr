@@ -31,9 +31,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   var initializeHRJobs = function(){
     var jobs = new Entities.HRJobCollection([
-      { id: 1, position: 'Developer', contract_type: 'Employee' },
-      { id: 2, position: 'Dancer', contract_type: 'Contractor' },
-      { id: 3, position: 'Dentist', contract_type: 'Volunteer' }
+      { id: 41, position: 'Developer', contract_type: 'Employee' },
+      { id: 42, position: 'Dancer', contract_type: 'Contractor' },
+      { id: 53, position: 'Dentist', contract_type: 'Volunteer' }
     ]);
     return jobs;
   };
