@@ -27,6 +27,7 @@ CREATE TABLE `civicrm_hrjob` (
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
+     `location` varchar(127)    COMMENT 'Main work location',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
 ,
     PRIMARY KEY ( `id` )
@@ -45,6 +46,9 @@ CREATE TABLE `civicrm_hrjob` (
   )
   ,     INDEX `index_period_type`(
         period_type
+  )
+  ,     INDEX `index_location`(
+        location
   )
   ,     INDEX `index_is_primary`(
         is_primary
@@ -214,7 +218,8 @@ CREATE TABLE `civicrm_hrjob_role` (
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `functional_area` varchar(127)    ,
      `organization` varchar(127)    ,
-     `cost_center` varchar(127)     
+     `cost_center` varchar(127)    ,
+     `location` varchar(127)    COMMENT 'Main work location' 
 ,
     PRIMARY KEY ( `id` )
  
@@ -235,6 +240,9 @@ CREATE TABLE `civicrm_hrjob_role` (
   )
   ,     INDEX `index_cost_center`(
         cost_center
+  )
+  ,     INDEX `index_location`(
+        location
   )
   
 ,          CONSTRAINT FK_civicrm_hrjob_role_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_role_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
