@@ -699,9 +699,8 @@ class GenerateHRData {
     );
     $hrJob = $this->insertJobData('CRM_HRJob_DAO_HRJob', $jobValues);
 
-    //For each HRJob, there may be 0 or 1 records for each of these entity types: HRJobHealth, HRJobHour, HRJobPay, HRJobPension. 
-    $cnt = mt_rand(0, 1);
-    for ($i = 1; $i <= $cnt; $i++) {
+    //For each HRJob, there may be 0 or 1 records for each of these entity types: HRJobHealth, HRJobHour, HRJobPay, HRJobPension.
+    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
       //sample data for HRJob Health table
       $healthValues = array(
         'job_id' => $hrJob->id,
@@ -711,7 +710,9 @@ class GenerateHRData {
         'dependents' => $this->randomItem('dependents'),
       );
       $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
+    }
 
+    for ($i = 1; $i <= mt_rand(0, 1); $i++) { 
       //sample data for HRJob Hour table
       $hoursValues = array(
         'job_id' => $hrJob->id,
@@ -721,7 +722,9 @@ class GenerateHRData {
         'hours_fte' => $this->randomItem('hours_fte'),
       );
       $this->insertJobData('CRM_HRJob_DAO_HRJobHour', $hoursValues);
+    }
 
+    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
       //sample data for HRJob Pay table
       $payValues = array(
         'job_id' => $hrJob->id,
@@ -730,7 +733,9 @@ class GenerateHRData {
         'pay_unit' => $this->randomItem('pay_unit'),
       );
       $this->insertJobData('CRM_HRJob_DAO_HRJobPay', $payValues);
-
+    }
+ 
+    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
       //sample data for HRJob Pension table
       $pensionValues = array(
         'job_id' => $hrJob->id,
