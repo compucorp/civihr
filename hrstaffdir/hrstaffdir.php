@@ -12,14 +12,14 @@ function hrstaffdir_civicrm_config(&$config) {
 /**
  * Implementation of hook_civicrm_searchColumns
  */
-function hrstaffdir_civicrm_searchColumns( $objectName, &$headers,  &$values, &$selector ) {
-  if ( $objectName == 'profile' ) {
+function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$selector) {
+  if ($objectName == 'profile') {
     $profileId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'Staff Directory', 'id', 'title');
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
     if ($profileId == $gid) {
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
-        if ($found) { 
+        if ($found) {
           $value['sort_name'] = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$matches[1]}") . "'>{$value['sort_name']}</a>";
         }
       }
@@ -47,7 +47,7 @@ function hrstaffdir_civicrm_install() {
     $navigationParams =
       array(
         'label' => 'Directory',
-        'url'   => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+        'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
         'is_active' => 1,
       );
     $navigation = CRM_Core_BAO_Navigation::add($navigationParams);

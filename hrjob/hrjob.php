@@ -90,37 +90,37 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
  * Implementation of hook_civicrm_entityTypes
  */
 function hrjob_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJob',
     'class' => 'CRM_HRJob_DAO_HRJob',
     'table' => 'civicrm_hrjob',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobPay',
     'class' => 'CRM_HRJob_DAO_HRJobPay',
     'table' => 'civicrm_hrjob_pay',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobHealth',
     'class' => 'CRM_HRJob_DAO_HRJobHealth',
     'table' => 'civicrm_hrjob_health',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobHour',
     'class' => 'CRM_HRJob_DAO_HRJobHour',
     'table' => 'civicrm_hrjob_hour',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobLeave',
     'class' => 'CRM_HRJob_DAO_HRJobLeave',
     'table' => 'civicrm_hrjob_leave',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobPension',
     'class' => 'CRM_HRJob_DAO_HRJobPension',
     'table' => 'civicrm_hrjob_pension',
   );
-  $entityTypes[] = array (
+  $entityTypes[] = array(
     'name' => 'HRJobRole',
     'class' => 'CRM_HRJob_DAO_HRJobRole',
     'table' => 'civicrm_hrjob_role',
