@@ -18,3 +18,14 @@
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/role" class="hrjob-nav" data-hrjob-event="hrjob:role:edit">{ts}Roles{/ts}</a></dd>
   </dl>
 </script>
+
+<script id="hrjob-summary-template" type="text/template">
+  <div>
+    <span>{ts}Position{/ts}:</span>
+    <span><%- position %></span>
+  </div>
+  <div>
+    <span>{ts}Contract Type{/ts}:</span>
+    <span><%- contract_type %></span>
+  </div>
+</script>

@@ -39,6 +39,10 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   };
 
   var API = {
+    getHRJobEntity: function(jobId) {
+      var entities = API.getHRJobEntities();
+      return entities.get(jobId);
+    },
     getHRJobEntities: function(){
       return initializeHRJobs();
       /*
@@ -55,5 +59,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   HRApp.reqres.setHandler("hrjob:entities", function(){
     return API.getHRJobEntities();
+  });
+  HRApp.reqres.setHandler("hrjob:entity", function(jobId){
+    return API.getHRJobEntity(jobId);
   });
 });
