@@ -3,7 +3,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     show: function(cid){
       var jobs = HRApp.request("hrjob:entities");
       var exampleView = new Tree.View({
-        jobCollection: jobs
+        collection: jobs
       });
       HRApp.treeRegion.show(exampleView);
     }
