@@ -18,10 +18,7 @@ CRM.HRApp.on("initialize:after", function(){
   if(Backbone.history){
     Backbone.history.start();
 
-    var exampleTreeView = new Backbone.Marionette.ItemView({
-      template: '#hrjob-tree-template'
-    });
-    CRM.HRApp.treeRegion.show(exampleTreeView);
+    CRM.HRApp.JobTabApp.Tree.Controller.show();
 
     if(this.getCurrentRoute() === ""){
       CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
