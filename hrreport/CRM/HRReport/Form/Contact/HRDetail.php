@@ -133,7 +133,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           array('title' => ts('Work Country'),
           ),
         ),
-        'filters' => 
+        'filters' =>
         array(
           'city' =>
           array('title' => ts('Work City'),
@@ -227,7 +227,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         $entryFound = TRUE;
        }
 
-      $entryFound = 
+      $entryFound =
         $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
 
       if (array_key_exists('civicrm_contact_gender_id', $row)) {
