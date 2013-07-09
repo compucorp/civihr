@@ -41,6 +41,26 @@
   </div>
 </script>
 
+<script id="hrjob-hour-template" type="text/template">
+  TODO: Hours
+</script>
+
+<script id="hrjob-pay-template" type="text/template">
+  TODO: Pay
+</script>
+
+<script id="hrjob-health-template" type="text/template">
+  TODO: Health
+</script>
+
+<script id="hrjob-leave-template" type="text/template">
+  TODO: Leave
+</script>
+
+<script id="hrjob-pension-template" type="text/template">
+  TODO: Pension
+</script>
+
 <script id="hrjob-role-template" type="text/template">
   TODO: Roles
 </script>

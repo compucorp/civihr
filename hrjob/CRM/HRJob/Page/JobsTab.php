@@ -48,6 +48,14 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/tree/tree_views.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/summary/summary_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/summary/summary_views.js', 160, 'html-header')
+    ;
+    foreach (array('general', 'health', 'hour', 'leave', 'pay', 'pension', 'role') as $module) {
+      CRM_Core_Resources::singleton()
+        ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_controller.js", 160, 'html-header')
+        ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_views.js", 160, 'html-header')
+        ;
+    }
+/*
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_views.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/role/edit_controller.js', 160, 'html-header')

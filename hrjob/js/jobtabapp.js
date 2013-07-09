@@ -4,6 +4,11 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
       ":cid/hrjob" : "showIntro",
       ":cid/hrjob/:id" : "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
+      ":cid/hrjob/:id/health": "editHealth",
+      ":cid/hrjob/:id/hour": "editHour",
+      ":cid/hrjob/:id/leave": "editLeave",
+      ":cid/hrjob/:id/pay": "editPay",
+      ":cid/hrjob/:id/pension": "editPension",
       ":cid/hrjob/:id/role": "editRole"
     }
   });
@@ -17,6 +22,21 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     },
     editGeneral: function(cid, jobId) {
       JobTabApp.General.Controller.editGeneral(cid, jobId);
+    },
+    editHealth: function(cid, jobId) {
+      JobTabApp.Health.Controller.editHealth(cid, jobId);
+    },
+    editHour: function(cid, jobId) {
+      JobTabApp.Hour.Controller.editHour(cid, jobId);
+    },
+    editLeave: function(cid, jobId) {
+      JobTabApp.Leave.Controller.editLeave(cid, jobId);
+    },
+    editPay: function(cid, jobId) {
+      JobTabApp.Pay.Controller.editPay(cid, jobId);
+    },
+    editPension: function(cid, jobId) {
+      JobTabApp.Pension.Controller.editPension(cid, jobId);
     },
     editRole: function(cid, jobId) {
       JobTabApp.Role.Controller.editRole(cid, jobId);
@@ -38,6 +58,11 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   // each separately
   _.each({
     "general": "editGeneral",
+    "health": "editHealth",
+    "hour": "editHour",
+    "leave": "editLeave",
+    "pay": "editPay",
+    "pension": "editPension",
     "role": "editRole"
   }, function(apiAction, editableModule, list){
     HRApp.on("hrjob:"+editableModule+":edit", function(cid, jobId){
