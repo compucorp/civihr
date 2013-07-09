@@ -2,10 +2,10 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
   Summary.Controller = {
     showSummary: function(cid, jobId){
       var model = HRApp.request("hrjob:entity", jobId);
-      var exampleMainView = new Summary.ShowView({
+      var mainView = new Summary.ShowView({
         model: model
       });
-      HRApp.mainRegion.show(exampleMainView);
+      HRApp.mainRegion.show(mainView);
     }
   }
 });
