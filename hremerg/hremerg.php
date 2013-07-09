@@ -22,6 +22,44 @@ function hremerg_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hremerg_civicrm_install() {
+  //hack to translate Relationship to Emergency Contact
+  $overrides = array(
+    'enabled' => array(
+      'wildcardMatch' => array(
+        'Relationships' => 'Emergency Contacts',
+        'Relationship' => 'Emergency Contact'
+      ),
+    ),
+  );
+
+  $config = CRM_Core_Config::singleton();
+  $domain = new CRM_Core_DAO_Domain();
+  $domain->find(TRUE);
+
+  if ($domain->locales && $config->localeCustomStrings) {
+    // for multilingual
+    $addReplacements = $config->localeCustomStrings;
+    $addReplacements[$config->lcMessages] = $overrides;
+    $stringOverride = serialize($addReplacements);
+  }
+  else {
+    // for single language
+    $stringOverride = serialize(array($config->lcMessages => $overrides));
+  }
+
+  $params = array('locale_custom_strings' => $stringOverride);
+  $id = CRM_Core_Config::domainID();
+
+  $wordReplacementSettings = CRM_Core_BAO_Domain::edit($params, $id);
+
+  if ($wordReplacementSettings) {
+    // Reset navigation
+    CRM_Core_BAO_Navigation::resetNavigation();
+    // Clear js string cache
+    CRM_Core_Resources::singleton()->flushStrings();
+  }
+
+
   return _hremerg_civix_civicrm_install();
 }
 
