@@ -430,7 +430,7 @@ class GenerateHRData {
       $contact->hash = crc32($contact->sort_name);
       $contact->id = $cid;
       $this->_update($contact);
-      
+
       //if Job(CiviHR) extension is enabled, add the sample data
       $this->addJobData($cid);
       //if Identification (CiviHR) extension is enabled, add the sample data
@@ -448,7 +448,7 @@ class GenerateHRData {
     }
   }
 
- 
+
   /**
    * This method adds organization data to the contact table
    *
@@ -712,7 +712,7 @@ class GenerateHRData {
       $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
     }
 
-    for ($i = 1; $i <= mt_rand(0, 1); $i++) { 
+    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
       //sample data for HRJob Hour table
       $hoursValues = array(
         'job_id' => $hrJob->id,
@@ -734,7 +734,7 @@ class GenerateHRData {
       );
       $this->insertJobData('CRM_HRJob_DAO_HRJobPay', $payValues);
     }
- 
+
     for ($i = 1; $i <= mt_rand(0, 1); $i++) {
       //sample data for HRJob Pension table
       $pensionValues = array(
@@ -788,7 +788,6 @@ class GenerateHRData {
     return $dao;
   }
 
-  
   /**
    * This method populates the Identification Custom Table
    */
@@ -810,7 +809,6 @@ class GenerateHRData {
     $this->insertCustomData($gid, $values);
   }
 
-  
   /**
    * This method populates the Medical & Disability Custom Table
    */
@@ -829,7 +827,6 @@ class GenerateHRData {
     $this->insertCustomData($gid, $values);
   }
 
-  
   /**
    * This method populates the Qualifications Custom Table
    */
@@ -837,7 +834,7 @@ class GenerateHRData {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
       return;
     }
-    
+
     $values = array(
       'entity_id' => $cid,
       'name_of_skill' => $this->randomItem('name_of_skill'),
@@ -853,7 +850,6 @@ class GenerateHRData {
     $this->insertCustomData($gid, $values);
   }
 
-  
   /**
    * This method populates the Visa/Immigration Custom Table
    */
@@ -861,7 +857,7 @@ class GenerateHRData {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Immigration', 'id', 'name')) {
       return;
     }
-    
+
     $values = array(
       'entity_id' => $cid,
       'visa_type' => $this->randomItem('visa_type'),
@@ -886,7 +882,7 @@ class GenerateHRData {
     $relationship->contact_id_a = $this->randomIndex(array_flip($this->Individual));
     $relationship->contact_id_b = $cid;
     $relationship->is_active = 1;
-    
+
     $this->_insert($relationship);
     $values = array(
       'entity_id' => $relationship->id,
@@ -912,7 +908,7 @@ class GenerateHRData {
       'paid_unpaid' => $this->randomItem('paid_unpaid'),
       'reference_supplied' => $this->randomItem('reference_supplied')
     );
-    
+
     $this->insertCustomData($gid, $values);
   }
   /**
@@ -934,7 +930,6 @@ class GenerateHRData {
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
     $dao = CRM_Core_DAO::executeQuery($query);
   }
-  
 }
 
 

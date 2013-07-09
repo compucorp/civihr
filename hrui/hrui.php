@@ -11,7 +11,7 @@ function hrui_civicrm_pageRun($page) {
   }
 }
 
-function hrui_civicrm_buildForm( $formName, &$form ) {
+function hrui_civicrm_buildForm($formName, &$form) {
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   }
@@ -41,7 +41,7 @@ function hrui_civicrm_xmlMenu(&$files) {
 function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
-    'version'   => 3,
+    'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
     'enable_components' => array('CiviMail', 'CiviReport'),
   );
@@ -49,7 +49,8 @@ function hrui_civicrm_install() {
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
-  } else {
+  }
+  else {
     // reset navigation per enabled components
     CRM_Core_BAO_Navigation::resetNavigation();
   }
@@ -60,13 +61,13 @@ function hrui_civicrm_install() {
 
   // get tab options from DB
   $options = hrui_getViewOptionsSetting();
-  
+
   // unset activity & tag tab options
   foreach ($tabsToUnset as $key) {
     unset($options[$key]);
   }
   $options = array_keys($options);
-  
+
   // set modified options in the DB
   hrui_setViewOptionsSetting($options);
 
@@ -96,18 +97,18 @@ function hrui_civicrm_install() {
  */
 function hrui_civicrm_uninstall() {
   // get a list of all tab options
-  $options  = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
+  $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToSet = array($options['Activities'], $options['Tags']);
-  
+
   // get tab options from DB
   $options = hrui_getViewOptionsSetting();
-  
+
   // set activity & tag tab options
   foreach ($tabsToSet as $key) {
     $options[$key] = 1;
   }
   $options = array_keys($options);
-  
+
   // set modified options in the DB
   hrui_setViewOptionsSetting($options);
 
@@ -119,10 +120,10 @@ function hrui_civicrm_uninstall() {
  */
 function hrui_getViewOptionsSetting() {
   $domainID = CRM_Core_Config::domainID();
-  $params   = array(
-    'version'   => 3,
+  $params = array(
+    'version' => 3,
     'domain_id' => $domainID,
-    'return'    => 'contact_view_options',
+    'return' => 'contact_view_options',
   );
   $result = civicrm_api('setting', 'get', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
@@ -137,8 +138,8 @@ function hrui_getViewOptionsSetting() {
  */
 function hrui_setViewOptionsSetting($options = array()) {
   $domainID = CRM_Core_Config::domainID();
-  $params   = array(
-    'version'   => 3,
+  $params = array(
+    'version' => 3,
     'domain_id' => $domainID,
     'contact_view_options' => $options,
   );

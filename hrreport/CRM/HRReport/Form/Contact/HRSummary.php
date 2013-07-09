@@ -100,7 +100,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           array('title' => ts('Work Country'),
           ),
         ),
-        'group_bys' => 
+        'group_bys' =>
         array(
           'city' =>
           array('title' => ts('Work City'),
@@ -176,7 +176,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       $sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_having} {$this->_orderBy} {$this->_limit}";
       $dao = CRM_Core_DAO::executeQuery($sql);
       while ($dao->fetch()) {
-        foreach ($this->_statFields as $title => $alias) { 
+        foreach ($this->_statFields as $title => $alias) {
           $statistics['counts'][$alias] = array(
             'title' => $title,
             'value' => $dao->$alias,
@@ -193,7 +193,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $gender     = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
 
     foreach ($rows as $rowNum => $row) {
-      $entryFound = 
+      $entryFound =
         $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
 
       if (array_key_exists('civicrm_contact_gender_id', $row)) {
