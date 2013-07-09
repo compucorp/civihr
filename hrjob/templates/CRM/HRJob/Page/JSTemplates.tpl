@@ -29,3 +29,18 @@
     <span><%- contract_type %></span>
   </div>
 </script>
+
+<script id="hrjob-general-template" type="text/template">
+  <div>
+    <span>{ts}Position{/ts}:</span>
+    <input type="text" value="<%- position %>" />
+  </div>
+  <div>
+    <span>{ts}Contract Type{/ts}:</span>
+    <input type="text" value="<%- contract_type %>" />
+  </div>
+</script>
+
+<script id="hrjob-role-template" type="text/template">
+  TODO: Roles
+</script>
