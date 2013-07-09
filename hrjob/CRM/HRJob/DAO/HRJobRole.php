@@ -150,6 +150,12 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
    */
   public $cost_center;
   /**
+   * Main work location
+   *
+   * @var string
+   */
+  public $location;
+  /**
    * class constructor
    *
    * @access public
@@ -255,6 +261,16 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
         ) ,
+        'location' => array(
+          'name' => 'location',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Location') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_location',
+          )
+        ) ,
       );
     }
     return self::$_fields;
@@ -281,6 +297,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'functional_area' => 'functional_area',
         'organization' => 'organization',
         'cost_center' => 'cost_center',
+        'location' => 'location',
       );
     }
     return self::$_fieldKeys;

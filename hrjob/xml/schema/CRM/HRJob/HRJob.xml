@@ -126,6 +126,21 @@
   </foreignKey>
 
   <field>
+    <name>location</name>
+    <title>Location</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Main work location</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_location</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_location</name>
+    <fieldName>location</fieldName>
+  </index>
+
+  <field>
     <name>is_primary</name>
     <type>boolean</type>
     <default>0</default>

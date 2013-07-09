@@ -154,6 +154,12 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $manager_contact_id;
   /**
+   * Main work location
+   *
+   * @var string
+   */
+  public $location;
+  /**
    * Is this the primary?
    *
    * @var boolean
@@ -266,6 +272,16 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
+        'location' => array(
+          'name' => 'location',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Location') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_location',
+          )
+        ) ,
         'is_primary' => array(
           'name' => 'is_primary',
           'type' => CRM_Utils_Type::T_BOOLEAN,
@@ -296,6 +312,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_start_date' => 'period_start_date',
         'period_end_date' => 'period_end_date',
         'manager_contact_id' => 'manager_contact_id',
+        'location' => 'location',
         'is_primary' => 'is_primary',
       );
     }

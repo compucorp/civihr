@@ -38,6 +38,12 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>hrjob_location</name>
+      <title>Work Location</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -248,6 +254,28 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_leave_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Headquarters</label>
+      <value>Headquarters</value>
+      <name>Headquarters</name>
+      <is_default>1</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_location</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Home or Home-Office</label>
+      <value>Home</value>
+      <name>Home</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_location</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

@@ -117,4 +117,19 @@
     <name>index_cost_center</name>
     <fieldName>cost_center</fieldName>
   </index>
+
+  <field>
+    <name>location</name>
+    <title>Location</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Main work location</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_location</optionGroupName>
+    </pseudoconstant>
+  </field>
+  <index>
+    <name>index_location</name>
+    <fieldName>location</fieldName>
+  </index>
 </table>
