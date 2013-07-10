@@ -73,6 +73,7 @@ function hrjob_civicrm_managed(&$entities) {
  * Implementation of hook_civicrm_tabs
  */
 function hrjob_civicrm_tabs(&$tabs, $contactID) {
+  CRM_HRJob_Page_JobsTab::registerScripts();
   $tab = array(
     'id' => 'hrjob',
     'url' => CRM_Utils_System::url('civicrm/contact/view/hrjob', array(
