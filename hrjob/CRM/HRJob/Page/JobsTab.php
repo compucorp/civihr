@@ -27,6 +27,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
+        'FieldOptions' => self::getFieldOptions(),
         'jobTabApp' => array(
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
         ),
@@ -55,6 +56,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_views.js", 160, 'html-header')
         ;
     }
+
 /*
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_views.js', 160, 'html-header')
@@ -76,6 +78,43 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     CRM_Core_Region::instance('page-header')->add(array(
       'template' => 'CRM/HRJob/Page/JSTemplates.tpl',
     ));
+  }
+
+  /**
+   * Get a list of all interesting options
+   *
+   * @return array e.g. $fieldOptions[$entityName][$fieldName] contains key-value options
+   */
+  public static function getFieldOptions() {
+    $fields = array(
+      'HRJob' => array(
+        "contract_type",
+        "seniority",
+        "period_type",
+        "location",
+      ),
+      'HRJobHour' => array(
+        'hours_type',
+        'hours_unit',
+      ),
+      'HRJobPay' => array(
+        'pay_grade'
+      ),
+      'HRJobHealth' => array(
+        'provider',
+        'plan_type',
+      ),
+      'HRJobLeave' => array(
+        'leave_type',
+      ),
+    );
+    $fieldOptions = array();
+    foreach ($fields as $entityName => $fieldNames) {
+      foreach ($fieldNames as $fieldName) {
+        $fieldOptions[$entityName][$fieldName] = CRM_Core_PseudoConstant::get("CRM_HRJob_DAO_{$entityName}", $fieldName);
+      }
+    }
+    return $fieldOptions;
   }
 
 }

@@ -31,7 +31,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   var initializeHRJobs = function(){
     var jobs = new Entities.HRJobCollection([
-      { id: 41, position: 'Developer', contract_type: 'Employee' },
+      { id: 41, position: 'Developer', title: 'Senior Associate for Extemperanous CSS', contract_type: 'Employee', seniority: 'Senior Staff', 'period_type': 'Permanent', 'period_start_date': '2010-01-02', 'period_end_date': '2012-03-04', 'manager_contact_id': 3 },
       { id: 42, position: 'Dancer', contract_type: 'Contractor' },
       { id: 53, position: 'Dentist', contract_type: 'Volunteer' }
     ]);
