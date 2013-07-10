@@ -75,9 +75,14 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'js/crm.designerapp.js', 250)
     */
 
-    CRM_Core_Region::instance('page-header')->add(array(
-      'template' => 'CRM/HRJob/Page/JSTemplates.tpl',
-    ));
+    $templateDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob') . '/templates/';
+    $region = CRM_Core_Region::instance('page-header');
+    foreach (glob($templateDir . 'CRM/HRJob/Underscore/*.tpl') as $file) {
+      $fileName = substr($file, strlen($templateDir));
+      $region->add(array(
+        'template' => $fileName,
+      ));
+    }
   }
 
   /**
