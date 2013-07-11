@@ -202,7 +202,7 @@
     </OptionValue>
     <OptionValue>
       <label>Paid</label>
-      <value>Paid</value>
+      <value>paid</value>
       <name>Paid</name>
       <is_default>0</is_default>
       <weight>2</weight>
