@@ -82,6 +82,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobPay' => array(
         'pay_grade',
+        'pay_unit',
       ),
       'HRJobPension' => array(
       ),
