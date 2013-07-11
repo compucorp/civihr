@@ -4,7 +4,7 @@ cj(function($) {
 
     //params to be passed in the api
     var params = $.parseJSON('{"sequential": "1"}');
-    params["entity_id"] = CRM.contactID;
+    params["entity_id"] = CRM.hrvisa.contactID;
     params[fieldName] = $(this).is(":Checked") ? 1 : 0;
     CRM.api('CustomValue', 'create', params,{
       success: function(data) {

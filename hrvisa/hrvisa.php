@@ -115,7 +115,11 @@ function hrvisa_civicrm_tabs(&$tabs, $contactID) {
   }
   CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrvisa', 'js/hrvisa.js');
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrvisa', 'css/hrvisa.css');
-  CRM_Core_Resources::singleton()->addSetting(array('contactID' => $contactID));
+  CRM_Core_Resources::singleton()->addSetting(array(
+    'hrvisa' => array(
+      'contactID' => $contactID,
+    ),
+  ));
 }
 
 function hrvisa_getCustomGroupId() {
