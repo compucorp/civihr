@@ -1,7 +1,7 @@
 <script id="hrjob-hour-template" type="text/template">
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-provider">{ts}Hours Type{/ts}:</label>
+      <label for="hrjob-hours_type">{ts}Hours Type{/ts}:</label>
     </div>
     <div class="crm-content">
     {literal}
