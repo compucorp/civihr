@@ -24,7 +24,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
-        'FieldOptions' => self::getFieldOptions(),
+        'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
         ),
