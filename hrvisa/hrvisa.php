@@ -10,19 +10,19 @@ function hrvisa_civicrm_buildProfile($name) {
     $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
     $params = array(
-      'entityID' => $contactID, 
+      'entityID' => $contactID,
       "custom_{$cfId}" => 1
     );
     $value = CRM_Core_BAO_CustomValueTable::getValues($params);
     $regionParams = array(
-      'markup' => "<p id='custom_{$cfId}_is_visa_required'>
+      'markup' => "<p id='custom_{$cfId}_is_visa_required' class='hrvisa-is_visa_required'>
         Is Visa Required &nbsp;<input type='checkbox' id='is_visa_required' value='1' name='is_visa_required'></p>",
       'weight' => -1
     );
 
     //check if the value is set. If it is, then add attribute checked='checked'
     if ($value["custom_{$cfId}"]) {
-      $regionParams['markup'] = "<p id='custom_{$cfId}_is_visa_required'>Is Visa Required &nbsp;
+      $regionParams['markup'] = "<p id='custom_{$cfId}_is_visa_required' class='hrvisa-is_visa_required'>Is Visa Required &nbsp;
         <input type='checkbox' id='is_visa_required' value='1' name='is_visa_required' checked='checked'></p>";
     }
     CRM_Core_Region::instance('profile-form-hrvisa_tab')->add($regionParams);
@@ -114,6 +114,7 @@ function hrvisa_civicrm_tabs(&$tabs, $contactID) {
     }
   }
   CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrvisa', 'js/hrvisa.js');
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrvisa', 'css/hrvisa.css');
   CRM_Core_Resources::singleton()->addSetting(array('contactID' => $contactID));
 }
 
