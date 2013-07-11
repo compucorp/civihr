@@ -846,6 +846,7 @@ class GenerateHRData {
       'grade_achieved' => $this->randomItem('grade_achieved'),
       'attain_date' => $this->randomDate('1346328800', '1356328800'),
       'expiry_date' => $this->randomDate('1356328800', '1368421200'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -924,7 +925,7 @@ class GenerateHRData {
     }
     if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
       // removing the file field column "evidence_attached" in Qualifications
-      array_pop($columnNames);
+      $columnNames = array_diff($columnNames, array('evidence_attached_26'));
     }
     $columns = implode("`,`", $columnNames);
     $columnValues = implode("','", array_values($columnVals));
