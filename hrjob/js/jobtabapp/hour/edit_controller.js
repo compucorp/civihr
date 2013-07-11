@@ -4,7 +4,7 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       var hrjobModel = HRApp.request("hrjob:entity", jobId);
       var hrjobHourModel = new HRApp.Entities.HRJobHour({
         job_id: null,
-        hours_type: 'Full Time',
+        hours_type: 'full',
         hours_amount: 40,
         hours_unit: 'Week',
         hours_fte: 1.0
