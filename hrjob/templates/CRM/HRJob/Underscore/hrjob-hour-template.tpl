@@ -6,10 +6,10 @@
     <div class="crm-content">
     {literal}
       <%= RenderUtil.select({
-      id: 'hrjob-hours_type',
-      name: 'hours_type',
-      selected: hours_type,
-      options: _.extend({'':''}, FieldOptions.hours_type)
+        id: 'hrjob-hours_type',
+        name: 'hours_type',
+        selected: hours_type,
+        options: _.extend({'':''}, FieldOptions.hours_type)
       }) %>
     {/literal}
     </div>
@@ -22,14 +22,14 @@
     <div class="crm-content">
       <input id="hrjob-hours_amount" name="hours_amount" type="text" value="<%- hours_amount %>" />
       <label for="hrjob-hours_unit">{ts}per{/ts}</label>
-    {literal}
+      {literal}
       <%= RenderUtil.select({
-      id: 'hrjob-hours_unit',
-      name: 'hours_unit',
-      selected: hours_unit,
-      options: _.extend({'':''}, FieldOptions.hours_unit)
+        id: 'hrjob-hours_unit',
+        name: 'hours_unit',
+        selected: hours_unit,
+        options: _.extend({'':''}, FieldOptions.hours_unit)
       }) %>
-    {/literal}
+      {/literal}
     </div>
   </div>
 
