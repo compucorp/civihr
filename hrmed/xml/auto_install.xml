@@ -14,9 +14,9 @@
       <is_active>1</is_active>
       <table_name>civicrm_value_medical_disability_4</table_name>
       <is_multiple>1</is_multiple>
-      <is_reserved>1</is_reserved>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
+      <is_reserved>1</is_reserved>
     </CustomGroup>
   </CustomGroups>
   <CustomFields>
@@ -71,6 +71,40 @@
       <note_rows>4</note_rows>
       <column_name>special_requirements_10</column_name>
       <option_group_name>special_requirements_20130502152523</option_group_name>
+      <custom_group_name>Medical_Disability</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Evidence_File</name>
+      <label>Evidence (File)</label>
+      <data_type>File</data_type>
+      <html_type>File</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>110</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>evidence_file_39</column_name>
+      <custom_group_name>Medical_Disability</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Evidence_Note</name>
+      <label>Evidence (Note)</label>
+      <data_type>Memo</data_type>
+      <html_type>TextArea</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>111</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>evidence_note_40</column_name>
       <custom_group_name>Medical_Disability</custom_group_name>
     </CustomField>
   </CustomFields>
@@ -210,6 +244,7 @@
       <is_edit_link>0</is_edit_link>
       <is_uf_link>0</is_uf_link>
       <is_update_dupe>0</is_update_dupe>
+      <is_cms_user>0</is_cms_user>
       <is_reserved>1</is_reserved>
       <name>hrmed_tab</name>
       <created_date>0000-00-00 00:00:00</created_date>
@@ -263,6 +298,38 @@
       <label>Special Requirements</label>
       <field_type>Individual</field_type>
       <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Medical &amp; Disability</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_medical_disability_4.evidence_file_39</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence (File)</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Medical &amp; Disability</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_medical_disability_4.evidence_note_40</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>5</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence (Note)</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Medical &amp; Disability</profile_group_name>
     </ProfileField>
   </ProfileFields>
