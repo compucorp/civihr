@@ -178,8 +178,8 @@
       <custom_group_name>Qualifications</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Evidence_Attached</name>
-      <label>Evidence (Attachment)</label>
+      <name>Evidence_File</name>
+      <label>Evidence (File)</label>
       <data_type>File</data_type>
       <html_type>File</html_type>
       <is_required>0</is_required>
@@ -191,7 +191,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>evidence_attached_26</column_name>
+      <column_name>evidence_file_26</column_name>
       <custom_group_name>Qualifications</custom_group_name>
     </CustomField>
     <CustomField>
@@ -490,7 +490,7 @@
       <profile_group_name>Qualifications</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_qualifications_5.evidence_attached_26</field_name>
+      <field_name>custom.civicrm_value_qualifications_5.evidence_file_26</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -500,7 +500,7 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Evidence (Attachment)</label>
+      <label>Evidence (File)</label>
       <field_type>Individual</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Qualifications</profile_group_name>

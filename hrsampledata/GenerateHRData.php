@@ -928,7 +928,7 @@ class GenerateHRData {
     }
 
     $ignoreFieldsByGroup = array(
-      'Qualifications' => array('evidence_attached_26'),
+      'Qualifications' => array('evidence_file_26'),
       'Identify' => array('evidence_file_37'),
       'Medical_Disability' => array('evidence_file_39'),
       'Immigration' => array('evidence_file_41'),
