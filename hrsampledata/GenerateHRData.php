@@ -803,7 +803,8 @@ class GenerateHRData {
       'issue_date' => $this->randomDate('1284267600', '1354514400'),
       'expire_date' => $this->randomDate('1356328800', '1368421200'),
       'country' => $this->randomItem('country'),
-      'state_province' => $this->randomItem('state_province')
+      'state_province' => $this->randomItem('state_province'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -923,10 +924,17 @@ class GenerateHRData {
     foreach ($cfDetails as $fieldID => $value) {
       $columnNames[] = $value['column_name'];
     }
-    if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
-      // removing the file field column "evidence_attached" in Qualifications
-      $columnNames = array_diff($columnNames, array('evidence_attached_26'));
+
+    $ignoreFieldsByGroup = array(
+      'Qualifications' => array('evidence_attached_26'),
+      'Identify' => array('evidence_file_37'),
+    );
+    foreach ($ignoreFieldsByGroup as $groupName => $ignoreFields) {
+      if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $groupName, 'id', 'name')) {
+        $columnNames = array_diff($columnNames, $ignoreFields);
+      }
     }
+
     $columns = implode("`,`", $columnNames);
     $columnValues = implode("','", array_values($columnVals));
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
