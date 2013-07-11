@@ -36,6 +36,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/renderutil.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_controller.js', 160, 'html-header')

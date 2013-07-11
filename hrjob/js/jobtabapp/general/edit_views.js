@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     template: '#hrjob-general-template',
     templateHelpers: function() {
       return {
+        'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJob
       };
     }

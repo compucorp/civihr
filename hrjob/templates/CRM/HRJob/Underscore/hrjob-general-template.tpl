@@ -24,12 +24,12 @@
     </div>
     <div class="crm-content">
     {literal}
-      <select id="hrjob-contract_type" name="contract_type">
-        <option value=""></option>
-        <% for (var selectValue in FieldOptions.contract_type) { %>
-        <option value="<%- selectValue %>" <%= contract_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.contract_type[selectValue] %></option>
-        <% } %>
-      </select>
+      <%= RenderUtil.select({
+        id: 'hrjob-contract_type',
+        name: 'contract_type',
+        selected: contract_type,
+        options: FieldOptions.contract_type
+      }) %>
     {/literal}
     </div>
   </div>
@@ -40,12 +40,12 @@
     </div>
     <div class="crm-content">
     {literal}
-      <select id="hrjob-seniority" name="seniority">
-        <option value=""></option>
-        <% for (var selectValue in FieldOptions.seniority) { %>
-        <option value="<%- selectValue %>" <%= seniority == selectValue ? 'selected' : ''  %>><%- FieldOptions.seniority[selectValue] %></option>
-        <% } %>
-      </select>
+      <%= RenderUtil.select({
+        id: 'hrjob-seniority',
+        name: 'seniority',
+        selected: seniority,
+        options: FieldOptions.seniority
+      }) %>
     {/literal}
     </div>
   </div>
@@ -56,12 +56,12 @@
     </div>
     <div class="crm-content">
     {literal}
-      <select id="hrjob-period_type" name="period_type">
-        <option value=""></option>
-        <% for (var selectValue in FieldOptions.period_type) { %>
-        <option value="<%- selectValue %>" <%= period_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.period_type[selectValue] %></option>
-        <% } %>
-      </select>
+      <%= RenderUtil.select({
+        id: 'hrjob-period_type',
+        name: 'period_type',
+        selected: period_type,
+        options: FieldOptions.period_type
+      }) %>
     {/literal}
     </div>
   </div>
