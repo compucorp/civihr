@@ -26,8 +26,8 @@
     {literal}
       <select id="hrjob-contract_type" name="contract_type">
         <option value=""></option>
-        <% for (var selectValue in FieldOptions.HRJob.contract_type) { %>
-        <option value="<%- selectValue %>" <%= contract_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.HRJob.contract_type[selectValue] %></option>
+        <% for (var selectValue in FieldOptions.contract_type) { %>
+        <option value="<%- selectValue %>" <%= contract_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.contract_type[selectValue] %></option>
         <% } %>
       </select>
     {/literal}
@@ -42,8 +42,8 @@
     {literal}
       <select id="hrjob-seniority" name="seniority">
         <option value=""></option>
-        <% for (var selectValue in FieldOptions.HRJob.seniority) { %>
-        <option value="<%- selectValue %>" <%= seniority == selectValue ? 'selected' : ''  %>><%- FieldOptions.HRJob.seniority[selectValue] %></option>
+        <% for (var selectValue in FieldOptions.seniority) { %>
+        <option value="<%- selectValue %>" <%= seniority == selectValue ? 'selected' : ''  %>><%- FieldOptions.seniority[selectValue] %></option>
         <% } %>
       </select>
     {/literal}
@@ -58,8 +58,8 @@
     {literal}
       <select id="hrjob-period_type" name="period_type">
         <option value=""></option>
-        <% for (var selectValue in FieldOptions.HRJob.period_type) { %>
-        <option value="<%- selectValue %>" <%= period_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.HRJob.period_type[selectValue] %></option>
+        <% for (var selectValue in FieldOptions.period_type) { %>
+        <option value="<%- selectValue %>" <%= period_type == selectValue ? 'selected' : ''  %>><%- FieldOptions.period_type[selectValue] %></option>
         <% } %>
       </select>
     {/literal}
