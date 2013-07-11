@@ -7,9 +7,6 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     // Example: Set the page-title dynamically; alternatively, declare a static title in xml/Menu/*.xml
     CRM_Utils_System::setTitle(ts('JobsTab'));
 
-    // Example: Assign a variable for use in a template
-    $this->assign('currentTime', date('Y-m-d H:i:s'));
-
     self::registerScripts();
     parent::run();
   }
@@ -27,6 +24,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
+        'FieldOptions' => self::getFieldOptions(),
         'jobTabApp' => array(
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
         ),
@@ -36,10 +34,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header')
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
-      //->addScriptFile('civicrm', 'packages/jquery/plugins/jstree/jquery.jstree.js', 0, 'html-header', FALSE)
-      //->addStyleFile('civicrm', 'packages/jquery/plugins/jstree/themes/default/style.css', 0, 'html-header')
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/renderutil.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_controller.js', 160, 'html-header')
@@ -55,27 +52,55 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_views.js", 160, 'html-header')
         ;
     }
-/*
-      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_controller.js', 160, 'html-header')
-      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/general/edit_views.js', 160, 'html-header')
-      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/role/edit_controller.js', 160, 'html-header')
-      ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/role/edit_views.js', 160, 'html-header')
-      ;
-    /*
-      ->addScriptFile('civicrm', 'js/crm.backbone.js', 150)
-      ->addScriptFile('civicrm', 'js/model/crm.schema-mapped.js', 200)
-      ->addScriptFile('civicrm', 'js/model/crm.uf.js', 200)
-      ->addScriptFile('civicrm', 'js/model/crm.designer.js', 200)
-      ->addScriptFile('civicrm', 'js/model/crm.profile-selector.js', 200)
-      ->addScriptFile('civicrm', 'js/view/crm.designer.js', 200)
-      ->addScriptFile('civicrm', 'js/view/crm.profile-selector.js', 200)
-      ->addScriptFile('civicrm', 'js/jquery/jquery.crmProfileSelector.js', 250)
-      ->addScriptFile('civicrm', 'js/crm.designerapp.js', 250)
-    */
 
-    CRM_Core_Region::instance('page-header')->add(array(
-      'template' => 'CRM/HRJob/Page/JSTemplates.tpl',
-    ));
+    $templateDir = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob') . '/templates/';
+    $region = CRM_Core_Region::instance('page-header');
+    foreach (glob($templateDir . 'CRM/HRJob/Underscore/*.tpl') as $file) {
+      $fileName = substr($file, strlen($templateDir));
+      $region->add(array(
+        'template' => $fileName,
+      ));
+    }
+  }
+
+  /**
+   * Get a list of all interesting options
+   *
+   * @return array e.g. $fieldOptions[$entityName][$fieldName] contains key-value options
+   */
+  public static function getFieldOptions() {
+    $fields = array(
+      'HRJob' => array(
+        "contract_type",
+        "seniority",
+        "period_type",
+        "location",
+      ),
+      'HRJobHour' => array(
+        'hours_type',
+        'hours_unit',
+      ),
+      'HRJobPay' => array(
+        'pay_grade',
+        'pay_unit',
+      ),
+      'HRJobPension' => array(
+      ),
+      'HRJobHealth' => array(
+        'provider',
+        'plan_type',
+      ),
+      'HRJobLeave' => array(
+        'leave_type',
+      ),
+    );
+    $fieldOptions = array();
+    foreach ($fields as $entityName => $fieldNames) {
+      foreach ($fieldNames as $fieldName) {
+        $fieldOptions[$entityName][$fieldName] = CRM_Core_PseudoConstant::get("CRM_HRJob_DAO_{$entityName}", $fieldName);
+      }
+    }
+    return $fieldOptions;
   }
 
 }
