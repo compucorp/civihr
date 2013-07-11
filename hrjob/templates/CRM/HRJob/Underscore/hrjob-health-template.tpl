@@ -9,7 +9,7 @@
         id: 'hrjob-provider',
         name: 'provider',
         selected: provider,
-        options: FieldOptions.provider
+        options: _.extend({'':''}, FieldOptions.provider)
       }) %>
     {/literal}
     </div>
@@ -25,7 +25,7 @@
         id: 'hrjob-plan_type',
         name: 'plan_type',
         selected: plan_type,
-        options: FieldOptions.plan_type
+        options: _.extend({'':''}, FieldOptions.plan_type)
       }) %>
     {/literal}
     </div>

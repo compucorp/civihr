@@ -28,7 +28,7 @@
         id: 'hrjob-contract_type',
         name: 'contract_type',
         selected: contract_type,
-        options: FieldOptions.contract_type
+        options: _.extend({'':''}, FieldOptions.contract_type)
       }) %>
     {/literal}
     </div>
@@ -44,7 +44,7 @@
         id: 'hrjob-seniority',
         name: 'seniority',
         selected: seniority,
-        options: FieldOptions.seniority
+        options: _.extend({'':''}, FieldOptions.seniority)
       }) %>
     {/literal}
     </div>
@@ -60,7 +60,7 @@
         id: 'hrjob-period_type',
         name: 'period_type',
         selected: period_type,
-        options: FieldOptions.period_type
+        options: _.extend({'':''}, FieldOptions.period_type)
       }) %>
     {/literal}
     </div>

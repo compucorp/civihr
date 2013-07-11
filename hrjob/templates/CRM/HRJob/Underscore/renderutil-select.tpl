@@ -9,7 +9,6 @@
 {literal}
 <script id="renderutil-select-template" type="text/template">
   <select id="<%= id %>" name="<%= name %>">
-    <option value=""></option>
     <% _.each(options, function(optionLabel, optionValue) { %>
     <option value="<%- optionValue %>" <%= selected == optionValue ? 'selected' : ''  %>><%- optionLabel %></option>
     <% }); %>
