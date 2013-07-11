@@ -869,7 +869,7 @@ class GenerateHRData {
       'end_date' => $this->randomDate('1356328800', '1368421200'),
       'conditions' => $this->randomItem('conditions'),
       'visa_number' => $this->randomItem('visa_number'),
-      'comments' => $this->randomItem('comments')
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -930,6 +930,7 @@ class GenerateHRData {
       'Qualifications' => array('evidence_attached_26'),
       'Identify' => array('evidence_file_37'),
       'Medical_Disability' => array('evidence_file_39'),
+      'Immigration' => array('evidence_file_41'),
     );
     foreach ($ignoreFieldsByGroup as $groupName => $ignoreFields) {
       if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $groupName, 'id', 'name')) {

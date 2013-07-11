@@ -43,7 +43,7 @@
       <is_required>1</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>25</weight>
+      <weight>27</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>128</text_length>
@@ -60,7 +60,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>1</is_search_range>
-      <weight>27</weight>
+      <weight>29</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -78,7 +78,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>1</is_search_range>
-      <weight>28</weight>
+      <weight>30</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -96,7 +96,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>29</weight>
+      <weight>31</weight>
       <attributes>rows=4, cols=60</attributes>
       <is_active>1</is_active>
       <is_view>0</is_view>
@@ -113,7 +113,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>26</weight>
+      <weight>28</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>128</text_length>
@@ -123,20 +123,37 @@
       <custom_group_name>Immigration</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Comments</name>
-      <label>Comments</label>
+      <name>Evidence_File</name>
+      <label>Evidence (File)</label>
+      <data_type>File</data_type>
+      <html_type>File</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>32</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>evidence_file_41</column_name>
+      <custom_group_name>Immigration</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Evidence_Note</name>
+      <label>Evidence (Note)</label>
       <data_type>Memo</data_type>
       <html_type>TextArea</html_type>
       <is_required>0</is_required>
-      <is_searchable>1</is_searchable>
+      <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>30</weight>
+      <weight>33</weight>
       <attributes>rows=4, cols=60</attributes>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>comments_56</column_name>
+      <column_name>evidence_note_42</column_name>
       <custom_group_name>Immigration</custom_group_name>
     </CustomField>
     <CustomField>
@@ -189,10 +206,11 @@
       <is_edit_link>0</is_edit_link>
       <is_uf_link>0</is_uf_link>
       <is_update_dupe>0</is_update_dupe>
+      <is_cms_user>0</is_cms_user>
+      <is_reserved>1</is_reserved>
       <name>hrvisa_tab</name>
       <created_date>0000-00-00 00:00:00</created_date>
       <is_proximity_search>0</is_proximity_search>
-      <is_reserved>1</is_reserved>
     </ProfileGroup>
   </ProfileGroups>
   <ProfileFields>
@@ -277,7 +295,7 @@
       <profile_group_name>Immigration</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_immigration_3.comments_56</field_name>
+      <field_name>custom.civicrm_value_immigration_3.evidence_file_41</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -287,9 +305,25 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Comments</label>
+      <label>Evidence (File)</label>
       <field_type>Individual</field_type>
-      <is_multi_summary>1</is_multi_summary>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Immigration</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_immigration_3.evidence_note_42</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>7</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence (Note)</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Immigration</profile_group_name>
     </ProfileField>
   </ProfileFields>
