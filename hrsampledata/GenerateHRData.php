@@ -844,7 +844,8 @@ class GenerateHRData {
       'name_of_certification' => $this->randomItem('name_of_certification'),
       'certification_authority' => $this->randomItem('certification_authority'),
       'grade_achieved' => $this->randomItem('grade_achieved'),
-      'expiry_date' => $this->randomDate('1356328800', '1368421200')
+      'attain_date' => $this->randomDate('1346328800', '1356328800'),
+      'expiry_date' => $this->randomDate('1356328800', '1368421200'),
     );
 
     $this->insertCustomData($gid, $values);

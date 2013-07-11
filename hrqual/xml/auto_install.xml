@@ -142,8 +142,26 @@
       <custom_group_name>Qualifications</custom_group_name>
     </CustomField>
     <CustomField>
+      <name>Attain_Date</name>
+      <label>Date of Attainment</label>
+      <data_type>Date</data_type>
+      <html_type>Select Date</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>110</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <date_format>d M yy</date_format>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>attain_date_25</column_name>
+      <custom_group_name>Qualifications</custom_group_name>
+    </CustomField>
+    <CustomField>
       <name>Expiry_Date</name>
-      <label>Expiry Date</label>
+      <label>Date of Expiration</label>
       <data_type>Date</data_type>
       <html_type>Select Date</html_type>
       <is_required>0</is_required>
@@ -422,7 +440,7 @@
       <profile_group_name>Qualifications</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_qualifications_5.expiry_date_25</field_name>
+      <field_name>custom.civicrm_value_qualifications_5.attain_date_25</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -432,7 +450,23 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Expiry Date</label>
+      <label>Date of Attainment</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Qualifications</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_qualifications_5.expiry_date_25</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>9</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Date of Expiration</label>
       <field_type>Individual</field_type>
       <is_multi_summary>1</is_multi_summary>
       <profile_group_name>Qualifications</profile_group_name>
@@ -442,7 +476,7 @@
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
-      <weight>9</weight>
+      <weight>10</weight>
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
