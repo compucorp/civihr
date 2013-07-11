@@ -63,4 +63,13 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   HRApp.reqres.setHandler("hrjob:entity", function(jobId){
     return API.getHRJobEntity(jobId);
   });
+
+  // FIXME real models
+  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole'], function(entityName){
+    Entities[entityName] = Backbone.Model.extend({
+    });
+    Entities[entityName + "Collection"] = Backbone.Collection.extend({
+      model: Entities[entityName]
+    });
+  });
 });
