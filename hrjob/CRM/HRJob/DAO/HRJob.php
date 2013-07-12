@@ -219,6 +219,10 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'title' => ts('Position') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.position',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'title' => array(
           'name' => 'title',
@@ -226,6 +230,10 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'title' => ts('Title') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.title',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
@@ -247,6 +255,10 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'title' => ts('Seniority') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob.seniority',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_seniority',
           )

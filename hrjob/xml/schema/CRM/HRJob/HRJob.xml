@@ -35,6 +35,7 @@
     <type>varchar</type>
     <length>127</length>
     <comment>Internal name for the job (for HR)</comment>
+    <export>true</export>
   </field>
   <index>
     <name>index_position</name>
@@ -46,6 +47,7 @@
     <type>varchar</type>
     <length>127</length>
     <comment>Negotiated name for the job</comment>
+    <export>true</export>
   </field>
   <index>
     <name>index_title</name>
@@ -82,6 +84,7 @@
     <pseudoconstant>
       <optionGroupName>hrjob_seniority</optionGroupName>
     </pseudoconstant>
+    <export>true</export>
   </field>
   <index>
     <name>index_seniority</name>
