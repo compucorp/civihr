@@ -62,47 +62,11 @@ class CRM_HRJob_BAO_Query implements CRM_Contact_BAO_Query_Interface {
    * @access public
    */
   function select(&$query) {
-    if (CRM_Utils_Array::value('position', $query->_returnProperties)) {
-      $query->_select['position'] = "civicrm_hrjob.position as hrjob_position";
-      $query->_element['position'] = 1;
-      $query->_tables['civicrm_hrjob'] = 1;
-    }
+    // override when required.
   }
 
   function where(&$query) {
-    $grouping = NULL;
-    foreach (array_keys($query->_params) as $id) {
-      if (!CRM_Utils_Array::value(0, $query->_params[$id])) {
-        continue;
-      }
-      $this->whereClauseSingle($query->_params[$id], $query);
-    }
-  }
-
-  function whereClauseSingle(&$values, &$query) {
-    list($name, $op, $value, $grouping, $wildcard) = $values;
-
-    $fields = $this->getFields();
-
-    if (!empty($value) && !is_array($value)) {
-      $quoteValue = "\"$value\"";
-    }
-
-    $strtolower = function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
-
-    switch ($name) {
-      case 'position':
-        $value = $strtolower(CRM_Core_DAO::escapeString($value));
-        if ($wildcard) {
-          $value = "%$value%";
-          $op = 'LIKE';
-        }
-        $wc = ($op != 'LIKE') ? "LOWER(civicrm_hrjob.position)" : "civicrm_hrjob.position";
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($wc, $op, $value, "String");
-        $query->_qill[$grouping][] = ts('HR job position %1 %2', array(1 => $op, 2 => $quoteValue));
-        $query->_tables['civicrm_hrjob'] = $query->_whereTables['civicrm_hrjob'] = 1;
-        return;
-    }
+    // generally done correctly by core. Implement if there is any specific requirement.
   }
 
   function from($name, $mode, $side) {

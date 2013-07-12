@@ -213,7 +213,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
-        'position' => array(
+        'hrjob_position' => array(
           'name' => 'position',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Position') ,
@@ -224,7 +224,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
-        'title' => array(
+        'hrjob_title' => array(
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Title') ,
@@ -249,7 +249,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_contract_type',
           )
         ) ,
-        'seniority' => array(
+        'hrjob_seniority' => array(
           'name' => 'seniority',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Seniority') ,
@@ -315,11 +315,11 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'contact_id' => 'contact_id',
-        'position' => 'position',
-        'title' => 'title',
+        'position' => 'hrjob_position',
+        'title' => 'hrjob_title',
         'is_tied_to_funding' => 'is_tied_to_funding',
         'contract_type' => 'contract_type',
-        'seniority' => 'seniority',
+        'seniority' => 'hrjob_seniority',
         'period_type' => 'period_type',
         'period_start_date' => 'period_start_date',
         'period_end_date' => 'period_end_date',

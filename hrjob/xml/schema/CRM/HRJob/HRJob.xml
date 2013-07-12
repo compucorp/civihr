@@ -36,6 +36,7 @@
     <length>127</length>
     <comment>Internal name for the job (for HR)</comment>
     <export>true</export>
+    <uniqueName>hrjob_position</uniqueName>
   </field>
   <index>
     <name>index_position</name>
@@ -48,6 +49,7 @@
     <length>127</length>
     <comment>Negotiated name for the job</comment>
     <export>true</export>
+    <uniqueName>hrjob_title</uniqueName>
   </field>
   <index>
     <name>index_title</name>
@@ -85,6 +87,7 @@
       <optionGroupName>hrjob_seniority</optionGroupName>
     </pseudoconstant>
     <export>true</export>
+    <uniqueName>hrjob_seniority</uniqueName>
   </field>
   <index>
     <name>index_seniority</name>
