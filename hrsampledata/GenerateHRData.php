@@ -803,7 +803,8 @@ class GenerateHRData {
       'issue_date' => $this->randomDate('1284267600', '1354514400'),
       'expire_date' => $this->randomDate('1356328800', '1368421200'),
       'country' => $this->randomItem('country'),
-      'state_province' => $this->randomItem('state_province')
+      'state_province' => $this->randomItem('state_province'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -821,7 +822,8 @@ class GenerateHRData {
       'entity_id' => $cid,
       'condition' => $this->randomItem('condition'),
       'medical_type' => $this->randomItem('medical_type'),
-      'special_requirements' => $this->randomItem('special_requirements')
+      'special_requirements' => $this->randomItem('special_requirements'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -844,7 +846,9 @@ class GenerateHRData {
       'name_of_certification' => $this->randomItem('name_of_certification'),
       'certification_authority' => $this->randomItem('certification_authority'),
       'grade_achieved' => $this->randomItem('grade_achieved'),
-      'expiry_date' => $this->randomDate('1356328800', '1368421200')
+      'attain_date' => $this->randomDate('1346328800', '1356328800'),
+      'expiry_date' => $this->randomDate('1356328800', '1368421200'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -865,7 +869,7 @@ class GenerateHRData {
       'end_date' => $this->randomDate('1356328800', '1368421200'),
       'conditions' => $this->randomItem('conditions'),
       'visa_number' => $this->randomItem('visa_number'),
-      'comments' => $this->randomItem('comments')
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -906,7 +910,8 @@ class GenerateHRData {
       'job_title_course_name' => $this->randomItem('job_title_course_name'),
       'full_time_part_time' => $this->randomItem('contracted_hours'),
       'paid_unpaid' => $this->randomItem('paid_unpaid'),
-      'reference_supplied' => $this->randomItem('reference_supplied')
+      'reference_supplied' => $this->randomItem('reference_supplied'),
+      'evidence_note' => $this->randomItem('evidence_note'),
     );
 
     $this->insertCustomData($gid, $values);
@@ -921,10 +926,20 @@ class GenerateHRData {
     foreach ($cfDetails as $fieldID => $value) {
       $columnNames[] = $value['column_name'];
     }
-    if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
-      // removing the file field column "evidence_attached" in Qualifications
-      array_pop($columnNames);
+
+    $ignoreFieldsByGroup = array(
+      'Qualifications' => array('evidence_file_26'),
+      'Identify' => array('evidence_file_37'),
+      'Medical_Disability' => array('evidence_file_39'),
+      'Immigration' => array('evidence_file_41'),
+      'Career' => array('evidence_file_42'),
+    );
+    foreach ($ignoreFieldsByGroup as $groupName => $ignoreFields) {
+      if ($gid == CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $groupName, 'id', 'name')) {
+        $columnNames = array_diff($columnNames, $ignoreFields);
+      }
     }
+
     $columns = implode("`,`", $columnNames);
     $columnValues = implode("','", array_values($columnVals));
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
