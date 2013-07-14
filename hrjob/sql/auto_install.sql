@@ -21,6 +21,7 @@ CREATE TABLE `civicrm_hrjob` (
      `position` varchar(127)    COMMENT 'Internal name for the job (for HR)',
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
+     `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
      `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
      `period_type` enum('Temporary', 'Permanent')    COMMENT '.',

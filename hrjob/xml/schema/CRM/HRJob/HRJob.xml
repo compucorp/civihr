@@ -63,6 +63,11 @@
   </field>
 
   <field>
+    <name>funding_notes</name>
+    <type>text</type>
+  </field>
+
+  <field>
     <name>contract_type</name>
     <title>Contract Type</title>
     <type>varchar</type>
