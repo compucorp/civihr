@@ -4,11 +4,13 @@
     width: 23%;
     padding: 0em 0.5em;
 }
-
 .hrjob-main-region {
     width: 73%;
     float: right;
     padding: 0em 0.5em;
+}
+.hrjob-role-toggle .on-open, .hrjob-role-toggle .on-closed {
+    font-family: "Courier New", Courier, monospace;
 }
 .hrjob-role-toggle.closed .on-open {
     display: none;
@@ -18,4 +20,10 @@
 }
 .hrjob-role-table {
     table-layout: fixed;
+}
+.hrjob-role-toggle:hover {
+    cursor: pointer;
+}
+strong.hrjob-role-toggle:hover {
+    text-decoration: underline;
 }
