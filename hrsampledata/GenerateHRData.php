@@ -690,7 +690,7 @@ class GenerateHRData {
       'title' => $this->randomItem('title'),
       'is_tied_to_funding' => $this->randomItem('is_tied_to_funding'),
       'contract_type' => $this->randomItem('contract_type'),
-      'seniority' => $this->randomItem('seniority'),
+      'level_type' => $this->randomItem('level_type'),
       'period_type' => $this->randomItem('period_type'),
       'period_start_date' => $this->randomDate('1284267600', '1354514400'),
       'period_end_date' => $this->randomDate('1356328800', '1368421200'),

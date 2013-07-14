@@ -128,7 +128,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    *
    * @var string
    */
-  public $seniority;
+  public $level_type;
   /**
    * .
    *
@@ -253,18 +253,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_contract_type',
           )
         ) ,
-        'hrjob_seniority' => array(
-          'name' => 'seniority',
+        'hrjob_level_type' => array(
+          'name' => 'level_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Seniority') ,
+          'title' => ts('Level') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
-          'where' => 'civicrm_hrjob.seniority',
+          'where' => 'civicrm_hrjob.level_type',
           'headerPattern' => '',
           'dataPattern' => '',
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_seniority',
+            'optionGroupName' => 'hrjob_level_type',
           )
         ) ,
         'hrjob_period_type' => array(
@@ -339,7 +339,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'title' => 'hrjob_title',
         'is_tied_to_funding' => 'is_tied_to_funding',
         'contract_type' => 'hrjob_contract_type',
-        'seniority' => 'hrjob_seniority',
+        'level_type' => 'hrjob_level_type',
         'period_type' => 'hrjob_period_type',
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',

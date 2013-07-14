@@ -37,8 +37,8 @@
         </tr>
         <tr>
             <td>
-                {$form.hrjob_seniority.label}<br />
-                {$form.hrjob_seniority.html}
+                {$form.hrjob_level_type.label}<br />
+                {$form.hrjob_level_type.html}
             </td>
             <td>
                 {$form.hrjob_contract_type.label}<br />

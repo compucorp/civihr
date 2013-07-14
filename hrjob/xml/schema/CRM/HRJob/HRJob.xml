@@ -80,20 +80,20 @@
   </index>
 
   <field>
-    <name>seniority</name>
-    <title>Seniority</title>
+    <name>level_type</name>
+    <title>Level</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Junior manager, senior manager, etc.</comment>
     <pseudoconstant>
-      <optionGroupName>hrjob_seniority</optionGroupName>
+      <optionGroupName>hrjob_level_type</optionGroupName>
     </pseudoconstant>
     <export>true</export>
-    <uniqueName>hrjob_seniority</uniqueName>
+    <uniqueName>hrjob_level_type</uniqueName>
   </field>
   <index>
-    <name>index_seniority</name>
-    <fieldName>seniority</fieldName>
+    <name>index_level_type</name>
+    <fieldName>level_type</fieldName>
   </index>
 
   <field>

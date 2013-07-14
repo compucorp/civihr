@@ -36,15 +36,15 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-seniority">{ts}Seniority{/ts}</label>
+      <label for="hrjob-level_type">{ts}Level{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
       <%= RenderUtil.select({
-        id: 'hrjob-seniority',
-        name: 'seniority',
-        selected: seniority,
-        options: _.extend({'':''}, FieldOptions.seniority)
+        id: 'hrjob-level_type',
+        name: 'level_type',
+        selected: level_type,
+        options: _.extend({'':''}, FieldOptions.level_type)
       }) %>
     {/literal}
     </div>

@@ -22,7 +22,7 @@ CREATE TABLE `civicrm_hrjob` (
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
-     `seniority` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
+     `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
      `period_type` enum('Temporary', 'Permanent')    COMMENT '.',
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
@@ -41,8 +41,8 @@ CREATE TABLE `civicrm_hrjob` (
   ,     INDEX `index_contract_type`(
         contract_type
   )
-  ,     INDEX `index_seniority`(
-        seniority
+  ,     INDEX `index_level_type`(
+        level_type
   )
   ,     INDEX `index_period_type`(
         period_type

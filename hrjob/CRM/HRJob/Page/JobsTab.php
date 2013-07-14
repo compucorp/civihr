@@ -74,7 +74,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     $fields = array(
       'HRJob' => array(
         "contract_type",
-        "seniority",
+        "level_type",
         "period_type",
         "location",
       ),

@@ -9,8 +9,8 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>hrjob_seniority</name>
-      <title>Seniority</title>
+      <name>hrjob_level_type</name>
+      <title>Level</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -121,7 +121,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_seniority</option_group_name>
+      <option_group_name>hrjob_level_type</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Junior Manager</label>
@@ -132,7 +132,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_seniority</option_group_name>
+      <option_group_name>hrjob_level_type</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Senior Staff</label>
@@ -143,7 +143,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_seniority</option_group_name>
+      <option_group_name>hrjob_level_type</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Junior Staff</label>
@@ -154,7 +154,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_seniority</option_group_name>
+      <option_group_name>hrjob_level_type</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Full Time</label>
