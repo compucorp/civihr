@@ -10,3 +10,9 @@
     float: right;
     padding: 0em 0.5em;
 }
+.hrjob-role-toggle.closed .on-open {
+    display: none;
+}
+.hrjob-role-toggle.open .on-closed {
+    display: none;
+}
