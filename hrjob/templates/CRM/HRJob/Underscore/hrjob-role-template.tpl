@@ -5,7 +5,7 @@
         <label for="hrjob-title">{ts}Title{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-title" data-hrjobrole="title" name="title"/>
+        <input id="hrjob-title" name="title"/>
       </div>
     </div>
 
@@ -14,7 +14,7 @@
         <label for="hrjob-description">{ts}Description{/ts}</label>
       </div>
       <div class="crm-content">
-        <textarea id="hrjob-description" data-hrjobrole="description" name="description"></textarea>
+        <textarea id="hrjob-description" name="description"></textarea>
       </div>
     </div>
 
@@ -23,7 +23,7 @@
         <label for="hrjob-hours">{ts}Hours{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-hours" data-hrjobrole="hours" name="hours"/>
+        <input id="hrjob-hours" name="hours"/>
       </div>
     </div>
 
@@ -32,7 +32,7 @@
         <label for="hrjob-cost_center">{ts}Cost Center{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-cost_center" data-hrjobrole="cost_center" name="cost_center"/>
+        <input id="hrjob-cost_center" name="cost_center"/>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
         <label for="hrjob-department">{ts}Department{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-department" data-hrjobrole="department" name="department"/>
+        <input id="hrjob-department" name="department"/>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
         <label for="hrjob-functional_area">{ts}Functional Area{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-functional_area" data-hrjobrole="functional_area" name="functional_area"/>
+        <input id="hrjob-functional_area" name="functional_area"/>
       </div>
     </div>
 
@@ -63,7 +63,6 @@
         <%= RenderUtil.select({
         id: 'hrjob-location',
         name: 'location',
-        selected: location,
         options: _.extend({'':''}, FieldOptions.location)
         }) %>
       {/literal}
@@ -75,7 +74,7 @@
         <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-manager_contact_id" data-hrjobrole="manager_contact_id" name="manager_contact_id"/>
+        <input id="hrjob-manager_contact_id" name="manager_contact_id"/>
       </div>
     </div>
 
@@ -84,7 +83,7 @@
         <label for="hrjob-organization">{ts}Organization{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-organization" data-hrjobrole="organization" name="organization"/>
+        <input id="hrjob-organization" name="organization"/>
       </div>
     </div>
 
@@ -93,7 +92,7 @@
         <label for="hrjob-region">{ts}Region{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-region" data-hrjobrole="region" name="region"/>
+        <input id="hrjob-region" name="region"/>
       </div>
     </div>
 

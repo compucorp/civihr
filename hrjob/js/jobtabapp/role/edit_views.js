@@ -35,7 +35,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
   });
 
   Role.EditView = Marionette.ItemView.extend({
-    bindingAttribute: 'data-hrjobrole',
     template: '#hrjob-role-template',
     templateHelpers: function() {
       return {
