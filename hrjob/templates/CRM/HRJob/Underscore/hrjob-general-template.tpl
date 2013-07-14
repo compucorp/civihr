@@ -29,7 +29,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-contract_type',
         name: 'contract_type',
-        selected: contract_type,
         options: _.extend({'':''}, FieldOptions.contract_type)
       }) %>
     {/literal}
@@ -45,7 +44,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-level_type',
         name: 'level_type',
-        selected: level_type,
         options: _.extend({'':''}, FieldOptions.level_type)
       }) %>
     {/literal}
@@ -72,7 +70,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-period_type',
         name: 'period_type',
-        selected: period_type,
         options: _.extend({'':''}, FieldOptions.period_type)
       }) %>
     {/literal}

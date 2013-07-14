@@ -10,7 +10,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-is_enrolled',
         name: 'is_enrolled',
-        selected: is_enrolled,
         options: {
           '': '',
           '0': '{/literal}{ts}No{/ts}{literal}',

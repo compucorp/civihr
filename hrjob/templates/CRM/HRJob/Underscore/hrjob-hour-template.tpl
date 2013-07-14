@@ -10,7 +10,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_type',
         name: 'hours_type',
-        selected: hours_type,
         options: _.extend({'':''}, FieldOptions.hours_type)
       }) %>
     {/literal}
@@ -28,7 +27,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_unit',
         name: 'hours_unit',
-        selected: hours_unit,
         options: _.extend({'':''}, FieldOptions.hours_unit)
       }) %>
       {/literal}

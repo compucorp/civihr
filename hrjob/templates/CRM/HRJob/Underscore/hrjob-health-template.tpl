@@ -10,7 +10,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-provider',
         name: 'provider',
-        selected: provider,
         options: _.extend({'':''}, FieldOptions.provider)
       }) %>
     {/literal}
@@ -26,7 +25,6 @@
       <%= RenderUtil.select({
         id: 'hrjob-plan_type',
         name: 'plan_type',
-        selected: plan_type,
         options: _.extend({'':''}, FieldOptions.plan_type)
       }) %>
     {/literal}

@@ -10,7 +10,6 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_grade',
       name: 'pay_grade',
-      selected: pay_grade,
       options: _.extend({'':''}, FieldOptions.pay_grade)
       }) %>
     {/literal}
@@ -28,7 +27,6 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_unit',
       name: 'pay_unit',
-      selected: pay_unit,
       options: _.extend({'':''}, FieldOptions.pay_unit)
       }) %>
     {/literal}
