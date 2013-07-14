@@ -39,6 +39,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/renderutil.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/common/mbind.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_views.js', 160, 'html-header')

@@ -1,5 +1,6 @@
 CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $, _){
   Role.RowView = Marionette.Layout.extend({
+    bindingAttribute: 'data-hrjobrole-row',
     tagName: 'tr',
     template: '#hrjob-role-row-template',
     templateHelpers: function() {
@@ -15,22 +16,16 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       'click .hrjob-role-toggle': 'toggleRole'
     },
     initialize: function() {
-      this.modelBinder = new Backbone.ModelBinder();
+      CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
 
-      var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'data-hrjobrole-row');
-      this.modelBinder.bind(this.model, this.el, bindings);
-
       var editView = new Role.EditView({
         model: this.model
       });
       this.toggledRegion.show(editView);
-    },
-    onClose: function() {
-      this.modelBinder.unbind();
     },
     toggleRole: function() {
       this.$('.hrjob-role-toggle').toggleClass('closed');
@@ -40,6 +35,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
   });
 
   Role.EditView = Marionette.ItemView.extend({
+    bindingAttribute: 'data-hrjobrole',
     template: '#hrjob-role-template',
     templateHelpers: function() {
       return {
@@ -48,14 +44,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     initialize: function() {
-      this.modelBinder = new Backbone.ModelBinder();
-    },
-    onRender: function() {
-      var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'data-hrjobrole');
-      this.modelBinder.bind(this.model, this.el, bindings);
-    },
-    onClose: function() {
-      this.modelBinder.unbind();
+      CRM.HRApp.Common.mbind(this);
     }
   });
 
