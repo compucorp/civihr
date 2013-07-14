@@ -2,10 +2,10 @@
   <table class="hrjob-role-table">
     <thead>
     <tr>
-      <th></th>
+      <th style="width: 2em;"></th>
       <th>{ts}Role Description{/ts}</th>
-      <th>{ts}Hours{/ts}</th>
-      <th>{ts}Action{/ts}</th>
+      <th style="width: 5em;">{ts}Hours{/ts}</th>
+      <th style="width: 5em;">{ts}Action{/ts}</th>
     </tr>
     </thead>
     <tbody>

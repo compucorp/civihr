@@ -16,3 +16,6 @@
 .hrjob-role-toggle.open .on-closed {
     display: none;
 }
+.hrjob-role-table {
+    table-layout: fixed;
+}
