@@ -4,10 +4,9 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var model = HRApp.request("hrjob:entity", jobId);
       var roleCollection = new CRM.HRApp.Entities.HRJobRoleCollection([
         {title: 'Assistant Break Dancer', hours: 10, description: 'Keeps all the other break dancers in line by busting an occasional move when someone breaks out of line', department: null},
-        {title: 'Choreographic research', hours: 5, description: '', department: null, functional_area: 'Choreography'},
+        {title: 'Choreographic research', hours: 5, description: '', department: null, functional_area: 'Choreography', location: 'Home'},
         {title: 'Dental insurance coding', hours: 3, description: '',  department: 'Accounting'}
       ]);
-      // job_id description region manager_contact_id functional_area organization cost_center location(OG)
       var mainView = new Role.TableView({
         collection: roleCollection,
         model: model

@@ -26,5 +26,76 @@
         <input id="hrjob-hours" data-hrjobrole="hours" name="hours"/>
       </div>
     </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-cost_center">{ts}Cost Center{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-cost_center" data-hrjobrole="cost_center" name="cost_center"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-department">{ts}Department{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-department" data-hrjobrole="department" name="department"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-functional_area">{ts}Functional Area{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-functional_area" data-hrjobrole="functional_area" name="functional_area"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-location">{ts}Location{/ts}:</label>
+      </div>
+      <div class="crm-content">
+      {literal}
+        <%= RenderUtil.select({
+        id: 'hrjob-location',
+        name: 'location',
+        selected: location,
+        options: _.extend({'':''}, FieldOptions.location)
+        }) %>
+      {/literal}
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-manager_contact_id">{ts}Manager{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-manager_contact_id" data-hrjobrole="manager_contact_id" name="manager_contact_id"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-organization">{ts}Organization{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-organization" data-hrjobrole="organization" name="organization"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-region">{ts}Region{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-region" data-hrjobrole="region" name="region"/>
+      </div>
+    </div>
+
   </form>
 </script>

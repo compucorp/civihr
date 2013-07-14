@@ -94,6 +94,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       'HRJobLeave' => array(
         'leave_type',
       ),
+      'HRJobRole' => array(
+        'location',
+      ),
     );
     $fieldOptions = array();
     foreach ($fields as $entityName => $fieldNames) {
