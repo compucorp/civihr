@@ -1,7 +1,7 @@
 <script id="hrjob-health-template" type="text/template">
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-provider">{ts}Provider{/ts}:</label>
+      <label for="hrjob-provider">{ts}Provider{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
@@ -17,7 +17,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-plan_type">{ts}Plan Type{/ts}:</label>
+      <label for="hrjob-plan_type">{ts}Plan Type{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
@@ -33,7 +33,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-description">{ts}Description{/ts}:</label>
+      <label for="hrjob-description">{ts}Description{/ts}</label>
     </div>
     <div class="crm-content">
       <textarea id="hrjob-description" name="description"><%- description %></textarea>
@@ -42,7 +42,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-dependents">{ts}Dependents{/ts}:</label>
+      <label for="hrjob-dependents">{ts}Dependents{/ts}</label>
     </div>
     <div class="crm-content">
       <textarea id="hrjob-dependents" name="dependents"><%- dependents %></textarea>
