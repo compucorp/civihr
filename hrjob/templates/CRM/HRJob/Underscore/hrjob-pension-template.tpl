@@ -24,7 +24,7 @@
       <label for="hrjob-contrib_pct">{ts}Contribution (%){/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-contrib_pct" name="contrib_pct" class="form-text-big" type="text" value="<%- contrib_pct %>" />
+      <input id="hrjob-contrib_pct" name="contrib_pct" class="form-text-big" type="text" />
     </div>
   </div>
 </script>

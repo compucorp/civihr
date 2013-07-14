@@ -20,7 +20,7 @@
       <label for="hrjob-hours_amount">{ts}Hours{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-hours_amount" name="hours_amount" type="text" value="<%- hours_amount %>" />
+      <input id="hrjob-hours_amount" name="hours_amount" type="text" />
       <label for="hrjob-hours_unit">{ts}per{/ts}</label>
       {literal}
       <%= RenderUtil.select({
@@ -37,8 +37,7 @@
     <div class="crm-label">
       <label>{ts}FTE{/ts}</label>
     </div>
-    <div class="crm-content">
-      <%- hours_fte %>
+    <div class="crm-content" name="hours_fte">
     </div>
   </div>
 </script>

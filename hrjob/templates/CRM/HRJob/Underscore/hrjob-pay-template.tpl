@@ -20,7 +20,7 @@
       <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-pay_amount" name="pay_amount" type="text" value="<%- pay_amount %>" />
+      <input id="hrjob-pay_amount" name="pay_amount" type="text" />
       <label for="hrjob-pay_unit">{ts}per{/ts}</label>
     {literal}
       <%= RenderUtil.select({

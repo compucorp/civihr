@@ -36,7 +36,7 @@
       <label for="hrjob-description">{ts}Description{/ts}</label>
     </div>
     <div class="crm-content">
-      <textarea id="hrjob-description" name="description"><%- description %></textarea>
+      <textarea id="hrjob-description" name="description"></textarea>
     </div>
   </div>
 
@@ -45,7 +45,7 @@
       <label for="hrjob-dependents">{ts}Dependents{/ts}</label>
     </div>
     <div class="crm-content">
-      <textarea id="hrjob-dependents" name="dependents"><%- dependents %></textarea>
+      <textarea id="hrjob-dependents" name="dependents"></textarea>
     </div>
   </div>
 </script>
