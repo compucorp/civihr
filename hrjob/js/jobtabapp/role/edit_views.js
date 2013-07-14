@@ -9,25 +9,16 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     events: {
-      'click .hrjob-role-toggle': 'toggleRole',
-      'change .bindto-in': 'updateBinding'
+      'click .hrjob-role-toggle': 'toggleRole'
     },
-    modelEvents: {
-      'change': 'onUpdateModel'
+    initialize: function() {
+      this.modelBinder = new Backbone.ModelBinder();
     },
     onRender: function() {
-      this.onUpdateModel();
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
-    },
-    updateBinding: function(event) {
-      this.model.set($(event.target).attr('name'), $(event.target).val());
-    },
-    onUpdateModel: function() {
-      var model = this.model;
-      this.$('.bindto-out').each(function(){
-        $(this).text(model.get($(this).attr('data-bindto')));
-      });
+      var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, 'data-hrjobrole');
+      this.modelBinder.bind(this.model, this.el, bindings);
     },
     toggleRole: function() {
       this.$('.hrjob-role-toggle').toggleClass('closed');

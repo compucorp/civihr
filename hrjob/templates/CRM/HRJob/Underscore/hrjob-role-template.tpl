@@ -6,7 +6,7 @@
     </span>
   </td>
   <td>
-    <strong class="hrjob-role-toggle bindto-out" data-bindto="title"></strong>
+    <strong class="hrjob-role-toggle" data-hrjobrole="title"></strong>
     <div class="toggle-role-form">
     {* FIXME: Extract to a new view/template *}
       <form>
@@ -14,19 +14,23 @@
           <tbody>
           <tr>
             <td>{ts}Title{/ts}</td>
-            <td colspan="3"><input class="hrjob-role-title bindto-in" name="title" value="<%- title %>"/></td>
+            <td colspan="3"><input data-hrjobrole="title" name="title" /></td>
           </tr>
           <tr>
             <td>{ts}Description{/ts}</td>
             <td colspan="3">
-              <textarea class="hrjob-role-description" name="description"><%- description %></textarea>
+              <textarea data-hrjobrole="description" name="description"></textarea>
             </td>
           </tr>
           <tr>
             <td>{ts}Department{/ts}</td>
-            <td><input class="hrjob-role-department" name="department" value="<%- department %>"/></td>
+            <td>
+              <input data-hrjobrole="department" name="department" />
+            </td>
             <td>{ts}Hours/Week{/ts}</td>
-            <td><input class="hrjob-role-hours bindto-in" name="hours" value="<%- hours %>"/></td>
+            <td>
+              <input data-hrjobrole="hours" name="hours" />
+            </td>
           </tr>
           </tbody>
         </table>
@@ -34,7 +38,7 @@
     </div>
   </td>
   <td>
-    <strong class="bindto-out" data-bindto="hours"></strong>
+    <strong data-hrjobrole="hours"></strong>
   </td>
   <td></td>
 </script>
