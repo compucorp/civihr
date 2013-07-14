@@ -1,28 +1,30 @@
 <script id="hrjob-role-template" type="text/template">
   <form>
-    <table>
-      <tbody>
-      <tr>
-        <td>{ts}Title{/ts}</td>
-        <td colspan="3"><input data-hrjobrole="title" name="title"/></td>
-      </tr>
-      <tr>
-        <td>{ts}Description{/ts}</td>
-        <td colspan="3">
-          <textarea data-hrjobrole="description" name="description"></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td>{ts}Department{/ts}</td>
-        <td>
-          <input data-hrjobrole="department" name="department"/>
-        </td>
-        <td>{ts}Hours/Week{/ts}</td>
-        <td>
-          <input data-hrjobrole="hours" name="hours"/>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-title">{ts}Title{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-title" data-hrjobrole="title" name="title"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-description">{ts}Description{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <textarea id="hrjob-description" data-hrjobrole="description" name="description"></textarea>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-hours">{ts}Hours{/ts}:</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-hours" data-hrjobrole="hours" name="hours"/>
+      </div>
+    </div>
   </form>
 </script>
