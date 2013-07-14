@@ -1,4 +1,6 @@
 <script id="hrjob-pay-template" type="text/template">
+  <h3>{ts}Pay{/ts}</h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-pay_grade">{ts}Pay Grade{/ts}</label>

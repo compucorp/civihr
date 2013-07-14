@@ -1,4 +1,6 @@
 <script id="hrjob-hour-template" type="text/template">
+  <h3>{ts}Hours{/ts}</h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-hours_type">{ts}Hours Type{/ts}</label>

@@ -1,5 +1,7 @@
 <script id="hrjob-general-template" type="text/template">
 
+  <h3>{ts}General{/ts}</h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-position">{ts}Position{/ts}</label>
@@ -52,6 +54,17 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
+      <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="form-text-big" type="text" />
+    </div>
+  </div>
+
+  <h3>{ts}Time Period{/ts}</h3>
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
       <label for="hrjob-period_type">{ts}Time Period{/ts}</label>
     </div>
     <div class="crm-content">
@@ -84,14 +97,8 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
-    <div class="crm-label">
-      <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
-    </div>
-    <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="form-text-big" type="text" />
-    </div>
-  </div>
+
+  <h3>{ts}Funding{/ts}</h3>
 
   <div class="crm-summary-row">
     <div class="crm-label">

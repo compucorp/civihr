@@ -1,4 +1,6 @@
 <script id="hrjob-pension-template" type="text/template">
+  <h3>{ts}Pension{/ts}</h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-is_enrolled">{ts}Is Enrolled{/ts}</label>

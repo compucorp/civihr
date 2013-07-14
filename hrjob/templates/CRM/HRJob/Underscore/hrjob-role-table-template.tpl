@@ -1,4 +1,6 @@
 <script id="hrjob-role-table-template" type="text/template">
+  <h3>{ts}Roles{/ts}</h3>
+
   <table class="hrjob-role-table">
     <thead>
     <tr>

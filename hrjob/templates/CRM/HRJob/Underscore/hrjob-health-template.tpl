@@ -1,4 +1,6 @@
 <script id="hrjob-health-template" type="text/template">
+  <h3>{ts}Healthcare{/ts}</h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-provider">{ts}Provider{/ts}</label>

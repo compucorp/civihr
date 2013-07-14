@@ -1,4 +1,6 @@
 <script id="hrjob-leave-table-template" type="text/template">
+  <h3>{ts}Leave Entitlement{/ts}</h3>
+
   <table>
     <thead>
     <tr>
