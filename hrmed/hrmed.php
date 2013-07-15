@@ -85,6 +85,7 @@ function hrmed_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrmed', 'css/hrmed.css');
 }
 
 function hrmed_getCustomGroupId() {
