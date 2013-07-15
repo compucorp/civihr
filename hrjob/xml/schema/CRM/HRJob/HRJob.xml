@@ -71,6 +71,8 @@
     <pseudoconstant>
       <optionGroupName>hrjob_contract_type</optionGroupName>
     </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_contract_type</uniqueName>
   </field>
   <index>
     <name>index_contract_type</name>
@@ -99,6 +101,8 @@
     <type>enum</type>
     <values>Temporary, Permanent</values>
     <comment>.</comment>
+    <export>true</export>
+    <uniqueName>hrjob_period_type</uniqueName>
   </field>
   <index>
     <name>index_period_type</name>
@@ -110,6 +114,8 @@
     <title>Job Start Date</title>
     <type>date</type>
     <comment>First day of the job</comment>
+    <export>true</export>
+    <uniqueName>hrjob_period_start_date</uniqueName>
   </field>
 
   <field>
@@ -117,6 +123,8 @@
     <title>Job End Date</title>
     <type>date</type>
     <comment>Last day of the job</comment>
+    <export>true</export>
+    <uniqueName>hrjob_period_end_date</uniqueName>
   </field>
 
   <field>
@@ -151,6 +159,8 @@
     <type>boolean</type>
     <default>0</default>
     <comment>Is this the primary?</comment>
+    <export>true</export>
+    <uniqueName>hrjob_is_primary</uniqueName>
   </field>
   <index>
     <name>index_is_primary</name>

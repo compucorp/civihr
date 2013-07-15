@@ -172,27 +172,39 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
-        'hours_type' => array(
+        'hrjob_hours_type' => array(
           'name' => 'hours_type',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Hours Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_hour.hours_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_hours_type',
           )
         ) ,
-        'hours_amount' => array(
+        'hrjob_hours_amount' => array(
           'name' => 'hours_amount',
           'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Amount') ,
           'required' => true,
+          'export' => true,
+          'where' => 'civicrm_hrjob_hour.hours_amount',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
-        'hours_unit' => array(
+        'hrjob_hours_unit' => array(
           'name' => 'hours_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Unit') ,
           'required' => true,
+          'export' => true,
+          'where' => 'civicrm_hrjob_hour.hours_unit',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'enumValues' => 'Day, Week, Month, Year',
         ) ,
         'hours_fte' => array(
@@ -217,9 +229,9 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'job_id' => 'job_id',
-        'hours_type' => 'hours_type',
-        'hours_amount' => 'hours_amount',
-        'hours_unit' => 'hours_unit',
+        'hours_type' => 'hrjob_hours_type',
+        'hours_amount' => 'hrjob_hours_amount',
+        'hours_unit' => 'hrjob_hours_unit',
         'hours_fte' => 'hours_fte',
       );
     }
