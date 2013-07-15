@@ -86,6 +86,7 @@ function hrcareer_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrcareer', 'css/hrcareer.css');
 }
 
 function hrcareer_getCustomGroupId() {
