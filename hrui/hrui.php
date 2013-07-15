@@ -179,6 +179,33 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
+ * Implementation of hook_civicrm_tabs
+ */
+function hrui_civicrm_tabs(&$tabs, $contactID) {
+  $count = count($tabs);
+  for ($i=0; $i < $count; $i++) {
+    if ($tabs[$i]['id'] != 'log') {
+      $tab[$i] = $tabs[$i]['title'];
+    }
+    else {
+      $changeLogTabID = $i; 
+    }
+  }
+
+  //sort alphabetically
+  asort($tab);
+  $weight = 0;
+  //assign the weights based on alphabetic order
+  foreach ($tab as $key => $value) {
+    $weight += 10;
+    $tabs[$key]['weight'] = $weight;
+  }
+
+  //Move change log to the end
+  $tabs[$changeLogTabID]['weight'] = $weight + 10;
+}
+
+/**
  * Implementation of hook_civicrm_managed
  *
  * Generate a list of entities to create/deactivate/delete when this module
