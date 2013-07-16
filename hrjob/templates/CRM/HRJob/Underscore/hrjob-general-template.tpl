@@ -55,8 +55,13 @@
       <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="form-text-big" type="text" />
-    </div>
+      {literal}
+      <%= RenderUtil.contact({
+        id: 'hrjob-manager_contact_id',
+        name: 'manager_contact_id',
+      }) %>
+      {/literal}
+   </div>
   </div>
 
   <h3>{ts}Time Period{/ts}</h3>
