@@ -17,7 +17,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
        * Setup a contact-selector widget for use in CRUD forms.
        *
        * Usage:
-       *   <INPUT type="hidden" name="my_contact_id" value="123" />
+       *   <INPUT type="text" name="my_contact_id" value="123" />
        *   <SCRIPT type="text/javascript">
        *     $('[name=my_contact_id]').crmContactSelector();
        *   </SCRIPT>
@@ -67,6 +67,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
           };
 
           $(hiddenEl).after(widgetEl);
+          $(hiddenEl).hide();
           $(widgetEl).autocomplete(contactUrl, {
             width: 200,
             selectFirst: false,
