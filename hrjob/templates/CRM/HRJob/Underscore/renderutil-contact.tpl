@@ -5,6 +5,5 @@
 {literal}
 <script id="renderutil-contact-template" type="text/template">
   <input type="text" id="<%= id %>" name="<%= name %>" class="crm-contact-selector" />
-  (<span name="<%= name %>"></span>)
 </script>
 {/literal}
