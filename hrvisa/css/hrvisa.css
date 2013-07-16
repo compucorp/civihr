@@ -1,0 +1,11 @@
+.hrvisa-is_visa_required {
+  background: #cde8fe;
+  margin: auto;
+  text-align: center;
+  width: 50%;
+  padding: 0.3em 0.3em;
+}
+
+form#Edit .crm-profile-name-hrvisa_tab>h1 {
+  display:none;
+}

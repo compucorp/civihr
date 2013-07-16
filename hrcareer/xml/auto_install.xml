@@ -161,6 +161,40 @@
       <column_name>reference_supplied_14</column_name>
       <custom_group_name>Career</custom_group_name>
     </CustomField>
+    <CustomField>
+      <name>Evidence_File</name>
+      <label>Evidence (File)</label>
+      <data_type>File</data_type>
+      <html_type>File</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>10</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>evidence_file_42</column_name>
+      <custom_group_name>Career</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Evidence_Note</name>
+      <label>Evidence (Note)</label>
+      <data_type>Memo</data_type>
+      <html_type>TextArea</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>11</weight>
+      <attributes>rows=4, cols=60</attributes>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>evidence_note_43</column_name>
+      <custom_group_name>Career</custom_group_name>
+    </CustomField>
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
@@ -348,10 +382,11 @@
       <is_edit_link>0</is_edit_link>
       <is_uf_link>0</is_uf_link>
       <is_update_dupe>0</is_update_dupe>
+      <is_cms_user>0</is_cms_user>
+      <is_reserved>1</is_reserved>
       <name>hrcareer_tab</name>
       <created_date>0000-00-00 00:00:00</created_date>
       <is_proximity_search>0</is_proximity_search>
-      <is_reserved>1</is_reserved>
     </ProfileGroup>
   </ProfileGroups>
   <ProfileFields>
@@ -481,6 +516,38 @@
       <label>Reference Supplied</label>
       <field_type>Individual</field_type>
       <is_multi_summary>1</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.evidence_file_42</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>10</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence (File)</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Career</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_career_4.evidence_note_43</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>11</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Evidence (Note)</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Career</profile_group_name>
     </ProfileField>
   </ProfileFields>

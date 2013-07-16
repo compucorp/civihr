@@ -17,6 +17,7 @@
       <is_active>1</is_active>
       <table_name>civicrm_value_emergency_contact_11</table_name>
       <is_multiple>0</is_multiple>
+      <is_reserved>1</is_reserved>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
     </CustomGroup>

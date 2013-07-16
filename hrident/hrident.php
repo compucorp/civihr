@@ -85,6 +85,7 @@ function hrident_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrident', 'css/hrident.css');
 }
 
 function hrident_getCustomGroupId() {

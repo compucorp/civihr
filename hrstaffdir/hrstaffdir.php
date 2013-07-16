@@ -3,6 +3,15 @@
 require_once 'hrstaffdir.civix.php';
 
 /**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrstaffdir_civicrm_pageRun($page) {
+  if ($page instanceof CRM_Profile_Page_Listings) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrstaffdir', 'js/hrstaffdir.js');
+  }
+}
+
+/**
  * Implementation of hook_civicrm_config
  */
 function hrstaffdir_civicrm_config(&$config) {
@@ -20,7 +29,7 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
-          $value['sort_name'] = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$matches[1]}") . "'>{$value['sort_name']}</a>";
+          $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$matches[1]}") . "'>{$value[1]}</a>";
         }
       }
     }
