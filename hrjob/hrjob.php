@@ -88,6 +88,13 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
 }
 
 /**
+ * Implementation of hook_civicrm_queryObjects
+ */
+function hrjob_civicrm_queryObjects(&$queryObjects) {
+  $queryObjects[] = new CRM_HRJob_BAO_Query();
+}
+
+/**
  * Implementation of hook_civicrm_entityTypes
  */
 function hrjob_civicrm_entityTypes(&$entityTypes) {

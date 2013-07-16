@@ -213,59 +213,87 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
-        'position' => array(
+        'hrjob_position' => array(
           'name' => 'position',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Position') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.position',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
-        'title' => array(
+        'hrjob_title' => array(
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Title') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.title',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
         ) ,
-        'contract_type' => array(
+        'hrjob_contract_type' => array(
           'name' => 'contract_type',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Contract Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob.contract_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_contract_type',
           )
         ) ,
-        'seniority' => array(
+        'hrjob_seniority' => array(
           'name' => 'seniority',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Seniority') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob.seniority',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_seniority',
           )
         ) ,
-        'period_type' => array(
+        'hrjob_period_type' => array(
           'name' => 'period_type',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Period Type') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob.period_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'enumValues' => 'Temporary, Permanent',
         ) ,
-        'period_start_date' => array(
+        'hrjob_period_start_date' => array(
           'name' => 'period_start_date',
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Job Start Date') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob.period_start_date',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
-        'period_end_date' => array(
+        'hrjob_period_end_date' => array(
           'name' => 'period_end_date',
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Job End Date') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob.period_end_date',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -282,9 +310,13 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_location',
           )
         ) ,
-        'is_primary' => array(
+        'hrjob_is_primary' => array(
           'name' => 'is_primary',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+          'export' => true,
+          'where' => 'civicrm_hrjob.is_primary',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
       );
     }
@@ -303,17 +335,17 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'contact_id' => 'contact_id',
-        'position' => 'position',
-        'title' => 'title',
+        'position' => 'hrjob_position',
+        'title' => 'hrjob_title',
         'is_tied_to_funding' => 'is_tied_to_funding',
-        'contract_type' => 'contract_type',
-        'seniority' => 'seniority',
-        'period_type' => 'period_type',
-        'period_start_date' => 'period_start_date',
-        'period_end_date' => 'period_end_date',
+        'contract_type' => 'hrjob_contract_type',
+        'seniority' => 'hrjob_seniority',
+        'period_type' => 'hrjob_period_type',
+        'period_start_date' => 'hrjob_period_start_date',
+        'period_end_date' => 'hrjob_period_end_date',
         'manager_contact_id' => 'manager_contact_id',
         'location' => 'location',
-        'is_primary' => 'is_primary',
+        'is_primary' => 'hrjob_is_primary',
       );
     }
     return self::$_fieldKeys;
