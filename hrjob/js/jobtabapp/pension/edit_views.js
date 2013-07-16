@@ -6,6 +6,9 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobPension
       };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
     }
   });
 });

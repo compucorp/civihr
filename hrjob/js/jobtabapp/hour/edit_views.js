@@ -6,6 +6,9 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobHour
       };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
     }
   });
 });

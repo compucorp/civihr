@@ -6,6 +6,9 @@ CRM.HRApp.module('JobTabApp.Health', function(Health, HRApp, Backbone, Marionett
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobHealth
       };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
     }
   });
 });

@@ -229,12 +229,12 @@
     <item>Apprentice</item>
   </contract_type>
 
-  <seniority>
+  <level_type>
     <item>Senior Manager</item>
     <item>Junior Manager</item>
     <item>Senior Staff</item>
     <item>Junior Staff</item>
-  </seniority>
+  </level_type>
 
   <period_type>
     <item>Permanent</item>

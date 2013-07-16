@@ -203,7 +203,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('hidden', 'hidden_hrjob', 1);
       $form->addElement('text', 'hrjob_position', ts('Position'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'position'));
       $form->addElement('text', 'hrjob_title', ts('Title'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'title'));
-      $form->addElement('text', 'hrjob_seniority', ts('Seniority'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'seniority'));
+      $form->addElement('text', 'hrjob_level_type', ts('Level'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'level_type'));
       $form->addElement('text', 'hrjob_contract_type', ts('Contract Type'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'contract_type'));
       $form->add('select', 'hrjob_period_type', ts('Period Type'), 
         array('Temporary' => ts('Temporary'), 'Permanent' => ts('Permanent')), FALSE,
