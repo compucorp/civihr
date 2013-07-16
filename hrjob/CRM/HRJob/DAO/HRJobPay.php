@@ -166,12 +166,16 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
-        'pay_grade' => array(
+        'hrjob_pay_grade' => array(
           'name' => 'pay_grade',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Pay Grade') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_grade',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_pay_grade',
           )
@@ -206,7 +210,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'job_id' => 'job_id',
-        'pay_grade' => 'pay_grade',
+        'pay_grade' => 'hrjob_pay_grade',
         'pay_amount' => 'pay_amount',
         'pay_unit' => 'pay_unit',
       );

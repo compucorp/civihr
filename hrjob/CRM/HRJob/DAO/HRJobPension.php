@@ -159,9 +159,13 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
-        'is_enrolled' => array(
+        'hrjob_is_enrolled' => array(
           'name' => 'is_enrolled',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pension.is_enrolled',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'contrib_pct' => array(
           'name' => 'contrib_pct',
@@ -185,7 +189,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'job_id' => 'job_id',
-        'is_enrolled' => 'is_enrolled',
+        'is_enrolled' => 'hrjob_is_enrolled',
         'contrib_pct' => 'contrib_pct',
       );
     }

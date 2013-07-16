@@ -45,6 +45,8 @@
     <pseudoconstant>
       <optionGroupName>hrjob_pay_grade</optionGroupName>
     </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_pay_grade</uniqueName>
   </field>
   <index>
     <name>index_pay_grade</name>
