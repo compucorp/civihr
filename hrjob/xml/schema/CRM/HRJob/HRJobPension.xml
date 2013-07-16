@@ -40,6 +40,8 @@
     <name>is_enrolled</name>
     <type>boolean</type>
     <default>0</default>
+    <export>true</export>
+    <uniqueName>hrjob_is_enrolled</uniqueName>
   </field>
   <index>
     <name>index_is_enrolled</name>
