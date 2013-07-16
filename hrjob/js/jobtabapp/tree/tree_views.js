@@ -9,6 +9,9 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-nav': 'doTriggerEvent'
     },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
+    },
     doTriggerEvent: function(e) {
       e.preventDefault();
       console.log("goto",

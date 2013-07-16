@@ -6,6 +6,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJob
       };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
     }
   });
 });

@@ -34,10 +34,12 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header')
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
+      ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/renderutil.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/entities/hrjob.js', 155, 'html-header')
+      ->addScriptFile('org.civicrm.hrjob', 'js/common/mbind.js', 155, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/intro/show_views.js', 160, 'html-header')
@@ -72,7 +74,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     $fields = array(
       'HRJob' => array(
         "contract_type",
-        "seniority",
+        "level_type",
         "period_type",
         "location",
       ),
@@ -92,6 +94,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobLeave' => array(
         'leave_type',
+      ),
+      'HRJobRole' => array(
+        'location',
       ),
     );
     $fieldOptions = array();

@@ -118,6 +118,11 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $is_tied_to_funding;
   /**
+   *
+   * @var text
+   */
+  public $funding_notes;
+  /**
    * Contract for employment, internship, etc.
    *
    * @var string
@@ -128,7 +133,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    *
    * @var string
    */
-  public $seniority;
+  public $level_type;
   /**
    * .
    *
@@ -239,6 +244,11 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
         ) ,
+        'funding_notes' => array(
+          'name' => 'funding_notes',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Funding Notes') ,
+        ) ,
         'hrjob_contract_type' => array(
           'name' => 'contract_type',
           'type' => CRM_Utils_Type::T_STRING,
@@ -253,18 +263,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_contract_type',
           )
         ) ,
-        'hrjob_seniority' => array(
-          'name' => 'seniority',
+        'hrjob_level_type' => array(
+          'name' => 'level_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Seniority') ,
+          'title' => ts('Level') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
-          'where' => 'civicrm_hrjob.seniority',
+          'where' => 'civicrm_hrjob.level_type',
           'headerPattern' => '',
           'dataPattern' => '',
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_seniority',
+            'optionGroupName' => 'hrjob_level_type',
           )
         ) ,
         'hrjob_period_type' => array(
@@ -338,8 +348,9 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'position' => 'hrjob_position',
         'title' => 'hrjob_title',
         'is_tied_to_funding' => 'is_tied_to_funding',
+        'funding_notes' => 'funding_notes',
         'contract_type' => 'hrjob_contract_type',
-        'seniority' => 'hrjob_seniority',
+        'level_type' => 'hrjob_level_type',
         'period_type' => 'hrjob_period_type',
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',
