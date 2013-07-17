@@ -221,7 +221,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_position' => array(
           'name' => 'position',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Position') ,
+          'title' => ts('Job Position') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
@@ -232,7 +232,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_title' => array(
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Title') ,
+          'title' => ts('Job Title') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
@@ -252,7 +252,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_contract_type' => array(
           'name' => 'contract_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Contract Type') ,
+          'title' => ts('Job Contract Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -266,7 +266,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_level_type' => array(
           'name' => 'level_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Level') ,
+          'title' => ts('Job Level') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -280,7 +280,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_period_type' => array(
           'name' => 'period_type',
           'type' => CRM_Utils_Type::T_ENUM,
-          'title' => ts('Period Type') ,
+          'title' => ts('Job Period Type') ,
           'export' => true,
           'where' => 'civicrm_hrjob.period_type',
           'headerPattern' => '',
@@ -323,6 +323,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_is_primary' => array(
           'name' => 'is_primary',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+          'title' => ts('Job Is Primary') ,
           'export' => true,
           'where' => 'civicrm_hrjob.is_primary',
           'headerPattern' => '',

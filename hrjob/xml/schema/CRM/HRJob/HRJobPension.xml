@@ -40,6 +40,7 @@
     <name>is_enrolled</name>
     <type>boolean</type>
     <default>0</default>
+    <title>Job Pension Is Enrolled</title>
     <export>true</export>
     <uniqueName>hrjob_is_enrolled</uniqueName>
   </field>
