@@ -85,6 +85,13 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
     'count' => 0, // FIXME
   );
   $tabs[] = $tab;
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/hrjob.js');
+  $selectedChild = CRM_Utils_Request::retrieve('selectedChild', 'String');
+  CRM_Core_Resources::singleton()->addSetting(array(
+    'tabs' => array(
+      'selectedChild' => $selectedChild,
+    ),
+  ));
 }
 
 /**
