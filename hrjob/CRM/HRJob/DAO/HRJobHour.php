@@ -175,7 +175,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_type' => array(
           'name' => 'hours_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Hours Type') ,
+          'title' => ts('Job Hours Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -189,7 +189,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_amount' => array(
           'name' => 'hours_amount',
           'type' => CRM_Utils_Type::T_MONEY,
-          'title' => ts('Amount') ,
+          'title' => ts('Job Hours Amount') ,
           'required' => true,
           'export' => true,
           'where' => 'civicrm_hrjob_hour.hours_amount',
@@ -199,7 +199,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_unit' => array(
           'name' => 'hours_unit',
           'type' => CRM_Utils_Type::T_ENUM,
-          'title' => ts('Unit') ,
+          'title' => ts('Job Hours Unit') ,
           'required' => true,
           'export' => true,
           'where' => 'civicrm_hrjob_hour.hours_unit',

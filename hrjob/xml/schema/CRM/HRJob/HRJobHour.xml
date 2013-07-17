@@ -38,7 +38,7 @@
 
   <field>
     <name>hours_type</name>
-    <title>Hours Type</title>
+    <title>Job Hours Type</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Full-Time, Part-Time, Casual</comment>
@@ -55,7 +55,7 @@
 
   <field>
     <name>hours_amount</name>
-    <title>Amount</title>
+    <title>Job Hours Amount</title>
     <type>decimal</type>
     <default>0</default>
     <required>true</required>
@@ -66,7 +66,7 @@
 
   <field>
     <name>hours_unit</name>
-    <title>Unit</title>
+    <title>Job Hours Unit</title>
     <type>enum</type>
     <values>Day, Week, Month, Year</values>
     <required>true</required>
