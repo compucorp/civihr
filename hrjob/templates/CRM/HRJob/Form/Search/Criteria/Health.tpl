@@ -27,7 +27,7 @@
     <table class="form-layout">
         <tr>
             <td>
-                {$form.hrjob_health_is_healthcare.label}&nbsp;{$form.hrjob_health_is_healthcare.html}
+                {$form.hrjob_is_healthcare.label}&nbsp;{$form.hrjob_is_healthcare.html}
             </td>
         </tr>
     </table>

@@ -162,6 +162,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'hrjob_is_enrolled' => array(
           'name' => 'is_enrolled',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+          'title' => ts('Job Pension Is Enrolled') ,
           'export' => true,
           'where' => 'civicrm_hrjob_pension.is_enrolled',
           'headerPattern' => '',
