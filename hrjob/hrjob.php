@@ -73,6 +73,11 @@ function hrjob_civicrm_managed(&$entities) {
  * Implementation of hook_civicrm_tabs
  */
 function hrjob_civicrm_tabs(&$tabs, $contactID) {
+  $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
+  if ($contactType != 'Individual') {
+    return;
+  }
+
   CRM_HRJob_Page_JobsTab::registerScripts();
   $tab = array(
     'id' => 'hrjob',
@@ -82,7 +87,9 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
     )),
     'title' => ts('Jobs'),
     'weight' => 10,
-    'count' => 0, // FIXME
+    'count' => CRM_HRJob_BAO_HRJob::getRecordCount(array(
+      'contact_id' => $contactID
+    )),
   );
   $tabs[] = $tab;
 }
