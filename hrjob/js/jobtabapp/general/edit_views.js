@@ -9,6 +9,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
+    },
+    onRender: function() {
+      this.$('.crm-contact-selector').crmContactField();
     }
   });
 });

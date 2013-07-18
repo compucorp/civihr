@@ -7,5 +7,6 @@ CRM.HRApp.module('RenderUtil', function(RenderUtil, HRApp, Backbone, Marionette,
       };
       return RenderUtil._select(_.extend(defaults, args));
     };
+    RenderUtil.contact = _.template(cj('#renderutil-contact-template').text());
   });
 });
