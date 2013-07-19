@@ -1,17 +1,31 @@
 CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marionette, $, _){
   Pension.Controller = {
     editPension: function(cid, jobId){
-      var hrjobModel = HRApp.request("hrjob:entity", jobId);
-      var hrjobPensionModel = new HRApp.Entities.HRJobPension({
-        job_id: null,
-        is_enrolled: 1,
-        contrib_pct: 33.3
+      HRApp.trigger('ui:block', ts('Loading'));
+      CRM.Backbone.findCreate({
+        CollectionClass: HRApp.Entities.HRJobPensionCollection,
+        crmCriteria: {
+          job_id: jobId
+        },
+/*
+         defaults: {
+           is_enrolled: '',
+           contrib_pct: '',
+         },
+*/
+        success: function(model) {
+          HRApp.trigger('ui:unblock');
+          var mainView = new Pension.EditView({
+            model: model
+          });
+          HRApp.mainRegion.show(mainView);
+        },
+        error: function(ignore, error) {
+          HRApp.trigger('ui:unblock');
+          var treeView = new HRApp.Common.Views.Failed();
+          HRApp.mainRegion.show(treeView);
+        }
       });
-      var mainView = new Pension.EditView({
-        model: hrjobPensionModel,
-        hrjob: hrjobModel
-      });
-      HRApp.mainRegion.show(mainView);
     }
   }
 });
