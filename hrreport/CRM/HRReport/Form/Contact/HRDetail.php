@@ -61,6 +61,12 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           array(
             'title' => ts('Gender'),
           ),
+          'manager' => 
+          array(
+            'name' => 'sort_name',
+            'title' => ts('Manager'),
+            'dbAlias' => 'manager.sort_name'
+          ),
         ),
         'filters' =>
         array(
@@ -158,6 +164,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             CRM_Core_PseudoConstant::country(),
           ),
         ),
+        'grouping' => 'contact-fields',
       ),
       'civicrm_group' =>
       array(
@@ -176,6 +183,281 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
         ),
       ),
+      'civicrm_hrjob' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJob',
+        'fields' =>
+        array(
+          'position' => 
+          array(
+            'title' => ts('Position'),
+          ),
+          'title' =>
+          array(
+            'title' => ts('Title'),
+          ),
+          'contract_type' => 
+          array(
+            'title' => ts('Contract Type'),
+          ),
+          'level_type' => 
+          array(
+            'title' => ts('Level'),
+          ),
+          'period_type' => 
+          array(
+            'title' => ts('Period Type'),
+          ),
+          'period_start_date' => 
+          array(
+            'title' => ts('Job Start Date'),
+         ),
+          'period_end_date' => 
+          array(
+            'title' => ts('Job End Date'),
+          ),
+          'location' => 
+          array(
+            'title' => ts('Location'),
+          ),
+          'manager_contact_id' => 
+          array(
+            'title' => ts('Manager Contact ID'),
+          ),
+        ),
+        'filters' =>
+        array(
+          'position' =>
+          array('title' => ts('Position'),
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ),
+          'title' =>
+          array('title' => ts('Title'),
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ),
+          'is_tied_to_funding' =>
+          array('title' => ts('Is Tied to Funding'),
+            'default' => NULL,
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
+          ),
+          'contract_type' =>
+          array('title' => ts('Contract Type'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'contract_type'),
+          ),
+          'level_type' =>
+          array('title' => ts('Level'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'level_type'),
+          ),
+          'period_type' =>
+          array('title' => ts('Period Type'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'period_type'),
+          ),
+          'period_start_date' =>
+          array('title' => ts('Job Start Date'),
+            'type' => CRM_Utils_Type::T_DATE,
+            'operatorType' => CRM_Report_Form::OP_DATE,
+          ),
+          'period_end_date' =>
+          array('title' => ts('Job End Date'),
+            'type' => CRM_Utils_Type::T_DATE,
+            'operatorType' => CRM_Report_Form::OP_DATE
+          ),
+          'location' =>
+          array('title' => ts('Location'),
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+      'civicrm_hrjob_health' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobHealth',
+        'fields' =>
+        array(
+          'provider' => 
+          array(
+            'title' => ts('Healthcare Provider'),
+          ),
+          'plan_type' => 
+          array(
+            'title' => ts('Plan Type'),
+          ),
+        ),
+        'filters' =>
+        array(
+          'provider' =>
+          array('title' => ts('Healthcare Provider'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHealth', 'provider'),
+          ),
+          'plan_type' =>
+          array('title' => ts('Plan Type'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHealth', 'plan_type'),
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+      'civicrm_hrjob_hour' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobHour',
+        'fields' =>
+        array(
+          'hours_type' => 
+          array(
+            'title' => ts('Hours Type'),
+          ),
+          'hours_amount' => 
+          array(
+            'title' => ts('Amount'),
+          ),
+          'hours_unit' => 
+          array(
+            'title' => ts('Hours Unit'),
+          ),
+          'hours_fte' =>
+          array(
+            'title' => ts('Full-Time Equivalence'),
+          ),
+        ),
+        'filters' =>
+        array(
+          'hours_type' =>
+          array('title' => ts('Hours Type'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHour', 'hours_type'),
+          ),
+          'hours_amount' =>
+          array('title' => ts('Hours Amount'),
+            'type' => CRM_Report_Form::OP_INT,
+          ),
+          'hours_unit' =>
+          array('title' => ts('Hours Unit'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHour', 'hours_unit'),
+          ),
+          'hours_fte' =>
+          array('title' => ts('Full-Time Equivalence'),
+            'type' => CRM_Report_Form::OP_INT,
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+      'civicrm_hrjob_pay' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobPay',
+        'fields' =>
+        array(
+          'pay_grade' => 
+          array(
+            'title' => ts('Pay Grade'),
+          ),
+          'pay_amount' => 
+          array(
+            'title' => ts('Pay Amount'),
+          ),
+          'pay_unit' => 
+          array(
+            'title' => ts('Pay Unit'),
+          ),
+        ),
+        'filters' =>
+        array(
+          'pay_grade' =>
+          array('title' => ts('Pay Grade'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_grade'),
+          ),
+          'pay_amount' =>
+          array('title' => ts('Pay Amount'),
+            'type' => CRM_Report_Form::OP_INT,
+          ),
+          'pay_unit' =>
+          array('title' => ts('Pay Unit'),
+            'type' => CRM_Utils_Type::T_STRING,
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_unit'),
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+      'civicrm_hrjob_pension' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobPension',
+        'fields' =>
+        array(
+          'contrib_pct' => 
+          array(
+            'title' => ts('Contribution Percentage'),
+          ),
+        ),
+        'filters' =>
+        array(
+          'is_enrolled' =>
+          array('title' => ts('Is Enrolled'),
+            'default' => NULL,
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
+          ),
+          'contrib_pct' =>
+          array('title' => ts('Contribution Percentage'),
+            'type' => CRM_Report_Form::OP_INT,
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+      'civicrm_hrjob_role' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobRole',
+        'fields' => 
+        array(
+          'department' =>
+          array('title' => ts('Department'),
+          ),
+          'cost_center' =>
+          array('title' => ts('Cost Center'),
+          ),
+          'job_location' =>
+          array('title' => ts('Job Location'),
+            'name' => 'location',
+          ),
+          'region' =>
+          array('title' => ts('Region/Country'),
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
+       'civicrm_hrjob_leave' =>
+      array(
+        'dao' => 'CRM_HRJob_DAO_HRJobLeave',
+        'fields' => 
+        array(
+          'leave_type' =>
+          array('title' => ts('Leave Type'),
+          ),
+          'leave_amount' =>
+          array('title' => ts('Leave Amount'),
+          ),
+        ),
+        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+      ),
     ) + $this->addAddressFields(FALSE, TRUE);
 
     parent::__construct();
@@ -190,7 +472,35 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       LEFT JOIN  civicrm_phone {$this->_aliases['civicrm_phone']}
              ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_phone']}.contact_id AND
-                 {$this->_aliases['civicrm_phone']}.is_primary = 1)";
+                 {$this->_aliases['civicrm_phone']}.is_primary = 1)
+      LEFT JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
+             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
+      LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
+             ON ({$this->_aliases['civicrm_hrjob_health']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+      LEFT JOIN civicrm_hrjob_hour {$this->_aliases['civicrm_hrjob_hour']}
+             ON ({$this->_aliases['civicrm_hrjob_hour']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+      LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
+             ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+      LEFT JOIN civicrm_hrjob_pension {$this->_aliases['civicrm_hrjob_pension']}
+             ON ({$this->_aliases['civicrm_hrjob_pension']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+      LEFT JOIN civicrm_contact manager
+             ON manager.id = ({$this->_aliases['civicrm_hrjob']}.manager_contact_id)";
+
+    foreach ($this->_columns as $tableName => $table) {
+      foreach ($table['fields'] as $fieldName => $field) {
+        if (CRM_Utils_Array::value('required', $field) ||
+            CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
+          if ($tableName == 'civicrm_hrjob_role') {
+            $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+               ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+          }
+          elseif ($tableName == 'civicrm_hrjob_leave') {
+            $this->_from .= "LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
+               ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+          }
+        }
+      }
+    }
 
     if ($this->_emailField) {
       $this->_from .= "
@@ -199,14 +509,14 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
                       {$this->_aliases['civicrm_email']}.is_primary = 1\n";
     }
 
-    $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array('flip' => TRUE));
-    $workLocTypeId = CRM_Utils_Array::value('Work', $locationTypes);
-
-    //FIXME: add address join only when required
-    $this->_from  .= "
+    if ($this->_addressField) {
+      $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array('flip' => TRUE));
+      $workLocTypeId = CRM_Utils_Array::value('Work', $locationTypes);
+      $this->_from  .= "
                  LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
                                {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
+    }
   }
 
   function alterDisplay(&$rows) {

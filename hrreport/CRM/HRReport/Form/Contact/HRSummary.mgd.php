@@ -30,7 +30,7 @@ return array (
         array(
           'fields' => array(
             'id'         => 1,
-            'custom_14_1' => 1, //FIXME: custom name - this is sth we need to find better alternative for
+            'job_positions' => 1,
             'state_province_id' => 1,
           ),
           'group_bys' => array(
