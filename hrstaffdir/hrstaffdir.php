@@ -53,6 +53,7 @@ function hrstaffdir_civicrm_install() {
 
   $profileId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'Staff Directory', 'id', 'title');
   if ($profileId) {
+    // add to navigation
     $navigationParams =
       array(
         'label' => 'Directory',
@@ -61,6 +62,14 @@ function hrstaffdir_civicrm_install() {
       );
     $navigation = CRM_Core_BAO_Navigation::add($navigationParams);
     CRM_Core_BAO_Navigation::resetNavigation();
+    
+    // set the profile as search view
+    $params = array();
+    CRM_Core_BAO_ConfigSetting::retrieve($params);
+    if (!empty($params)) {
+      $params['defaultSearchProfileID'] = $profileId;
+      CRM_Core_BAO_ConfigSetting::create($params);
+    }
   }
 }
 
