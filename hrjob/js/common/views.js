@@ -15,8 +15,6 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
    * @type {*}
    */
   Views.StandardForm = Marionette.ItemView.extend({
-    saveState: 'saved', // saved, unsaved, active, error
-    pendingAlert: null,
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
     },

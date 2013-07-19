@@ -7,12 +7,6 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
         crmCriteria: {
           job_id: jobId
         },
-/*
-         defaults: {
-           is_enrolled: '',
-           contrib_pct: '',
-         },
-*/
         success: function(model) {
           HRApp.trigger('ui:unblock');
           var mainView = new Pension.EditView({

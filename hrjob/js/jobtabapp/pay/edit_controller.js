@@ -7,13 +7,6 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         crmCriteria: {
           job_id: jobId
         },
-/*
-        defaults: {
-          pay_grade: '',
-          pay_amount: '',
-          pay_unit: ''
-        },
-*/
         success: function(model) {
           HRApp.trigger('ui:unblock');
           var mainView = new Pay.EditView({

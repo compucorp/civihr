@@ -7,14 +7,6 @@ CRM.HRApp.module('JobTabApp.Health', function(Health, HRApp, Backbone, Marionett
         crmCriteria: {
           job_id: jobId
         },
-/*
-        defaults: {
-          provider: '',
-          plan_type: '',
-          description: '',
-          dependents: ''
-        },
-*/
         success: function(model) {
           HRApp.trigger('ui:unblock');
           var mainView = new Health.EditView({

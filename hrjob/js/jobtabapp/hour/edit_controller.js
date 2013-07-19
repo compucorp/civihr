@@ -7,14 +7,6 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         crmCriteria: {
           job_id: jobId
         },
-/*
-        defaults: {
-          hours_type: '',
-          hours_amount: '',
-          hours_unit: '',
-          hours_fte: ''
-        },
-*/
         success: function(model) {
           HRApp.trigger('ui:unblock');
           var mainView = new Hour.EditView({
