@@ -305,9 +305,14 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
-        'manager_contact_id' => array(
+        'hrjob_manager_contact_id' => array(
           'name' => 'manager_contact_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Manager ID') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob.manager_contact_id',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'location' => array(
@@ -355,7 +360,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_type' => 'hrjob_period_type',
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',
-        'manager_contact_id' => 'manager_contact_id',
+        'manager_contact_id' => 'hrjob_manager_contact_id',
         'location' => 'location',
         'is_primary' => 'hrjob_is_primary',
       );
