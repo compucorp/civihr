@@ -51,6 +51,13 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   function &getFields() {
     if (!self::$_hrjobFields) {
       self::$_hrjobFields = CRM_HRJob_BAO_HRJob::export();
+      self::$_hrjobFields['hrjob_manager_contact'] = 
+        array(
+          'name'  => 'manager_contact', 
+          'title' => 'Job Manager', 
+          'type'  => CRM_Utils_Type::T_STRING, 
+          'where' => 'civicrm_hrjob_manager.display_name'
+        );
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_HRJob_BAO_HRJobHour::export());
 
       // special case to check for existence of health record entry
@@ -69,6 +76,17 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   function select(&$query) {
+    if (CRM_Contact_BAO_Query::componentPresent($query->_returnProperties, 'hrjob_')) {
+      $fields = $this->getFields();
+      foreach ($fields as $fldName => $params) {
+        if (CRM_Utils_Array::value($fldName, $query->_returnProperties)) {
+          $query->_select[$fldName]  = "{$params['where']} as $fldName";
+          $query->_element[$fldName] = 1;
+          list($tableName, $dnc) = explode('.', $params['where'], 2);
+          $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
+        }
+      }
+    }
   }
 
   function where(&$query) {
@@ -162,6 +180,9 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     switch ($name) {
       case 'civicrm_hrjob':
         $from = " $side JOIN civicrm_hrjob ON civicrm_hrjob.contact_id = contact_a.id AND civicrm_hrjob.is_primary=1";
+        break;
+      case 'civicrm_hrjob_manager':
+        $from = " $side JOIN civicrm_contact civicrm_hrjob_manager ON civicrm_hrjob.manager_contact_id = civicrm_hrjob_manager.id";
         break;
       case 'civicrm_hrjob_hour':
         $from = " $side JOIN civicrm_hrjob_hour ON civicrm_hrjob.id = civicrm_hrjob_hour.job_id ";

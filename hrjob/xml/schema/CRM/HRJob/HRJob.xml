@@ -137,8 +137,11 @@
 
   <field>
     <name>manager_contact_id</name>
+    <title>Job Manager ID</title>
     <type>int unsigned</type>
     <comment>FK to Contact ID</comment>
+    <export>true</export>
+    <uniqueName>hrjob_manager_contact_id</uniqueName>
   </field>
   <foreignKey>
     <name>manager_contact_id</name>
