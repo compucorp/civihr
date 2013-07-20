@@ -1,14 +1,11 @@
 CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marionette, $, _){
-  Pension.EditView = Marionette.ItemView.extend({
+  Pension.EditView = HRApp.Common.Views.StandardForm.extend({
     template: '#hrjob-pension-template',
     templateHelpers: function() {
       return {
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobPension
       };
-    },
-    initialize: function() {
-      CRM.HRApp.Common.mbind(this);
     }
   });
 });

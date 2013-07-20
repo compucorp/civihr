@@ -24,53 +24,23 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       }
     }
   });
+  CRM.Backbone.extendModel(Entities.HRJob, 'HRJob');
 
   Entities.HRJobCollection = Backbone.Collection.extend({
+    sync: CRM.Backbone.sync,
     model: Entities.HRJob
   });
-
-  var initializeHRJobs = function(){
-    var jobs = new Entities.HRJobCollection([
-      { id: 41, position: 'Developer', title: 'Senior Associate for Extemperanous CSS', contract_type: 'Employee', level_type: 'Senior Staff', 'period_type': 'Permanent', 'period_start_date': '2010-01-02', 'period_end_date': '2012-03-04', 'manager_contact_id': 3, is_tied_to_funding: 0 },
-      { id: 42, position: 'Dancer', contract_type: 'Contractor', period_type: 'Temporary', is_tied_to_funding: 1, funding_notes: 'Requires approval from Fred @ Uberfunders Foundation' },
-      { id: 53, position: 'Dentist', contract_type: 'Volunteer' }
-    ]);
-    return jobs;
-  };
-  var jobs = initializeHRJobs();
-
-  var API = {
-    getHRJobEntity: function(jobId) {
-      var entities = API.getHRJobEntities();
-      return entities.get(jobId);
-    },
-    getHRJobEntities: function(){
-      return jobs;
-      /*
-      var defer = $.Deferred();
-      setTimeout(function(){
-        var data = initializeHRJobs();
-        defer.resolve(data);
-      }, 500);
-      var promise = defer.promise();
-      return promise;
-      */
-    }
-  };
-
-  HRApp.reqres.setHandler("hrjob:entities", function(){
-    return API.getHRJobEntities();
-  });
-  HRApp.reqres.setHandler("hrjob:entity", function(jobId){
-    return API.getHRJobEntity(jobId);
-  });
+  CRM.Backbone.extendCollection(Entities.HRJobCollection);
 
   // FIXME real models
   _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole'], function(entityName){
     Entities[entityName] = Backbone.Model.extend({
     });
+    CRM.Backbone.extendModel(Entities[entityName], entityName);
+
     Entities[entityName + "Collection"] = Backbone.Collection.extend({
       model: Entities[entityName]
     });
+    CRM.Backbone.extendCollection(Entities[entityName + "Collection"]);
   });
 });

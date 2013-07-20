@@ -48,4 +48,6 @@
       <textarea id="hrjob-dependents" name="dependents"></textarea>
     </div>
   </div>
+
+  <%= RenderUtil.standardButtons() %>
 </script>

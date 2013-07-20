@@ -1,19 +1,25 @@
 CRM.HRApp.module('JobTabApp.Health', function(Health, HRApp, Backbone, Marionette, $, _){
   Health.Controller = {
     editHealth: function(cid, jobId){
-      var hrjobModel = HRApp.request("hrjob:entity", jobId);
-      var hrjobHealthModel = new HRApp.Entities.HRJobHealth({
-        job_id: null,
-        provider: 'Unknown',
-        plan_type: 'Family',
-        description: 'some description',
-        dependents: 'Jane and John'
+      HRApp.trigger('ui:block', ts('Loading'));
+      CRM.Backbone.findCreate({
+        CollectionClass: HRApp.Entities.HRJobHealthCollection,
+        crmCriteria: {
+          job_id: jobId
+        },
+        success: function(model) {
+          HRApp.trigger('ui:unblock');
+          var mainView = new Health.EditView({
+            model: model
+          });
+          HRApp.mainRegion.show(mainView);
+        },
+        error: function(ignore, error) {
+          HRApp.trigger('ui:unblock');
+          var treeView = new HRApp.Common.Views.Failed();
+          HRApp.mainRegion.show(treeView);
+        }
       });
-      var mainView = new Health.EditView({
-        model: hrjobHealthModel,
-        hrjob: hrjobModel
-      });
-      HRApp.mainRegion.show(mainView);
     }
   }
 });
