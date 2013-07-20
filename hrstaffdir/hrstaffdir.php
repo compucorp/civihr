@@ -23,7 +23,7 @@ function hrstaffdir_civicrm_config(&$config) {
  */
 function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$selector) {
   if ($objectName == 'profile') {
-    $profileId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'Staff Directory', 'id', 'title');
+    $profileId = hrstaffdir_getUFGroupID();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
     if ($profileId == $gid) {
       foreach ($values as &$value) {
@@ -51,7 +51,7 @@ function hrstaffdir_civicrm_xmlMenu(&$files) {
 function hrstaffdir_civicrm_install() {
   _hrstaffdir_civix_civicrm_install();
 
-  $profileId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'Staff Directory', 'id', 'title');
+  $profileId = hrstaffdir_getUFGroupID();
   if ($profileId) {
     // add to navigation
     $navigationParams =
@@ -115,4 +115,14 @@ function hrstaffdir_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrstaffdir_civicrm_managed(&$entities) {
   return _hrstaffdir_civix_civicrm_managed($entities);
+}
+
+/**
+ * Determine the ID of the profile which defines the staff directory
+ *
+ * @return int
+ */
+function hrstaffdir_getUFGroupID() {
+  $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+  return array_search('hrstaffdir_listing', $groups);
 }

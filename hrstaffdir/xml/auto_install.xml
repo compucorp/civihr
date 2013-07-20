@@ -13,7 +13,7 @@
       <is_update_dupe>0</is_update_dupe>
       <is_cms_user>0</is_cms_user>
       <is_reserved>1</is_reserved>
-      <name>Staff_Directory</name>
+      <name>hrstaffdir_listing</name>
       <created_date>0000-00-00 00:00:00</created_date>
       <is_proximity_search>0</is_proximity_search>
     </ProfileGroup>
