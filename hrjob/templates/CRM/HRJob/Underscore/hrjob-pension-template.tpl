@@ -28,4 +28,6 @@
       <input id="hrjob-contrib_pct" name="contrib_pct" class="form-text-big" type="text" />
     </div>
   </div>
+
+  <%= RenderUtil.standardButtons() %>
 </script>

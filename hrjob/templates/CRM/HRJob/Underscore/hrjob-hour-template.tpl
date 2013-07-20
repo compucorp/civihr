@@ -40,4 +40,6 @@
     <div class="crm-content" name="hours_fte">
     </div>
   </div>
+
+  <%= RenderUtil.standardButtons() %>
 </script>

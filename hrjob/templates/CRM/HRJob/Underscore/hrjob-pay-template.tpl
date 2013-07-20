@@ -32,4 +32,6 @@
     {/literal}
     </div>
   </div>
+
+  <%= RenderUtil.standardButtons() %>
 </script>
