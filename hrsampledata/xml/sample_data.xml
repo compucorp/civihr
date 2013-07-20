@@ -241,11 +241,6 @@
     <item>Temporary</item>
   </period_type>
 
-  <is_primary>
-    <item>1</item>
-    <item>0</item>
-  </is_primary>
-
   <provider>
     <item>Unknown</item>
   </provider>

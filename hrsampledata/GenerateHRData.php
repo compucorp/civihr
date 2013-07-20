@@ -683,96 +683,104 @@ class GenerateHRData {
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrjob', 'is_active', 'full_name')) {
       return;
     }
-    //sample data for HRJob table
-    $jobValues = array(
-      'contact_id' => $cid,
-      'position' => $this->randomItem('position'),
-      'title' => $this->randomItem('title'),
-      'is_tied_to_funding' => $this->randomItem('is_tied_to_funding'),
-      'contract_type' => $this->randomItem('contract_type'),
-      'level_type' => $this->randomItem('level_type'),
-      'period_type' => $this->randomItem('period_type'),
-      'period_start_date' => $this->randomDate('1284267600', '1354514400'),
-      'period_end_date' => $this->randomDate('1356328800', '1368421200'),
-      'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
-      'is_primary' => $this->randomItem('is_primary'),
-    );
-    $hrJob = $this->insertJobData('CRM_HRJob_DAO_HRJob', $jobValues);
+
+    for ($i = 1; $i <= mt_rand(1, 3); $i++) {
+      //sample data for HRJob table
+      $jobValues = array(
+        'contact_id' => $cid,
+        'position' => $this->randomItem('position'),
+        'title' => $this->randomItem('title'),
+        'is_tied_to_funding' => $this->randomItem('is_tied_to_funding'),
+        'contract_type' => $this->randomItem('contract_type'),
+        'level_type' => $this->randomItem('level_type'),
+        'period_type' => $this->randomItem('period_type'),
+        'period_start_date' => $this->randomDate('1284267600', '1354514400'),
+        'period_end_date' => $this->randomDate('1356328800', '1368421200'),
+        'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
+        'is_primary' => 0,
+      );
+      if ($i == 1) {
+        $jobValues['is_primary'] = 1;
+      }
+      $hrJob[] = $this->insertJobData('CRM_HRJob_DAO_HRJob', $jobValues);
+    }
 
     //For each HRJob, there may be 0 or 1 records for each of these entity types: HRJobHealth, HRJobHour, HRJobPay, HRJobPension.
-    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-      //sample data for HRJob Health table
-      $healthValues = array(
-        'job_id' => $hrJob->id,
-        'provider' => $this->randomItem('provider'),
-        'plan_type' => $this->randomItem('plan_type'),
-        'description' => $this->randomItem('description'),
-        'dependents' => $this->randomItem('dependents'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
-    }
+    foreach($hrJob as $key => $hrJobObj) {
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        //sample data for HRJob Health table
+        $healthValues = array(
+          'job_id' => $hrJobObj->id,
+          'provider' => $this->randomItem('provider'),
+          'plan_type' => $this->randomItem('plan_type'),
+          'description' => $this->randomItem('description'),
+          'dependents' => $this->randomItem('dependents'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
+      }
 
-    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-      //sample data for HRJob Hour table
-      $hoursValues = array(
-        'job_id' => $hrJob->id,
-        'hours_type' => $this->randomItem('hours_type'),
-        'hours_amount' => $this->randomItem('hours_amount'),
-        'hours_unit' => $this->randomItem('hours_unit'),
-        'hours_fte' => $this->randomItem('hours_fte'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobHour', $hoursValues);
-    }
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        //sample data for HRJob Hour table
+        $hoursValues = array(
+          'job_id' => $hrJobObj->id,
+          'hours_type' => $this->randomItem('hours_type'),
+          'hours_amount' => $this->randomItem('hours_amount'),
+          'hours_unit' => $this->randomItem('hours_unit'),
+          'hours_fte' => $this->randomItem('hours_fte'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobHour', $hoursValues);
+      }
 
-    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-      //sample data for HRJob Pay table
-      $payValues = array(
-        'job_id' => $hrJob->id,
-        'pay_grade' => $this->randomItem('paid_unpaid'),
-        'pay_amount' => $this->randomItem('pay_amount'),
-        'pay_unit' => $this->randomItem('pay_unit'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobPay', $payValues);
-    }
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        //sample data for HRJob Pay table
+        $payValues = array(
+          'job_id' => $hrJobObj->id,
+          'pay_grade' => $this->randomItem('paid_unpaid'),
+          'pay_amount' => $this->randomItem('pay_amount'),
+          'pay_unit' => $this->randomItem('pay_unit'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobPay', $payValues);
+      }
 
-    for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-      //sample data for HRJob Pension table
-      $pensionValues = array(
-        'job_id' => $hrJob->id,
-        'is_enrolled' => $this->randomItem('is_enrolled'),
-        'contrib_pct' => $this->randomItem('contrib_pct'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobPension', $pensionValues);
-    }
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        //sample data for HRJob Pension table
+        $pensionValues = array(
+          'job_id' => $hrJobObj->id,
+          'is_enrolled' => $this->randomItem('is_enrolled'),
+          'contrib_pct' => $this->randomItem('contrib_pct'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobPension', $pensionValues);
+      }
 
-    //sample data for HRJob Leave table. For each HRJob, there would be one HRJobLeave for each leave_type.
-    $leaveTypes = array('Annual', 'Public', 'Sick');
-    foreach ($leaveTypes as $key => $value) {
-      $leaveValues =  array(
-        'job_id' => $hrJob->id,
-        'leave_type' => $value,
-        'leave_amount' => $this->randomItem('leave_amount'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobLeave', $leaveValues);
-    }
+      //sample data for HRJob Leave table. For each HRJob, there would be one HRJobLeave for each leave_type.
+      $leaveTypes = array('Annual', 'Public', 'Sick');
+      foreach ($leaveTypes as $key => $value) {
+        $leaveValues =  array(
+          'job_id' => $hrJobObj->id,
+          'leave_type' => $value,
+          'leave_amount' => $this->randomItem('leave_amount'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobLeave', $leaveValues);
+      }
 
 
-    //sample data for HRJob Role table. cases with 0, 1, 2, and 3 job roles.
-    $count = mt_rand(0, 3);
-    for ($i = 1; $i <= $count; $i++) {
-      $roleValues = array(
-        'job_id' => $hrJob->id,
-        'title' => $this->randomItem('title'),
-        'description' => $this->randomItem('job_role_description'),
-        'hours' => $this->randomItem('hours_amount'),
-        'region' => $this->randomItem('region'),
-        'department' => $this->randomItem('department'),
-        'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
-        'functional_area' => $this->randomItem('functional_area'),
-        'organization' => $this->randomItem('name_of_organisation'),
-        'cost_center' => $this->randomItem('cost_center'),
-      );
-      $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
+      //sample data for HRJob Role table. cases with 0, 1, 2, and 3 job roles.
+      $count = mt_rand(0, 3);
+      for ($i = 1; $i <= $count; $i++) {
+        $roleValues = array(
+          'job_id' => $hrJobObj->id,
+          'title' => $this->randomItem('title'),
+          'description' => $this->randomItem('job_role_description'),
+          'hours' => $this->randomItem('hours_amount'),
+          'region' => $this->randomItem('region'),
+          'department' => $this->randomItem('department'),
+          'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
+          'functional_area' => $this->randomItem('functional_area'),
+          'organization' => $this->randomItem('name_of_organisation'),
+          'cost_center' => $this->randomItem('cost_center'),
+        );
+        $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
+      }
     }
   }
 
