@@ -2,6 +2,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   JobTabApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
       ":cid/hrjob" : "showIntro",
+      ":cid/hrjob/add" : "addJob",
       ":cid/hrjob/:id" : "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
       ":cid/hrjob/:id/health": "editHealth",
@@ -14,6 +15,9 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   });
 
   var API = {
+    addJob: function(cid, jobCollection) {
+      JobTabApp.General.Controller.addGeneral(cid, jobCollection);
+    },
     showIntro: function(cid){
       JobTabApp.Intro.Controller.showIntro(cid);
     },
@@ -71,6 +75,10 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     });
   });
 
+  HRApp.on("hrjob:add", function(cid, jobCollection){
+    HRApp.navigate(cid + "/hrjob/add");
+    API.addJob(cid, jobCollection);
+  });
 
   HRApp.addInitializer(function(){
     new JobTabApp.Router({

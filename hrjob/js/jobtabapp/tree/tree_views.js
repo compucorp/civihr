@@ -30,6 +30,17 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
   Tree.View = Marionette.CompositeView.extend({
     template: '#hrjob-tree-template',
     itemView: Tree.ItemView,
-    itemViewContainer: '.hrjob-tree-items'
+    itemViewContainer: '.hrjob-tree-items',
+    events: {
+      'click .hrjob-tree-add': 'doAddJob'
+    },
+    doAddJob: function(e) {
+      e.preventDefault();
+      CRM.HRApp.trigger(
+        'hrjob:add',
+        CRM.jobTabApp.contact_id, // FIXME
+        this.collection
+      );
+    }
   });
 });

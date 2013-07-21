@@ -1,5 +1,9 @@
 CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marionette, $, _){
   General.Controller = {
+    addGeneral: function(cid, jobCollection){
+      alert('add job for ' + cid);
+    },
+
     editGeneral: function(cid, jobId){
       HRApp.trigger('ui:block', ts('Loading'));
       var model = new HRApp.Entities.HRJob({id: jobId});
