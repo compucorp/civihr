@@ -38,8 +38,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
       e.preventDefault();
       CRM.HRApp.trigger(
         'hrjob:add',
-        CRM.jobTabApp.contact_id, // FIXME
-        this.collection
+        CRM.jobTabApp.contact_id // FIXME
       );
     }
   });
