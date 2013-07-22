@@ -68,8 +68,10 @@
 
   <field>
     <name>department</name>
+    <title>Department</title>
     <type>varchar</type>
     <length>127</length>
+    <export>true</export>
   </field>
   <index>
     <name>index_department</name>

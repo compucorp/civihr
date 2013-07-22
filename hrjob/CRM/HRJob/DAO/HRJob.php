@@ -318,9 +318,13 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'location' => array(
           'name' => 'location',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Location') ,
+          'title' => ts('Job Location') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.location',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_location',
           )
