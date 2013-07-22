@@ -13,5 +13,7 @@
   <td>
     <strong data-hrjobrole-row="hours"></strong>
   </td>
-  <td></td>
+  <td>
+    <a class="ui-icon ui-icon-trash hrjob-role-remove" title="{ts}Remove{/ts}"></a>
+  </td>
 </script>

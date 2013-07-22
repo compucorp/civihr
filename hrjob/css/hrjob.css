@@ -21,7 +21,7 @@
 .hrjob-role-table {
     table-layout: fixed;
 }
-.hrjob-role-toggle:hover {
+.hrjob-role-toggle:hover, .hrjob-role-remove:hover {
     cursor: pointer;
 }
 strong.hrjob-role-toggle:hover {

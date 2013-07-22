@@ -13,6 +13,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       toggledRegion: '.toggle-role-form'
     },
     events: {
+      'click .hrjob-role-remove': 'removeRole',
       'click .hrjob-role-toggle': 'toggleRole'
     },
     initialize: function() {
@@ -26,6 +27,9 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         model: this.model
       });
       this.toggledRegion.show(editView);
+    },
+    removeRole: function() {
+      this.model.destroy();
     },
     toggleRole: function() {
       this.$('.hrjob-role-toggle').toggleClass('closed');
