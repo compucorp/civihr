@@ -16,38 +16,46 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
    */
   Views.StandardForm = Marionette.ItemView.extend({
     initialize: function() {
+      this.modelBackup = this.model.toJSON();
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
     },
+    modelEvents: {
+      invalid: function(model, errors) {
+        var view = this;
+        _.each(errors, function(message, field){
+          view.$('[name='+field+']').crmError(message);
+        });
+      }
+    },
     events: {
       'click .standard-save': function() {
         var view = this;
+        if (!view.model.isValid()) {
+          return;
+        }
+
         HRApp.trigger('ui:block', ts('Saving'));
         this.model.save({}, {
           success: function() {
             HRApp.trigger('ui:unblock');
+            view.modelBackup = view.model.toJSON();
             view.render();
-            view.trigger('standard:save', view, view.model);
+            view.triggerMethod('standard:save', view, view.model);
           },
           error: function() {
             HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
           }
         });
       },
+
       'click .standard-reset': function() {
         var view = this;
-        HRApp.trigger('ui:block', ts('Reloading'));
-        this.model.fetch({
-          success: function() {
-            HRApp.trigger('ui:unblock');
-            view.render();
-            view.trigger('standard:reset', view, view.model);
-          },
-          error: function() {
-            HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
-          }
-        });
+        this.model.clear();
+        this.model.set(this.modelBackup);
+        view.render();
+        view.triggerMethod('standard:reset', view, view.model);
       }
     }
   });
