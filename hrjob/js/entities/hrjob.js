@@ -17,7 +17,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     validate: function(attrs, options) {
       var errors = {}
       if (! attrs.position) {
-        errors.position = "can't be blank";
+        errors.position = ts("Field is required");
       }
       if( ! _.isEmpty(errors)){
         return errors;
