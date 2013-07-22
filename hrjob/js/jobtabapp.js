@@ -1,7 +1,17 @@
 CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $, _){
+
+  // FIXME: allows multiple cid's but only one JobCollection
+  var jobCollection = new CRM.HRApp.Entities.HRJobCollection([], {
+    crmCriteria: {contact_id: CRM.jobTabApp.contact_id}
+  });
+  HRApp.on("initialize:after", function(){
+    HRApp.JobTabApp.Tree.Controller.show(CRM.jobTabApp.contact_id, jobCollection);
+  });
+
   JobTabApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
       ":cid/hrjob" : "showIntro",
+      ":cid/hrjob/add" : "addJob",
       ":cid/hrjob/:id" : "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
       ":cid/hrjob/:id/health": "editHealth",
@@ -14,6 +24,9 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   });
 
   var API = {
+    addJob: function(cid) {
+      JobTabApp.General.Controller.addGeneral(cid, jobCollection);
+    },
     showIntro: function(cid){
       JobTabApp.Intro.Controller.showIntro(cid);
     },
@@ -71,6 +84,10 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     });
   });
 
+  HRApp.on("hrjob:add", function(cid){
+    HRApp.navigate(cid + "/hrjob/add");
+    API.addJob(cid);
+  });
 
   HRApp.addInitializer(function(){
     new JobTabApp.Router({
