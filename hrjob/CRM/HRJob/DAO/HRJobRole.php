@@ -234,6 +234,10 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'title' => ts('Department') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob_role.department',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',

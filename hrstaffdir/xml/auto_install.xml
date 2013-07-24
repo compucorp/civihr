@@ -131,6 +131,38 @@
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
+    <ProfileField>
+      <field_name>location</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>8</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages</visibility>
+      <in_selector>1</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Location</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Staff Directory</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>department</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>9</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages</visibility>
+      <in_selector>1</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Department</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Staff Directory</profile_group_name>
+    </ProfileField>
   </ProfileFields>
   <ProfileJoins>
     <ProfileJoin>
