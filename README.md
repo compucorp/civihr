@@ -39,6 +39,22 @@ bash /var/www/drupal/vendor/civicrm/civihr/bin/drush-install.sh --with-sample-da
 
 Read the drush-install.sh for details.
 
+## Schema development
+
+Most CiviHR extensions define their schema using CiviCRM's custom-data system.
+During installation, modules using this sytem will load "xml/auto_install.xml" 
+which was [re]generated using the command "civix generate:custom-xml".
+(Note: The XML won't be reloaded during upgrade. To support upgrades, one must
+add an upgrade_N() function to CRM/*/Upgrader.php.)
+
+The hrjob extension uses XML/GenCode to manage schema. When modifying the
+schema, be sure to:
+
+ 1. Edit the XML files in "hrjob/xml/schema/CRM/HRJob"
+ 2. Run the command "hrjob/bin/setup.sh <civicrm-root>"
+ 3. Manually copy relevant SQL snippets from "<civicrm-root>/civicrm.mysql" to "hrjob/sql/auto_install.sql"
+ 4. (If appropriate) Add an upgrade_N() function to hrjob/CRM/HRJob/Upgrader.php
+
 ## Test
 
 To run the unit-tests, one must configure CiviCRM to run unit-tests, install
@@ -70,3 +86,6 @@ OK (1 test, 4 assertions)
 used with "civix civicrm:ping" is part of a fully-functioning CiviCRM/CiviHR installation.
 The "headless testing database" is only used for testing -- it is conventionally
 called "civicrm_tests_dev".)
+
+(Note: For "hrjob", there's an extra pre-requisite: before running tests, run
+"hrjob/bin/setup.sh <civicrm-root>".)
