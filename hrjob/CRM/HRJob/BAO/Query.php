@@ -71,6 +71,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_HRJob_BAO_HRJobPension::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_HRJob_BAO_HRJobPay::export());
+      self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_HRJob_BAO_HRJobRole::export());
     }
     return self::$_hrjobFields;
   }
@@ -196,6 +197,9 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       case 'civicrm_hrjob_pay':
         $from = " $side JOIN civicrm_hrjob_pay ON civicrm_hrjob.id = civicrm_hrjob_pay.job_id ";
         break;
+    case 'civicrm_hrjob_role':
+      $from = " $side JOIN civicrm_hrjob_role ON civicrm_hrjob.id = civicrm_hrjob_role.job_id ";
+      break;
     }
     return $from;
   }

@@ -152,10 +152,11 @@
 
   <field>
     <name>location</name>
-    <title>Location</title>
+    <title>Job Location</title>
     <type>varchar</type>
     <length>127</length>
     <comment>Main work location</comment>
+    <export>true</export>
     <pseudoconstant>
       <optionGroupName>hrjob_location</optionGroupName>
     </pseudoconstant>
