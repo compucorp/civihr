@@ -225,8 +225,148 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>Language</name>
+      <title>Language</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>Computing</name>
+      <title>Computing</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>Finance</name>
+      <title>Finance</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>Management</name>
+      <title>Management</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>Legal</name>
+      <title>Legal</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
+    <OptionValue>
+      <label>Java</label>
+      <value>Java</value>
+      <name>Java</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Language</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>PHP</label>
+      <value>PHP</value>
+      <name>PHP</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Language</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Computer Security</label>
+      <value>Computer Security</value>
+      <name>Computer Security</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Computing</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Word Processing</label>
+      <value>Word Processing</value>
+      <name>Word Processing</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Computing</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Value added analysis</label>
+      <value>Value added analysis</value>
+      <name>Value added analysis</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Finance</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Business Valuations</label>
+      <value>Business Valuations</value>
+      <name>Business Valuations</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Finance</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Business Mangement</label>
+      <value>Business Management</value>
+      <name>Business Management</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Management</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Crisis Management</label>
+      <value>Crisis Management</value>
+      <name>Crisis Management</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Management</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Legal Research</label>
+      <value>Legal Research</value>
+      <name>Legal Research</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Legal</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Legal Writing</label>
+      <value>Legal Writing</value>
+      <name>Legal Writing</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>Legal</option_group_name>
+    </OptionValue>
     <OptionValue>
       <label>Language</label>
       <value>Language</value>
@@ -350,7 +490,7 @@
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>1</is_required>
-      <weight>1</weight>
+      <weight>2</weight>
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
@@ -366,7 +506,7 @@
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>1</is_required>
-      <weight>2</weight>
+      <weight>1</weight>
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>

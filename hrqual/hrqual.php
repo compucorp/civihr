@@ -3,6 +3,22 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrqual.civix.php';
 
 /**
+ * Implementation of hook_civicrm_buildProfile
+ */
+function hrqual_civicrm_buildProfile($name) {
+  if ($name == 'hrqual_tab') {
+    $action = CRM_Utils_Request::retrieve('multiRecord', 'String', $this);
+    // display the select box only in add and update mode
+    if (in_array($action, array("add", "update"))) {
+      $regionParams = array( 
+        'markup' => "<select id='category_name' name='category_name' style='display:none' class='form-select required'></select>",
+      );
+      CRM_Core_Region::instance('profile-form-hrqual_tab')->add($regionParams);
+    }
+  }
+}
+
+/**
  * Implementation of hook_civicrm_config
  */
 function hrqual_civicrm_config(&$config) {
@@ -86,6 +102,24 @@ function hrqual_civicrm_tabs(&$tabs, $contactID) {
     }
   }
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrqual', 'css/hrqual.css');
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/hrqual.js');
+
+  $optionGroups = CRM_Core_OptionGroup::values('category_of_skill_20130510015438');
+  foreach ($optionGroups as $name => $optionGroup) {
+    $options = array_values(CRM_Core_OptionGroup::values($name));
+    $val[$optionGroup] = $options;
+    unset($options);
+  }
+
+  $cfId1 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Name_of_Skill', 'id', 'name');
+  $cfId2 = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Category_of_Skill', 'id', 'name');
+  CRM_Core_Resources::singleton()->addSetting(array(
+    'hrqual' => array(
+      'name' => $cfId1,
+      'category' => $cfId2,
+      'optionGroups' => $val,
+    ),
+  ));
 }
 
 function hrqual_getCustomGroupId() {
