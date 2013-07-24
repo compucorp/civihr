@@ -51,8 +51,8 @@ The hrjob extension uses XML/GenCode to manage schema. When modifying the
 schema, be sure to:
 
  1. Edit the XML files in "hrjob/xml/schema/CRM/HRJob"
- 2. Run the command "hrjob/bin/setup.sh <civicrm-root>"
- 3. Manually copy relevant SQL snippets from "<civicrm-root>/civicrm.mysql" to "hrjob/sql/auto_install.sql"
+ 2. Run the command "hrjob/bin/setup.sh {CIVICRM_ROOT}"
+ 3. Manually copy relevant SQL snippets from "{CIVICRM_ROOT}/sql/civicrm.mysql" to "hrjob/sql/auto_install.sql"
  4. (If appropriate) Add an upgrade_N() function to hrjob/CRM/HRJob/Upgrader.php
 
 ## Test
@@ -88,4 +88,4 @@ The "headless testing database" is only used for testing -- it is conventionally
 called "civicrm_tests_dev".)
 
 (Note: For "hrjob", there's an extra pre-requisite: before running tests, run
-"hrjob/bin/setup.sh <civicrm-root>".)
+"hrjob/bin/setup.sh {CIVICRM_ROOT}".)
