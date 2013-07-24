@@ -26,6 +26,12 @@ function hrvisa_civicrm_buildProfile($name) {
         <input type='checkbox' id='is_visa_required' value='1' name='is_visa_required' checked='checked'></p>";
     }
     CRM_Core_Region::instance('profile-form-hrvisa_tab')->add($regionParams);
+
+    CRM_Core_Region::instance('profile-form-hrvisa_tab')->add(array('markup' => '
+<a id="view-revisions" class="css_right" href="#" title="{ts}View Revisions{/ts}">Revisions</a>
+<div id="revision-dialog">
+  <div id="revision-content"></div>
+</div>', 'weight' => -2));
   }
 }
 
