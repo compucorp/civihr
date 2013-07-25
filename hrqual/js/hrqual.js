@@ -13,9 +13,23 @@ cj(document).ajaxSuccess(function() {
   });
 });
 
+/**
+* This function is called to render a select box in
+* place of a customField and to populate its options tags
+* with the relevent optionGroup values. Its also used to
+* assign default value to the rendered select.
+*
+*
+* @param oGroups       list of optionGroups and its values.
+* @param nameID        ID of the customField on which the select is to be rendered.
+* @param selectedVal   the value(OptionGroup name) of the selectBox which will help the change 
+*                      event to populate the relevant OptionGroup values in the rendered selectbox options.
+* @param select        the select field ID. eg. cj('#fieldID');
+* @param nameDefault   the default value to be assigned to the rendered select in EDIT mode
+*/
 function renderSelectBox(oGroups, nameID, selectedVal, select, nameDefault) {
   if (oGroups[selectedVal]) {
-    select.find('option').remove().end();
+    select.find('option').remove().end().append(cj('<option></option>').val("").html("-select-"));
     for (var i = 0; i < oGroups[selectedVal].length; i++) {
       select.append(cj('<option></option>').val(oGroups[selectedVal][i]).html(oGroups[selectedVal][i]));
     }
