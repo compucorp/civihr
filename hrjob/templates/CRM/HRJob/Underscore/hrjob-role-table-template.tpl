@@ -13,4 +13,6 @@
     <tbody>
     </tbody>
   </table>
+
+  <%= RenderUtil.standardButtons() %>
 </script>

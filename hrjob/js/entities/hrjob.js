@@ -25,6 +25,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     }
   });
   CRM.Backbone.extendModel(Entities.HRJob, 'HRJob');
+  CRM.Backbone.trackSoftDelete(Entities.HRJob);
 
   Entities.HRJobCollection = Backbone.Collection.extend({
     sync: CRM.Backbone.sync,
@@ -37,6 +38,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     Entities[entityName] = Backbone.Model.extend({
     });
     CRM.Backbone.extendModel(Entities[entityName], entityName);
+    CRM.Backbone.trackSoftDelete(Entities[entityName]);
 
     Entities[entityName + "Collection"] = Backbone.Collection.extend({
       model: Entities[entityName]

@@ -15,5 +15,6 @@
   </td>
   <td>
     <a class="ui-icon ui-icon-trash hrjob-role-remove" title="{ts}Remove{/ts}"></a>
+    <a class="ui-icon ui-icon-refresh hrjob-role-restore" title="{ts}Restore{/ts}"></a>
   </td>
 </script>
