@@ -25,6 +25,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     }
   });
   CRM.Backbone.extendModel(Entities.HRJob, 'HRJob');
+  CRM.Backbone.trackSoftDelete(Entities.HRJob);
 
   Entities.HRJobCollection = Backbone.Collection.extend({
     sync: CRM.Backbone.sync,
@@ -32,11 +33,29 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
   CRM.Backbone.extendCollection(Entities.HRJobCollection);
 
+  Entities.HRJobRole = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      title: '',
+      description: '',
+      hours: 0,
+      region: '',
+      department: '',
+      manager_contact_id: null,
+      functional_area: '',
+      organization: '',
+      cost_center: '',
+      location: ''
+    }
+  });
+
   // FIXME real models
   _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole'], function(entityName){
-    Entities[entityName] = Backbone.Model.extend({
-    });
+    if (!Entities[entityName]) {
+      Entities[entityName] = Backbone.Model.extend({});
+    }
     CRM.Backbone.extendModel(Entities[entityName], entityName);
+    CRM.Backbone.trackSoftDelete(Entities[entityName]);
 
     Entities[entityName + "Collection"] = Backbone.Collection.extend({
       model: Entities[entityName]

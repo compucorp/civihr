@@ -21,9 +21,19 @@
 .hrjob-role-table {
     table-layout: fixed;
 }
-.hrjob-role-toggle:hover {
+.hrjob-role-toggle:hover, .hrjob-role-table .ui-icon:hover {
     cursor: pointer;
 }
 strong.hrjob-role-toggle:hover {
     text-decoration: underline;
+}
+table.hrjob-role-table > tbody > tr.deleted {
+    color: red;
+    text-decoration: line-through;
+}
+table.hrjob-role-table > tbody > tr.deleted .hrjob-role-remove {
+    display: none;
+}
+table.hrjob-role-table > tbody > tr.undeleted .hrjob-role-restore {
+    display: none;
 }
