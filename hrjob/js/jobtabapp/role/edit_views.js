@@ -42,9 +42,13 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.model.setSoftDeleted(!this.model.isSoftDeleted());
     },
     toggleRole: function() {
-      this.$('.hrjob-role-toggle').toggleClass('closed');
-      this.$('.hrjob-role-toggle').toggleClass('open');
-      this.$('.toggle-role-form').toggle();
+      var open = this.$('.hrjob-role-toggle').hasClass('closed');
+      this.$('.hrjob-role-toggle').toggleClass('closed', !open);
+      this.$('.hrjob-role-toggle').toggleClass('open', open);
+      this.$('.toggle-role-form').toggle(open);
+      if (open) {
+        this.$('input,select,textarea').first().focus();
+      }
     }
   });
 
@@ -72,8 +76,21 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     events: {
+      'click .hrjob-role-add': 'doAdd',
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset'
+    },
+    appendHtml: function(collectionView, itemView, index) {
+      collectionView.$('tr.hrjob-role-final').before(itemView.el);
+    },
+    doAdd: function(e) {
+      e.stopPropagation();
+      var model = new CRM.HRApp.Entities.HRJobRole(
+        this.options.newModelDefaults || {}
+      );
+      this.collection.add(model);
+      this.children.findByModel(model).toggleRole(); // open
+      return false;
     },
     doSave: function() {
       var view = this;

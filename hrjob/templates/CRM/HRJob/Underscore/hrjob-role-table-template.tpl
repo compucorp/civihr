@@ -11,6 +11,12 @@
     </tr>
     </thead>
     <tbody>
+      <tr class="hrjob-role-final">
+        <td></td>
+        <td><a href="#" class="hrjob-role-add">{ts}Add role{/ts}</a></td>
+        <td></td>
+        <td></td>
+      </tr>
     </tbody>
   </table>
 

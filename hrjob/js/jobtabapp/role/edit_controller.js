@@ -11,6 +11,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         success: function() {
           HRApp.trigger('ui:unblock');
           var mainView = new Role.TableView({
+            newModelDefaults: {
+              job_id: jobId,
+              title: ts('New Role')
+            },
             collection: roleCollection
           });
           HRApp.mainRegion.show(mainView);
