@@ -72,13 +72,39 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     events: {
-      'click .standard-save': function() {
-        alert('save all');
-        this.triggerMethod('standard:save', this, this.model);
-      },
-      'click .standard-reset': function() {
-        this.triggerMethod('standard:reset', this, this.model);
-      }
+      'click .standard-save': 'doSave',
+      'click .standard-reset': 'doReset'
+    },
+    doSave: function() {
+      var view = this;
+      HRApp.trigger('ui:block', ts('Saving'));
+      view.collection.save({
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert('Saved');
+          view.triggerMethod('standard:save', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:unblock');
+          // Note: CRM.Backbone.sync displays API errors with CRM.alert
+        }
+      });
+    },
+    doReset: function() {
+      var view = this;
+      HRApp.trigger('ui:block', ts('Loading'));
+      this.collection.fetch({
+        reset: true,
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert('Reset');
+          view.triggerMethod('standard:reset', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:unblock');
+          // Note: CRM.Backbone.sync displays API errors with CRM.alert
+        }
+      });
     }
   });
 });
