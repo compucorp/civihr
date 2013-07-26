@@ -32,6 +32,33 @@ function hrvisa_civicrm_buildProfile($name) {
 <div id="revision-dialog">
   <div id="revision-content"></div>
 </div>', 'weight' => -2));
+
+    $tableName  = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Immigration', 'table_name', 'name');
+    $instanceID = CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary');
+    if ($instanceID && $tableName) {
+      CRM_Core_Region::instance('profile-form-hrvisa_tab')->add(array('script' => "
+    cj(document).on('click', '#view-revisions', function() {
+      cj('#revision-dialog').show( );
+      cj('#revision-dialog').dialog({
+        title: 'Revisions',
+        modal: true,
+        width:  '680px',
+        height: '380',
+        bgiframe: true,
+        overlay: { opacity: 0.5, background: 'black' },
+        open:function() {
+	        var url = CRM.url('civicrm/report/instance/{$instanceID}', {reset:1, snippet:4, section:2, altered_contact_id_op:'eq', altered_contact_id_value:'{$contactID}', log_type_table_op:'has', log_type_table_value:'{$tableName}'}); 
+          cj('#revision-content', this).load(url);
+        },
+        buttons: {
+          'Done': function() {
+              cj(this).dialog('destroy');
+            }
+        }
+      });
+    });"
+        ));
+    }
   }
 }
 
