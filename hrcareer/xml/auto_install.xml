@@ -32,7 +32,7 @@
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
-      <date_format>yy-mm</date_format>
+      <date_format>d M yy</date_format>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>start_date_7</column_name>
@@ -43,14 +43,14 @@
       <label>End Date</label>
       <data_type>Date</data_type>
       <html_type>Select Date</html_type>
-      <is_required>1</is_required>
+      <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>3</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
-      <date_format>yy-mm</date_format>
+      <date_format>d M yy</date_format>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>end_date_8</column_name>
@@ -410,7 +410,7 @@
       <field_name>custom.civicrm_value_career_4.end_date_8</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
-      <is_required>1</is_required>
+      <is_required>0</is_required>
       <weight>3</weight>
       <help_post></help_post>
       <help_pre></help_pre>
