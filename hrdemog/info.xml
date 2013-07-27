@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.civicrm.hrdemog" type="module">
+  <file>hrdemog</file>
+  <name>Extended Demographics</name>
+  <description>Add extended demographic fields for the contact</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>CiviCRM LLC</author>
+    <email>info@civicrm.org</email>
+  </maintainer>
+  <releaseDate>2013-07-24</releaseDate>
+  <version>0.1</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.3</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Hrdemog</namespace>
+  </civix>
+</extension>
