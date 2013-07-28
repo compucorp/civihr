@@ -62,8 +62,10 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       }
     },
     onNavigateWarnings: function(route, options) {
-      if (!this.model.isSaved()) {
-        options.navWarnings.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
+      if (!this.model.isModified()) {
+        console.log('unsaved changes in ', this.model);
+        options.warnTitle = ts('Abandon Changes?');
+        options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
       }
     }
   });

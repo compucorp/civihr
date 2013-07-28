@@ -15,7 +15,7 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
         return value;
         break;
       case 'ViewToModel':
-        return value ? 1 : 0;
+        return value ? "1" : "0";
         break;
       default:
         throw "Invalid direction"
