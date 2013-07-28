@@ -33,6 +33,9 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
         'FieldOptions': CRM.FieldOptions.HRJobLeave
       };
     },
+    initialize: function(models, options) {
+      this.addMissingTypes();
+    },
     events: {
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset'
@@ -59,6 +62,8 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
         reset: true,
         success: function() {
           HRApp.trigger('ui:unblock');
+          view.addMissingTypes();
+          view.render(); // CompositeView doesn't draw the new elements at the right position
           CRM.alert('Reset');
           view.triggerMethod('standard:reset', view, view.model);
         },
@@ -67,6 +72,12 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+    },
+    addMissingTypes: function() {
+      this.collection.addMissingTypes(
+        _.keys(CRM.FieldOptions.HRJobLeave.leave_type),
+        { job_id: this.collection.crmCriteria.job_id } // FIXME: tight coupling
+      );
     }
   });
 });
