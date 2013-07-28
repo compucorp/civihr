@@ -40,6 +40,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
         this.model.save({}, {
           success: function() {
             HRApp.trigger('ui:unblock');
+            CRM.alert(ts('Saved'), null, 'success');
             view.modelBackup = view.model.toJSON();
             view.render();
             view.triggerMethod('standard:save', view, view.model);
@@ -51,6 +52,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       },
 
       'click .standard-reset': function() {
+        CRM.alert(ts('Reset'));
         var view = this;
         this.model.clear();
         this.model.set(this.modelBackup);
