@@ -5,20 +5,61 @@ CRM.HRApp.addRegions({
   treeRegion: ".hrjob-tree-region"
 });
 
-CRM.HRApp.navigate = function(route,  options){
+/**
+ * Navigate to a major/new screen.
+ *
+ * @param string route The fragment to append to the URL
+ * @param Object options:
+ *   - warnTitle: string
+ *   - warnMessages: array of string
+ *   - success: function(route, options) -- Callback if navigation is allowed
+ *   - [TODO] cancel: function(route, options) --  Callback if navigation is cancelled
+ *
+ * Events:
+ *  - navigate:warnings: function(route, options) -- Allow other components
+ *    to display warnings before navigation occurs. Warnings should be
+ *    added to options.warnMessages.
+ *  - navigate: function(route, options) -- Allow other components to
+ *    update based on the navigation
+ */
+CRM.HRApp.navigate = function(route, options) {
   options || (options = {});
-  Backbone.history.navigate(route, options);
+  _.defaults(options, {
+    warnTitle: ts('Confirm Action'),
+    warnMessages: []
+  });
+  CRM.HRApp.trigger('navigate:warnings', route, options);
+
+  var doNavigate = function() {
+    Backbone.history.navigate(route, options);
+    CRM.HRApp.trigger('navigate', route, options);
+    if (options.success) options.success(route, options);
+  };
+
+  if (options.warnMessages.length == 0) {
+    doNavigate();
+  } else {
+    var buttons = {};
+    buttons[ts('Continue')] = doNavigate;
+    buttons[ts('Cancel')] = function() {
+      if (options.cancel) options.cancel(route, options);
+    };
+    CRM.confirm(buttons, {
+      title: options.warnTitle,
+      message: options.warnMessages.join(' ')
+    });
+  }
 };
 
-CRM.HRApp.getCurrentRoute = function(){
+CRM.HRApp.getCurrentRoute = function() {
   return Backbone.history.fragment
 };
 
-CRM.HRApp.on("initialize:after", function(){
-  if(Backbone.history){
+CRM.HRApp.on("initialize:after", function() {
+  if (Backbone.history) {
     Backbone.history.start();
 
-    if(this.getCurrentRoute() === ""){
+    if (this.getCurrentRoute() === "") {
       CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
     }
   }
