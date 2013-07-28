@@ -103,38 +103,14 @@ function hrqual_getUFGroupID() {
  */
 function hrqual_civicrm_buildProfile($name) {
   if ($name == 'hrqual_tab') {
-    CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array('markup' => '
-<a id="view-revisions" class="css_right" href="#" title="{ts}View Revisions{/ts}">Revisions</a>
-<div id="revision-dialog">
-  <div id="revision-content"></div>
-</div>', 'weight' => -2));
-
     $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
-    $tableName  = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name');
-    $instanceID = CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary');
-    if ($instanceID && $tableName) {
-      CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array('script' => "
-    cj(document).on('click', '#view-revisions', function() {
-      cj('#revision-dialog').show( );
-      cj('#revision-dialog').dialog({
-        title: 'Revisions',
-        modal: true,
-        width:  '680px',
-        height: '380',
-        bgiframe: true,
-        overlay: { opacity: 0.5, background: 'black' },
-        open:function() {
-	        var url = CRM.url('civicrm/report/instance/{$instanceID}', {reset:1, snippet:4, section:2, altered_contact_id_op:'eq', altered_contact_id_value:'{$contactID}', log_type_table_op:'has', log_type_table_value:'{$tableName}'}); 
-          cj('#revision-content', this).load(url);
-        },
-        buttons: {
-          'Done': function() {
-              cj(this).dialog('destroy');
-            }
-        }
-      });
-    });"
-        ));
-    }
+    CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array(
+        'template'    => 'CRM/common/logButton.tpl',
+        'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+        'css_class'   => 'hrqual-revision-link',
+        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name'),
+        'contact_id'  => $contactID,
+        'weight'      => -2,
+      ));
   }
 }
