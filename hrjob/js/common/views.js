@@ -18,6 +18,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     initialize: function() {
       this.modelBackup = this.model.toJSON();
       CRM.HRApp.Common.mbind(this);
+      this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
     },
@@ -58,6 +59,11 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
         this.model.set(this.modelBackup);
         view.render();
         view.triggerMethod('standard:reset', view, view.model);
+      }
+    },
+    onNavigateWarnings: function(route, options) {
+      if (!this.model.isSaved()) {
+        options.navWarnings.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
       }
     }
   });

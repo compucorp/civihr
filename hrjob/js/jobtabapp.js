@@ -57,13 +57,19 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   };
 
   HRApp.on("intro:show", function(cid) {
-    HRApp.navigate(cid + "/hrjob");
-    API.showIntro(cid);
+    HRApp.navigate(cid + "/hrjob", {
+      success: function() {
+        API.showIntro(cid);
+      }
+    });
   });
 
   HRApp.on("hrjob:summary:show", function(cid, jobId) {
-    HRApp.navigate(cid + "/hrjob/" + jobId);
-    API.showSummary(cid, jobId);
+    HRApp.navigate(cid + "/hrjob/" + jobId, {
+      success: function() {
+        API.showSummary(cid, jobId);
+      }
+    });
   });
 
   // For the moment, we'll define event listeners with this basic pattern.
@@ -79,14 +85,20 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     "role": "editRole"
   }, function(apiAction, editableModule, list) {
     HRApp.on("hrjob:" + editableModule + ":edit", function(cid, jobId) {
-      HRApp.navigate(cid + "/hrjob/" + jobId + "/" + editableModule);
-      API[apiAction](cid, jobId);
+      HRApp.navigate(cid + "/hrjob/" + jobId + "/" + editableModule, {
+        success: function() {
+          API[apiAction](cid, jobId);
+        }
+      });
     });
   });
 
   HRApp.on("hrjob:add", function(cid) {
-    HRApp.navigate(cid + "/hrjob/add");
-    API.addJob(cid);
+    HRApp.navigate(cid + "/hrjob/add", {
+      success: function() {
+        API.addJob(cid);
+      }
+    });
   });
 
   HRApp.addInitializer(function() {
