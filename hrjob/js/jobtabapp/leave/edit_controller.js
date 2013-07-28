@@ -10,16 +10,10 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       leaveCollection.fetch({
         success: function() {
           HRApp.trigger('ui:unblock');
-          /*
           leaveCollection.addMissingTypes(
             _.keys(CRM.FieldOptions.HRJobLeave.leave_type),
-            {
-              job_id: jobId,
-              leave_amount: 0
-            }
+            { job_id: jobId }
           );
-          //*/
-          //leaveCollection.sortBy('leave_type');
           var mainView = new Leave.TableView({
             collection: leaveCollection
           });
