@@ -1,18 +1,18 @@
-CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $, _){
+CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $, _) {
 
   // FIXME: allows multiple cid's but only one JobCollection
   var jobCollection = new CRM.HRApp.Entities.HRJobCollection([], {
     crmCriteria: {contact_id: CRM.jobTabApp.contact_id}
   });
-  HRApp.on("initialize:after", function(){
+  HRApp.on("initialize:after", function() {
     HRApp.JobTabApp.Tree.Controller.show(CRM.jobTabApp.contact_id, jobCollection);
   });
 
   JobTabApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
-      ":cid/hrjob" : "showIntro",
-      ":cid/hrjob/add" : "addJob",
-      ":cid/hrjob/:id" : "showSummary",
+      ":cid/hrjob": "showIntro",
+      ":cid/hrjob/add": "addJob",
+      ":cid/hrjob/:id": "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
       ":cid/hrjob/:id/health": "editHealth",
       ":cid/hrjob/:id/hour": "editHour",
@@ -27,7 +27,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     addJob: function(cid) {
       JobTabApp.General.Controller.addGeneral(cid, jobCollection);
     },
-    showIntro: function(cid){
+    showIntro: function(cid) {
       JobTabApp.Intro.Controller.showIntro(cid);
     },
     showSummary: function(cid, jobId) {
@@ -56,12 +56,12 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     }
   };
 
-  HRApp.on("intro:show", function(cid){
+  HRApp.on("intro:show", function(cid) {
     HRApp.navigate(cid + "/hrjob");
     API.showIntro(cid);
   });
 
-  HRApp.on("hrjob:summary:show", function(cid, jobId){
+  HRApp.on("hrjob:summary:show", function(cid, jobId) {
     HRApp.navigate(cid + "/hrjob/" + jobId);
     API.showSummary(cid, jobId);
   });
@@ -77,19 +77,19 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     "pay": "editPay",
     "pension": "editPension",
     "role": "editRole"
-  }, function(apiAction, editableModule, list){
-    HRApp.on("hrjob:"+editableModule+":edit", function(cid, jobId){
+  }, function(apiAction, editableModule, list) {
+    HRApp.on("hrjob:" + editableModule + ":edit", function(cid, jobId) {
       HRApp.navigate(cid + "/hrjob/" + jobId + "/" + editableModule);
       API[apiAction](cid, jobId);
     });
   });
 
-  HRApp.on("hrjob:add", function(cid){
+  HRApp.on("hrjob:add", function(cid) {
     HRApp.navigate(cid + "/hrjob/add");
     API.addJob(cid);
   });
 
-  HRApp.addInitializer(function(){
+  HRApp.addInitializer(function() {
     new JobTabApp.Router({
       controller: API
     });

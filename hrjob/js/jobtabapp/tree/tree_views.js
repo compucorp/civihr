@@ -1,4 +1,4 @@
-CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $, _){
+CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $, _) {
   Tree.ItemView = Marionette.ItemView.extend({
     template: '#hrjob-tree-item-template',
     templateHelpers: function() {
