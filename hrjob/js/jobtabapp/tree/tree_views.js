@@ -40,6 +40,21 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
         'hrjob:add',
         CRM.jobTabApp.contact_id // FIXME
       );
+    },
+    /**
+     * Designate a particular path (eg "#9/hrjob/10/pay")
+     * as active
+     *
+     * @param path
+     */
+    selectRoute: function(route) {
+      this.$('.selected').removeClass('selected');
+      this.$('a').each(function() {
+        var $this = $(this);
+        if ($this.attr('href') == ('#' + route)) {
+          $this.addClass('selected');
+        }
+      });
     }
   });
 });

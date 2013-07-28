@@ -5,9 +5,16 @@ CRM.HRApp.addRegions({
   treeRegion: ".hrjob-tree-region"
 });
 
+/**
+ * Navigate to a major/new screen.
+ *
+ * @param string route The fragment to append to the URL
+ * @param Object options
+ */
 CRM.HRApp.navigate = function(route,  options){
   options || (options = {});
   Backbone.history.navigate(route, options);
+  CRM.HRApp.trigger('navigate', route, options);
 };
 
 CRM.HRApp.getCurrentRoute = function(){
