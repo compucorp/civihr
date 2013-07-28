@@ -46,7 +46,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       view.collection.save({
         success: function() {
           HRApp.trigger('ui:unblock');
-          CRM.alert('Saved');
+          CRM.alert(ts('Saved'), null, 'success');
           view.triggerMethod('standard:save', view, view.model);
         },
         error: function() {
@@ -64,7 +64,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           HRApp.trigger('ui:unblock');
           view.addMissingTypes();
           view.render(); // CompositeView doesn't draw the new elements at the right position
-          CRM.alert('Reset');
+          CRM.alert(ts('Reset'));
           view.triggerMethod('standard:reset', view, view.model);
         },
         error: function() {

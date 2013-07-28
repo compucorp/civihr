@@ -98,7 +98,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       view.collection.save({
         success: function() {
           HRApp.trigger('ui:unblock');
-          CRM.alert('Saved');
+          CRM.alert(ts('Saved'), null, 'success');
           view.triggerMethod('standard:save', view, view.model);
         },
         error: function() {
@@ -114,7 +114,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         reset: true,
         success: function() {
           HRApp.trigger('ui:unblock');
-          CRM.alert('Reset');
+          CRM.alert(ts('Reset'));
           view.triggerMethod('standard:reset', view, view.model);
         },
         error: function() {
