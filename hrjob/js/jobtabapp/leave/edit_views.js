@@ -4,6 +4,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     template: '#hrjob-leave-template',
     templateHelpers: function() {
       return {
+        'cid': this.model.cid,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobLeave
       };
@@ -12,7 +13,9 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       CRM.HRApp.Common.mbind(this);
     },
     onBindingCreate: function(bindings) {
-      var suffix = '_' + this.model.get('leave_type');
+      // The field names in each <TR> must be distinct, so we append the cid.
+      // However, ModelBinder doesn't know about the cid suffix, so we fix it.
+      var suffix = '_' + this.model.cid;
       _.each(['leave_type', 'leave_amount'], function(field){
         bindings[field] = bindings[field + suffix];
         delete bindings[field + suffix];
