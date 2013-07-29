@@ -34,13 +34,19 @@
                 {$form.hrjob_hours_unit.label}<br />
                 {$form.hrjob_hours_unit.html}
             </td>
-            <td>
-                {$form.hrjob_hours_amount.label}<br />
-                {$form.hrjob_hours_amount.html}
+        </tr>
+        <tr>
+            <td><label>{ts}Hours Amount{/ts}</label> <br />
+                {$form.hrjob_hours_amount_low.label}
+                {$form.hrjob_hours_amount_low.html} &nbsp;&nbsp;
+                {$form.hrjob_hours_amount_high.label}
+                {$form.hrjob_hours_amount_high.html} 
             </td>
-            <td>
-                {$form.hrjob_hours_fte.label}<br />
-                {$form.hrjob_hours_fte.html}
+            <td><label>{ts}Hours FTE{/ts}</label> <br />
+                {$form.hrjob_hours_fte_low.label}
+                {$form.hrjob_hours_fte_low.html} &nbsp;&nbsp;
+                {$form.hrjob_hours_fte_high.label}
+                {$form.hrjob_hours_fte_high.html} 
             </td>
         </tr>
     </table>

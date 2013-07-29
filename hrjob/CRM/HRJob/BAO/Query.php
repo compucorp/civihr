@@ -115,6 +115,8 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
     $strtolower = function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
     switch ($name) {
+      case 'hrjob_level_type':
+      case 'hrjob_contract_type':
       case 'hrjob_pay_grade':
       case 'hrjob_period_type':
         if (is_array($value) && count($value) > 1) {
@@ -155,6 +157,28 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         );
         return;
 
+      case 'hrjob_hours_amount':
+      case 'hrjob_hours_amount_low':
+      case 'hrjob_hours_amount_high':
+        // process min/max amount
+        $query->numberRangeBuilder($values,
+          'civicrm_hrjob_hour', 'hrjob_hours_amount',
+          'hours_amount', 'Hours Amount',
+          NULL
+        );
+        return;
+
+      case 'hrjob_hours_fte':
+      case 'hrjob_hours_fte_low':
+      case 'hrjob_hours_fte_high':
+        // process min/max fte
+        $query->numberRangeBuilder($values,
+          'civicrm_hrjob_hour', 'hrjob_hours_fte',
+          'hours_fte', 'Hours FTE',
+          NULL
+        );
+        return;
+
       default:
         if (!isset($fields[$name])) {
           CRM_Core_Session::setStatus(ts(
@@ -168,6 +192,12 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $value      = trim($value);
         $dataType   = "String";
 
+        if (in_array($name, array('hrjob_position', 'hrjob_title')) &&
+          strpos($value, '%') === FALSE) {
+          $op = 'LIKE';
+          $value = "%" . trim($value, '%') . "%";
+          $quoteValue = "\"$value\"";
+        }
         $wc = ($op != 'LIKE') ? "LOWER($whereTable[where])" : "$whereTable[where]";
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($wc, $op, $value, $dataType);
         $query->_qill [$grouping][] = "{$whereTable['title']} {$op} {$quoteValue}";
@@ -228,8 +258,14 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('hidden', 'hidden_hrjob', 1);
       $form->addElement('text', 'hrjob_position', ts('Position'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'position'));
       $form->addElement('text', 'hrjob_title', ts('Title'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'title'));
-      $form->addElement('text', 'hrjob_level_type', ts('Level'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'level_type'));
-      $form->addElement('text', 'hrjob_contract_type', ts('Contract Type'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'contract_type'));
+      $form->add('select', 'hrjob_level_type', ts('Level'), 
+        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'level_type'), FALSE,
+        array('id' => 'hrjob_level_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
+      );
+      $form->add('select', 'hrjob_contract_type', ts('Contract Type'), 
+        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'contract_type'), FALSE,
+        array('id' => 'hrjob_contract_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
+      );
       $form->add('select', 'hrjob_period_type', ts('Period Type'), 
         array('Temporary' => ts('Temporary'), 'Permanent' => ts('Permanent')), FALSE,
         array('id' => 'hrjob_period_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
@@ -247,12 +283,21 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('select', 'hrjob_hours_type', ts('Hours Types'), $hoursType, FALSE,
         array('id' => 'hrjob_hours_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
-      $form->addElement('text', 'hrjob_hours_amount', ts('Hours Amount'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJobHour', 'hours_amount'));
+
       $form->add('select', 'hrjob_hours_unit', ts('Hours Unit'), 
         array('Day' => ts('Day'), 'Week' => ts('Week'), 'Month' => ts('Month'), 'Year' => ts('Year')), FALSE,
         array('id' => 'hrjob_hours_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
-      $form->addElement('text', 'hrjob_hours_fte', ts('Hours FTE'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJobHour', 'hours_fte'));
+
+      $form->add('text', 'hrjob_hours_amount_low', ts('From'), array('size' => 8, 'maxlength' => 8));
+      $form->addRule('hrjob_hours_amount_low', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('9.99', ' '))), 'money');
+      $form->add('text', 'hrjob_hours_amount_high', ts('To'), array('size' => 8, 'maxlength' => 8));
+      $form->addRule('hrjob_hours_amount_high', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('99.99', ' '))), 'money');
+
+      $form->add('text', 'hrjob_hours_fte_low', ts('From'), array('size' => 8, 'maxlength' => 8));
+      $form->addRule('hrjob_hours_fte_low', ts('Please enter a valid decimal value (e.g. %1).', array(1 => CRM_Utils_Money::format('9.99', ' '))), 'money');
+      $form->add('text', 'hrjob_hours_fte_high', ts('To'), array('size' => 8, 'maxlength' => 8));
+      $form->addRule('hrjob_hours_fte_high', ts('Please enter a valid decimal value (e.g. %1).', array(1 => CRM_Utils_Money::format('99.99', ' '))), 'money');
     }
     if ($type  == 'hrjob_pension') {
       $form->add('hidden', 'hidden_hrjob_pension', 1);
