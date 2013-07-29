@@ -59,6 +59,21 @@
     </div>
   </div>
 
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-level_type">{ts}Location{/ts}</label>
+    </div>
+    <div class="crm-content">
+    {literal}
+      <%= RenderUtil.select({
+      id: 'hrjob-level_type',
+      name: 'location',
+      options: _.extend({'':''}, FieldOptions.location)
+      }) %>
+    {/literal}
+    </div>
+  </div>
+
   <h3>{ts}Time Period{/ts}</h3>
 
   <div class="crm-summary-row">
