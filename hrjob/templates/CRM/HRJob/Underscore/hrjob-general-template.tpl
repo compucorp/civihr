@@ -55,7 +55,7 @@
       <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="form-text-big" type="text" />
+      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-contact-selector" type="text" />
     </div>
   </div>
 
