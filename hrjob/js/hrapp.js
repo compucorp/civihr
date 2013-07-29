@@ -9,7 +9,7 @@ CRM.HRApp.on("initialize:after", function() {
   if (Backbone.history) {
     Backbone.history.start();
 
-    if (this.getCurrentRoute() === "") {
+    if (CRM.HRApp.Common.Navigation.getCurrentRoute() === "") {
       CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
     }
   }

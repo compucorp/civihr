@@ -16,17 +16,17 @@ CRM.HRApp.module('Common.Navigation', function(Navigation, HRApp, Backbone, Mari
    *  - navigate: function(route, options) -- Allow other components to
    *    update based on the navigation
    */
-  CRM.HRApp.navigate = function(route, options) {
+  Navigation.navigate = function(route, options) {
     options || (options = {});
     _.defaults(options, {
       warnTitle: ts('Confirm Action'),
       warnMessages: []
     });
-    CRM.HRApp.trigger('navigate:warnings', route, options);
+    HRApp.trigger('navigate:warnings', route, options);
 
     var doNavigate = function() {
       Backbone.history.navigate(route, options);
-      CRM.HRApp.trigger('navigate', route, options);
+      HRApp.trigger('navigate', route, options);
       if (options.success) options.success(route, options);
     };
 
@@ -45,18 +45,18 @@ CRM.HRApp.module('Common.Navigation', function(Navigation, HRApp, Backbone, Mari
     }
   };
 
-  CRM.HRApp.getCurrentRoute = function() {
-    return Backbone.history.fragment
+  Navigation.getCurrentRoute = function() {
+    return Backbone.history.fragment;
   };
 
-  CRM.HRApp.on("initialize:after", function() {
+  HRApp.on("initialize:after", function() {
     window.onbeforeunload = _.wrap(window.onbeforeunload, function(onbeforeunload) {
       console.log('unload');
       var options = {
         warnTitle: ts('Confirm Action'),
         warnMessages: []
       };
-      CRM.HRApp.trigger('navigate:warnings', null, options);
+      HRApp.trigger('navigate:warnings', null, options);
       if (options.warnMessages.length > 0) {
         return options.warnMessages.join(' ');
       } else if (onbeforeunload) {
