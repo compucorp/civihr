@@ -16,6 +16,6 @@
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
-    <namespace>CRM/Hrdemog</namespace>
+    <namespace>CRM/HRDemog</namespace>
   </civix>
 </extension>
