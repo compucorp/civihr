@@ -109,7 +109,7 @@ function hrcareer_civicrm_buildProfile($name) {
         'template'    => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
         'css_class'   => 'hrcareer-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'table_name', 'name'),
+        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'table_name', 'name'),
         'contact_id'  => $contactID,
         'weight'      => -2,
       ));
