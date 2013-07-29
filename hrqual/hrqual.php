@@ -15,6 +15,16 @@ function hrqual_civicrm_buildProfile($name) {
       );
       CRM_Core_Region::instance('profile-form-hrqual_tab')->add($regionParams);
     }
+
+    $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+    CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array(
+        'template'    => 'CRM/common/logButton.tpl',
+        'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+        'css_class'   => 'hrqual-revision-link',
+        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name'),
+        'contact_id'  => $contactID,
+        'weight'      => -2,
+      ));
   }
 }
 
@@ -130,21 +140,4 @@ function hrqual_getCustomGroupId() {
 function hrqual_getUFGroupID() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
   return array_search('hrqual_tab', $groups);
-}
-
-/**
- * Implementation of hook_civicrm_buildProfile
- */
-function hrqual_civicrm_buildProfile($name) {
-  if ($name == 'hrqual_tab') {
-    $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
-    CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array(
-        'template'    => 'CRM/common/logButton.tpl',
-        'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-        'css_class'   => 'hrqual-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name'),
-        'contact_id'  => $contactID,
-        'weight'      => -2,
-      ));
-  }
 }
