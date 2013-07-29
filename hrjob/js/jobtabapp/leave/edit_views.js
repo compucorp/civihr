@@ -35,6 +35,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     },
     initialize: function(models, options) {
       this.addMissingTypes();
+      this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     events: {
       'click .standard-save': 'doSave',
@@ -78,6 +79,20 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
         _.keys(CRM.FieldOptions.HRJobLeave.leave_type),
         { job_id: this.collection.crmCriteria.job_id } // FIXME: tight coupling
       );
+    },
+    onNavigateWarnings: function(route, options) {
+      // The "Leave" table shows a fixed number of rows -- in two general categories:
+      // 1. Real, existing DB rows
+      // 2. New, placeholder DB rows (which would become real if saved)
+      // In both case, we only care if the row has been *modified*. Insertions/deletions
+      // are a non-issue.
+      var modified = this.collection.foldl(function(memo, model){
+        return memo || model.isModified();
+      }, false);
+      if (modified) {
+        options.warnTitle = ts('Abandon Changes?');
+        options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
+      }
     }
   });
 });
