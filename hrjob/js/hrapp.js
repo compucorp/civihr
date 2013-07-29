@@ -63,6 +63,20 @@ CRM.HRApp.on("initialize:after", function() {
       CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
     }
   }
+
+  window.onbeforeunload = _.wrap(window.onbeforeunload, function(onbeforeunload) {
+    console.log('unload');
+    var options = {
+      warnTitle: ts('Confirm Action'),
+      warnMessages: []
+    };
+    CRM.HRApp.trigger('navigate:warnings', null, options);
+    if (options.warnMessages.length > 0) {
+      return options.warnMessages.join(' ');
+    } else if (onbeforeunload) {
+      return onbeforeunload.apply(this, arguments);
+    }
+  });
 });
 
 CRM.HRApp.on("ui:block", function(message) {
