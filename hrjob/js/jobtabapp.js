@@ -57,7 +57,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   };
 
   HRApp.on("intro:show", function(cid) {
-    HRApp.navigate(cid + "/hrjob", {
+    HRApp.Common.Navigation.navigate(cid + "/hrjob", {
       success: function() {
         API.showIntro(cid);
       }
@@ -65,7 +65,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   });
 
   HRApp.on("hrjob:summary:show", function(cid, jobId) {
-    HRApp.navigate(cid + "/hrjob/" + jobId, {
+    HRApp.Common.Navigation.navigate(cid + "/hrjob/" + jobId, {
       success: function() {
         API.showSummary(cid, jobId);
       }
@@ -85,7 +85,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     "role": "editRole"
   }, function(apiAction, editableModule, list) {
     HRApp.on("hrjob:" + editableModule + ":edit", function(cid, jobId) {
-      HRApp.navigate(cid + "/hrjob/" + jobId + "/" + editableModule, {
+      HRApp.Common.Navigation.navigate(cid + "/hrjob/" + jobId + "/" + editableModule, {
         success: function() {
           API[apiAction](cid, jobId);
         }
@@ -94,7 +94,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   });
 
   HRApp.on("hrjob:add", function(cid) {
-    HRApp.navigate(cid + "/hrjob/add", {
+    HRApp.Common.Navigation.navigate(cid + "/hrjob/add", {
       success: function() {
         API.addJob(cid);
       }
