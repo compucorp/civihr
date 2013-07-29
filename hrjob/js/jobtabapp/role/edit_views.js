@@ -80,6 +80,9 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset'
     },
+    initialize: function() {
+      this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
+    },
     appendHtml: function(collectionView, itemView, index) {
       collectionView.$('tr.hrjob-role-final').before(itemView.el);
     },
@@ -122,6 +125,17 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+    },
+    onNavigateWarnings: function(route, options) {
+      // The "Role" table may include a mix of existing (modifiable) rows,
+      // newly added rows, and deleted rows.
+      var modified = this.collection.foldl(function(memo, model){
+        return memo || model.isNew() || model.isModified() || model.isSoftDeleted();
+      }, false);
+      if (modified) {
+        options.warnTitle = ts('Abandon Changes?');
+        options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
+      }
     }
   });
 });
