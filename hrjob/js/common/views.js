@@ -21,6 +21,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
+      this.$('.crm-contact-selector').crmContactField();
     },
     modelEvents: {
       invalid: function(model, errors) {
