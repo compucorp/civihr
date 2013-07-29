@@ -26,6 +26,15 @@ function hrvisa_civicrm_buildProfile($name) {
         <input type='checkbox' id='is_visa_required' value='1' name='is_visa_required' checked='checked'></p>";
     }
     CRM_Core_Region::instance('profile-form-hrvisa_tab')->add($regionParams);
+
+    CRM_Core_Region::instance('profile-form-hrvisa_tab')->add(array(
+        'template'    => 'CRM/common/logButton.tpl',
+        'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+        'css_class'   => 'hrvisa-revision-link',
+        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Immigration', 'table_name', 'name'),
+        'contact_id'  => $contactID,
+        'weight'      => -2,
+      ));
   }
 }
 
