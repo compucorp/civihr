@@ -9,6 +9,7 @@
 ##################################
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
+org.civicrm.hrdemog,\
 org.civicrm.hrident,\
 org.civicrm.hrjob,\
 org.civicrm.hrmed,\
