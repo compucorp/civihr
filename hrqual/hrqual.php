@@ -10,21 +10,24 @@ function hrqual_civicrm_buildProfile($name) {
     $action = CRM_Utils_Request::retrieve('multiRecord', 'String', $this);
     // display the select box only in add and update mode
     if (in_array($action, array("add", "update"))) {
-      $regionParams = array( 
+      $regionParams = array(
         'markup' => "<select id='category_name' name='category_name' style='display:none' class='form-select required'></select>",
       );
       CRM_Core_Region::instance('profile-form-hrqual_tab')->add($regionParams);
     }
 
-    $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
-    CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array(
-        'template'    => 'CRM/common/logButton.tpl',
+    $config = CRM_Core_Config::singleton();
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+      CRM_Core_Region::instance('profile-form-hrqual_tab')->add(array(
+        'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-        'css_class'   => 'hrqual-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name'),
-        'contact_id'  => $contactID,
-        'weight'      => -2,
+        'css_class' => 'hrqual-revision-link',
+        'table_name' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'table_name', 'name'),
+        'contact_id' => $contactID,
+        'weight' => -2,
       ));
+    }
   }
 }
 

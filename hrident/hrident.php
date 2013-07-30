@@ -103,14 +103,17 @@ function hrident_getUFGroupID() {
  */
 function hrident_civicrm_buildProfile($name) {
   if ($name == 'hrident_tab') {
-    $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
-    CRM_Core_Region::instance('profile-form-hrident_tab')->add(array(
-        'template'    => 'CRM/common/logButton.tpl',
+    $config = CRM_Core_Config::singleton();
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+      CRM_Core_Region::instance('profile-form-hrident_tab')->add(array(
+        'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-        'css_class'   => 'hrident-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'table_name', 'name'),
-        'contact_id'  => $contactID,
-        'weight'      => -2,
+        'css_class' => 'hrident-revision-link',
+        'table_name' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'table_name', 'name'),
+        'contact_id' => $contactID,
+        'weight' => -2,
       ));
+    }
   }
 }
