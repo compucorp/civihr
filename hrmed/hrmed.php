@@ -107,12 +107,12 @@ function hrmed_civicrm_buildProfile($name) {
     if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
       $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
       CRM_Core_Region::instance('profile-form-hrmed_tab')->add(array(
-        'template'    => 'CRM/common/logButton.tpl',
+        'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-        'css_class'   => 'hrmed-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'table_name', 'name'),
-        'contact_id'  => $contactID,
-        'weight'      => -2,
+        'css_class' => 'hrmed-revision-link',
+        'table_name' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'table_name', 'name'),
+        'contact_id' => $contactID,
+        'weight' => -2,
       ));
     }
   }

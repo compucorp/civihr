@@ -97,7 +97,7 @@ function hrcareer_getCustomGroupId() {
 function hrcareer_getUFGroupID() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
   return array_search('hrcareer_tab', $groups);
-} 
+}
 
 /**
  * Implementation of hook_civicrm_buildProfile
@@ -106,14 +106,14 @@ function hrcareer_civicrm_buildProfile($name) {
   if ($name == 'hrcareer_tab') {
     $config = CRM_Core_Config::singleton();
     if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
-      $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
       CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
-        'template'    => 'CRM/common/logButton.tpl',
+        'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-        'css_class'   => 'hrcareer-revision-link',
-        'table_name'  => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'table_name', 'name'),
-        'contact_id'  => $contactID,
-        'weight'      => -2,
+        'css_class' => 'hrcareer-revision-link',
+        'table_name' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'table_name', 'name'),
+        'contact_id' => $contactID,
+        'weight' => -2,
       ));
     }
   }
