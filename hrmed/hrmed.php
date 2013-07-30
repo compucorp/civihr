@@ -102,7 +102,11 @@ function hrmed_getUFGroupID() {
  * Implementation of hook_civicrm_buildProfile
  */
 function hrmed_civicrm_buildProfile($name) {
-  if ($name == 'hrmed_tab') {
+  if (
+    $name == 'hrmed_tab'
+    &&
+    'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)
+  ) {
     $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     CRM_Core_Region::instance('profile-form-hrmed_tab')->add(array(
         'template'    => 'CRM/common/logButton.tpl',

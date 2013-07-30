@@ -102,7 +102,11 @@ function hrident_getUFGroupID() {
  * Implementation of hook_civicrm_buildProfile
  */
 function hrident_civicrm_buildProfile($name) {
-  if ($name == 'hrident_tab') {
+  if (
+    $name == 'hrident_tab'
+    &&
+    'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)
+  ) {
     $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     CRM_Core_Region::instance('profile-form-hrident_tab')->add(array(
         'template'    => 'CRM/common/logButton.tpl',
