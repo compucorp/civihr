@@ -27,7 +27,8 @@ function hrvisa_civicrm_buildProfile($name) {
     }
     CRM_Core_Region::instance('profile-form-hrvisa_tab')->add($regionParams);
 
-    if ('multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+    $config = CRM_Core_Config::singleton();
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
       CRM_Core_Region::instance('profile-form-hrvisa_tab')->add(array(
         'template'    => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),

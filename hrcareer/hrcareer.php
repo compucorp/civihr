@@ -103,13 +103,11 @@ function hrcareer_getUFGroupID() {
  * Implementation of hook_civicrm_buildProfile
  */
 function hrcareer_civicrm_buildProfile($name) {
-  if (
-    $name == 'hrcareer_tab'
-    &&
-    'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)
-  ) {
-    $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
-    CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
+  if ($name == 'hrcareer_tab') {
+    $config = CRM_Core_Config::singleton();
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+      $contactID  = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+      CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
         'template'    => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
         'css_class'   => 'hrcareer-revision-link',
@@ -117,5 +115,6 @@ function hrcareer_civicrm_buildProfile($name) {
         'contact_id'  => $contactID,
         'weight'      => -2,
       ));
+    }
   }
 }
