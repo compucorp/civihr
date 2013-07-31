@@ -48,7 +48,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
       JobTabApp.Summary.Controller.showSummary(cid, jobId);
     },
     editGeneral: function(cid, jobId) {
-      JobTabApp.General.Controller.editGeneral(cid, jobId);
+      JobTabApp.General.Controller.editGeneral(cid, jobId, jobCollection);
     },
     editHealth: function(cid, jobId) {
       JobTabApp.Health.Controller.editHealth(cid, jobId);
