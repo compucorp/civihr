@@ -39,6 +39,9 @@ table.hrjob-role-table > tbody > tr.deleted .hrjob-role-remove {
 table.hrjob-role-table > tbody > tr.undeleted .hrjob-role-restore {
     display: none;
 }
+a.hrjob-nav .ui-icon {
+    float: right;
+}
 a.hrjob-nav.selected {
     color: #000000;
     font-weight: bold;

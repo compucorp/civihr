@@ -30,7 +30,10 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   Entities.HRJobCollection = Backbone.Collection.extend({
     sync: CRM.Backbone.sync,
-    model: Entities.HRJob
+    model: Entities.HRJob,
+    comparator: function(model) {
+      return (model.get('is_primary') == '1' ? 'a' : 'b') + "::" + model.get("contract_type") + "::" + model.get("position");
+    }
   });
   CRM.Backbone.extendCollection(Entities.HRJobCollection);
 
