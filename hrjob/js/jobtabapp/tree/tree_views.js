@@ -40,6 +40,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     initialize: function() {
       this.listenTo(this, 'render', this.showHide);
       this.listenTo(this, 'after:item:added', this.showHide);
+      this.listenTo(this.collection, 'sync', this.render);
     },
     doAddJob: function(e) {
       e.preventDefault();
