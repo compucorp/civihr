@@ -43,3 +43,6 @@ a.hrjob-nav.selected {
     color: #000000;
     font-weight: bold;
 }
+.hrjob-container input, .hrjob-container select, .hrjob-container textarea {
+    width: 95%;
+}
