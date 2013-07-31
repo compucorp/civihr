@@ -315,7 +315,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'dataPattern' => '',
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
-        'location' => array(
+        'hrjob_location' => array(
           'name' => 'location',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job Location') ,
@@ -365,7 +365,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',
         'manager_contact_id' => 'hrjob_manager_contact_id',
-        'location' => 'location',
+        'location' => 'hrjob_location',
         'is_primary' => 'hrjob_is_primary',
       );
     }
