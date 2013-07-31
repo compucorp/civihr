@@ -15,7 +15,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
           } else {
             // Redirect to the edit screen for the first job
             var job = jobCollection.first();
-            CRM.HRApp.trigger('hrjob:general:edit', job.get('contact_id'), job.get('id'));
+            HRApp.trigger('hrjob:general:edit', job.get('contact_id'), job.get('id'));
           }
         }
       },

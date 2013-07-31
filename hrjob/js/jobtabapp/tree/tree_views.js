@@ -34,12 +34,23 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-tree-add': 'doAddJob'
     },
+    initialize: function() {
+      this.listenTo(this, 'render', this.showHide);
+      this.listenTo(this, 'after:item:added', this.showHide);
+    },
     doAddJob: function(e) {
       e.preventDefault();
       CRM.HRApp.trigger(
         'hrjob:add',
         CRM.jobTabApp.contact_id // FIXME
       );
+    },
+    showHide: function() {
+      if (this.collection.isEmpty()) {
+        this.$el.hide();
+      } else {
+        this.$el.show();
+      }
     },
     /**
      * Designate a particular path (eg "#9/hrjob/10/pay")
