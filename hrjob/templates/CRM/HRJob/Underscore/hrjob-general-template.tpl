@@ -74,6 +74,15 @@
     </div>
   </div>
 
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-is_primary">{ts}Is Primary{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-is_primary" name="is_primary" type="checkbox" />
+    </div>
+  </div>
+
   <h3>{ts}Time Period{/ts}</h3>
 
   <div class="crm-summary-row">
