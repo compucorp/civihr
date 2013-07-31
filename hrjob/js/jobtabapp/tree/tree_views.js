@@ -6,6 +6,9 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
         cid: CRM.jobTabApp.contact_id // FIXME
       }
     },
+    modelEvents: {
+      'change:is_primary': 'render'
+    },
     events: {
       'click .hrjob-nav': 'doTriggerEvent'
     },
