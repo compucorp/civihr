@@ -1,6 +1,7 @@
 CRM.HRApp = new Marionette.Application();
 
 CRM.HRApp.addRegions({
+  messageRegion: ".hrjob-message-region",
   mainRegion: ".hrjob-main-region",
   treeRegion: ".hrjob-tree-region"
 });
@@ -9,6 +10,10 @@ CRM.HRApp.on("initialize:after", function() {
   if (Backbone.history) {
     Backbone.history.start();
   }
+});
+
+CRM.HRApp.on("navigate", function(route, options) {
+  CRM.HRApp.messageRegion.close();
 });
 
 CRM.HRApp.on("ui:block", function(message) {

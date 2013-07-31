@@ -1,3 +1,5 @@
+<div class="hrjob-message-region"></div>
+
 <div class="hrjob-container">
   <div class="hrjob-main-region"></div>
   <div class="hrjob-tree-region"></div>

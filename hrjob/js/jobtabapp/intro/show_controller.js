@@ -4,7 +4,7 @@ CRM.HRApp.module('JobTabApp.Intro', function(Intro, HRApp, Backbone, Marionette,
       var mainView = new Intro.ShowView({
         contact_id: cid
       });
-      HRApp.mainRegion.show(mainView);
+      HRApp.messageRegion.show(mainView);
     }
   }
 });
