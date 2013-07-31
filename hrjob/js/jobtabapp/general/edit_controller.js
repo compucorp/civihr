@@ -18,7 +18,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       HRApp.mainRegion.show(mainView);
     },
 
-    editGeneral: function(cid, jobId) {
+    editGeneral: function(cid, jobId, jobCollection) {
       HRApp.trigger('ui:block', ts('Loading'));
       var model = new HRApp.Entities.HRJob({id: jobId});
       model.fetch({
@@ -28,6 +28,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
             model: model
           });
           HRApp.mainRegion.show(mainView);
+          mainView.listenTo(mainView, "standard:save", function(view, model) {
+            jobCollection.fetch();
+          });
         },
         error: function() {
           HRApp.trigger('ui:unblock');
