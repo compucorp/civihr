@@ -228,10 +228,10 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
         ) ,
-        'department' => array(
+        'hrjob_department' => array(
           'name' => 'department',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Department') ,
+          'title' => ts('Job Department') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
@@ -296,7 +296,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'description' => 'description',
         'hours' => 'hours',
         'region' => 'region',
-        'department' => 'department',
+        'department' => 'hrjob_department',
         'manager_contact_id' => 'manager_contact_id',
         'functional_area' => 'functional_area',
         'organization' => 'organization',
