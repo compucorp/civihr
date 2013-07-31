@@ -119,15 +119,16 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       case 'hrjob_contract_type':
       case 'hrjob_pay_grade':
       case 'hrjob_period_type':
-        if (is_array($value) && count($value) > 1) {
-          $op   = 'IN';
+        $display = $options = $value;
+        if (is_array($value) && count($value) >= 1) {
+          $op      = 'IN';
           $options = "('" . implode("','", $value) . "')";
-
-          $query->_qill[$grouping][]  = ts('%1 %2', array(1 => $fields[$name]['title'], 2 => $op)) . ' ' . implode(' ' . ts('or') . ' ', $value);
-          $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($fields[$name]['where'], $op, $options);
-          list($tableName, $fieldName) = explode('.', $fields[$name]['where'], 2);
-          $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
+          $display = implode(' ' . ts('or') . ' ', $value);
         }
+        $query->_qill[$grouping][]  = ts('%1 %2', array(1 => $fields[$name]['title'], 2 => $op)) . ' ' . $display;
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause($fields[$name]['where'], $op, $options);
+        list($tableName, $fieldName) = explode('.', $fields[$name]['where'], 2);
+        $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
         return;
 
       case 'hrjob_is_healthcare':
