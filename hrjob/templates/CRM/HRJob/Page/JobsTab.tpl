@@ -6,3 +6,5 @@
 <script type="text/javascript">
   CRM.HRApp.start();
 </script>
+
+<div class="clear"></div>
