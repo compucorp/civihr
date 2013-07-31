@@ -160,6 +160,7 @@
     <pseudoconstant>
       <optionGroupName>hrjob_location</optionGroupName>
     </pseudoconstant>
+    <uniqueName>hrjob_location</uniqueName>
   </field>
   <index>
     <name>index_location</name>
