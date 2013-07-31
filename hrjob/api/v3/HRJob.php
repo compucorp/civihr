@@ -10,6 +10,7 @@
  */
 function _civicrm_api3_h_r_job_create_spec(&$spec) {
   // $spec['some_parameter']['api.required'] = 1;
+  $params['is_primary']['api.default'] = 0;
 }
 
 /**

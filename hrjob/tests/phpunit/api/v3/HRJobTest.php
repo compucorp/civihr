@@ -15,6 +15,9 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
 
   function tearDown() {
     parent::tearDown();
+    $this->quickCleanup(array(
+      'civicrm_hrjob'
+    ));
   }
 
   protected static function _populateDB($perClass = FALSE, &$object = NULL) {
@@ -136,5 +139,59 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
         $this->assertEquals(7, $hrJobLeaveResult['leave_amount']);
       }
     }
+  }
+
+  /**
+   * Create two jobs (the first defaults to is_primary=1, the second defaults to is_primary=0).
+   * Then switch the defaults.
+   */
+  public function testIsPrimary() {
+    $cid = $this->individualCreate();
+
+    // create first contact - defaults to is_primary=1
+    $result1 = $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $cid,
+      'position' => 'First',
+      'contract_type' => 'Volunteer',
+    ));
+    $this->assertEquals('1', $result1['values'][$result1['id']]['is_primary']);
+
+    // create second contact - defaults to is_primary=0
+    $result2 = $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $cid,
+      'position' => 'Second',
+      'contract_type' => 'Employee',
+    ));
+    $this->assertTrue(empty($result2['values'][$result2['id']]['is_primary']));
+
+    // make sure first and second were both really persisted - and that
+    // the value from first wasn't munged
+    $this->assertDBQuery(
+      1,
+      'SELECT count(*) FROM civicrm_hrjob WHERE is_primary = 1 AND id = %1',
+      array(1 => array($result1['id'], 'Integer'))
+    );
+    $this->assertDBQuery(
+      1,
+      'SELECT count(*) FROM civicrm_hrjob WHERE is_primary = 0 AND id = %1',
+      array(1 => array($result2['id'], 'Integer'))
+    );
+
+    // switch around the is_primary
+    $result2b = $this->callAPISuccess('HRJob', 'create', array(
+      'id' => $result2['id'],
+      'is_primary' => 1,
+    ));
+    $this->assertDBQuery(
+      1,
+      'SELECT count(*) FROM civicrm_hrjob WHERE is_primary = 1 AND id = %1',
+      array(1 => array($result2['id'], 'Integer'))
+    );
+    $this->assertDBQuery(
+      1,
+      'SELECT count(*) FROM civicrm_hrjob WHERE is_primary = 0 AND id = %1',
+      array(1 => array($result1['id'], 'Integer'))
+    );
+
   }
 }
