@@ -1,6 +1,7 @@
 CRM.HRApp = new Marionette.Application();
 
 CRM.HRApp.addRegions({
+  messageRegion: ".hrjob-message-region",
   mainRegion: ".hrjob-main-region",
   treeRegion: ".hrjob-tree-region"
 });
@@ -8,11 +9,11 @@ CRM.HRApp.addRegions({
 CRM.HRApp.on("initialize:after", function() {
   if (Backbone.history) {
     Backbone.history.start();
-
-    if (CRM.HRApp.Common.Navigation.getCurrentRoute() === "") {
-      CRM.HRApp.trigger("intro:show", CRM.jobTabApp.contact_id);
-    }
   }
+});
+
+CRM.HRApp.on("navigate", function(route, options) {
+  CRM.HRApp.messageRegion.close();
 });
 
 CRM.HRApp.on("ui:block", function(message) {

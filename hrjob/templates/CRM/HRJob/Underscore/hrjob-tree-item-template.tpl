@@ -1,6 +1,9 @@
 <script id="hrjob-tree-item-template" type="text/template">
   <dl>
+    {*
     <dt><a href="#<%= cid %>/hrjob/<%= id %>" class="hrjob-nav" data-hrjob-event="hrjob:summary:show">
+    *}
+    <dt><a href="#<%= cid %>/hrjob/<%= id %>/general" class="hrjob-nav" data-hrjob-event="hrjob:general:edit">
       <span name="contract_type"></span>:
       <span name="position"></span>
     </a></dt>
