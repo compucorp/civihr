@@ -74,7 +74,7 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
+  <div class="crm-summary-row hrjob-is_primary-row">
     <div class="crm-label">
       <label for="hrjob-is_primary">{ts}Is Primary{/ts}</label>
     </div>

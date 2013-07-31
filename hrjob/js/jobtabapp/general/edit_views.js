@@ -25,7 +25,12 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       if (!this.options.collection.get(this.model)) {
         jobCount++;
       }
-      if (jobCount <= 1 || this.model.get('is_primary') == '1') {
+      if (jobCount <= 1) {
+        this.$('.hrjob-is_primary-row').hide();
+      } else {
+        this.$('.hrjob-is_primary-row').show();
+      }
+      if (this.model.get('is_primary') == '1') {
         this.$('[name=is_primary]').attr('disabled', true);
       } else {
         this.$('[name=is_primary]').attr('disabled', false);

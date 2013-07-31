@@ -11,9 +11,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       });
       mainView.listenTo(mainView, "standard:save", function(view, model) {
         _.defer(function() {
-          if (!jobCollection.get(model)) {
-            jobCollection.add(model);
-          }
+          jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
           CRM.HRApp.trigger("hrjob:general:edit", model.get('contact_id'), model.get('id'));
         });
       });
@@ -32,7 +30,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
           });
           HRApp.mainRegion.show(mainView);
           mainView.listenTo(mainView, "standard:save", function(view, model) {
-            jobCollection.fetch();
+            jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
           });
         },
         error: function() {
