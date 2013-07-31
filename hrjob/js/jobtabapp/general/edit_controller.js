@@ -1,6 +1,6 @@
-CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marionette, $, _){
+CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marionette, $, _) {
   General.Controller = {
-    addGeneral: function(cid, jobCollection){
+    addGeneral: function(cid, jobCollection) {
       var model = new HRApp.Entities.HRJob({
         contact_id: cid
       });
@@ -8,15 +8,17 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         model: model
       });
       mainView.listenTo(mainView, "standard:save", function(view, model) {
-        if (! jobCollection.get(model)) {
-          jobCollection.add(model);
-        }
-        CRM.HRApp.trigger("hrjob:general:edit", model.get('contact_id'), model.get('id'));
+        _.defer(function() {
+          if (!jobCollection.get(model)) {
+            jobCollection.add(model);
+          }
+          CRM.HRApp.trigger("hrjob:general:edit", model.get('contact_id'), model.get('id'));
+        });
       });
       HRApp.mainRegion.show(mainView);
     },
 
-    editGeneral: function(cid, jobId){
+    editGeneral: function(cid, jobId) {
       HRApp.trigger('ui:block', ts('Loading'));
       var model = new HRApp.Entities.HRJob({id: jobId});
       model.fetch({
