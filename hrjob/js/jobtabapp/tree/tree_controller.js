@@ -3,23 +3,11 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
 
   Tree.Controller = {
     show: function(cid, jobCollection) {
-      if (!cid) {
-        throw "Missing argument: cid";
-      }
-      jobCollection.fetch({
-        success: function() {
-          treeView = new Tree.View({
-            collection: jobCollection
-          });
-          HRApp.treeRegion.show(treeView);
-          treeView.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
-        },
-        error: function(collection, errorData) {
-          treeView = null;
-          var errorView = new HRApp.Common.Views.Failed();
-          HRApp.treeRegion.show(errorView);
-        }
+      treeView = new Tree.View({
+        collection: jobCollection
       });
+      HRApp.treeRegion.show(treeView);
+      treeView.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
     },
 
     /**

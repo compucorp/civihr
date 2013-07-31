@@ -5,12 +5,29 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     crmCriteria: {contact_id: CRM.jobTabApp.contact_id}
   });
   HRApp.on("initialize:after", function() {
-    HRApp.JobTabApp.Tree.Controller.show(CRM.jobTabApp.contact_id, jobCollection);
+    jobCollection.fetch({
+      success: function() {
+        HRApp.JobTabApp.Tree.Controller.show(CRM.jobTabApp.contact_id, jobCollection);
+        if (CRM.HRApp.Common.Navigation.getCurrentRoute() === "") {
+          if (jobCollection.isEmpty()) {
+            // Stay on the default unrouted page (no #cid/hrjob in URL) but display an error.
+            JobTabApp.Intro.Controller.showIntro(CRM.jobTabApp.contact_id);
+          } else {
+            // Redirect to the edit screen for the first job
+            var job = jobCollection.first();
+            CRM.HRApp.trigger('hrjob:general:edit', job.get('contact_id'), job.get('id'));
+          }
+        }
+      },
+      error: function(collection, errorData) {
+        var errorView = new HRApp.Common.Views.Failed();
+        HRApp.treeRegion.show(errorView);
+      }
+    });
   });
 
   JobTabApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
-      ":cid/hrjob": "showIntro",
       ":cid/hrjob/add": "addJob",
       ":cid/hrjob/:id": "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
@@ -26,9 +43,6 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   var API = {
     addJob: function(cid) {
       JobTabApp.General.Controller.addGeneral(cid, jobCollection);
-    },
-    showIntro: function(cid) {
-      JobTabApp.Intro.Controller.showIntro(cid);
     },
     showSummary: function(cid, jobId) {
       JobTabApp.Summary.Controller.showSummary(cid, jobId);
@@ -55,14 +69,6 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
       JobTabApp.Role.Controller.editRole(cid, jobId);
     }
   };
-
-  HRApp.on("intro:show", function(cid) {
-    HRApp.Common.Navigation.navigate(cid + "/hrjob", {
-      success: function() {
-        API.showIntro(cid);
-      }
-    });
-  });
 
   HRApp.on("hrjob:summary:show", function(cid, jobId) {
     HRApp.Common.Navigation.navigate(cid + "/hrjob/" + jobId, {
