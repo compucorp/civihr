@@ -37,7 +37,8 @@
     <div class="crm-label">
       <label>{ts}FTE{/ts}</label>
     </div>
-    <div class="crm-content" name="hours_fte">
+    <div class="crm-content">
+      <input id="hrjob-hours_fte" name="hours_fte" type="text" />
     </div>
   </div>
 
