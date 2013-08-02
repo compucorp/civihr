@@ -55,7 +55,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
         }
       });
     },
-    'doReset': function() {
+    doReset: function() {
       CRM.alert(ts('Reset'));
       var view = this;
       this.model.clear();
