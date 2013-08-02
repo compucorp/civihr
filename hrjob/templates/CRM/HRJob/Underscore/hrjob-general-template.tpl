@@ -140,4 +140,9 @@
   </div>
 
   <%= RenderUtil.standardButtons() %>
+  {literal}
+  <% if (typeof id != 'undefined') { %>
+  <button class="hrjob-duplicate">{/literal}{ts}Duplicate{/ts}{literal}</button>
+  <% } %>
+  {/literal}
 </script>

@@ -10,9 +10,13 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     initialize: function() {
       HRApp.Common.Views.StandardForm.prototype.initialize.apply(this, arguments);
       this.listenTo(this.options.collection, 'sync', this.toggleIsPrimary);
+      this.events['click .hrjob-duplicate'] = 'doDuplicate';
     },
     onRender: function() {
       this.toggleIsPrimary();
+    },
+    doDuplicate: function() {
+      this.triggerMethod('hrjob:duplicate:click', this, this.model);
     },
     /**
      * Activate or de-activate is_primary field. If there's only

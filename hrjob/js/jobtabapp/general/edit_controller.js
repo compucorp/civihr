@@ -32,11 +32,37 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
           mainView.listenTo(mainView, "standard:save", function(view, model) {
             jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
           });
+          mainView.listenTo(mainView, 'hrjob:duplicate:click', function(view, model) {
+            General.Controller.doDuplicate(model, jobCollection);
+          });
         },
         error: function() {
           HRApp.trigger('ui:unblock');
           var treeView = new HRApp.Common.Views.Failed();
           HRApp.mainRegion.show(treeView);
+        }
+      });
+    },
+
+    /**
+     * Immediately duplicate a job
+     *
+     * @param HRJobModel job
+     * @param HRJobCollection jobColelction
+     */
+    doDuplicate: function(job, jobCollection) {
+      HRApp.trigger('ui:block', ts('Duplicating'));
+      CRM.api('HRJob', 'duplicate', {
+        id: job.get('id')
+      }, {
+        success: function(data) {
+          HRApp.trigger('ui:unblock');
+          jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
+          HRApp.trigger("hrjob:general:edit", data.values[data.id].contact_id, data.id);
+        },
+        error: function(data) {
+          HRApp.trigger('ui:unblock');
+          $().crmError(data.error_message, ts('Error'));
         }
       });
     }
