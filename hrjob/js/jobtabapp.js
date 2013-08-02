@@ -31,6 +31,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
       ":cid/hrjob/add": "addJob",
       ":cid/hrjob/:id": "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
+      ":cid/hrjob/:id/copy": "copyGeneral",
       ":cid/hrjob/:id/health": "editHealth",
       ":cid/hrjob/:id/hour": "editHour",
       ":cid/hrjob/:id/leave": "editLeave",
@@ -49,6 +50,9 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     },
     editGeneral: function(cid, jobId) {
       JobTabApp.General.Controller.editGeneral(cid, jobId, jobCollection);
+    },
+    copyGeneral: function(cid, jobId) {
+      JobTabApp.General.Controller.copyGeneral(cid, jobId, jobCollection);
     },
     editHealth: function(cid, jobId) {
       JobTabApp.Health.Controller.editHealth(cid, jobId);
@@ -96,6 +100,14 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
           API[apiAction](cid, jobId);
         }
       });
+    });
+  });
+
+  HRApp.on("hrjob:general:copy", function(cid, jobId) {
+    HRApp.Common.Navigation.navigate(cid + "/hrjob/" + jobId + "/copy", {
+      success: function() {
+        API.copyGeneral(cid, jobId);
+      }
     });
   });
 

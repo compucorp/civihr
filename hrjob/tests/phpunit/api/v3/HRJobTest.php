@@ -11,34 +11,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     // them to ensure a consisting starting point for all tests
     // $this->quickCleanup(array('example_table_name'));
     parent::setUp();
-  }
 
-  function tearDown() {
-    parent::tearDown();
-    $this->quickCleanup(array(
-      'civicrm_hrjob'
-    ));
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-
-    $import = new CRM_Utils_Migrate_Import();
-    $import->run(
-      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
-        . '/xml/option_group_install.xml'
-    );
-
-    return TRUE;
-  }
-
-  /**
-   * Create a job and several subordinate entities using API chaining
-   */
-  function testCreateChained() {
-    $params = array(
+    $this->fixtures['fullJob'] = array(
       'version' => 3,
       'contract_type' => 'Volunteer',
       'api.HRJobPay.create' => array(
@@ -75,12 +49,45 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
         'leave_type' => 'Annual',
         'leave_amount' => 10,
       ),
-       'api.HRJobLeave.create.1' => array(
+      'api.HRJobLeave.create.1' => array(
         'leave_type' => 'Sick',
         'leave_amount' => 7
       ),
     );
-    $result = civicrm_api('HRJob', 'create', $params);
+  }
+
+  function tearDown() {
+    parent::tearDown();
+    $this->quickCleanup(array(
+      'civicrm_hrjob',
+      'civicrm_hrjob_health',
+      'civicrm_hrjob_hour',
+      'civicrm_hrjob_leave',
+      'civicrm_hrjob_pay',
+      'civicrm_hrjob_pension',
+      'civicrm_hrjob_role',
+    ));
+  }
+
+  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
+    if (!parent::_populateDB($perClass, $object)) {
+      return FALSE;
+    }
+
+    $import = new CRM_Utils_Migrate_Import();
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
+        . '/xml/option_group_install.xml'
+    );
+
+    return TRUE;
+  }
+
+  /**
+   * Create a job and several subordinate entities using API chaining
+   */
+  function testCreateChained() {
+    $result = civicrm_api('HRJob', 'create', $this->fixtures['fullJob']);
     $this->assertAPISuccess($result);
     foreach ($result['values'] as $hrJobResult) {
       $this->assertEquals('Volunteer', $hrJobResult['contract_type']);
@@ -193,5 +200,87 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       array(1 => array($result1['id'], 'Integer'))
     );
 
+  }
+
+  function testDuplicate() {
+    $cid = $this->individualCreate();
+    $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
+    $duplicate = $this->callAPISuccess('HRJob', 'duplicate', array(
+      'id' => $original['id'],
+    ));
+    $this->assertTrue(is_numeric($original['id']));
+    $this->assertTrue(is_numeric($duplicate['id']));
+    $this->assertTrue($original['id'] < $duplicate['id'], 'Duplicate ID should be newer than original ID');
+
+    // Compare the main entity
+    $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
+    $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
+    $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary'), 'HRJob: ');
+    $this->assertEquals('1', $originalGet['values'][0]['is_primary']);
+    $this->assertEquals('0', $duplicateGet['values'][0]['is_primary']);
+
+    // Compare the child entities
+    $subEntities = array(
+      'HRJobPay',
+      'HRJobHealth',
+      'HRJobHour',
+      'HRJobPension',
+      'HRJobRole',
+      'HRJobLeave',
+      );
+    foreach ($subEntities as $subEntity) {
+      $originalGet = $this->callAPISuccess($subEntity, 'get', array('job_id' => $original['id'], 'sequential' => TRUE));
+      $duplicateGet = $this->callAPISuccess($subEntity, 'get', array('job_id' => $duplicate['id'], 'sequential' => TRUE));
+      $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'job_id'), "$subEntity: ");
+    }
+  }
+
+  function testDuplicateWithChange() {
+    $cid = $this->individualCreate();
+    $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
+    $duplicate = $this->callAPISuccess('HRJob', 'duplicate', array(
+      'id' => $original['id'],
+      'title' => 'New title',
+      'is_primary' => 1, // this will be the new primary
+    ));
+    $this->assertTrue(is_numeric($original['id']));
+    $this->assertTrue(is_numeric($duplicate['id']));
+    $this->assertTrue($original['id'] < $duplicate['id'], 'Duplicate ID should be newer than original ID');
+
+    // Compare the main entity
+    $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
+    $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
+    $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary', 'title'), 'HRJob: ');
+    $this->assertEquals('1', $duplicateGet['values'][0]['is_primary']); // per $params
+    $this->assertEquals('0', $originalGet['values'][0]['is_primary']); // implicitly flipped down to 0
+    $this->assertEquals('New title', $duplicateGet['values'][0]['title']);
+  }
+
+  /**
+   * Asser that two arrays include the same keys/values (notwithstanding $ignores)
+   *
+   * @param array $expected
+   * @param array $actual
+   * @param array $changedKeys list of keys to ignore
+   */
+  function assertEqualsWithChanges($expected, $actual, $changedKeys = array(), $prefix = '') {
+    $expKeys = array_diff(array_keys($expected), $changedKeys);
+    $actualKeys = array_diff(array_keys($actual), $changedKeys);
+    sort($expKeys);
+    sort($actualKeys);
+    $this->assertEquals($expKeys, $actualKeys, "{$prefix}Expected and actual array keys should match");
+    $this->assertTrue(!empty($expKeys));
+    foreach ($expKeys as $expKey) {
+      if (is_array($expected[$expKey]) && is_array($actual[$expKey])) {
+        $this->assertEqualsWithChanges($expected[$expKey], $actual[$expKey], $changedKeys);
+      } else {
+        $this->assertEquals($expected[$expKey], $actual[$expKey], "{$prefix}Key [$expKey] should match");
+      }
+    }
+    foreach ($changedKeys as $changedKey) {
+      if (isset($expected[$changedKey]) || isset($actual[$changedKey])) {
+        $this->assertNotEquals(@$expected[$changedKey], @$actual[$changedKey], "{$prefix}Key [$changedKey] should not match");
+      }
+    }
   }
 }

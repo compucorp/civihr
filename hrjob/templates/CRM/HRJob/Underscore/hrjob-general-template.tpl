@@ -1,6 +1,6 @@
 <script id="hrjob-general-template" type="text/template">
 
-  <h3>{ts}General{/ts}</h3>
+  <h3>{ts}General{/ts}{literal} <%- (isNewDuplicate) ? '(' + ts('New Copy of "%1"', {1: position}) + ')' : '' %>{/literal}</h3>
 
   <div class="crm-summary-row">
     <div class="crm-label">
@@ -139,5 +139,10 @@
     </div>
   </div>
 
-  <%= RenderUtil.standardButtons() %>
+  {literal}<% if (!isNewDuplicate) { %> {/literal}
+  <button class="standard-save">{ts}Save{/ts}</button>
+  {literal}<% } else { %>{/literal}
+  <button class="standard-save">{ts}Save New Copy{/ts}</button>
+  {literal}<% } %>{/literal}
+  <button class="standard-reset">{ts}Reset{/ts}</button>
 </script>
