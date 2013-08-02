@@ -32,35 +32,36 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       }
     },
     events: {
-      'click .standard-save': function() {
-        var view = this;
-        if (!view.model.isValid()) {
-          return;
-        }
-
-        HRApp.trigger('ui:block', ts('Saving'));
-        this.model.save({}, {
-          success: function() {
-            HRApp.trigger('ui:unblock');
-            CRM.alert(ts('Saved'), null, 'success');
-            view.modelBackup = view.model.toJSON();
-            view.render();
-            view.triggerMethod('standard:save', view, view.model);
-          },
-          error: function() {
-            HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
-          }
-        });
-      },
-
-      'click .standard-reset': function() {
-        CRM.alert(ts('Reset'));
-        var view = this;
-        this.model.clear();
-        this.model.set(this.modelBackup);
-        view.render();
-        view.triggerMethod('standard:reset', view, view.model);
+      'click .standard-save': 'doSave',
+      'click .standard-reset': 'doReset'
+    },
+    doSave: function() {
+      var view = this;
+      if (!view.model.isValid()) {
+        return;
       }
+
+      HRApp.trigger('ui:block', ts('Saving'));
+      this.model.save({}, {
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert(ts('Saved'), null, 'success');
+          view.modelBackup = view.model.toJSON();
+          view.render();
+          view.triggerMethod('standard:save', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
+        }
+      });
+    },
+    doReset: function() {
+      CRM.alert(ts('Reset'));
+      var view = this;
+      this.model.clear();
+      this.model.set(this.modelBackup);
+      view.render();
+      view.triggerMethod('standard:reset', view, view.model);
     },
     onNavigateWarnings: function(route, options) {
       if (this.model.isModified()) {

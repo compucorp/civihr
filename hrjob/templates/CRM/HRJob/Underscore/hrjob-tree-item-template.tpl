@@ -3,12 +3,9 @@
     {*
     <dt><a href="#<%= cid %>/hrjob/<%= id %>" class="hrjob-nav" data-hrjob-event="hrjob:summary:show">
     *}
-    <dt><a href="#<%= cid %>/hrjob/<%= id %>/general" class="hrjob-nav <%= (is_primary == '1') ? 'primary' : '' %>" data-hrjob-event="hrjob:general:edit">
-      {*
-      <% if (is_primary == "1") { %>
-            <span class="ui-icon ui-icon-star"  title="{/literal}{ts}Primary Job{/ts}{literal}"></span>
-      <% } %>
-      *}
+    <dt>
+      <a href="#<%= cid %>/hrjob/<%= id %>/copy" class="hrjob-nav ui-icon ui-icon-copy" data-hrjob-event="hrjob:general:copy" title="{ts}Copy{/ts}"></a>
+      <a href="#<%= cid %>/hrjob/<%= id %>/general" class="hrjob-nav <%= (is_primary == '1') ? 'primary' : '' %>" data-hrjob-event="hrjob:general:edit">
       {literal}
       <% if (contract_type) { %>
       <span name="contract_type"></span>:
