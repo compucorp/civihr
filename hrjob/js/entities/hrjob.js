@@ -54,6 +54,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
 
   Entities.HRJobLeave = Backbone.Model.extend({
+    defaults: {
+      leave_amount: 0
+    },
     validate: function(attrs, options) {
       var errors = {};
 
