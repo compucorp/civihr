@@ -56,6 +56,9 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
         this.$el.show();
       }
     },
+    onRender: function() {
+      this.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
+    },
     /**
      * Designate a particular path (eg "#9/hrjob/10/pay")
      * as active
