@@ -78,16 +78,18 @@ function civicrm_api3_h_r_job_duplicate($params) {
     throw new API_Exception('Cannot duplicate: Unknown original ID', 'duplciate_unknown_id');
   }
 
-  $ignoreFields = array('id');
+  $ignoreFields = array('id'); // Never copy or set this on new record
+  $allowOverrideFields = array('is_primary'); // Only set if explicitly passed in $params
   $duplicateCreateParams = array();
   foreach ($hrJobFields['values'] as $hrJobField) {
     $fieldKey = $hrJobField['name'];
-    if (!in_array($fieldKey, $ignoreFields)) {
-      if (isset($params[$fieldKey])) {
-        $duplicateCreateParams[$fieldKey] = $params[$fieldKey];
-      } elseif (isset($originalGetResult['values'][0][$fieldKey])) {
-        $duplicateCreateParams[$fieldKey] = $originalGetResult['values'][0][$fieldKey];
-      }
+    if (in_array($fieldKey, $ignoreFields)) {
+      continue;
+    }
+    if (isset($params[$fieldKey])) {
+      $duplicateCreateParams[$fieldKey] = $params[$fieldKey];
+    } elseif (isset($originalGetResult['values'][0][$fieldKey]) && !in_array($fieldKey, $allowOverrideFields)) {
+      $duplicateCreateParams[$fieldKey] = $originalGetResult['values'][0][$fieldKey];
     }
   }
   $duplicateCreateResult = civicrm_api3('HRJob', 'create', $duplicateCreateParams);

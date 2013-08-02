@@ -216,6 +216,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
     $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
     $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary'), 'HRJob: ');
+    $this->assertEquals('1', $originalGet['values'][0]['is_primary']);
+    $this->assertEquals('0', $duplicateGet['values'][0]['is_primary']);
 
     // Compare the child entities
     $subEntities = array(
@@ -239,6 +241,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     $duplicate = $this->callAPISuccess('HRJob', 'duplicate', array(
       'id' => $original['id'],
       'title' => 'New title',
+      'is_primary' => 1, // this will be the new primary
     ));
     $this->assertTrue(is_numeric($original['id']));
     $this->assertTrue(is_numeric($duplicate['id']));
@@ -248,6 +251,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
     $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
     $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary', 'title'), 'HRJob: ');
+    $this->assertEquals('1', $duplicateGet['values'][0]['is_primary']); // per $params
+    $this->assertEquals('0', $originalGet['values'][0]['is_primary']); // implicitly flipped down to 0
     $this->assertEquals('New title', $duplicateGet['values'][0]['title']);
   }
 
