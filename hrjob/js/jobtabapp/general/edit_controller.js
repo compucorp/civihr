@@ -56,7 +56,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
           HRApp.trigger('ui:unblock');
           var model = origModel.duplicate();
           model.set('is_primary', '0');
-          var mainView = new General.DuplicateView({
+          var mainView = new General.EditView({
             model: model,
             collection: jobCollection
           });

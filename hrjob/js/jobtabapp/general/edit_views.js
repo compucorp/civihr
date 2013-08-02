@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     template: '#hrjob-general-template',
     templateHelpers: function() {
       return {
+        'isNewDuplicate': this.model._isDuplicate ? true : false,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJob
       };
@@ -36,8 +37,5 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         this.$('[name=is_primary]').attr('disabled', false);
       }
     }
-  });
-
-  General.DuplicateView = General.EditView.extend({
   });
 });
