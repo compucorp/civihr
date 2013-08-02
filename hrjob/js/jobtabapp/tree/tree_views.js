@@ -17,11 +17,13 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     },
     doTriggerEvent: function(e) {
       e.preventDefault();
+      /*
       console.log("goto",
         $(e.currentTarget).attr('data-hrjob-event'),
         CRM.jobTabApp.contact_id, // FIXME
         this.model.get('id')
       );
+      */
       CRM.HRApp.trigger(
         $(e.currentTarget).attr('data-hrjob-event'),
         CRM.jobTabApp.contact_id, // FIXME
