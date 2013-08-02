@@ -7,7 +7,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
         collection: jobCollection
       });
       HRApp.treeRegion.show(treeView);
-      treeView.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
+//      treeView.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
     },
 
     /**

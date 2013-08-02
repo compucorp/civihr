@@ -49,9 +49,14 @@ CRM.HRApp.module('Common.Navigation', function(Navigation, HRApp, Backbone, Mari
     return Backbone.history.fragment;
   };
 
+  Navigation.onRoute = function(router, route, params) {
+    HRApp.trigger('navigate', Navigation.getCurrentRoute(), {});
+  };
+
   HRApp.on("initialize:after", function() {
+    Backbone.history.on('route', Navigation.onRoute);
+
     window.onbeforeunload = _.wrap(window.onbeforeunload, function(onbeforeunload) {
-      console.log('unload');
       var options = {
         warnTitle: ts('Confirm Action'),
         warnMessages: []
