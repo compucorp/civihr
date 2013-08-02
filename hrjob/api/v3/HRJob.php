@@ -45,3 +45,63 @@ function civicrm_api3_h_r_job_delete($params) {
 function civicrm_api3_h_r_job_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * HRJob.Duplicate API specification (optional)
+ * This is used for documentation and validation.
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
+ */
+function _civicrm_api3_h_r_job_duplicate_spec(&$spec) {
+  $spec['magicword']['api.required'] = 1;
+}
+
+/**
+ * HRJob.Duplicate API
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @see civicrm_api3_create_success
+ * @see civicrm_api3_create_error
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_duplicate($params) {
+  $originalGetResult = civicrm_api3('HRJob', 'get', array(
+    'id' => $params['id'],
+    'sequential' => 1,
+  ));
+  if ($originalGetResult['count'] != 1 || !is_array($originalGetResult['values'][0])) {
+    throw new API_Exception('Cannot duplicate: Unknown original ID', 'duplciate_unknown_id');
+  }
+
+  $duplicateCreateParams = $originalGetResult['values'][0];
+  unset($duplicateCreateParams['id']);
+  $duplicateCreateResult = civicrm_api3('HRJob', 'create', $duplicateCreateParams);
+
+  // Duplicate each of the sub-entities
+
+  $subEntities = array(
+    'HRJobPay',
+    'HRJobHealth',
+    'HRJobHour',
+    'HRJobPension',
+    'HRJobRole',
+    'HRJobLeave',
+  );
+  foreach ($subEntities as $subEntity) {
+    $originalSubGetResult = civicrm_api3($subEntity, 'get', array(
+      'job_id' => $params['id'],
+    ));
+    foreach ($originalSubGetResult['values'] as $originalSubGetValue) {
+      $duplicateSubCreateParams = $originalSubGetValue;
+      unset($duplicateSubCreateParams['id']);
+      $duplicateSubCreateParams['job_id'] = $duplicateCreateResult['id'];
+      civicrm_api3($subEntity, 'create', $duplicateSubCreateParams);
+    }
+  }
+
+  // Spec: civicrm_api3_create_success($values = 1, $params = array(), $entity = NULL, $action = NULL)
+  return civicrm_api3_create_success($duplicateCreateResult['values'], $params, 'HRJob', 'duplicate');
+}

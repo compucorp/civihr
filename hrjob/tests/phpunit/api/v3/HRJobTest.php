@@ -195,4 +195,63 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     );
 
   }
+
+  function testDuplicate() {
+    $cid = $this->individualCreate();
+    $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
+    $duplicate = $this->callAPISuccess('HRJob', 'duplicate', array(
+      'id' => $original['id'],
+    ));
+    $this->assertTrue(is_numeric($original['id']));
+    $this->assertTrue(is_numeric($duplicate['id']));
+    $this->assertTrue($original['id'] < $duplicate['id'], 'Duplicate ID should be newer than original ID');
+
+    // Compare the main entity
+    $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
+    $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
+    $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary'), 'HRJob: ');
+
+    // Compare the child entities
+    $subEntities = array(
+      'HRJobPay',
+      'HRJobHealth',
+      'HRJobHour',
+      'HRJobPension',
+      'HRJobRole',
+      'HRJobLeave',
+      );
+    foreach ($subEntities as $subEntity) {
+      $originalGet = $this->callAPISuccess($subEntity, 'get', array('job_id' => $original['id'], 'sequential' => TRUE));
+      $duplicateGet = $this->callAPISuccess($subEntity, 'get', array('job_id' => $duplicate['id'], 'sequential' => TRUE));
+      $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'job_id'), "$subEntity: ");
+    }
+  }
+
+  /**
+   * Asser that two arrays include the same keys/values (notwithstanding $ignores)
+   *
+   * @param array $expected
+   * @param array $actual
+   * @param array $changedKeys list of keys to ignore
+   */
+  function assertEqualsWithChanges($expected, $actual, $changedKeys = array(), $prefix = '') {
+    $expKeys = array_diff(array_keys($expected), $changedKeys);
+    $actualKeys = array_diff(array_keys($actual), $changedKeys);
+    sort($expKeys);
+    sort($actualKeys);
+    $this->assertEquals($expKeys, $actualKeys, "{$prefix}Expected and actual array keys should match");
+    $this->assertTrue(!empty($expKeys));
+    foreach ($expKeys as $expKey) {
+      if (is_array($expected[$expKey]) && is_array($actual[$expKey])) {
+        $this->assertEqualsWithChanges($expected[$expKey], $actual[$expKey], $changedKeys);
+      } else {
+        $this->assertEquals($expected[$expKey], $actual[$expKey], "{$prefix}Key [$expKey] should match");
+      }
+    }
+    foreach ($changedKeys as $changedKey) {
+      if (isset($expected[$changedKey]) || isset($actual[$changedKey])) {
+        $this->assertNotEquals($expected[$changedKey], $actual[$changedKey], "{$prefix}Key [$changedKey] should not match");
+      }
+    }
+  }
 }
