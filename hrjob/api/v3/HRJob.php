@@ -61,13 +61,15 @@ function _civicrm_api3_h_r_job_duplicate_spec(&$spec) {
 /**
  * HRJob.Duplicate API
  *
- * @param array $params
+ * @param array $params must include "id" of the original job, and may additionally include per-field overrides
  * @return array API result descriptor
  * @see civicrm_api3_create_success
  * @see civicrm_api3_create_error
  * @throws API_Exception
  */
 function civicrm_api3_h_r_job_duplicate($params) {
+  $hrJobFields = civicrm_api3('HRJob', 'getfields', array());
+
   $originalGetResult = civicrm_api3('HRJob', 'get', array(
     'id' => $params['id'],
     'sequential' => 1,
@@ -76,8 +78,18 @@ function civicrm_api3_h_r_job_duplicate($params) {
     throw new API_Exception('Cannot duplicate: Unknown original ID', 'duplciate_unknown_id');
   }
 
-  $duplicateCreateParams = $originalGetResult['values'][0];
-  unset($duplicateCreateParams['id']);
+  $ignoreFields = array('id');
+  $duplicateCreateParams = array();
+  foreach ($hrJobFields['values'] as $hrJobField) {
+    $fieldKey = $hrJobField['name'];
+    if (!in_array($fieldKey, $ignoreFields)) {
+      if (isset($params[$fieldKey])) {
+        $duplicateCreateParams[$fieldKey] = $params[$fieldKey];
+      } elseif (isset($originalGetResult['values'][0][$fieldKey])) {
+        $duplicateCreateParams[$fieldKey] = $originalGetResult['values'][0][$fieldKey];
+      }
+    }
+  }
   $duplicateCreateResult = civicrm_api3('HRJob', 'create', $duplicateCreateParams);
 
   // Duplicate each of the sub-entities

@@ -59,7 +59,13 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
   function tearDown() {
     parent::tearDown();
     $this->quickCleanup(array(
-      'civicrm_hrjob'
+      'civicrm_hrjob',
+      'civicrm_hrjob_health',
+      'civicrm_hrjob_hour',
+      'civicrm_hrjob_leave',
+      'civicrm_hrjob_pay',
+      'civicrm_hrjob_pension',
+      'civicrm_hrjob_role',
     ));
   }
 
@@ -227,6 +233,24 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     }
   }
 
+  function testDuplicateWithChange() {
+    $cid = $this->individualCreate();
+    $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
+    $duplicate = $this->callAPISuccess('HRJob', 'duplicate', array(
+      'id' => $original['id'],
+      'title' => 'New title',
+    ));
+    $this->assertTrue(is_numeric($original['id']));
+    $this->assertTrue(is_numeric($duplicate['id']));
+    $this->assertTrue($original['id'] < $duplicate['id'], 'Duplicate ID should be newer than original ID');
+
+    // Compare the main entity
+    $originalGet = $this->callAPISuccess('HRJob', 'get', array('id' => $original['id'], 'sequential' => TRUE));
+    $duplicateGet = $this->callAPISuccess('HRJob', 'get', array('id' => $duplicate['id'], 'sequential' => TRUE));
+    $this->assertEqualsWithChanges($originalGet['values'], $duplicateGet['values'], array('id', 'is_primary', 'title'), 'HRJob: ');
+    $this->assertEquals('New title', $duplicateGet['values'][0]['title']);
+  }
+
   /**
    * Asser that two arrays include the same keys/values (notwithstanding $ignores)
    *
@@ -250,7 +274,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     }
     foreach ($changedKeys as $changedKey) {
       if (isset($expected[$changedKey]) || isset($actual[$changedKey])) {
-        $this->assertNotEquals($expected[$changedKey], $actual[$changedKey], "{$prefix}Key [$changedKey] should not match");
+        $this->assertNotEquals(@$expected[$changedKey], @$actual[$changedKey], "{$prefix}Key [$changedKey] should not match");
       }
     }
   }
