@@ -11,34 +11,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     // them to ensure a consisting starting point for all tests
     // $this->quickCleanup(array('example_table_name'));
     parent::setUp();
-  }
 
-  function tearDown() {
-    parent::tearDown();
-    $this->quickCleanup(array(
-      'civicrm_hrjob'
-    ));
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-
-    $import = new CRM_Utils_Migrate_Import();
-    $import->run(
-      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
-        . '/xml/option_group_install.xml'
-    );
-
-    return TRUE;
-  }
-
-  /**
-   * Create a job and several subordinate entities using API chaining
-   */
-  function testCreateChained() {
-    $params = array(
+    $this->fixtures['fullJob'] = array(
       'version' => 3,
       'contract_type' => 'Volunteer',
       'api.HRJobPay.create' => array(
@@ -75,12 +49,39 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
         'leave_type' => 'Annual',
         'leave_amount' => 10,
       ),
-       'api.HRJobLeave.create.1' => array(
+      'api.HRJobLeave.create.1' => array(
         'leave_type' => 'Sick',
         'leave_amount' => 7
       ),
     );
-    $result = civicrm_api('HRJob', 'create', $params);
+  }
+
+  function tearDown() {
+    parent::tearDown();
+    $this->quickCleanup(array(
+      'civicrm_hrjob'
+    ));
+  }
+
+  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
+    if (!parent::_populateDB($perClass, $object)) {
+      return FALSE;
+    }
+
+    $import = new CRM_Utils_Migrate_Import();
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
+        . '/xml/option_group_install.xml'
+    );
+
+    return TRUE;
+  }
+
+  /**
+   * Create a job and several subordinate entities using API chaining
+   */
+  function testCreateChained() {
+    $result = civicrm_api('HRJob', 'create', $this->fixtures['fullJob']);
     $this->assertAPISuccess($result);
     foreach ($result['values'] as $hrJobResult) {
       $this->assertEquals('Volunteer', $hrJobResult['contract_type']);
