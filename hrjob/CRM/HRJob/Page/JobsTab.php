@@ -63,9 +63,43 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     $region = CRM_Core_Region::instance('page-header');
     foreach (glob($templateDir . 'CRM/HRJob/Underscore/*.tpl') as $file) {
       $fileName = substr($file, strlen($templateDir));
-      $region->add(array(
-        'template' => $fileName,
-      ));
+      $regionParams = array('template' => $fileName);
+
+      $config = CRM_Core_Config::singleton();
+      if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+        $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
+        $specificFile = substr($file, strlen($templateDir . 'CRM/HRJob/Underscore/'), -4);
+        switch ($specificFile) {
+          case 'hrjob-hour-template':
+            $tableName = 'civicrm_hrjob_hour';
+            break;
+          case 'hrjob-health-template':
+            $tableName = 'civicrm_hrjob_health';
+            break;
+          case 'hrjob-leave-table-template':
+            $tableName = 'civicrm_hrjob_leave';
+            break;
+          case 'hrjob-pay-template':
+            $tableName = 'civicrm_hrjob_pay';
+            break;
+          case 'hrjob-pension-template':
+            $tableName = 'civicrm_hrjob_pension';
+            break;
+          case 'hrjob-role-table-template':
+            $tableName = 'civicrm_hrjob_role';
+            break;
+          default:
+            $tableName = 'civicrm_hrjob';
+        }
+        $regionParams = array_merge($regionParams, 
+                        array(
+                          'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+                          'css_class'  => $specificFile,
+                          'table_name' => $tableName,
+                          'contact_id' => $contactID,
+                        ));
+      }
+      $region->add($regionParams);
     }
   }
 
