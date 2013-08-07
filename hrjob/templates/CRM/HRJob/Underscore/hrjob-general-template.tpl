@@ -61,7 +61,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-level_type">{ts}Location{/ts}</label>
+      <label for="hrjob-level_type">{ts}Normal Place of Work{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
@@ -87,7 +87,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-period_type">{ts}Time Period{/ts}</label>
+      <label for="hrjob-period_type">{ts}Contract Duration{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
