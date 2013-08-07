@@ -13,6 +13,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       this.listenTo(this.options.collection, 'sync', this.toggleIsPrimary);
     },
     onRender: function() {
+      HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
       this.toggleIsPrimary();
     },
     /**
