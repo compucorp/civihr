@@ -108,7 +108,7 @@
     <type>enum</type>
     <values>Temporary, Permanent</values>
     <comment>.</comment>
-    <title>Job Period Type</title>
+    <title>Job Contract Duration</title>
     <export>true</export>
     <uniqueName>hrjob_period_type</uniqueName>
   </field>
@@ -152,10 +152,10 @@
 
   <field>
     <name>location</name>
-    <title>Job Location</title>
+    <title>Job Normal Place of Work</title>
     <type>varchar</type>
     <length>127</length>
-    <comment>Main work location</comment>
+    <comment>Normal place of work</comment>
     <export>true</export>
     <pseudoconstant>
       <optionGroupName>hrjob_location</optionGroupName>

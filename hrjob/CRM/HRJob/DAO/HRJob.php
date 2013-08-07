@@ -159,7 +159,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $manager_contact_id;
   /**
-   * Main work location
+   * Normal place of work
    *
    * @var string
    */
@@ -280,7 +280,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_period_type' => array(
           'name' => 'period_type',
           'type' => CRM_Utils_Type::T_ENUM,
-          'title' => ts('Job Period Type') ,
+          'title' => ts('Job Contract Duration') ,
           'export' => true,
           'where' => 'civicrm_hrjob.period_type',
           'headerPattern' => '',
@@ -318,7 +318,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_location' => array(
           'name' => 'location',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Location') ,
+          'title' => ts('Job Normal Place of Work') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
