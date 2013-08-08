@@ -15,6 +15,34 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
       this.toggleIsPrimary();
+
+      var dateOptions = {
+        dateFormat: 'yy-mm-dd',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: '-100:+20'
+      };
+      var $start = this.$('[name=period_start_date]');
+      var $end = this.$('[name=period_end_date]');
+      $start
+        .addClass('dateplugin')
+        .datepicker(_.extend({}, dateOptions, {
+          maxDate: $end.val() ? $end.val() : null,
+          onClose: function(selectedDate) {
+            $end.datepicker("option", "minDate", selectedDate);
+          }
+        }));
+      $end
+        .addClass('dateplugin')
+        .datepicker(_.extend({}, dateOptions, {
+          minDate: $start.val() ? $start.val() : null,
+          onClose: function(selectedDate) {
+            $start.datepicker("option", "maxDate", selectedDate);
+          }
+        }));
+      /*
+       .addClass('dateplugin')
+       });*/
     },
     /**
      * Activate or de-activate is_primary field. If there's only
