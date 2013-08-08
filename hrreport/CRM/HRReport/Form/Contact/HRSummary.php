@@ -418,18 +418,21 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       array(
        'name' => 'hours_amount',
        'title' => ts('Full Time Equivalents'),
+       'type' => CRM_Utils_Type::T_INT,
        'statistics' => array('fte' => ts('Full Time Equivalents'),),
        'grouping'   => 'contact-fields',
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
        'name' => 'pay_amount',      
        'title' => ts('Monthly Cost Equivalents'),
+       'type' => CRM_Utils_Type::T_INT,
        'statistics' => array('mce' => ts('Monthly Cost Equivalents'),),
        'grouping'   => 'contact-fields',
     );
     $this->_columns['civicrm_hrjob_pay']['fields']['annual_cost_eq'] = array(
        'name' => 'pay_amount',      
        'title' => ts('Annual Cost Equivalents'),
+       'type' => CRM_Utils_Type::T_INT,
        'statistics' => array('sum' => ts('Annual Cost Equivalents'),),
        'grouping'   => 'contact-fields',
     );
@@ -441,28 +444,30 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $jobTables = array('civicrm_hrjob', 'civicrm_hrjob_hour', 'civicrm_hrjob_pay', 'civicrm_hrjob_role',
       'civicrm_hrjob_health', 'civicrm_hrjob_pension', 'civicrm_hrjob_leave');
     foreach ($this->_columns as $tableName => $table) {
-      foreach ($table['fields'] as $fieldName => $field) {
-        if (in_array($tableName, $jobTables)) {
+      if (!empty($table['fields'])) {
+        foreach ($table['fields'] as $fieldName => $field) {
+          if (in_array($tableName, $jobTables)) {
             $this->_jobField = TRUE;
-        }
-        if (CRM_Utils_Array::value('required', $field) ||
-          CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
-          if (CRM_Utils_Array::value('statistics', $field)) {
-            foreach ($field['statistics'] as $stat => $label) {
-              $alias = "{$tableName}_{$fieldName}_{$stat}";
-              switch (strtolower($stat)) {
-              case 'mce':
-                $select[] = "(SUM({$field['dbAlias']})/12) as {$tableName}_{$fieldName}_{$stat}";
-                $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
-                $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
-                $this->_statFields[$label] = $alias;
-                break;
-              case 'fte':
-                $select[] = "(SUM({$field['dbAlias']})/40) as {$tableName}_{$fieldName}_{$stat}";
-                $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
-                $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
-                $this->_statFields[$label] = $alias;
-                break;
+          }
+          if (CRM_Utils_Array::value('required', $field) ||
+              CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
+            if (CRM_Utils_Array::value('statistics', $field)) {
+              foreach ($field['statistics'] as $stat => $label) {
+                $alias = "{$tableName}_{$fieldName}_{$stat}";
+                switch (strtolower($stat)) {
+                case 'mce':
+                  $select[] = "(SUM({$field['dbAlias']})/12) as {$tableName}_{$fieldName}_{$stat}";
+                  $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
+                  $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
+                  $this->_statFields[$label] = $alias;
+                  break;
+                case 'fte':
+                  $select[] = "(SUM({$field['dbAlias']})/40) as {$tableName}_{$fieldName}_{$stat}";
+                  $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
+                  $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
+                  $this->_statFields[$label] = $alias;
+                  break;
+                }
               }
             }
           }
@@ -480,7 +485,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
     if ($this->_jobField) {
       $this->_from .= "
-      LEFT JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
+      INNER JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
              ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
       LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
              ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
@@ -492,16 +497,18 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
              ON ({$this->_aliases['civicrm_hrjob_pension']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
 
       foreach ($this->_columns as $tableName => $table) {
-        foreach ($table['fields'] as $fieldName => $field) {
-          if (CRM_Utils_Array::value('required', $field) ||
-              CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
-            if ($tableName == 'civicrm_hrjob_role') {
-              $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-               ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
-            }
-            elseif ($tableName == 'civicrm_hrjob_leave') {
-              $this->_from .= "LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
-               ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+        if (!empty($table['fields'])) {
+          foreach ($table['fields'] as $fieldName => $field) {
+            if (CRM_Utils_Array::value('required', $field) ||
+                CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
+              if ($tableName == 'civicrm_hrjob_role') {
+                $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+                  ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+              }
+              elseif ($tableName == 'civicrm_hrjob_leave') {
+                $this->_from .= "LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
+                  ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+              }
             }
           }
         }
