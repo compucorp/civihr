@@ -30,11 +30,63 @@ return array (
         array(
           'fields' => array(
             'id'         => 1,
-            'custom_14_1' => 1, //FIXME: custom name - this is sth we need to find better alternative for
+            'job_positions' => 1,
             'state_province_id' => 1,
           ),
           'group_bys' => array(
             'state_province_id' => 1,
+          ),
+        )
+      ),
+    ),
+  ),
+  array(
+    'name'   => 'CiviHR Annual and Monthly Cost Equivalents Report ',
+    'entity' => 'ReportInstance',
+    'params' =>
+    array (
+      'version' => 3,
+      'title'   => 'CiviHR Annual and Monthly Cost Equivalents Report ',
+      'description' => 'HR Report with stats on Annual and Monthly Cost Equivalents',
+      'report_id'   => 'civihr/summary',
+      'form_values' => serialize(
+        array(
+          'fields' => array(
+            'level_type' => 1,
+            'period_type' => 1,
+            'location' => 1,
+            'monthly_cost_eq' => 1,
+            'annual_cost_eq' => 1,
+          ),
+          'group_bys' => array(
+            'level_type' => 1,
+            'location' => 1,
+          ),
+        )
+      ),
+    ),
+  ),
+  array(
+    'name'   => 'CiviHR FTE Report ',
+    'entity' => 'ReportInstance',
+    'params' =>
+    array (
+      'version' => 3,
+      'title'   => 'CiviHR Full Time Equivalents Report ',
+      'description' => 'HR Report with stats on Full Time Equivalents',
+      'report_id'   => 'civihr/summary',
+      'form_values' => serialize(
+        array(
+          'fields' => array(
+            'title' => 1,
+            'level_type' => 1,
+            'hours_type' => 1,
+            'hours_unit' => 1,
+            'fte' => 1,
+          ),
+          'group_bys' => array(
+            'title' => 1,
+            'level_type' => 1,
           ),
         )
       ),
