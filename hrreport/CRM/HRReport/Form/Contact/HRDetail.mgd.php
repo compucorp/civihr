@@ -32,7 +32,10 @@ return array (
             'id'  => 1,
             'sort_name' => 1,
             'email'     => 1,
-            'custom_14' => 1,//FIXME: custom name - this is sth we need to find better alternative for
+            'position' => 1,
+            'title' => 1,
+            'manager' => 1,
+            'level_type' => 1,
             'state_province_id' => 1,
             'country_id' => 1,
           ),
