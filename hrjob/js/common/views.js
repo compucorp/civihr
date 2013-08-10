@@ -22,14 +22,16 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     onRender: function() {
       this.$('.crm-contact-selector').crmContactField();
-      this.$('form').validate(this.getValidationRules());
+      this.$('form').validate(this.createValidationRules());
     },
     /**
      *
      * @return {*} jQuery.validate rules
      */
-    getValidationRules: function() {
-      return _.extend({}, CRM.validate.params);
+    createValidationRules: function() {
+      var rules = _.extend({}, CRM.validate.params);
+      this.triggerMethod("validateRules:create", this, rules);
+      return rules;
     },
     modelEvents: {
       invalid: function(model, errors) {
