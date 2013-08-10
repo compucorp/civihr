@@ -52,7 +52,7 @@
   <field>
     <name>contrib_pct</name>
     <title>Contribution Percentage</title>
-    <type>decimal</type>
+    <type>float</type>
     <default>0</default>
     <comment>??</comment>
   </field>
