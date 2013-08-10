@@ -22,7 +22,18 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     onRender: function() {
       this.$('.crm-contact-selector').crmContactField();
-      this.$('form').validate(this.createValidationRules());
+      var rules = this.createValidationRules();
+      this.$('form').validate(rules);
+      if (rules.rules) {
+        var view = this;
+        _.each(rules.rules, function(rule, field){
+          var $label = view.$('[name=' + field +']').parents('.crm-summary-row').find('.crm-label');
+          if (rule.required && !$label.data('has-required')) {
+            $label.data('has-required', true);
+            $label.append(HRApp.RenderUtil.required());
+          }
+        });
+      }
     },
     /**
      *
