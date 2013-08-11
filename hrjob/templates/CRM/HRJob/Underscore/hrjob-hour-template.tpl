@@ -1,12 +1,5 @@
 <script id="hrjob-hour-template" type="text/template">
   <h3>{ts}Hours{/ts} {if $snippet.table_name}<a class="css_right {$snippet.css_class}" href="#" title="{ts}View Revisions{/ts}">({ts}View Revisions{/ts})</a>{/if}</h3>
-
-  {if $snippet.table_name}
-    <div class="dialog-{$snippet.css_class}">
-      <div class="revision-content"></div>
-    </div>
-  {/if}
-
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-hours_type">{ts}Hours Type{/ts}</label>
