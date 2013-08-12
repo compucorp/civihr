@@ -6,6 +6,50 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobHour
       };
+    },
+    modelEvents: _.extend({}, HRApp.Common.Views.StandardForm.prototype.modelEvents, {
+      'change:hours_type': 'toggleFields'
+    }),
+    onRender: function() {
+      HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
+      if (this.model.get('hours_type')) {
+        this.$('.hrjob-needs-type').show();
+      } else {
+        this.$('.hrjob-needs-type').hide();
+      }
+    },
+    toggleFields: function() {
+      var view = this;
+      if (this.model.get('hours_type')) {
+        view.$('.hrjob-needs-type:hidden').slideDown({
+          complete: function() {
+            view.$('[name=hours_amount]').focus();
+          }
+        });
+      } else {
+        view.$('.hrjob-needs-type').slideUp();
+      }
+    },
+    /**
+     *
+     * @return {*} jQuery.validate rules
+     */
+    onValidateRulesCreate: function(view, r) {
+      r.rules || (r.rules = {});
+      _.extend(r.rules, {
+        hours_amount: {
+          required: true,
+          number: true
+        },
+        hours_unit: {
+          required: true
+        },
+        hours_fte: {
+          required: true,
+          number: true,
+          range: [0, 2]
+        }
+      });
     }
   });
 });
