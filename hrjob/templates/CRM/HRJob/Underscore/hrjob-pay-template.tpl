@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
+  <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
       <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
     </div>
