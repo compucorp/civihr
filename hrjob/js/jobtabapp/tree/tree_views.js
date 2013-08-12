@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     template: '#hrjob-tree-item-template',
     templateHelpers: function() {
       return {
+        is_active: this.model.isActive(),
         cid: CRM.jobTabApp.contact_id // FIXME
       }
     },
