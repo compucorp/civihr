@@ -1,4 +1,5 @@
 <script id="hrjob-general-template" type="text/template">
+<form>
 
   <h3>{ts}General{/ts}{literal} <%- (isNewDuplicate) ? '(' + ts('New Copy of "%1"', {1: position}) + ')' : '' %>{/literal}</h3>
 
@@ -145,4 +146,5 @@
   <button class="standard-save">{ts}Save New Copy{/ts}</button>
   {literal}<% } %>{/literal}
   <button class="standard-reset">{ts}Reset{/ts}</button>
+</form>
 </script>
