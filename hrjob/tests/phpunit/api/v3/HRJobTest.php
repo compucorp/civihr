@@ -235,6 +235,30 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     }
   }
 
+  /**
+   * Ensure that pay_amount is nullable
+   */
+  function testNullPay() {
+    $cid = $this->individualCreate();
+    $hrJobResults = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
+    $this->assertEquals(1, count($hrJobResults['values']));
+    foreach ($hrJobResults['values'] as $hrJobResult) {
+      $this->assertAPISuccess($hrJobResult['api.HRJobPay.create']);
+      $this->assertEquals(1, count($hrJobResult['api.HRJobPay.create']['values']));
+      foreach ($hrJobResult['api.HRJobPay.create']['values'] as $hrJobPayResult) {
+        $this->assertEquals(20, $hrJobPayResult['pay_amount']);
+
+        $setEmptyResult = $this->callAPISuccess('HRJobPay', 'create', array(
+          'id' => $hrJobPayResult['id'],
+          'pay_amount' => '',
+        ));
+        $this->assertDBQuery(1, "SELECT count(*) FROM civicrm_hrjob_pay WHERE id = %1 AND pay_amount IS NULL",
+          array(1 => array($hrJobPayResult['id'], 'Integer'))
+        );
+      }
+    }
+  }
+
   function testDuplicateWithChange() {
     $cid = $this->individualCreate();
     $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));

@@ -71,8 +71,8 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPay ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
-     `pay_amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
-     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year') NOT NULL   COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
+     `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
+     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
 ,
     PRIMARY KEY ( `id` )
  
