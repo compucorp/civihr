@@ -14,6 +14,24 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       is_primary: 0
     },
 
+    isActive: function() {
+      if (this.get('period_end_date')) {
+        // Don't use Date() comparison - don't trust TZ handling
+        var now = new Date();
+        var nowParts = [ now.getFullYear(), (now.getMonth()+1), now.getDate() ];
+        var endDateParts = this.get('period_end_date').split("-");
+        for (var i = 0; i< 3; i++) {
+          if (parseInt(nowParts[i]) > parseInt(endDateParts[i])) return false;
+          if (parseInt(nowParts[i]) < parseInt(endDateParts[i])) return true;
+          if (parseInt(nowParts[i]) == parseInt(endDateParts[i])) continue;
+          throw ("Malformed date");
+        }
+        return true; // today is the last day!
+      } else {
+        return true; // no end date specified
+      }
+    },
+
     validate: function(attrs, options) {
       var errors = {}
       if (! attrs.position) {
@@ -32,7 +50,10 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     sync: CRM.Backbone.sync,
     model: Entities.HRJob,
     comparator: function(model) {
-      return (model.get('is_primary') == '1' ? 'a' : 'b') + "::" + model.get("contract_type") + "::" + model.get("position");
+      return (model.get('is_primary') == '1' ? 'a' : 'b')
+        + "::" + (model.isActive() ? "a" : "b")
+        + "::" + model.get("contract_type")
+        + "::" + model.get("position");
     }
   });
   CRM.Backbone.extendCollection(Entities.HRJobCollection);
