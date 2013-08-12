@@ -1,4 +1,5 @@
 <script id="hrjob-health-template" type="text/template">
+<form>
   <h3>{ts}Healthcare{/ts}</h3>
 
   <div class="crm-summary-row">
@@ -50,4 +51,5 @@
   </div>
 
   <%= RenderUtil.standardButtons() %>
+</form>
 </script>

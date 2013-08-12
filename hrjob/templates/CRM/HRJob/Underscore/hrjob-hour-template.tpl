@@ -1,4 +1,5 @@
 <script id="hrjob-hour-template" type="text/template">
+  <form>
   <h3>{ts}Hours{/ts}</h3>
 
   <div class="crm-summary-row">
@@ -16,12 +17,14 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
+  <div class="crm-summary-row hrjob-needs-type">
     <div class="crm-label">
       <label for="hrjob-hours_amount">{ts}Hours{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-hours_amount" name="hours_amount" type="text" />
+      <div>
+        <input id="hrjob-hours_amount" name="hours_amount" type="text" />
+      </div>
       <label for="hrjob-hours_unit">{ts}per{/ts}</label>
       {literal}
       <%= RenderUtil.select({
@@ -33,9 +36,9 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
+  <div class="crm-summary-row hrjob-needs-type">
     <div class="crm-label">
-      <label>{ts}FTE{/ts}</label>
+      <label for="hrjob-hours_fte">{ts}FTE{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-hours_fte" name="hours_fte" type="text" />
@@ -43,4 +46,5 @@
   </div>
 
   <%= RenderUtil.standardButtons() %>
+  </form>
 </script>

@@ -188,9 +188,8 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         ) ,
         'hrjob_hours_amount' => array(
           'name' => 'hours_amount',
-          'type' => CRM_Utils_Type::T_MONEY,
+          'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Job Hours Amount') ,
-          'required' => true,
           'export' => true,
           'where' => 'civicrm_hrjob_hour.hours_amount',
           'headerPattern' => '',
@@ -200,7 +199,6 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'name' => 'hours_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Hours Unit') ,
-          'required' => true,
           'export' => true,
           'where' => 'civicrm_hrjob_hour.hours_unit',
           'headerPattern' => '',
@@ -209,7 +207,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         ) ,
         'hours_fte' => array(
           'name' => 'hours_fte',
-          'type' => CRM_Utils_Type::T_MONEY,
+          'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Full-Time Equivalence') ,
         ) ,
       );

@@ -20,6 +20,14 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
         bindings[field] = bindings[field + suffix];
         delete bindings[field + suffix];
       });
+    },
+    onValidateRulesCreate: function(view, r) {
+      var suffix = '_' + this.model.cid;
+      r.rules['leave_amount' + suffix] = {
+        required: true,
+        number: true,
+        range: [0,365]
+      };
     }
   });
 
@@ -43,11 +51,16 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     },
     doSave: function() {
       var view = this;
+      if (!this.$('form').valid()) {
+        return false;
+      }
+
       HRApp.trigger('ui:block', ts('Saving'));
       view.collection.save({
         success: function() {
           HRApp.trigger('ui:unblock');
           CRM.alert(ts('Saved'), null, 'success');
+          view.render();
           view.triggerMethod('standard:save', view, view.model);
         },
         error: function() {
@@ -55,6 +68,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
     },
     doReset: function() {
       var view = this;
@@ -73,6 +87,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
     },
     addMissingTypes: function() {
       this.collection.addMissingTypes(
@@ -93,6 +108,23 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
         options.warnTitle = ts('Abandon Changes?');
         options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
       }
+    },
+    onRender: function() {
+      var rules = this.createValidationRules();
+      this.$('form').validate(rules);
+    },
+    /**
+     *
+     * @return {*} jQuery.validate rules
+     */
+    createValidationRules: function() {
+      var rules = _.extend({}, CRM.validate.params);
+      rules.rules || (rules.rules = {});
+      this.triggerMethod("validateRules:create", this, rules);
+      _.each(this.children.toArray(), function(child) {
+        child.triggerMethod("validateRules:create", child, rules);
+      });
+      return rules;
     }
   });
 });

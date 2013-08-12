@@ -28,7 +28,7 @@ CREATE TABLE `civicrm_hrjob` (
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
-     `location` varchar(127)    COMMENT 'Main work location',
+     `location` varchar(127)    COMMENT 'Normal place of work',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
 ,
     PRIMARY KEY ( `id` )
@@ -71,8 +71,8 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPay ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
-     `pay_amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
-     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year') NOT NULL   COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
+     `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
+     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
 ,
     PRIMARY KEY ( `id` )
  
@@ -131,9 +131,9 @@ CREATE TABLE `civicrm_hrjob_hour` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHour ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `hours_type` varchar(63)    COMMENT 'Full-Time, Part-Time, Casual',
-     `hours_amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'Amount of time allocated for work (in given period)',
-     `hours_unit` enum('Day', 'Week', 'Month', 'Year') NOT NULL   COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
-     `hours_fte` decimal(20,2)    COMMENT 'Typically, employment at 40 hr/wk is 1 FTE' 
+     `hours_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in given period)',
+     `hours_unit` enum('Day', 'Week', 'Month', 'Year')    COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
+     `hours_fte` double    COMMENT 'Typically, employment at 40 hr/wk is 1 FTE' 
 ,
     PRIMARY KEY ( `id` )
  
@@ -185,7 +185,7 @@ CREATE TABLE `civicrm_hrjob_pension` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPension ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `is_enrolled` tinyint   DEFAULT 0 ,
-     `contrib_pct` decimal(20,2)   DEFAULT 0 COMMENT '??' 
+     `contrib_pct` double   DEFAULT 0 COMMENT '??' 
 ,
     PRIMARY KEY ( `id` )
  
@@ -213,7 +213,7 @@ CREATE TABLE `civicrm_hrjob_role` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `title` varchar(127)    COMMENT 'Negotiated name for the role',
      `description` text    COMMENT 'Negotiated name for the role',
-     `hours` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of time allocated for work (in a given week)',
+     `hours` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in a given week)',
      `region` varchar(127)    ,
      `department` varchar(127)    ,
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',

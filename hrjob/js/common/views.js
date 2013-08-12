@@ -22,6 +22,28 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     onRender: function() {
       this.$('.crm-contact-selector').crmContactField();
+      var rules = this.createValidationRules();
+      this.$('form').validate(rules);
+      if (rules.rules) {
+        var view = this;
+        _.each(rules.rules, function(rule, field){
+          var $label = view.$('[name=' + field +']').parents('.crm-summary-row').find('.crm-label');
+          if (rule.required && !$label.data('has-required')) {
+            $label.data('has-required', true);
+            $label.append(HRApp.RenderUtil.required());
+          }
+        });
+      }
+    },
+    /**
+     *
+     * @return {*} jQuery.validate rules
+     */
+    createValidationRules: function() {
+      var rules = _.extend({}, CRM.validate.params);
+      rules.rules || (rules.rules = {});
+      this.triggerMethod("validateRules:create", this, rules);
+      return rules;
     },
     modelEvents: {
       invalid: function(model, errors) {
@@ -37,8 +59,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     doSave: function() {
       var view = this;
-      if (!view.model.isValid()) {
-        return;
+      if (!this.$('form').valid() || !view.model.isValid()) {
+        return false;
       }
 
       HRApp.trigger('ui:block', ts('Saving'));
@@ -54,6 +76,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
           HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
         }
       });
+      return false;
     },
     doReset: function() {
       CRM.alert(ts('Reset'));
@@ -62,6 +85,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.model.set(this.modelBackup);
       view.render();
       view.triggerMethod('standard:reset', view, view.model);
+      return false;
     },
     onNavigateWarnings: function(route, options) {
       if (this.model.isModified()) {
