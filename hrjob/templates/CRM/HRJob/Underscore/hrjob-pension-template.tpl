@@ -1,4 +1,5 @@
 <script id="hrjob-pension-template" type="text/template">
+<form>
   <h3>{ts}Pension{/ts}</h3>
 
   <div class="crm-summary-row">
@@ -30,4 +31,5 @@
   </div>
 
   <%= RenderUtil.standardButtons() %>
+</form>
 </script>

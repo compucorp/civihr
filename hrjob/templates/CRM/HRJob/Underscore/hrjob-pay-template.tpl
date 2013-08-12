@@ -1,4 +1,5 @@
 <script id="hrjob-pay-template" type="text/template">
+<form>
   <h3>{ts}Pay{/ts}</h3>
 
   <div class="crm-summary-row">
@@ -16,7 +17,7 @@
     </div>
   </div>
 
-  <div class="crm-summary-row">
+  <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
       <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
     </div>
@@ -34,4 +35,5 @@
   </div>
 
   <%= RenderUtil.standardButtons() %>
+</form>
 </script>

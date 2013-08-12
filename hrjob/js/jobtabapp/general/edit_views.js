@@ -17,6 +17,25 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       this.toggleIsPrimary();
     },
     /**
+     * Define form validation rules
+     *
+     * @param View view the view for which validation rules are created
+     * @param Object r the validation rules for the view
+     */
+    onValidateRulesCreate: function(view, r) {
+      _.extend(r.rules, {
+        title: {
+          required: true
+        },
+        position: {
+          required: true
+        },
+        contract_type: {
+          required: true
+        }
+      });
+    },
+    /**
      * Activate or de-activate is_primary field. If there's only
      * one job, then it must be primary. If a job is already
      * primary, then it's futile to uncheck it (because the

@@ -56,9 +56,8 @@
   <field>
     <name>hours_amount</name>
     <title>Job Hours Amount</title>
-    <type>decimal</type>
+    <type>float</type>
     <default>0</default>
-    <required>true</required>
     <comment>Amount of time allocated for work (in given period)</comment>
     <export>true</export>
     <uniqueName>hrjob_hours_amount</uniqueName>
@@ -69,7 +68,6 @@
     <title>Job Hours Unit</title>
     <type>enum</type>
     <values>Day, Week, Month, Year</values>
-    <required>true</required>
     <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
     <export>true</export>
     <uniqueName>hrjob_hours_unit</uniqueName>
@@ -78,7 +76,7 @@
   <field>
     <name>hours_fte</name>
     <title>Full-Time Equivalence</title>
-    <type>decimal</type>
+    <type>float</type>
     <comment>Typically, employment at 40 hr/wk is 1 FTE</comment>
   </field>
 </table>

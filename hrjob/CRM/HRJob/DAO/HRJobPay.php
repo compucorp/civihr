@@ -184,13 +184,11 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'name' => 'pay_amount',
           'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Amount') ,
-          'required' => true,
         ) ,
         'pay_unit' => array(
           'name' => 'pay_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Unit') ,
-          'required' => true,
           'enumValues' => 'Hour, Day, Week, Month, Year',
         ) ,
       );
