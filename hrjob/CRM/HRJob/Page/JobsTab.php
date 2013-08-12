@@ -36,6 +36,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmContactField.js', 125, 'html-header', FALSE)
+      ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE)
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
@@ -67,7 +68,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
 
       $config = CRM_Core_Config::singleton();
       if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
-        $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
+        $contactID = CRM_Utils_Request::retrieve('cid', 'Positive');
         $specificFile = substr($file, strlen($templateDir . 'CRM/HRJob/Underscore/'), -4);
         switch ($specificFile) {
           case 'hrjob-hour-template':

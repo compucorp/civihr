@@ -147,3 +147,4 @@
   <button class="standard-reset">{ts}Reset{/ts}</button>
 </form>
 </script>
+{if $snippet.table_name}{include file="CRM/common/logButton.tpl" onlyScript=true onajax=true}{/if}
