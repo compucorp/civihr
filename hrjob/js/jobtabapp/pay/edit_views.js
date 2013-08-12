@@ -6,6 +6,14 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobPay
       };
+    },
+    onValidateRulesCreate: function(view, r) {
+      _.extend(r.rules, {
+        pay_amount: {
+          number: true,
+          range: [0, 100]
+        }
+      });
     }
   });
 });
