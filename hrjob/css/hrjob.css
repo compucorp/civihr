@@ -11,6 +11,9 @@
     float: right;
     padding: 0em 0.5em;
 }
+.hrjob-leave-table {
+    table-layout: fixed;
+}
 .hrjob-role-toggle .on-open, .hrjob-role-toggle .on-closed {
     font-family: "Courier New", Courier, monospace;
 }
