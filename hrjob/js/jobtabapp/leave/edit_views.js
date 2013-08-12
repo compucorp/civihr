@@ -55,6 +55,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
     },
     doReset: function() {
       var view = this;
@@ -73,6 +74,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
     },
     addMissingTypes: function() {
       this.collection.addMissingTypes(
