@@ -41,6 +41,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
      */
     createValidationRules: function() {
       var rules = _.extend({}, CRM.validate.params);
+      rules.rules || (rules.rules = {});
       this.triggerMethod("validateRules:create", this, rules);
       return rules;
     },

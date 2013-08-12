@@ -31,11 +31,12 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       }
     },
     /**
+     * Define form validation rules
      *
-     * @return {*} jQuery.validate rules
+     * @param View view the view for which validation rules are created
+     * @param Object r the validation rules for the view
      */
     onValidateRulesCreate: function(view, r) {
-      r.rules || (r.rules = {});
       _.extend(r.rules, {
         hours_amount: {
           required: true,

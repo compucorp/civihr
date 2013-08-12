@@ -17,11 +17,12 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       this.toggleIsPrimary();
     },
     /**
+     * Define form validation rules
      *
-     * @return {*} jQuery.validate rules
+     * @param View view the view for which validation rules are created
+     * @param Object r the validation rules for the view
      */
     onValidateRulesCreate: function(view, r) {
-      r.rules || (r.rules = {});
       _.extend(r.rules, {
         title: {
           required: true
