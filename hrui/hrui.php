@@ -70,7 +70,7 @@ function hrui_civicrm_install() {
     $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
     if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
         $resetNavigation = false;
-        CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContatType);
+        CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
         throw new CRM_Core_Exception('Failed to disable contact type');
     }
   }
