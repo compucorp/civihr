@@ -218,7 +218,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         ) ,
         'hours' => array(
           'name' => 'hours',
-          'type' => CRM_Utils_Type::T_MONEY,
+          'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Amount') ,
         ) ,
         'region' => array(

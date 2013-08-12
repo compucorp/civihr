@@ -101,6 +101,10 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       }
       $region->add($regionParams);
     }
+
+    $region->add(array(
+      'template' => 'CRM/Form/validate.tpl'
+    ));
   }
 
   /**

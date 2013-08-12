@@ -170,7 +170,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         ) ,
         'contrib_pct' => array(
           'name' => 'contrib_pct',
-          'type' => CRM_Utils_Type::T_MONEY,
+          'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Contribution Percentage') ,
         ) ,
       );

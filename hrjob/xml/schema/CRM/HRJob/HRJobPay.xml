@@ -58,7 +58,6 @@
     <title>Amount</title>
     <type>decimal</type>
     <default>0</default>
-    <required>true</required>
     <comment>Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)</comment>
   </field>
 
@@ -67,7 +66,6 @@
     <title>Unit</title>
     <type>enum</type>
     <values>Hour, Day, Week, Month, Year</values>
-    <required>true</required>
     <comment>Unit for expressing pay rate (e.g. amount per hour, amount per week)</comment>
   </field>
 
