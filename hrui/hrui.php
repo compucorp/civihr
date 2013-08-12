@@ -52,6 +52,7 @@ function hrui_civicrm_install() {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
+  
   // Disable Household contact type
   $paramsContactType = array(
     'version' => 3,
@@ -65,19 +66,21 @@ function hrui_civicrm_install() {
     throw new CRM_Core_Exception('Failed to get contact type');
   }
  else {
-    $paramsContactType["id"] = $resultGetContactType["id"];
-    $paramsContactType["is_active"] = false;
-    $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
-    if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
-        $resetNavigation = false;
-        CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
-        throw new CRM_Core_Exception('Failed to disable contact type');
-    }
+    if (array_key_exists('id', $resultGetContactType)) {   
+        $paramsContactType["id"] = $resultGetContactType["id"];
+        $paramsContactType["is_active"] = false;
+        $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
+        if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+            $resetNavigation = false;
+            CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+            throw new CRM_Core_Exception('Failed to disable contact type');
+        }
+    }   
   }
+  if ($resetNavigation === true) {
+    CRM_Core_BAO_Navigation::resetNavigation();
+  } 
   
-  if($resetNavigation === true){
-      CRM_Core_BAO_Navigation::resetNavigation();
-  }   
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
