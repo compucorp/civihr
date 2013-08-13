@@ -32,6 +32,12 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         },
         contract_type: {
           required: true
+        },
+        period_start_date: {
+          dateISO: true
+        },
+        period_end_date: {
+          dateISO: true
         }
       });
     },
