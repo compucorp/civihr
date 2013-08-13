@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Health', function(Health, HRApp, Backbone, Marionett
     template: '#hrjob-health-template',
     templateHelpers: function() {
       return {
+        'isNew': this.model.get('id') ? false : true,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobHealth
       };

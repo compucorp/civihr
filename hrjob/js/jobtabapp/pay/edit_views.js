@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     template: '#hrjob-pay-template',
     templateHelpers: function() {
       return {
+        'isNew': this.model.get('id') ? false : true,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobPay
       };

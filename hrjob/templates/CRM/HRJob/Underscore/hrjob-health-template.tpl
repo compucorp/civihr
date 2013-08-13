@@ -1,6 +1,11 @@
 <script id="hrjob-health-template" type="text/template">
 <form>
-  <h3>{ts}Healthcare{/ts} {if $snippet.table_name}<a class="css_right {$snippet.css_class}" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>{/if}</h3>
+  <h3>
+    {ts}Healthcare{/ts} 
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_health" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <div class="crm-summary-row">
     <div class="crm-label">
@@ -53,4 +58,3 @@
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>
-{if $snippet.table_name}{include file="CRM/common/logButton.tpl" onlyScript=true onajax=true}{/if}

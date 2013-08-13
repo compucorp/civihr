@@ -20,13 +20,16 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addSettingsFactory(function () {
+      $config = CRM_Core_Config::singleton();
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
-          'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
+          'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+          'isLogEnabled'    => (bool) $config->logging,
+          'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
         ),
       );
     })
@@ -64,43 +67,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     $region = CRM_Core_Region::instance('page-header');
     foreach (glob($templateDir . 'CRM/HRJob/Underscore/*.tpl') as $file) {
       $fileName = substr($file, strlen($templateDir));
-      $regionParams = array('template' => $fileName);
-
-      $config = CRM_Core_Config::singleton();
-      if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
-        $contactID = CRM_Utils_Request::retrieve('cid', 'Positive');
-        $specificFile = substr($file, strlen($templateDir . 'CRM/HRJob/Underscore/'), -4);
-        switch ($specificFile) {
-          case 'hrjob-hour-template':
-            $tableName = 'civicrm_hrjob_hour';
-            break;
-          case 'hrjob-health-template':
-            $tableName = 'civicrm_hrjob_health';
-            break;
-          case 'hrjob-leave-table-template':
-            $tableName = 'civicrm_hrjob_leave';
-            break;
-          case 'hrjob-pay-template':
-            $tableName = 'civicrm_hrjob_pay';
-            break;
-          case 'hrjob-pension-template':
-            $tableName = 'civicrm_hrjob_pension';
-            break;
-          case 'hrjob-role-table-template':
-            $tableName = 'civicrm_hrjob_role';
-            break;
-          default:
-            $tableName = 'civicrm_hrjob';
-        }
-        $regionParams = array_merge($regionParams, 
-                        array(
-                          'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-                          'css_class'  => $specificFile,
-                          'table_name' => $tableName,
-                          'contact_id' => $contactID,
-                        ));
-      }
-      $region->add($regionParams);
+      $region->add(array(
+          'template' => $fileName
+        ));
     }
 
     $region->add(array(
@@ -150,5 +119,4 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     }
     return $fieldOptions;
   }
-
 }

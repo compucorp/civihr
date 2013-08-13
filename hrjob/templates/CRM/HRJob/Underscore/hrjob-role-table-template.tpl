@@ -1,5 +1,10 @@
 <script id="hrjob-role-table-template" type="text/template">
-  <h3>{ts}Roles{/ts} {if $snippet.table_name}<a class="css_right {$snippet.css_class}" href="#" title="{ts}View Revisions{/ts}">({ts}View Revisions{/ts})</a>{/if}</h3>
+  <h3> 
+    {ts}Roles{/ts}
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_role" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <table class="hrjob-role-table">
     <thead>
@@ -22,4 +27,3 @@
 
   <%= RenderUtil.standardButtons() %>
 </script>
-{if $snippet.table_name}{include file="CRM/common/logButton.tpl" onlyScript=true onajax=true}{/if}

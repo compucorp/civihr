@@ -36,7 +36,11 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     itemViewContainer: 'tbody',
     template: '#hrjob-leave-table-template',
     templateHelpers: function() {
+      var isNew = this.collection.foldl(function(memo, model){
+        return model.get('id') ? false : true;
+      }, false);
       return {
+        'isNew': isNew,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobLeave
       };
@@ -44,6 +48,17 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     initialize: function(models, options) {
       this.addMissingTypes();
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
+    },
+    onRender: function() {
+      if (CRM.jobTabApp.isLogEnabled) {
+        this.$('.hrjob-revision-link').crmRevisionLink({
+	  reportId: CRM.jobTabApp.loggingReportId,
+	  contactId: CRM.jobTabApp.contact_id,
+	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+	});
+      } else {
+        this.$('.crm-revision-link').hide();
+      }
     },
     events: {
       'click .standard-save': 'doSave',

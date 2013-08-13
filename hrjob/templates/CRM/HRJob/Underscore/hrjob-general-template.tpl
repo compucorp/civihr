@@ -1,6 +1,11 @@
 <script id="hrjob-general-template" type="text/template">
 <form>
-  <h3>{ts}General{/ts}{literal} <%- (isNewDuplicate) ? '(' + ts('New Copy of "%1"', {1: position}) + ')' : '' %>{/literal} {if $snippet.table_name}<a class="css_right {$snippet.css_class}" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>{/if}</h3>
+  <h3>
+    {ts}General{/ts}{literal} <%- (isNewDuplicate) ? '(' + ts('New Copy of "%1"', {1: position}) + ')' : '' %>{/literal} 
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class='css_right hrjob-revision-link' data-table-name='civicrm_hrjob' href='#' title='{ts}View Revisions{/ts}'>(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <div class="crm-summary-row">
     <div class="crm-label">
@@ -147,4 +152,3 @@
   <button class="standard-reset">{ts}Reset{/ts}</button>
 </form>
 </script>
-{if $snippet.table_name}{include file="CRM/common/logButton.tpl" onlyScript=true onajax=true}{/if}

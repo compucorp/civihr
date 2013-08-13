@@ -1,6 +1,11 @@
 <script id="hrjob-leave-table-template" type="text/template">
 <form>
-  <h3>{ts}Leave Entitlement{/ts} {if $snippet.table_name}<a class="css_right {$snippet.css_class}" href="#" title="{ts}View Revisions{/ts}">({ts}View Revisions{/ts})</a>{/if}</h3>
+  <h3>
+    {ts}Leave Entitlement{/ts}
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_leave" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <table class="hrjob-leave-table">
     <thead>
@@ -16,4 +21,3 @@
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>
-{if $snippet.table_name}{include file="CRM/common/logButton.tpl" onlyScript=true onajax=true}{/if}
