@@ -55,29 +55,54 @@ function hrui_civicrm_install() {
   
   // Disable Household contact type
   $contactTypeID = CRM_Core_DAO::getFieldValue(
-                                            'CRM_Contact_DAO_ContactType',
-                                             'Household',
-                                             'id',
-                                             'name'
-                                            );
+                                               'CRM_Contact_DAO_ContactType',
+                                               'Household',
+                                               'id',
+                                               'name'
+                                               );
   
-  if($contactTypeID) {
-        $paramsContactType = array(
-                             'version' => 3,
-                             'name' => "Household",
-                             'id' => $contactTypeID,
-                             'is_active' => FALSE
-                             );
-      $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
-      if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
-        $resetNavigation = false;
-        CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
-        throw new CRM_Core_Exception('Failed to disable contact type');
-      }
+  if ($contactTypeID) {
+    $paramsContactType = array(
+                               'version' => 3,
+                               'name' => "Household",
+                               'id' => $contactTypeID,
+                               'is_active' => FALSE
+                               );
+    $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
+    if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+      $resetNavigation = false;
+      CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+      throw new CRM_Core_Exception('Failed to disable contact type');
+    }
   }
   
   // Reset Navigation  
-   CRM_Core_BAO_Navigation::resetNavigation();
+  CRM_Core_BAO_Navigation::resetNavigation();
+  
+  // Delete unnecessary reports 
+  $reports = array("Constituent Summary","Constituent Detail","Current Employers");
+  if (!empty($reports)) {    
+    foreach ($reports as $reportTitle) {
+      $reportID = CRM_Core_DAO::getFieldValue(
+                                              'CRM_Report_DAO_Instance',
+                                              $reportTitle,
+                                              'id',
+                                              'title'
+                                              );
+      if ($reportID) {
+        $paramsReport = array(
+                              'version' => 3,
+                              'id' => $reportID,
+                              ); 
+        $resultContactType = civicrm_api('report_instance', 'delete', $paramsReport);
+        if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+          $resetNavigation = false;
+          CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+          throw new CRM_Core_Exception('Failed to disable contact type');
+        }
+      } 
+    }
+  }
   
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
