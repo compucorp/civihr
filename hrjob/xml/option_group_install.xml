@@ -51,7 +51,7 @@
       <value>Employee</value>
       <name>Employee</name>
       <is_default>0</is_default>
-      <weight>1</weight>
+      <weight>3</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -73,7 +73,7 @@
       <value>Volunteer</value>
       <name>Volunteer</name>
       <is_default>0</is_default>
-      <weight>3</weight>
+      <weight>6</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -84,7 +84,7 @@
       <value>Trustee</value>
       <name>Trustee</name>
       <is_default>0</is_default>
-      <weight>4</weight>
+      <weight>5</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -95,7 +95,7 @@
       <value>Intern</value>
       <name>Intern</name>
       <is_default>0</is_default>
-      <weight>5</weight>
+      <weight>4</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -106,7 +106,7 @@
       <value>Apprentice</value>
       <name>Apprentice</name>
       <is_default>0</is_default>
-      <weight>6</weight>
+      <weight>1</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
