@@ -39,8 +39,7 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
-  // make sure only relevant components are enabled
-  $resetNavigation = true;  
+  // make sure only relevant components are enabled 
   $params = array(
     'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
@@ -48,38 +47,32 @@ function hrui_civicrm_install() {
   );
   $result = civicrm_api('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-    $resetNavigation = false;     
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
   
   // Disable Household contact type
-  $paramsContactType = array(
-                             'version' => 3,
-                             'name' => "Household",
-                             'is_active' => true,
-                             );
-  $resultGetContactType = civicrm_api('contact_type', 'get', $paramsContactType);
-  if (CRM_Utils_Array::value('is_error', $resultGetContactType, FALSE)) {
-    $resetNavigation = false;
-    CRM_Core_Error::debug_var('contact_type-get result for Household', $resultContatType);
-    throw new CRM_Core_Exception('Failed to get contact type');
+  $contactTypeId = CRM_Core_DAO::getFieldValue(
+                                               'CRM_Contact_DAO_ContactType',
+                                               'Household',
+                                               'id',
+                                               'name'
+                                               );
+  if ($contactTypeId) {    
+    $paramsContactType = array(
+                               'version' => 3,
+                               'name' => "Household",
+                               'id'  => $contactTypeId,  
+                               'is_active' => false,
+                               );
+    $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
+    if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+      CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+      throw new CRM_Core_Exception('Failed to disable contact type');
+    }
   }
-  else {
-    if (array_key_exists('id', $resultGetContactType)) {   
-      $paramsContactType["id"] = $resultGetContactType["id"];
-      $paramsContactType["is_active"] = false;
-      $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
-      if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
-        $resetNavigation = false;
-        CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
-        throw new CRM_Core_Exception('Failed to disable contact type');
-      }
-    }   
-  }
-  if ($resetNavigation === true) {
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }  
+  // Reset Navigation
+  CRM_Core_BAO_Navigation::resetNavigation();
  
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
