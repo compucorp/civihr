@@ -80,23 +80,7 @@ function hrui_civicrm_install() {
   if ($resetNavigation === true) {
     CRM_Core_BAO_Navigation::resetNavigation();
   }  
-  
-  // Delete unnecessary reports 
-  $reports = array("Constituent Summary","Constituent Detail","Current Employers");
-  if (!empty($reports)) {    
-    foreach ($reports as $reportTitle) {
-      $instanceID = CRM_Core_DAO::getFieldValue(
-                                                'CRM_Report_DAO_Instance',
-                                                $reportTitle,
-                                                'id',
-                                                'title'
-                                                );
-      if ($instanceID) {
-        CRM_Report_BAO_ReportInstance::del($instanceID);
-      }
-    }
-  }
-   
+ 
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
