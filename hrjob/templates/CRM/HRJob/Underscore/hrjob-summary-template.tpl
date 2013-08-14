@@ -18,11 +18,31 @@
         <div class="hrjob-summary-general"></div>
       </td>
       <td>
-        <div class="hrjob-summary-health"></div>
-        <div class="hrjob-summary-hour"></div>
-        <div class="hrjob-summary-leave"></div>
-        <div class="hrjob-summary-pay"></div>
-        <div class="hrjob-summary-pension"></div>
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Healthcare{/ts}</div>
+          <div class="crm-content hrjob-summary-health"></div>
+        </div>
+
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Hours{/ts}</div>
+          <div class="crm-content hrjob-summary-hour"></div>
+        </div>
+
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Leave{/ts}</div>
+          <div class="crm-content hrjob-summary-leave"></div>
+        </div>
+
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Pay{/ts}</div>
+          <div class="crm-content hrjob-summary-pay"></div>
+        </div>
+
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Pension{/ts}</div>
+          <div class="crm-content hrjob-summary-pension"></div>
+        </div>
+
       </td>
     </tr>
     </tbody>

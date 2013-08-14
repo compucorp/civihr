@@ -9,14 +9,8 @@ var enrolledOptions ={
 %>
 {/literal}
 
-  <div class="crm-summary-row">
-    <div class="crm-label">{ts}Pension{/ts}</div>
-    <div class="crm-content">
       <%- enrolledOptions[is_enrolled] %>
       {literal}<% if (contrib_pct && contrib_pct != 0) { %>{/literal}
       <br /><strong>{ts}Contribution (%){/ts}</strong>: <span name="contrib_pct"/>
       {literal}<% } %>{/literal}
-    </div>
-  </div>
-
 </script>
