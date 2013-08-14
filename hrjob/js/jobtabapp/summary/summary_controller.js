@@ -22,7 +22,8 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
           var models = Summary.Controller.parseChainedModels(jobId, result.values[result.id]);
           console.log('models', models);
           var mainView = new Summary.ShowView({
-            model: models.HRJob.first()
+            model:  models.HRJob.first(),
+            models: models
           });
           HRApp.mainRegion.show(mainView);
         }

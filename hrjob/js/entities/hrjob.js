@@ -74,6 +74,25 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     }
   });
 
+  Entities.HRJobHealth = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      provider: '',
+      plan_type: '',
+      description: '',
+      dependents: ''
+    }
+  });
+
+  Entities.HRJobPay = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      pay_grade: '',
+      pay_amount: '',
+      pay_unit: ''
+    }
+  });
+
   Entities.HRJobLeave = Backbone.Model.extend({
     defaults: {
       leave_amount: 0
