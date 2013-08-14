@@ -1,5 +1,5 @@
 <script id="hrjob-tree-item-template" type="text/template">
-  <dl>
+  <dl class="<%= is_active ? '' : 'hrjob-inactive' %>">
     {*
     <dt><a href="#<%= cid %>/hrjob/<%= id %>" class="hrjob-nav" data-hrjob-event="hrjob:summary:show">
     *}

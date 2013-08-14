@@ -144,3 +144,12 @@ function hrqual_getUFGroupID() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
   return array_search('hrqual_tab', $groups);
 }
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrqual_civicrm_pageRun($page) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+  }
+}

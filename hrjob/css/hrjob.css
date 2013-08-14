@@ -59,3 +59,6 @@ a.hrjob-nav.selected {
 .hrjob-duplicate-notice {
     text-align: center;
 }
+.hrjob-tree-block .hrjob-inactive a {
+    color: red;
+}

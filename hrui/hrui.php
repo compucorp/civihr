@@ -39,22 +39,41 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
-  // make sure only relevant components are enabled
+  // make sure only relevant components are enabled 
   $params = array(
     'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviMail', 'CiviReport'),
+    'enable_components' => array('CiviReport'),
   );
   $result = civicrm_api('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
-  else {
-    // reset navigation per enabled components
-    CRM_Core_BAO_Navigation::resetNavigation();
+  
+  // Disable Household contact type
+  $contactTypeId = CRM_Core_DAO::getFieldValue(
+                                               'CRM_Contact_DAO_ContactType',
+                                               'Household',
+                                               'id',
+                                               'name'
+                                               );
+  if ($contactTypeId) {    
+    $paramsContactType = array(
+                               'version' => 3,
+                               'name' => "Household",
+                               'id'  => $contactTypeId,  
+                               'is_active' => false,
+                               );
+    $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
+    if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+      CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+      throw new CRM_Core_Exception('Failed to disable contact type');
+    }
   }
-
+  // Reset Navigation
+  CRM_Core_BAO_Navigation::resetNavigation();
+ 
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
