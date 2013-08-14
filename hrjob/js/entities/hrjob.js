@@ -103,6 +103,14 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     }
   });
 
+  Entities.HRJobPension = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      is_enrolled: '',
+      contrib_pct: ''
+    }
+  });
+
   Entities.HRJobLeave = Backbone.Model.extend({
     defaults: {
       leave_amount: 0

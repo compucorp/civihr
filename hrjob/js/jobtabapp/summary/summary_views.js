@@ -41,6 +41,11 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         crmEntityName: 'HRJobPay',
         model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
       }));
+      this.pensionRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-pension-summary-template',
+        crmEntityName: 'HRJobPension',
+        model: models.HRJobPension.first() || new HRApp.Entities.HRJobPension()
+      }));
       /*
        this.roleRegion.show(new HRApp.JobTabApp.Role.TableView({
        newModelDefaults: {
