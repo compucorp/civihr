@@ -24,21 +24,15 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       this.generalRegion.show(new HRApp.JobTabApp.General.SummaryView({
         model: models.HRJob.first()
       }));
-      if (models.HRJobHealth.first()) {
-        this.healthRegion.show(new HRApp.JobTabApp.Health.SummaryView({
-          model: models.HRJobHealth.first()
-        }));
-      }
-      if (models.HRJobHour.first()) {
-        this.hourRegion.show(new HRApp.JobTabApp.Hour.SummaryView({
-          model: models.HRJobHour.first()
-        }));
-      }
-      if (models.HRJobPay.first()) {
-        this.payRegion.show(new HRApp.JobTabApp.Pay.SummaryView({
-          model: models.HRJobPay.first()
-        }));
-      }
+      this.healthRegion.show(new HRApp.JobTabApp.Health.SummaryView({
+        model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
+      }));
+      this.hourRegion.show(new HRApp.JobTabApp.Hour.SummaryView({
+        model: models.HRJobHour.first() || new HRApp.Entities.HRJobHour()
+      }));
+      this.payRegion.show(new HRApp.JobTabApp.Pay.SummaryView({
+        model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
+      }));
       /*
        this.roleRegion.show(new HRApp.JobTabApp.Role.TableView({
        newModelDefaults: {

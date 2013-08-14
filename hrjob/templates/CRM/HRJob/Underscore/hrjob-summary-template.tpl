@@ -10,7 +10,6 @@
         <h3>{ts}Details{/ts}</h3>
         <div class="hrjob-summary-hour"></div>
         <div class="hrjob-summary-pay"></div>
-
         <div class="hrjob-summary-health"></div>
         <div class="hrjob-summary-pension"></div>
         <div class="hrjob-summary-leave"></div>

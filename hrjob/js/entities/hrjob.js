@@ -84,6 +84,16 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
     }
   });
 
+  Entities.HRJobHour = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      hours_type: '',
+      hours_amount: '',
+      hours_unit: '',
+      hours_fte: ''
+    }
+  });
+
   Entities.HRJobPay = Backbone.Model.extend({
     defaults: {
       job_id: null,
