@@ -1,6 +1,12 @@
 CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marionette, $, _) {
   Summary.ShowView = Marionette.Layout.extend({
     template: '#hrjob-summary-template',
+    templateHelpers: function() {
+      return {
+        RenderUtil: CRM.HRApp.RenderUtil,
+        FieldOptions: CRM.FieldOptions.HRJob
+      };
+    },
     regions: {
       generalRegion: '.hrjob-summary-general',
       healthRegion: '.hrjob-summary-health',
@@ -24,7 +30,7 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         }));
       }
       if (models.HRJobHour.first()) {
-        this.healthRegion.show(new HRApp.JobTabApp.Hour.SummaryView({
+        this.hourRegion.show(new HRApp.JobTabApp.Hour.SummaryView({
           model: models.HRJobHour.first()
         }));
       }
