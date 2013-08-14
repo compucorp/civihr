@@ -71,9 +71,34 @@ function hrui_civicrm_install() {
       throw new CRM_Core_Exception('Failed to disable contact type');
     }
   }
+  
+  // Delete unnecessary reports 
+  $reports = array("Constituent Summary","Constituent Detail","Current Employers");
+  if (!empty($reports)) {    
+    foreach ($reports as $reportTitle) {
+      $reportID = CRM_Core_DAO::getFieldValue(
+                                              'CRM_Report_DAO_Instance',
+                                              $reportTitle,
+                                              'id',
+                                              'title'
+                                              );
+      if ($reportID) {
+        $paramsReport = array(
+                              'version' => 3,
+                              'id' => $reportID,
+                              ); 
+        $resultContactType = civicrm_api('report_instance', 'delete', $paramsReport);
+        if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+          CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+          throw new CRM_Core_Exception('Failed to disable contact type');
+        }
+      } 
+    }
+  }
+
   // Reset Navigation
   CRM_Core_BAO_Navigation::resetNavigation();
- 
+  
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
