@@ -36,6 +36,9 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         crmEntityName: 'HRJobHour',
         model: models.HRJobHour.first() || new HRApp.Entities.HRJobHour()
       }));
+      this.leaveRegion.show(new HRApp.JobTabApp.Leave.SummaryView({
+        collection: models.HRJobLeave
+      }));
       this.payRegion.show(new Summary.SimpleItemView({
         template: '#hrjob-pay-summary-template',
         crmEntityName: 'HRJobPay',
