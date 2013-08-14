@@ -3,8 +3,8 @@ cj(document).ready(function($) {
   cj('.crm-contact-current_employer').parent('div.crm-summary-row').hide();
   cj('.crm-contact-job_title').parent('div.crm-summary-row').hide();
 
-  //rename "Summary" tab to "Contact Details"
-  $('#tab_summary a').text('Contact Details');
+  //rename "Summary" tab to "Personal Details"
+  $('#tab_summary a').text('Personal Details');
 });
 // for inline edit
 cj(document).ajaxSuccess(function() {
