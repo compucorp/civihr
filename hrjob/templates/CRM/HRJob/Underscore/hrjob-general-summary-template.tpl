@@ -1,7 +1,5 @@
 <script id="hrjob-general-summary-template" type="text/template">
 
-  <h3>{ts}General{/ts}</h3>
-
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Position{/ts}</div>
     <div class="crm-content"><span name="position"></span></div>
