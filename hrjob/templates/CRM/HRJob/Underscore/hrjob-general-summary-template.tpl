@@ -32,22 +32,19 @@
     <div class="crm-content"><%- FieldOptions.location[location] %></div>
   </div>
 
-  <h3>{ts}Time Period{/ts}</h3>
 
   <div class="crm-summary-row">
-    <div class="crm-label">{ts}Contract Duration{/ts}</div>
-    <div class="crm-content"><%- FieldOptions.period_type[period_type] %></div>
+    <div class="crm-label">{ts}Time Period{/ts}</div>
+    <div class="crm-content">
+      <%- FieldOptions.period_type[period_type] %>
+      {literal}<% if (period_start_date || period_end_date) { %>{/literal}
+        (<%- period_start_date ? period_start_date : '{ts escape="js"}Unspecified{/ts}' %>
+        to
+        <%- period_end_date ? period_end_date : '{ts escape="js"}Unspecified{/ts}' %>)
+    {literal}<% } %>{/literal}
+    </div>
   </div>
 
-  <div class="crm-summary-row">
-    <div class="crm-label">{ts}Start Date{/ts}</div>
-    <div class="crm-content"><span name="period_start_date"/></div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">{ts}End Date{/ts}</div>
-    <div class="crm-content"><span name="period_end_date"/></div>
-  </div>
 
   <h3>{ts}Funding{/ts}</h3>
 
