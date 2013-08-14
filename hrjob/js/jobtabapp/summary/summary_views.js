@@ -21,16 +21,24 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
     },
     onRender: function() {
       var models = this.options.models;
-      this.generalRegion.show(new HRApp.JobTabApp.General.SummaryView({
+      this.generalRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-general-summary-template',
+        crmEntityName: 'HRJob',
         model: models.HRJob.first()
       }));
-      this.healthRegion.show(new HRApp.JobTabApp.Health.SummaryView({
+      this.healthRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-health-summary-template',
+        crmEntityName: 'HRJobHealth',
         model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
       }));
-      this.hourRegion.show(new HRApp.JobTabApp.Hour.SummaryView({
+      this.hourRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-hour-summary-template',
+        crmEntityName: 'HRJobHour',
         model: models.HRJobHour.first() || new HRApp.Entities.HRJobHour()
       }));
-      this.payRegion.show(new HRApp.JobTabApp.Pay.SummaryView({
+      this.payRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-pay-summary-template',
+        crmEntityName: 'HRJobPay',
         model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
       }));
       /*
@@ -44,4 +52,29 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
        */
     }
   });
+
+  /**
+   * A simple view for templates which display fields of a CRM entity.
+   *
+   * If you need something more sophisticated, then considering making a
+   * new view class.
+   *
+   * Required options:
+   *  - template: string, CSS selector
+   *  - crmEntityName: string, APIv3 entity name
+   *
+   * @type {*}
+   */
+  Summary.SimpleItemView = Marionette.ItemView.extend({
+    templateHelpers: function() {
+      return {
+        'RenderUtil': CRM.HRApp.RenderUtil,
+        'FieldOptions': CRM.FieldOptions[this.options.crmEntityName]
+      };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
+    }
+  });
+
 });
