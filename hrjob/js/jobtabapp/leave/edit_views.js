@@ -49,17 +49,6 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       this.addMissingTypes();
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
-    onRender: function() {
-      if (CRM.jobTabApp.isLogEnabled) {
-        this.$('.hrjob-revision-link').crmRevisionLink({
-	  reportId: CRM.jobTabApp.loggingReportId,
-	  contactId: CRM.jobTabApp.contact_id,
-	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
-	});
-      } else {
-        this.$('.crm-revision-link').hide();
-      }
-    },
     events: {
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset'
@@ -127,6 +116,15 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     onRender: function() {
       var rules = this.createValidationRules();
       this.$('form').validate(rules);
+      if (CRM.jobTabApp.isLogEnabled) {
+        this.$('.hrjob-revision-link').crmRevisionLink({
+      	  reportId: CRM.jobTabApp.loggingReportId,
+      	  contactId: CRM.jobTabApp.contact_id,
+      	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+      	});
+      } else {
+        this.$('.crm-revision-link').hide();
+      }
     },
     /**
      *
