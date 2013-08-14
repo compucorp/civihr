@@ -32,11 +32,6 @@
     <div class="crm-content"><%- FieldOptions.location[location] %></div>
   </div>
 
-  <div class="crm-summary-row hrjob-is_primary-row">
-    <div class="crm-label">{ts}Is Primary{/ts}</div>
-    <div class="crm-content"><span name="is_primary" "/></div>
-  </div>
-
   <h3>{ts}Time Period{/ts}</h3>
 
   <div class="crm-summary-row">

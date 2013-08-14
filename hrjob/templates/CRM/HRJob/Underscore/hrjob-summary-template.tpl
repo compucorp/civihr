@@ -1,5 +1,11 @@
 <script id="hrjob-summary-template" type="text/template">
-  <h3>{ts}Summary{/ts} (<span name="position"></span>)</h3>
+  <h3>
+    {ts}Summary{/ts}
+    (<span name="position"></span>)
+    {literal}<% if (is_primary) { %>{/literal}
+      &lt;<em>{ts}Primary Job{/ts}</em>&gt;
+    {literal}<% } %>{/literal}
+  </h3>
   <table>
     <tbody>
     <tr>
