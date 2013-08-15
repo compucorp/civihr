@@ -21,9 +21,7 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
     },
     onRender: function() {
       var models = this.options.models;
-      this.generalRegion.show(new Summary.SimpleItemView({
-        template: '#hrjob-general-summary-template',
-        crmEntityName: 'HRJob',
+      this.generalRegion.show(new HRApp.JobTabApp.General.SummaryView({
         model: models.HRJob.first()
       }));
       this.healthRegion.show(new Summary.SimpleItemView({
