@@ -1,4 +1,4 @@
-CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $, _){
+CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $, _) {
   Views.Failed = Marionette.ItemView.extend({
     template: "#common-failed-template"
   });
@@ -24,10 +24,10 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.$('.crm-contact-selector').crmContactField();
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
-	  reportId: CRM.jobTabApp.loggingReportId,
-	  contactId: CRM.jobTabApp.contact_id,
-	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
-	});
+          reportId: CRM.jobTabApp.loggingReportId,
+          contactId: CRM.jobTabApp.contact_id,
+          tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+        });
       } else {
         this.$('.crm-revision-link').hide();
       }
@@ -35,8 +35,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.$('form').validate(rules);
       if (rules.rules) {
         var view = this;
-        _.each(rules.rules, function(rule, field){
-          var $label = view.$('[name=' + field +']').parents('.crm-summary-row').find('.crm-label');
+        _.each(rules.rules, function(rule, field) {
+          var $label = view.$('[name=' + field + ']').parents('.crm-summary-row').find('.crm-label');
           if (rule.required && !$label.data('has-required')) {
             $label.data('has-required', true);
             $label.append(HRApp.RenderUtil.required());
@@ -57,8 +57,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     modelEvents: {
       invalid: function(model, errors) {
         var view = this;
-        _.each(errors, function(message, field){
-          view.$('[name='+field+']').crmError(message);
+        _.each(errors, function(message, field) {
+          view.$('[name=' + field + ']').crmError(message);
         });
       }
     },
@@ -110,7 +110,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
    *
    * @type {*}
    *
-  Views.AutoSaveForm = Marionette.ItemView.extend({
+   Views.AutoSaveForm = Marionette.ItemView.extend({
     saveState: 'saved', // saved, unsaved, active, error
     pendingAlert: null,
     initialize: function() {

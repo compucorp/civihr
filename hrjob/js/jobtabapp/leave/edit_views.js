@@ -16,7 +16,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       // The field names in each <TR> must be distinct, so we append the cid.
       // However, ModelBinder doesn't know about the cid suffix, so we fix it.
       var suffix = '_' + this.model.cid;
-      _.each(['leave_type', 'leave_amount'], function(field){
+      _.each(['leave_type', 'leave_amount'], function(field) {
         bindings[field] = bindings[field + suffix];
         delete bindings[field + suffix];
       });
@@ -26,7 +26,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       r.rules['leave_amount' + suffix] = {
         required: true,
         number: true,
-        range: [0,365]
+        range: [0, 365]
       };
     }
   });
@@ -36,7 +36,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     itemViewContainer: 'tbody',
     template: '#hrjob-leave-table-template',
     templateHelpers: function() {
-      var isNew = this.collection.foldl(function(memo, model){
+      var isNew = this.collection.foldl(function(memo, model) {
         return model.get('id') ? false : true;
       }, false);
       return {
@@ -105,7 +105,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       // 2. New, placeholder DB rows (which would become real if saved)
       // In both case, we only care if the row has been *modified*. Insertions/deletions
       // are a non-issue.
-      var modified = this.collection.foldl(function(memo, model){
+      var modified = this.collection.foldl(function(memo, model) {
         return memo || model.isModified();
       }, false);
       if (modified) {
@@ -118,10 +118,10 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
       this.$('form').validate(rules);
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
-      	  reportId: CRM.jobTabApp.loggingReportId,
-      	  contactId: CRM.jobTabApp.contact_id,
-      	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
-      	});
+          reportId: CRM.jobTabApp.loggingReportId,
+          contactId: CRM.jobTabApp.contact_id,
+          tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+        });
       } else {
         this.$('.crm-revision-link').hide();
       }
