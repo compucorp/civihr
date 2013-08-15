@@ -123,7 +123,7 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
           tableName: this.$('.hrjob-revision-link').attr('data-table-name')
         });
       } else {
-        this.$('.crm-revision-link').hide();
+        this.$('.hrjob-revision-link').hide();
       }
     },
     /**

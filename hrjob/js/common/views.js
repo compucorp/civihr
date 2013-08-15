@@ -29,7 +29,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
           tableName: this.$('.hrjob-revision-link').attr('data-table-name')
         });
       } else {
-        this.$('.crm-revision-link').hide();
+        this.$('.hrjob-revision-link').hide();
       }
       var rules = this.createValidationRules();
       this.$('form').validate(rules);
