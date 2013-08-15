@@ -694,8 +694,8 @@ class GenerateHRData {
         'contract_type' => $this->randomItem('contract_type'),
         'level_type' => $this->randomItem('level_type'),
         'period_type' => $this->randomItem('period_type'),
-        'period_start_date' => $this->randomDate('1284267600', '1354514400'),
-        'period_end_date' => $this->randomDate('1356328800', '1368421200'),
+        'period_start_date' => $this->randomDate(strtotime('2009-01-01'), strtotime('2012-12-31')),
+        'period_end_date' => $this->randomDate(strtotime('2013-01-01'), strtotime('2015-12-31')),
         'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
         'is_primary' => 0,
       );
