@@ -77,7 +77,7 @@ function hrui_civicrm_install() {
   if (!empty($reports)) {    
     foreach ($reports as $reportTitle) {
       $reportID = CRM_Core_DAO::getFieldValue(
-                                              'CRM_Report_DAO_Instance',
+                                              'CRM_Report_DAO_ReportInstance',
                                               $reportTitle,
                                               'id',
                                               'title'
