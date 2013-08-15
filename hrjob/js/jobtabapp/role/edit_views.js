@@ -73,11 +73,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     itemViewContainer: 'table.hrjob-role-table > tbody',
     template: '#hrjob-role-table-template',
     templateHelpers: function() {
-      var isNew = this.collection.foldl(function(memo, model) {
-        return model.get('id') ? false : true;
-      }, false);
       return {
-        'isNew': isNew,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -120,6 +116,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         success: function() {
           HRApp.trigger('ui:unblock');
           CRM.alert(ts('Saved'), null, 'success');
+          view.render();
           view.triggerMethod('standard:save', view, view.model);
         },
         error: function() {
@@ -136,6 +133,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         success: function() {
           HRApp.trigger('ui:unblock');
           CRM.alert(ts('Reset'));
+          view.render();
           view.triggerMethod('standard:reset', view, view.model);
         },
         error: function() {

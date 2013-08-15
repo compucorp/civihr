@@ -37,8 +37,8 @@ CRM.HRApp.module('JobTabApp.Leave', function(Leave, HRApp, Backbone, Marionette,
     template: '#hrjob-leave-table-template',
     templateHelpers: function() {
       var isNew = this.collection.foldl(function(memo, model) {
-        return model.get('id') ? false : true;
-      }, false);
+        return memo && (model.get('id') ? false : true);
+      }, true);
       return {
         'isNew': isNew,
         'RenderUtil': CRM.HRApp.RenderUtil,
