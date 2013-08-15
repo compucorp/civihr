@@ -3,8 +3,15 @@ cj(document).ready(function($) {
   cj('.crm-contact-current_employer').parent('div.crm-summary-row').hide();
   cj('.crm-contact-job_title').parent('div.crm-summary-row').hide();
 
+  //Enhance styling of "View Contact" tabs to indicate empty/non-empty tags
+  cj('div#mainTabContainer ul').find('li').each(function(n){
+    if(cj(this).find('em').html()==0){
+      cj(this).addClass("disabled");
+    }
+  });
+    
   //rename "Summary" tab to "Personal Details"
-  $('#tab_summary a').text('Personal Details');
+  $('#tab_summary a').text('Personal Details');  
 });
 // for inline edit
 cj(document).ajaxSuccess(function() {
