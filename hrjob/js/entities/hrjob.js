@@ -5,6 +5,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       position: '',
       title: '',
       is_tied_to_funding: 0,
+      funding_notes: '',
       contract_type: null,
       level_type: null,
       period_type: null,
@@ -71,6 +72,43 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       organization: '',
       cost_center: '',
       location: ''
+    }
+  });
+
+  Entities.HRJobHealth = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      provider: '',
+      plan_type: '',
+      description: '',
+      dependents: ''
+    }
+  });
+
+  Entities.HRJobHour = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      hours_type: '',
+      hours_amount: '',
+      hours_unit: '',
+      hours_fte: ''
+    }
+  });
+
+  Entities.HRJobPay = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      pay_grade: '',
+      pay_amount: '',
+      pay_unit: ''
+    }
+  });
+
+  Entities.HRJobPension = Backbone.Model.extend({
+    defaults: {
+      job_id: null,
+      is_enrolled: '',
+      contrib_pct: ''
     }
   });
 

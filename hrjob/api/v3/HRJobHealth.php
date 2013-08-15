@@ -35,6 +35,10 @@ function civicrm_api3_h_r_job_health_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
+function _civicrm_api3_h_r_job_health_get_spec(&$spec) {
+  $spec['job_id']['api.aliases'] = array('h_r_job_id');
+}
+
 /**
  * HRJobHealth.get API
  *

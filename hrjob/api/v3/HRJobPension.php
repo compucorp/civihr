@@ -35,6 +35,10 @@ function civicrm_api3_h_r_job_pension_delete($params) {
   return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
 
+function _civicrm_api3_h_r_job_pension_get_spec(&$spec) {
+  $spec['job_id']['api.aliases'] = array('h_r_job_id');
+}
+
 /**
  * HRJobPension.get API
  *
