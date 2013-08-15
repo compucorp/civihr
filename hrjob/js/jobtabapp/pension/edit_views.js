@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
     template: '#hrjob-pension-template',
     templateHelpers: function() {
       return {
+        'isNew': this.model.get('id') ? false : true,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobPension
       };

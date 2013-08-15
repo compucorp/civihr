@@ -20,13 +20,16 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addSettingsFactory(function () {
+      $config = CRM_Core_Config::singleton();
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
         ),
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
-          'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer')
+          'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+          'isLogEnabled'    => (bool) $config->logging,
+          'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
         ),
       );
     })
@@ -36,6 +39,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmContactField.js', 125, 'html-header', FALSE)
+      ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE)
       ->addStyleFile('org.civicrm.hrjob', 'css/hrjob.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/hrapp.js', 150, 'html-header')
@@ -64,8 +68,8 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     foreach (glob($templateDir . 'CRM/HRJob/Underscore/*.tpl') as $file) {
       $fileName = substr($file, strlen($templateDir));
       $region->add(array(
-        'template' => $fileName,
-      ));
+          'template' => $fileName
+        ));
     }
 
     $region->add(array(
@@ -115,5 +119,4 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     }
     return $fieldOptions;
   }
-
 }

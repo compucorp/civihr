@@ -1,6 +1,11 @@
 <script id="hrjob-pay-template" type="text/template">
 <form>
-  <h3>{ts}Pay{/ts}</h3>
+  <h3>
+    {ts}Pay{/ts}
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_pay" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <div class="crm-summary-row">
     <div class="crm-label">

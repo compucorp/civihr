@@ -1,5 +1,10 @@
 <script id="hrjob-role-table-template" type="text/template">
-  <h3>{ts}Roles{/ts}</h3>
+  <h3> 
+    {ts}Roles{/ts}
+    {literal}<% if (!isNew) { %> {/literal}
+    <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_role" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
+    {literal}<% } %>{/literal}
+  </h3>
 
   <table class="hrjob-role-table">
     <thead>

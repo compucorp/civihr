@@ -22,6 +22,15 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     onRender: function() {
       this.$('.crm-contact-selector').crmContactField();
+      if (CRM.jobTabApp.isLogEnabled) {
+        this.$('.hrjob-revision-link').crmRevisionLink({
+	  reportId: CRM.jobTabApp.loggingReportId,
+	  contactId: CRM.jobTabApp.contact_id,
+	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+	});
+      } else {
+        this.$('.crm-revision-link').hide();
+      }
       var rules = this.createValidationRules();
       this.$('form').validate(rules);
       if (rules.rules) {
