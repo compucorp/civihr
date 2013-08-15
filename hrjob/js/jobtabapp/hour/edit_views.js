@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
     template: '#hrjob-hour-template',
     templateHelpers: function() {
       return {
+        'isNew': this.model.get('id') ? false : true,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobHour
       };

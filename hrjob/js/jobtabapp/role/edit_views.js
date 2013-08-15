@@ -73,7 +73,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     itemViewContainer: 'table.hrjob-role-table > tbody',
     template: '#hrjob-role-table-template',
     templateHelpers: function() {
+      var isNew = this.collection.foldl(function(memo, model){
+        return model.get('id') ? false : true;
+      }, false);
       return {
+        'isNew': isNew,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -85,6 +89,17 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     initialize: function() {
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
+    },
+    onRender: function() {
+      if (CRM.jobTabApp.isLogEnabled) {
+        this.$('.hrjob-revision-link').crmRevisionLink({
+	  reportId: CRM.jobTabApp.loggingReportId,
+	  contactId: CRM.jobTabApp.contact_id,
+	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+	});
+      } else {
+        this.$('.crm-revision-link').hide();
+      }
     },
     appendHtml: function(collectionView, itemView, index) {
       collectionView.$('tr.hrjob-role-final').before(itemView.el);
