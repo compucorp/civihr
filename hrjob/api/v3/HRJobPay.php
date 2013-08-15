@@ -36,6 +36,18 @@ function civicrm_api3_h_r_job_pay_delete($params) {
 }
 
 /**
+ * HRJobPay.create API specification (optional)
+ * This is used for documentation and validation.
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
+ */
+function _civicrm_api3_h_r_job_pay_get_spec(&$spec) {
+  $spec['job_id']['api.aliases'] = array('h_r_job_id');
+}
+
+/**
  * HRJobPay.get API
  *
  * @param array $params
