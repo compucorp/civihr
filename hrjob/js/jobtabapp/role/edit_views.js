@@ -1,4 +1,4 @@
-CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $, _){
+CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $, _) {
   Role.RowView = Marionette.Layout.extend({
     bindingAttribute: 'data-hrjobrole-row',
     tagName: 'tr',
@@ -73,11 +73,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     itemViewContainer: 'table.hrjob-role-table > tbody',
     template: '#hrjob-role-table-template',
     templateHelpers: function() {
-      var isNew = this.collection.foldl(function(memo, model){
-        return model.get('id') ? false : true;
-      }, false);
       return {
-        'isNew': isNew,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -93,12 +89,12 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     onRender: function() {
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
-	  reportId: CRM.jobTabApp.loggingReportId,
-	  contactId: CRM.jobTabApp.contact_id,
-	  tableName: this.$('.hrjob-revision-link').attr('data-table-name')
-	});
+          reportId: CRM.jobTabApp.loggingReportId,
+          contactId: CRM.jobTabApp.contact_id,
+          tableName: this.$('.hrjob-revision-link').attr('data-table-name')
+        });
       } else {
-        this.$('.crm-revision-link').hide();
+        this.$('.hrjob-revision-link').hide();
       }
     },
     appendHtml: function(collectionView, itemView, index) {
@@ -120,6 +116,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         success: function() {
           HRApp.trigger('ui:unblock');
           CRM.alert(ts('Saved'), null, 'success');
+          view.render();
           view.triggerMethod('standard:save', view, view.model);
         },
         error: function() {
@@ -136,6 +133,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         success: function() {
           HRApp.trigger('ui:unblock');
           CRM.alert(ts('Reset'));
+          view.render();
           view.triggerMethod('standard:reset', view, view.model);
         },
         error: function() {
@@ -147,7 +145,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     onNavigateWarnings: function(route, options) {
       // The "Role" table may include a mix of existing (modifiable) rows,
       // newly added rows, and deleted rows.
-      var modified = this.collection.foldl(function(memo, model){
+      var modified = this.collection.foldl(function(memo, model) {
         return memo || model.isNew() || model.isModified() || model.isSoftDeleted();
       }, false);
       if (modified) {
