@@ -9,5 +9,6 @@ CRM.HRApp.module('RenderUtil', function(RenderUtil, HRApp, Backbone, Marionette,
     };
     RenderUtil.standardButtons = _.template(cj('#renderutil-standardButtons-template').text());
     RenderUtil.required = _.template(cj('#common-required-template').text());
+    RenderUtil.toggle = _.template(cj('#renderutil-toggle-template').text());
   });
 });

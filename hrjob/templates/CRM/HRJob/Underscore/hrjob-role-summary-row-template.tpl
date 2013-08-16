@@ -1,9 +1,6 @@
 <script id="hrjob-role-summary-row-template" type="text/template">
   <td>
-    <span class="hrjob-role-toggle">
-      <span class="on-closed">[+]</span>
-      <span class="on-open">[-]</span>
-    </span>
+    {literal}<%= RenderUtil.toggle({className: 'hrjob-role-toggle'}) %>{/literal}
   </td>
   <td>
     <strong class="hrjob-role-toggle" data-hrjobrole-row="title"></strong>

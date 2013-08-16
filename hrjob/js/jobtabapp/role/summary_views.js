@@ -29,8 +29,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     toggleRole: function() {
       var open = this.$('.hrjob-role-toggle').hasClass('closed');
-      this.$('.hrjob-role-toggle').toggleClass('closed', !open);
-      this.$('.hrjob-role-toggle').toggleClass('open', open);
+      this.$('.hrjob-role-toggle').toggleClass('open', open).toggleClass('closed', !open);
       this.$('.toggle-role-form').toggle(open);
     }
   });
