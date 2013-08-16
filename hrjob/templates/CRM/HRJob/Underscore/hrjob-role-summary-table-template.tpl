@@ -1,5 +1,5 @@
 <script id="hrjob-role-summary-table-template" type="text/template">
-  {* <h3>{ts}Roles{/ts}</h3> *}
+  <h3>{ts}Roles{/ts}</h3>
 
   <table class="hrjob-role-table">
     <thead>
