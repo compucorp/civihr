@@ -60,6 +60,21 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
+    },
+    collectionEvents: {
+      'add': 'autoHide',
+      'remove': 'autoHide',
+      'reset': 'autoHide'
+    },
+    onRender: function() {
+      this.autoHide();
+    },
+    autoHide: function() {
+      if (this.collection.isEmpty()) {
+        this.$el.hide();
+      } else {
+        this.$el.show();
+      }
     }
   });
 });
