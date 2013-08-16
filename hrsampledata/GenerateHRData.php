@@ -747,6 +747,7 @@ class GenerateHRData {
         $pensionValues = array(
           'job_id' => $hrJobObj->id,
           'is_enrolled' => $this->randomItem('is_enrolled'),
+          'ee_contrib_pct' => $this->randomItem('contrib_pct'),
           'er_contrib_pct' => $this->randomItem('contrib_pct'),
         );
         $this->insertJobData('CRM_HRJob_DAO_HRJobPension', $pensionValues);
