@@ -20,6 +20,7 @@ CREATE TABLE `civicrm_hrjob` (
      `contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `position` varchar(127)    COMMENT 'Internal name for the job (for HR)',
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
+     `department` varchar(127)    ,
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',

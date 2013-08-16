@@ -59,6 +59,19 @@
   </index>
 
   <field>
+    <name>department</name>
+    <title>Job Department</title>
+    <type>varchar</type>
+    <length>127</length>
+    <export>true</export>
+    <uniqueName>hrjob_department</uniqueName>
+  </field>
+  <index>
+    <name>index_department</name>
+    <fieldName>department</fieldName>
+  </index>
+
+  <field>
     <name>is_tied_to_funding</name>
     <type>boolean</type>
     <default>0</default>

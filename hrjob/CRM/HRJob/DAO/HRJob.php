@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviCRM version 4.3                                                |
+| CiviCRM version 4.4                                                |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -112,6 +112,11 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    * @var string
    */
   public $title;
+  /**
+   *
+   * @var string
+   */
+  public $department;
   /**
    *
    * @var boolean
@@ -240,6 +245,17 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
+        'hrjob_department' => array(
+          'name' => 'department',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Department') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+          'export' => true,
+          'where' => 'civicrm_hrjob.department',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
@@ -357,6 +373,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'contact_id' => 'contact_id',
         'position' => 'hrjob_position',
         'title' => 'hrjob_title',
+        'department' => 'hrjob_department',
         'is_tied_to_funding' => 'is_tied_to_funding',
         'funding_notes' => 'funding_notes',
         'contract_type' => 'hrjob_contract_type',
