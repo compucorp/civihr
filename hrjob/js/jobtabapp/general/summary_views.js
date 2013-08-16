@@ -17,24 +17,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       this.renderManagerContact();
     },
     renderManagerContact: function() {
-      var view = this;
-      var cid = this.model.get('manager_contact_id');
-      if (cid) {
-        var contactLookupUrl = CRM.url('civicrm/ajax/rest', 'className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1');
-        var viewContactUrl = CRM.url('civicrm/contact/view', {reset:1, cid: cid});
-        $.ajax({
-          url     : contactLookupUrl + '&id=' + cid,
-          async   : false,
-          success : function(html){
-            var htmlText = html.split( '|' , 2);
-            view.$('.manager_contact')
-              .attr('href', viewContactUrl)
-              .text(htmlText[0]);
-          }
-        });
-      } else {
-        this.$('.manager_contact').text('');
-      }
+      this.$('a.hrjob-manager_contact').hrContactLink({
+        cid: this.model.get('manager_contact_id')
+      });
     }
   });
 

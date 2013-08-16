@@ -47,15 +47,9 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         crmEntityName: 'HRJobPension',
         model: models.HRJobPension.first() || new HRApp.Entities.HRJobPension()
       }));
-      /*
-       this.roleRegion.show(new HRApp.JobTabApp.Role.TableView({
-       newModelDefaults: {
-       job_id: 123, // FIXME jobId,
-       title: ts('New Role')
-       },
-       collection: models.HRJobRole
-       }));
-       */
+      this.roleRegion.show(new HRApp.JobTabApp.Role.SummaryTableView({
+        collection: models.HRJobRole
+      }));
     }
   });
 
