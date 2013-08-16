@@ -300,7 +300,7 @@ INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay
 -- Dumping data for table `civicrm_hrjob_pension`
 --
 
-INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `contrib_pct`) VALUES
+INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `er_contrib_pct`) VALUES
 (1, 3, 1, 100.00),
 (2, 4, 0, 100.00),
 (3, 7, 1, 400.00),

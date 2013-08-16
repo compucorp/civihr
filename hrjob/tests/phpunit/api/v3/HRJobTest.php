@@ -29,7 +29,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       ),
       'api.HRJobPension.create' => array(
         'is_enrolled' => 1,
-        'contrib_pct' => 75.00,
+        'er_contrib_pct' => 75.00,
+        'ee_contrib_pct' => 10.00,
       ),
       'api.HRJobRole.create' => array(
         'title' => 'Manager',
@@ -110,7 +111,8 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       $this->assertAPISuccess($hrJobResult['api.HRJobPension.create']);
       foreach ($hrJobResult['api.HRJobPension.create']['values'] as $hrJobPensionResult) {
         $this->assertEquals(1, $hrJobPensionResult['is_enrolled']);
-        $this->assertEquals(75.00, $hrJobPensionResult['contrib_pct']);
+        $this->assertEquals(75.00, $hrJobPensionResult['er_contrib_pct']);
+        $this->assertEquals(10.00, $hrJobPensionResult['ee_contrib_pct']);
       }
 
       //assert the creation of multiple job roles
