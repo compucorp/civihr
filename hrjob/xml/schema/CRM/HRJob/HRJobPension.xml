@@ -50,10 +50,18 @@
   </index>
 
   <field>
-    <name>contrib_pct</name>
-    <title>Contribution Percentage</title>
+    <name>ee_contrib_pct</name>
+    <title>Employee Contribution Percentage</title>
     <type>float</type>
     <default>0</default>
-    <comment>??</comment>
+    <comment>Employee Contribution Percentage</comment>
+  </field>
+
+  <field>
+    <name>er_contrib_pct</name>
+    <title>Employer Contribution Percentage</title>
+    <type>float</type>
+    <default>0</default>
+    <comment>Employer Contribution Percentage</comment>
   </field>
 </table>

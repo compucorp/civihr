@@ -402,9 +402,9 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobPension',
         'fields' =>
         array(
-          'contrib_pct' => 
+          'er_contrib_pct' => 
           array(
-            'title' => ts('Contribution Percentage'),
+            'title' => ts('Employer Contribution %'),
           ),
         ),
         'filters' =>
@@ -416,8 +416,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
-          'contrib_pct' =>
-          array('title' => ts('Contribution Percentage'),
+          'er_contrib_pct' =>
+          array('title' => ts('Employer Contribution %'),
             'type' => CRM_Report_Form::OP_INT,
           ),
         ),

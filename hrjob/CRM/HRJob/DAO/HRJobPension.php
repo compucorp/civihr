@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviCRM version 4.3                                                |
+| CiviCRM version 4.4                                                |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -106,11 +106,17 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $is_enrolled;
   /**
-   * ??
+   * Employee Contribution Percentage
    *
    * @var float
    */
-  public $contrib_pct;
+  public $ee_contrib_pct;
+  /**
+   * Employer Contribution Percentage
+   *
+   * @var float
+   */
+  public $er_contrib_pct;
   /**
    * class constructor
    *
@@ -168,10 +174,15 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
-        'contrib_pct' => array(
-          'name' => 'contrib_pct',
+        'ee_contrib_pct' => array(
+          'name' => 'ee_contrib_pct',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Contribution Percentage') ,
+          'title' => ts('Employee Contribution Percentage') ,
+        ) ,
+        'er_contrib_pct' => array(
+          'name' => 'er_contrib_pct',
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('Employer Contribution Percentage') ,
         ) ,
       );
     }
@@ -191,7 +202,8 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'id' => 'id',
         'job_id' => 'job_id',
         'is_enrolled' => 'hrjob_is_enrolled',
-        'contrib_pct' => 'contrib_pct',
+        'ee_contrib_pct' => 'ee_contrib_pct',
+        'er_contrib_pct' => 'er_contrib_pct',
       );
     }
     return self::$_fieldKeys;
