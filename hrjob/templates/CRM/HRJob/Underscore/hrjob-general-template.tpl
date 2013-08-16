@@ -42,6 +42,15 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
+      <label for="hrjob-department">{ts}Department{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-department" name="department" class="form-text-big" type="text" />
+    </div>
+  </div>
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
       <label for="hrjob-level_type">{ts}Level{/ts}</label>
     </div>
     <div class="crm-content">

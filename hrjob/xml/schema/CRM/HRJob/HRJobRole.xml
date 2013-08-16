@@ -68,11 +68,11 @@
 
   <field>
     <name>department</name>
-    <title>Job Department</title>
+    <title>Job Role Department</title>
     <type>varchar</type>
     <length>127</length>
     <export>true</export>
-    <uniqueName>hrjob_department</uniqueName>
+    <uniqueName>hrjob_role_department</uniqueName>
   </field>
   <index>
     <name>index_department</name>
