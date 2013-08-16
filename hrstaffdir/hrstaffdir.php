@@ -29,7 +29,7 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
-          $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$matches[1]}") . "'>{$value[1]}</a>";
+          $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/profile/view', "reset=1&id={$matches[1]}&gid={$profileId }") . "'>{$value[1]}</a>";
         }
       }
     }

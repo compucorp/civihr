@@ -16,6 +16,11 @@
   </div>
 
   <div class="crm-summary-row">
+    <div class="crm-label">{ts}Department{/ts}</div>
+    <div class="crm-content"><span name="department" /></div>
+  </div>
+
+  <div class="crm-summary-row">
     <div class="crm-label">{ts}Level{/ts}</div>
     <div class="crm-content"><%- FieldOptions.level_type[level_type] %></div>
   </div>
@@ -29,7 +34,6 @@
     <div class="crm-label">{ts}Normal Place of Work{/ts}</div>
     <div class="crm-content"><%- FieldOptions.location[location] %></div>
   </div>
-
 
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Time Period{/ts}</div>
