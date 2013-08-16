@@ -215,7 +215,11 @@
     <item>Teaching Assistant</item>
     <item>Copy-editor</item>
     <item>Creative Director</item>
+    <item>System Administrator</item>
+    <item>System Engineer</item>
     <item>Chief Nomenclature Officer</item>
+    <item>Intermediate Logistics Expert</item>
+    <item>Intermediate Linguistics Expert</item>
     <item>Senior Associate Marketing Manager for Elderly Constituencies</item>
     <item>Interim Assistant Director of Long-Term Leadership Communication</item>
   </title>
@@ -315,10 +319,11 @@
   </is_enrolled>
 
   <contrib_pct>
-    <item>100</item>
-    <item>200</item>
-    <item>300</item>
-    <item>400</item>
+    <item>2</item>
+    <item>5</item>
+    <item>10</item>
+    <item>15</item>
+    <item>20</item>
   </contrib_pct>
 
   <leave_amount>

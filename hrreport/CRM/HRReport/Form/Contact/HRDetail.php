@@ -49,7 +49,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'sort_name' =>
-          array('title' => ts('Applicant Name'),
+          array(
+            'title' => ts('Applicant Name'),
             'required' => TRUE,
           ),
           'id' =>
@@ -61,7 +62,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           array(
             'title' => ts('Gender'),
           ),
-          'manager' => 
+          'manager' =>
           array(
             'name' => 'sort_name',
             'title' => ts('Manager'),
@@ -71,11 +72,13 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'sort_name' =>
-          array('title' => ts('Applicant Name'),
+          array(
+            'title' => ts('Applicant Name'),
             'operator' => 'like',
           ),
           'id' =>
-          array('title' => ts('Contact ID'),
+          array(
+            'title' => ts('Contact ID'),
             'no_display' => TRUE,
             'type' => CRM_Utils_Type::T_INT,
           ),
@@ -103,7 +106,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'email' =>
-          array('title' => ts('Applicant Email'),
+          array(
+            'title' => ts('Applicant Email'),
             'default' => TRUE,
           ),
         ),
@@ -115,7 +119,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'phone' =>
-          array('title' => ts('Applicant Phone'),
+          array(
+            'title' => ts('Applicant Phone'),
             'no_repeat' => TRUE,
           ),
         ),
@@ -127,28 +132,35 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'city' =>
-          array('title' => ts('Work City'),
+          array(
+            'title' => ts('Work City'),
           ),
           'postal_code' =>
-          array('title' => ts('Work Postal Code'),
+          array(
+            'title' => ts('Work Postal Code'),
           ),
           'state_province_id' =>
-          array('title' => ts('Work State/Province'),
+          array(
+            'title' => ts('Work State/Province'),
           ),
           'country_id' =>
-          array('title' => ts('Work Country'),
+          array(
+            'title' => ts('Work Country'),
           ),
         ),
         'filters' =>
         array(
           'city' =>
-          array('title' => ts('Work City'),
+          array(
+            'title' => ts('Work City'),
           ),
           'postal_code' =>
-          array('title' => ts('Work Postal Code'),
+          array(
+            'title' => ts('Work Postal Code'),
           ),
           'state_province_id' =>
-          array('title' => ts('Work State/Province'),
+          array(
+            'title' => ts('Work State/Province'),
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' =>
             CRM_Report_Form::OP_MULTISELECT,
@@ -156,7 +168,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             CRM_Core_PseudoConstant::stateProvince(),
           ),
           'country_id' =>
-          array('title' => ts('Work Country'),
+          array(
+            'title' => ts('Work Country'),
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' =>
             CRM_Report_Form::OP_MULTISELECT,
@@ -188,7 +201,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJob',
         'fields' =>
         array(
-          'position' => 
+          'position' =>
           array(
             'title' => ts('Position'),
           ),
@@ -196,31 +209,31 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           array(
             'title' => ts('Title'),
           ),
-          'contract_type' => 
+          'contract_type' =>
           array(
             'title' => ts('Contract Type'),
           ),
-          'level_type' => 
+          'level_type' =>
           array(
             'title' => ts('Level'),
           ),
-          'period_type' => 
+          'period_type' =>
           array(
             'title' => ts('Period Type'),
           ),
-          'period_start_date' => 
+          'period_start_date' =>
           array(
             'title' => ts('Job Start Date'),
-         ),
-          'period_end_date' => 
+          ),
+          'period_end_date' =>
           array(
             'title' => ts('Job End Date'),
           ),
-          'location' => 
+          'location' =>
           array(
             'title' => ts('Location'),
           ),
-          'manager_contact_id' => 
+          'manager_contact_id' =>
           array(
             'title' => ts('Manager Contact ID'),
           ),
@@ -228,52 +241,61 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'position' =>
-          array('title' => ts('Position'),
+          array(
+            'title' => ts('Position'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
           'title' =>
-          array('title' => ts('Title'),
+          array(
+            'title' => ts('Title'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
           'is_tied_to_funding' =>
-          array('title' => ts('Is Tied to Funding'),
+          array(
+            'title' => ts('Is Tied to Funding'),
             'default' => NULL,
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
           'contract_type' =>
-          array('title' => ts('Contract Type'),
+          array(
+            'title' => ts('Contract Type'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'contract_type'),
           ),
           'level_type' =>
-          array('title' => ts('Level'),
+          array(
+            'title' => ts('Level'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'level_type'),
           ),
           'period_type' =>
-          array('title' => ts('Period Type'),
+          array(
+            'title' => ts('Period Type'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'period_type'),
           ),
           'period_start_date' =>
-          array('title' => ts('Job Start Date'),
+          array(
+            'title' => ts('Job Start Date'),
             'type' => CRM_Utils_Type::T_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
           'period_end_date' =>
-          array('title' => ts('Job End Date'),
+          array(
+            'title' => ts('Job End Date'),
             'type' => CRM_Utils_Type::T_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE
           ),
           'location' =>
-          array('title' => ts('Location'),
+          array(
+            'title' => ts('Location'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
@@ -285,11 +307,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobHealth',
         'fields' =>
         array(
-          'provider' => 
+          'provider' =>
           array(
             'title' => ts('Healthcare Provider'),
           ),
-          'plan_type' => 
+          'plan_type' =>
           array(
             'title' => ts('Plan Type'),
           ),
@@ -297,13 +319,15 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'provider' =>
-          array('title' => ts('Healthcare Provider'),
+          array(
+            'title' => ts('Healthcare Provider'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHealth', 'provider'),
           ),
           'plan_type' =>
-          array('title' => ts('Plan Type'),
+          array(
+            'title' => ts('Plan Type'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHealth', 'plan_type'),
@@ -316,15 +340,15 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobHour',
         'fields' =>
         array(
-          'hours_type' => 
+          'hours_type' =>
           array(
             'title' => ts('Hours Type'),
           ),
-          'hours_amount' => 
+          'hours_amount' =>
           array(
             'title' => ts('Amount'),
           ),
-          'hours_unit' => 
+          'hours_unit' =>
           array(
             'title' => ts('Hours Unit'),
           ),
@@ -336,23 +360,27 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'hours_type' =>
-          array('title' => ts('Hours Type'),
+          array(
+            'title' => ts('Hours Type'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHour', 'hours_type'),
           ),
           'hours_amount' =>
-          array('title' => ts('Hours Amount'),
+          array(
+            'title' => ts('Hours Amount'),
             'type' => CRM_Report_Form::OP_INT,
           ),
           'hours_unit' =>
-          array('title' => ts('Hours Unit'),
+          array(
+            'title' => ts('Hours Unit'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobHour', 'hours_unit'),
           ),
           'hours_fte' =>
-          array('title' => ts('Full-Time Equivalence'),
+          array(
+            'title' => ts('Full-Time Equivalence'),
             'type' => CRM_Report_Form::OP_INT,
           ),
         ),
@@ -363,15 +391,15 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobPay',
         'fields' =>
         array(
-          'pay_grade' => 
+          'pay_grade' =>
           array(
             'title' => ts('Pay Grade'),
           ),
-          'pay_amount' => 
+          'pay_amount' =>
           array(
             'title' => ts('Pay Amount'),
           ),
-          'pay_unit' => 
+          'pay_unit' =>
           array(
             'title' => ts('Pay Unit'),
           ),
@@ -379,17 +407,20 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'pay_grade' =>
-          array('title' => ts('Pay Grade'),
+          array(
+            'title' => ts('Pay Grade'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_grade'),
           ),
           'pay_amount' =>
-          array('title' => ts('Pay Amount'),
+          array(
+            'title' => ts('Pay Amount'),
             'type' => CRM_Report_Form::OP_INT,
           ),
           'pay_unit' =>
-          array('title' => ts('Pay Unit'),
+          array(
+            'title' => ts('Pay Unit'),
             'type' => CRM_Utils_Type::T_STRING,
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_unit'),
@@ -414,18 +445,21 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'filters' =>
         array(
           'is_enrolled' =>
-          array('title' => ts('Is Enrolled'),
+          array(
+            'title' => ts('Is Enrolled'),
             'default' => NULL,
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
           'ee_contrib_pct' =>
-          array('title' => ts('Employee Contribution (%)'),
+          array(
+            'title' => ts('Employee Contribution (%)'),
             'type' => CRM_Report_Form::OP_INT,
           ),
           'er_contrib_pct' =>
-          array('title' => ts('Employer Contribution (%)'),
+          array(
+            'title' => ts('Employer Contribution (%)'),
             'type' => CRM_Report_Form::OP_INT,
           ),
         ),
@@ -434,34 +468,40 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       'civicrm_hrjob_role' =>
       array(
         'dao' => 'CRM_HRJob_DAO_HRJobRole',
-        'fields' => 
+        'fields' =>
         array(
           'department' =>
-          array('title' => ts('Department'),
+          array(
+            'title' => ts('Department'),
           ),
           'cost_center' =>
-          array('title' => ts('Cost Center'),
+          array(
+            'title' => ts('Cost Center'),
           ),
           'job_location' =>
-          array('title' => ts('Job Location'),
+          array(
+            'title' => ts('Job Location'),
             'name' => 'location',
           ),
           'region' =>
-          array('title' => ts('Region/Country'),
+          array(
+            'title' => ts('Region/Country'),
           ),
         ),
         'grouping' => array('contact-fields' => 'Stats and Work Fields'),
       ),
-       'civicrm_hrjob_leave' =>
+      'civicrm_hrjob_leave' =>
       array(
         'dao' => 'CRM_HRJob_DAO_HRJobLeave',
-        'fields' => 
+        'fields' =>
         array(
           'leave_type' =>
-          array('title' => ts('Leave Type'),
+          array(
+            'title' => ts('Leave Type'),
           ),
           'leave_amount' =>
-          array('title' => ts('Leave Amount'),
+          array(
+            'title' => ts('Leave Amount'),
           ),
         ),
         'grouping' => array('contact-fields' => 'Stats and Work Fields'),
@@ -498,7 +538,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (CRM_Utils_Array::value('required', $field) ||
-              CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
+            CRM_Utils_Array::value($fieldName, $this->_params['fields'])
+          ) {
             if ($tableName == 'civicrm_hrjob_role') {
               $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
                ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
@@ -521,7 +562,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     if ($this->_addressField) {
       $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array('flip' => TRUE));
       $workLocTypeId = CRM_Utils_Array::value('Work', $locationTypes);
-      $this->_from  .= "
+      $this->_from .= "
                  LEFT JOIN civicrm_address {$this->_aliases['civicrm_address']}
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
                                {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
@@ -530,7 +571,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
 
   function alterDisplay(&$rows) {
     $entryFound = FALSE;
-    $gender     = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
+    $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
 
     foreach ($rows as $rowNum => $row) {
       if (array_key_exists('civicrm_contact_sort_name', $row) &&
@@ -538,13 +579,13 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array_key_exists('civicrm_contact_id', $row)
       ) {
         $url = CRM_Utils_System::url("civicrm/contact/view",
-               'reset=1&cid=' . $row['civicrm_contact_id'],
-               $this->_absoluteUrl
+          'reset=1&cid=' . $row['civicrm_contact_id'],
+          $this->_absoluteUrl
         );
         $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
         $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts("View Contact Summary for this Contact.");
         $entryFound = TRUE;
-       }
+      }
 
       $entryFound =
         $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/summary', 'List all contact(s) for this ') ? TRUE : $entryFound;
