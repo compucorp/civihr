@@ -22,7 +22,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Manager{/ts}</div>
-    <div class="crm-content"><a href="#" class="manager_contact">...</a></div>
+    <div class="crm-content"><a href="#" class="hrjob-manager_contact" /></div>
   </div>
 
   <div class="crm-summary-row">
