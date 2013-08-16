@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviCRM version 4.3                                                |
+| CiviCRM version 4.4                                                |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -228,10 +228,10 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
         ) ,
-        'hrjob_department' => array(
+        'hrjob_role_department' => array(
           'name' => 'department',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Department') ,
+          'title' => ts('Job Role Department') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
@@ -296,7 +296,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'description' => 'description',
         'hours' => 'hours',
         'region' => 'region',
-        'department' => 'hrjob_department',
+        'department' => 'hrjob_role_department',
         'manager_contact_id' => 'manager_contact_id',
         'functional_area' => 'functional_area',
         'organization' => 'organization',
