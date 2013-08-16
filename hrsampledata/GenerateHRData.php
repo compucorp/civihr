@@ -68,7 +68,7 @@ class GenerateHRData {
     $this->numOrganization = self::ORGANIZATION_PERCENT * self::NUM_CONTACT / 100;
 
     // Parse data file
-    foreach((array) simplexml_load_file(dirname(__FILE__) . '/xml/sample_data.xml') as $key => $val) {
+    foreach ((array) simplexml_load_file(dirname(__FILE__) . '/xml/sample_data.xml') as $key => $val) {
       $val = (array) $val;
       $this->sampleData[$key] = (array) $val['item'];
     }
@@ -544,16 +544,16 @@ class GenerateHRData {
       'postal_code' => $this->randomItem('postal_code')
     );
 
-      $params['street_address'] = $params['street_number'] . $params['street_number_suffix'] . " " . $params['street_name'] . " " . $params['street_type'] . " " . $params['street_number_postdirectional'];
+    $params['street_address'] = $params['street_number'] . $params['street_number_suffix'] . " " . $params['street_name'] . " " . $params['street_type'] . " " . $params['street_number_postdirectional'];
 
 
-      if ($params['location_type_id'] == self::WORK) {
-        $params['supplemental_address_1'] = $this->randomItem('supplemental_addresses_1');
-      }
+    if ($params['location_type_id'] == self::WORK) {
+      $params['supplemental_address_1'] = $this->randomItem('supplemental_addresses_1');
+    }
 
 
-      $this->_addDAO('Address', $params);
-      return $params;
+    $this->_addDAO('Address', $params);
+    return $params;
   }
 
   /**
@@ -706,7 +706,7 @@ class GenerateHRData {
     }
 
     //For each HRJob, there may be 0 or 1 records for each of these entity types: HRJobHealth, HRJobHour, HRJobPay, HRJobPension.
-    foreach($hrJob as $key => $hrJobObj) {
+    foreach ($hrJob as $key => $hrJobObj) {
       for ($i = 1; $i <= mt_rand(0, 1); $i++) {
         //sample data for HRJob Health table
         $healthValues = array(
@@ -756,7 +756,7 @@ class GenerateHRData {
       //sample data for HRJob Leave table. For each HRJob, there would be one HRJobLeave for each leave_type.
       $leaveTypes = array('Annual', 'Public', 'Sick');
       foreach ($leaveTypes as $key => $value) {
-        $leaveValues =  array(
+        $leaveValues = array(
           'job_id' => $hrJobObj->id,
           'leave_type' => $value,
           'leave_amount' => $this->randomItem('leave_amount'),
@@ -925,6 +925,7 @@ class GenerateHRData {
 
     $this->insertCustomData($gid, $values);
   }
+
   /**
    * This is a common method called to insert the data into the custom table
    */
