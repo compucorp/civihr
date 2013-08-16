@@ -81,7 +81,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
     $this->_addJobPensionData(1, array(
       'is_enrolled' => 0,
-      'contrib_pct' => 65,
+      'er_contrib_pct' => 65,
+      'ee_contrib_pct' => 15,
     ));
 
     $roleValues = array(
@@ -191,13 +192,15 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
     $this->_addJobPensionData(2, array(
       'is_enrolled' => 0,
-      'contrib_pct' => 65,
+      'er_contrib_pct' => 65,
+      'ee_contrib_pct' => 15,
     ));
 
     //edit Pension Data
     $this->_addJobPensionData(2, array(
       'is_enrolled' => 1,
-      'contrib_pct' => 35,
+      'er_contrib_pct' => 35,
+      'ee_contrib_pct' => 5,
     ), 'Edit');
 
     $roleValues = array(
@@ -337,9 +340,14 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[6]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[6]/a");
     }
-    $this->waitForElementPresent("hrjob-contrib_pct");
+    $this->waitForElementPresent("hrjob-er_contrib_pct");
     $this->select('hrjob-is_enrolled', "value={$values['is_enrolled']}");
-    $this->type('hrjob-contrib_pct', $values['contrib_pct']);
+    $this->type('hrjob-er_contrib_pct', $values['er_contrib_pct']);
+
+    $this->waitForElementPresent("hrjob-ee_contrib_pct");
+    $this->select('hrjob-is_enrolled', "value={$values['is_enrolled']}");
+    $this->type('hrjob-ee_contrib_pct', $values['ee_contrib_pct']);
+
     $this->click("xpath=//button[@class='standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");

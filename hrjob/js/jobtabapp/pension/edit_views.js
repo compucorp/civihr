@@ -10,7 +10,11 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
     },
     onValidateRulesCreate: function(view, r) {
       _.extend(r.rules, {
-        contrib_pct: {
+        er_contrib_pct: {
+          number: true,
+          range: [0, 100]
+        },
+        ee_contrib_pct: {
           number: true,
           range: [0, 100]
         }
