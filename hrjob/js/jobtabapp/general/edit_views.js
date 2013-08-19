@@ -34,6 +34,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         contract_type: {
           required: true
         },
+        notice_amount: {
+          number: true
+        },
         period_start_date: {
           dateISO: true
         },

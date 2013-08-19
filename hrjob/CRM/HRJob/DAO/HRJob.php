@@ -158,6 +158,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $period_end_date;
   /**
+   * Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.
+   *
+   * @var float
+   */
+  public $notice_amount;
+  /**
+   * Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.
+   *
+   * @var enum('Day', 'Week', 'Month', 'Year')
+   */
+  public $notice_unit;
+  /**
    * FK to Contact ID
    *
    * @var int unsigned
@@ -321,6 +333,17 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
+        'hrjob_notice_amount' => array(
+          'name' => 'notice_amount',
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('Job Notice Period Amount') ,
+        ) ,
+        'hrjob_notice_unit' => array(
+          'name' => 'notice_unit',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Job Notice Period Unit') ,
+          'enumValues' => 'Day, Week, Month, Year',
+        ) ,
         'hrjob_manager_contact_id' => array(
           'name' => 'manager_contact_id',
           'type' => CRM_Utils_Type::T_INT,
@@ -381,6 +404,8 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_type' => 'hrjob_period_type',
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',
+        'notice_amount' => 'hrjob_notice_amount',
+        'notice_unit' => 'hrjob_notice_unit',
         'manager_contact_id' => 'hrjob_manager_contact_id',
         'location' => 'hrjob_location',
         'is_primary' => 'hrjob_is_primary',
@@ -466,6 +491,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
   {
     static $enums = array(
       'period_type',
+      'notice_unit',
     );
     return $enums;
   }
@@ -485,6 +511,12 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_type' => array(
           'Temporary' => ts('Temporary') ,
           'Permanent' => ts('Permanent') ,
+        ) ,
+        'notice_unit' => array(
+          'Day' => ts('Day') ,
+          'Week' => ts('Week') ,
+          'Month' => ts('Month') ,
+          'Year' => ts('Year') ,
         ) ,
       );
     }
