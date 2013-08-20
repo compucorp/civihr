@@ -149,6 +149,24 @@
   </field>
 
   <field>
+    <name>notice_amount</name>
+    <title>Job Notice Period Amount</title>
+    <type>float</type>
+    <default>0</default>
+    <comment>Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.</comment>
+    <uniqueName>hrjob_notice_amount</uniqueName>
+  </field>
+
+  <field>
+    <name>notice_unit</name>
+    <title>Job Notice Period Unit</title>
+    <type>enum</type>
+    <values>Day, Week, Month, Year</values>
+    <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
+    <uniqueName>hrjob_notice_unit</uniqueName>
+  </field>
+
+  <field>
     <name>manager_contact_id</name>
     <title>Job Manager ID</title>
     <type>int unsigned</type>
