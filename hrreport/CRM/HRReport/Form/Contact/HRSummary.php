@@ -465,10 +465,10 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       );
     $this->_columns['civicrm_hrjob_hour']['fields']['fte'] =
       array(
-        'name' => 'hours_amount',
+        'name' => 'hours_fte',
         'title' => ts('Full Time Equivalents'),
         'type' => CRM_Utils_Type::T_INT,
-        'statistics' => array('fte' => ts('Full Time Equivalents'),),
+        'statistics' => array('sum' => ts('Full Time Equivalents'),),
         'grouping' => 'contact-fields',
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
@@ -518,12 +518,6 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
                     $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
                     $this->_statFields[$label] = $alias;
                     break;
-                  case 'fte':
-                    $select[] = "(SUM({$field['dbAlias']})/40) as {$tableName}_{$fieldName}_{$stat}";
-                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
-                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
-                    $this->_statFields[$label] = $alias;
-                    break;
                 }
               }
             }
@@ -537,7 +531,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   }
 
   function from() {
-    $this->_from .= "
+    $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}";
 
     if ($this->_jobField) {
@@ -595,12 +589,24 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           $statistics['counts'][$alias] = array(
             'title' => $title,
             'value' => $dao->$alias,
-            'type' => CRM_Utils_Type::T_INT,
+            'type' => CRM_Utils_Type::T_STRING,
           );
         }
       }
     }
     return $statistics;
+  }
+
+  function modifyColumnHeaders() {
+    // make sure stats columns always appear on right.
+    if (!empty($this->_statFields)) {
+      $tempHeaders = array();
+      foreach ($this->_statFields as $header) {
+        $tempHeaders[$header] = $this->_columnHeaders[$header];
+        unset($this->_columnHeaders[$header]);
+      }
+      $this->_columnHeaders = array_merge($this->_columnHeaders, $tempHeaders);
+    }
   }
 
   function alterDisplay(&$rows) {
