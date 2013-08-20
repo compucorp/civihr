@@ -71,8 +71,6 @@ class CRM_Report_Form_HRJob_HRSummaryTest extends CiviReportTestCase {
           'fields' => array(
             'title',
             'level_type',
-            'hours_type',
-            'hours_unit',
             'fte',
           ),
           'group_bys' => array(
