@@ -404,7 +404,7 @@ class GenerateHRData {
       $count = mt_rand(0, 2);
       for ($i = 0; $i < $count; ++$i) {
         $email = $this->_individualEmail($contact);
-        $this->_addEmail($cid, $email, self::HOME);
+        $this->_addEmail($cid, $email, self::WORK);
       }
 
       // Add 0, 1 or 2 phones
@@ -566,7 +566,7 @@ class GenerateHRData {
     $pre = mt_rand(201, 899);
     $post = mt_rand(1000, 9999);
     $params = array(
-      'location_type_id' => $this->getContactType($cid) == 'Organization' ? self::MAIN : self::HOME,
+      'location_type_id' => $this->getContactType($cid) == 'Organization' ? self::MAIN : self::WORK,
       'contact_id' => $cid,
       'phone' => ($area ? "($area) " : '') . "$pre-$post",
       'phone_numeric' => $area . $pre . $post,
@@ -696,6 +696,10 @@ class GenerateHRData {
         'period_type' => $this->randomItem('period_type'),
         'period_start_date' => $this->randomDate(strtotime('2009-01-01'), strtotime('2012-12-31')),
         'period_end_date' => $this->randomDate(strtotime('2013-01-01'), strtotime('2015-12-31')),
+        'notice_amount' => $this->randomItem('notice_amount'),
+        'notice_unit' => $this->randomItem('notice_unit'),
+        'location'   => $this->randomItem('location'),
+        'department' => $this->randomItem('department'),
         'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
         'is_primary' => 0,
       );
