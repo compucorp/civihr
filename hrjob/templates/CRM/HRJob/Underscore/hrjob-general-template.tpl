@@ -140,7 +140,6 @@
       <div>
         <input id="hrjob-notice_amount" name="notice_amount" type="text" />
       </div>
-      <label for="hrjob-notice_unit">{ts}per{/ts}</label>
       {literal}
       <%= RenderUtil.select({
         id: 'hrjob-notice_unit',
