@@ -43,7 +43,13 @@
         (<%- period_start_date ? period_start_date : '{ts escape="js"}Unspecified{/ts}' %>
         to
         <%- period_end_date ? period_end_date : '{ts escape="js"}Unspecified{/ts}' %>)
-    {literal}<% } %>{/literal}
+      {literal}<% } %>{/literal}
+      {literal}<% if (notice_amount || notice_unit) { %>{/literal}
+      <div><strong>{ts}Notice{/ts}</strong>:
+        <span name="notice_amount" />
+        <%- FieldOptions.notice_unit[notice_unit] %>
+      </div>
+      {literal}<% } %>{/literal}
     </div>
   </div>
 
