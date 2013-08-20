@@ -269,6 +269,21 @@
     <item>dependents2</item>
   </dependents>
 
+  <notice_amount>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+  </notice_amount>
+
+  <notice_unit>
+    <item>Day</item>
+    <item>Week</item>
+    <item>Month</item>
+  </notice_unit>
+
   <hours_type>
     <item>full</item>
     <item>part</item>
@@ -359,6 +374,11 @@
     <item>HR</item>
     <item>Advocacy</item>
   </department>
+
+  <location>
+    <item>Headquarters</item>
+    <item>Home or Home-Office</item>
+  </location>
 
   <region>
     <item>North America</item>
