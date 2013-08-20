@@ -132,6 +132,24 @@
     </div>
   </div>
 
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-notice_amount">{ts}Notice Period{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <div>
+        <input id="hrjob-notice_amount" name="notice_amount" type="text" />
+      </div>
+      <label for="hrjob-notice_unit">{ts}per{/ts}</label>
+      {literal}
+      <%= RenderUtil.select({
+        id: 'hrjob-notice_unit',
+        name: 'notice_unit',
+        options: _.extend({'':''}, FieldOptions.notice_unit)
+      }) %>
+      {/literal}
+    </div>
+  </div>
 
   <h3>{ts}Funding{/ts}</h3>
 
