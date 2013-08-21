@@ -80,8 +80,6 @@ return array (
           'fields' => array(
             'title' => 1,
             'level_type' => 1,
-            'hours_type' => 1,
-            'hours_unit' => 1,
             'fte' => 1,
           ),
           'group_bys' => array(
