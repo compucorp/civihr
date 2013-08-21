@@ -12,7 +12,6 @@ class api_v3_HRJobSyntaxTest extends api_v3_SyntaxConformanceTest {
 
   function setUp() {
     parent::setUp();
-    $this->extensionEntitiesWithoutUpdate = array('HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension');
   }
 
   function tearDown() {
@@ -40,5 +39,16 @@ class api_v3_HRJobSyntaxTest extends api_v3_SyntaxConformanceTest {
     );
 
     return TRUE;
+  }
+
+  /*
+  * At this stage exclude the ones that don't pass & add them as we can troubleshoot them
+  * This function will override the parent function.
+  * This function will skip 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension' entities
+  */
+  public static function toBeSkipped_updatesingle($sequential = FALSE) {
+    $entitiesWithout =  parent::toBeSkipped_updatesingle(TRUE);
+    $entities = array_merge($entitiesWithout, array('HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension'));
+    return $entities;
   }
 }
