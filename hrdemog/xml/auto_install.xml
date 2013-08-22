@@ -38,8 +38,8 @@
       <custom_group_name>Extended_Demographics</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Ethinicity</name>
-      <label>Ethinicity</label>
+      <name>Ethnicity</name>
+      <label>Ethnicity</label>
       <data_type>String</data_type>
       <html_type>Multi-Select</html_type>
       <is_required>0</is_required>
@@ -51,8 +51,8 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>ethinicity_45</column_name>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <column_name>ethnicity_45</column_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
       <custom_group_name>Extended_Demographics</custom_group_name>
     </CustomField>
     <CustomField>
@@ -94,8 +94,8 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
-      <name>ethinicity_20130725123943</name>
-      <title>Ethinicity</title>
+      <name>ethnicity_20130725123943</name>
+      <title>Ethnicity</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -122,7 +122,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Asian or Pacific Islander</label>
@@ -133,7 +133,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Black, not of Hispanic origin</label>
@@ -144,7 +144,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Hispanic</label>
@@ -155,7 +155,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>White, not of Hispanic origin</label>
@@ -166,7 +166,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>ethinicity_20130725123943</option_group_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Buddhist</label>
