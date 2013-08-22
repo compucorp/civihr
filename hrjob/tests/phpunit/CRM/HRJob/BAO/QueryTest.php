@@ -30,6 +30,7 @@ class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
       'civicrm_hrjob_pay',
       'civicrm_hrjob_pension',
       'civicrm_hrjob_role',
+      'civicrm_email',
       'civicrm_contact',
      );
     $this->quickCleanup($tablesToTruncate);

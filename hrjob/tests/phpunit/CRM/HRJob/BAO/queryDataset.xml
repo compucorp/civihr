@@ -30,6 +30,34 @@
         gender_id="1"
     />
 
+    <civicrm_contact
+        id="12"
+        contact_type="Individual"
+        display_name="Test Contact 12"
+        sort_name="Test Contact 12"
+        first_name="Test"
+        last_name="Contact 12"
+        gender_id="1"
+        />
+
+    <civicrm_email
+        id="9"
+        contact_id="9"
+        location_type_id="1"
+        email="test09@example.com"
+        is_primary="1"
+        is_billing="0" on_hold="0" is_bulkmail="0" signature_text="" signature_html=""
+        />
+
+    <civicrm_email
+        id="10"
+        contact_id="10"
+        location_type_id="1"
+        email="test10@example.org"
+        is_primary="1"
+        is_billing="0" on_hold="0" is_bulkmail="0" signature_text="" signature_html=""
+        />
+
     <civicrm_hrjob
         id="1"
         contact_id="9"

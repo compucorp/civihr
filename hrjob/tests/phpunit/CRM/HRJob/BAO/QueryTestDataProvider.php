@@ -213,6 +213,26 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
         '9',
       ),
     ),
+    // cross-over test - mixing with unrelated fields
+    array(
+      'fv' => array(
+        'hrjob_position' => 'Fundraiser',
+        'email' => '@example',
+      ),
+      'id' => array(
+        '9','10',
+      ),
+    ),
+    // cross-over test - mixing with unrelated fields
+    array(
+      'fv' => array(
+        'hrjob_position' => 'Fundraiser',
+        'email' => '@example.org',
+      ),
+      'id' => array(
+        '10',
+      ),
+    ),
   );
 
   public function _construct() {
