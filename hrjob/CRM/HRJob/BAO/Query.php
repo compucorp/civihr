@@ -119,6 +119,8 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       case 'hrjob_contract_type':
       case 'hrjob_pay_grade':
       case 'hrjob_period_type':
+      case 'hrjob_hours_type':
+      case 'hrjob_hours_unit':
         $display = $options = $value;
         if (is_array($value) && count($value) >= 1) {
           $op      = 'IN';
@@ -287,7 +289,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       $form->add('select', 'hrjob_hours_unit', ts('Hours Unit'), 
         array('Day' => ts('Day'), 'Week' => ts('Week'), 'Month' => ts('Month'), 'Year' => ts('Year')), FALSE,
-        array('id' => 'hrjob_hours_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
+        array('id' => 'hrjob_hours_unit', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
 
       $form->add('text', 'hrjob_hours_amount_low', ts('From'), array('size' => 8, 'maxlength' => 8));
