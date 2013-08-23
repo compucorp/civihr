@@ -5,7 +5,7 @@
     <ProfileGroup>
       <is_active>1</is_active>
       <group_type>Individual,Contact</group_type>
-      <title>HR Staff Directory</title>
+      <title>Staff Directory</title>
       <add_captcha>0</add_captcha>
       <is_map>0</is_map>
       <is_edit_link>0</is_edit_link>
@@ -33,7 +33,7 @@
       <label>Image</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>  
     <ProfileField>
       <field_name>first_name</field_name>
@@ -44,12 +44,12 @@
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>Public Pages</visibility>
-      <in_selector>0</in_selector>
+      <in_selector>1</in_selector>
       <is_searchable>1</is_searchable>
       <label>First Name</label>
       <field_type>Individual</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>last_name</field_name>
@@ -65,7 +65,7 @@
       <label>Last Name</label>
       <field_type>Individual</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>email</field_name>
@@ -82,7 +82,7 @@
       <field_type>Contact</field_type>
       <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>phone</field_name>
@@ -99,7 +99,7 @@
       <field_type>Contact</field_type>
       <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>country</field_name>
@@ -116,7 +116,7 @@
       <field_type>Contact</field_type>
       <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>hrjob_title</field_name>
@@ -132,7 +132,7 @@
       <label>Title</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>hrjob_manager_contact</field_name>
@@ -148,7 +148,7 @@
       <label>Manager</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>hrjob_location</field_name>
@@ -164,7 +164,7 @@
       <label>Location</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>hrjob_department</field_name>
@@ -180,7 +180,7 @@
       <label>Department</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
   </ProfileFields>
   <ProfileJoins>
@@ -188,7 +188,7 @@
       <is_active>1</is_active>
       <module>Profile</module>
       <weight>1</weight>
-      <profile_group_name>HR Staff Directory</profile_group_name>
+      <profile_group_name>Staff Directory</profile_group_name>
     </ProfileJoin>
   </ProfileJoins>
 </CustomData>
