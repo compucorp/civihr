@@ -46,7 +46,7 @@ INSERT INTO `civicrm_address` (`id`, `contact_id`, `location_type_id`, `is_prima
 --
 
 INSERT INTO `civicrm_contact` (`id`, `contact_type`, `contact_sub_type`, `do_not_email`, `do_not_phone`, `do_not_mail`, `do_not_sms`, `do_not_trade`, `is_opt_out`, `legal_identifier`, `external_identifier`, `sort_name`, `display_name`, `nick_name`, `legal_name`, `image_URL`, `preferred_communication_method`, `preferred_language`, `preferred_mail_format`, `hash`, `api_key`, `source`, `first_name`, `middle_name`, `last_name`, `prefix_id`, `suffix_id`, `email_greeting_id`, `email_greeting_custom`, `email_greeting_display`, `postal_greeting_id`, `postal_greeting_custom`, `postal_greeting_display`, `addressee_id`, `addressee_custom`, `addressee_display`, `job_title`, `gender_id`, `birth_date`, `is_deceased`, `deceased_date`, `household_name`, `primary_contact_id`, `organization_name`, `sic_code`, `user_unique_id`, `employer_id`, `is_deleted`, `created_date`, `modified_date`) VALUES
-(203, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hetfield, Emma', 'Ms. Emma Hetfield', NULL, NULL, NULL, NULL, NULL, 'Both', '1537046527', NULL, NULL, 'Emma', 'W', 'Hetfield', 2, NULL, 1, NULL, 'Dear Emma', 1, NULL, 'Dear Emma', 1, NULL, 'Ms. Emma Hetfield', NULL, 1, '1982-09-09', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:50', '2013-08-06 16:12:55'),
+(203, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hetfield, Amy', 'Ms. Amy Hetfield', NULL, NULL, NULL, NULL, NULL, 'Both', '1537046527', NULL, NULL, 'Amy', 'W', 'Hetfield', 2, NULL, 1, NULL, 'Dear Amy', 1, NULL, 'Dear Amy', 1, NULL, 'Ms. Amy Hetfield', NULL, 1, '1982-09-09', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:50', '2013-08-06 16:12:55'),
 (204, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hetfield, Emma', 'Ms. Emma Hetfield', NULL, NULL, NULL, '1', NULL, 'Both', '1537046527', NULL, NULL, 'Emma', '', 'Hetfield', 2, NULL, 1, NULL, 'Dear Emma', 1, NULL, 'Dear Emma', 1, NULL, 'Ms. Emma Hetfield', NULL, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:50', '2013-08-06 16:13:02'),
 (205, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Anderson, John', 'John Anderson', NULL, NULL, NULL, NULL, NULL, 'Both', '465340484', NULL, NULL, 'John', '', 'Anderson', NULL, NULL, 1, NULL, 'Dear John', 1, NULL, 'Dear John', 1, NULL, 'John Anderson', NULL, 2, '1990-05-02', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:13:01'),
 (206, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hammett, Peter', 'Peter Hammett Sr.', NULL, NULL, NULL, NULL, NULL, 'Both', '557528799', NULL, NULL, 'Peter', '', 'Hammett', NULL, 2, 1, NULL, 'Dear Peter', 1, NULL, 'Dear Peter', 1, NULL, 'Peter Hammett Sr.', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:56'),
@@ -79,7 +79,7 @@ INSERT INTO `civicrm_email` (`id`, `contact_id`, `location_type_id`, `email`, `i
 (188, 213, 1, 'johnson.cristina8@mymail.com', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
 (189, 213, 1, 'cristinajohnson@lol.co.in', 0, 0, 0, 0, NULL, NULL, NULL, NULL),
 (190, 217, 1, 'emmahetfield50@fakemail.com', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
-(191, 203, 1, 'hetfield.w.emma@fakemail.co.nz', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
+(191, 203, 1, 'hetfield.w.amy@fakemail.co.nz', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
 (192, 222, 1, 'hetfielde67@notmail.com', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
 (193, 205, 1, 'andersonj@infomail.info', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
 (194, 208, 1, 'andersonc46@spamalot.org', 1, 0, 0, 0, NULL, NULL, NULL, NULL),
@@ -300,23 +300,23 @@ INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay
 -- Dumping data for table `civicrm_hrjob_pension`
 --
 
-INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `er_contrib_pct`) VALUES
-(1, 3, 1, 100.00),
-(2, 4, 0, 100.00),
-(3, 7, 1, 400.00),
-(4, 8, 0, 400.00),
-(5, 9, 1, 300.00),
-(6, 10, 0, 200.00),
-(7, 11, 1, 400.00),
-(8, 13, 1, 100.00),
-(9, 15, 1, 200.00),
-(10, 20, 1, 100.00),
-(11, 21, 1, 400.00),
-(12, 22, 1, 100.00),
-(13, 26, 0, 100.00),
-(14, 30, 1, 300.00),
-(15, 32, 0, 400.00),
-(16, 33, 0, 200.00);
+INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `ee_contrib_pct`, `er_contrib_pct`) VALUES
+(1, 3, 1, 200.00, 100.00),
+(2, 4, 0, 250.00, 100.00),
+(3, 7, 1, 300.00, 400.00),
+(4, 8, 0, 150.00, 400.00),
+(5, 9, 1, 300.00, 300.00),
+(6, 10, 0, 50.00, 200.00),
+(7, 11, 1, 125.00, 100.00),
+(8, 13, 1, 150.00, 100.00),
+(9, 15, 1, 300.00, 200.00),
+(10, 20, 1, 400.00, 100.00),
+(11, 21, 1, 500.00, 400.00),
+(12, 22, 1, 275.00, 100.00),
+(13, 26, 0, 135.00, 100.00),
+(14, 30, 1, 400.00, 300.00),
+(15, 32, 0, 200.00, 400.00),
+(16, 33, 0, 300.00, 200.00);
 
 --
 -- Dumping data for table `civicrm_hrjob_role`
