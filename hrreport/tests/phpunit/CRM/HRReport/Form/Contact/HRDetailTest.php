@@ -385,31 +385,21 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
       'plan_type',
     );
 
-    $contact_211_1_filters = include __DIR__ . '/fixtures/singleFilter-contact-211.php';
-    foreach ($contact_211_1_filters as $contact_211_1_filter) {
-      $cases[] = array(
-        'CRM_HRReport_Form_Contact_HRDetail',
-        array(
-          'fields' => $fields,
-          'filters' => $contact_211_1_filter,
-        ),
-        'fixtures/singleFilter-dataset.sql',
-        'fixtures/singleFilter-contact-211.csv',
-      );
+    foreach (array('singleFilter-211', 'singleFilter-213') as $prefix) {
+      $filters = include __DIR__ . "/fixtures/{$prefix}.filter.php";
+      foreach ($filters as $filter) {
+        $cases[] = array(
+          'CRM_HRReport_Form_Contact_HRDetail',
+          array(
+            'fields' => $fields,
+            'filters' => $filter,
+          ),
+          'fixtures/singleFilter-dataset.sql',
+          "fixtures/{$prefix}.csv",
+        );
+      }
     }
 
-    $contact_213_6_filters = include __DIR__ . '/fixtures/singleFilter-contact-211.php';
-    foreach ($contact_213_6_filters as $contact_213_6_filter) {
-      $cases[] = array(
-        'CRM_HRReport_Form_Contact_HRDetail',
-        array(
-          'fields' => $fields,
-          'filters' => $contact_213_6_filter,
-        ),
-        'fixtures/singleFilter-dataset.sql',
-        'fixtures/singleFilter-contact-213.csv',
-      );
-    }
     return $cases;
   }
 
