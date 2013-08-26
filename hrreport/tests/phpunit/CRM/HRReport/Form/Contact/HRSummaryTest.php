@@ -61,7 +61,7 @@ class CRM_HRReport_Form_Contact_HRSummaryTest extends CiviReportTestCase {
           ),
         ),
       'fixtures/dataset-detail.sql',
-      'fixtures/report-summary.csv',
+      'fixtures/summary-bystate.csv',
     );
 
     //testcase for CiviHR Full Time Equivalents Report 
@@ -79,7 +79,7 @@ class CRM_HRReport_Form_Contact_HRSummaryTest extends CiviReportTestCase {
           ),
         ),
       'fixtures/dataset-detail.sql',
-      'fixtures/report-fte.csv',
+      'fixtures/summary-fte.csv',
     );
 
     //testcase for CiviHR Annual and Monthly Cost Equivalents Report 
@@ -99,7 +99,7 @@ class CRM_HRReport_Form_Contact_HRSummaryTest extends CiviReportTestCase {
           ),
         ),
       'fixtures/dataset-detail.sql',
-      'fixtures/report-annual-monthly-equiv.csv',
+      'fixtures/summary-annual-monthly-equiv.csv',
     );
 
     //testcase for CiviHR Contact Summary Report using "in" operator for filters
