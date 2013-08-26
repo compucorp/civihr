@@ -3,6 +3,10 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
   /**
    * Converter for checkbox/boolean fields
    *
+   * Note that this works well with *only* checkboxes. If the template does
+   * or could include a mix of widgets for the same field, then you would need
+   * to define separate bindings (with separate converters) for each widget.
+   *
    * @param direction
    * @param value
    * @return {*}
@@ -39,20 +43,9 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
   Common.mbind = function(view) {
     var modelBinder = new Backbone.ModelBinder();
 
-    // ModelBinder - Some bindings to use in all our views
-    var booleanFieldRE = /^is_/;
-    var onBindingCreate = function(bindings) {
-      _.each(bindings, function(value, key){
-        if (booleanFieldRE.test(key)) {
-          value.converter = Common.convertCheckbox;
-        }
-      });
-    };
-
     // View - onRender listener
     var onRender = function() {
       var bindings = Backbone.ModelBinder.createDefaultBindings(this.el, view.bindingAttribute || 'name');
-      onBindingCreate(bindings); // Apply some changes to bindings across all our views
       view.triggerMethod.call(view, 'binding:create', bindings);
       modelBinder.bind(this.model, this.el, bindings);
     };
