@@ -1,7 +1,7 @@
 <?php
 
 // A list of filters. In the sample data set, you could use any of these filters,
-// and the results would iclude *only* contact #211 (job 1).
+// and the results would include *only* contact #211 (job 1).
 return array(
   array('title_op' => 'like', 'title_value' => 'Title-211-1'),
   array('position_op' => 'like', 'position_value' => 'Position-211-1'),
