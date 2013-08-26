@@ -35,7 +35,7 @@ foreach ($filters as $filter) {
       'filters' => $filter,
     ),
     'fixtures/singleFilter-dataset.sql',
-    "fixtures/singleFilter-211.csv",
+    'fixtures/singleFilter-211.csv',
   );
 }
 return $cases;
