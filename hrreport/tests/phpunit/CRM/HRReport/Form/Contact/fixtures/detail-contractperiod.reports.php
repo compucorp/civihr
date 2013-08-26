@@ -22,6 +22,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase5.csv',
+    'fixtures/detail-contractperiod.csv',
   ),
 );

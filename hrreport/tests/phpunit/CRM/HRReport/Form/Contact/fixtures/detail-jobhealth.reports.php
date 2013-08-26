@@ -28,7 +28,7 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase8.csv',
+    'fixtures/detail-jobhealth.csv',
   ),
   //some variation to testCase8
   array(
@@ -58,6 +58,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase8.csv',
+    'fixtures/detail-jobhealth.csv',
   )
 );

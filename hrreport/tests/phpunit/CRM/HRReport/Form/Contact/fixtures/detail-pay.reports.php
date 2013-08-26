@@ -23,6 +23,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase2.csv',
+    'fixtures/detail-pay.csv',
   )
 );

@@ -26,7 +26,7 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase9.csv',
+    'fixtures/detail-hours.csv',
   ),
 
   //some variation to testCase9
@@ -55,6 +55,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase9.csv',
+    'fixtures/detail-hours.csv',
   )
 );

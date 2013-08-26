@@ -47,16 +47,11 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
   );
 
   public function dataProvider() {
-    return array_merge(
-      include __DIR__ . '/fixtures/testCase1.reports.php',
-      include __DIR__ . '/fixtures/testCase2.reports.php',
-      include __DIR__ . '/fixtures/testCase3.reports.php',
-      include __DIR__ . '/fixtures/testCase4.reports.php',
-      include __DIR__ . '/fixtures/testCase5.reports.php',
-      include __DIR__ . '/fixtures/testCase6.reports.php',
-      include __DIR__ . '/fixtures/testCase8.reports.php',
-      include __DIR__ . '/fixtures/testCase9.reports.php'
-    );
+    $cases = array();
+    foreach (glob(__DIR__ . '/fixtures/detail-*.reports.php') as $file) {
+      $cases = array_merge($cases, include $file);
+    }
+    return $cases;
   }
 
   /**
@@ -75,8 +70,8 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
    */
   function singleFilterTestCases() {
     $cases = array();
-    foreach (array('singleFilter-211', 'singleFilter-213') as $prefix) {
-      $cases = array_merge($cases, include __DIR__ . "/fixtures/{$prefix}.reports.php");
+    foreach (glob(__DIR__ . '/fixtures/singleFilter-*.reports.php') as $file) {
+      $cases = array_merge($cases, include $file);
     }
     return $cases;
   }

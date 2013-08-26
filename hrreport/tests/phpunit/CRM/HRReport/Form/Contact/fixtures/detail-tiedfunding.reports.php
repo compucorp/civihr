@@ -24,7 +24,7 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase6.csv',
+    'fixtures/detail-tiedfunding.csv',
   ),
 
   //testCase with hrjob isTiedToFunding,level type and contract type filters with "notin" operator
@@ -51,6 +51,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase6.csv',
+    'fixtures/detail-tiedfunding.csv',
   ),
 );

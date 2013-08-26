@@ -21,6 +21,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase3.csv',
+    'fixtures/detail-pension.csv',
   ),
 );

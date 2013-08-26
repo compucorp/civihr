@@ -15,6 +15,6 @@ return array(
       ),
     ),
     'fixtures/dataset-detail.sql',
-    'fixtures/testCase1.csv',
+    'fixtures/detail-alljobs.csv',
   )
 );
