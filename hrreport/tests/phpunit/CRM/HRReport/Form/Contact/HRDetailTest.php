@@ -371,35 +371,9 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
    */
   function singleFilterTestCases() {
     $cases = array();
-    $fields = array(
-      'id',
-      'sort_name',
-      'email',
-      'position',
-      'title',
-      'contract_type',
-      'level_type',
-      'period_type',
-      'location',
-      'provider',
-      'plan_type',
-    );
-
     foreach (array('singleFilter-211', 'singleFilter-213') as $prefix) {
-      $filters = include __DIR__ . "/fixtures/{$prefix}.filter.php";
-      foreach ($filters as $filter) {
-        $cases[] = array(
-          'CRM_HRReport_Form_Contact_HRDetail',
-          array(
-            'fields' => $fields,
-            'filters' => $filter,
-          ),
-          'fixtures/singleFilter-dataset.sql',
-          "fixtures/{$prefix}.csv",
-        );
-      }
+      $cases = array_merge($cases, include __DIR__ . "/fixtures/{$prefix}.reports.php");
     }
-
     return $cases;
   }
 
