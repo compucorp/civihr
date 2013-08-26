@@ -38,8 +38,7 @@ INSERT INTO `civicrm_contact` (`id`, `contact_type`, `contact_sub_type`, `do_not
 (210, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hetfield, Peter', 'Peter Hetfield Jr.', NULL, NULL, NULL, NULL, NULL, 'Both', '1535107201', NULL, NULL, 'Peter', 'Q', 'Hetfield', NULL, 1, 1, NULL, 'Dear Peter', 1, NULL, 'Dear Peter', 1, NULL, 'Peter Hetfield Jr.', NULL, 2, '1982-04-19', 0, NULL, NULL, NULL, 'Sierra Sports Trust', NULL, NULL, 214, 0, '2013-08-06 16:12:51', '2013-08-06 16:13:07'),
 (211, 'Individual', NULL, 0, 1, 0, 0, 0, 0, NULL, NULL, 'Last211, Cristina', 'Cristina Last211', NULL, NULL, NULL, NULL, NULL, 'Both', '-494892012', NULL, NULL, 'Cristina', '', 'Last211', NULL, NULL, 1, NULL, 'Dear Cristina', 1, NULL, 'Dear Cristina', 1, NULL, 'Cristina Last211', NULL, NULL, '1929-07-06', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:51'),
 (213, 'Individual', NULL, 0, 1, 0, 0, 1, 0, NULL, NULL, 'Last213, Cristina', 'Cristina Last213', NULL, NULL, NULL, '3', NULL, 'Both', '2095701394', NULL, NULL, 'Cristina', '', 'Last213', NULL, NULL, 1, NULL, 'Dear Cristina', 1, NULL, 'Dear Cristina', 1, NULL, 'Cristina Last213', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:53'),
-(219, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Last219, Cristina', 'Cristina Last219', NULL, NULL, NULL, NULL, NULL, 'Both', '821806118', NULL, NULL, 'Cristina', 'P', 'Last219', NULL, NULL, 1, NULL, 'Dear Cristina', 1, NULL, 'Dear Cristina', 1, NULL, 'Cristina Last219', NULL, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:52');
-
+(219, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Last219, Nevermatch', 'Nevermatch Last219', NULL, NULL, NULL, NULL, NULL, 'Both', '821806118', NULL, NULL, 'Nevermatch', 'P', 'Last219', NULL, NULL, 1, NULL, 'Dear Nevermatch', 1, NULL, 'Dear Nevermatch', 1, NULL, 'Nevermatch Last219', NULL, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:52');
 
 --
 -- Dumping data for table `civicrm_email`
@@ -57,9 +56,9 @@ INSERT INTO `civicrm_email` (`id`, `contact_id`, `location_type_id`, `email`, `i
 --
 
 INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_to_funding`, `funding_notes`, `contract_type`, `level_type`, `period_type`, `period_start_date`, `period_end_date`, `manager_contact_id`, `location`, `is_primary`) VALUES
-(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2011-03-01', '2013-01-26', 211, 'Headquarters', 1),
+(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2012-03-01', '2013-01-26', 211, 'Headquarters', 1),
 (4, 219, 'Position-219-4', 'Title-219-4', 1, NULL, 'Apprentice', 'Junior Staff', 'Permanent', '2011-11-23', '2013-04-17', 206, NULL, 1),
-(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Permanent', '2010-10-10', '2013-01-25', 213, 'Home', 1);
+(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Temporary', '2010-10-10', '2012-01-25', 213, 'Home', 1);
 
 --
 -- Dumping data for table `civicrm_hrjob_health`
@@ -74,20 +73,20 @@ INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `de
 --
 
 INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, `hours_unit`, `hours_fte`) VALUES
-(1, 1, 'full', 32.00, 'Week', 1.50),
-(2, 6, 'part', 16.00, 'Day', 2.00);
+(1, 1, 'full', 32.00, 'Week', 0.8),
+(2, 6, 'part', 16.00, 'Day', 0.4);
 
 --
 -- Dumping data for table `civicrm_hrjob_leave`
 --
 
 INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`) VALUES
-(1, 1, 'Annual', 2),
-(2, 1, 'Public', 5),
+(1, 1, 'Annual', 1),
+(2, 1, 'Public', 2),
 (3, 1, 'Sick', 3),
 (16, 6, 'Annual', 4),
-(17, 6, 'Public', 1),
-(18, 6, 'Sick', 2);
+(17, 6, 'Public', 5),
+(18, 6, 'Sick', 6);
 
 --
 -- Dumping data for table `civicrm_hrjob_pay`
@@ -110,10 +109,9 @@ INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `ee_contrib_
 --
 
 INSERT INTO `civicrm_hrjob_role` (`id`, `job_id`, `title`, `description`, `hours`, `region`, `department`, `manager_contact_id`, `functional_area`, `organization`, `cost_center`, `location`) VALUES
-(1, 1, 'Role-Title-211-1', 'desc3', 24.00, 'Europe', 'Operations', 217, 'Save the Rhinos', 'Org-211-1', 'Cost-211-1', NULL),
-(2, 1, 'Role-Title-211-2', 'desc1', 16.00, 'Asia', 'Finance', 216, 'Save the Panda', 'Org-211-2', 'Cost-211-2', NULL),
-(7, 6, 'Role-Title-213-6', 'desc4', 40.00, 'Africa', 'Marketing', 220, 'Save the Whales', 'Org-213-6', 'Cost-213-6', NULL);
-
+(1, 1, 'Role-Title-211-1', 'Desc-211-1', 24.00, 'Europe', 'Operations', 217, 'Save the Rhinos', 'Org-211-1', 'Cost-211-1', NULL),
+(2, 1, 'Role-Title-211-2', 'Desc-211-2', 16.00, 'Asia',   'Finance',    216, 'Save the Panda',  'Org-211-2', 'Cost-211-2', NULL),
+(7, 6, 'Role-Title-213-6', 'Desc-213-6', 40.00, 'Africa', 'Marketing',  220, 'Save the Whales', 'Org-213-6', 'Cost-213-6', NULL);
 
 --
 -- Dumping data for table `civicrm_phone`
