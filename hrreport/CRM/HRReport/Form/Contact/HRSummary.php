@@ -55,6 +55,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'title' => ts('People'),
             'default' => TRUE,
             'statistics' => array('count_distinct' => ts('People'),),
+            'grouping' => array('stats-fields' => 'Stats Fields'),
           ),
           'gender_id' =>
           array(
@@ -82,7 +83,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'options' => CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id'),
           ),
         ),
-        'grouping' => array('contact-fields' => 'Stats and Work Fields'),
+        'grouping' => array('contact-fields' => 'Job and Work Fields'),
       ),
       'civicrm_address' =>
       array(
@@ -461,7 +462,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'name' => 'contact_id',
         'title' => ts('Job Positions'),
         'statistics' => array('count' => ts('Job Positions'),),
-        'grouping' => 'contact-fields',
+        'grouping' => 'stats-fields',
       );
     $this->_columns['civicrm_hrjob_hour']['fields']['fte'] =
       array(
@@ -469,21 +470,21 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'title' => ts('Full Time Equivalents'),
         'type' => CRM_Utils_Type::T_INT,
         'statistics' => array('sum' => ts('Full Time Equivalents'),),
-        'grouping' => 'contact-fields',
+        'grouping' => 'stats-fields',
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
       'name' => 'pay_amount',
       'title' => ts('Monthly Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
       'statistics' => array('mce' => ts('Monthly Cost Equivalents'),),
-      'grouping' => 'contact-fields',
+      'grouping' => 'stats-fields',
     );
     $this->_columns['civicrm_hrjob_pay']['fields']['annual_cost_eq'] = array(
       'name' => 'pay_amount',
       'title' => ts('Annual Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
       'statistics' => array('sum' => ts('Annual Cost Equivalents'),),
-      'grouping' => 'contact-fields',
+      'grouping' => 'stats-fields',
     );
   }
 
