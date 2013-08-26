@@ -58,8 +58,6 @@ INSERT INTO `civicrm_email` (`id`, `contact_id`, `location_type_id`, `email`, `i
 
 INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_to_funding`, `funding_notes`, `contract_type`, `level_type`, `period_type`, `period_start_date`, `period_end_date`, `manager_contact_id`, `location`, `is_primary`) VALUES
 (1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2011-03-01', '2013-01-26', 211, 'Headquarters', 1),
-(2, 211, 'Position-211-2', 'Title-211-2', 0, NULL, 'Volunteer', 'Junior Staff', 'Permanent', '2011-10-07', '2013-03-29', 207, 'Headquarters', 0),
-(3, 211, 'Position-211-3', 'Title-211-3', 1, NULL, 'Apprentice', 'Senior Manager', 'Temporary', '2010-12-18', '2013-03-29', 214, 'Headquarters', 0),
 (4, 219, 'Position-219-4', 'Title-219-4', 1, NULL, 'Apprentice', 'Junior Staff', 'Permanent', '2011-11-23', '2013-04-17', 206, NULL, 1),
 (6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Permanent', '2010-10-10', '2013-01-25', 213, 'Home', 1);
 
@@ -87,15 +85,6 @@ INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`)
 (1, 1, 'Annual', 2),
 (2, 1, 'Public', 5),
 (3, 1, 'Sick', 3),
-(4, 2, 'Annual', 1),
-(5, 2, 'Public', 4),
-(6, 2, 'Sick', 1),
-(7, 3, 'Annual', 2),
-(8, 3, 'Public', 5),
-(9, 3, 'Sick', 2),
-(10, 4, 'Annual', 5),
-(11, 4, 'Public', 3),
-(12, 4, 'Sick', 3),
 (16, 6, 'Annual', 4),
 (17, 6, 'Public', 1),
 (18, 6, 'Sick', 2);
@@ -105,9 +94,8 @@ INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`)
 --
 
 INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay_unit`) VALUES
-(1, 2, 'Paid', 80.00, 'Day'),
-(2, 3, 'Paid', 200.00, 'Hour'),
-(3, 4, 'Unpaid', 200.00, 'Day');
+(1, 1, 'Paid', 80.00, 'Day'),
+(3, 6, 'Unpaid', 200.00, 'Day');
 
 --
 -- Dumping data for table `civicrm_hrjob_pension`
@@ -122,12 +110,9 @@ INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `ee_contrib_
 --
 
 INSERT INTO `civicrm_hrjob_role` (`id`, `job_id`, `title`, `description`, `hours`, `region`, `department`, `manager_contact_id`, `functional_area`, `organization`, `cost_center`, `location`) VALUES
-(1, 1, 'Manager2', 'desc3', 24.00, 'Europe', 'Operations', 217, 'Save the Rhinos', 'ZINGIT', '003', NULL),
-(2, 1, 'Manager1', 'desc1', 16.00, 'Europe', 'Finance', 216, 'Save the Panda', 'UP', '004', NULL),
-(3, 3, 'Manager1', 'desc1', 32.00, 'North America', 'Operations', 204, 'Save the Panda', 'ZINGIT', '004', NULL),
-(4, 3, 'Manager2', 'desc4', 32.00, 'Europe', 'Fundraising', 212, 'Save the Tigers', 'UP', '004', NULL),
-(5, 3, 'Manager1', 'desc1', 24.00, 'Asia', 'Finance', 217, 'Save the Whales', 'ZING', '003', NULL),
-(7, 6, 'Manager2', 'desc4', 40.00, 'Africa', 'Operations', 220, 'Save the Whales', 'UP', '005', NULL);
+(1, 1, 'Role-Title-211-1', 'desc3', 24.00, 'Europe', 'Operations', 217, 'Save the Rhinos', 'Org-211-1', 'Cost-211-1', NULL),
+(2, 1, 'Role-Title-211-2', 'desc1', 16.00, 'Asia', 'Finance', 216, 'Save the Panda', 'Org-211-2', 'Cost-211-2', NULL),
+(7, 6, 'Role-Title-213-6', 'desc4', 40.00, 'Africa', 'Marketing', 220, 'Save the Whales', 'Org-213-6', 'Cost-213-6', NULL);
 
 
 --
