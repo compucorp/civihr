@@ -357,31 +357,19 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
 
   /**
    * The single-filter test cases ensure that each filter works correctly when used
-   * individually. This function has two big sections:
+   * individually.
    *
-   * 1) For each filter-option, we need at least two examples with different values for
-   * that filter-option -- the two examples must match different records.
-   * 2) Given that we have a list of filters and that we know which contacts should match
-   * each filter, we can prepare a full test-case ().
+   * To reduce clutter/duplication, we pick two contacts/jobs as our "targets"
+   * (contacts 211 and 213). For a given field like "title", we write one query
+   * which matches contact 211 based on title; then we write a second query which
+   * matches contact 213 based on title.
+   *
+   * In the end, we have a list of filters which match contact 211 (singleFilter-contact-211.php)
+   * and an example output file displaying contact 211 (singleFilter-contact-211.csv). Similarly,
+   * there's a list of filters and an example output for contact 213 (singleFilter-contact-213.php
+   * and singlefilter-contact-213.csv).
    */
   function singleFilterTestCases() {
-    // ---- List of filters which contact #1 or contact #2 ----
-
-    $contact_211_1_filters = array(); // a list of filters which should return contact #211 (job 1)
-    $contact_213_6_filters = array(); // a list of filters which should return contact #213 (job 6)
-    $contact_211_1_filters[] =  array('title_op' => 'like', 'title_value' => 'Title-211-1');
-    $contact_213_6_filters[] =  array('title_op' => 'like', 'title_value' => 'Title-213-6');
-    $contact_211_1_filters[] =  array('position_op' => 'like', 'position_value' => 'Position-211-1');
-    $contact_213_6_filters[] =  array('position_op' => 'like', 'position_value' => 'Position-213-6');
-    $contact_211_1_filters[] =  array('hours_type_op' => 'in', 'hours_type_value' => 'full');
-    $contact_213_6_filters[] =  array('hours_type_op' => 'in', 'hours_type_value' => 'part');
-    $contact_211_1_filters[] =  array('hours_type_op' => 'in', 'hours_type_value' => 'full,casual');
-    $contact_211_1_filters[] =  array('hours_type_op' => 'notin', 'hours_type_value' => 'part,casual');
-    $contact_213_6_filters[] =  array('hours_type_op' => 'notin', 'hours_type_value' => 'full,casual');
-
-    // TODO Add more $contact_211_1_filters and $contact_213_6_filter
-
-    // ---- Construct full test-cases using these filters ----
     $cases = array();
     $fields = array(
       'id',
@@ -396,6 +384,8 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
       'provider',
       'plan_type',
     );
+
+    $contact_211_1_filters = include __DIR__ . '/fixtures/singleFilter-contact-211.php';
     foreach ($contact_211_1_filters as $contact_211_1_filter) {
       $cases[] = array(
         'CRM_HRReport_Form_Contact_HRDetail',
@@ -407,6 +397,8 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
         'fixtures/singleFilter-contact-211.csv',
       );
     }
+
+    $contact_213_6_filters = include __DIR__ . '/fixtures/singleFilter-contact-211.php';
     foreach ($contact_213_6_filters as $contact_213_6_filter) {
       $cases[] = array(
         'CRM_HRReport_Form_Contact_HRDetail',
