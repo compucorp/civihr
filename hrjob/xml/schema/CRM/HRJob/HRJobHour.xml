@@ -75,8 +75,10 @@
 
   <field>
     <name>hours_fte</name>
-    <title>Full-Time Equivalence</title>
+    <title>Job Full-Time Equivalence</title>
     <type>float</type>
     <comment>Typically, employment at 40 hr/wk is 1 FTE</comment>
+    <export>true</export>
+    <uniqueName>hrjob_hours_fte</uniqueName>
   </field>
 </table>
