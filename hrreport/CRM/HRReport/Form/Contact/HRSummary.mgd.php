@@ -78,12 +78,10 @@ return array (
       'form_values' => serialize(
         array(
           'fields' => array(
-            'hrjob_title' => 1,
             'hrjob_level_type' => 1,
-            'fte' => 1,
+            'full_time_eq'     => 1,
           ),
           'group_bys' => array(
-            'hrjob_title' => 1,
             'hrjob_level_type' => 1,
           ),
         )

@@ -1,7 +1,7 @@
-"Level","Period Type","Job Location","Annual Cost Equivalents","Monthly Cost Equivalents"
-"Junior Manager","Permanent","Headquarters"," "," "
-"Junior Manager","Permanent","Home"," "," "
-"Senior Manager","Permanent","Headquarters","200.00","16.666667"
-"Senior Manager","Permanent","Home"," "," "
-"Senior Staff","Permanent","Headquarters","80.00","6.666667"
-"Senior Staff","Permanent","Home","90.00","7.500000"
+"Job Level","Job Contract Duration","Job Normal Place of Work","Monthly Cost Equivalents","Annual Cost Equivalents"
+"Junior Manager","Permanent","Headquarters", , 
+"Junior Manager","Permanent","Home", , 
+"Senior Manager","Permanent","Headquarters","16.666667","200.00"
+"Senior Manager","Permanent","Home", , 
+"Senior Staff","Permanent","Headquarters","6.666667","80.00"
+"Senior Staff","Permanent","Home","7.500000","90.00"

@@ -315,10 +315,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     parent::__construct();
   }
 
-  function preProcess() {
-    parent::preProcess();
-  }
-
   function from() {
     $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
