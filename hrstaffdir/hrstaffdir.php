@@ -26,7 +26,7 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
     $profileId = hrstaffdir_getUFGroupID();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
     if ($profileId == $gid) {
-      $imageUrlHeader = array("");  
+      $imageUrlHeader[]["name"] = "";  
       $headers = array_merge($imageUrlHeader,$headers); 
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
