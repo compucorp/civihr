@@ -6,7 +6,6 @@ $filters = array(
   array('hrjob_title_op' => 'has', 'hrjob_title_value' => 'Title-211-1'),
   array('hrjob_position_op' => 'has', 'hrjob_position_value' => 'Position-211-1'),
   array('hrjob_hours_type_op' => 'in', 'hrjob_hours_type_value' => 'full'),
-  array('hrjob_hours_type_op' => 'in', 'hrjob_hours_type_value' => 'full,casual'),
   array('hrjob_hours_type_op' => 'notin', 'hrjob_hours_type_value' => 'part,casual'),
 );
 
