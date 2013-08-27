@@ -170,20 +170,28 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
-        'provider' => array(
+        'hrjob_health_provider' => array(
           'name' => 'provider',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Healthcare Provider') ,
+          'title' => ts('Job Healthcare Provider') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_health.provider',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_health_provider',
           )
         ) ,
-        'plan_type' => array(
+        'hrjob_health_plan_type' => array(
           'name' => 'plan_type',
           'type' => CRM_Utils_Type::T_ENUM,
-          'title' => ts('Plan Type') ,
+          'title' => ts('Job Healthcare Plan') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_health.plan_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'enumValues' => 'Family, Individual',
         ) ,
         'description' => array(
@@ -213,8 +221,8 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'job_id' => 'job_id',
-        'provider' => 'provider',
-        'plan_type' => 'plan_type',
+        'provider' => 'hrjob_health_provider',
+        'plan_type' => 'hrjob_health_plan_type',
         'description' => 'description',
         'dependents' => 'dependents',
       );

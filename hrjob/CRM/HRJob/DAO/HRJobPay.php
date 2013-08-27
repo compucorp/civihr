@@ -180,15 +180,23 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_pay_grade',
           )
         ) ,
-        'pay_amount' => array(
+        'hrjob_pay_amount' => array(
           'name' => 'pay_amount',
           'type' => CRM_Utils_Type::T_MONEY,
-          'title' => ts('Amount') ,
+          'title' => ts('Job Pay Amount') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_amount',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
-        'pay_unit' => array(
+        'hrjob_pay_unit' => array(
           'name' => 'pay_unit',
           'type' => CRM_Utils_Type::T_ENUM,
-          'title' => ts('Unit') ,
+          'title' => ts('Job Pay Unit') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_unit',
+          'headerPattern' => '',
+          'dataPattern' => '',
           'enumValues' => 'Hour, Day, Week, Month, Year',
         ) ,
       );
@@ -209,8 +217,8 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'id' => 'id',
         'job_id' => 'job_id',
         'pay_grade' => 'hrjob_pay_grade',
-        'pay_amount' => 'pay_amount',
-        'pay_unit' => 'pay_unit',
+        'pay_amount' => 'hrjob_pay_amount',
+        'pay_unit' => 'hrjob_pay_unit',
       );
     }
     return self::$_fieldKeys;

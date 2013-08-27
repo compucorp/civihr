@@ -5,13 +5,11 @@ return array(
     'CRM_HRReport_Form_Contact_HRSummary',
     array(
       'fields' => array(
-        'title',
-        'level_type',
-        'fte',
+        'hrjob_level_type',
+        'full_time_eq',
       ),
       'group_bys' => array(
-        'title',
-        'level_type',
+        'hrjob_level_type',
       ),
     ),
     'fixtures/dataset-detail.sql',

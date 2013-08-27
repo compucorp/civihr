@@ -5,19 +5,15 @@ return array(
     'CRM_HRReport_Form_Contact_HRSummary',
     array(
       'fields' => array(
-        'title',
-        'level_type',
-        'fte',
+        'hrjob_level_type',
+        'full_time_eq',
       ),
       'group_bys' => array(
-        'title',
-        'level_type',
+        'hrjob_level_type',
       ),
       'filters' => array(
-        'title_op' => 'like',
-        'title_value' => 'Manager2',
-        'level_type_op' => 'in',
-        'level_type_value' => 'Senior Manager,Junior Staff,Senior Staff',
+        'hrjob_level_type_op' => 'in',
+        'hrjob_level_type_value' => 'Senior Manager,Junior Staff,Senior Staff',
       ),
     ),
     'fixtures/dataset-detail.sql',
@@ -28,19 +24,15 @@ return array(
     'CRM_HRReport_Form_Contact_HRSummary',
     array(
       'fields' => array(
-        'title',
-        'level_type',
-        'fte',
+        'hrjob_level_type',
+        'full_time_eq',
       ),
       'group_bys' => array(
-        'title',
-        'level_type',
+        'hrjob_level_type',
       ),
       'filters' => array(
-        'title_op' => 'like',
-        'title_value' => 'Manager2',
-        'level_type_op' => 'notin',
-        'level_type_value' => 'Junior Manager',
+        'hrjob_level_type_op' => 'notin',
+        'hrjob_level_type_value' => 'Junior Manager',
       ),
     ),
     'fixtures/dataset-detail.sql',

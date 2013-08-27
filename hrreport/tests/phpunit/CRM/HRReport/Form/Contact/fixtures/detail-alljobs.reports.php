@@ -6,10 +6,10 @@ return array(
       'fields' => array(
         'sort_name',
         'email',
-        'position',
-        'title',
+        'hrjob_position',
+        'hrjob_title',
         'manager',
-        'level_type',
+        'hrjob_level_type',
         'state_province_id',
         'country_id',
       ),

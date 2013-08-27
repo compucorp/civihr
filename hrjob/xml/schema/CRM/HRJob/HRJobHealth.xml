@@ -38,13 +38,15 @@
 
   <field>
     <name>provider</name>
-    <title>Healthcare Provider</title>
+    <title>Job Healthcare Provider</title>
     <type>varchar</type>
     <length>63</length>
     <comment>The organization or company which manages healthcare service</comment>
     <pseudoconstant>
       <optionGroupName>hrjob_health_provider</optionGroupName>
     </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_health_provider</uniqueName>
   </field>
   <index>
     <name>index_provider</name>
@@ -53,9 +55,12 @@
 
   <field>
     <name>plan_type</name>
+    <title>Job Healthcare Plan</title>
     <type>enum</type>
     <values>Family, Individual</values>
     <comment>.</comment>
+    <export>true</export>
+    <uniqueName>hrjob_health_plan_type</uniqueName>
   </field>
   <index>
     <name>index_plan_type</name>

@@ -5,15 +5,15 @@ return array(
     'CRM_HRReport_Form_Contact_HRSummary',
     array(
       'fields' => array(
-        'level_type',
-        'period_type',
-        'location',
+        'hrjob_level_type',
+        'hrjob_period_type',
+        'hrjob_location',
         'monthly_cost_eq',
         'annual_cost_eq',
       ),
       'group_bys' => array(
-        'level_type',
-        'location',
+        'hrjob_level_type',
+        'hrjob_location',
       ),
     ),
     'fixtures/dataset-detail.sql',

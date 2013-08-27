@@ -52,15 +52,15 @@ return array (
       'form_values' => serialize(
         array(
           'fields' => array(
-            'level_type' => 1,
-            'period_type' => 1,
-            'location' => 1,
-            'monthly_cost_eq' => 1,
-            'annual_cost_eq' => 1,
+            'hrjob_level_type'  => 1,
+            'hrjob_period_type' => 1,
+            'hrjob_location'    => 1,
+            'monthly_cost_eq'   => 1,
+            'annual_cost_eq'    => 1,
           ),
           'group_bys' => array(
-            'level_type' => 1,
-            'location' => 1,
+            'hrjob_level_type' => 1,
+            'hrjob_location'   => 1,
           ),
         )
       ),
@@ -78,13 +78,11 @@ return array (
       'form_values' => serialize(
         array(
           'fields' => array(
-            'title' => 1,
-            'level_type' => 1,
-            'fte' => 1,
+            'hrjob_level_type' => 1,
+            'full_time_eq'     => 1,
           ),
           'group_bys' => array(
-            'title' => 1,
-            'level_type' => 1,
+            'hrjob_level_type' => 1,
           ),
         )
       ),
