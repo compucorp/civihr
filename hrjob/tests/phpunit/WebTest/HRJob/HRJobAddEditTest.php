@@ -303,17 +303,18 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
     }
-    $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/table/tbody/tr[3]/td[2]/input");
-    $this->type("xpath=//div[@class='hrjob-main-region']/div/table/tbody/tr[1]/td[2]/input", $values['annual']);
-    $this->type("xpath=//div[@class='hrjob-main-region']/div/table/tbody/tr[2]/td[2]/input", $values['public']);
-    $this->type("xpath=//div[@class='hrjob-main-region']/div/table/tbody/tr[3]/td[2]/input", $values['sick']);
+    $tbodyXPath = "xpath=//div[@class='hrjob-main-region']/div//table/tbody";
+    $this->waitForElementPresent("$tbodyXPath/tr[3]/td[2]/input");
+    $this->type("$tbodyXPath/tr[1]/td[2]/input", $values['annual']);
+    $this->type("$tbodyXPath/tr[2]/td[2]/input", $values['public']);
+    $this->type("$tbodyXPath/tr[3]/td[2]/input", $values['sick']);
     $this->click("xpath=//button[@class='standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
     $i = 1;
     foreach ($values as $key => $value) {
-      $this->assertEquals($value, $this->getValue("xpath=//div[@class='hrjob-main-region']/div/table/tbody/tr[$i]/td[2]/input"));
+      $this->assertEquals($value, $this->getValue("$tbodyXPath/tr[$i]/td[2]/input"));
       $i++;
     }
   }
