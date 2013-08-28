@@ -55,10 +55,10 @@ INSERT INTO `civicrm_email` (`id`, `contact_id`, `location_type_id`, `email`, `i
 -- Dumping data for table `civicrm_hrjob`
 --
 
-INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_to_funding`, `funding_notes`, `contract_type`, `level_type`, `period_type`, `period_start_date`, `period_end_date`, `manager_contact_id`, `location`, `is_primary`) VALUES
-(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2012-03-01', '2013-01-26', 211, 'Headquarters', 1),
-(4, 219, 'Position-219-4', 'Title-219-4', 1, NULL, 'Apprentice', 'Junior Staff', 'Permanent', '2011-11-23', '2013-04-17', 206, NULL, 1),
-(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Temporary', '2010-10-10', '2012-01-25', 213, 'Home', 1);
+INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_to_funding`, `funding_notes`, `contract_type`, `level_type`, `period_type`, `period_start_date`, `period_end_date`, `manager_contact_id`, `location`, `is_primary`, `department`) VALUES
+(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2012-03-01', '2013-01-26', 211, 'Headquarters', 1, 'Dept-211'),
+(4, 219, 'Position-219-4', 'Title-219-4', NULL, NULL, 'Apprentice', 'Junior Staff', NULL,        '2011-11-23', '2013-04-17', 206, NULL, 1, 'Dept-219'),
+(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Temporary', '2010-10-10', '2012-01-25', 213, 'Home', 1, 'Dept-213');
 
 --
 -- Dumping data for table `civicrm_hrjob_health`
@@ -73,9 +73,9 @@ INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `de
 --
 
 INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, `hours_unit`, `hours_fte`) VALUES
-(1, 1, 'full', 32.00, 'Week', 0.8),
-(2, 6, 'part', 16.00, 'Day', 0.4),
-(3, 4, 'casual', 40.00, 'Day', 1.0);
+(1, 1, 'full', 16.00, 'Week', 1.0),
+(2, 6, 'part', 40.00, 'Month', 0.3),
+(3, 4, 'casual', 25.00, 'Day', 0.5);
 
 --
 -- Dumping data for table `civicrm_hrjob_leave`
@@ -94,8 +94,8 @@ INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`)
 --
 
 INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay_unit`) VALUES
-(1, 1, 'Paid', 80.00, 'Day'),
-(3, 6, 'Unpaid', 200.00, 'Day');
+(1, 1, 'paid', 80.00, 'Day'),
+(3, 6, 'unpaid', 200.00, 'Week');
 
 --
 -- Dumping data for table `civicrm_hrjob_pension`
@@ -103,7 +103,7 @@ INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay
 
 INSERT INTO `civicrm_hrjob_pension` (`id`, `job_id`, `is_enrolled`, `ee_contrib_pct`, `er_contrib_pct`) VALUES
 (1, 1, 1, 200.00, 100.00),
-(2, 6, 0, 250.00, 100.00);
+(2, 6, 0, 0.00, 0.00);
 
 --
 -- Dumping data for table `civicrm_hrjob_role`
