@@ -152,3 +152,63 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
     'table' => 'civicrm_hrjob_role',
   );
 }
+
+function hrjob_civicrm_triggerInfo(&$info, $tableName) {
+  $info[] = array(
+    'table' => array('civicrm_hrjob'),
+    'when' => 'after',
+    'event' => array('insert', 'update'),
+    'sql' => "
+      IF NEW.contact_id IS NOT NULL THEN
+        SET @hrjob_joindate = (SELECT min(period_start_date) FROM civicrm_hrjob WHERE contact_id = NEW.contact_id);
+        SET @hrjob_termdate = (SELECT max(period_end_date) FROM civicrm_hrjob WHERE contact_id = NEW.contact_id);
+        INSERT INTO civicrm_value_job_summary_10 (entity_id,initial_join_date_56,final_termination_date_57)
+          VALUES (NEW.contact_id, @hrjob_joindate, @hrjob_termdate)
+          ON DUPLICATE KEY UPDATE
+          initial_join_date_56 = @hrjob_joindate,
+          final_termination_date_57 = @hrjob_termdate;
+      END IF;
+    ",
+  );
+  $info[] = array(
+    'table' => array('civicrm_hrjob'),
+    'when' => 'before',
+    'event' => array('update', 'delete'),
+    'sql' => "
+      IF OLD.contact_id IS NOT NULL THEN
+        SET @hrjob_joindate = (SELECT min(period_start_date) FROM civicrm_hrjob WHERE contact_id = OLD.contact_id);
+        SET @hrjob_termdate = (SELECT max(period_end_date) FROM civicrm_hrjob WHERE contact_id = OLD.contact_id);
+        INSERT INTO civicrm_value_job_summary_10 (entity_id,initial_join_date_56,final_termination_date_57)
+          VALUES (OLD.contact_id, @hrjob_joindate, @hrjob_termdate)
+          ON DUPLICATE KEY UPDATE
+          initial_join_date_56 = @hrjob_joindate,
+          final_termination_date_57 = @hrjob_termdate;
+      END IF;
+    ",
+  );
+}
+
+/**
+ * @return array list fields keyed by stable name; each field has:
+ *   - id: int
+ *   - name: string
+ *   - column_name: string
+ *   - field: string, eg "custom_123"
+ */
+function hrjob_getSummaryFields($fresh = FALSE) {
+  static $cache = NULL;
+  if ($cache === NULL || $fresh) {
+    $sql =
+      "SELECT ccf.id, ccf.name, ccf.column_name, concat('custom_', ccf.id) as field
+      FROM civicrm_custom_group ccg
+      INNER JOIN civicrm_custom_field ccf ON ccf.custom_group_id = ccg.id
+      WHERE ccg.name = 'HRJob_Summary'
+    ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    $cache = array();
+    while ($dao->fetch()) {
+      $cache[$dao->name] = $dao->toArray();
+    }
+  }
+  return $cache;
+}
