@@ -34,8 +34,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     onValidateRulesCreate: function(view, r) {
       _.extend(r.rules, {
         pay_amount: {
-          number: true,
-          range: [0, 100]
+          number: true
         }
       });
     }
