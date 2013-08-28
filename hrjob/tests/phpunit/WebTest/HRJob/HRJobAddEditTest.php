@@ -376,9 +376,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         $this->select("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/select[@id='hrjob-{$key}']","value={$value}");
       }
       elseif ($key == 'ac_input') {
-        $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']");
         $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']", $value);
-        $this->typeKeys("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']", $value);
+        $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']");
         $this->waitForElementPresent("css=div.ac_results-inner li");
         $this->click("css=div.ac_results-inner li");
       }
