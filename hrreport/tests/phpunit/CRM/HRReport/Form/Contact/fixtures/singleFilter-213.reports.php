@@ -4,39 +4,39 @@
 // and the results would include *only* contact #213 (job 6).
 $filters = array(
   // HRJob
-  array('hrjob_title_op' => 'has', 'hrjob_title_value' => 'Title-213-6'),
-  array('hrjob_contract_type_op' => 'in', 'hrjob_contract_type_value' => 'Employee'),
-  array('hrjob_level_type_op' => 'like', 'hrjob_level_type_value' => 'Junior Manager'),
-  array('hrjob_period_type_op' => 'in', 'hrjob_period_type_value' => 'Temporary'),
-  array('hrjob_department_op' => 'ew', 'hrjob_department_value' => 'Dept-213'),
-  array('hrjob_location_op' => 'in', 'hrjob_location_value' => 'Home'),
-  array('hrjob_position_op' => 'has', 'hrjob_position_value' => 'Position-213-6'),
-  /* FIXME array(
-      'hrjob_period_start_date_relative' => '0',
-      'hrjob_period_start_date_from ' => '10/01/2010',
-      'hrjob_period_start_date_from_display' => '10/01/2010',
-      'hrjob_period_start_date_to' => '10/15/2010',
-      'hrjob_period_start_date_to_display' => '10/15/2010'
-    ),
-  //*/
-  // FIXME array('hrjob_period_end_date_op' => '', 'hrjob_period_end_date_value' => ''),
-  array('is_tied_to_funding_op' => 'in', 'is_tied_to_funding_value' => '0'),
+  array('hrjob_title_op'         => 'has', 'hrjob_title_value'         => 'Title-213-6'),
+  array('hrjob_contract_type_op' => 'in',  'hrjob_contract_type_value' => 'Employee'),
+  array('hrjob_level_type_op'    => 'has', 'hrjob_level_type_value'    => 'Junior Manager'),
+  array('hrjob_period_type_op'   => 'in',  'hrjob_period_type_value'   => 'Temporary'),
+  array('hrjob_department_op'    => 'ew',  'hrjob_department_value'    => 'Dept-213'),
+  array('hrjob_location_op'      => 'in',  'hrjob_location_value'      => 'Home'),
+  array('hrjob_position_op'      => 'has', 'hrjob_position_value'      => 'Position-213-6'),
+  array(
+    'hrjob_period_start_date_from'  => '20101001',
+    'hrjob_period_start_date_to'    => '20101015',
+  ),
+  array(
+    'hrjob_period_end_date_from'    => '20120120', 
+    'hrjob_period_end_date_to'      => '20120127',
+  ),
+  array('is_tied_to_funding_op'   => 'eq',  'is_tied_to_funding_value' => '0'),
 
   // HRJobHealth
-  array('hrjob_health_provider_op' => 'in', 'hrjob_health_provider_value' => 'Provider-6'),
+  array('hrjob_health_provider_op'  => 'in', 'hrjob_health_provider_value'  => 'Provider-6'),
   array('hrjob_health_plan_type_op' => 'in', 'hrjob_health_plan_type_value' => 'Family'),
 
   // HRJobHour
-  array('hrjob_hours_type_op' => 'in', 'hrjob_hours_type_value' => 'part'),
-  array('hrjob_hours_type_op' => 'notin', 'hrjob_hours_type_value' => 'full,casual'),
-  // FIXME array('hrjob_hours_amount_op' => 'gte', 'hrjob_hours_amount_value' => '40'),
-  array('hrjob_hours_unit_op' => 'in', 'hrjob_hours_unit_value' => 'Month'),
-  // FIXME array('hrjob_hours_fte_op' => 'lt', 'hrjob_hours_fte_value' => '0.4'),
+  array('hrjob_hours_type_op'   => 'in',    'hrjob_hours_type_value'   => 'part'),
+  array('hrjob_hours_type_op'   => 'notin', 'hrjob_hours_type_value'   => 'full,casual'),
+  array('hrjob_hours_amount_op' => 'gte',   'hrjob_hours_amount_value' => '40'),
+  array('hrjob_hours_unit_op'   => 'in',    'hrjob_hours_unit_value'   => 'Month'),
+
+  array('hrjob_hours_fte_op' => 'lt', 'hrjob_hours_fte_value' => '0.4'),
 
   // HRJobPay
-  array('hrjob_pay_grade_op' => 'in', 'hrjob_pay_grade_value' => 'unpaid'),
+  array('hrjob_pay_grade_op' => 'in',   'hrjob_pay_grade_value'  => 'unpaid'),
   array('hrjob_pay_amount_op' => 'gte', 'hrjob_pay_amount_value' => '100'),
-  array('hrjob_pay_unit_op' => 'in', 'hrjob_pay_unit_value' => 'Week'),
+  array('hrjob_pay_unit_op' => 'in',    'hrjob_pay_unit_value'   => 'Week'),
 
   // HRJobPension
   array('hrjob_is_enrolled_op' => 'in', 'hrjob_is_enrolled_value' => '0'),
