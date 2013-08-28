@@ -261,6 +261,103 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     }
   }
 
+  /**
+   * A list of test-cases for the "initial join date" and "final termination date" fields.
+   */
+  function jobSummaryDateTestCases() {
+    $cases = array();
+    /*
+    $cases[] = array(
+      array(),
+      array('start' => '', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => ''),
+      ),
+      array('start' => '', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '2012-01-02', 'period_end_date' => ''),
+      ),
+      array('start' => '2012-01-02', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => ''),
+        array('period_start_date' => '2012-01-02', 'period_end_date' => ''),
+        array('period_start_date' => '2011-05-01', 'period_end_date' => ''),
+        array('period_start_date' => '2013-04-01', 'period_end_date' => ''),
+      ),
+      array('start' => '2011-05-01', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2012-01-02'),
+      ),
+      array('start' => '', 'end' => '2012-01-02')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2011-09-02'),
+        array('period_start_date' => '', 'period_end_date' => '2013-01-02'),
+        array('period_start_date' => '', 'period_end_date' => '2012-08-02'),
+        array('period_start_date' => '', 'period_end_date' => ''),
+      ),
+      array('start' => '', 'end' => '2013-01-02')
+    );
+    */
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2011-09-02'),
+        array('period_start_date' => '', 'period_end_date' => '2013-01-02'),
+        array('period_start_date' => '2009-08-05', 'period_end_date' => '2012-08-02'),
+        array('period_start_date' => '2010-09-01', 'period_end_date' => ''),
+      ),
+      array('start' => '2009-08-05', 'end' => '2013-01-02')
+    );
+    return $cases;
+  }
+
+  /**
+   * @dataProvider jobSummaryDateTestCases
+   * @param array $jobFixtures list of API calls to make for creating the jobs
+   * @param array $expectedDates list of job-summary values that are expected
+   */
+  function testJobSummaryDates($jobFixtures, $expectedDates) {
+    // Make some noise to ensure we filter correctly
+    $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $this->individualCreate(),
+      'period_start_date' => '2001-02-03',
+      'period_end_date' => '2030-04-05',
+    ));
+
+    // Make the contact+jobs we care about
+    $cid = $this->individualCreate();
+    foreach ($jobFixtures as $jobFixture) {
+      $this->callAPISuccess('HRJob', 'create', $jobFixture + array('contact_id' => $cid));
+    }
+
+    // Make some more noise
+    $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $this->individualCreate(),
+      'period_start_date' => '2002-02-03',
+      'period_end_date' => '2050-04-05',
+    ));
+
+    // Check the stats for the contact we care about
+    $result = $this->callAPISuccess('CustomValue', 'get', array(
+      'entity_id' => $cid,
+      'return.HRJob_Summary:Initial_Join_Date' => 1,
+      'return.HRJob_Summary:Final_Termination_Date' => 1
+    ));
+    print_r($result); // TODO assertions
+    $this->assertEquals(1, $result['count']);
+  }
+
+  // TODO test summary transitions
+
   function testDuplicateWithChange() {
     $cid = $this->individualCreate();
     $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
