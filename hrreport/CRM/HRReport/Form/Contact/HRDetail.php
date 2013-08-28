@@ -91,7 +91,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'default_order' => 'ASC'
           ),
         ),
-        'grouping' => array('contact-fields' => ts('Contact and Work')),
+        'grouping' => array('contact-fields' => ts('Personal Details')),
       ),
       'civicrm_email' =>
       array(
