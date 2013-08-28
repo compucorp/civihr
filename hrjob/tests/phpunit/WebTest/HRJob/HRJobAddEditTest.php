@@ -161,7 +161,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'hours_type' => 'casual',
       'hours_amount' => 100.00, 
       'hours_unit' => 'Week', 
-      'hours_fte' => 3,
+      'hours_fte' => 0.5,
     ), 'Edit');
 
     $this->_addJobLeaveData(2, array(
