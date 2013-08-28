@@ -119,7 +119,7 @@
       <label for="hrjob-period_start_date">{ts}Start Date{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-period_start_date" name="period_start_date" class="form-text-big" type="text" />
+      <input id="hrjob-period_start_date" name="period_start_date" type="text" />
     </div>
   </div>
 
@@ -128,7 +128,7 @@
       <label for="hrjob-period_end_date">{ts}End Date{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-period_end_date" name="period_end_date" class="form-text-big" type="text" />
+      <input id="hrjob-period_end_date" name="period_end_date" type="text" />
     </div>
   </div>
 
