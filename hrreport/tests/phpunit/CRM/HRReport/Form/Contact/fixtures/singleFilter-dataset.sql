@@ -74,7 +74,8 @@ INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `de
 
 INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, `hours_unit`, `hours_fte`) VALUES
 (1, 1, 'full', 32.00, 'Week', 0.8),
-(2, 6, 'part', 16.00, 'Day', 0.4);
+(2, 6, 'part', 16.00, 'Day', 0.4),
+(3, 4, 'casual', 40.00, 'Day', 1.0);
 
 --
 -- Dumping data for table `civicrm_hrjob_leave`

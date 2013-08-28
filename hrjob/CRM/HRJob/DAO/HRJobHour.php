@@ -205,10 +205,14 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'dataPattern' => '',
           'enumValues' => 'Day, Week, Month, Year',
         ) ,
-        'hours_fte' => array(
+        'hrjob_hours_fte' => array(
           'name' => 'hours_fte',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Full-Time Equivalence') ,
+          'title' => ts('Job Full-Time Equivalence') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_hour.hours_fte',
+          'headerPattern' => '',
+          'dataPattern' => '',
         ) ,
       );
     }
@@ -230,7 +234,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hours_type' => 'hrjob_hours_type',
         'hours_amount' => 'hrjob_hours_amount',
         'hours_unit' => 'hrjob_hours_unit',
-        'hours_fte' => 'hours_fte',
+        'hours_fte' => 'hrjob_hours_fte',
       );
     }
     return self::$_fieldKeys;
