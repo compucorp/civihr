@@ -72,7 +72,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           ),
           'gender' => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => array('contact-fields' => 'Personal Details'),
       ),
 
       'civicrm_address' =>
@@ -181,7 +181,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => array('job-fields' => ts('Job')),
       ),
 
       'civicrm_hrjob_health' =>
@@ -202,7 +202,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           'hrjob_health_provider'  => array(),
           'hrjob_health_plan_type' => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => 'job-fields',
       ),
 
       'civicrm_hrjob_hour' =>
@@ -223,7 +223,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           'hrjob_hours_type'   => array(),
           'hrjob_hours_unit'   => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => 'job-fields',
       ),
 
       'civicrm_hrjob_pay' =>
@@ -241,7 +241,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         array(
           'hrjob_pay_grade' => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => 'job-fields',
       ),
 
       'civicrm_hrjob_pension' =>
@@ -259,7 +259,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         array(
           'hrjob_is_enrolled' => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => 'job-fields',
       ),
 
       'civicrm_hrjob_role' =>
@@ -277,7 +277,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         array(
           'hrjob_role_department' => array(),
         ),
-        'grouping' => array('contact-fields' => 'Job and Work'),
+        'grouping' => 'job-fields',
       ),
 
       'civicrm_hrjob_leave' =>
