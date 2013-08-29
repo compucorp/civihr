@@ -24,8 +24,12 @@ function hrstaffdir_civicrm_config(&$config) {
 function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$selector) {
   if ($objectName == 'profile') {
     $profileId = hrstaffdir_getUFGroupID();
+    $session = CRM_Core_Session::singleton();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
-    if ($profileId == $gid) {
+    if (isset($gid) && $profileId == $gid) {
+      $session->set('staffDirectoryGid', $gid);
+    }
+    if ($profileId == $session->get('staffDirectoryGid')) {
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
