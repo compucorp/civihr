@@ -9,3 +9,14 @@ cj(document).ready(function($) {
   var jobTab = $("div#mainTabContainer ul li#tab_hrjob");
   jobTab.prependTo(jobTab.parent());
 });
+
+function updateJobTitle() {
+   if(cj("#hrjob-title").val() === cj("#hrjob-position").val()) {
+	    cj("#hrjob-position").bind("keyup", function() {
+	  	  cj("#hrjob-title").val(cj(this).val());
+	    });
+	    cj("#hrjob-title").bind("keyup", function() {
+	    	  cj("#hrjob-position").unbind("keyup");
+	    });
+   }
+}
