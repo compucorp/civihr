@@ -7,6 +7,10 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrqual.civix.php';
  */
 function hrqual_civicrm_buildProfile($name) {
   if ($name == 'hrqual_tab') {
+  	// To fix validation alert issue
+  	$smarty = CRM_Core_Smarty::singleton();
+  	$smarty->assign('urlIsPublic', false);
+  	
     $action = CRM_Utils_Request::retrieve('multiRecord', 'String', $this);
     // display the select box only in add and update mode
     if (in_array($action, array("add", "update"))) {

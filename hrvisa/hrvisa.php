@@ -7,6 +7,10 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrvisa.civix.php';
  */
 function hrvisa_civicrm_buildProfile($name) {
   if ($name == 'hrvisa_tab') {
+  	// To fix validation alert issue
+  	$smarty = CRM_Core_Smarty::singleton();
+  	$smarty->assign('urlIsPublic', false);
+  	
     $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
     $params = array(
