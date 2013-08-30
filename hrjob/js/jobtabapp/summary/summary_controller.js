@@ -3,6 +3,7 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
     showSummary: function(cid, jobId) {
       // Use CRM.api for now so that we can do chaining.
       // TODO: Backbone request batching
+      HRApp.trigger('ui:block', ts('Loading'));
       CRM.api('HRJob', 'get', {
         id: jobId,
         'api.HRJobHealth.get': 1,
@@ -13,6 +14,8 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         'api.HRJobRole.get': 1
       }, {
         success: function(result, ajax) {
+          HRApp.trigger('ui:unblock');
+
           if (result.count != 1) {
             var treeView = new HRApp.Common.Views.Failed();
             HRApp.mainRegion.show(treeView);
@@ -25,14 +28,25 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
             models: models
           });
           HRApp.mainRegion.show(mainView);
+        },
+        error: function(data) {
+          // Override the default error handler so that we can unblock the UI
+          HRApp.trigger('ui:unblock');
+
+          // the default error handler would normally do this, but we've overriden
+          // that, so we have to do it ourselves
+          $().crmError(data.error_message, ts('Error'));
         }
       });
     },
+
     /**
+     * Examine the response to "chained" API calls and parse each of
+     * the returned entities.
      *
-     * @param jobId
-     * @param attrs
-     * @return {Object}
+     * @param int jobId
+     * @param {Object} attrs raw response from API
+     * @return {Object} a set of Backbone Collections -- one Backbone Collection for each chained API call; keys are based on the entity-name
      */
     parseChainedModels: function(jobId, attrs) {
       var models = {};
