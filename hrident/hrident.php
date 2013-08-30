@@ -103,6 +103,10 @@ function hrident_getUFGroupID() {
  */
 function hrident_civicrm_buildProfile($name) {
   if ($name == 'hrident_tab') {
+  	// To fix validation alert issue
+  	$smarty = CRM_Core_Smarty::singleton();
+  	$smarty->assign('urlIsPublic', false);
+  	
     $config = CRM_Core_Config::singleton();
     if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
       $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
