@@ -24,7 +24,7 @@
 
   <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
-      <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
+      <label for="hrjob-pay_amount">{ts 1=$config->defaultCurrency}Pay Rate (%1){/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-pay_amount" name="pay_amount" type="text" />

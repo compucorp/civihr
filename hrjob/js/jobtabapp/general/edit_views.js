@@ -99,11 +99,18 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       } else {
         this.$('.hrjob-is_primary-row').show();
       }
+
+      var disabled = false;
       if (this.model.get('is_primary') == '1') {
-        this.$('[name=is_primary]').attr('disabled', true);
-      } else {
-        this.$('[name=is_primary]').attr('disabled', false);
+        disabled = true;
       }
+      if (!this.model.isActive()) {
+        var hasActiveModel = this.options.collection.reduce(function(memo, model){return memo||model.isActive()}, false);
+        if (hasActiveModel) {
+          disabled = true;
+        }
+      }
+      this.$('[name=is_primary]').attr('disabled', disabled);
     }
   });
 });
