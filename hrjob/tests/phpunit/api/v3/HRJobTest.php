@@ -80,6 +80,10 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
         . '/xml/option_group_install.xml'
     );
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
+        . '/xml/job_summary_install.xml'
+    );
 
     return TRUE;
   }
@@ -260,6 +264,111 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       }
     }
   }
+
+  /**
+   * A list of test-cases for the "initial join date" and "final termination date" fields.
+   */
+  function jobSummaryDateTestCases() {
+    $cases = array();
+
+    $cases[] = array(
+      array(),
+      array('start' => '', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => ''),
+      ),
+      array('start' => '', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '2012-01-02', 'period_end_date' => ''),
+      ),
+      array('start' => '2012-01-02 00:00:00', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => ''),
+        array('period_start_date' => '2012-01-02', 'period_end_date' => ''),
+        array('period_start_date' => '2011-05-01', 'period_end_date' => ''),
+        array('period_start_date' => '2013-04-01', 'period_end_date' => ''),
+      ),
+      array('start' => '2011-05-01 00:00:00', 'end' => '')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2012-01-02'),
+      ),
+      array('start' => '', 'end' => '2012-01-02 00:00:00')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2011-09-02'),
+        array('period_start_date' => '', 'period_end_date' => '2013-01-02'),
+        array('period_start_date' => '', 'period_end_date' => '2012-08-02'),
+        array('period_start_date' => '', 'period_end_date' => ''),
+      ),
+      array('start' => '', 'end' => '2013-01-02 00:00:00')
+    );
+    $cases[] = array(
+      array(
+        array('period_start_date' => '', 'period_end_date' => '2011-09-02'),
+        array('period_start_date' => '', 'period_end_date' => '2013-01-02'),
+        array('period_start_date' => '2009-08-05', 'period_end_date' => '2012-08-02'),
+        array('period_start_date' => '2010-09-01', 'period_end_date' => ''),
+      ),
+      array('start' => '2009-08-05 00:00:00', 'end' => '2013-01-02 00:00:00')
+    );
+    return $cases;
+  }
+
+  /**
+   * @dataProvider jobSummaryDateTestCases
+   * @param array $jobFixtures list of API calls to make for creating the jobs
+   * @param array $expectedDates list of job-summary values that are expected
+   */
+  function testJobSummaryDates($jobFixtures, $expectedDates) {
+    // Make some noise to ensure we filter correctly
+    $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $this->individualCreate(array('email' => 'ignore1@example.com')),
+      'period_start_date' => '2001-02-03',
+      'period_end_date' => '2030-04-05',
+    ));
+
+    // Make the contact+jobs we care about
+    $cid = $this->individualCreate();
+    foreach ($jobFixtures as $jobFixture) {
+      $this->callAPISuccess('HRJob', 'create', $jobFixture + array('contact_id' => $cid));
+    }
+
+    // Make some more noise
+    $this->callAPISuccess('HRJob', 'create', array(
+      'contact_id' => $this->individualCreate(array('email' => 'ignore2@example.com')),
+      'period_start_date' => '2002-02-03',
+      'period_end_date' => '2050-04-05',
+    ));
+
+    // Check the stats for the contact we care about
+    $fields = hrjob_getSummaryFields(TRUE);
+    $result = $this->callAPISuccess('contact', 'get', array(
+      'id' => $cid,
+      'return' => array($fields['Initial_Join_Date']['field'], $fields['Final_Termination_Date']['field']),
+    ));
+    $this->assertEquals(1, $result['count']);
+    $this->assertTrue(
+      isset(
+      $expectedDates['start'],
+      $result['values'][$result['id']][$fields['Initial_Join_Date']['field']],
+      $expectedDates['end'],
+      $result['values'][$result['id']][$fields['Final_Termination_Date']['field']]
+      )
+    );
+    $this->assertEquals($expectedDates['start'], $result['values'][$result['id']][$fields['Initial_Join_Date']['field']], 'Compare Initial_Join_Date');
+    $this->assertEquals($expectedDates['end'], $result['values'][$result['id']][$fields['Final_Termination_Date']['field']], 'Compare Final_Termination_Date');
+  }
+
+  // TODO test summary transitions
 
   function testDuplicateWithChange() {
     $cid = $this->individualCreate();
