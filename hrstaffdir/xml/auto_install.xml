@@ -20,6 +20,22 @@
   </ProfileGroups>
   <ProfileFields>
     <ProfileField>
+      <field_name>image_URL</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>0</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>1</is_searchable>
+      <label>Image</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Staff Directory</profile_group_name>
+    </ProfileField>  
+    <ProfileField>
       <field_name>first_name</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>

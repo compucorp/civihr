@@ -26,10 +26,21 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
     $profileId = hrstaffdir_getUFGroupID();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
     if ($profileId == $gid) {
+      $imageUrlHeader[]["name"] = "";  
+      $headers = array_merge($imageUrlHeader,$headers); 
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
+          $imageCol = array();   
+          $imageUrl = CRM_Core_DAO::getFieldValue(
+                                                  'CRM_Contact_DAO_Contact',
+                                                  $matches[1],
+                                                  'image_URL',
+                                                  'id'
+                                                  );   
+          $imageCol[] = ($imageUrl)?'<a href="'.$imageUrl.'" class="crm-image-popup"><img src="'.$imageUrl.'" height = "56" width="100"></a>':"";
           $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/profile/view', "reset=1&id={$matches[1]}&gid={$profileId }") . "'>{$value[1]}</a>";
+          $value = array_merge($imageCol,$value);
         }
       }
     }
