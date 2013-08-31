@@ -599,7 +599,7 @@ class GenerateHRData {
    * @param $name str: contact name
    */
   private function _addWebsite($cid, $name) {
-    $part = array_pad(split(' ', strtolower($name)), 3, '');
+    $part = array_pad(explode(' ', strtolower($name)), 3, '');
     if (count($part) > 3) {
       // Abbreviate the place name if it's two words
       $domain = $part[0][0] . $part[1][0] . $part[2] . $part[3];
