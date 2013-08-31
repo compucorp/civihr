@@ -212,3 +212,18 @@ function hrjob_getSummaryFields($fresh = FALSE) {
   }
   return $cache;
 }
+
+/**
+ * Helper function to load data into DB between iterations of the unit-test
+ */
+function _hrjob_phpunit_populateDB() {
+  $import = new CRM_Utils_Migrate_Import();
+  $import->run(
+    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
+      . '/xml/option_group_install.xml'
+  );
+  $import->run(
+    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
+      . '/xml/job_summary_install.xml'
+  );
+}

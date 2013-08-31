@@ -86,6 +86,14 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase {
     parent::tearDown();
   }
 
+  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
+    if (!parent::_populateDB($perClass, $object)) {
+      return FALSE;
+    }
+    _hrjob_phpunit_populateDB();
+    return TRUE;
+  }
+
   /**
    * @dataProvider dataProvider
    */
