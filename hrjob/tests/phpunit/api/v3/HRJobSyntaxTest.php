@@ -31,13 +31,7 @@ class api_v3_HRJobSyntaxTest extends api_v3_SyntaxConformanceTest {
     if (!parent::_populateDB($perClass, $object)) {
       return FALSE;
     }
-
-    $import = new CRM_Utils_Migrate_Import();
-    $import->run(
-      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
-        . '/xml/option_group_install.xml'
-    );
-
+    _hrjob_phpunit_populateDB();
     return TRUE;
   }
 
