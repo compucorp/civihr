@@ -44,6 +44,17 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       /*
        .addClass('dateplugin')
        });*/
+      //hrjob: automatically update the "Job Title"
+      var $position = this.$('[name=position]');
+      var $title = this.$('[name=title]');
+      if($position.val() === $title.val()) {
+        $position.bind("keyup", function() {
+    	  $title.val($position.val());
+        });
+        $title.bind("keyup", function() {
+    	  $position.unbind("keyup");
+    	});
+      }
     },
     onBindingCreate: function(bindings) {
       bindings.is_primary = {
