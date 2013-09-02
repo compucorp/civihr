@@ -9,3 +9,4 @@ cj(document).ready(function($) {
   var jobTab = $("div#mainTabContainer ul li#tab_hrjob");
   jobTab.prependTo(jobTab.parent());
 });
+
