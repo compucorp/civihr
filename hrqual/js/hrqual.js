@@ -11,6 +11,25 @@ cj(document).ajaxSuccess(function() {
     var selectedVal = cj(this).val();
     renderSelectBox(oGroups, nameID, selectedVal, select);
   });
+//hrqual: hide/display fields based on "Certification Acquired"
+  if(cj(this).find("div#profile-dialog").html().contains("crm-profile-name-hrqual_tab")){
+    var divIdCertificationAcquired = cj("label:contains('Certification Acquired?')").parent().parent().attr("id");
+	var elementIdCertificationAcquired = divIdCertificationAcquired.split("-");
+	var elementValueCertificationAcquired= cj('input:radio[name='+elementIdCertificationAcquired[1]+']:checked').val();
+    if(elementValueCertificationAcquired == 1) {
+        showCertificationFields();
+      } else {
+        hideCertificationFields();	
+    } 
+	cj(':radio[name="'+elementIdCertificationAcquired[1]+'"]').change(function() {
+		if (cj(this).val()==0) {
+			hideCertificationFields();
+		} else if(cj(this).val()==1) {
+			showCertificationFields();
+		}
+    });
+  }
+
 });
 
 /**
@@ -46,27 +65,29 @@ function renderSelectBox(oGroups, nameID, selectedVal, select, nameDefault) {
   }
 }
 
-cj(document).ready(function($) {
-    //hrqual: hide/display fields based on "Certification Acquired"
-    cj('input[type=radio]').live('change', function() {
+function hideCertificationFields() {
 	var nameOfCertificationId = cj("label:contains('Name of Certification')").attr("for");
 	var cetificationAuthorityId = cj("label:contains('Certification Authority')").attr("for");
 	var gradeAchievedId = cj("label:contains('Grade Achieved')").attr("for");
 	var dateOfAttainmentId = cj("label:contains('Date of Attainment')").attr("for");
 	var dateOfExpiration = cj("label:contains('Date of Expiration')").attr("for");
-	if (cj(this).val()==0) {
-	    cj("div#editrow-"+nameOfCertificationId).hide();
-	    cj("div#editrow-"+cetificationAuthorityId).hide();
-	    cj("div#editrow-"+gradeAchievedId).hide();
-	    cj("div#editrow-"+dateOfAttainmentId).hide();
-	    cj("div#editrow-"+dateOfExpiration).hide();
-	} else if(cj(this).val()==1) {
-	    cj("div#editrow-"+nameOfCertificationId).show();
-	    cj("div#editrow-"+cetificationAuthorityId).show();
-	    cj("div#editrow-"+gradeAchievedId).show();
-	    cj("div#editrow-"+dateOfAttainmentId).show();
-	    cj("div#editrow-"+dateOfExpiration).show();
-	}
-    });
-});
+	cj("div#editrow-"+nameOfCertificationId).hide();
+    cj("div#editrow-"+cetificationAuthorityId).hide();
+    cj("div#editrow-"+gradeAchievedId).hide();
+    cj("div#editrow-"+dateOfAttainmentId).hide();
+    cj("div#editrow-"+dateOfExpiration).hide();
+}
+
+function showCertificationFields() {
+	var nameOfCertificationId = cj("label:contains('Name of Certification')").attr("for");
+	var cetificationAuthorityId = cj("label:contains('Certification Authority')").attr("for");
+	var gradeAchievedId = cj("label:contains('Grade Achieved')").attr("for");
+	var dateOfAttainmentId = cj("label:contains('Date of Attainment')").attr("for");
+	var dateOfExpiration = cj("label:contains('Date of Expiration')").attr("for");
+    cj("div#editrow-"+nameOfCertificationId).show();
+    cj("div#editrow-"+cetificationAuthorityId).show();
+    cj("div#editrow-"+gradeAchievedId).show();
+    cj("div#editrow-"+dateOfAttainmentId).show();
+    cj("div#editrow-"+dateOfExpiration).show();
+}
  
