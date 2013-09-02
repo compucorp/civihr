@@ -11,23 +11,25 @@ cj(document).ajaxSuccess(function() {
     var selectedVal = cj(this).val();
     renderSelectBox(oGroups, nameID, selectedVal, select);
   });
-//hrqual: hide/display fields based on "Certification Acquired"
-  if(cj(this).find("div#profile-dialog").html().contains("crm-profile-name-hrqual_tab")){
-    var divIdCertificationAcquired = cj("label:contains('Certification Acquired?')").parent().parent().attr("id");
-	var elementIdCertificationAcquired = divIdCertificationAcquired.split("-");
-	var elementValueCertificationAcquired= cj('input:radio[name='+elementIdCertificationAcquired[1]+']:checked').val();
-    if(elementValueCertificationAcquired == 1) {
+  //hrqual: hide/display fields based on "Certification Acquired"
+  if(cj(this).find("div#profile-dialog").length) {
+    if(cj(this).find("div#profile-dialog").html().contains("crm-profile-name-hrqual_tab")){
+      var divIdCertificationAcquired = cj("label:contains('Certification Acquired?')").parent().parent().attr("id");
+      var elementIdCertificationAcquired = divIdCertificationAcquired.split("-");
+      var elementValueCertificationAcquired= cj('input:radio[name='+elementIdCertificationAcquired[1]+']:checked').val();
+      if(elementValueCertificationAcquired == 1) {
         showCertificationFields();
       } else {
-        hideCertificationFields();	
-    } 
-	cj(':radio[name="'+elementIdCertificationAcquired[1]+'"]').change(function() {
-		if (cj(this).val()==0) {
-			hideCertificationFields();
-		} else if(cj(this).val()==1) {
-			showCertificationFields();
-		}
-    });
+        hideCertificationFields();
+      }
+      cj(':radio[name="'+elementIdCertificationAcquired[1]+'"]').change(function() {
+        if (cj(this).val()==0) {
+          hideCertificationFields();
+        } else if(cj(this).val()==1) {
+          showCertificationFields();
+        }
+      });
+    }
   }
 
 });
