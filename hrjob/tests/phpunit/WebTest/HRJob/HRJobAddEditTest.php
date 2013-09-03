@@ -228,7 +228,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'organization' => 'ZING',
       'region' => 'Europe',
     );
-    $this->_addJobRoleData($roleValues, 2, 1);
+    $this->_addJobRoleData($roleValues, 2, 2);
   }
 
   function _addJobData($values, $new = FALSE, $mode = NULL) {
@@ -388,7 +388,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
-    $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/strong[contains(text(),'{$values['title']}')]");  
+    $this->waitForElementPresent("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/strong[contains(text(),'{$values['title']}')]");
+    $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/strong[contains(text(),'{$values['title']}')]");
 
     //assert the saved values for multiple roles
     unset($values['ac_input']);
