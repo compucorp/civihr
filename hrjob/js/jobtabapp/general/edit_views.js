@@ -50,9 +50,12 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       if($position.val() === $title.val()) {
         $position.bind("keyup", function() {
     	  $title.val($position.val());
+    	  $title.change();
         });
-        $title.bind("keyup", function() {
-    	  $position.unbind("keyup");
+        $title.bind("change", function() {
+         if($position.val() !== $title.val()) {	
+    	   $position.unbind("keyup");
+         } 
     	});
       }
     },
