@@ -13,7 +13,7 @@ cj(document).ajaxSuccess(function() {
   });
   //hrqual: hide/display fields based on "Certification Acquired"
   if(cj(this).find("div#profile-dialog").length) {
-    if(cj(this).find("div#profile-dialog").html().contains("crm-profile-name-hrqual_tab")){
+	 if(cj(this).find("div#profile-dialog").html().indexOf('crm-profile-name-hrqual_tab') > -1){
       var divIdCertificationAcquired = cj("label:contains('Certification Acquired?')").parent().parent().attr("id");
       var elementIdCertificationAcquired = divIdCertificationAcquired.split("-");
       var elementValueCertificationAcquired= cj('input:radio[name='+elementIdCertificationAcquired[1]+']:checked').val();
