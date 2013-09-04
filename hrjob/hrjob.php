@@ -73,6 +73,10 @@ function hrjob_civicrm_managed(&$entities) {
  * Implementation of hook_civicrm_tabs
  */
 function hrjob_civicrm_tabs(&$tabs, $contactID) {
+  if (!CRM_Core_Permission::check('edit HRJobs')) {
+    return;
+  }
+
   $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
   if ($contactType != 'Individual') {
     return;
@@ -186,6 +190,39 @@ function hrjob_civicrm_triggerInfo(&$info, $tableName) {
       END IF;
     ",
   );
+}
+
+/**
+ * Implementation of hook_civicrm_permission
+ *
+ * @param array $permissions
+ * @return void
+ */
+function hrjob_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHR') . ': '; // name of extension or module
+  $permissions = array(
+    'access HRJobs' => $prefix . ts('access HRJobs'),
+    'edit HRJobs' => $prefix . ts('edit HRJobs'),
+    'delete HRJobs' => $prefix . ts('delete HRJobs'),
+  );
+}
+
+/**
+ * Implementaiton of hook_civicrm_alterAPIPermissions
+ *
+ * @param $entity
+ * @param $action
+ * @param $params
+ * @param $permissions
+ * @return void
+ */
+function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+  $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
+  $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
+  $permissions['h_r_job']['duplicate'] = array('access CiviCRM', 'edit HRJobs');
+  $permissions['h_r_job']['delete'] = array('access CiviCRM', 'delete HRJobs');
+  $permissions['HRJob'] = $permissions['h_r_job'];
 }
 
 /**

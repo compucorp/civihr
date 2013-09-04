@@ -4,6 +4,6 @@
     <path>civicrm/contact/view/hrjob</path>
     <page_callback>CRM_HRJob_Page_JobsTab</page_callback>
     <title>JobsTab</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>edit HRJobs</access_arguments>
   </item>
 </menu>
