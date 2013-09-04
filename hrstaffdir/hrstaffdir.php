@@ -24,10 +24,16 @@ function hrstaffdir_civicrm_config(&$config) {
 function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$selector) {
   if ($objectName == 'profile') {
     $profileId = hrstaffdir_getUFGroupID();
+    $session = CRM_Core_Session::singleton();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);
-    if ($profileId == $gid) {
-      $imageUrlHeader[]["name"] = "";  
-      $headers = array_merge($imageUrlHeader,$headers); 
+    // Note: This protocol is not safe when concurrently browsing multiple profile-listings, but
+    // that doesn't work anyway, so we can't implement/test a better protocol.
+    if (isset($gid) && $profileId == $gid) {
+      $session->set('staffDirectoryGid', $gid);
+    }
+    if ($profileId == $session->get('staffDirectoryGid')) {
+      $imageUrlHeader[]["name"] = "";
+      $headers = array_merge($imageUrlHeader,$headers);
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
