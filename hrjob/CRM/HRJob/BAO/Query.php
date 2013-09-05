@@ -249,6 +249,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function registerAdvancedSearchPane(&$panes) {
+    if (!CRM_Core_Permission::check('access HRJobs')) return;
     $panes['Job'] = 'hrjob';
     $panes['Job: Hour']  = 'hrjob_hour';
     $panes['Job: Health']  = 'hrjob_health';
@@ -257,6 +258,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function buildAdvancedSearchPaneForm(&$form, $type) {
+    if (!CRM_Core_Permission::check('access HRJobs')) return;
     if ($type  == 'hrjob') {
       $form->add('hidden', 'hidden_hrjob', 1);
       $form->addElement('text', 'hrjob_position', ts('Position'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'position'));
@@ -316,6 +318,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function setAdvancedSearchPaneTemplatePath(&$paneTemplatePathArray, $type) {
+    if (!CRM_Core_Permission::check('access HRJobs')) return;
     if ($type  == 'hrjob') {
       $paneTemplatePathArray['hrjob'] = 'CRM/HRJob/Form/Search/Criteria/Job.tpl';
     }
@@ -347,6 +350,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
    * @void
    */
   public function alterSearchBuilderOptions(&$apiEntities, &$fieldOptions) {
+    if (!CRM_Core_Permission::check('access HRJobs')) return;
     $apiEntities = array_merge($apiEntities, array(
       'HRJob',
       'HRJobHealth',
