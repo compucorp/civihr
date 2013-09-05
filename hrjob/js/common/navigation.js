@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('Common.Navigation', function(Navigation, HRApp, Backbone, Marionette, $, _) {
   /**
    * Navigate to a major/new screen.

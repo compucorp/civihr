@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $, _) {
   var treeView;
 

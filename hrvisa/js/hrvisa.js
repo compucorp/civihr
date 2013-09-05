@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 cj(function($) {
   $(document).on("click", "#is_visa_required", function() {
     var fieldName = $(this).parent().attr('id').replace('_is_visa_required', '');

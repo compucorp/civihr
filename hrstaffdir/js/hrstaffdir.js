@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 //js to make email addresses clickable in search results
 cj(function($) {
   if ($('tr:has(td.crm-email)').length > 0) {

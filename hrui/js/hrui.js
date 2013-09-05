@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 // js to hide current employer and job title from contact view screen
 cj(document).ready(function($) {
   cj('.crm-contact-current_employer').parent('div.crm-summary-row').hide();
