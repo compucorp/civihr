@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 cj(document).ajaxSuccess(function() {
   var categoryID = CRM.hrqual.category;
   var nameID = CRM.hrqual.name;

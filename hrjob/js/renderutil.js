@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('RenderUtil', function(RenderUtil, HRApp, Backbone, Marionette, $, _){
   CRM.HRApp.on("initialize:before", function(){
     RenderUtil._select = _.template($('#renderutil-select-template').html());

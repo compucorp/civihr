@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marionette, $, _){
   Pension.EditView = HRApp.Common.Views.StandardForm.extend({
     template: '#hrjob-pension-template',
