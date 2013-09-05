@@ -1,3 +1,4 @@
+// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
 
   /**
