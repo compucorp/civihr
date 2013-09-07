@@ -15,15 +15,14 @@ cj(document).ajaxSuccess(function() {
   //hrqual: hide/display fields based on "Certification Acquired"
   if(cj(this).find("div#profile-dialog").length) {
 	 if(cj(this).find("div#profile-dialog").html().indexOf('crm-profile-name-hrqual_tab') > -1){
-      var divIdCertificationAcquired = cj("label:contains('Certification Acquired?')").parent().parent().attr("id");
-      var elementIdCertificationAcquired = divIdCertificationAcquired.split("-");
-      var elementValueCertificationAcquired= cj('input:radio[name='+elementIdCertificationAcquired[1]+']:checked').val();
+	  var elementNameCertificationAcquired = cj('[data-crm-custom="Qualifications:Certification_Acquired_"]').attr("name");
+      var elementValueCertificationAcquired= cj('input:radio[name='+elementNameCertificationAcquired+']:checked').val();
       if(elementValueCertificationAcquired == 1) {
         showCertificationFields();
       } else {
         hideCertificationFields();
       }
-      cj(':radio[name="'+elementIdCertificationAcquired[1]+'"]').change(function() {
+      cj(':radio[name="'+elementNameCertificationAcquired+'"]').change(function() {
         if (cj(this).val()==0) {
           hideCertificationFields();
         } else if(cj(this).val()==1) {
@@ -69,11 +68,11 @@ function renderSelectBox(oGroups, nameID, selectedVal, select, nameDefault) {
 }
 
 function hideCertificationFields() {
-	var nameOfCertificationId = cj("label:contains('Name of Certification')").attr("for");
-	var cetificationAuthorityId = cj("label:contains('Certification Authority')").attr("for");
-	var gradeAchievedId = cj("label:contains('Grade Achieved')").attr("for");
-	var dateOfAttainmentId = cj("label:contains('Date of Attainment')").attr("for");
-	var dateOfExpiration = cj("label:contains('Date of Expiration')").attr("for");
+	var nameOfCertificationId = cj('[data-crm-custom="Qualifications:Name_of_Certification"]').attr("id");
+	var cetificationAuthorityId = cj('[data-crm-custom="Qualifications:Certification_Authority"]').attr("id");
+	var gradeAchievedId = cj('[data-crm-custom="Qualifications:Grade_Achieved"]').attr("id");
+	var dateOfAttainmentId = cj('[data-crm-custom="Qualifications:Attain_Date"]').attr("id");
+	var dateOfExpiration = cj('[data-crm-custom="Qualifications:Expiry_Date"]').attr("id");
 	cj("div#editrow-"+nameOfCertificationId).hide();
     cj("div#editrow-"+cetificationAuthorityId).hide();
     cj("div#editrow-"+gradeAchievedId).hide();
@@ -82,11 +81,11 @@ function hideCertificationFields() {
 }
 
 function showCertificationFields() {
-	var nameOfCertificationId = cj("label:contains('Name of Certification')").attr("for");
-	var cetificationAuthorityId = cj("label:contains('Certification Authority')").attr("for");
-	var gradeAchievedId = cj("label:contains('Grade Achieved')").attr("for");
-	var dateOfAttainmentId = cj("label:contains('Date of Attainment')").attr("for");
-	var dateOfExpiration = cj("label:contains('Date of Expiration')").attr("for");
+	var nameOfCertificationId = cj('[data-crm-custom="Qualifications:Name_of_Certification"]').attr("id");
+	var cetificationAuthorityId = cj('[data-crm-custom="Qualifications:Certification_Authority"]').attr("id");
+	var gradeAchievedId = cj('[data-crm-custom="Qualifications:Grade_Achieved"]').attr("id");
+	var dateOfAttainmentId = cj('[data-crm-custom="Qualifications:Attain_Date"]').attr("id");
+	var dateOfExpiration = cj('[data-crm-custom="Qualifications:Expiry_Date"]').attr("id");
     cj("div#editrow-"+nameOfCertificationId).show();
     cj("div#editrow-"+cetificationAuthorityId).show();
     cj("div#editrow-"+gradeAchievedId).show();
