@@ -13,5 +13,15 @@ return array (
                             'find_word' => 'CiviCRM',
                             'replace_word'=>'CiviHR',
                             ),
+                     ),      
+               array (
+                     'name' => 'WordReplacement CiviHR',
+                     'entity' => 'WordReplacement',
+                     'params' =>
+                     array (
+                            'version' => 3,
+                            'find_word' => 'Nickname',
+                            'replace_word'=>'Preferred Name',
+                            ),
                      )
               );
