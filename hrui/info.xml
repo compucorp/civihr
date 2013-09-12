@@ -5,11 +5,11 @@
   <description>High-level UI tweaks for human resources</description>
   <license>AGPL</license>
   <maintainer>
-    <author>Tim Otten</author>
+    <author>CiviCRM LLC</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2013-08-14</releaseDate>
-  <version>1.0-alpha3</version>
+  <releaseDate>2013-09-11</releaseDate>
+  <version>1.0-beta2</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.4</ver>
