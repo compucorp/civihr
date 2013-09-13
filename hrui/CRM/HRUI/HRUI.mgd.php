@@ -15,7 +15,7 @@ return array (
                             ),
                      ),      
                array (
-                     'name' => 'WordReplacement CiviHR',
+                     'name' => 'WordReplacement Preferred Name',
                      'entity' => 'WordReplacement',
                      'params' =>
                      array (
