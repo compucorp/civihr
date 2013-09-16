@@ -91,6 +91,24 @@
       <option_group_name>sexual_orientation_20130725124348</option_group_name>
       <custom_group_name>Extended_Demographics</custom_group_name>
     </CustomField>
+    <CustomField>
+      <name>Marital_Status</name>
+      <label>Marital Status</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>marital_status_58</column_name>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+      <custom_group_name>Extended_Demographics</custom_group_name>
+    </CustomField>
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
@@ -108,6 +126,12 @@
     <OptionGroup>
       <name>sexual_orientation_20130725124348</name>
       <title>Sexual Orientation</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>marital_status_20130913084916</name>
+      <title>Marital Status</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
@@ -288,6 +312,50 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Single</label>
+      <value>Single</value>
+      <name>Single</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Married</label>
+      <value>Married</value>
+      <name>Married</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Divorced</label>
+      <value>Divorced</value>
+      <name>Divorced</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Widowed</label>
+      <value>Widowed</value>
+      <name>Widowed</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>
