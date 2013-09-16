@@ -32,10 +32,10 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrvisa.civix.php';
  */
 function hrvisa_civicrm_buildProfile($name) {
   if ($name == 'hrvisa_tab') {
-  	// To fix validation alert issue
-  	$smarty = CRM_Core_Smarty::singleton();
-  	$smarty->assign('urlIsPublic', false);
-  	
+    // To fix validation alert issue
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('urlIsPublic', FALSE);
+
     $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
     $params = array(
@@ -178,6 +178,7 @@ function hrvisa_getUFGroupID() {
  */
 function hrvisa_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
   }
 }

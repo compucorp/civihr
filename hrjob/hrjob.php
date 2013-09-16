@@ -136,7 +136,8 @@ function hrjob_civicrm_tabs(&$tabs, $contactID) {
 function hrjob_civicrm_queryObjects(&$queryObjects, $type) {
   if ($type == 'Contact') {
     $queryObjects[] = new CRM_HRJob_BAO_Query();
-  } else if ($type == 'Report') {
+  }
+  elseif ($type == 'Report') {
     $queryObjects[] = new CRM_HRJob_BAO_ReportHook();
   }
 }

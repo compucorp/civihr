@@ -58,20 +58,20 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
     }
     if ($profileId == $session->get('staffDirectoryGid')) {
       $imageUrlHeader[]["name"] = "";
-      $headers = array_merge($imageUrlHeader,$headers);
+      $headers = array_merge($imageUrlHeader, $headers);
       foreach ($values as &$value) {
         $found = preg_match('/;id=([^&]*)/', $value[0], $matches);
         if ($found) {
-          $imageCol = array();   
+          $imageCol = array();
           $imageUrl = CRM_Core_DAO::getFieldValue(
-                                                  'CRM_Contact_DAO_Contact',
-                                                  $matches[1],
-                                                  'image_URL',
-                                                  'id'
-                                                  );   
-          $imageCol[] = ($imageUrl)?'<a href="'.$imageUrl.'" class="crm-image-popup"><img src="'.$imageUrl.'" height = "56" width="100"></a>':"";
+            'CRM_Contact_DAO_Contact',
+            $matches[1],
+            'image_URL',
+            'id'
+          );
+          $imageCol[] = ($imageUrl) ? '<a href="' . $imageUrl . '" class="crm-image-popup"><img src="' . $imageUrl . '" height = "56" width="100"></a>' : "";
           $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/profile/view', "reset=1&id={$matches[1]}&gid={$profileId }") . "'>{$value[1]}</a>";
-          $value = array_merge($imageCol,$value);
+          $value = array_merge($imageCol, $value);
         }
       }
     }
@@ -104,7 +104,7 @@ function hrstaffdir_civicrm_install() {
       );
     $navigation = CRM_Core_BAO_Navigation::add($navigationParams);
     CRM_Core_BAO_Navigation::resetNavigation();
-    
+
     // set the profile as search view
     $params = array();
     CRM_Core_BAO_ConfigSetting::retrieve($params);

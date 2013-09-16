@@ -75,55 +75,55 @@ function hrui_civicrm_install() {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
-  
+
   // Disable Household contact type
   $contactTypeId = CRM_Core_DAO::getFieldValue(
-                                               'CRM_Contact_DAO_ContactType',
-                                               'Household',
-                                               'id',
-                                               'name'
-                                               );
-  if ($contactTypeId) {    
+    'CRM_Contact_DAO_ContactType',
+    'Household',
+    'id',
+    'name'
+  );
+  if ($contactTypeId) {
     $paramsContactType = array(
-                               'version' => 3,
-                               'name' => "Household",
-                               'id'  => $contactTypeId,  
-                               'is_active' => false,
-                               );
+      'version' => 3,
+      'name' => "Household",
+      'id' => $contactTypeId,
+      'is_active' => FALSE,
+    );
     $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
-    if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+    if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
       CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
       throw new CRM_Core_Exception('Failed to disable contact type');
     }
   }
-  
+
   // Delete unnecessary reports 
-  $reports = array("Constituent Summary","Constituent Detail","Current Employers");
-  if (!empty($reports)) {    
+  $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
+  if (!empty($reports)) {
     foreach ($reports as $reportTitle) {
       $reportID = CRM_Core_DAO::getFieldValue(
-                                              'CRM_Report_DAO_ReportInstance',
-                                              $reportTitle,
-                                              'id',
-                                              'title'
-                                              );
+        'CRM_Report_DAO_ReportInstance',
+        $reportTitle,
+        'id',
+        'title'
+      );
       if ($reportID) {
         $paramsReport = array(
-                              'version' => 3,
-                              'id' => $reportID,
-                              ); 
+          'version' => 3,
+          'id' => $reportID,
+        );
         $resultContactType = civicrm_api('report_instance', 'delete', $paramsReport);
-        if (CRM_Utils_Array::value('is_error',  $resultContactType, FALSE)) {
+        if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
           CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
           throw new CRM_Core_Exception('Failed to disable contact type');
         }
-      } 
+      }
     }
   }
 
   // Reset Navigation
   CRM_Core_BAO_Navigation::resetNavigation();
-  
+
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToUnset = array($options['Activities'], $options['Tags']);
@@ -252,12 +252,12 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
   $count = count($tabs);
-  for ($i=0; $i < $count; $i++) {
+  for ($i = 0; $i < $count; $i++) {
     if ($tabs[$i]['id'] != 'log') {
       $tab[$i] = $tabs[$i]['title'];
     }
     else {
-      $changeLogTabID = $i; 
+      $changeLogTabID = $i;
     }
   }
 
