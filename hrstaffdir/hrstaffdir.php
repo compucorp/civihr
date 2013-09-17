@@ -119,21 +119,55 @@ function hrstaffdir_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrstaffdir_civicrm_uninstall() {
-  return _hrstaffdir_civix_civicrm_uninstall();
+  _hrstaffdir_civix_civicrm_uninstall();
+  $profileId = hrstaffdir_getUFGroupID();
+  $navigationParams =
+  array(
+  		'label' => 'Directory',
+  		'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+       );
+  $navigation = CRM_Core_BAO_Navigation::retrieve($navigationParams,$defaultParams);
+  CRM_Core_BAO_Navigation::processDelete($navigation->id);
+  CRM_Core_BAO_Navigation::resetNavigation();
 }
 
 /**
  * Implementation of hook_civicrm_enable
  */
 function hrstaffdir_civicrm_enable() {
-  return _hrstaffdir_civix_civicrm_enable();
+  _hrstaffdir_civix_civicrm_enable();
+  $profileId = hrstaffdir_getUFGroupID();
+  $params =
+  array(
+  		'label' => 'Directory',
+  		'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+  		'is_active' => 0,
+  );
+  $newParams =
+  array(
+  		'is_active' => 1,
+  );
+  $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
+  CRM_Core_BAO_Navigation::resetNavigation();
 }
 
 /**
  * Implementation of hook_civicrm_disable
  */
 function hrstaffdir_civicrm_disable() {
-  return _hrstaffdir_civix_civicrm_disable();
+  _hrstaffdir_civix_civicrm_disable();
+  $profileId = hrstaffdir_getUFGroupID();
+  $params =
+  array(
+  		'label' => 'Directory',
+  		'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+  		'is_active' => 1,
+  );
+  $newParams =
+  array(
+  		'is_active' => 0,
+  );
+  $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
 }
 
 /**
