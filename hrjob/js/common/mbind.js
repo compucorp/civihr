@@ -27,6 +27,28 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
     }
   };
 
+    /**
+     * Converter for currency
+     *
+     *
+     * @param direction
+     * @param value
+     * @return string
+     */
+    
+    Common.formatCurrency = function(direction, value) {
+	switch (direction) {
+	case 'ModelToView':
+	    return parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+	    break;
+	case 'ViewToModel':
+	    return value;
+	    break;
+	default:
+	    throw "Invalid direction"
+	}
+    };
+
   /**
    * Marionette-ModelBinding helper
    *
