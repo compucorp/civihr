@@ -158,15 +158,15 @@ function hrstaffdir_civicrm_disable() {
   _hrstaffdir_civix_civicrm_disable();
   $profileId = hrstaffdir_getUFGroupID();
   $params =
-  array(
-  		'label' => 'Directory',
-  		'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
-  		'is_active' => 1,
-  );
+    array(
+          'label' => 'Directory',
+          'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+          'is_active' => 1,
+          );
   $newParams =
-  array(
-  		'is_active' => 0,
-  );
+    array(
+          'is_active' => 0,
+          );
   $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
 }
 
