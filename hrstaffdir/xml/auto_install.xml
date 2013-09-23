@@ -4,7 +4,7 @@
   <ProfileGroups>
     <ProfileGroup>
       <is_active>1</is_active>
-      <group_type>Individual,Contact</group_type>
+      <group_type>Contact,Individual</group_type>
       <title>Staff Directory</title>
       <add_captcha>0</add_captcha>
       <is_map>0</is_map>
@@ -34,7 +34,7 @@
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
-    </ProfileField>  
+    </ProfileField>
     <ProfileField>
       <field_name>first_name</field_name>
       <is_active>1</is_active>
@@ -80,7 +80,6 @@
       <is_searchable>0</is_searchable>
       <label>Email</label>
       <field_type>Contact</field_type>
-      <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
@@ -97,7 +96,6 @@
       <is_searchable>0</is_searchable>
       <label>Phone</label>
       <field_type>Contact</field_type>
-      <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
@@ -114,7 +112,6 @@
       <is_searchable>1</is_searchable>
       <label>Country</label>
       <field_type>Contact</field_type>
-      <location_type_id>2</location_type_id>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
     </ProfileField>
@@ -178,6 +175,38 @@
       <in_selector>1</in_selector>
       <is_searchable>0</is_searchable>
       <label>Department</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Staff Directory</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>im</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>10</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>IM</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Staff Directory</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>url-1</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>11</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Website</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Staff Directory</profile_group_name>
