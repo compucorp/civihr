@@ -1,28 +1,28 @@
 <?php
 /*
-  +--------------------------------------------------------------------+
-  | CiviHR version 1.0                                                 |
-  +--------------------------------------------------------------------+
-  | Copyright CiviCRM LLC (c) 2004-2013                                |
-  +--------------------------------------------------------------------+
-  | This file is a part of CiviCRM.                                    |
-  |                                                                    |
-  | CiviCRM is free software; you can copy, modify, and distribute it  |
-  | under the terms of the GNU Affero General Public License           |
-  | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
-  |                                                                    |
-  | CiviCRM is distributed in the hope that it will be useful, but     |
-  | WITHOUT ANY WARRANTY; without even the implied warranty of         |
-  | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
-  | See the GNU Affero General Public License for more details.        |
-  |                                                                    |
-  | You should have received a copy of the GNU Affero General Public   |
-  | License and the CiviCRM Licensing Exception along                  |
-  | with this program; if not, contact CiviCRM LLC                     |
-  | at info[AT]civicrm[DOT]org. If you have questions about the        |
-  | GNU Affero General Public License or the licensing of CiviCRM,     |
-  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
-  +--------------------------------------------------------------------+
++--------------------------------------------------------------------+
+| CiviHR version 1.0                                                 |
++--------------------------------------------------------------------+
+| Copyright CiviCRM LLC (c) 2004-2013                                |
++--------------------------------------------------------------------+
+| This file is a part of CiviCRM.                                    |
+|                                                                    |
+| CiviCRM is free software; you can copy, modify, and distribute it  |
+| under the terms of the GNU Affero General Public License           |
+| Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+|                                                                    |
+| CiviCRM is distributed in the hope that it will be useful, but     |
+| WITHOUT ANY WARRANTY; without even the implied warranty of         |
+| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+| See the GNU Affero General Public License for more details.        |
+|                                                                    |
+| You should have received a copy of the GNU Affero General Public   |
+| License and the CiviCRM Licensing Exception along                  |
+| with this program; if not, contact CiviCRM LLC                     |
+| at info[AT]civicrm[DOT]org. If you have questions about the        |
+| GNU Affero General Public License or the licensing of CiviCRM,     |
+| see the CiviCRM license FAQ at http://civicrm.org/licensing        |
++--------------------------------------------------------------------+
 */
 
 require_once 'hrstaffdir.civix.php';
@@ -64,11 +64,11 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
         if ($found) {
           $imageCol = array();
           $imageUrl = CRM_Core_DAO::getFieldValue(
-                                                  'CRM_Contact_DAO_Contact',
-                                                  $matches[1],
-                                                  'image_URL',
-                                                  'id'
-                                                  );
+            'CRM_Contact_DAO_Contact',
+            $matches[1],
+            'image_URL',
+            'id'
+          );
           $imageCol[] = ($imageUrl) ? '<a href="' . $imageUrl . '" class="crm-image-popup"><img src="' . $imageUrl . '" height = "56" width="100"></a>' : "";
           $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/profile/view', "reset=1&id={$matches[1]}&gid={$profileId }") . "'>{$value[1]}</a>";
           $value = array_merge($imageCol, $value);
@@ -158,15 +158,15 @@ function hrstaffdir_civicrm_disable() {
   _hrstaffdir_civix_civicrm_disable();
   $profileId = hrstaffdir_getUFGroupID();
   $params =
-    array(
-          'label' => 'Directory',
-          'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
-          'is_active' => 1,
-          );
+  array(
+  		'label' => 'Directory',
+  		'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
+  		'is_active' => 1,
+  );
   $newParams =
-    array(
-          'is_active' => 0,
-          );
+  array(
+  		'is_active' => 0,
+  );
   $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
 }
 
