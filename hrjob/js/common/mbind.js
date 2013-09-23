@@ -39,7 +39,7 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
     Common.formatCurrency = function(direction, value) {
 	switch (direction) {
 	case 'ModelToView':
-	    return parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+	    return CRM.formatMoney(value);
 	    break;
 	case 'ViewToModel':
 	    return value;
