@@ -120,7 +120,7 @@ function hrstaffdir_civicrm_install() {
 function hrstaffdir_civicrm_uninstall() {
   _hrstaffdir_civix_civicrm_uninstall();
   $profileId = hrstaffdir_getUFGroupID();
-  $navigationParams =array(
+  $navigationParams = array(
     'label' => 'Directory',
     'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
   );
