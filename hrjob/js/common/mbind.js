@@ -38,14 +38,14 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
     
     Common.formatCurrency = function(direction, value) {
       switch (direction) {
-	case 'ModelToView':
-	  return CRM.formatMoney(value);
-	break;
-	case 'ViewToModel':
-	  return value;
-	break;
-	default:
-	  throw "Invalid direction"
+		case 'ModelToView':
+		  return CRM.formatMoney(value);
+		  break;
+		case 'ViewToModel':
+		  return value;
+		  break;
+		default:
+		  throw "Invalid direction"
       }
     };
 
