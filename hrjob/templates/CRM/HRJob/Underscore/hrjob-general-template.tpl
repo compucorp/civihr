@@ -165,7 +165,7 @@
       <label for="hrjob-funding_org_id">{ts}Funding organization{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="organization" name="funding_org_id" class="crm-contact-selector" type="text" autocompleteType="org"/>
+      <input id="funding_org_id" name="funding_org_id" class="crm-contact-selector" urlParam = "org=1" type="text" />
     </div>
   </div>
   <div class="crm-summary-row">
