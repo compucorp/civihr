@@ -24,7 +24,22 @@
 
   <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
-      <label for="hrjob-pay_amount">{ts 1=$config->defaultCurrency}Pay Rate (%1){/ts}</label>
+      <label for="hrjob-pay_amount">{ts}Currency{/ts}</label>{}
+    </div>
+    <div class="crm-content">
+    {literal}
+      <%= RenderUtil.select({
+      id: 'hrjob-pay_currency',
+      name: 'pay_currency',
+      options: _.extend({'':''}, FieldOptions.pay_currency)
+      }) %>
+    {/literal}
+    </div>
+  </div>
+
+  <div class="crm-summary-row hrjob-needs-pay_grade">
+    <div class="crm-label">
+      <label for="hrjob-pay_amount">{ts}Pay Rate{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-pay_amount" name="pay_amount" type="text" />
