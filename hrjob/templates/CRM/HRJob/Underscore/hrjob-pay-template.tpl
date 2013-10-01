@@ -24,7 +24,7 @@
 
   <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
-      <label for="hrjob-pay_amount">{ts}Currency{/ts}</label>{}
+      <label for="hrjob-pay_amount">{ts}Currency{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
