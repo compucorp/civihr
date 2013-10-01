@@ -113,7 +113,7 @@
       <label>Country</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>Staff Directory</profile_group_name>
+      <profile_group_name>Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
       <field_name>hrjob_title</field_name>
