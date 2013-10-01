@@ -49,7 +49,7 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
     );
     $this->_addMedData($addData, "add");
     
-    //edit Visa data
+    //edit Medical & Disability data
     $randomEditMedNumber = substr(sha1(rand()), 0, 7);
     $editData = array(
       'Condition' => $randomEditMedNumber,
