@@ -4,7 +4,7 @@
   <CustomGroups>
     <CustomGroup>
       <name>Career</name>
-      <title>Career</title>
+      <title>Career History</title>
       <extends>Individual</extends>
       <style>Tab</style>
       <collapse_display>0</collapse_display>
