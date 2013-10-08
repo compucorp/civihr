@@ -30,16 +30,24 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
   /**
    * Converter for currency
    *
+   * Note: If a field uses alternate currencies, then you should declare how to
+   * lookup the currency in every binding, e.g.
+   *
+   * <span name="pay_amount" data-currency-field="pay_currency" />
    *
    * @param direction
    * @param value
    * @return string
    */
-      
-  Common.formatCurrency = function(direction, value) {
+  Common.formatCurrency = function(direction, value, fieldName, model, elements) {
+    var currencyFormat;
+    if (elements.length > 0 && $(elements[0]).attr('data-currency-field')) {
+      var currency = model.get($(elements[0]).attr('data-currency-field'));
+      currencyFormat = CRM.jobTabApp.currencies[currency];
+    }
     switch (direction) {
       case 'ModelToView':
-        return CRM.formatMoney(value);
+        return CRM.formatMoney(value, currencyFormat);
         break;
       case 'ViewToModel':
         return value;

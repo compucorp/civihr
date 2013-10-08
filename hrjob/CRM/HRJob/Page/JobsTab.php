@@ -55,6 +55,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer'),
           'isLogEnabled'    => (bool) $config->logging,
           'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+          'currencies' => CRM_HRJob_Page_JobsTab::getCurrencyFormats(),
         ),
       );
     })
@@ -125,6 +126,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       'HRJobPay' => array(
         'pay_grade',
         'pay_unit',
+        'pay_currency',
       ),
       'HRJobPension' => array(
       ),
@@ -146,5 +148,17 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       }
     }
     return $fieldOptions;
+  }
+
+  /**
+   * Get a list of templates demonstrating how to format currencies.
+   */
+  static function getCurrencyFormats() {
+    $currencies = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_currency');
+    $formats = array();
+    foreach ($currencies as $currency => $label) {
+      $formats[$currency] = CRM_Utils_Money::format(1234.56, $currency);
+    }
+    return $formats;
   }
 }
