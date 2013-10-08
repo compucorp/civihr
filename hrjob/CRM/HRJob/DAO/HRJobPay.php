@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -209,7 +208,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_currency' => array(
           'name' => 'pay_currency',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Pay Unit') ,
+          'title' => ts('Job Pay Currency') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,

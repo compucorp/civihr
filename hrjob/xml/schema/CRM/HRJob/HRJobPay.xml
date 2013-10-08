@@ -75,7 +75,7 @@
 
   <field>
     <name>pay_currency</name>
-    <title>Job Pay Unit</title>
+    <title>Job Pay Currency</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Unit for expressing pay currency</comment>
