@@ -257,6 +257,15 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     $panes['Job: Pay']  = 'hrjob_pay';
   }
 
+  public function getPanesMapper(&$panes) {
+    if (!CRM_Core_Permission::check('access HRJobs')) return;
+    $panes['Job']          = 'civicrm_hrjob';
+    $panes['Job: Hour']    = 'civicrm_hrjob_hour';
+    $panes['Job: Health']  = 'civicrm_hrjob_health';
+    $panes['Job: Pension'] = 'civicrm_hrjob_pension';
+    $panes['Job: Pay']     = 'civicrm_hrjob_pay';
+  }
+
   public function buildAdvancedSearchPaneForm(&$form, $type) {
     if (!CRM_Core_Permission::check('access HRJobs')) return;
     if ($type  == 'hrjob') {
