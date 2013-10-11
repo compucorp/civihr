@@ -97,8 +97,6 @@
     </div>
   </div>
 
-  <h3>{ts}Time Period{/ts}</h3>
-
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-period_type">{ts}Contract Duration{/ts}</label>
