@@ -12,10 +12,12 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
       CRM.HRApp.Common.mbind(this);
     },
     onBindingCreate: function(bindings) {
-      bindings.pay_amount = {
-        selector: 'span[name=pay_amount]',
-        converter: HRApp.Common.formatCurrency
-      };
+      if (this.$('span[name=pay_amount]').length > 1) {
+        bindings.pay_amount = {
+          selector: 'span[name=pay_amount]',
+          converter: HRApp.Common.formatCurrency
+        };
+      }
     }
   });
 });

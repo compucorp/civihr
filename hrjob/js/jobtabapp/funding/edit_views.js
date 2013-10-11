@@ -1,7 +1,7 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
-CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marionette, $, _) {
-  General.EditView = HRApp.Common.Views.StandardForm.extend({
-    template: '#hrjob-general-template',
+CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marionette, $, _) {
+	Funding.EditView = HRApp.Common.Views.StandardForm.extend({
+    template: '#hrjob-funding-template',
     templateHelpers: function() {
       return {
         'isNew': this.model.get('id') ? false : true,
@@ -61,8 +61,8 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       }
     },
     onBindingCreate: function(bindings) {
-      bindings.is_primary = {
-        selector: 'input[name=is_primary]',
+      bindings.is_tied_to_funding = {
+        selector: 'input[name=is_tied_to_funding]',
         converter: HRApp.Common.convertCheckbox
       };
     },
