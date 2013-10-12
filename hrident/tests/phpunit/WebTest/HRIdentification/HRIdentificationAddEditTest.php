@@ -37,11 +37,10 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
     // Adding contacts
     $random = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
-    $this->waitForElementPresent("xpath=//a[@class='hrjob-add']");
 
     // Check if Identification tab exists
-    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Identification']"), 'Identification tab not appearing');
-    
+    $this->waitForElementPresent("xpath=//li[@aria-controls='Identification']");
+
     //add Visa data
     $addData = array(
       'Type' => 'Drivers License',
@@ -94,8 +93,11 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
     $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Number']."']/following-sibling::td[5]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
-    $this->waitForElementPresent("xpath=//div[8]/div[1]/a");
-    $this->click("xpath=//div[8]/div[1]/a");
+
+    // WAS: xpath=//div[8]/div[1]/a
+    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $this->waitForElementPresent($close);
+    $this->click($close);
   }
 
 }
