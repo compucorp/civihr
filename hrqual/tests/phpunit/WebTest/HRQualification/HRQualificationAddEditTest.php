@@ -100,8 +100,11 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
     $this->assertTrue($this->isTextPresent($values['Name_of_Certification']), 'Name of Certification not found after '.$mode.'ing Qualification (_addQualificationData).');
     $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Certification']."']/following-sibling::td[5]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Name_of_Certification']), 'Name of Certification not found after '.$mode.'ing Qualification (_addQualificationData).');
-    $this->waitForElementPresent("xpath=//div[8]/div[1]/a");
-    $this->click("xpath=//div[8]/div[1]/a");
+
+    // WAS: xpath=//div[8]/div[1]/a
+    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $this->waitForElementPresent($close);
+    $this->click($close);
   }
 
 }
