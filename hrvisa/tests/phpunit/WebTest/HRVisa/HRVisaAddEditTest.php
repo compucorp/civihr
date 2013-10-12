@@ -90,8 +90,11 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
     $this->assertTrue($this->isTextPresent($values['Visa_Number']), 'Visa number not found after '.$mode.'ing visa data (_addVisaData).');
     $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Visa_Number']."']/following-sibling::td[4]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Visa_Number']), 'Visa number not found after '.$mode.'ing vida data (_addVisaData).');
-    $this->waitForElementPresent("xpath=//div[8]/div[1]/a");
-    $this->click("xpath=//div[8]/div[1]/a");
+
+    // WAS: xpath=//div[8]/div[1]/a
+    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $this->waitForElementPresent($close);
+    $this->click($close);
   }
 
 }
