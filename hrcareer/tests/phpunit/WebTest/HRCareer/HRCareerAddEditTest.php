@@ -100,8 +100,11 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
     $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Organisation']."']/following-sibling::td[6]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
-    $this->waitForElementPresent("xpath=//div[8]/div[1]/a");
-    $this->click("xpath=//div[8]/div[1]/a");
+
+    // WAS: xpath=//div[8]/div[1]/a
+    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $this->waitForElementPresent($close);
+    $this->click($close);
   }
 
 }
