@@ -39,7 +39,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
     
     // Check if Carrer tab exists
-    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Career']"), 'Career tab not appearing');
+    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Career_History']"), 'Career tab not appearing');
 
     //add Carrer data
     $addData = array(
@@ -74,12 +74,12 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
 
   function _addMedData($values, $mode = NULL, $nameOfOrganisation = NULL) {
     if ($mode == 'add') {
-      $this->click("xpath=//a[@title='Career']");
+      $this->click("xpath=//a[@title='Career History']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
       $this->click("xpath=//form[@id='Edit']/div[2]/a/span");
     }  	
     else {
-      $this->click("xpath=//a[@title='Career']");
+      $this->click("xpath=//a[@title='Career History']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
       $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$nameOfOrganisation."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
@@ -95,7 +95,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     $this->type("xpath=//textarea[@data-crm-custom='Career:Evidence_Note']", $values['Evidence_Note']);
     $this->click("xpath=//input[@id='_qf_Edit_upload']");
     $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->waitForElementPresent("xpath=//li[@aria-controls='Career']");
+    $this->waitForElementPresent("xpath=//li[@aria-controls='Career_History']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
     $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Organisation']."']/following-sibling::td[6]/span/a[text()='View']");
