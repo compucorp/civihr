@@ -146,7 +146,7 @@
     </CustomField>
     <CustomField>
       <name>Reference_Supplied</name>
-      <label>Reference Supplied</label>
+      <label>Reference Supplied By</label>
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
@@ -513,7 +513,7 @@
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
-      <label>Reference Supplied</label>
+      <label>Reference Supplied By</label>
       <field_type>Individual</field_type>
       <is_multi_summary>1</is_multi_summary>
       <profile_group_name>Career</profile_group_name>
