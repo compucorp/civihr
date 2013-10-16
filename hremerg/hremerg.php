@@ -93,3 +93,19 @@ function hremerg_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hremerg_civicrm_managed(&$entities) {
   return _hremerg_civix_civicrm_managed($entities);
 }
+
+function hremerg_civicrm_pageRun($page) {
+  if ($page instanceof CRM_Contact_Page_View_Relationship) {
+    $relationshipTypes = CRM_Core_PseudoConstant::relationshipType();
+    foreach ($relationshipTypes as $id => $value) {
+      if ($value['label_a_b'] == 'Emergency Contact is') {
+        CRM_Core_Resources::singleton()->addSetting(array(
+          'hremerg' => array(
+            'relationshipTypeId' => $id,
+           ),
+        ));
+      }
+    }
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  }
+}
