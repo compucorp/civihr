@@ -238,6 +238,14 @@
     <item>Apprentice</item>
   </contract_type>
 
+ <department>
+    <item>Finance</item>
+    <item>HR</item>
+    <item>IT</item>
+    <item>Fund Raising</item>
+    <item>Marketing </item>
+ </department>
+
   <level_type>
     <item>Senior Manager</item>
     <item>Junior Manager</item>

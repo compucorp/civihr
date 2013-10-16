@@ -118,6 +118,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         "period_type",
         "location",
         'notice_unit',
+        'department'
       ),
       'HRJobHour' => array(
         'hours_type',
@@ -139,6 +140,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobRole' => array(
         'location',
+        'department'
       ),
     );
     $fieldOptions = array();

@@ -72,6 +72,9 @@
     <type>varchar</type>
     <length>127</length>
     <export>true</export>
+    <pseudoconstant>
+      <optionGroupName>hrjob_department</optionGroupName>
+    </pseudoconstant>
     <uniqueName>hrjob_role_department</uniqueName>
   </field>
   <index>

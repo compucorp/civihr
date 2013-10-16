@@ -268,6 +268,9 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'where' => 'civicrm_hrjob.department',
           'headerPattern' => '',
           'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_department',
+          )
         ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
