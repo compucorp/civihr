@@ -59,6 +59,9 @@
     {literal}<% if (is_tied_to_funding == 1) { %>{/literal}
         <div><strong>{ts}Tied to funding{/ts}</strong></div>
     {literal}<% } %>{/literal}
+    {literal}<% if (funding_org_id) { %>{/literal}
+    	<div><strong>{ts}Funding organization{/ts}</strong>: <a href="#" class="hrjob-funding_org_id" /></div>
+    {literal}<% } %>{/literal}
     {literal}<% if (funding_notes) { %>{/literal}
       <div><strong>{ts}Notes{/ts}</strong>: <%- funding_notes %></div>
     {literal}<% } %>{/literal}

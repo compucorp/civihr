@@ -160,7 +160,14 @@
       <input id="hrjob-is_tied_to_funding" name="is_tied_to_funding" type="checkbox" />
     </div>
   </div>
-
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-funding_org_id">{ts}Funding organization{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="funding_org_id" name="funding_org_id" class="crm-contact-selector" urlParam = "org=1" type="text" />
+    </div>
+  </div>
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-funding_notes">{ts}Funding Notes{/ts}</label>

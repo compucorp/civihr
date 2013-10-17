@@ -124,6 +124,12 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $is_tied_to_funding;
   /**
+   * FK to Contact ID
+   *
+   * @var int unsigned
+   */
+  public $funding_org_id;
+  /**
    *
    * @var text
    */
@@ -273,6 +279,15 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
         ) ,
+        'hrjob_funding_org_id' => array(
+          'name' => 'funding_org_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Funding Organization') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob.funding_org_id',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
         'funding_notes' => array(
           'name' => 'funding_notes',
           'type' => CRM_Utils_Type::T_TEXT,
@@ -399,6 +414,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'title' => 'hrjob_title',
         'department' => 'hrjob_department',
         'is_tied_to_funding' => 'is_tied_to_funding',
+        'funding_org_id' => 'hrjob_funding_org_id',
         'funding_notes' => 'funding_notes',
         'contract_type' => 'hrjob_contract_type',
         'level_type' => 'hrjob_level_type',
