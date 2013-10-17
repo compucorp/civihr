@@ -91,7 +91,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         'description' => 'A test Description',
         'hours' => 40.00,
         'cost_center' => 001,
-        'department' => 'Fundraising',
+        'department' => 'Fund Raising',
         'functional_area' => 'Save the Whales',
         'location' => 'Headquarters',
         'ac_input' => $firstName,
@@ -208,7 +208,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'description' => 'Again a test Description',
       'hours' => 80.00,
       'cost_center' => 003,
-      'department' => 'Operations',
+      'department' => 'HR',
       'functional_area' => 'Save the Tigers',
       'location' => 'Home',
       'organization' => 'ZINGIT',
@@ -372,7 +372,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       if ($key == 'description') {
         $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/textarea[@id='hrjob-{$key}']", $value);
       }
-      elseif ($key == 'location') {
+      elseif ($key == 'location' || $key == 'department') {
         $this->select("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/select[@id='hrjob-{$key}']","value={$value}");
       }
       elseif ($key == 'ac_input') {
@@ -397,7 +397,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       if ($key == 'description') {
         $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/textarea[@id='hrjob-{$key}']"));
       }
-      elseif ($key == 'location') {
+      elseif ($key == 'location' || $key == 'department') {
         $this->assertEquals($value, $this->getSelectedValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/select[@id='hrjob-{$key}']"));
       }
       else {
