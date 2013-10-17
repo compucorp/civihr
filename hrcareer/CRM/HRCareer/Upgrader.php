@@ -136,5 +136,24 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     }
     return TRUE;
   } // */
-
+  
+  public function upgrade_4402() {
+    $this->ctx->log->info('Planning update 4402'); // PEAR Log interface
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $cgid = array_search('Career', $groups);
+    $params = array(
+      'custom_group_id' => $cgid,
+      'name' => 'Reference_Supplied',
+    );
+    $cfid = $customFields['id']; 
+    if ( $cgid ) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET label = 'Reference Supplied By' WHERE civicrm_custom_field.name = 'Reference_Supplied' AND civicrm_custom_field.custom_group_id = {$cgid}");
+    }
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $ufid = array_search('hrcareer_tab', $groups);
+    if ($ufid) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET label = 'Reference Supplied By' WHERE civicrm_uf_field.field_name = 'custom_{$cfid}' AND civicrm_uf_field.uf_group_id = {$ufid}");
+    }
+    return TRUE;
+    }
 }
