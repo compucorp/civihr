@@ -21,7 +21,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Department{/ts}</div>
-    <div class="crm-content"><span name="department"/></div>
+    <div class="crm-content"><%- FieldOptions.department[department] %></div>
   </div>
 
   <div class="crm-summary-row">
