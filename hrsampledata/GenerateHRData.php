@@ -883,6 +883,7 @@ class GenerateHRData {
       'conditions' => $this->randomItem('conditions'),
       'visa_number' => $this->randomItem('visa_number'),
       'evidence_note' => $this->randomItem('evidence_note'),
+      'sponsor_certificate_number' => $this->randomItem('sponsor_certificate_number'),
     );
 
     $this->insertCustomData($gid, $values);
