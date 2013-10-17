@@ -66,13 +66,13 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
    *
    * @return TRUE on success
    * @throws Exception
-   * 
-  public function upgrade_4400() {
+   *
+  public function upgrade_4200() {
     $this->ctx->log->info('Applying update 4200');
     CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
     CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
     return TRUE;
-  } //*/
+  } // */
 
 
   /**
