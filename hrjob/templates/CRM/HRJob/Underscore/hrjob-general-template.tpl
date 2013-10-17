@@ -45,7 +45,13 @@
       <label for="hrjob-department">{ts}Department{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-department" name="department" class="form-text-big" type="text" />
+      {literal}
+        <%= RenderUtil.select({
+        id: 'hrjob-department',
+        name: 'department',
+        options: _.extend({'':''}, FieldOptions.department)
+        }) %>
+      {/literal}
     </div>
   </div>
 
