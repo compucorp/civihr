@@ -76,4 +76,45 @@
     <name>dependents</name>
     <type>text</type>
   </field>
+
+  <field>
+    <name>provider_life_insurance</name>
+    <title>Job life insurance Provider</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>The organization or company which manages life insurance service</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_health_provider</optionGroupName>
+    </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_health_provider_life_insurance</uniqueName>
+  </field>
+  <index>
+    <name>index_provider_life_insurance</name>
+    <fieldName>provider_life_insurance</fieldName>
+  </index>
+
+  <field>
+    <name>plan_type_life_insurance</name>
+    <title>Job life insurance Plan</title>
+    <type>enum</type>
+    <values>Family, Individual</values>
+    <comment>.</comment>
+    <export>true</export>
+    <uniqueName>hrjob_life_insurance_plan_type</uniqueName>
+  </field>
+  <index>
+    <name>index_plan_type_life_insurance</name>
+    <fieldName>plan_type_life_insurance</fieldName>
+  </index>
+
+  <field>
+    <name>description_life_insurance</name>
+    <type>text</type>
+  </field>
+
+  <field>
+    <name>dependents_life_insurance</name>
+    <type>text</type>
+  </field>
 </table>

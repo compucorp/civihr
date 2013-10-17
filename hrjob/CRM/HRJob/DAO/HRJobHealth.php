@@ -124,6 +124,28 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    */
   public $dependents;
   /**
+   * The organization or company which manages life insurance service
+   *
+   * @var string
+   */
+  public $provider_life_insurance;
+  /**
+   * .
+   *
+   * @var enum('Family', 'Individual')
+   */
+  public $plan_type_life_insurance;
+  /**
+   *
+   * @var text
+   */
+  public $description_life_insurance;
+  /**
+   *
+   * @var text
+   */
+  public $dependents_life_insurance;
+  /**
    * class constructor
    *
    * @access public
@@ -205,6 +227,40 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Dependents') ,
         ) ,
+        'hrjob_health_provider_life_insurance' => array(
+          'name' => 'provider_life_insurance',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job life insurance Provider') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_health.provider_life_insurance',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_health_provider',
+          )
+        ) ,
+        'hrjob_life_insurance_plan_type' => array(
+          'name' => 'plan_type_life_insurance',
+          'type' => CRM_Utils_Type::T_ENUM,
+          'title' => ts('Job life insurance Plan') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_health.plan_type_life_insurance',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'enumValues' => 'Family, Individual',
+        ) ,
+        'description_life_insurance' => array(
+          'name' => 'description_life_insurance',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Description Life Insurance') ,
+        ) ,
+        'dependents_life_insurance' => array(
+          'name' => 'dependents_life_insurance',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => ts('Dependents Life Insurance') ,
+        ) ,
       );
     }
     return self::$_fields;
@@ -226,6 +282,10 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'plan_type' => 'hrjob_health_plan_type',
         'description' => 'description',
         'dependents' => 'dependents',
+        'provider_life_insurance' => 'hrjob_health_provider_life_insurance',
+        'plan_type_life_insurance' => 'hrjob_life_insurance_plan_type',
+        'description_life_insurance' => 'description_life_insurance',
+        'dependents_life_insurance' => 'dependents_life_insurance',
       );
     }
     return self::$_fieldKeys;
@@ -308,6 +368,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
   {
     static $enums = array(
       'plan_type',
+      'plan_type_life_insurance',
     );
     return $enums;
   }
@@ -325,6 +386,10 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
     if (!$translations) {
       $translations = array(
         'plan_type' => array(
+          'Family' => ts('Family') ,
+          'Individual' => ts('Individual') ,
+        ) ,
+        'plan_type_life_insurance' => array(
           'Family' => ts('Family') ,
           'Individual' => ts('Individual') ,
         ) ,

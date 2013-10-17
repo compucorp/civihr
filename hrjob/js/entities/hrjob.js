@@ -84,7 +84,11 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       provider: '',
       plan_type: '',
       description: '',
-      dependents: ''
+      dependents: '',
+      provider_life_insurance:'',
+      plan_type_life_insurance:'',
+      description_life_insurance:'',
+      dependents_life_insurance:''
     }
   });
 

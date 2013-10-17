@@ -24,6 +24,11 @@
         </div>
 
         <div class="crm-summary-row">
+          <div class="crm-label">{ts}Life Insurance{/ts}</div>
+          <div class="crm-content hrjob-summary-life"></div>
+        </div>
+
+        <div class="crm-summary-row">
           <div class="crm-label">{ts}Hours{/ts}</div>
           <div class="crm-content hrjob-summary-hour"></div>
         </div>
