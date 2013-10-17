@@ -137,5 +137,20 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   } // */
-
+  public function upgrade_4403() {
+    $this->ctx->log->info('Applying update 4403');
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider_life_insurance')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_health ADD COLUMN provider_life_insurance VARCHAR(63) COMMENT "The organization or company which manages life insurance service"');
+    }
+    if(!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'plan_type_life_insurance')) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health ADD COLUMN plan_type_life_insurance  enum('Family','Individual') DEFAULT NULL COMMENT '.'");
+    }
+    if(!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'description_life_insurance')) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health ADD COLUMN description_life_insurance text DEFAULT NULL");
+    }
+    if(!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'dependents_life_insurance')) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health ADD COLUMN dependents_life_insurance text DEFAULT NULL");
+    }
+    return TRUE;
+  } 
 }
