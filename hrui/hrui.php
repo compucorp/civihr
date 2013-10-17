@@ -253,11 +253,14 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrui_civicrm_tabs(&$tabs, $contactID) {
   $count = count($tabs);
   for ($i = 0; $i < $count; $i++) {
-    if ($tabs[$i]['id'] != 'log') {
-      $tab[$i] = $tabs[$i]['title'];
+    if ($tabs[$i]['id'] == 'log') {
+      $changeLogTabID = $i;
+    }
+    elseif ($tabs[$i]['id'] == 'hrjob')  {
+      $jobTabID = $i;
     }
     else {
-      $changeLogTabID = $i;
+      $tab[$i] = $tabs[$i]['title'];
     }
   }
 
@@ -272,6 +275,8 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
 
   //Move change log to the end
   $tabs[$changeLogTabID]['weight'] = $weight + 10;
+  //Move job tab next to personal details tab
+  $tabs[$jobTabID]['weight'] = 0;
 }
 
 /**
