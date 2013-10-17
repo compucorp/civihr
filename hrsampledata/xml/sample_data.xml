@@ -375,14 +375,6 @@
     <item>desc4</item>
   </job_role_description>
 
-  <department>
-    <item>Fundraising</item>
-    <item>Operations</item>
-    <item>Finance</item>
-    <item>HR</item>
-    <item>Advocacy</item>
-  </department>
-
   <location>
     <item>Headquarters</item>
     <item>Home</item>
