@@ -137,4 +137,22 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     return TRUE;
   } // */
 
+  public function upgrade_4400() {
+	$this->ctx->log->info('Planning update 4400'); // PEAR Log interface
+	$params = array(
+	  1 => array("CiviHR Annual and Monthly Cost Equivalents Report", 'String'),
+	);
+	$formValues = CRM_Core_DAO::singleValueQuery('SELECT form_values FROM civicrm_report_instance where title = %1',$params);
+	$arrayFormValues = unserialize($formValues);
+	$arrayFormValues["fields"]["hrjob_pay_currency"] = 1;
+	$arrayFormValues["group_bys"]["hrjob_pay_currency"] = 1;
+	
+	$formValues = serialize($arrayFormValues);
+	$params[2] = array($formValues, 'String');
+	$sql = 'UPDATE civicrm_report_instance SET form_values = %2 WHERE title = %1';
+	CRM_Core_DAO::executeQuery($sql, $params);
+	
+	return TRUE;
+  }	
+
 }
