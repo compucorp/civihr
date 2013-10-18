@@ -137,5 +137,50 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   } // */
+  
+  public function upgrade_4404() {
+    $this->ctx->log->info('Applying update 4404');
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $cgid = array_search('Immigration', $groups);
+    $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Sponsor_Certificate_number', 'id', 'name');
 
+    if($cgid && !$cfId) {
+      $cfparams = array(
+        'custom_group_id' => $cgid,
+        'name' => 'Sponsor_Certificate_number',
+        'label' => 'Sponsor\'s Certificate number',
+        'html_type' => 'Text',
+        'data_type' => 'String',
+        'default_value' => '',
+        'weight' => 34,
+        'is_active' => 1,
+      );
+      $cfresult =CRM_Core_BAO_CustomField::create($cfparams);
+      $cfId = $cfresult->id;
+    }
+    if( $cfId ) {
+      $ufgroups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+      $ufid = array_search('hrvisa_tab', $ufgroups);
+      $eufId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFField', 'custom_'.$cfId, 'id', 'field_name');
+
+      if(!$eufId && $ufid){
+        $ufparams = array(
+          'field_name' => 'custom_'.$cfId,
+          'field_type' => 'Individual',
+          'visibility' => 'User and User Admin Only',
+          'label' => 'Sponsor\'s Certificate number',
+          'is_searchable' => 0,
+          'is_active' => 0,
+          'uf_group_id' => $ufid,
+          'is_multi_summary' => 1,
+          'is_active'=> 0,
+          'is_required'=> 0,
+          'in_selector'=> 0,
+        );
+        $ufresult = civicrm_api3('uf_field', 'create', $ufparams);
+      }
+    }
+    return TRUE;
+  }
+  
 }
