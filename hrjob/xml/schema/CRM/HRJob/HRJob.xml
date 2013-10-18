@@ -86,7 +86,7 @@
     <uniqueName>hrjob_funding_org_id</uniqueName>
   </field>
   <foreignKey>
-    <name>fund_org</name>
+    <name>funding_org_id</name>
     <table>civicrm_contact</table>
     <key>id</key>
     <onDelete>SET NULL</onDelete>

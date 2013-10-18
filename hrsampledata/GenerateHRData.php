@@ -701,6 +701,7 @@ class GenerateHRData {
         'location'   => $this->randomItem('location'),
         'department' => $this->randomItem('department'),
         'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
+        'funding_org_id' => $this->randomIndex(array_flip($this->Organization)),
         'is_primary' => 0,
       );
       if ($i == 1) {

@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -217,6 +216,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
     if (!self::$_links) {
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'funding_org_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'manager_contact_id', 'civicrm_contact', 'id') ,
       );
     }
@@ -287,6 +287,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'where' => 'civicrm_hrjob.funding_org_id',
           'headerPattern' => '',
           'dataPattern' => '',
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'funding_notes' => array(
           'name' => 'funding_notes',
