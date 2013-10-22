@@ -44,6 +44,15 @@
     </div>
   </div>
 
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-ee_contrib_abs">{ts}Employee Contribution (absolute amount){/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-ee_contrib_abs" name="ee_contrib_abs" class="form-text-big" type="text" />
+    </div>
+  </div>
+
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>
