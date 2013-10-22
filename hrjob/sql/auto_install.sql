@@ -191,7 +191,8 @@ CREATE TABLE `civicrm_hrjob_pension` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `is_enrolled` tinyint   DEFAULT 0 ,
      `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage', 
-     `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage' 
+     `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage',
+     `pension_type` varchar(63) COMMENT 'Pension Type'
 ,
     PRIMARY KEY ( `id` )
  

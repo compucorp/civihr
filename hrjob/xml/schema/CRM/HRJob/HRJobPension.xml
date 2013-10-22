@@ -64,4 +64,21 @@
     <default>0</default>
     <comment>Employer Contribution Percentage</comment>
   </field>
+  
+  <field>
+    <name>pension_type</name>
+    <title>Pension Type</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>Pension Type</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_pension_type</optionGroupName>
+    </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_pension_type</uniqueName>
+  </field>
+  <index>
+    <name>index_pension_type</name>
+    <fieldName>pension_type</fieldName>
+  </index>
 </table>
