@@ -32,6 +32,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
       ":cid/hrjob/add": "addJob",
       ":cid/hrjob/:id": "showSummary",
       ":cid/hrjob/:id/general": "editGeneral",
+      ":cid/hrjob/:id/funding": "editFunding",
       ":cid/hrjob/:id/copy": "copyGeneral",
       ":cid/hrjob/:id/health": "editHealth",
       ":cid/hrjob/:id/hour": "editHour",
@@ -51,6 +52,9 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     },
     editGeneral: function(cid, jobId) {
       JobTabApp.General.Controller.editGeneral(cid, jobId, jobCollection);
+    },
+    editFunding: function(cid, jobId) {
+        JobTabApp.Funding.Controller.editFunding(cid, jobId, jobCollection);
     },
     copyGeneral: function(cid, jobId) {
       JobTabApp.General.Controller.copyGeneral(cid, jobId, jobCollection);
@@ -88,6 +92,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
   // each separately
   _.each({
     "general": "editGeneral",
+    "funding": "editFunding",
     "health": "editHealth",
     "hour": "editHour",
     "leave": "editLeave",

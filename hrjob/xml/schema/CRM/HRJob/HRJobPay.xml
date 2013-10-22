@@ -73,4 +73,17 @@
     <uniqueName>hrjob_pay_unit</uniqueName>
   </field>
 
+  <field>
+    <name>pay_currency</name>
+    <title>Job Pay Currency</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>Unit for expressing pay currency</comment>
+    <pseudoconstant>
+      <optionGroupName>currencies_enabled</optionGroupName>
+    </pseudoconstant>
+    <export>true</export>
+    <uniqueName>hrjob_pay_currency</uniqueName>
+  </field>
+
 </table>

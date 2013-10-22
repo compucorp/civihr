@@ -22,6 +22,7 @@ CREATE TABLE `civicrm_hrjob` (
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
      `department` varchar(127)    ,
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
+     `funding_org_id` int unsigned    COMMENT 'FK to Contact ID',
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
      `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
@@ -75,7 +76,8 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
-     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)' 
+     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
+     `pay_currency` varchar(63)    COMMENT 'Unit for expressing pay currency'
 ,
     PRIMARY KEY ( `id` )
  

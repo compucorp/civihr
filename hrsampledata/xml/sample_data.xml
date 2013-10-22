@@ -238,6 +238,14 @@
     <item>Apprentice</item>
   </contract_type>
 
+ <department>
+    <item>Finance</item>
+    <item>HR</item>
+    <item>IT</item>
+    <item>Fund Raising</item>
+    <item>Marketing </item>
+ </department>
+
   <level_type>
     <item>Senior Manager</item>
     <item>Junior Manager</item>
@@ -366,14 +374,6 @@
     <item>desc3</item>
     <item>desc4</item>
   </job_role_description>
-
-  <department>
-    <item>Fundraising</item>
-    <item>Operations</item>
-    <item>Finance</item>
-    <item>HR</item>
-    <item>Advocacy</item>
-  </department>
 
   <location>
     <item>Headquarters</item>

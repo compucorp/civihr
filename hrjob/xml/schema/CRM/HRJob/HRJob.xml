@@ -63,6 +63,9 @@
     <title>Job Department</title>
     <type>varchar</type>
     <length>127</length>
+    <pseudoconstant>
+      <optionGroupName>hrjob_department</optionGroupName>
+    </pseudoconstant>
     <export>true</export>
     <uniqueName>hrjob_department</uniqueName>
   </field>
@@ -76,6 +79,21 @@
     <type>boolean</type>
     <default>0</default>
   </field>
+
+  <field>
+    <name>funding_org_id</name>
+    <title>Funding Organization</title>
+    <type>int unsigned</type>
+    <comment>FK to Contact ID</comment>
+    <export>true</export>
+    <uniqueName>hrjob_funding_org_id</uniqueName>
+  </field>
+  <foreignKey>
+    <name>fund_org</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
 
   <field>
     <name>funding_notes</name>

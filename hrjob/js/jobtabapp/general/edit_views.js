@@ -65,10 +65,6 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         selector: 'input[name=is_primary]',
         converter: HRApp.Common.convertCheckbox
       };
-      bindings.is_tied_to_funding = {
-        selector: 'input[name=is_tied_to_funding]',
-        converter: HRApp.Common.convertCheckbox
-      };
     },
     /**
      * Define form validation rules

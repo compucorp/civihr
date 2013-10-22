@@ -57,10 +57,10 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'statistics' => array('count_distinct' => ts('People'),),
             'grouping'   => array('stats-fields' => 'Stats'),
           ),
-          'gender' => array(),
+          'gender_id' => array('title' => ts('Gender'),),
         ),
         'group_bys' => array(
-          'gender' => array(),
+          'gender_id' => array('title' => ts('Gender'),),
         ),
         'filters' =>
         array(
@@ -70,7 +70,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'no_display' => TRUE,
             'type' => CRM_Utils_Type::T_INT,
           ),
-          'gender' => array(),
+          'gender_id' => array('title' => ts('Gender'),),
         ),
         'grouping' => array('contact-fields' => 'Personal Details'),
       ),
@@ -431,14 +431,13 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   function alterDisplay(&$rows) {
     $entryFound = FALSE;
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
-
     foreach ($rows as $rowNum => $row) {
       $entryFound =
         $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
 
-      if (array_key_exists('civicrm_contact_gender', $row)) {
-        if (CRM_Utils_Array::value('civicrm_contact_gender', $row)) {
-          $rows[$rowNum]['civicrm_contact_gender'] = CRM_Utils_Array::value($row['civicrm_contact_gender'], $gender);
+      if (array_key_exists('civicrm_contact_gender_id', $row)) {
+      	if (CRM_Utils_Array::value('civicrm_contact_gender_id', $row)) {
+          $rows[$rowNum]['civicrm_contact_gender_id'] = CRM_Utils_Array::value($row['civicrm_contact_gender_id'], $gender);
         }
         $entryFound = TRUE;
       }

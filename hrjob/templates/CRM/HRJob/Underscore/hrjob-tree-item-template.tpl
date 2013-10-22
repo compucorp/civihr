@@ -6,14 +6,15 @@
     <dt>
       <a href="#<%= cid %>/hrjob/<%= id %>/copy" class="hrjob-nav ui-icon ui-icon-copy" data-hrjob-event="hrjob:general:copy" title="{ts}Copy{/ts}"></a>
       <a href="#<%= cid %>/hrjob/<%= id %>" class="hrjob-nav <%= (is_primary == '1') ? 'primary' : '' %>" data-hrjob-event="hrjob:summary:show">
-      {literal}
-      <% if (contract_type) { %>
-      <span name="contract_type"></span>:
-      <% } %>
-      <span name="position"></span>
-      {/literal}
+        <span name="position"></span>
+        {literal}
+          <% if (contract_type) { %>
+          [<span name="contract_type"></span>]
+          <% } %>
+        {/literal}
     </a></dt>
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/general" class="hrjob-nav" data-hrjob-event="hrjob:general:edit">{ts}General{/ts}</a></dd>
+    <dd><a href="#<%= cid %>/hrjob/<%= id %>/funding" class="hrjob-nav" data-hrjob-event="hrjob:funding:edit">{ts}Funding{/ts}</a></dd>
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/health" class="hrjob-nav" data-hrjob-event="hrjob:health:edit">{ts}Healthcare{/ts}</a></dd>
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/hour" class="hrjob-nav" data-hrjob-event="hrjob:hour:edit">{ts}Hours{/ts}</a></dd>
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/leave" class="hrjob-nav" data-hrjob-event="hrjob:leave:edit">{ts}Leave{/ts}</a></dd>

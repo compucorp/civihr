@@ -16,6 +16,7 @@
     <tr>
       <td>
         <div class="hrjob-summary-general"></div>
+        <div class="hrjob-summary-funding"></div>
       </td>
       <td>
         <div class="crm-summary-row">

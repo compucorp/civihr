@@ -55,6 +55,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer'),
           'isLogEnabled'    => (bool) $config->logging,
           'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+          'currencies' => CRM_HRJob_Page_JobsTab::getCurrencyFormats(),
         ),
       );
     })
@@ -82,7 +83,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/summary/summary_controller.js', 160, 'html-header')
       ->addScriptFile('org.civicrm.hrjob', 'js/jobtabapp/summary/summary_views.js', 160, 'html-header')
     ;
-    foreach (array('general', 'health', 'hour', 'leave', 'pay', 'pension', 'role') as $module) {
+    foreach (array('general', 'funding', 'health', 'hour', 'leave', 'pay', 'pension', 'role') as $module) {
       CRM_Core_Resources::singleton()
         ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_controller.js", 160, 'html-header')
         ->addScriptFile('org.civicrm.hrjob', "js/jobtabapp/$module/edit_views.js", 160, 'html-header')
@@ -117,6 +118,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         "period_type",
         "location",
         'notice_unit',
+        'department'
       ),
       'HRJobHour' => array(
         'hours_type',
@@ -125,6 +127,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       'HRJobPay' => array(
         'pay_grade',
         'pay_unit',
+        'pay_currency',
       ),
       'HRJobPension' => array(
       ),
@@ -137,6 +140,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobRole' => array(
         'location',
+        'department'
       ),
     );
     $fieldOptions = array();
@@ -146,5 +150,17 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       }
     }
     return $fieldOptions;
+  }
+
+  /**
+   * Get a list of templates demonstrating how to format currencies.
+   */
+  static function getCurrencyFormats() {
+    $currencies = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_currency');
+    $formats = array();
+    foreach ($currencies as $currency => $label) {
+      $formats[$currency] = CRM_Utils_Money::format(1234.56, $currency);
+    }
+    return $formats;
   }
 }

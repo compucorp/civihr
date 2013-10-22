@@ -17,7 +17,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Department{/ts}</div>
-    <div class="crm-content"><span name="department" /></div>
+    <div class="crm-content"><%- FieldOptions.department[department] %></div>
   </div>
 
   <div class="crm-summary-row">
@@ -50,18 +50,6 @@
         <%- FieldOptions.notice_unit[notice_unit] %>
       </div>
       {literal}<% } %>{/literal}
-    </div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">{ts}Funding{/ts}</div>
-    <div class="crm-content">
-    {literal}<% if (is_tied_to_funding == 1) { %>{/literal}
-        <div><strong>{ts}Tied to funding{/ts}</strong></div>
-    {literal}<% } %>{/literal}
-    {literal}<% if (funding_notes) { %>{/literal}
-      <div><strong>{ts}Notes{/ts}</strong>: <%- funding_notes %></div>
-    {literal}<% } %>{/literal}
     </div>
   </div>
 

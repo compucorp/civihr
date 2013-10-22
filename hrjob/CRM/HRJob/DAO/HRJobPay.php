@@ -24,7 +24,6 @@
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
@@ -120,6 +119,12 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $pay_unit;
   /**
+   * Unit for expressing pay currency
+   *
+   * @var string
+   */
+  public $pay_currency;
+  /**
    * class constructor
    *
    * @access public
@@ -200,6 +205,20 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'dataPattern' => '',
           'enumValues' => 'Hour, Day, Week, Month, Year',
         ) ,
+        'hrjob_pay_currency' => array(
+          'name' => 'pay_currency',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Pay Currency') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_currency',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'currencies_enabled',
+          )
+        ) ,
       );
     }
     return self::$_fields;
@@ -220,6 +239,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'pay_grade' => 'hrjob_pay_grade',
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
+        'pay_currency' => 'hrjob_pay_currency',
       );
     }
     return self::$_fieldKeys;

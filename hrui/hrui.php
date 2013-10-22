@@ -158,6 +158,23 @@ function hrui_civicrm_install() {
     }
   }
 
+  //hide communication preferences block
+  $groupID = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_OptionGroup',
+    'contact_edit_options', 
+    'id', 
+    'name'
+  );
+
+  $params = array(
+    'option_group_id' => $groupID,
+    'name' => 'CommunicationPreferences',
+  );
+
+  CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+  $defaults['is_active'] = 0;
+  CRM_Core_BAO_OptionValue::create($defaults);
+
   return _hrui_civix_civicrm_install();
 }
 
@@ -180,6 +197,23 @@ function hrui_civicrm_uninstall() {
 
   // set modified options in the DB
   hrui_setViewOptionsSetting($options);
+
+  // show communication preferences block
+  $groupID = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_OptionGroup',
+    'contact_edit_options', 
+    'id', 
+    'name'
+  );
+
+  $params = array(
+    'option_group_id' => $groupID,
+    'name' => 'CommunicationPreferences',
+  );
+
+  CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+  $defaults['is_active'] = 1;
+  CRM_Core_BAO_OptionValue::create($defaults);
 
   return _hrui_civix_civicrm_uninstall();
 }

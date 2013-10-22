@@ -239,6 +239,9 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'where' => 'civicrm_hrjob_role.department',
           'headerPattern' => '',
           'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_department',
+          )
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
