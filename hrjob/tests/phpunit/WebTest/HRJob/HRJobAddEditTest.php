@@ -256,7 +256,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->select('hrjob-contract_type', "value={$values['contract_type']}");
     $this->select('hrjob-level_type', "value={$values['level_type']}");
     $this->select('hrjob-period_type', "value={$values['period_type']}");
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
 
     //assert the saved values
@@ -271,7 +271,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
   	$this->waitForElementPresent('hrjob-is_tied_to_funding');
   	$this->click('hrjob-is_tied_to_funding');
   	$this->type('hrjob-funding_notes', $values['funding_notes']);
-  	$this->click("xpath=//button[@class='standard-save']");
+  	$this->click("xpath=//button[@class='crm-button standard-save']");
   	sleep(1);
   	$this->waitForText('crm-notification-container', "Saved");
   
@@ -289,7 +289,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->select('hrjob-plan_type', "value={$values['plan_type']}");
     $this->type('hrjob-description', $values['description']);
     $this->type('hrjob-dependents', $values['dependents']);
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
@@ -307,7 +307,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->type('hrjob-hours_amount', $values['hours_amount']);
     $this->select('hrjob-hours_unit', "value={$values['hours_unit']}");
     $this->type('hrjob-hours_fte', $values['hours_fte']);
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
@@ -325,7 +325,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->type("$tbodyXPath/tr[1]/td[2]/input", $values['annual']);
     $this->type("$tbodyXPath/tr[2]/td[2]/input", $values['public']);
     $this->type("$tbodyXPath/tr[3]/td[2]/input", $values['sick']);
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
@@ -345,7 +345,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->select('hrjob-pay_grade', "value={$values['pay_grade']}");
     $this->type('hrjob-pay_amount', $values['pay_amount']);
     $this->select('hrjob-pay_unit', "value={$values['pay_unit']}");
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
@@ -366,7 +366,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->select('hrjob-is_enrolled', "value={$values['is_enrolled']}");
     $this->type('hrjob-ee_contrib_pct', $values['ee_contrib_pct']);
 
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
@@ -402,7 +402,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@id='hrjob-{$key}']", $value);
       }
     }
-    $this->click("xpath=//button[@class='standard-save']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
     $this->waitForElementPresent("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/strong[contains(text(),'{$values['title']}')]");
