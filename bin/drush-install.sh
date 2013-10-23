@@ -23,6 +23,7 @@ org.civicrm.hrcareer
 APP_EXTS=\
 org.civicrm.hrreport,\
 org.civicrm.hrui,\
+org.civicrm.hrcase,\
 org.civicrm.hrstaffdir
 
 ##################################
