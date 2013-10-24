@@ -74,3 +74,48 @@ function hrcase_civicrm_buildForm($formName, &$form) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrcase', 'js/hrcase.js');
   }
 }
+
+function hrcase_civicrm_navigationMenu(&$params) {
+  // process only if civiCase is enabled
+  if (!array_key_exists('CiviCase', CRM_Core_Component::getEnabledComponents())) {
+    return;
+  }
+  $values = array();
+  $caseMenuItems = array();
+
+  // the parent menu
+  $referenceMenuItem['name'] = 'New Case';
+  CRM_Core_BAO_Navigation::retrieve($referenceMenuItem, $values);
+
+  if (!empty($values)) {
+    // fetch all the case types
+    $caseTypes = CRM_Case_PseudoConstant::caseType();
+
+    $parentId = $values['id'];
+    $maxKey = (max(array_keys($params)));
+
+    // now create nav menu items
+    if (!empty($caseTypes)) {
+      foreach ($caseTypes as $cTypeId => $caseTypeName) {
+        $maxKey = $maxKey + 1;
+        $caseMenuItems[$maxKey] = array(
+          'attributes' => array(
+            'label'      => "New {$caseTypeName}",
+            'name'       => "New {$caseTypeName}",
+            'url'        => $values['url'] . "&ctype={$cTypeId}",
+            'permission' => $values['permission'],
+            'operator'   => $values['permission_operator'],
+            'separator'  => NULL,
+            'parentID'   => $parentId,
+            'navID'      => $maxKey,
+            'active'     => 1
+          )
+        );
+      }
+    }
+
+    if (!empty($caseMenuItems)) {
+      $params[$values['parent_id']]['child'][$values['id']]['child'] = $caseMenuItems;
+    }
+  }
+}
