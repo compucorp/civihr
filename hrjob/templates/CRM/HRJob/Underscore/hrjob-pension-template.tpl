@@ -25,6 +25,21 @@
     {/literal}
     </div>
   </div>
+  
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}</label>
+    </div>
+    <div class="crm-content">
+    {literal}
+      <%= RenderUtil.select({
+        id: 'hrjob-pension_type',
+        name: 'pension_type',
+        options: _.extend({'':''}, FieldOptions.pension_type)
+      }) %>
+    {/literal}
+    </div>
+  </div>
 
   <div class="crm-summary-row">
     <div class="crm-label">

@@ -152,5 +152,15 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob ADD COLUMN funding_org_id int(10) unsigned DEFAULT NULL COMMENT 'FK to Contact ID', ADD CONSTRAINT `FK_civicrm_hrjob_funding_org_id` FOREIGN KEY (`funding_org_id`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL");
     }
     return TRUE;
+  }
+  public function upgrade_4405() {
+    $this->ctx->log->info('Applying update 4405');
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'pension_type')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN pension_type VARCHAR(63) COMMENT "Pension Type"');
+    }
+    if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjob_pension_type', 'name')) {
+      $this->executeCustomDataFile('xml/4405_pension_type.xml');
+    }
+    return TRUE;
   } 
 }

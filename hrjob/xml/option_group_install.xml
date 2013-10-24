@@ -50,6 +50,12 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>hrjob_pension_type</name>
+      <title>Pension Type</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -337,6 +343,28 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_department</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Employer Pension</label>
+      <value>Employer Pension</value>
+      <name>Employer Pension </name>
+      <is_default>1</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pension_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Personal Pension</label>
+      <value>Personal Pension</value>
+      <name>Personal Pension</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pension_type</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

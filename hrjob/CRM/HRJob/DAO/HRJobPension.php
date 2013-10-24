@@ -119,6 +119,12 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $er_contrib_pct;
   /**
+   * Pension Type
+   *
+   * @var string
+   */
+  public $pension_type;
+  /**
    * class constructor
    *
    * @access public
@@ -185,6 +191,20 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Employer Contribution Percentage') ,
         ) ,
+        'hrjob_pension_type' => array(
+          'name' => 'pension_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Pension Type') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pension.pension_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_pension_type',
+          )
+        ) ,
       );
     }
     return self::$_fields;
@@ -205,6 +225,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'is_enrolled' => 'hrjob_is_enrolled',
         'ee_contrib_pct' => 'ee_contrib_pct',
         'er_contrib_pct' => 'er_contrib_pct',
+        'pension_type' => 'hrjob_pension_type',
       );
     }
     return self::$_fieldKeys;

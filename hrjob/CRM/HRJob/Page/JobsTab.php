@@ -130,6 +130,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'pay_currency',
       ),
       'HRJobPension' => array(
+        'pension_type',
       ),
       'HRJobHealth' => array(
         'provider',
