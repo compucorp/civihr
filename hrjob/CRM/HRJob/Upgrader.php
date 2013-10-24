@@ -150,6 +150,9 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'pension_type')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN pension_type VARCHAR(63) COMMENT "Pension Type"');
     }
+    if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjob_pension_type', 'name')) {
+      $this->executeCustomDataFile('xml/4405_pension_type.xml');
+    }
     return TRUE;
   } 
 }
