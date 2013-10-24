@@ -100,8 +100,8 @@ function hrcase_civicrm_navigationMenu(&$params) {
         $maxKey = $maxKey + 1;
         $caseMenuItems[$maxKey] = array(
           'attributes' => array(
-            'label'      => $caseTypeName,
-            'name'       => $caseTypeName,
+            'label'      => "New {$caseTypeName}",
+            'name'       => "New {$caseTypeName}",
             'url'        => $values['url'] . "&ctype={$cTypeId}",
             'permission' => $values['permission'],
             'operator'   => $values['permission_operator'],
