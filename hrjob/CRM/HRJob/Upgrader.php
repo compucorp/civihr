@@ -141,7 +141,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   public function upgrade_4401() {
     $this->ctx->log->info('Applying update 4401');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
-      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob ADD COLUMN funding_org_id int(10) unsigned DEFAULT NULL COMMENT 'FK to Contact ID'");
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob ADD COLUMN funding_org_id int(10) unsigned DEFAULT NULL COMMENT 'FK to Contact ID', ADD CONSTRAINT `FK_civicrm_hrjob_funding_org_id` FOREIGN KEY (`funding_org_id`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL");
     }
     return TRUE;
   } 
