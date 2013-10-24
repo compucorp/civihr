@@ -66,3 +66,16 @@ a.hrjob-nav.selected {
 .hrjob-tree-block .hrjob-inactive a {
     color: red;
 }
+
+div.hrjob-tree-items {
+    display: inline-block;
+    width: 100%;
+}
+
+.hrjob-container button.crm-button {
+    /* passed important arg to not
+       inherit padding property of crm-button 
+       and use this one
+    */
+    padding: 2px 6px !important;
+}

@@ -30,10 +30,10 @@
   </div>
 
   {literal}<% if (!isNewDuplicate) { %> {/literal}
-  <button class="standard-save">{ts}Save{/ts}</button>
+  <button class="crm-button standard-save">{ts}Save{/ts}</button>
   {literal}<% } else { %>{/literal}
-  <button class="standard-save">{ts}Save New Copy{/ts}</button>
+  <button class="crm-button standard-save">{ts}Save New Copy{/ts}</button>
   {literal}<% } %>{/literal}
-  <button class="standard-reset">{ts}Reset{/ts}</button>
+  <button class="crm-button standard-reset">{ts}Reset{/ts}</button>
 </form>
 </script>
