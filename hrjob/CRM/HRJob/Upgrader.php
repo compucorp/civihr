@@ -137,6 +137,14 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   } // */
+  
+  public function upgrade_4400() {
+    $this->ctx->log->info('Applying update 4400');
+  	if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_currency')) {
+  	  CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_currency VARCHAR(63) COMMENT "Job Pay Currency" AFTER pay_unit');
+  	}
+  	return TRUE;
+  }
 
   public function upgrade_4401() {
     $this->ctx->log->info('Applying update 4401');
