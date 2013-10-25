@@ -115,7 +115,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       is_enrolled: '',
       er_contrib_pct: '',
       ee_contrib_pct: '',
-      pension_type:''
+      pension_type:'',
+      ee_contrib_abs: '' 
     }
   });
 
