@@ -81,4 +81,12 @@
     <name>index_pension_type</name>
     <fieldName>pension_type</fieldName>
   </index>
+
+  <field>
+    <name>ee_contrib_abs</name>
+    <title>Employer Contribution Absolute Amount</title>
+    <type>float</type>
+    <default>0</default>
+    <comment>Employer Contribution Absolute Amount</comment>
+  </field> 
 </table>

@@ -18,7 +18,10 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
         ee_contrib_pct: {
           number: true,
           range: [0, 100]
-        }
+        },
+        ee_contrib_abs: {
+		  number: true,
+        } 
       });
     }
   });

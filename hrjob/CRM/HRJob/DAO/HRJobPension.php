@@ -125,6 +125,12 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $pension_type;
   /**
+   * Employer Contribution Absolute Amount
+   *
+   * @var float
+   */
+  public $ee_contrib_abs;
+  /**
    * class constructor
    *
    * @access public
@@ -205,6 +211,11 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_pension_type',
           )
         ) ,
+        'ee_contrib_abs' => array(
+          'name' => 'ee_contrib_abs',
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('Employer Contribution Absolute Amount') ,
+        ) ,
       );
     }
     return self::$_fields;
@@ -226,6 +237,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'ee_contrib_pct' => 'ee_contrib_pct',
         'er_contrib_pct' => 'er_contrib_pct',
         'pension_type' => 'hrjob_pension_type',
+        'ee_contrib_abs' => 'ee_contrib_abs',
       );
     }
     return self::$_fieldKeys;
