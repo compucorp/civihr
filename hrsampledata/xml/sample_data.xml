@@ -576,4 +576,10 @@
     <item>Absolutely solid evidence</item>
     <item>Looks like it was printed on an inkjet at home</item>
   </evidence_note>
+
+  <sponsor_certificate_number>
+    <item></item>
+    <item>VT123456</item>
+    <item>AB67564</item>
+  </sponsor_certificate_number>
 </sample_data>
