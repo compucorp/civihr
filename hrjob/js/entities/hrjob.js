@@ -105,7 +105,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       job_id: null,
       pay_grade: '',
       pay_amount: '',
-      pay_unit: ''
+      pay_unit: '',
+      pay_currency: ''
     }
   });
 

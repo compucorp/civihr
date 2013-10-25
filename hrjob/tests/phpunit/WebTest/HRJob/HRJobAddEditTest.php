@@ -33,6 +33,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
   function testJobCreateEdit() {
     $this->webtestLogin();
+    $config = CRM_Core_Config::singleton();
 
     // Adding contacts
     //manager contact
@@ -79,6 +80,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'pay_grade' => 'paid',
       'pay_amount' => 40,
       'pay_unit' => 'Day',
+      'pay_currency' => $config->defaultCurrency,
     ));
 
     $this->_addJobPensionData(1, array(
@@ -189,6 +191,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'pay_grade' => 'unpaid',
       'pay_amount' => 60,
       'pay_unit' => 'Day',
+      'pay_currency' => $config->defaultCurrency,
     ));
 
     //edit PayData
@@ -196,6 +199,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'pay_grade' => 'paid',
       'pay_amount' => 120,
       'pay_unit' => 'Week',
+      'pay_currency' => $config->defaultCurrency,
     ), 'Edit');
 
     $this->_addJobPensionData(2, array(
@@ -345,6 +349,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->select('hrjob-pay_grade', "value={$values['pay_grade']}");
     $this->type('hrjob-pay_amount', $values['pay_amount']);
     $this->select('hrjob-pay_unit', "value={$values['pay_unit']}");
+    $this->select('hrjob-pay_currency', "value={$values['pay_currency']}");
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
