@@ -323,9 +323,9 @@
       <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Fund Raising</label>
-      <value>Fund Raising</value>
-      <name>Fund_Raising</name>
+      <label>Fundraising</label>
+      <value>Fundraising</value>
+      <name>Fundraising</name>
       <is_default>0</is_default>
       <weight>4</weight>
       <is_optgroup>0</is_optgroup>
