@@ -16,7 +16,7 @@ function contactImLink() {
   // build array for IM and its protocol
   var params = { 'Yahoo':'ymsgr:sendIM?',
                  'Skype':'skype:',
-                 'GTalk':'gtalk:chat?',
+                 'GTalk':'gtalk:chat?jid=',
                  'AIM':'aim:goim?screenname=',
                  'Jabber':'xmpp:',
                  'MSN':'msnim:chat?contact=' };
