@@ -25,7 +25,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
       if (this.model.get('pay_grade') == 'paid') {
         view.$('.hrjob-needs-pay_grade:hidden').slideDown({
           complete: function() {
-            view.$('[name=pay_amount]').focus();
+            view.$('[name=pay_currency]').focus();
           }
         });
       } else {
