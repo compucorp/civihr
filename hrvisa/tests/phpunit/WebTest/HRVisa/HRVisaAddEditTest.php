@@ -49,6 +49,7 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
       'End_Date' => date("Y-m-d",strtotime("+1 month")), 
       'Conditions' => 'NA', 
       'Evidence' => 'NA', 
+      'Sponsor_s_Certificate_number' => $random,
     );
     $this->_addVisaData($addData, "add");
     
@@ -61,6 +62,7 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
       'End_Date' => date("Y-m-d",strtotime("+1 month")),
       'Conditions' => 'NA',
       'Evidence' => 'NA',
+      'Sponsor_s_Certificate_number' => $randomEditVisaNumber,
     );
     $this->_addVisaData($editData, "edit", $random);
   }
@@ -70,11 +72,16 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
       $this->click("xpath=//a[@title='Immigration']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
       $this->click("xpath=//form[@id='Edit']/div[2]/a/span");
-    }  	
+    }
     else {
       $this->click("xpath=//a[@title='Immigration']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[4]/span/a[text()='Edit']");
+      if ($this->isElementPresent("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[5]/span/a[text()='Edit']")) {
+        $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[5]/span/a[text()='Edit']");
+      }
+      else {
+        $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[4]/span/a[text()='Edit']");
+      }
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Immigration:Visa_Type']");
     $this->type("xpath=//input[@data-crm-custom='Immigration:Visa_Type']", $values['Visa_Type']);
@@ -83,12 +90,21 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
     $this->type("xpath=//input[@data-crm-custom='Immigration:End_Date']", $values['End_Date']);
     $this->type("xpath=//textarea[@data-crm-custom='Immigration:Conditions']", $values['Conditions']);
     $this->type("xpath=//textarea[@data-crm-custom='Immigration:Evidence_Note']", $values['Evidence']);
+    if ($this->isElementPresent("xpath=//input[@data-crm-custom='Immigration:Sponsor_s_Certificate_number']")) {
+      $this->type("xpath=//input[@data-crm-custom='Immigration:Sponsor_s_Certificate_number']", $values['Sponsor_s_Certificate_number']);
+    }
+
     $this->click("xpath=//input[@id='_qf_Edit_upload']");
     $this->waitForPageToLoad($this->getTimeoutMsec());
     $this->waitForElementPresent("xpath=//li[@aria-controls='Immigration']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Visa_Number']), 'Visa number not found after '.$mode.'ing visa data (_addVisaData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Visa_Number']."']/following-sibling::td[4]/span/a[text()='View']");
+    if ($this->isElementPresent("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Visa_Number']."']/following-sibling::td[5]/span/a[text()='View']")) {
+      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Visa_Number']."']/following-sibling::td[5]/span/a[text()='View']");
+    }
+    else {
+      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Visa_Number']."']/following-sibling::td[4]/span/a[text()='View']");
+    }
     $this->assertTrue($this->isTextPresent($values['Visa_Number']), 'Visa number not found after '.$mode.'ing vida data (_addVisaData).');
 
     // WAS: xpath=//div[8]/div[1]/a
@@ -96,6 +112,5 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent($close);
     $this->click($close);
   }
-
 }
 
