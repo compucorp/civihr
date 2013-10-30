@@ -137,7 +137,7 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   } // */
-  
+
   public function upgrade_4404() {
     $this->ctx->log->info('Applying update 4404');
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
@@ -182,5 +182,30 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
+  public function upgrade_4405() {
+    $this->ctx->log->info('Applying update 4405');
+    // create activity_type 'Visa Expiration'
+    $params = array(
+      'weight' => 1,
+      'label' => 'Visa Expiration',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_default' => 0
+    );
+    $result = civicrm_api3('activity_type', 'create', $params);
+
+    // find all contacts who require visa
+    $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
+    $params = array(
+      "custom_{$cfId}" => 1,
+      'return.id' => 1
+    );
+    $result = civicrm_api3('contact', 'get', $params);
+    if ($result['count']) {
+      foreach ($result['values'] as $value) {
+        CRM_HRVisa_Activity::sync($value['id']);
+      }
+    }
+  }
 }
