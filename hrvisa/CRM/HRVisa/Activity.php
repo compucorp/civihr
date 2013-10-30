@@ -51,7 +51,7 @@ class CRM_HRVisa_Activity {
       $lastestVisaExpirationDate = $immigrationDateInfo['values']["{$immigrationDateInfo['id']}"]['latest'];
     }
 
-    // activity processing
+    // activity processing if immigration data found
     if ($immigrationDateInfo['count']) {
       // get 'Visa Expiration' activity for this contact
       $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
@@ -65,12 +65,12 @@ class CRM_HRVisa_Activity {
       $result = civicrm_api3('activity', 'get', $params);
 
       if ($count = $result['count']) {
-        // check if count is one if not log a error
         $activityParams = array();
         $activityParams['status_id'] =
           $isVisaRequired ? CRM_Utils_Array::key('Scheduled', $activityStatuses) : CRM_Utils_Array::key('Cancelled', $activityStatuses);
         $activityParams['activity_date_time'] = $lastestVisaExpirationDate;
 
+        // check if count is one, if not log a error
         if ($count > 1) {
           // update the last activity and log a error
           $result = array_pop($result['values']);
