@@ -182,5 +182,16 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
+  public function upgrade_4405() {
+    $this->ctx->log->info('Applying update 4405');
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $customFieldID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
+    $customGroupID = array_search('Extended_Demographics', $groups);
+
+    if ($customFieldID && $customGroupID) {
+      CRM_Core_BAO_CustomField::moveField($customFieldID, $customGroupID);
+    }
+    return TRUE;
+  }
 }

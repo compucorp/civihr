@@ -157,24 +157,6 @@
       <custom_group_name>Immigration</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Is_Visa_Required</name>
-      <label>Is Visa Required</label>
-      <data_type>String</data_type>
-      <html_type>CheckBox</html_type>
-      <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
-      <is_search_range>0</is_search_range>
-      <weight>1</weight>
-      <is_active>1</is_active>
-      <is_view>0</is_view>
-      <text_length>255</text_length>
-      <note_columns>60</note_columns>
-      <note_rows>4</note_rows>
-      <column_name>is_visa_required_74</column_name>
-      <option_group_name>is_visa_required_20130702051150</option_group_name>
-      <custom_group_name>Immigration_Summary</custom_group_name>
-    </CustomField>
-    <CustomField>
       <name>Sponsor_s_Certificate_number</name>
       <label>Sponsor's Certificate number</label>
       <data_type>String</data_type>

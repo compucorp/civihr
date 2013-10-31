@@ -45,7 +45,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>2</weight>
+      <weight>3</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -63,7 +63,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>3</weight>
+      <weight>4</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -81,7 +81,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>4</weight>
+      <weight>5</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -99,7 +99,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>5</weight>
+      <weight>6</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -107,6 +107,24 @@
       <note_rows>4</note_rows>
       <column_name>marital_status_58</column_name>
       <option_group_name>marital_status_20130913084916</option_group_name>
+      <custom_group_name>Extended_Demographics</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Is_Visa_Required</name>
+      <label>Is Visa Required</label>
+      <data_type>Boolean</data_type>
+      <html_type>Radio</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>is_visa_required_64</column_name>
+      <option_group_name>is_visa_required_20130702051150</option_group_name>
       <custom_group_name>Extended_Demographics</custom_group_name>
     </CustomField>
   </CustomFields>
