@@ -70,7 +70,21 @@ function hrcase_civicrm_managed(&$entities) {
 }
 
 function hrcase_civicrm_buildForm($formName, &$form) {
-  if ($form instanceof CRM_Case_Form_Activity OR $form instanceof CRM_Case_Form_Case) {
+  if ($form instanceof CRM_Case_Form_Activity OR $form instanceof CRM_Case_Form_Case OR $form instanceof CRM_Case_Form_CaseView) {
+    $optionID = CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('activity_status');
+    $completed = array_search( 'Completed', $optionID );
+    CRM_Core_Resources::singleton()->addSetting(array(
+      'hrcase' => array(
+        'statusID' => $completed,
+      ),
+    ));
+    if( $form instanceof CRM_Case_Form_CaseView ) {
+    CRM_Core_Resources::singleton()->addSetting(array(
+      'hrcase' => array(
+        'manageScreen' => 1,
+      ),
+    ));
+    }
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrcase', 'js/hrcase.js');
   }
 }
