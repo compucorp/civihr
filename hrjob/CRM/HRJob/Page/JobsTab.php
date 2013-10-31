@@ -135,6 +135,8 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       'HRJobHealth' => array(
         'provider',
         'plan_type',
+        'provider_life_insurance',
+        'plan_type_life_insurance',
       ),
       'HRJobLeave' => array(
         'leave_type',

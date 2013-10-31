@@ -20,8 +20,13 @@
       </td>
       <td>
         <div class="crm-summary-row">
-          <div class="crm-label">{ts}Healthcare{/ts}</div>
+          <div class="crm-label">{ts}Health Insurance{/ts}</div>
           <div class="crm-content hrjob-summary-health"></div>
+        </div>
+
+        <div class="crm-summary-row">
+          <div class="crm-label">{ts}Life Insurance{/ts}</div>
+          <div class="crm-content hrjob-summary-life"></div>
         </div>
 
         <div class="crm-summary-row">
