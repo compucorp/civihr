@@ -106,7 +106,11 @@ CREATE TABLE `civicrm_hrjob_health` (
      `provider` varchar(63)    COMMENT 'The organization or company which manages healthcare service',
      `plan_type` enum('Family', 'Individual')    COMMENT '.',
      `description` text    ,
-     `dependents` text     
+     `dependents` text,
+     `provider_life_insurance`    varchar(63)    COMMENT 'The organization or company which manages life insurance service',
+     `plan_type_life_insurance` enum('Family', 'Individual')    COMMENT '.',
+     `description_life_insurance` text,
+     `dependents_life_insurance` text 
 ,
     PRIMARY KEY ( `id` )
  
@@ -118,6 +122,12 @@ CREATE TABLE `civicrm_hrjob_health` (
   )
   ,     INDEX `index_plan_type`(
         plan_type
+  ) ,
+        INDEX `index_provider_life_insurance`(
+        provider_life_insurance
+  ) ,
+        INDEX `index_plan_type_life_insurance`(
+        plan_type_life_insurance
   )
   
 ,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  

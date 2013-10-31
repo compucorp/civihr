@@ -12,6 +12,7 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       generalRegion: '.hrjob-summary-general',
       fundingRegion: '.hrjob-summary-funding',
       healthRegion: '.hrjob-summary-health',
+      lifeRegion: '.hrjob-summary-life',
       hourRegion: '.hrjob-summary-hour',
       leaveRegion: '.hrjob-summary-leave',
       payRegion: '.hrjob-summary-pay',
@@ -31,6 +32,11 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       }));
       this.healthRegion.show(new Summary.SimpleItemView({
         template: '#hrjob-health-summary-template',
+        crmEntityName: 'HRJobHealth',
+        model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
+      }));
+      this.lifeRegion.show(new Summary.SimpleItemView({
+        template: '#hrjob-life-summary-template',
         crmEntityName: 'HRJobHealth',
         model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
       }));
