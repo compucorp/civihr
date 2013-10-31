@@ -19,7 +19,7 @@ function contactImLink() {
                  'GTalk':'gtalk:chat?jid=',
                  'AIM':'aim:goim?screenname=',
                  'Jabber':'xmpp:',
-                 'MSN':'msnim:chat?contact=' };
+                 'MSN':'skype:' };
   cj("#crm-im-content .crm-summary-row").each(function() {
     if (this) {
       // get providerlabels
@@ -35,5 +35,8 @@ function contactImLink() {
         }
       }
     }
+  });
+  cj('.crm-contact_im a').on('click',function() {
+    CRM.alert("Having trouble? <a href='https://civicrm.org/go/im-support' target='_blank'>Click here to discuss</a>", 'Experimental: Instant Messaging', 'notice');
   });
 }
