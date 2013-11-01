@@ -30,12 +30,12 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
       this.fundingRegion.show(new HRApp.JobTabApp.Funding.SummaryView({
           model: models.HRJob.first()
       }));
-      this.healthRegion.show(new Summary.SimpleItemView({
+      this.healthRegion.show(new HRApp.JobTabApp.Health.SummaryView({
         template: '#hrjob-health-summary-template',
         crmEntityName: 'HRJobHealth',
         model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
       }));
-      this.lifeRegion.show(new Summary.SimpleItemView({
+      this.lifeRegion.show(new HRApp.JobTabApp.Health.SummaryView({
         template: '#hrjob-life-summary-template',
         crmEntityName: 'HRJobHealth',
         model: models.HRJobHealth.first() || new HRApp.Entities.HRJobHealth()
