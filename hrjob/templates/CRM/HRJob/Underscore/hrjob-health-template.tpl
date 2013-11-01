@@ -19,9 +19,12 @@
         options: _.extend({'':''}, FieldOptions.provider)
       }) %>
     {/literal}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_health_provider'}
+    {foreach from=$result.values item=OptionGroup}
+      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$OptionGroup.id}" target="_blank"><span class="batch-edit"></span></a>
+      {/if}
+    {/foreach}
     </div>
   </div>
 
@@ -75,9 +78,12 @@
         options: _.extend({'':''}, FieldOptions.provider_life_insurance)
       }) %>
     {/literal}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_life_provider'}
+    {foreach from=$result.values item=OptionGroup}
+      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$OptionGroup.id}" target="_blank"><span class="batch-edit"></span></a>
+      {/if}
+    {/foreach}
     </div>
   </div>
 
