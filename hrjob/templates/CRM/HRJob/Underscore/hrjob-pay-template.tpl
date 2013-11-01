@@ -19,6 +19,9 @@
       options: _.extend({'':''}, FieldOptions.pay_grade)
       }) %>
     {/literal}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
@@ -34,6 +37,9 @@
       options: _.extend({'':''}, FieldOptions.pay_currency)
       }) %>
     {/literal}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 

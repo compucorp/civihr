@@ -37,6 +37,9 @@
         options: _.extend({'':''}, FieldOptions.contract_type)
       }) %>
     {/literal}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
@@ -52,6 +55,9 @@
         options: _.extend({'':''}, FieldOptions.department)
         }) %>
       {/literal}
+      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+        <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+      {/if}
     </div>
   </div>
 
@@ -67,6 +73,9 @@
         options: _.extend({'':''}, FieldOptions.level_type)
       }) %>
     {/literal}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
@@ -91,6 +100,9 @@
       options: _.extend({'':''}, FieldOptions.location)
       }) %>
     {/literal}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/options' q='reset=1'}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
