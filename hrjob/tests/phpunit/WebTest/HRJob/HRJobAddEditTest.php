@@ -35,6 +35,14 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->webtestLogin();
     $config = CRM_Core_Config::singleton();
 
+    $this->rest_civicrm_api('ContactType','create',array('parent_id'=>3,'name'=>'Health_Insurance_Provider'));
+    $this->rest_civicrm_api('ContactType','create',array('parent_id'=>3,'name'=>'Life_Insurance_Provider'));
+    
+    $orgName1 = substr(sha1(rand()), 0, 7);
+    $org1 = $this->webtestAddOrganization($orgName1, "$orgName1@org.name", 'Health_Insurance_Provider');
+    $orgName2 = substr(sha1(rand()), 0, 7);
+    $org2 = $this->webtestAddOrganization($orgName2, "$orgName2@org.name", 'Life_Insurance_Provider');
+
     // Adding contacts
     //manager contact
     $firstName = substr(sha1(rand()), 0, 7);
@@ -64,11 +72,11 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ));
     
     $this->_addHealthCareData(1, array(
-      'provider' => 'Unknown', 
+      'provider' => $orgName1, 
       'plan_type' => 'Family', 
       'description' => 'This is a Test Description', 
       'dependents' => 'Mr X',
-      'provider_life_insurance' => 'Unknown',
+      'provider_life_insurance' => $orgName2,
       'plan_type_life_insurance' => 'Individual',
       'description_life_insurance' => 'This is a life insurance description',
       'dependents_life_insurance' => 'Own',
@@ -165,11 +173,11 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), 'Edit');
 
     $this->_addHealthCareData(2, array(
-      'provider' => 'Unknown', 
+      'provider' => $orgName1, 
       'plan_type' => 'Individual', 
       'description' => 'This is a another Test Description', 
       'dependents' => 'Mr Y',
-      'provider_life_insurance'=> 'Unknown',
+      'provider_life_insurance'=> $orgName2,
       'plan_type_life_insurance'=> 'Family',
       'description_life_insurance'=> 'This is a life insurance description',
       'dependents_life_insurance'=> 'Spouse, children',
@@ -177,10 +185,11 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
     //edit healthCare data
     $this->_addHealthCareData(2, array(
-      'provider' => 'Unknown', 
+      'provider' => $orgName1, 
       'plan_type' => 'Family', 
       'description' => 'A Test Description', 
-      'dependents' => 'Mr XYZ','provider_life_insurance'=> 'Unknown',
+      'dependents' => 'Mr XYZ',
+      'provider_life_insurance'=> $orgName2,
       'plan_type_life_insurance'=> 'Family',
       'description_life_insurance'=> 'This is a life insurance description',
       'dependents_life_insurance'=> 'Spouse, children',
@@ -322,18 +331,33 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
     }
-    $this->waitForElementPresent('hrjob-provider');
-    $this->select('hrjob-provider', "value={$values['provider']}");
+    foreach ($values as $key => $value) {
+      if ($key == 'provider') {
+        $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+        $this->type("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']", $value);
+        $this->click("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+        $this->waitForElementPresent("css=div.ac_results-inner li");
+        $this->click("css=div.ac_results-inner li");
+      }     
+      if ($key == 'provider_life_insurance') {
+        $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+        $this->type("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']", $value);
+        $this->click("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+        $this->waitForElementPresent("css=div.ac_results-inner li");
+        $this->click("css=div.ac_results-inner li");
+      }
+    }
     $this->select('hrjob-plan_type', "value={$values['plan_type']}");
     $this->type('hrjob-description', $values['description']);
     $this->type('hrjob-dependents', $values['dependents']);
-    $this->select('hrjob-provider_life_insurance', "value={$values['provider_life_insurance']}");
     $this->select('hrjob-plan_type_life_insurance', "value={$values['plan_type_life_insurance']}");
     $this->type('hrjob-description_life_insurance', $values['description_life_insurance']);
     $this->type('hrjob-dependents_life_insurance', $values['dependents_life_insurance']);
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
+    unset($values['provider']);
+    unset($values['provider_life_insurance']);
 
     //assert the saved values
     $this->assertSavedValues($values, array('provider', 'plan_type','provider_life_insurance', 'plan_type_life_insurance'));

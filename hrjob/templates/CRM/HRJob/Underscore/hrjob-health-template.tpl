@@ -12,13 +12,7 @@
       <label for="hrjob-provider">{ts}Provider{/ts}</label>
     </div>
     <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-provider',
-        name: 'provider',
-        options: _.extend({'':''}, FieldOptions.provider)
-      }) %>
-    {/literal}
+      <input id="hrjob-provider" name="provider" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Health_Insurance_Provider" type="text" />
     </div>
   </div>
 
@@ -60,18 +54,13 @@
     <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_health" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
     {literal}<% } %>{/literal}
   </h3>
+
   <div class="crm-summary-row">
     <div class="crm-label">
       <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}</label>
     </div>
     <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-provider_life_insurance',
-        name: 'provider_life_insurance',
-        options: _.extend({'':''}, FieldOptions.provider_life_insurance)
-      }) %>
-    {/literal}
+      <input id="hrjob-provider_life_insurance" name="provider_life_insurance" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Life_Insurance_Provider" type="text" />
     </div>
   </div>
 

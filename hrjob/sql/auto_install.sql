@@ -103,11 +103,11 @@ CREATE TABLE `civicrm_hrjob_health` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHealth ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
-     `provider` varchar(63)    COMMENT 'The organization or company which manages healthcare service',
+     `provider` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages healthcare service',
      `plan_type` enum('Family', 'Individual')    COMMENT '.',
      `description` text    ,
      `dependents` text,
-     `provider_life_insurance`    varchar(63)    COMMENT 'The organization or company which manages life insurance service',
+     `provider_life_insurance` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages life insurance service',
      `plan_type_life_insurance` enum('Family', 'Individual')    COMMENT '.',
      `description_life_insurance` text,
      `dependents_life_insurance` text 
@@ -122,15 +122,15 @@ CREATE TABLE `civicrm_hrjob_health` (
   )
   ,     INDEX `index_plan_type`(
         plan_type
-  ) ,
-        INDEX `index_provider_life_insurance`(
+  ) 
+  ,     INDEX `index_provider_life_insurance`(
         provider_life_insurance
-  ) ,
-        INDEX `index_plan_type_life_insurance`(
+  )
+  ,     INDEX `index_plan_type_life_insurance`(
         plan_type_life_insurance
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE, CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************

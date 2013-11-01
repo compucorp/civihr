@@ -102,9 +102,9 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    */
   public $job_id;
   /**
-   * The organization or company which manages healthcare service
+   * FK to Contact ID for the organization or company which manages healthcare service
    *
-   * @var string
+   * @var int unsigned
    */
   public $provider;
   /**
@@ -124,9 +124,9 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
    */
   public $dependents;
   /**
-   * The organization or company which manages life insurance service
+   * FK to Contact ID for the organization or company which manages life insurance service
    *
-   * @var string
+   * @var int unsigned
    */
   public $provider_life_insurance;
   /**
@@ -168,6 +168,8 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
     if (!self::$_links) {
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'job_id', 'civicrm_hrjob', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'provider', 'civicrm_contact', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'provider_life_insurance', 'civicrm_contact', 'id') ,
       );
     }
     return self::$_links;
@@ -195,17 +197,13 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         ) ,
         'hrjob_health_provider' => array(
           'name' => 'provider',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Job Healthcare Provider') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
           'export' => true,
           'where' => 'civicrm_hrjob_health.provider',
           'headerPattern' => '',
           'dataPattern' => '',
-          'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_health_provider',
-          )
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'hrjob_health_plan_type' => array(
           'name' => 'plan_type',
@@ -229,17 +227,13 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         ) ,
         'hrjob_health_provider_life_insurance' => array(
           'name' => 'provider_life_insurance',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Job life insurance Provider') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
           'export' => true,
           'where' => 'civicrm_hrjob_health.provider_life_insurance',
           'headerPattern' => '',
           'dataPattern' => '',
-          'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_life_provider',
-          )
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'hrjob_life_insurance_plan_type' => array(
           'name' => 'plan_type_life_insurance',

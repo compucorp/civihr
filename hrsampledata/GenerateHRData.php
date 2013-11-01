@@ -716,10 +716,14 @@ class GenerateHRData {
         //sample data for HRJob Health table
         $healthValues = array(
           'job_id' => $hrJobObj->id,
-          'provider' => $this->randomItem('provider'),
+          'provider' =>  null,
           'plan_type' => $this->randomItem('plan_type'),
           'description' => $this->randomItem('description'),
           'dependents' => $this->randomItem('dependents'),
+          'provider_life_insurance' => null,
+          'plan_type_life_insurance' => $this->randomItem('plan_type_life_insurance'),
+          'description_life_insurance' => $this->randomItem('description_life_insurance'),
+          'dependents_life_insurance' => $this->randomItem('dependents_life_insurance'),
         );
         $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
       }
