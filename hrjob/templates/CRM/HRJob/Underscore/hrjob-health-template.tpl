@@ -19,6 +19,10 @@
         options: _.extend({'':''}, FieldOptions.provider)
       }) %>
     {/literal}
+    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_health_provider'}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
@@ -72,6 +76,10 @@
         options: _.extend({'':''}, FieldOptions.provider_life_insurance)
       }) %>
     {/literal}
+    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_life_provider'}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
