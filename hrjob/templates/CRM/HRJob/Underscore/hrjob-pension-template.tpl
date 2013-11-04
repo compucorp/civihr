@@ -37,12 +37,11 @@
         name: 'pension_type',
         options: _.extend({'':''}, FieldOptions.pension_type)
       }) %>
-    {/literal}{crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pension_type'}
-      {foreach from=$result.values item=OptionGroup}
-        {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-          <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$OptionGroup.id}" target="_blank"><span class="batch-edit"></span></a>
-        {/if}
-      {/foreach}
+    {/literal}
+    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pension_type'}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 

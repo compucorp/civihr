@@ -20,11 +20,9 @@
       }) %>
     {/literal}
     {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_hours_type'}
-    {foreach from=$result.values item=OptionGroup}
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$OptionGroup.id}" target="_blank"><span class="batch-edit"></span></a>
-      {/if}
-    {/foreach}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+    {/if}
     </div>
   </div>
 
