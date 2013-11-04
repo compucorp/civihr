@@ -5,7 +5,7 @@
   <% } %>
 
   <% if (provider) { %>
-    (With <%- FieldOptions.provider[provider] %>)
+    (With <a href="#" class="hrjob-provider" /> )
   <% } %>
 
   <% if (description) { %>
@@ -25,7 +25,7 @@
   <% } %>
 
   <% if (provider_life_insurance) { %>
-    (With <%- FieldOptions.provider[provider_life_insurance] %>)
+    (With <a href="#" class="hrjob-provider_life_insurance" /> )
   <% } %>
 
   <% if (description_life_insurance) { %>

@@ -12,17 +12,7 @@
       <label for="hrjob-provider">{ts}Provider{/ts}</label>
     </div>
     <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-provider',
-        name: 'provider',
-        options: _.extend({'':''}, FieldOptions.provider)
-      }) %>
-    {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_health_provider'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+      <input id="hrjob-provider" name="provider" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Health_Insurance_Provider" type="text" />
     </div>
   </div>
 
@@ -69,17 +59,7 @@
       <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}</label>
     </div>
     <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-provider_life_insurance',
-        name: 'provider_life_insurance',
-        options: _.extend({'':''}, FieldOptions.provider_life_insurance)
-      }) %>
-    {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_life_provider'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+      <input id="hrjob-provider_life_insurance" name="provider_life_insurance" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Life_Insurance_Provider" type="text" />
     </div>
   </div>
 
