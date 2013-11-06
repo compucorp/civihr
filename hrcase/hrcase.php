@@ -133,3 +133,14 @@ function hrcase_civicrm_navigationMenu(&$params) {
     }
   }
 }
+
+/**
+ * Implementation of hook_civicrm_caseTypes
+ *
+ * Generate a list of case-types
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ */
+function hrcase_civicrm_caseTypes(&$caseTypes) {
+  _hrcase_civix_civicrm_caseTypes($caseTypes);
+}
