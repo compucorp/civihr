@@ -232,6 +232,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'fields' =>
         array(
           'hrjob_pay_grade' => array(),
+          'hrjob_pay_currency' => array(),
         ),
         'filters' =>
         array(
@@ -240,6 +241,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'group_bys' =>
         array(
           'hrjob_pay_grade' => array(),
+          'hrjob_pay_currency' => array(),
         ),
         'grouping' => 'job-fields',
       ),
@@ -398,19 +400,38 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
   function statistics(&$rows) {
     $statistics = parent::statistics($rows);
-
     if (!empty($this->_statFields)) {
-      // after removing group-by we have
-      $sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_having} {$this->_orderBy} {$this->_limit}";
-      $dao = CRM_Core_DAO::executeQuery($sql);
-      while ($dao->fetch()) {
-        foreach ($this->_statFields as $title => $alias) {
-          $statistics['counts'][$alias] = array(
-            'title' => $title,
-            'value' => $dao->$alias,
-            'type' => CRM_Utils_Type::T_STRING,
-          );
-        }
+      if (array_key_exists("monthly_cost_eq",$this->_params["fields"]) || array_key_exists("annual_cost_eq",$this->_params["fields"])) {
+      	$this->_select .=", count({$this->_aliases["civicrm_hrjob_pay"]}.pay_amount) as count";
+      	$groupByCurrency = "GROUP BY {$this->_aliases["civicrm_hrjob_pay"]}.pay_currency";
+      	$sql = "{$this->_select} {$this->_from} {$this->_where} {$groupByCurrency} {$this->_having} {$this->_orderBy} {$this->_limit}";
+      	$dao = CRM_Core_DAO::executeQuery($sql);
+      	while ($dao->fetch()) {
+      	  foreach ($this->_statFields as $title => $alias) {
+      	    if ($alias == "civicrm_hrjob_pay_annual_cost_eq_sum") {
+      		  $totalAmount[] = CRM_Utils_Money::format($dao->$alias, $dao->civicrm_hrjob_pay_hrjob_pay_currency)."(".$dao->count.")";
+      		  $statistics['counts'][$alias] = array(
+      		    'title' => $title,
+      			'value' => implode(',  ', $totalAmount),
+      			'type' => CRM_Utils_Type::T_STRING,
+      		  );
+      		}
+      	  }
+        }	
+      } 
+      else {
+      	// after removing group-by we have
+      	$sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_having} {$this->_orderBy} {$this->_limit}";
+      	$dao = CRM_Core_DAO::executeQuery($sql);
+      	while ($dao->fetch()) {
+      	  foreach ($this->_statFields as $title => $alias) {
+      	    $statistics['counts'][$alias] = array(
+      		  'title' => $title,
+      		  'value' => $dao->$alias,
+      		  'type' => CRM_Utils_Type::T_STRING,
+      		);
+      	  }
+      	}	
       }
     }
     return $statistics;
