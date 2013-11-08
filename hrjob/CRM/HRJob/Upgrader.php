@@ -248,5 +248,6 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
         ADD CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
         ADD CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL");
     }
+    return TRUE;
   }
 }
