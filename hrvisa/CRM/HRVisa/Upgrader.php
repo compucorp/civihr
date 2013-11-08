@@ -191,6 +191,25 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
 
     if ($customFieldID && $customGroupID) {
       CRM_Core_BAO_CustomField::moveField($customFieldID, $customGroupID);
+
+      $result = civicrm_api3('CustomField', 'get', array(
+        'sequential' => 1,
+        'name' => 'Is_Visa_Required',
+      ));
+      $weight = $result['values']['weight'];
+
+      $params = array(
+        'sequential' => 1,
+        'id' => $result['id'],
+        'is_active' => 1,
+        'html_type' => 'Radio',
+      );
+      $result = civicrm_api3('CustomField', 'create', $params);
+
+      $fieldValues['custom_group_id'] = $customGroupID;
+
+      //fix the weight so that the field is next to nationality
+      CRM_Utils_Weight::updateOtherWeights('CRM_Core_DAO_CustomField', $weight, 2, $fieldValues);
     }
     return TRUE;
   }
