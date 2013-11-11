@@ -195,4 +195,59 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }  
+
+  public function upgrade_4408() {
+    $this->ctx->log->info('Applying update 4408');
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider') && CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider_life_insurance')) {
+      $opt_grp_name = array(
+        'hrjob_health_provider' => array(
+          'name' => 'Health_Insurance_Provider',
+          'label' => ts('Health Insurance Provider'),
+          'column' => 'provider'
+        ),
+        'hrjob_life_provider' => array(
+          'name' => 'Life_Insurance_Provider',
+          'label' => ts('Life Insurance Provider'),
+          'column' => 'provider_life_insurance'
+        )
+      );
+      $org_id = array_search('Organization', CRM_Contact_BAO_ContactType::basicTypePairs(false,'id'));
+      $orgSubType = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
+
+      foreach($opt_grp_name as $oKey => $oValue) {
+        $subID = array_key_exists( $oValue['name'], $orgSubType );
+        if(!$subID) {
+          CRM_Contact_BAO_ContactType::add( array(
+            'parent_id' => $org_id,
+            'is_active' => 1,
+            'name' => $oValue['name'],
+            'label' => $oValue['label']
+          ));
+        }
+        $options =  CRM_Core_OptionGroup::values($oKey, TRUE, FALSE);
+        foreach($options as $orgKey => $orgValue) {
+          $params = array(
+            'organization_name' => $orgValue,
+            'sort_name' => $orgValue,
+            'display_name' => $orgValue,
+            'legal_name' => $orgValue,
+            'contact_type' => 'Organization',
+            'contact_sub_type' => $oValue['name'],
+          );
+          $result = civicrm_api3('contact', 'create', $params);
+          if($result['id']) {
+            CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjob_health SET {$oValue['column']} = {$result['id']} WHERE {$oValue['column']} LIKE '{$orgValue}'");
+            CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjob_health SET {$oValue['column']} = NULL WHERE {$oValue['column']} = ''");
+          }
+        }
+        CRM_Core_OptionGroup::deleteAssoc($oKey);
+      }
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjob_health` 
+        MODIFY COLUMN `provider` int(10) unsigned DEFAULT NULL,
+        MODIFY COLUMN `provider_life_insurance` int(10) unsigned DEFAULT NULL,
+        ADD CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
+        ADD CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL");
+    }
+    return TRUE;
+  }
 }

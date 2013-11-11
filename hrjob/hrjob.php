@@ -47,6 +47,29 @@ function hrjob_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrjob_civicrm_install() {
+  $cType = CRM_Contact_BAO_ContactType::basicTypePairs(false,'id');
+  $org_id = array_search('Organization',$cType);
+  $sub_type_name = array('Health Insurance Provider','Life Insurance Provider');
+  $orgSubType = CRM_Contact_BAO_ContactType::subTypes('Organization', true);
+  $orgSubType = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
+  $params['parent_id'] = $org_id;
+  $params['is_active'] = 1;
+
+  if($org_id) {
+    foreach($sub_type_name as $sub_type_name) {
+      $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
+      $subID = array_key_exists( $subTypeName, $orgSubType );
+      if(!$subID) {
+        $params['name'] = $subTypeName;
+        $params['label'] = $sub_type_name;
+        CRM_Contact_BAO_ContactType::add($params);
+      } 
+      elseif($subID && $orgSubType[$subTypeName]['is_active']==0) {
+        CRM_Contact_BAO_ContactType::setIsActive($orgSubType[$subTypeName]['id'], 1);
+      }    
+    }
+  }
+
   return _hrjob_civix_civicrm_install();
 }
 
@@ -54,6 +77,16 @@ function hrjob_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrjob_civicrm_uninstall() {
+  $subTypeInfo = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
+  $sub_type_name = array('Health Insurance Provider','Life Insurance Provider');
+  foreach($sub_type_name as $sub_type_name) {
+    $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
+    $orid = array_key_exists($subTypeName, $subTypeInfo);
+    if($orid) {
+      $id = $subTypeInfo[$subTypeName]['id'];
+      CRM_Contact_BAO_ContactType::del($id);
+    }
+  }
   return _hrjob_civix_civicrm_uninstall();
 }
 

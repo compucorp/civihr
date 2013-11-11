@@ -83,11 +83,11 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   Entities.HRJobHealth = Backbone.Model.extend({
     defaults: {
       job_id: null,
-      provider: '',
+      provider: null,
       plan_type: '',
       description: '',
       dependents: '',
-      provider_life_insurance:'',
+      provider_life_insurance: null,
       plan_type_life_insurance:'',
       description_life_insurance:'',
       dependents_life_insurance:''
