@@ -6,4 +6,22 @@
     <title>JobsTab</title>
     <access_arguments>edit HRJobs</access_arguments>
   </item>
+  <item>
+    <path>civicrm/hrjob/file/upload</path>
+    <page_callback>CRM_HRJob_Page_Files::fileUpload</page_callback>
+    <title>FileSave</title>
+    <access_arguments>edit HRJobs</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/hrjob/file/display</path>
+    <page_callback>CRM_HRJob_Page_Files::fileDisplay</page_callback>
+    <title>FileDisplay</title>
+    <access_arguments>edit HRJobs</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/hrjob/file/delete</path>
+    <page_callback>CRM_HRJob_Page_Files::fileDelete</page_callback>
+    <title>FileDelete</title>
+    <access_arguments>edit HRJobs</access_arguments>
+  </item>
 </menu>

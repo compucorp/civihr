@@ -203,7 +203,8 @@ CREATE TABLE `civicrm_hrjob_pension` (
      `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage', 
      `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage',
      `pension_type` varchar(63) COMMENT 'Pension Type',
-     `ee_contrib_abs` decimal(20,2)   DEFAULT 0 COMMENT 'Employee Contribution Absolute Amount' 
+     `ee_contrib_abs` decimal(20,2)   DEFAULT 0 COMMENT 'Employee Contribution Absolute Amount',
+     `ee_evidence_note` varchar(127)   COMMENT 'Employee evidence note'
 ,
     PRIMARY KEY ( `id` )
  

@@ -131,6 +131,12 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
    */
   public $ee_contrib_abs;
   /**
+   * Employee evidence note
+   *
+   * @var string
+   */
+  public $ee_evidence_note;
+  /**
    * class constructor
    *
    * @access public
@@ -216,6 +222,13 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_FLOAT,
           'title' => ts('Employer Contribution Absolute Amount') ,
         ) ,
+        'ee_evidence_note' => array(
+          'name' => 'ee_evidence_note',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Evidence Note') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+        ) ,
       );
     }
     return self::$_fields;
@@ -238,6 +251,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'er_contrib_pct' => 'er_contrib_pct',
         'pension_type' => 'hrjob_pension_type',
         'ee_contrib_abs' => 'ee_contrib_abs',
+        'ee_evidence_note' => 'ee_evidence_note',
       );
     }
     return self::$_fieldKeys;

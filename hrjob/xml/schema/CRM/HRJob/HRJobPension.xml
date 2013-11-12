@@ -88,5 +88,13 @@
     <type>float</type>
     <default>0</default>
     <comment>Employer Contribution Absolute Amount</comment>
-  </field> 
+  </field>
+
+  <field>
+    <name>ee_evidence_note</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Employee evidence note</comment>
+    <title>Evidence Note</title>
+  </field>
 </table>

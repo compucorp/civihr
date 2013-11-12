@@ -187,7 +187,16 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       $this->executeCustomDataFile('xml/4405_pension_type.xml');
     }
     return TRUE;
-  } 
+  }
+
+  public function upgrade_4206() {
+    $this->ctx->log->info('Applying update 4200');
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'ee_evidence_note')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN ee_evidence_note VARCHAR(127) COMMENT "Employee evidence note"');
+    } 
+    return TRUE;
+  }
+
   public function upgrade_4407() {
     $this->ctx->log->info('Applying update 4407');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'ee_contrib_abs')) {
