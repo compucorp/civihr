@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CaseType>
+  <name>Joining</name>
+  
+  <ActivityTypes>
+    <ActivityType>
+      <name>Open Case</name>
+      <max_instances>1</max_instances>
+    </ActivityType>
+    <ActivityType>
+      <name>Follow up</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Change Case Type</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Change Case Status</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Change Case Start Date</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Link Cases</name>
+    </ActivityType>
+
+    <ActivityType>
+      <name>Attach Application Documents</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Attach Offer Letter</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Attach Reference</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Attach Draft Job Contract</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Attach Signed Job Contract</name>
+    </ActivityType>
+  </ActivityTypes>
+
+  <ActivitySets>
+    <ActivitySet>
+      <name>standard_timeline</name>
+      <label>Standard Timeline</label>
+      <timeline>false</timeline>
+      <ActivityTypes>
+        <ActivityType>
+          <name>Open Case</name>
+          <status>Completed</status>
+        </ActivityType>
+      </ActivityTypes>
+    </ActivitySet>
+  </ActivitySets>
+
+  <CaseRoles>
+    <RelationshipType>
+      <name>HR Manager</name>
+      <creator>1</creator>
+      <manager>1</manager>
+    </RelationshipType>
+    <RelationshipType>
+        <name>Recruiting Manager</name>
+    </RelationshipType>
+  </CaseRoles>
+
+  </CaseType>
