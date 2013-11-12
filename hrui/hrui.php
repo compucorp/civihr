@@ -34,6 +34,29 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   }
+  if ($page instanceof CRM_Dashlet_Page_Blog) {
+    $obj = get_class($page);
+    $hrBlogUrl = 'https://civicrm.org/taxonomy/term/198/feed';
+    $httpClient = new CRM_Utils_HttpClient($obj::CHECK_TIMEOUT);
+    list ($status, $rawFeed) = $httpClient->get($hrBlogUrl);
+    if ($status !== CRM_Utils_HttpClient::STATUS_OK) {
+      return NULL;
+    }
+    $feed = @simplexml_load_string($rawFeed);
+    $blog = array();
+    if ($feed && !empty($feed->channel->item)) {
+      foreach ($feed->channel->item as $item) {
+        $item = (array) $item;
+        // Clean up description - remove tags that would break dashboard layout
+        $description = preg_replace('#<h[1-3][^>]*>(.+?)</h[1-3][^>]*>#s', '<h4>$1</h4>', $item['description']);
+        $item['description'] = strip_tags($description, "<a><p><h4><h5><h6><b><i><em><strong><ol><ul><li><dd><dt><code><pre><br>");
+        $blog[] = $item;
+      }
+      if ($blog) {
+        CRM_Core_BAO_Cache::setItem($blog, 'dashboard', 'blog');
+      }
+    }
+  }
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
