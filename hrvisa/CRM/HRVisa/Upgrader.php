@@ -198,18 +198,19 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
       ));
       $weight = $result['values']['weight'];
 
+      //fix the weight so that the field is next to nationality
+      $fieldValues['custom_group_id'] = $customGroupID;
+      CRM_Utils_Weight::updateOtherWeights('CRM_Core_DAO_CustomField', $weight, 2, $fieldValues);
+
       $params = array(
         'sequential' => 1,
         'id' => $result['id'],
         'is_active' => 1,
         'html_type' => 'Radio',
+        'data_type' => 'Boolean',
+        'weight' => 2
       );
       $result = civicrm_api3('CustomField', 'create', $params);
-
-      $fieldValues['custom_group_id'] = $customGroupID;
-
-      //fix the weight so that the field is next to nationality
-      CRM_Utils_Weight::updateOtherWeights('CRM_Core_DAO_CustomField', $weight, 2, $fieldValues);
     }
     return TRUE;
   }
