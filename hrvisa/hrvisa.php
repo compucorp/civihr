@@ -72,6 +72,62 @@ function hrvisa_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrvisa_civicrm_install() {
+  if (!CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name')) {
+    // create activity_type 'Visa Expiration'
+    $params = array(
+      'weight' => 1,
+      'label' => 'Visa Expiration',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_default' => 0,
+    );
+    $result = civicrm_api3('activity_type', 'create', $params);
+    if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
+      CRM_Core_Error::debug_var("Failed to create activity type 'Visa  Expiration'", $result);
+      throw new CRM_Core_Exception('Failed to create activity type \'Visa  Expiration\'');
+    }
+    $activityTypeId =  $result['values'][$result['id']]['value'];
+  }
+  else {
+    $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
+  }
+
+  // set weekly reminder for Visa Expiration activities (not active)
+  // will be active when extension is enabled
+  if (!empty($activityTypeId)) {
+    $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+    $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+
+    // schedule reminder for Visa Expiration Creation
+    $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+    if (empty($result['id'])) {
+      $params = array(
+        'name' => 'Visa Expiration Reminder',
+        'title' => 'Visa Expiration Reminder',
+        'recipient' => $targetID,
+        'limit_to' => 1,
+        'entity_value' => $activityTypeId,
+        'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
+        'start_action_offset' => 0,
+        'start_action_unit' => 'hour',
+        'start_action_condition' => 'before',
+        'start_action_date' => 'activity_date_time',
+        'is_repeat' => 1,
+        'repetition_frequency_unit' => 'week',
+        'repetition_frequency_interval' => 1,
+        'end_frequency_unit' => 'hour',
+        'end_frequency_interval' => 0,
+        'end_action' => 'before',
+        'end_date' => 'activity_date_time',
+        'is_active' => 0,
+        'body_html' => '<p>Your latest visa expiries on {activity.activity_date_time}</p>',
+        'subject' => 'Reminder for Visa Expiration',
+        'record_activity' => 1,
+        'mapping_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_ActionMapping', 'activity_type', 'id', 'entity_value')
+      );
+      $result = civicrm_api3('action_schedule', 'create', $params);
+    }
+  }
   return _hrvisa_civix_civicrm_install();
 }
 
@@ -79,6 +135,11 @@ function hrvisa_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrvisa_civicrm_uninstall() {
+  // delete weekly reminder for Visa Expiration activities
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
   return _hrvisa_civix_civicrm_uninstall();
 }
 
@@ -86,6 +147,11 @@ function hrvisa_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrvisa_civicrm_enable() {
+  // enable weekly reminder for Visa Expiration activities
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
   return _hrvisa_civix_civicrm_enable();
 }
 
@@ -93,6 +159,11 @@ function hrvisa_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrvisa_civicrm_disable() {
+  // disable weekly reminder for Visa Expiration activities
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
   return _hrvisa_civix_civicrm_disable();
 }
 
@@ -163,4 +234,36 @@ function hrvisa_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
   }
+}
+
+/**
+ * Implementation of hook_civicrm_custom
+ */
+function hrvisa_civicrm_custom($op, $groupID, $entityID, &$params) {
+  if ($op != 'create' && $op != 'edit') {
+    return;
+  }
+
+  $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+  $groupName = CRM_Utils_Array::value($groupID, $groups);
+  if ($groupName == 'Immigration' || $groupName == 'Extended_Demographics') {
+    CRM_HRVisa_Activity::sync($entityID);
+  }
+}
+
+
+/**
+ * Helper function to load data into DB between iterations of the unit-test
+ */
+function _hrvisa_phpunit_populateDB() {
+  $import = new CRM_Utils_Migrate_Import();
+  $import->run(
+    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrvisa')
+      . '/xml/auto_install.xml'
+  );
+  // this had to be done as demographics consists of is_visa_required field (used in unit test)
+  $import->run(
+    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrdemog')
+      . '/xml/auto_install.xml'
+  );
 }
