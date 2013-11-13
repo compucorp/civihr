@@ -96,10 +96,10 @@ function _hrcase_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 function _hrcase_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrcase/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRCase/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_Hrcase_Upgrader_Base::instance();
+    return CRM_HRCase_Upgrader_Base::instance();
   }
 }
 
@@ -155,6 +155,33 @@ function _hrcase_civix_civicrm_managed(&$entities) {
       }
       $entities[] = $e;
     }
+  }
+}
+
+/**
+ * (Delegated) Implementation of hook_civicrm_caseTypes
+ *
+ * Find any and return any files matching "xml/case/*.xml"
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ */
+function _hrcase_civix_civicrm_caseTypes(&$caseTypes) {
+  if (!is_dir(__DIR__ . '/xml/case')) {
+    return;
+  }
+
+  foreach (_hrcase_civix_glob(__DIR__ . '/xml/case/*.xml') as $file) {
+    $name = preg_replace('/\.xml$/', '', basename($file));
+    if ($name != CRM_Case_XMLProcessor::mungeCaseType($name)) {
+      $errorMessage = sprintf("Case-type file name is malformed (%s vs %s)", $name, CRM_Case_XMLProcessor::mungeCaseType($name));
+      CRM_Core_Error::fatal($errorMessage);
+      // throw new CRM_Core_Exception($errorMessage);
+    }
+    $caseTypes[$name] = array(
+      'module' => 'org.civicrm.hrcase',
+      'name' => $name,
+      'file' => $file,
+    );
   }
 }
 
