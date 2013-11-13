@@ -246,6 +246,10 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     );
     $resultActivityType = civicrm_api3('activity_type', 'create', $params);
 
+    if ($resultActivityType['is_error']) {
+      return FALSE;
+    }
+
     // find all contacts who require visa
     $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
     $params = array(
@@ -285,13 +289,17 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
         'end_frequency_interval' => 0,
         'end_action' => 'before',
         'end_date' => 'activity_date_time',
-        'is_active' => 0,
+        'is_active' => 1,
         'body_html' => '<p>Your latest visa expiries on {activity.activity_date_time}</p>',
         'subject' => 'Reminder for Visa Expiration',
         'record_activity' => 1,
         'mapping_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_ActionMapping', 'activity_type', 'id', 'entity_value')
       );
       $result = civicrm_api3('action_schedule', 'create', $params);
+      if ($result['is_error']) {
+        return FALSE;
+      }
     }
+    return TRUE;
   }
 }
