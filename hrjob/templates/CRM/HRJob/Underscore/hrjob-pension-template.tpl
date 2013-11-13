@@ -1,5 +1,5 @@
 <script id="hrjob-pension-template" type="text/template">
-<form>
+<form enctype="multipart/form-data" method="POST">
   <h3>
     {ts}Pension{/ts}
     {literal}<% if (!isNew) { %> {/literal}
@@ -19,7 +19,8 @@
         options: {
           '': '',
           '0': '{/literal}{ts}No{/ts}{literal}',
-          '1': '{/literal}{ts}Yes{/ts}{literal}'
+          '1': '{/literal}{ts}Yes{/ts}{literal}',
+          '2': '{/literal}{ts}Opted out{/ts}{literal}'
         }
       }) %>
     {/literal}
@@ -71,7 +72,24 @@
       <input id="hrjob-ee_contrib_abs" name="ee_contrib_abs" class="form-text-big" type="text" />
     </div>
   </div>
- 
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-evidence_file">{ts}Evidence File{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="evidence_file" type='file' name='evidence_file'/>
+    </div>
+  </div>
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-ee_evidence_note">{ts}Evidence Note{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-ee_evidence_note" name="ee_evidence_note" class="form-text-big" type="text" />
+    </div>
+  </div>
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>

@@ -51,6 +51,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $contactName = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($contactName, "Anderson", "$contactName@anderson.name");
 
+    $note = substr(sha1(rand()), 0, 7);
+
     //add Job data
     $this->_addJobData(array(
       'position' => 'Chief Executive', 
@@ -100,6 +102,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'er_contrib_pct' => 65,
       'ee_contrib_pct' => 15,
       'ee_contrib_abs' => 10.10,
+      'ee_evidence_note' => $note,
     ));
 
     $roleValues = array(
@@ -229,6 +232,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'er_contrib_pct' => 65,
       'ee_contrib_pct' => 15,
       'ee_contrib_abs' => 12.00,
+      'ee_evidence_note' => $note,
     ));
 
     //edit Pension Data
@@ -238,6 +242,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'er_contrib_pct' => 35,
       'ee_contrib_pct' => 5,
       'ee_contrib_abs' => 12.00,
+      'ee_evidence_note' => $note,
     ), 'Edit');
 
     $roleValues = array(
@@ -423,6 +428,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent("hrjob-ee_contrib_abs");
     $this->select('hrjob-is_enrolled', "value={$values['is_enrolled']}");
     $this->type('hrjob-ee_contrib_abs', $values['ee_contrib_abs']);
+
+    $this->type('hrjob-ee_evidence_note', $values['ee_evidence_note']);
 
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);

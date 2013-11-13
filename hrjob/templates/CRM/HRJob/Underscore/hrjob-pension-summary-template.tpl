@@ -4,7 +4,8 @@
   var enrolledOptions ={
     '': '',
     '0': '{/literal}{ts}Not Enrolled{/ts}{literal}',
-    '1': '{/literal}{ts}Enrolled{/ts}{literal}'
+    '1': '{/literal}{ts}Enrolled{/ts}{literal}',
+    '2': '{/literal}{ts}Opted out{/ts}{literal}'
   };
   %>
 
