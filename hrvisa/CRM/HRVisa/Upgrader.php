@@ -233,4 +233,65 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_4406() {
+    $this->ctx->log->info('Applying update 4406');
+    // create activity_type 'Visa Expiration'
+    $params = array(
+      'weight' => 1,
+      'label' => 'Visa Expiration',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_default' => 0
+    );
+    $resultActivityType = civicrm_api3('activity_type', 'create', $params);
+
+    // find all contacts who require visa
+    $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
+    $params = array(
+      "custom_{$cfId}" => 1,
+      'return.id' => 1
+    );
+
+    $result = civicrm_api3('contact', 'get', $params);
+    if ($result['count']) {
+      foreach ($result['values'] as $value) {
+        CRM_HRVisa_Activity::sync($value['id']);
+      }
+    }
+
+    // create weekly reminder for Visa Expiration
+    $actionSchedule = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
+    $activityTypeId =  $resultActivityType['values'][$resultActivityType['id']]['value'];
+    if (empty($actionSchedule['id'])) {
+      $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
+      $targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+
+      $params = array(
+        'name' => 'Visa Expiration Reminder',
+        'title' => 'Visa Expiration Reminder',
+        'recipient' => $targetID,
+        'limit_to' => 1,
+        'entity_value' => $activityTypeId,
+        'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
+        'start_action_offset' => 0,
+        'start_action_unit' => 'hour',
+        'start_action_condition' => 'before',
+        'start_action_date' => 'activity_date_time',
+        'is_repeat' => 1,
+        'repetition_frequency_unit' => 'week',
+        'repetition_frequency_interval' => 1,
+        'end_frequency_unit' => 'hour',
+        'end_frequency_interval' => 0,
+        'end_action' => 'before',
+        'end_date' => 'activity_date_time',
+        'is_active' => 0,
+        'body_html' => '<p>Your latest visa expiries on {activity.activity_date_time}</p>',
+        'subject' => 'Reminder for Visa Expiration',
+        'record_activity' => 1,
+        'mapping_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_ActionMapping', 'activity_type', 'id', 'entity_value')
+      );
+      $result = civicrm_api3('action_schedule', 'create', $params);
+    }
+  }
 }
