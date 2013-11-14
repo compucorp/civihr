@@ -81,7 +81,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     else {
       $this->click("xpath=//a[@title='Career History']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$nameOfOrganisation."']/following-sibling::td[6]/span/a[text()='Edit']");
+      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$nameOfOrganisation."']/following-sibling::td[7]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Career:Start_Date']");
     $this->type("xpath=//input[@data-crm-custom='Career:Start_Date']", $values['Start_Date']);
@@ -98,7 +98,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent("xpath=//li[@aria-controls='Career_History']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Organisation']."']/following-sibling::td[6]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Organisation']."']/following-sibling::td[7]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
 
     // WAS: xpath=//div[8]/div[1]/a

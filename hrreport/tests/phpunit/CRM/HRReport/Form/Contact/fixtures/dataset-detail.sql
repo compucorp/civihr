@@ -134,25 +134,25 @@ INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_t
 -- Dumping data for table `civicrm_hrjob_health`
 --
 
-INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `description`, `dependents`) VALUES
-(1, 1, 'Unknown', 'Individual', 'Description1', 'dependents2'),
-(2, 5, 'Unknown', 'Individual', 'Description2', 'dependents2'),
-(3, 6, 'Unknown', 'Individual', 'Description1', 'dependents2'),
-(4, 7, 'Unknown', 'Individual', 'Description1', 'dependents1'),
-(5, 8, 'Unknown', 'Individual', 'Description2', 'dependents1'),
-(6, 9, 'Unknown', 'Individual', 'Description1', 'dependents2'),
-(7, 10, 'Unknown', 'Individual', 'Description2', 'dependents1'),
-(8, 12, 'Unknown', 'Family', 'Description2', 'dependents1'),
-(9, 13, 'Unknown', 'Family', 'Description2', 'dependents1'),
-(10, 15, 'Unknown', 'Family', 'Description2', 'dependents2'),
-(11, 16, 'Unknown', 'Family', 'Description1', 'dependents1'),
-(12, 17, 'Unknown', 'Family', 'Description1', 'dependents2'),
-(13, 18, 'Unknown', 'Family', 'Description1', 'dependents2'),
-(14, 25, 'Unknown', 'Individual', 'Description1', 'dependents1'),
-(15, 29, 'Unknown', 'Family', 'Description2', 'dependents1'),
-(16, 31, 'Unknown', 'Individual', 'Description2', 'dependents2'),
-(17, 32, 'Unknown', 'Individual', 'Description2', 'dependents1'),
-(18, 33, 'Unknown', 'Individual', 'Description2', 'dependents1');
+INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `description`, `dependents`, `provider_life_insurance`, `plan_type_life_insurance`, `description_life_insurance`, `dependents_life_insurance`) VALUES
+(1, 1, null, 'Individual', 'Description1', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(2, 5, null, 'Individual', 'Description2', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(3, 6, null, 'Individual', 'Description1', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(4, 7, null, 'Individual', 'Description1', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(5, 8, null, 'Family', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(6, 9, null, 'Family', 'Description1', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(7, 10, null, 'Individual', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(8, 12, null, 'Family', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(9, 13, null, 'Family', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(10, 15, null, 'Family', 'Description2', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(11, 16, null, 'Family', 'Description1', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(12, 17, null, 'Family', 'Description1', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(13, 18, null, 'Family', 'Description1', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(14, 25, null, 'Family', 'Description1', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(15, 29, null, 'Family', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(16, 31, null, 'Family', 'Description2', 'dependents2', null, 'Individual', 'Description1', 'dependents2'),
+(17, 32, null, 'Individual', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2'),
+(18, 33, null, 'Individual', 'Description2', 'dependents1', null, 'Individual', 'Description1', 'dependents2');
 
 --
 -- Dumping data for table `civicrm_hrjob_hour`

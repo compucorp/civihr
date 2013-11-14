@@ -22,8 +22,10 @@ $filters = array(
   array('is_tied_to_funding_op'   => 'eq',  'is_tied_to_funding_value' => '0'),
 
   // HRJobHealth
-  array('hrjob_health_provider_op'  => 'in', 'hrjob_health_provider_value'  => 'Provider-6'),
   array('hrjob_health_plan_type_op' => 'in', 'hrjob_health_plan_type_value' => 'Family'),
+  array('hrjob_life_insurance_plan_type_op' => 'in', 'hrjob_life_insurance_plan_type_value' => 'Family'),
+  array('organization_name_op'  => 'has', 'organization_name_value'  => 'HealthOrg213'),
+  array('display_name_op'  => 'has', 'display_name_value'  => 'LifeOrg213'),
 
   // HRJobHour
   array('hrjob_hours_type_op'   => 'in',    'hrjob_hours_type_value'   => 'part'),
@@ -63,6 +65,8 @@ foreach ($filters as $filter) {
         'hrjob_location',
         'hrjob_health_provider',
         'hrjob_health_plan_type',
+        'hrjob_health_provider_life_insurance',
+        'hrjob_life_insurance_plan_type',
       ),
       'filters' => $filter,
     ),

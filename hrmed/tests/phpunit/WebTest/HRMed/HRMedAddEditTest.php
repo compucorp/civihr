@@ -69,7 +69,7 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
     else {
       $this->click("xpath=//a[@title='Medical & Disability']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$condition."']/following-sibling::td[3]/span/a[text()='Edit']");
+      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$condition."']/following-sibling::td[4]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Medical_Disability:Condition']");
     $this->type("xpath=//input[@data-crm-custom='Medical_Disability:Condition']", $values['Condition']);
@@ -81,7 +81,7 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent("xpath=//li[@aria-controls='Medical__Disability']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Condition']), 'Condition not found after '.$mode.'ing Medical & Disability (_addMedData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Condition']."']/following-sibling::td[3]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Condition']."']/following-sibling::td[4]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Condition']), 'Condition not found after '.$mode.'ing Medical & Disability (_addMedData).');
 
     // WAS: xpath=//div[8]/div[1]/a

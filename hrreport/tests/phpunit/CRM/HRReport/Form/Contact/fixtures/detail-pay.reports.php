@@ -12,6 +12,7 @@ return array(
         'hrjob_pay_grade',
         'hrjob_pay_amount',
         'hrjob_pay_unit',
+        'hrjob_pay_currency',
       ),
       'filters' => array(
         'hrjob_pay_grade_op' => 'in',
