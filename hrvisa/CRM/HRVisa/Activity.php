@@ -57,14 +57,26 @@ class CRM_HRVisa_Activity {
       $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
       $activityStatuses = CRM_Core_OptionGroup::values('activity_status', FALSE, FALSE, FALSE, NULL, 'name');
 
-      $params = array(
-        'target_contact_id' => $contactId,
+      // to check if visa expiration activity exists for the input target_contact_id
+      $activityGetParams = array(
+        'contact_id' => $contactId,
         'activity_type_id' => $activityTypeId,
-        'sequential' => 1
+        'sequential' => 1,
       );
-      $result = civicrm_api3('activity', 'get', $params);
+      // note : using filter 'activity_type_id' in combination with 'contact_id' filter doesn't work
+      $activities = civicrm_api3('activity', 'get', $activityGetParams);
 
-      if ($count = $result['count']) {
+      $activityId = NULL;
+      $count = 0;
+      foreach($activities['values'] as $val) {
+        if ($val['activity_type_id'] != $activityTypeId || !array_key_exists('targets', $val)) {
+          continue;
+        }
+        $activityId = $val['id'];
+        $count++;
+      }
+
+      if ($count) {
         $activityParams = array();
         $activityParams['status_id'] =
           $isVisaRequired ? CRM_Utils_Array::key('Scheduled', $activityStatuses) : CRM_Utils_Array::key('Cancelled', $activityStatuses);
@@ -73,16 +85,12 @@ class CRM_HRVisa_Activity {
         // check if count is one, if not log a error
         if ($count > 1) {
           // update the last activity and log a error
-          $result = array_pop($result['values']);
           $logError =
-            "Multiple 'Visa Expiration' activities exists for target contact with id : {$contactId}, so updating last activity with id : {$result['id']}";
-        }
-        $activityParams['id'] = $result['id'];
-        $result = civicrm_api3('activity', 'create', $activityParams);
-
-        if (!empty($logError)) {
+            "Multiple 'Visa Expiration' activities exists for target contact with id : {$contactId}, so updating last activity with id : {$activityId}";
           CRM_Core_Error::debug_log_message($logError);
         }
+        $activityParams['id'] = $activityId;
+        $result = civicrm_api3('activity', 'create', $activityParams);
       }
       else {
         // if no activity create a new one only if 'visa is required'
