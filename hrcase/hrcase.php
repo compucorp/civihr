@@ -131,6 +131,17 @@ function hrcase_civicrm_navigationMenu(&$params) {
     if (!empty($caseMenuItems)) {
       $params[$values['parent_id']]['child'][$values['id']]['child'] = $caseMenuItems;
     }
+    
+    require_once 'CRM/Utils/Migrate/Import.php';
+    
+    $import = new CRM_Utils_Migrate_Import();
+    
+    $files = glob(__DIR__ . '/xml/*_customGroupCaseType.xml');
+    if (is_array($files)) {
+    	foreach ($files as $file) {
+    		$import->run($file);
+    	}
+    }
   }
 }
 
