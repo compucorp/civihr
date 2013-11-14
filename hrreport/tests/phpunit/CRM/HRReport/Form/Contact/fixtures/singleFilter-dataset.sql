@@ -38,7 +38,11 @@ INSERT INTO `civicrm_contact` (`id`, `contact_type`, `contact_sub_type`, `do_not
 (210, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Hetfield, Peter', 'Peter Hetfield Jr.', NULL, NULL, NULL, NULL, NULL, 'Both', '1535107201', NULL, NULL, 'Peter', 'Q', 'Hetfield', NULL, 1, 1, NULL, 'Dear Peter', 1, NULL, 'Dear Peter', 1, NULL, 'Peter Hetfield Jr.', NULL, 2, '1982-04-19', 0, NULL, NULL, NULL, 'Sierra Sports Trust', NULL, NULL, 214, 0, '2013-08-06 16:12:51', '2013-08-06 16:13:07'),
 (211, 'Individual', NULL, 0, 1, 0, 0, 0, 0, NULL, NULL, 'Last211, Cristina', 'Cristina Last211', NULL, NULL, NULL, NULL, NULL, 'Both', '-494892012', NULL, NULL, 'Cristina', '', 'Last211', NULL, NULL, 1, NULL, 'Dear Cristina', 1, NULL, 'Dear Cristina', 1, NULL, 'Cristina Last211', NULL, NULL, '1929-07-06', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:51'),
 (213, 'Individual', NULL, 0, 1, 0, 0, 1, 0, NULL, NULL, 'Last213, Cristina', 'Cristina Last213', NULL, NULL, NULL, '3', NULL, 'Both', '2095701394', NULL, NULL, 'Cristina', '', 'Last213', NULL, NULL, 1, NULL, 'Dear Cristina', 1, NULL, 'Dear Cristina', 1, NULL, 'Cristina Last213', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:53'),
-(219, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Last219, Nevermatch', 'Nevermatch Last219', NULL, NULL, NULL, NULL, NULL, 'Both', '821806118', NULL, NULL, 'Nevermatch', 'P', 'Last219', NULL, NULL, 1, NULL, 'Dear Nevermatch', 1, NULL, 'Dear Nevermatch', 1, NULL, 'Nevermatch Last219', NULL, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:52');
+(219, 'Individual', NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 'Last219, Nevermatch', 'Nevermatch Last219', NULL, NULL, NULL, NULL, NULL, 'Both', '821806118', NULL, NULL, 'Nevermatch', 'P', 'Last219', NULL, NULL, 1, NULL, 'Dear Nevermatch', 1, NULL, 'Dear Nevermatch', 1, NULL, 'Nevermatch Last219', NULL, 1, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2013-08-06 16:12:51', '2013-08-06 16:12:52'),
+(235, 'Organization', 'Health_Insurance_Provider', 0, 0, 0, 0, 0, 0, NULL, NULL, 'HealthOrg211', 'HealthOrg211', NULL, 'HealthOrg211', NULL, NULL, 'en_US', 'Both', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,'HealthOrg211', NULL, NULL,NULL, 0, '2013-08-06 13:49:30', '2013-08-06 13:49:30'),
+(236, 'Organization', 'Health_Insurance_Provider', 0, 0, 0, 0, 0, 0, NULL, NULL, 'HealthOrg213', 'HealthOrg213', NULL, 'HealthOrg213', NULL, NULL, 'en_US', 'Both', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,'HealthOrg213', NULL, NULL,NULL, 0, '2013-08-06 13:49:30', '2013-08-06 13:49:30'),
+(237, 'Organization', 'Life_Insurance_Provider', 0, 0, 0, 0, 0, 0, NULL, NULL, 'LifeOrg211', 'LifeOrg211', NULL, 'LifeOrg211', NULL, NULL, 'en_US', 'Both', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL, 'LifeOrg211', NULL, NULL,NULL, 0, '2013-08-06 13:49:30', '2013-08-06 13:49:30'),
+(238, 'Organization', 'Life_Insurance_Provider', 0, 0, 0, 0, 0, 0, NULL, NULL, 'LifeOrg213', 'LifeOrg213', NULL, 'LifeOrg213', NULL, NULL, 'en_US', 'Both', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,'LifeOrg213', NULL, NULL,NULL, 0, '2013-08-06 13:49:30', '2013-08-06 13:49:30');
 
 --
 -- Dumping data for table `civicrm_email`
@@ -64,9 +68,9 @@ INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_t
 -- Dumping data for table `civicrm_hrjob_health`
 --
 
-INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `description`, `dependents`) VALUES
-(1, 1, 'Provider-1', 'Individual', 'Description-1', 'dependents-1'),
-(3, 6, 'Provider-6', 'Family', 'Description-6', 'dependents-6');
+INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `description`, `dependents`, `provider_life_insurance`, `plan_type_life_insurance`, `description_life_insurance`, `dependents_life_insurance`) VALUES
+(1, 1, 235, 'Individual', 'Description-1', 'dependents-1', 237, 'Individual', 'Description1', 'dependents2'),
+(3, 6, 236, 'Family', 'Description-6', 'dependents-6', 238, 'Family', 'Description1', 'dependents2');
 
 --
 -- Dumping data for table `civicrm_hrjob_hour`

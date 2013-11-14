@@ -1,4 +1,4 @@
-"Name","Email","Job Position","Job Pay Grade","Job Pay Amount","Job Pay Unit"
-"Hammett, Cristina","hammett.cristina13@sample.co.pl","Volunteer Manager","Paid","$ 200.00","Hour"
-"Hammett, Kirk", ,"Chief Executive","Paid","$ 200.00","Day"
-"Hammett, Peter", ,"Chief Executive","Paid","$ 200.00","Hour"
+Name,Email,Job Position,Job Pay Grade,Job Pay Amount,Job Pay Unit,Job Pay Currency
+"Hammett, Cristina",hammett.cristina13@sample.co.pl,Volunteer Manager,Paid,$ 200.00,Hour, 
+"Hammett, Kirk", ,Chief Executive,Paid,$ 200.00,Day, 
+"Hammett, Peter", ,Chief Executive,Paid,$ 200.00,Hour, 

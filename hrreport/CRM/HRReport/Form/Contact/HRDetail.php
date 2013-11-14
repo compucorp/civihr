@@ -234,15 +234,72 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobHealth',
         'fields' =>
         array(
-          'hrjob_health_provider'  => array(),
+          'hrjob_health_provider' => array(),
           'hrjob_health_plan_type' => array(),
+          'hrjob_health_provider_life_insurance' => array(),
+          'hrjob_life_insurance_plan_type' => array(),
         ),
         'filters' =>
         array(
-          'hrjob_health_provider'  => array(),
           'hrjob_health_plan_type' => array(),
+          'hrjob_life_insurance_plan_type' => array(),
         ),
         'grouping' => array('job-fields' => 'Job'),
+      ),
+
+      'civicrm_hrjob_health_provider' =>
+      array(
+        'dao' => 'CRM_Contact_DAO_Contact',
+        'fields' =>
+        array(
+          'organization_name' =>
+          array(
+            'title' => ts('Job Healthcare Provider'),
+            'no_repeat' => TRUE,
+            'no_display' => TRUE,
+            'required' => TRUE,
+          ),
+          'id' =>
+          array(
+            'no_display' => TRUE,
+            'required' => TRUE,
+          ),
+        ),
+        'filters' =>
+        array(
+          'organization_name' =>
+          array(
+            'title' => ts('Job Healthcare Provider'),
+            'operatorType' => CRM_Report_Form::OP_STRING,
+          ),
+        ),
+      ),
+
+      'civicrm_hrjob_health_life_provider' =>
+      array(
+        'dao' => 'CRM_Contact_DAO_Contact',
+        'fields' =>
+        array(
+          'display_name' =>
+          array('title' => ts('Job life insurance Provider'),
+            'no_repeat' => TRUE,
+            'no_display' => TRUE,
+            'required' => TRUE,
+          ),
+          'id' =>
+          array(
+            'no_display' => TRUE,
+            'required' => TRUE,
+          ),
+        ),
+        'filters' =>
+        array(
+          'display_name' =>
+          array(
+            'title' => ts('Job life insurance Provider'),
+            'operatorType' => CRM_Report_Form::OP_STRING,
+          ),
+        ),
       ),
 
       'civicrm_hrjob_hour' =>
@@ -270,9 +327,10 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobPay',
         'fields' =>
         array(
-          'hrjob_pay_grade'  => array(),
-          'hrjob_pay_amount' => array(),
-          'hrjob_pay_unit'   => array(),
+          'hrjob_pay_grade'    => array(),
+          'hrjob_pay_amount'   => array(),
+          'hrjob_pay_unit'     => array(),
+          'hrjob_pay_currency' => array(),
         ),
         'filters' =>
         array(
@@ -332,7 +390,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       LEFT JOIN civicrm_hrjob_pension {$this->_aliases['civicrm_hrjob_pension']}
              ON ({$this->_aliases['civicrm_hrjob_pension']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_contact manager
-             ON manager.id = ({$this->_aliases['civicrm_hrjob']}.manager_contact_id)";
+             ON manager.id = ({$this->_aliases['civicrm_hrjob']}.manager_contact_id)
+      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_provider']}
+          ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
+      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
+          ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance";
 
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
@@ -384,6 +446,30 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         );
         $rows[$rowNum]['civicrm_contact_sort_name_link'] = $url;
         $rows[$rowNum]['civicrm_contact_sort_name_hover'] = ts("View Contact Summary for this Contact.");
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_health_provider_life_insurance', $row) &&
+        array_key_exists('civicrm_hrjob_health_life_provider_id', $row) && array_key_exists('civicrm_hrjob_health_life_provider_display_name', $row)
+      ) {
+        $url =  CRM_Utils_System::url("civicrm/contact/view",
+          'reset=1&cid=' . $row['civicrm_hrjob_health_life_provider_id'],
+          $this->_absoluteUrl
+        );
+        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_life_insurance'] = $rows[$rowNum]['civicrm_hrjob_health_life_provider_display_name'];
+        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_life_insurance_link'] = $url;
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_health_provider', $row) &&
+        array_key_exists('civicrm_hrjob_health_provider_id', $row) && array_key_exists('civicrm_hrjob_health_provider_organization_name', $row)
+      ) {
+        $url = CRM_Utils_System::url("civicrm/contact/view",
+          'reset=1&cid=' . $row['civicrm_hrjob_health_provider_id'],
+          $this->_absoluteUrl
+        );
+        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider'] = $rows[$rowNum]['civicrm_hrjob_health_provider_organization_name'];
+        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_link'] = $url;
         $entryFound = TRUE;
       }
 

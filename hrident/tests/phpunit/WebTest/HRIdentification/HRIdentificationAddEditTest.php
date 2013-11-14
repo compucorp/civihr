@@ -76,14 +76,14 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
     else {
       $this->click("xpath=//a[@title='Identification']");
       $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[5]/span/a[text()='Edit']");
+      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Identify:Type']");
     $this->select("xpath=//select[@data-crm-custom='Identify:Type']", "label=".$values["Type"]);
     $this->type("xpath=//input[@data-crm-custom='Identify:Number']", $values['Number']);
     $this->type("xpath=//input[@data-crm-custom='Identify:Issue_Date']", $values['Issue_Date']);
     $this->type("xpath=//input[@data-crm-custom='Identify:Expire_Date']", $values['Expire_Date']);
-    $this->select("xpath=//select[@data-crm-custom='Identify:State_Province']", "label=".$values["State_Province"]);
+    $this->select("xpath=//div[@class='crm-profile-name-hrident_tab']/div/div[5]/div[2]/select", "label=".$values["State_Province"]);
     $this->select("xpath=//select[@data-crm-custom='Identify:Country']", "label=".$values["Country"]);
     $this->type("xpath=//textarea[@data-crm-custom='Identify:Evidence_Note']", $values['Evidence_Note']);
     $this->click("xpath=//input[@id='_qf_Edit_upload']");
@@ -91,7 +91,7 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
     $this->waitForElementPresent("xpath=//li[@aria-controls='Identification']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Number']."']/following-sibling::td[5]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Number']."']/following-sibling::td[6]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
 
     // WAS: xpath=//div[8]/div[1]/a
