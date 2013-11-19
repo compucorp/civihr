@@ -1,0 +1,14 @@
+.crm-profile-name-hrprofile .dataTables_filter {
+  width:100%;
+  text-align: center;
+  border-radius: 4px 4px 4px 4px;
+  background-color: #E6E6DC;
+  color: #3E3E3E;
+  font-size: 12px ;
+  margin-bottom: 4px;
+  padding: 4px;
+} 
+.crm-profile-name-hrprofile .dataTables_filter input{
+  width: 50%;
+  border: transparent;
+}
