@@ -415,6 +415,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   		$result = civicrm_api3('action_schedule', 'create', $params);
   	  }
   	}
+  	return TRUE;
   }	
   /**
    * Set components as enabled or disabled. Leave any other
