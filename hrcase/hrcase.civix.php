@@ -258,14 +258,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Send Termination Letter', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
 
 	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Send_Termination_Letter'));
 	if (empty($result['id'])) {
 	  $params = array(
 	    'name' => 'Send_Termination_Letter',
 		'title' => 'Send Termination Letter',
-		'recipient' => $targetID,
+		'recipient' => $assigneeID,
 		'limit_to' => 1,
 		'entity_value' => $activityTypeId,
 		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -294,14 +294,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Exit Interview', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
 	
 	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Exit_Interview'));
 	if (empty($result['id'])) {
 	  $params = array(
 	    'name' => 'Exit_Interview',
 		'title' => 'Exit Interview',
-		'recipient' => $targetID,
+		'recipient' => $assigneeID,
 		'limit_to' => 1,
 		'entity_value' => $activityTypeId,
 		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -330,14 +330,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Offer Letter', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
 	
 	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Offer_Letter'));
 	if (empty($result['id'])) {
 	  $params = array(
 	    'name' => 'Attach_Offer_Letter',
 		'title' => 'Attach Offer Letter',
-		'recipient' => $targetID,
+		'recipient' => $assigneeID,
 		'limit_to' => 1,
 		'entity_value' => $activityTypeId,
 		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -366,14 +366,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Reference', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
 	
 	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Reference'));
 	if (empty($result['id'])) {
 	  $params = array(
 	    'name' => 'Attach_Reference',
 		'title' => 'Attach Reference',
-		'recipient' => $targetID,
+		'recipient' => $assigneeID,
 		'limit_to' => 1,
 		'entity_value' => $activityTypeId,
 		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -402,14 +402,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Draft Job Contract', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-   	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+   	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
    
    	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Draft_Job_Contract'));
    	if (empty($result['id'])) {
    	  $params = array(
    	    'name' => 'Attach_Draft_Job_Contract',
    		'title' => 'Attach Draft Job Contract',
-   		'recipient' => $targetID,
+   		'recipient' => $assigneeID,
    		'limit_to' => 1,
    		'entity_value' => $activityTypeId,
    		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -438,14 +438,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Objectives Document', 'name');
   if (!empty($activityTypeId)) {
   	$activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-  	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+  	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
   	 
   	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Objects_Document'));
   	if (empty($result['id'])) {
   	  $params = array(
   	    'name' => 'Attach_Objects_Document',
   		'title' => 'Attach Objects Document',
-  		'recipient' => $targetID,
+  		'recipient' => $assigneeID,
   		'limit_to' => 1,
   		'entity_value' => $activityTypeId,
   		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -474,14 +474,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Appraisal Document', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-  	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+  	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
   
   	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Appraisal_Document'));
   	if (empty($result['id'])) {
   	  $params = array(
   	    'name' => 'Attach_Appraisal_Document',
   		'title' => 'Attach Appraisal Document',
-  		'recipient' => $targetID,
+  		'recipient' => $assigneeID,
   		'limit_to' => 1,
   		'entity_value' => $activityTypeId,
   		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
@@ -509,14 +509,14 @@ function _hrcase_postInstall() {
   $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Attach Probation Notification', 'name');
   if (!empty($activityTypeId)) {
     $activityContacts = CRM_Core_OptionGroup::values('activity_contacts', FALSE, FALSE, FALSE, NULL, 'name');
-  	$targetID = CRM_Utils_Array::key('Activity Targets', $activityContacts);
+  	$assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
   
   	$result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Probation_Notification'));
   	if (empty($result['id'])) {
   	  $params = array(
   	    'name' => 'Attach_Probation_Notification',
   		'title' => 'Attach Probation Notification',
-  		'recipient' => $targetID,
+  		'recipient' => $assigneeID,
   		'limit_to' => 1,
   		'entity_value' => $activityTypeId,
   		'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
