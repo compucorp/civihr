@@ -413,7 +413,7 @@
       <is_required>0</is_required>
       <weight>3</weight>
       <help_post></help_post>
-      <help_pre></help_pre>
+      <help_pre>Career History is used for recording the jobs and study courses that a person has undertaken before joining the organisation. It would include all those events usually listed on a CV/Resume. However, for an event that was started before joining the organisation, but has not yet been finished (e.g. a part-time study course) record the start date of the event but leave the end date blank.</help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>

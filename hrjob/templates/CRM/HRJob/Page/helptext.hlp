@@ -1,0 +1,90 @@
+{*
+ +--------------------------------------------------------------------+
+ | CiviCRM version 4.4                                                |
+ +--------------------------------------------------------------------+
+ | Copyright CiviCRM LLC (c) 2004-2013                                |
+ +--------------------------------------------------------------------+
+ | This file is a part of CiviCRM.                                    |
+ |                                                                    |
+ | CiviCRM is free software; you can copy, modify, and distribute it  |
+ | under the terms of the GNU Affero General Public License           |
+ | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+ |                                                                    |
+ | CiviCRM is distributed in the hope that it will be useful, but     |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of         |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+ | See the GNU Affero General Public License for more details.        |
+ |                                                                    |
+ | You should have received a copy of the GNU Affero General Public   |
+ | License and the CiviCRM Licensing Exception along                  |
+ | with this program; if not, contact CiviCRM LLC                     |
+ | at info[AT]civicrm[DOT]org. If you have questions about the        |
+ | GNU Affero General Public License or the licensing of CiviCRM,     |
+ | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
+ +--------------------------------------------------------------------+
+*}
+{htxt id="accesskeys-title"}
+  {ts}Access Keys{/ts}
+{/htxt}
+
+{htxt id="access-provider"}
+<p></p>
+<ul>
+  {ts}The name of the Health Insurance Company{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-dependents"}
+<p></p>
+<ul>
+  {ts}For a family plan, please list the names of all dependents who are also covered, along with their relationships to the individual
+{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-fte"}
+<p></p>
+<ul>
+{ts}
+FTE stands for Full Time Equivalent. This is a useful measure for an organisation
+that has people working part-time.
+For a full-time person, FTE is always equal to 1.0, whereas for a part-time person,
+the FTE will represent the fraction of standard hours that the person works on a
+regular basis.<br/><br/>
+E.g. if the standard working day at an organisation comprises of 8 hours, then a
+person who regularly works for 8 hours each day would be considered to be full-
+time and would have an FTE value of 1.0. A person who regularly works for only
+4 hours each day would be considered to be a part-time person and would have
+an FTE value of 0.5. If the organisation had 10 people, each with an FTE of 1.0
+the actual headcount of full-time people would be 10 and the FTE headcount
+(equal to actual headcount multiplied by the FTE value) would also be 10.
+However, if the organisation had another 10 people who each worked part-time
+with an FTE value of 0.5 the actual headcount of part-time people would be 10
+while the FTE headcount would only be 5. Thus for an organisation that had a
+total of 10 full-time people, and 10 part-time people (each with an FTE of 0.5) the
+actual headcount for the organisation would be 20 while the FTE headcount
+would be 15.
+{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-employer"}
+<p></p>
+<ul>
+{ts}The contribution paid by the employer as a percentage of gross salary.{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-employee"}
+<p></p>
+<ul>
+{ts}The contribution paid by the employee as a percentage of gross salary.{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-cost-center"}
+<p></p>
+<ul>
+{ts}If applicable, please enter the cost center that is assigned to the individual by the finance department.{/ts}
+</ul>
+{/htxt}

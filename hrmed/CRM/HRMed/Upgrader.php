@@ -156,4 +156,23 @@ class CRM_HRMed_Upgrader extends CRM_HRMed_Upgrader_Base {
     }
     return TRUE;
   }
+  
+  public function upgrade_4418() {
+    $this->ctx->log->info('Planning update 4418'); // PEAR Log interface    
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name')); 
+    $gid = array_search('hrmed_tab', $groups);
+    $params = array(
+                    'action' => 'submit',
+                    'profile_id' => $gid,
+                    ); 
+    $result = civicrm_api3('profile', 'getfields', $params);
+    if($result['is_error'] == 0 ) {
+      foreach($result['values'] as $key => $value) {
+        if(isset($value['label']) && $value['label'] == 'Condition') {
+          CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET help_pre = 'E.g. blindness, wheelchair user, weak heart, asthma etc.' WHERE civicrm_uf_field.uf_group_id = {$gid} AND civicrm_uf_field.field_name = '{$key}'");
+        }
+      }
+    }
+    return TRUE;
+  }
 }

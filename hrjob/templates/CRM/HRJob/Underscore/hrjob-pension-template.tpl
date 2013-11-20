@@ -48,7 +48,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-er_contrib_pct">{ts}Employer Contribution (%){/ts}</label>
+      <label for="hrjob-er_contrib_pct">{ts}Employer Contribution (%){/ts}</label>&nbsp;{help id='access-employer' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <input id="hrjob-er_contrib_pct" name="er_contrib_pct" class="form-text-big" type="text" />
@@ -57,7 +57,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-ee_contrib_pct">{ts}Employee Contribution (%){/ts}</label>
+      <label for="hrjob-ee_contrib_pct">{ts}Employee Contribution (%){/ts}</label>&nbsp;{help id='access-employee' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <input id="hrjob-ee_contrib_pct" name="ee_contrib_pct" class="form-text-big" type="text" />

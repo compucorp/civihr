@@ -284,7 +284,7 @@
       <is_required>0</is_required>
       <weight>5</weight>
       <help_post></help_post>
-      <help_pre></help_pre>
+      <help_pre>E.g. whether or not a visa allows a person to work</help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
