@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/profile/table</path>
+    <page_callback>CRM_HRProfile_Page_HRProfile</page_callback>
+    <title>HrProfile</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

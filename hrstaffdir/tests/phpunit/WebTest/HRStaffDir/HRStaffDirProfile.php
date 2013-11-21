@@ -25,7 +25,7 @@
 */
 
 require_once 'CiviTest/CiviSeleniumTestCase.php';
-class WebTest_HRStaffDir_HRStaffDirAddEditTest extends CiviSeleniumTestCase {
+class WebTest_HRStaffDir_HRStaffDirProfile extends CiviSeleniumTestCase {
 
   protected function setUp() {
     parent::setUp();
@@ -37,21 +37,21 @@ class WebTest_HRStaffDir_HRStaffDirAddEditTest extends CiviSeleniumTestCase {
     
     // Check if Directory menu item exists
     $this->assertTrue($this->isElementPresent("xpath=//ul[@id='civicrm-menu']/li/a[text()='Directory']"), 'Directory not appearing in the top nav bar');
-
-    $url = $this->getAttribute("xpath=//ul[@id='civicrm-menu']/li/a[text()='Directory']/@href");
-    $url = str_replace('/table', '', $url);
+        
     // Adding contacts
     $random = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
-    $this->open($url);
+    
+    // Open directory listing
+    $this->click("xpath=//ul[@id='civicrm-menu']/li/a[text()='Directory']");
     $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->click("xpath=//form[@id='Search']/div[2]/div[1]/div/div[1]");
-    $this->type("xpath=//input[@id='first_name']", $random);
+
+    // Type text to search
+    $this->click("xpath=//div[@class='dataTables_wrapper']/table/thead/tr/th[3]");
+    $this->click("xpath=//div[@class='dataTables_filter']/label/input[@type='text']");
+    $this->type("xpath=//div[@class='dataTables_filter']/label/input", $random);
+    $this->typeKeys("xpath=//div[@class='dataTables_filter']/label/input", $random);
     sleep(1);
-    $this->click("_qf_Search_refresh");
-    $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->assertFalse($this->isTextPresent("No matches found for"), 'Contact not found.');
-    $this->assertTrue($this->isTextPresent($random), 'Contact not found.');
   }
 
 
