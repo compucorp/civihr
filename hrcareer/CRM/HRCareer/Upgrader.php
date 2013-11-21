@@ -175,4 +175,31 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     }
     return TRUE;
   }
+  public function upgrade_4417() {
+    $this->ctx->log->info('Planning update 4417'); // PEAR Log interface
+
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('hrcareer_tab', $groups);
+    $params = array(
+                    'action' => 'submit',
+                    'profile_id' => $gid,
+                    );
+  
+    $result = civicrm_api3('profile', 'getfields', $params);
+ 
+    if($result['is_error'] == 0 ) {
+      foreach($result['values'] as $key => $value) {
+        if(isset($value['label']) && $value['label'] == 'End Date') {
+          CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET help_pre = 'Career History is used for recording the jobs and study courses that a person has
+undertaken before joining the organisation. It would include all those events
+usually listed on a CV/Resume. However, for an event that was started before
+joining the organisation, but has not yet been finished (e.g. a part-time study
+course) record the start date of the event but leave the end date blank.
+' WHERE civicrm_uf_field.uf_group_id = {$gid} AND civicrm_uf_field.field_name = '{$key}'");
+      
+        }
+      }
+    }
+    return TRUE;
+  }
 }

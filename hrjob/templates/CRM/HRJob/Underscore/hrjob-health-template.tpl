@@ -9,7 +9,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-provider">{ts}Provider{/ts}</label>
+      <label for="hrjob-provider">{ts}Provider{/ts}</label>&nbsp;{help id='access-provider' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <input id="hrjob-provider" name="provider" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Health_Insurance_Provider" type="text" />
@@ -42,7 +42,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-dependents">{ts}Dependents{/ts}</label>
+      <label for="hrjob-dependents">{ts}Dependents{/ts}</label>&nbsp;{help id='access-dependents' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <textarea id="hrjob-dependents" name="dependents"></textarea>
@@ -56,7 +56,7 @@
   </h3>
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}</label>
+      <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}</label>&nbsp;{help id='access-provider' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <input id="hrjob-provider_life_insurance" name="provider_life_insurance" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Life_Insurance_Provider" type="text" />
@@ -89,7 +89,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-dependents_life_insurance">{ts}Dependents{/ts}</label>
+      <label for="hrjob-dependents_life_insurance">{ts}Dependents{/ts}</label>&nbsp;{help id='access-dependents' file='CRM/HRJob/Page/helptext'}
     </div>
     <div class="crm-content">
       <textarea id="hrjob-dependents_life_insurance" name="dependents_life_insurance"></textarea>

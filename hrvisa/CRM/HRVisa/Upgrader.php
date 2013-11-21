@@ -296,4 +296,25 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     }
     return TRUE;
   }
+  public function upgrade_4419() {
+    $this->ctx->log->info('Planning update 4419'); // PEAR Log interface  
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('hrvisa_tab', $groups);
+    $params = array(
+                    'action' => 'submit',
+                    'profile_id' => $gid,
+                    );
+   
+    $result = civicrm_api3('profile', 'getfields', $params);
+    
+    if($result['is_error'] == 0 ) {
+      foreach($result['values'] as $key => $value) {
+        if(isset($value['label']) && $value['label'] == 'Conditions') {
+          CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET help_pre = 'E.g. whether or not a visa allows a person to work' WHERE civicrm_uf_field.uf_group_id = {$gid} AND civicrm_uf_field.field_name = '{$key}'");
+      
+        }
+      }
+    }
+    return TRUE;
+  }
 }
