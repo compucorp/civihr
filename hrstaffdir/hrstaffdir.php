@@ -48,6 +48,8 @@ function hrstaffdir_civicrm_config(&$config) {
  */
 function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$selector) {
   if ($objectName == 'profile') {
+  	$result = civicrm_api3('action_schedule', 'get', array('id' => '4'));
+  	echo "<pre>";print_r($result);die;
     $profileId = hrstaffdir_getUFGroupID();
     $session = CRM_Core_Session::singleton();
     $gid = CRM_Utils_Request::retrieve('gid', 'Positive', CRM_Core_DAO::$_nullObject);

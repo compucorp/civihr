@@ -22,6 +22,7 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  $caseType = array();	
   return _hrcase_civix_civicrm_install();
 }
 
@@ -29,6 +30,46 @@ function hrcase_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrcase_civicrm_uninstall() {
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Send_Termination_Letter'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Exit_Interview'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Offer_Letter'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Reference'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Draft_Job_Contract'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Objects_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Appraisal_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Probation_Notification'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
+  }
+
   return _hrcase_civix_civicrm_uninstall();
 }
 
@@ -36,6 +77,46 @@ function hrcase_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrcase_civicrm_enable() {
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Send_Termination_Letter'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }	
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Exit_Interview'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Offer_Letter'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Reference'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Draft_Job_Contract'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Objects_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Appraisal_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Probation_Notification'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+  }
+  
   return _hrcase_civix_civicrm_enable();
 }
 
@@ -43,6 +124,45 @@ function hrcase_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrcase_civicrm_disable() {
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Send_Termination_Letter'));
+  if (!empty($result['id'])) {
+    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }	
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Exit_Interview'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Offer_Letter'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Reference'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Draft_Job_Contract'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Objects_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Appraisal_Document'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
+  
+  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Attach_Probation_Notification'));
+  if (!empty($result['id'])) {
+  	$result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
+  }
   return _hrcase_civix_civicrm_disable();
 }
 
@@ -127,7 +247,7 @@ function hrcase_civicrm_navigationMenu(&$params) {
         );
       }
     }
-
+    _hrcase_postInstall();
     if (!empty($caseMenuItems)) {
       $params[$values['parent_id']]['child'][$values['id']]['child'] = $caseMenuItems;
     }
