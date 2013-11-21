@@ -240,3 +240,5 @@ function _hrcase_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = 
     return $found;
   }
 }
+
+
