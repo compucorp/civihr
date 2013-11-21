@@ -3,14 +3,6 @@
 require_once 'hrprofile.civix.php';
 
 /**
- * Implementation of hook_civicrm_pageRun
- */
-function hrprofile_civicrm_pageRun($page) {
-  if ($page instanceof CRM_HRProfile_Page_HRProfile) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrprofile', 'css/hrprofile.css');
-  }
-}
-/**
  * Implementation of hook_civicrm_config
  */
 function hrprofile_civicrm_config(&$config) {

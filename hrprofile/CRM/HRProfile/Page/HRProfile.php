@@ -1,6 +1,11 @@
 <?php
 
 class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
+  function run() {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrprofile', 'css/hrprofile.css');
+    parent::run();
+  }
+
   function getTemplateFileName() {
     $profID = CRM_Utils_Request::retrieve('gid', 'String', $this);
     $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $profID,
