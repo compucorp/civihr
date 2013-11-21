@@ -38,7 +38,47 @@
         first_name="Test"
         last_name="Contact 12"
         gender_id="1"
-        />
+    />
+
+    <civicrm_contact
+        id="13"
+        contact_type="Organization"
+        contact_sub_type="Health_Insurance_Provider"
+        display_name="Test organization 13"
+        sort_name="Test organization 13"
+        legal_name="Test organization 13"
+        organization_name="Test organization 13"
+    />
+
+    <civicrm_contact
+        id="14"
+        contact_type="Organization"
+        contact_sub_type="Life_Insurance_Provider"
+        display_name="Test organization 14"
+        sort_name="Test organization 14"
+        legal_name="Test organization 14"
+        organization_name="Test organization 14"
+    />
+
+    <civicrm_contact
+        id="15"
+        contact_type="Organization"
+        contact_sub_type="Health_Insurance_Provider"
+        display_name="Test organization 15"
+        sort_name="Test organization 15"
+        legal_name="Test organization 15"
+        organization_name="Test organization 15"
+    />
+
+    <civicrm_contact
+        id="16"
+        contact_type="Organization"
+        contact_sub_type="Life_Insurance_Provider"
+        display_name="Test organization 16"
+        sort_name="Test organization 16"
+        legal_name="Test organization 16"
+        organization_name="Test organization 16"
+    />
 
     <civicrm_email
         id="9"
@@ -81,10 +121,14 @@
     <civicrm_hrjob_health
         id="1"
         job_id="1"
-        provider="Unknown"
+        provider="13"
         plan_type="Family"
         description="Test Description"
         dependents="Mr. XYZ"
+        provider_life_insurance="14"
+        plan_type_life_insurance="Individual"
+        description_life_insurance="This is a life insurance description"
+        dependents_life_insurance="Mr. MNO"
     />
 
     <civicrm_hrjob_hour
@@ -348,10 +392,14 @@
     <civicrm_hrjob_health
         id="2"
         job_id="4"
-        provider="Unknown"
+        provider="15"
         plan_type="Individual"
         description="Test Description2"
         dependents="Mr. ABC"
+        provider_life_insurance="16"
+        plan_type_life_insurance="Individual"
+        description_life_insurance="Test life insurance description2"
+        dependents_life_insurance="Own"
     />
 
     <civicrm_hrjob_hour

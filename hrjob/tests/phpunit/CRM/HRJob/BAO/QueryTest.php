@@ -31,6 +31,18 @@ require_once 'CiviTest/CiviUnitTestCase.php';
  *  Include dataProvider for tests
  */
 class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
+  static $_tablesToTruncate = array(
+    'civicrm_hrjob',
+    'civicrm_hrjob_health',
+    'civicrm_hrjob_hour',
+    'civicrm_hrjob_leave',
+    'civicrm_hrjob_pay',
+    'civicrm_hrjob_pension',
+    'civicrm_hrjob_role',
+    'civicrm_email',
+    'civicrm_contact',
+  );
+
   function get_info() {
     return array(
       'name' => 'HRJob BAO Query',
@@ -45,21 +57,20 @@ class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
 
   function setUp() {
     parent::setUp();
+    $this->foreignKeyChecksOff();
+    $this->quickCleanup(self::$_tablesToTruncate);
   }
 
   function tearDown() {
-    $tablesToTruncate = array(
-      'civicrm_hrjob',
-      'civicrm_hrjob_health',
-      'civicrm_hrjob_hour',
-      'civicrm_hrjob_leave',
-      'civicrm_hrjob_pay',
-      'civicrm_hrjob_pension',
-      'civicrm_hrjob_role',
-      'civicrm_email',
-      'civicrm_contact',
-     );
-    $this->quickCleanup($tablesToTruncate);
+    parent::tearDown();
+  }
+
+  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
+    if (!parent::_populateDB($perClass, $object)) {
+      return FALSE;
+    }
+    _hrjob_phpunit_populateDB();
+    return TRUE;
   }
 
   /**
