@@ -34,9 +34,10 @@
       cj('table').dataTable( {
         "aoColumns": columns,
         "aaData": result,
-        "sPaginationType": "full_numbers",
+        "sPaginationType": "full_numbers"
       });
     });
  </script>
 {/literal} 
 
+<div class="clear"></div>
