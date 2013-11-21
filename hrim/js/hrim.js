@@ -14,12 +14,14 @@ cj(document).ajaxSuccess(function(event, xhr, settings) {
 
 function contactImLink() {
   // build array for IM and its protocol
-  var params = { 'Yahoo':'ymsgr:sendIM?',
-                 'Skype':'skype:',
-                 'GTalk':'gtalk:chat?jid=',
-                 'AIM':'aim:goim?screenname=',
-                 'Jabber':'xmpp:',
-                 'MSN':'skype:' };
+  var params = {
+    'Yahoo':'ymsgr:sendIM?',
+    'Skype':'skype:',
+    //'GTalk':'gtalk:chat?jid=', // error message doesn't work in FF/OSX
+    'AIM':'aim:goim?screenname=',
+    'Jabber':'xmpp:',
+    'MSN':'skype:'
+  };
   cj("#crm-im-content .crm-summary-row").each(function() {
     if (this) {
       // get providerlabels
