@@ -130,12 +130,24 @@ function hrcareer_getUFGroupID() {
  */
 function hrcareer_civicrm_buildProfile($name) {
   if ($name == 'hrcareer_tab') {
+    $isDialog = ('multiProfileDialog' == CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject));
+
     // To fix validation alert issue
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('urlIsPublic', FALSE);
 
+    if (! $isDialog) {
+      CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
+        'weight' => -10,
+        'markup' =>
+          '<div class="help">'
+          . ts('Like a CV or resume, Career History records the work and study that a person has undertaken before joining the organization.')
+          . '</div>'
+      ));
+    }
+
     $config = CRM_Core_Config::singleton();
-    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+    if ($config->logging && ! $isDialog) {
       $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
       CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',

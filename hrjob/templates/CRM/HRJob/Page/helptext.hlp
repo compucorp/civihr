@@ -27,18 +27,24 @@
   {ts}Access Keys{/ts}
 {/htxt}
 
-{htxt id="access-provider"}
+{htxt id="access-health-provider"}
 <p></p>
 <ul>
-  {ts}The name of the Health Insurance Company{/ts}
+  {ts}The name of the health insurance company{/ts}
+</ul>
+{/htxt}
+
+{htxt id="access-life-provider"}
+<p></p>
+<ul>
+    {ts}The name of the life insurance company{/ts}
 </ul>
 {/htxt}
 
 {htxt id="access-dependents"}
 <p></p>
 <ul>
-  {ts}For a family plan, please list the names of all dependents who are also covered, along with their relationships to the individual
-{/ts}
+  {ts}For a family plan, please list the names of all dependents who are also covered, along with their relationships to the individual.{/ts}
 </ul>
 {/htxt}
 
