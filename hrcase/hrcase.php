@@ -341,24 +341,24 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
         $schedules[$reminderName]['subject'] = 'Reminder to Attach Appraisal Document';
       }
       elseif ($reminderName == 'Attach_Probation_Notification') {
-	    $schedules[$reminderName]['start_action_offset'] = 0;
-	    $schedules[$reminderName]['start_action_unit'] = 'hour';
-	    $schedules[$reminderName]['start_action_condition'] = 'before';
-	    $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-	    $schedules[$reminderName]['is_repeat'] = 1;
-	    $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
-	    $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-	    $schedules[$reminderName]['end_frequency_unit'] = 'month';
-	    $schedules[$reminderName]['end_frequency_interval'] = 2;
-	    $schedules[$reminderName]['end_action'] = 'after';
-	    $schedules[$reminderName]['end_date'] = 'activity_date_time';
-	    $schedules[$reminderName]['body_html'] = '<p>Attach Probation Notification on {activity.activity_date_time}</p>';
-	    $schedules[$reminderName]['subject'] = 'Reminder to Attach Probation Notification';
+        $schedules[$reminderName]['start_action_offset'] = 0;
+        $schedules[$reminderName]['start_action_unit'] = 'hour';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Attach Probation Notification on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Attach Probation Notification';
       }
       elseif ($reminderName == 'Attach_Objects_Document_For_Client') {
-      	$schedules[$reminderName]['recipient'] = $targetID;
-      	$schedules[$reminderName]['start_action_offset'] = 2;
-      	$schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
       	$schedules[$reminderName]['start_action_condition'] = 'before';
       	$schedules[$reminderName]['start_action_date'] = 'activity_date_time';
       	$schedules[$reminderName]['is_repeat'] = 1;
