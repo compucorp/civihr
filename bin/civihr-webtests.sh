@@ -1,5 +1,7 @@
 #!/bin/bash
 ##################################
+HASERROR=
+
 ## List of extensions defining basic entity types
 ENTITY_EXTS=( hrbank \
 hrcareer \
@@ -28,7 +30,7 @@ for var in "${ENTITY_EXTS[@]}"
           --log-junit "$CIVISOURCEDIR/build/junit-${var}-CRM_AllTests.xml" \
           WebTest_AllTests
       popd
-      [ $? ] && HASERROR=1
+      [ -n $? ] && HASERROR=1
       set -e
     popd    
 done

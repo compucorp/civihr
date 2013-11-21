@@ -1,5 +1,7 @@
 #!/bin/bash
 ##################################
+HASERROR=
+
 ## List of extensions defining basic entity types
 ENTITY_EXTS=( hrreport \
 hrjob \
@@ -24,7 +26,7 @@ for var in "${ENTITY_EXTS[@]}"
             --log-junit "$CIVISOURCEDIR/build/junit-${var}-api_v3_AllTests.xml" \
             api_v3_AllTests
         popd
-        [ $? ] && HASERROR=1
+        [ -n $? ] && HASERROR=1
         set -e
         drush cvapi extension.install keys=org.civicrm.${var}
       else
@@ -39,7 +41,7 @@ for var in "${ENTITY_EXTS[@]}"
           --log-junit "$CIVISOURCEDIR/build/junit-${var}-CRM_AllTests.xml" \
           CRM_AllTests
       popd
-      [ $? ] && HASERROR=1
+      [ -n $? ] && HASERROR=1
       set -e
     popd
 done
