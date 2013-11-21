@@ -73,9 +73,9 @@ function hrcase_civicrm_enable() {
   $scheduleActions = hrcase_getActionsSchedule(true);
   foreach($scheduleActions as $actionName) {
     $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
-	if (!empty($result['id'])) {
+    if (!empty($result['id'])) {
 	  $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
-	}
+    }
   }	
   return _hrcase_civix_civicrm_enable();
 }
@@ -232,19 +232,19 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
 	    'mapping_id' => $mappingId,
       );
       if ($reminderName == 'Send_Termination_Letter') {
-	    $schedules[$reminderName]['start_action_offset'] = 3;
-	    $schedules[$reminderName]['start_action_unit'] = 'day';
-	    $schedules[$reminderName]['start_action_condition'] = 'before';
-	    $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-	    $schedules[$reminderName]['is_repeat'] = 1;
-	    $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
-	    $schedules[$reminderName]['repetition_frequency_interval'] = 3;
-	    $schedules[$reminderName]['end_frequency_unit'] = 'hour';
-	    $schedules[$reminderName]['end_frequency_interval'] = 0;
-	    $schedules[$reminderName]['end_action'] = 'before';
-	    $schedules[$reminderName]['end_date'] = 'activity_date_time';
-	    $schedules[$reminderName]['body_html'] = "<p>Your need to send termination letter on {activity.activity_date_time}</p>";
-	    $schedules[$reminderName]['subject'] = 'Reminder to Send Termination Letter';
+        $schedules[$reminderName]['start_action_offset'] = 3;
+        $schedules[$reminderName]['start_action_unit'] = 'day';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 3;
+        $schedules[$reminderName]['end_frequency_unit'] = 'hour';
+        $schedules[$reminderName]['end_frequency_interval'] = 0;
+        $schedules[$reminderName]['end_action'] = 'before';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = "<p>Your need to send termination letter on {activity.activity_date_time}</p>";
+        $schedules[$reminderName]['subject'] = 'Reminder to Send Termination Letter';
       }
       elseif ($reminderName == 'Exit_Interview') {
 	    $schedules[$reminderName]['start_action_offset'] = 3;
