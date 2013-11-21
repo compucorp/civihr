@@ -68,7 +68,7 @@ function hrui_civicrm_install() {
   $params = array(
     'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviReport'),
+    'enable_components' => array('CiviReport','CiviCase'),
   );
   $result = civicrm_api('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
