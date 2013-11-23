@@ -10,6 +10,7 @@ hrqual \
 hrstaffdir \
 hrvisa \
 )
+
 CONF=`dirname $0`/setup.conf
 if [ -f "$CONF" ]; then
   source "$CONF"
@@ -19,20 +20,17 @@ set -x
 
 for var in "${ENTITY_EXTS[@]}"
   do
-    pushd $CIVIHRDIR/${var}
-      set +e
-      pushd "$CIVISOURCEDIR/tools"
-        ./scripts/phpunit \
-          --include-path "$CIVIHRDIR/${var}/tests/phpunit" \
-          --tap \
-          --log-junit "$CIVISOURCEDIR/build/junit-${var}-CRM_AllTests.xml" \
-          WebTest_AllTests
-      popd
-      [ $? ] && HASERROR=1
-      set -e
-    popd    
+    set +e
+    pushd "$CIVISOURCEDIR/tools"
+      ./scripts/phpunit \
+        --include-path "$CIVIHRDIR/${var}/tests/phpunit" \
+        --tap \
+        --log-junit "$CIVISOURCEDIR/build/junit-${var}-CRM_AllTests.xml" \
+        WebTest_AllTests
+    popd
+    if [ $? != "0" ]; then
+      HASERROR=1
+    fi
+    set -e
 done
-
-if [ -n $HASERROR ]; then
-  exit 1
-fi
+exit $HASERROR
