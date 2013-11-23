@@ -111,8 +111,6 @@ function hrcareer_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrcareer', 'css/hrcareer.css');
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrcareer', 'js/hrcareer.js');
 }
 
 function hrcareer_getCustomGroupId() {
@@ -168,5 +166,11 @@ function hrcareer_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('org.civicrm.hrcareer', 'js/hrcareer.js');
+
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrcareer', 'css/hrcareer.css');
   }
 }

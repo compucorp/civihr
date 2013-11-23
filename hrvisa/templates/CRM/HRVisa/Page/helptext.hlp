@@ -23,10 +23,6 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-
-{htxt id="accesskeys-title"}
-  {ts}Access Keys{/ts}
-{/htxt}
 {htxt id="access-condition"}
 <ul>
   {ts}E.g. whether or not a visa allows a person to work{/ts}
