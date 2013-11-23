@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{htxt id="access-condition"}
+{htxt id="hrvisa-condition"}
 <ul>
   {ts}E.g. whether or not a visa allows a person to work{/ts}
 </ul>

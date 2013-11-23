@@ -29,7 +29,7 @@
 
     <div class="crm-summary-row">
       <div class="crm-label">
-        <label for="hrjob-cost_center">{ts}Cost Center{/ts}&nbsp;{help id='access-cost-center' file='CRM/HRJob/Page/helptext'}</label>
+        <label for="hrjob-cost_center">{ts}Cost Center{/ts}&nbsp;{help id='hrjob-cost-center' file='CRM/HRJob/Page/helptext'}</label>
       </div>
       <div class="crm-content">
         <input id="hrjob-cost_center" name="cost_center"/>

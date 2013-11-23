@@ -23,40 +23,40 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{htxt id="access-health-provider-title"}
+{htxt id="hrjob-health-provider-title"}
   {ts}Provider{/ts}
 {/htxt}
-{htxt id="access-health-provider"}
+{htxt id="hrjob-health-provider"}
 <p></p>
 <ul>
   {ts}The name of the health insurance company{/ts}
 </ul>
 {/htxt}
 
-{htxt id="access-life-provider-title"}
+{htxt id="hrjob-life-provider-title"}
   {ts}Provider{/ts}
 {/htxt}
-{htxt id="access-life-provider"}
+{htxt id="hrjob-life-provider"}
 <p></p>
 <ul>
     {ts}The name of the life insurance company{/ts}
 </ul>
 {/htxt}
 
-{htxt id="access-dependents-title"}
+{htxt id="hrjob-dependents-title"}
   {ts}Dependents{/ts}
 {/htxt}
-{htxt id="access-dependents"}
+{htxt id="hrjob-dependents"}
 <p></p>
 <ul>
   {ts}For a family plan, please list the names of all dependents who are also covered, along with their relationships to the individual.{/ts}
 </ul>
 {/htxt}
 
-{htxt id="access-fte-title"}
+{htxt id="hrjob-fte-title"}
   {ts}FTE{/ts}
 {/htxt}
-{htxt id="access-fte"}
+{htxt id="hrjob-fte"}
 <p></p>
 <ul>
 {ts}
@@ -82,30 +82,30 @@ would be 15.
 </ul>
 {/htxt}
 
-{htxt id="access-employer-title"}
+{htxt id="hrjob-employer-title"}
   {ts}Employer Contribution{/ts}
 {/htxt}
-{htxt id="access-employer"}
+{htxt id="hrjob-employer"}
 <p></p>
 <ul>
 {ts}The contribution paid by the employer as a percentage of gross salary.{/ts}
 </ul>
 {/htxt}
 
-{htxt id="access-employee-title"}
+{htxt id="hrjob-employee-title"}
   {ts}Employee Contribution{/ts}
 {/htxt}
-{htxt id="access-employee"}
+{htxt id="hrjob-employee"}
 <p></p>
 <ul>
 {ts}The contribution paid by the employee as a percentage of gross salary.{/ts}
 </ul>
 {/htxt}
 
-{htxt id="access-cost-center-title"}
+{htxt id="hrjob-cost-center-title"}
   {ts}Cost Center{/ts}
 {/htxt}
-{htxt id="access-cost-center"}
+{htxt id="hrjob-cost-center"}
 <p></p>
 <ul>
 {ts}If applicable, please enter the cost center that is assigned to the individual by the finance department.{/ts}
