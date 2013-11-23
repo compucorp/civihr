@@ -110,8 +110,6 @@ function hrmed_civicrm_tabs(&$tabs, $contactID) {
       ));
     }
   }
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrmed', 'css/hrmed.css');
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrmed', 'js/hrmed.js');
 }
 
 function hrmed_getCustomGroupId() {
@@ -155,5 +153,9 @@ function hrmed_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('org.civicrm.hrmed', 'js/hrmed.js');
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrmed', 'css/hrmed.css');
   }
 }
