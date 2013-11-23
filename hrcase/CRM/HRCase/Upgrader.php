@@ -141,10 +141,10 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
         $enableComponents = array_diff($enableComponents, array($component));
       }
     }
-
     civicrm_api3('setting', 'create', array(
       'domain_id' => CRM_Core_Config::domainID(),
       'enable_components' => $enableComponents,
-    ));
+    )); 
+    CRM_Core_Component::flushEnabledComponents();
   }
 }
