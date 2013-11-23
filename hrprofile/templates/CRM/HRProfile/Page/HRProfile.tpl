@@ -30,13 +30,34 @@
   <script type="text/javascript">
     var result = {/literal}{$aaData}{literal};
     var columns = {/literal}{$aaColumn}{literal};
-    cj( function() {
-      cj('table').dataTable( {
+    cj(function($){
+      $('table').dataTable( {
         "aoColumns": columns,
         "aaData": result,
         "sPaginationType": "full_numbers"
       });
-    });
+      
+      // get the width parameters
+      var widthData = [];
+      $( "table thead th", this ).each(function( index ) {
+        var widthParam = this.style.width;
+        var width = '{"sWidth":"'+ widthParam + '","aTargets":[' + index + ']}';
+        widthData.push(width);
+      });
+     var width = '[' + widthData + ']';
+     var responseResult = $.parseJSON(width);
+
+     // Reconstruct the already constructured datatable
+     $('table').dataTable( {	
+      "bDestroy": true,
+      "aoColumns": columns,
+      "aaData": result,
+      "sPaginationType": "full_numbers",
+      "aoColumnDefs": responseResult 
+     }); 
+     $( '.crm-profile-name-hrprofile table').css( "table-layout",'fixed');
+   });
+
  </script>
 {/literal} 
 
