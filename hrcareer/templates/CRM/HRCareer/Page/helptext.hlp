@@ -25,12 +25,5 @@
 *}
 
 {htxt id="access-enddate"}
-<ul>
-  {ts}Career History is used for recording the jobs and study courses that a person has
-undertaken before joining the organisation. It would include all those events
-usually listed on a CV/Resume. However, for an event that was started before
-joining the organisation, but has not yet been finished (e.g. a part-time study
-course) record the start date of the event but leave the end date blank.
-{/ts}
-</ul>
+{ts}For an event started but not yet finished (e.g. an on-going study course), leave the end date blank.{/ts}
 {/htxt}
