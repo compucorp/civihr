@@ -26,18 +26,46 @@
 </div>
 {* crm-profile-name-NAME *}
 
+{*
+By default, the column widths in jQuery.dataTable have the uncanny tendency to change while typing in a search.
+
+We cannot resolve this by setting a fixed width in CSS because the qty and size of columns change at runtime.
+
+WORK-AROUND: Call jQuery.dataTable twice. The first time uses automatic width. We extract the automatically-computed
+widths. The second time uses the same widths -- but sets them statically.
+*}
 {literal}
-  <script type="text/javascript">
-    var result = {/literal}{$aaData}{literal};
-    var columns = {/literal}{$aaColumn}{literal};
-    cj( function() {
-      cj('table').dataTable( {
-        "aoColumns": columns,
-        "aaData": result,
-        "sPaginationType": "full_numbers"
-      });
-    });
- </script>
+<script type="text/javascript">
+var result = {/literal}{$aaData}{literal};
+var columns = {/literal}{$aaColumn}{literal};
+cj(function($){
+  $('table').dataTable( {
+    "aoColumns": columns,
+    "aaData": result,
+    "sPaginationType": "full_numbers"
+  });
+
+  // get the width parameters
+  var widthData = [];
+  $( "table thead th", this ).each(function( index ) {
+    var widthParam = this.style.width;
+    var width = '{"sWidth":"'+ widthParam + '","aTargets":[' + index + ']}';
+    widthData.push(width);
+  });
+  var width = '[' + widthData + ']';
+  var responseResult = $.parseJSON(width);
+
+  // Reconstruct the datatable
+  $('table').dataTable( {
+    "bDestroy": true,
+    "aoColumns": columns,
+    "aaData": result,
+    "sPaginationType": "full_numbers",
+    "aoColumnDefs": responseResult
+  });
+  $( '.crm-profile-name-hrprofile table').css( "table-layout",'fixed');
+});
+</script>
 {/literal} 
 
 <div class="clear"></div>
