@@ -5,16 +5,16 @@
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
  return array (
           array (
- 		    'name' => 'WordReplacement People Management',
- 			'entity' => 'WordReplacement',
- 			'params' =>
- 			  array (
- 			    'version' => 3,
- 				'find_word' => 'CiviCase',
- 				'replace_word'=>'People Management',
- 				'is_active' => 1,
- 			  ),
- 		  ),
+            'name' => 'WordReplacement People Management',
+            'entity' => 'WordReplacement',
+            'params' =>
+              array (
+                'version' => 3,
+                'find_word' => 'CiviCase',
+                'replace_word'=>'People Management',
+                'is_active' => 1,
+              ),
+          ),
           array (
             'name' => 'WordReplacement Assignment',
             'entity' => 'WordReplacement',
