@@ -24,9 +24,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{htxt id="accesskeys-title"}
-  {ts}Access Keys{/ts}
-{/htxt}
 {htxt id="access-med-condition"}
 <ul>
   {ts}E.g. blindness, wheelchair user, weak heart, asthma etc.{/ts}

@@ -24,9 +24,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{htxt id="accesskeys-title"}
-  {ts}Access Keys{/ts}
-{/htxt}
 {htxt id="access-enddate"}
 <ul>
   {ts}Career History is used for recording the jobs and study courses that a person has
