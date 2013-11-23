@@ -29,7 +29,7 @@ cj(function($) {
     if($(this).find("div#profile-dialog").length) { 
       var accessName = $('[data-crm-custom="Immigration:Conditions"]').attr('name');
       if($('div#editrow-' + accessName + ' a.helpicon').length == 0) {
-        var helpIcon = $( "<span class ='crm-container'><a class='helpicon' onclick='CRM.help(\"\", {\"id\":\"access-condition\",\"file\":\"CRM\/HRVisa\/Page\/helptext\"}); return false;' title='Conditions Help'></a></span>" );
+        var helpIcon = $( "<span class ='crm-container'><a class='helpicon' onclick='CRM.help(\"\", {\"id\":\"hrvisa-condition\",\"file\":\"CRM\/HRVisa\/Page\/helptext\"}); return false;' title='Conditions Help'></a></span>" );
         $('div#editrow-' + accessName +' div label').append(helpIcon);
       }
     }

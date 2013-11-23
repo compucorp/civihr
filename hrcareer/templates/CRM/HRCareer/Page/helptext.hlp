@@ -24,6 +24,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{htxt id="access-enddate"}
+{htxt id="hrcareer-enddate"}
 {ts}For an event started but not yet finished (e.g. an on-going study course), leave the end date blank.{/ts}
 {/htxt}

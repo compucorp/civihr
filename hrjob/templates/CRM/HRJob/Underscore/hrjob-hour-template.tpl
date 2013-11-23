@@ -47,7 +47,7 @@
 
   <div class="crm-summary-row hrjob-needs-type">
     <div class="crm-label">
-      <label for="hrjob-hours_fte">{ts}FTE{/ts}&nbsp;{help id='access-fte' file='CRM/HRJob/Page/helptext'}</label>
+      <label for="hrjob-hours_fte">{ts}FTE{/ts}&nbsp;{help id='hrjob-fte' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-hours_fte" name="hours_fte" type="text" />

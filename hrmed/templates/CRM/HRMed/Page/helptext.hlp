@@ -24,8 +24,6 @@
  +--------------------------------------------------------------------+
 *}
 
-{htxt id="access-med-condition"}
-<ul>
-  {ts}E.g. blindness, wheelchair user, weak heart, asthma etc.{/ts}
-</ul>
+{htxt id="hrmed-med-condition"}
+{ts}E.g. blindness, wheelchair user, weak heart, asthma etc.{/ts}
 {/htxt}
