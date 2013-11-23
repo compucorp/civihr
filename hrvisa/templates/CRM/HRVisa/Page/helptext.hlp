@@ -24,7 +24,5 @@
  +--------------------------------------------------------------------+
 *}
 {htxt id="hrvisa-condition"}
-<ul>
-  {ts}E.g. whether or not a visa allows a person to work{/ts}
-</ul>
+{ts}E.g. whether or not a visa allows a person to work{/ts}
 {/htxt}
