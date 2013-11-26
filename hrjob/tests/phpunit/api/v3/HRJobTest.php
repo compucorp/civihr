@@ -103,6 +103,10 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     return TRUE;
   }
 
+  function testIntentionalfailure() {
+    $this->fail('Cause a failure to ensure that Jenkins reports properly');
+  }
+
   /**
    * Create a job and several subordinate entities using API chaining
    */
