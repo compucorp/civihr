@@ -7,7 +7,10 @@ if [ -f "$CONF" ]; then
   source "$CONF"
 fi
 
-DUMP="${CIVIHRDIR}/bin/dump.sql"
+## Fill in defaults
+TESTOUTDIR=${TESTOUTDIR:-${CIVISOURCEDIR}/build}
+SQLDUMP=${SQLDUMP:-${CIVIHRDIR}/bin/dump.sql}
+
 ##################################
 set -x
 
@@ -20,9 +23,9 @@ function runTest() {
 
   set +e
   pushd "${DRUPALDIR}" >> /dev/null
-    if [ -f "$DUMP" ]; then
+    if [ -f "$SQLDUMP" ]; then
       ## add a file ~/.my.cnf in your home directory and it will disable the mysqldump password prompting
-      mysql "${CIVIDBNAME}" < "${DUMP}"
+      mysql "${CIVIDBNAME}" < "${SQLDUMP}"
     else
       drush cvapi extension.install keys=${deps}
     fi
@@ -32,7 +35,7 @@ function runTest() {
     ./scripts/phpunit \
       --include-path "${CIVIHRDIR}/${var}/tests/phpunit" \
       --tap \
-      --log-junit "${CIVISOURCEDIR}/build/junit-${var}-${test}.xml" \
+      --log-junit "${TESTOUTDIR}/junit-${var}-${test}.xml" \
       ${test}
     if [ $? != "0" ]; then
       HASERROR=1
@@ -45,7 +48,7 @@ function runTest() {
 ## Main
 if [ "${DSNDBNAME}" == "${CIVIDBNAME}" ]; then
   pushd "${DRUPALDIR}" >> /dev/null
-    drush sql-dump > "$DUMP"
+    drush sql-dump > "$SQLDUMP"
   popd >> /dev/null
   if [ -n "${DBUSER}" -a -n "${DBPASS}" ]; then
     file=~/.my.cnf
@@ -59,13 +62,13 @@ if [ "${DSNDBNAME}" == "${CIVIDBNAME}" ]; then
   fi
 fi
 
-runTest hrreport org.civicrm.hrjob,org.civicrm.hrreport CRM_AllTests
-runTest hrjob org.civicrm.hrjob api_v3_AllTests
+#runTest hrreport org.civicrm.hrjob,org.civicrm.hrreport CRM_AllTests
+#runTest hrjob org.civicrm.hrjob api_v3_AllTests
 runTest hrjob org.civicrm.hrjob CRM_AllTests
 #runTest hrvisa org.civicrm.hrjob,org.civicrm.hrvisa CRM_AllTests
 
-if [ -f "${DUMP}" ] ; then
-  rm "${DUMP}"
+if [ -f "${SQLDUMP}" ] ; then
+  rm "${SQLDUMP}"
 fi
 
 exit $HASERROR

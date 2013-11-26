@@ -1,3 +1,4 @@
 *~
 *.bak
 hrjob/build
+bin/setup.conf
