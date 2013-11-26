@@ -27,7 +27,7 @@ for var in "${ENTITY_EXTS[@]}"
       ./scripts/phpunit \
         --include-path "$CIVIHRDIR/${var}/tests/phpunit" \
         --tap \
-        --log-junit "$CIVISOURCEDIR/build/junit-${var}-CRM_AllTests.xml" \
+        --log-junit "$CIVISOURCEDIR/build/junit-${var}-WebTest_AllTests.xml" \
         WebTest_AllTests
     popd
     if [ $? != "0" ]; then

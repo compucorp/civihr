@@ -10,6 +10,8 @@ fi
 DUMP="${CIVIHRDIR}/bin/dump.sql"
 ##################################
 set -x
+
+##################################
 ## runTest <extension-name> <dependencies> <test-name>
 function runTest() {
   var="$1"
@@ -17,16 +19,16 @@ function runTest() {
   test="$3"
 
   set +e
-  pushd "${DRUPALDIR}"
-    if [ -f "${CIVIHRDIR}/bin/dump.sql" ]; then
+  pushd "${DRUPALDIR}" >> /dev/null
+    if [ -f "$DUMP" ]; then
       ## add a file ~/.my.cnf in your home directory and it will disable the mysqldump password prompting
       mysql "${CIVIDBNAME}" < "${DUMP}"
     else
       drush cvapi extension.install keys=${deps}
     fi
-  popd
+  popd >> /dev/null
 
-  pushd "${CIVISOURCEDIR}/tools"
+  pushd "${CIVISOURCEDIR}/tools" >> /dev/null
     ./scripts/phpunit \
       --include-path "${CIVIHRDIR}/${var}/tests/phpunit" \
       --tap \
@@ -35,17 +37,19 @@ function runTest() {
     if [ $? != "0" ]; then
       HASERROR=1
     fi
-  popd
+  popd >> /dev/null
   set -e
 }
 
+##################################
+## Main
 if [ "${DSNDBNAME}" == "${CIVIDBNAME}" ]; then
-  pushd "${DRUPALDIR}"
+  pushd "${DRUPALDIR}" >> /dev/null
     drush sql-dump > "$DUMP"
-  popd
+  popd >> /dev/null
   if [ -n "${DBUSER}" -a -n "${DBPASS}" ]; then
     file=~/.my.cnf
-    combine="[mysql]\nuser=${DBUSER}\npassword=${DBPASS}"    
+    combine="[mysql]\nuser=${DBUSER}\npassword=${DBPASS}"
     if [ -f "$file" ]; then
       echo -e $combine >> $file
     else
