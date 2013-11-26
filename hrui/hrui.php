@@ -175,6 +175,11 @@ function hrui_civicrm_install() {
   $defaults['is_active'] = 0;
   CRM_Core_BAO_OptionValue::create($defaults);
 
+  // Change the blog URL
+  civicrm_api3('setting', 'create', array(
+    'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed',
+  ));
+
   return _hrui_civix_civicrm_install();
 }
 
