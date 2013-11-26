@@ -17,6 +17,8 @@ CONF=`dirname $0`/setup.conf
 if [ -f "$CONF" ]; then
   source "$CONF"
 fi
+TESTOUTDIR=${TESTOUTDIR:-${CIVISOURCEDIR}/build}
+
 ##################################
 set -x
 
@@ -27,7 +29,7 @@ for var in "${ENTITY_EXTS[@]}"
       ./scripts/phpunit \
         --include-path "$CIVIHRDIR/${var}/tests/phpunit" \
         --tap \
-        --log-junit "$CIVISOURCEDIR/build/junit-${var}-WebTest_AllTests.xml" \
+        --log-junit "$TESTOUTDIR/junit-${var}-WebTest_AllTests.xml" \
         WebTest_AllTests
     popd
     if [ $? != "0" ]; then

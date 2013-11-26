@@ -20,3 +20,11 @@ DBUSER=
 
 # define your database password here
 DBPASS=
+
+# Define the path which stores JUnit XML output files
+# default (if omitted): $CIVISOURCEDIR/build
+# TESTOUTDIR=
+
+# Define the location of a temporary SQL dump
+# default (if omitted): $CIVIHRDIR/bin/dump.sql
+# SQLDUMP=
