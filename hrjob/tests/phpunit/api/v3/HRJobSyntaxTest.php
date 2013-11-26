@@ -70,4 +70,11 @@ class api_v3_HRJobSyntaxTest extends api_v3_SyntaxConformanceTest {
     $entities = array_merge($entitiesWithout, array('HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension'));
     return $entities;
   }
+
+  public static function entities($skip = NULL) {
+    $result = parent::entities($skip);
+    return array_filter($result, function($value) {
+      return preg_match("/^HRJob/", $value[0]);
+    });
+  }
 }
