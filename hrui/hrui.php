@@ -34,6 +34,9 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   }
+  if ($page instanceof CRM_Dashlet_Page_Blog) {
+    $page->_getFeed('https://civicrm.org/taxonomy/term/198/feed');
+  }
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
