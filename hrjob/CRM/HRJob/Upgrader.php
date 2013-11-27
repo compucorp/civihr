@@ -138,8 +138,8 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     return TRUE;
   } // */
   
-  public function upgrade_4400() {
-    $this->ctx->log->info('Applying update 4400');
+  public function upgrade_1100() {
+    $this->ctx->log->info('Applying update 1100');
   	if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_currency')) {
   	  CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_currency VARCHAR(63) COMMENT "Job Pay Currency" AFTER pay_unit');
   	}
@@ -159,8 +159,8 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
-  public function upgrade_4403() {
-    $this->ctx->log->info('Applying update 4403');
+  public function upgrade_1103() {
+    $this->ctx->log->info('Applying update 1103');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider_life_insurance')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_health ADD COLUMN provider_life_insurance VARCHAR(63) COMMENT "The organization or company which manages life insurance service"');
     }
@@ -174,39 +174,39 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health ADD COLUMN dependents_life_insurance text DEFAULT NULL");
     }
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjob_life_provider', 'name')) {
-      $this->executeCustomDataFile('xml/4403_life_provider.xml');
+      $this->executeCustomDataFile('xml/1103_life_provider.xml');
     }
     return TRUE;
   } 
-  public function upgrade_4405() {
-    $this->ctx->log->info('Applying update 4405');
+  public function upgrade_1105() {
+    $this->ctx->log->info('Applying update 1105');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'pension_type')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN pension_type VARCHAR(63) COMMENT "Pension Type"');
     }
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjob_pension_type', 'name')) {
-      $this->executeCustomDataFile('xml/4405_pension_type.xml');
+      $this->executeCustomDataFile('xml/1105_pension_type.xml');
     }
     return TRUE;
   }
 
-  public function upgrade_4206() {
-    $this->ctx->log->info('Applying update 4200');
+  public function upgrade_1106() {
+    $this->ctx->log->info('Applying update 1106');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'ee_evidence_note')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN ee_evidence_note VARCHAR(127) COMMENT "Employee evidence note"');
     } 
     return TRUE;
   }
 
-  public function upgrade_4407() {
-    $this->ctx->log->info('Applying update 4407');
+  public function upgrade_1107() {
+    $this->ctx->log->info('Applying update 1107');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'ee_contrib_abs')) {
       CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_pension ADD COLUMN ee_contrib_abs decimal(20,2) unsigned DEFAULT NULL COMMENT 'Employee Contribution Absolute Amount'");
     }
     return TRUE;
   }  
 
-  public function upgrade_4408() {
-    $this->ctx->log->info('Applying update 4408');
+  public function upgrade_1108() {
+    $this->ctx->log->info('Applying update 1108');
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider') && CRM_Core_DAO::checkFieldExists('civicrm_hrjob_health', 'provider_life_insurance')) {
       $opt_grp_name = array(
         'hrjob_health_provider' => array(

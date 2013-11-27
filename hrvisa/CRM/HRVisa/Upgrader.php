@@ -138,8 +138,8 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     return TRUE;
   } // */
   
-  public function upgrade_4404() {
-    $this->ctx->log->info('Applying update 4404');
+  public function upgrade_1104() {
+    $this->ctx->log->info('Applying update 1104');
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
     $cgid = array_search('Immigration', $groups);
     $cfId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Sponsor_Certificate_number', 'id', 'name');
@@ -183,8 +183,8 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_4405() {
-    $this->ctx->log->info('Applying update 4405');
+  public function upgrade_1105() {
+    $this->ctx->log->info('Applying update 1105');
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
     $customFieldID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'Is_Visa_Required', 'id', 'name');
     $customGroupID = array_search('Extended_Demographics', $groups);
@@ -215,8 +215,8 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_4416() {
-    $this->ctx->log->info('Planning update 4416'); // PEAR Log interface
+  public function upgrade_1116() {
+    $this->ctx->log->info('Planning update 1116'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
     $gid = array_search('hrvisa_tab', $groups);
     $params = array(
@@ -234,8 +234,8 @@ class CRM_HRVisa_Upgrader extends CRM_HRVisa_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_4406() {
-    $this->ctx->log->info('Applying update 4406');
+  public function upgrade_1106() {
+    $this->ctx->log->info('Applying update 1106');
     // create activity_type 'Visa Expiration'
     $params = array(
       'weight' => 1,

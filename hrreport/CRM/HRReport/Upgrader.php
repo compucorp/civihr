@@ -137,8 +137,8 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     return TRUE;
   } // */
 
-  public function upgrade_4400() {
-	$this->ctx->log->info('Planning update 4400'); // PEAR Log interface
+  public function upgrade_1100() {
+	$this->ctx->log->info('Planning update 1100'); // PEAR Log interface
 	$params = array(
 	  1 => array("CiviHR Annual and Monthly Cost Equivalents Report", 'String'),
 	);
