@@ -136,23 +136,4 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
     }
     return TRUE;
   } // */
-
-  public function upgrade_4203() {
-    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
-    $profileId = array_search('hrstaffdir_listing', $groups);
-    if ($profileId) {
-      $navigationParams = array(
-                                'label' => 'Directory',
-                                'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
-                                'is_active' => 1,
-                                );
-      $navigationParamsNew = array(
-                                   'label' => 'Directory',
-                                   'url' => "civicrm/profile/table&reset=1&gid={$profileId}&force=1",
-                                   'is_active' => 1,
-                                   );
-      $navigation = CRM_Core_BAO_Navigation::processUpdate($navigationParams,$navigationParamsNew);
-      return TRUE;
-    }
-  }
 }
