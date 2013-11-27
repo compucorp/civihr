@@ -98,7 +98,7 @@ function hrstaffdir_civicrm_install() {
     // add to navigation
     $navigationParams = array(
       'label' => 'Directory',
-      'url' => "civicrm/profile/table&reset=1&gid={$profileId}&force=1",
+      'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
       'is_active' => 1,
     );
     $navigation = CRM_Core_BAO_Navigation::add($navigationParams);
@@ -122,7 +122,7 @@ function hrstaffdir_civicrm_uninstall() {
   $profileId = hrstaffdir_getUFGroupID();
   $navigationParams = array(
     'label' => 'Directory',
-    'url' => "civicrm/profile/table&reset=1&gid={$profileId}&force=1",
+    'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
   );
   $navigation = CRM_Core_BAO_Navigation::retrieve($navigationParams,$defaultParams);
   CRM_Core_BAO_Navigation::processDelete($navigation->id);
@@ -137,7 +137,7 @@ function hrstaffdir_civicrm_enable() {
   $profileId = hrstaffdir_getUFGroupID();
   $params = array(
     'label' => 'Directory',
-    'url' => "civicrm/profile/table&reset=1&gid={$profileId}&force=1",
+    'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
     'is_active' => 0,
   );
   $newParams = array(
@@ -155,7 +155,7 @@ function hrstaffdir_civicrm_disable() {
   $profileId = hrstaffdir_getUFGroupID();
   $params = array(
     'label' => 'Directory',
-    'url' => "civicrm/profile/table&reset=1&gid={$profileId}&force=1",
+    'url' => "civicrm/profile&reset=1&gid={$profileId}&force=1",
     'is_active' => 1,
   );
   $newParams = array(
