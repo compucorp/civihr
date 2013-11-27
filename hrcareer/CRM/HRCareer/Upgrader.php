@@ -137,8 +137,8 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     return TRUE;
   } // */
   
-  public function upgrade_4402() {
-    $this->ctx->log->info('Planning update 4402'); // PEAR Log interface
+  public function upgrade_1102() {
+    $this->ctx->log->info('Planning update 1102'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
     $cgid = array_search('Career', $groups);
     $params = array(
@@ -157,8 +157,8 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     return TRUE;
     }
   
-  public function upgrade_4412() {
-    $this->ctx->log->info('Planning update 4412'); // PEAR Log interface
+  public function upgrade_1112() {
+    $this->ctx->log->info('Planning update 1112'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
     $gid = array_search('hrcareer_tab', $groups);
     $params = array(

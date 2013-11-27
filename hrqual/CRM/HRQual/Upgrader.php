@@ -138,8 +138,8 @@ class CRM_HRQual_Upgrader extends CRM_HRQual_Upgrader_Base {
     return TRUE;
   } // */
 
-  public function upgrade_4415() {
-    $this->ctx->log->info('Planning update 4415'); // PEAR Log interface
+  public function upgrade_1115() {
+    $this->ctx->log->info('Planning update 1115'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
     $gid = array_search('hrqual_tab', $groups);
     $params = array(

@@ -138,8 +138,8 @@ class CRM_HRMed_Upgrader extends CRM_HRMed_Upgrader_Base {
     return TRUE;
   } // */
 
-  public function upgrade_4414() {
-    $this->ctx->log->info('Planning update 4414'); // PEAR Log interface
+  public function upgrade_1114() {
+    $this->ctx->log->info('Planning update 1114'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
     $gid = array_search('hrmed_tab', $groups);
     $params = array(

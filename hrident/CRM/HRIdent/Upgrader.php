@@ -137,8 +137,8 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     }
     return TRUE;
   } // */
-  public function upgrade_4413() {
-    $this->ctx->log->info('Planning update 4413'); // PEAR Log interface
+  public function upgrade_1113() {
+    $this->ctx->log->info('Planning update 1113'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
     $gid = array_search('hrident_tab', $groups);
     $params = array(
