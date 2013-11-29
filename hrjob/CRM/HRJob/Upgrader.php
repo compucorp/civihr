@@ -289,4 +289,12 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
 
     return TRUE;
   }
+
+  public function upgrade_1202() {
+  	$this->ctx->log->info('Applying update 1109');
+  	if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_annualized_est')) {
+  		CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_annualized_est decimal(40,2)   DEFAULT 0 COMMENT "Annulized Estimation for Job Pay Amount" AFTER pay_currency');
+  	}
+  	return TRUE;
+  }
 }
