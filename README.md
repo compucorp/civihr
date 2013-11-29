@@ -89,3 +89,15 @@ called "civicrm_tests_dev".)
 
 (Note: For "hrjob", there's an extra pre-requisite: before running tests, run
 "hrjob/bin/setup.sh {CIVICRM_ROOT}".)
+
+To run all CRM test 
+  cd /var/www/drupal/vendor/civicrm/civihr/bin/
+  Copy setup.conf.text file and rename it to setup.conf
+  Modify the setup.conf file to define the path
+  Execute the crm-api test using 
+    bash civihr-crm-api-tests.sh
+
+To run all webtests
+  cd /var/www/drupal/vendor/civicrm/civihr/bin/
+  Execute all CiviHr tests
+    bash civihr-webtests.sh
