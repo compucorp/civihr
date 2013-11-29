@@ -62,6 +62,14 @@
     </div>
   </div>
 
+  <div class="crm-summary-row hrjob-needs-pay_annualized_est">
+    <div class="crm-label">
+      <label for="hrjob-pay_annualized_est">{ts}Pay Rate{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-pay_annualized_est" name="pay_annualized_est" type="text" />
+    </div>
+  </div>
   <%= RenderUtil.standardButtons() %>
 </form>
 </script>
