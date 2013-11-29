@@ -5,17 +5,17 @@ See also:
  * Wiki: http://wiki.civicrm.org/confluence/display/CRM/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
 
-## Download
+## Download and Install
+Upgrade CiviCRM to 4.4.3 or higher
 
-Clone this git repository, e.g.
+cd </path/to/extension/dir>
+  (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
-```bash
-mkdir -p /var/www/drupal/vendor/civicrm
-cd  /var/www/drupal/vendor/civicrm
-git clone git://github.com/civicrm/civihr.git
-```
+wget https://github.com/civicrm/civihr/archive/1.1.zip
 
-## Install
+unzip civihr-1.1.zip
+
+mv civihr-1.1 civihr
 
 If you have Drush installed, then you can enable all the extensions at once:
 
@@ -89,3 +89,15 @@ called "civicrm_tests_dev".)
 
 (Note: For "hrjob", there's an extra pre-requisite: before running tests, run
 "hrjob/bin/setup.sh {CIVICRM_ROOT}".)
+
+To run all CRM test 
+  cd /var/www/drupal/vendor/civicrm/civihr/bin/
+  Copy setup.conf.text file and rename it to setup.conf
+  Modify the setup.conf file to define the path
+  Execute the crm-api test using 
+    bash civihr-crm-api-tests.sh
+
+To run all webtests
+  cd /var/www/drupal/vendor/civicrm/civihr/bin/
+  Execute all CiviHr tests using
+    bash civihr-webtests.sh
