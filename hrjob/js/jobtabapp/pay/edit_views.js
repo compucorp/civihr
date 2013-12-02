@@ -12,6 +12,9 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     modelEvents: _.extend({}, HRApp.Common.Views.StandardForm.prototype.modelEvents, {
       'change:pay_grade': 'togglePayGrade'
     }),
+    events: _.extend({}, HRApp.Common.Views.StandardForm.prototype.events,{
+      'click .pay_annualized_est_edit': 'doAnnualizedEstEdit'
+    }),
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
       if (this.model.get('pay_grade') == 'paid') {
@@ -32,6 +35,14 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         view.$('.hrjob-needs-pay_grade').slideUp();
       }
     },
+    doAnnualizedEstEdit: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var view = new Pay.EditSettings({
+        model: this.model
+      });
+      HRApp.dialogRegion.show(view);
+    },
     onValidateRulesCreate: function(view, r) {
       _.extend(r.rules, {
         pay_amount: {
@@ -39,5 +50,22 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         }
       });
     }
+  });
+  Pay.EditSettings = HRApp.Common.Views.StandardForm.extend({
+    template: '#hrjob-pay-settings-template',
+	templateHelpers: function() {
+	  return {
+	    'isNew': this.model.get('id') ? false : true,
+	    'RenderUtil': CRM.HRApp.RenderUtil,
+	    'FieldOptions': CRM.FieldOptions.HRJobPay
+		};
+	  },
+	onShow: function() {
+	  $('.hrjob-dialog-region').dialog({
+	    modal: true,
+	    title: "Anualized Pay Constants",
+	    width: "auto"
+	  });
+	} 
   });
 });

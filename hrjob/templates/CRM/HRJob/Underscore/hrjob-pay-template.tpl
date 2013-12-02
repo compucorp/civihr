@@ -68,6 +68,9 @@
     </div>
     <div class="crm-content">
       <input id="hrjob-pay_annualized_est" name="pay_annualized_est" type="text" />
+      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+        <span class="batch-edit pay_annualized_est_edit"></span>
+      {/if}
     </div>
   </div>
   <%= RenderUtil.standardButtons() %>

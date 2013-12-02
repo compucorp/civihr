@@ -4,7 +4,8 @@ CRM.HRApp = new Marionette.Application();
 CRM.HRApp.addRegions({
   messageRegion: ".hrjob-message-region",
   mainRegion: ".hrjob-main-region",
-  treeRegion: ".hrjob-tree-region"
+  treeRegion: ".hrjob-tree-region",
+  dialogRegion: ".hrjob-dialog-region"
 });
 
 CRM.HRApp.on("initialize:after", function() {
