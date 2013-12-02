@@ -3,6 +3,7 @@
 <div class="hrjob-container">
   <div class="hrjob-main-region"></div>
   <div class="hrjob-tree-region"></div>
+  <div class="hrjob-dialog-region"></div>
 </div>
 
 <script type="text/javascript">
