@@ -44,7 +44,8 @@ Read the drush-install.sh for details.
 ## Install (Option B: Manual)
 
 CiviHR includes over a dozen extensions. These can be activated piecemeal.
-The following extensions provide major functionality:
+The following extensions provide the major features and may be activated
+individually:
 
  * org.civicrm.hrcareer: Career History
  * org.civicrm.hrdemog: Extended Demographics
@@ -57,7 +58,7 @@ The following extensions provide major functionality:
  * org.civicrm.hrstaffdir: Staff Directory
  * org.civicrm.hrvisa: Immigration
 
-Finally, these two optional extensions
+Finally, these two extensions build on top of the others:
 
  * org.civicrm.hrsampledata: Generate random example data
  * org.civicrm.hrui: Trim/revise CiviCRM UI for CiviHR users
