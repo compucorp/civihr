@@ -1,11 +1,11 @@
 ## Pre-requisites
 
-Install CiviCRM 4.4.0 or higher
+CiviCRM 4.4.0 or higher
 
-Note: CiviHR includes some significant changes to the nomal CiviCRM
-user-experience.  As with any significant change or addition, CiviHR should
-be evaluated on a test/staging site before installing on a live/production
-site.
+> Note: CiviHR includes some significant changes to the nomal CiviCRM
+> user-experience.  As with any significant change or addition, CiviHR
+> should be evaluated on a test/staging site before installing on a
+> live/production site.
 
 ## Download
 
