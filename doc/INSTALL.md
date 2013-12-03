@@ -2,7 +2,11 @@
 
 Install CiviCRM 4.4.0 or higher
 
-## Download and Install
+Note: CiviHR includes some significant changes to the nomal CiviCRM
+user-experience.  It is currently recommended to install CiviHR on a
+test/staging site before installing it on your live/production site.
+
+## Download
 
 ```bash
 cd </path/to/extension/dir>
@@ -12,6 +16,8 @@ wget https://github.com/civicrm/civihr/archive/1.0.0.zip
 unzip civihr-1.0.0.zip
 mv civihr-1.0.0 civihr
 ```
+
+## Install (Option A: Drush)
 
 If you have Drush installed, then you can enable all the extensions at once:
 
@@ -34,3 +40,24 @@ bash /var/www/drupal/vendor/civicrm/civihr/bin/drush-install.sh --with-sample-da
 ```
 
 Read the drush-install.sh for details.
+
+## Install (Option B: Manual)
+
+CiviHR includes over a dozen extensions. These can be activated piecemeal.
+The following extensions provide major functionality:
+
+ * org.civicrm.hrcareer: Career History
+ * org.civicrm.hrdemog: Extended Demographics
+ * org.civicrm.hremerg: Emergency Contacts
+ * org.civicrm.hrident: Identification
+ * org.civicrm.hrjob: Jobs and Roles
+ * org.civicrm.hrmed: Medical and Disability
+ * org.civicrm.hrqual: Qualifications
+ * org.civicrm.hrreport: Reporting
+ * org.civicrm.hrstaffdir: Staff Directory
+ * org.civicrm.hrvisa: Immigration
+
+Finally, these two optional extensions
+
+ * org.civicrm.hrsampledata: Generate random example data
+ * org.civicrm.hrui: Trim/revise CiviCRM UI for CiviHR users
