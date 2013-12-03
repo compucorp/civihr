@@ -3,8 +3,9 @@
 Install CiviCRM 4.4.0 or higher
 
 Note: CiviHR includes some significant changes to the nomal CiviCRM
-user-experience.  It is currently recommended to install CiviHR on a
-test/staging site before installing it on your live/production site.
+user-experience.  As with any significant change or addition, CiviHR should
+be evaluated on a test/staging site before installing on a live/production
+site.
 
 ## Download
 
