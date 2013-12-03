@@ -3,9 +3,9 @@
 Clone this git repository, e.g.
 
 ```bash
-mkdir -p $civiroot/tools/extensions
-cd  $civiroot/tools/extensions
-git clone git://github.com/civicrm/civihr.git
+cd /var/www/drupal/sites/all/modules/civicrm
+mkdir -p tools/extensions
+git clone git://github.com/civicrm/civihr.git tools/extensions/civihr
 ```
 
 ## Install
@@ -14,20 +14,20 @@ If you have Drush installed, then you can enable all the extensions at once:
 
 ```bash
 cd /var/www/drupal
-bash vendor/civicrm/civihr/bin/drush-install.sh --with-sample-data
+bash sites/all/modules/civicrm/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
 ```
 
 If you're familiar with different ways to call drush, then you can use the same
 techniques with drush-install.sh, e.g.
 
 ```bash
-cd /var/www/drupal/vendor/civicrm/civihr
+cd /var/www/drupal/sites/all/modules/civicrm/tools/extensions/civihr
 ./bin/drush-install.sh --with-sample-data --root=/var/www/drupal
 
 or
 
 cd /var/www/drupal/sites/example.com
-bash /var/www/drupal/vendor/civicrm/civihr/bin/drush-install.sh --with-sample-data
+bash /var/www/drupal/sites/all/modules/civicrm/tools/extensions/civihr/bin/drush-install.sh --with-sample-data
 ```
 
 Read the drush-install.sh for details.
