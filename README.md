@@ -5,17 +5,17 @@ See also:
  * Wiki: http://wiki.civicrm.org/confluence/display/CRM/CiviHR
  * Issues: http://issues.civicrm.org/jira/secure/Dashboard.jspa?selectPageId=11213
 
-## Download
+## Download and Install
+Upgrade CiviCRM to 4.4.0 or higher
 
-Clone this git repository, e.g.
+cd </path/to/extension/dir>
+  (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
-```bash
-mkdir -p /var/www/drupal/vendor/civicrm
-cd  /var/www/drupal/vendor/civicrm
-git clone git://github.com/civicrm/civihr.git
-```
+wget https://github.com/civicrm/civihr/archive/1.0.0.zip
 
-## Install
+unzip civihr-1.0.0.zip
+
+mv civihr-1.0.0 civihr
 
 If you have Drush installed, then you can enable all the extensions at once:
 
