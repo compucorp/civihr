@@ -2,7 +2,7 @@
 
 CiviCRM 4.4.0 or higher
 
-> Note: CiviHR includes some significant changes to the nomal CiviCRM
+> NOTE: CiviHR includes some significant changes to the nomal CiviCRM
 > user-experience.  As with any significant change or addition, CiviHR
 > should be evaluated on a test/staging site before installing on a
 > live/production site.
@@ -17,6 +17,10 @@ wget https://github.com/civicrm/civihr/archive/1.0.0.zip
 unzip civihr-1.0.0.zip
 mv civihr-1.0.0 civihr
 ```
+
+> NOTE: On some misconfigured systems, the "wget" command may display a warning
+> like "ERROR: The certificate of `github.com' is not trusted." For a workaround,
+> add the option "--no-check-certificate" or check out [this article](http://blog.55minutes.com/2012/01/fixing-https-certificate-errors-in-wget-and-ruby/).
 
 ## Install (Option A: Drush)
 
