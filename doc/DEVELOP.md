@@ -35,7 +35,7 @@ Read the drush-install.sh for details.
 ## Schema development
 
 Most CiviHR extensions define their schema using CiviCRM's custom-data system.
-During installation, modules using this sytem will load "xml/auto_install.xml" 
+During installation, modules using this sytem will load "xml/auto_install.xml"
 which was [re]generated using the command "civix generate:custom-xml".
 (Note: The XML won't be reloaded during upgrade. To support upgrades, one must
 add an upgrade_N() function to CRM/*/Upgrader.php.)
