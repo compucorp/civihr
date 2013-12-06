@@ -14,6 +14,7 @@ hrmed \
 hrprofile
 hrqual \
 hrreport \
+hrsampledata \
 hrstaffdir \
 hrui \
 hrvisa \
