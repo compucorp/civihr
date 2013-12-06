@@ -8,8 +8,8 @@
     <author>CiviCRM LLC</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2013-11-26</releaseDate>
-  <version>1.1</version>
+  <releaseDate>2013-12-06</releaseDate>
+  <version>1.1.0</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.4</ver>
