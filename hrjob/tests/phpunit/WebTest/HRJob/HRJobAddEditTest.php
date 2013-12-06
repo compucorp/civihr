@@ -42,7 +42,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $org1 = $this->webtestAddOrganization($orgName1, "$orgName1@org.name", 'Health_Insurance_Provider');
     $orgName2 = substr(sha1(rand()), 0, 7);
     $org2 = $this->webtestAddOrganization($orgName2, "$orgName2@org.name", 'Life_Insurance_Provider');
-
+    $orgName3 = substr(sha1(rand()), 0, 7);
+    $org3 = $this->webtestAddOrganization($orgName3, "$orgName3@org.name");
     // Adding contacts
     //manager contact
     $firstName = substr(sha1(rand()), 0, 7);
@@ -63,6 +64,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), TRUE);
 
     $this->_addFundingData(1, array(
+      'funding_org_id' => $orgName3,
       'funding_notes' => 'Test Notes'
     ));
 
@@ -153,10 +155,12 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), FALSE, 'Edit');
 
     $this->_addFundingData(2, array(
+      'funding_org_id' => $orgName3,
       'funding_notes' => 'Test Funding Notes'
     ));
     
     $this->_addFundingData(2, array(
+     'funding_org_id' => $orgName2,
      'funding_notes' => 'Test Funding Notes'
     ), 'Edit');
     
@@ -302,12 +306,17 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
   	  $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[2]/a");
   	  $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[2]/a");
   	}
-  	$this->waitForElementPresent('hrjob-is_tied_to_funding');
-  	$this->click('hrjob-is_tied_to_funding');
-  	$this->type('hrjob-funding_notes', $values['funding_notes']);
-  	$this->click("xpath=//button[@class='crm-button standard-save']");
-  	sleep(1);
-  	$this->waitForText('crm-notification-container', "Saved");
+    $this->waitForElementPresent('hrjob-is_tied_to_funding');
+    $this->click('hrjob-is_tied_to_funding');
+    $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/form//div[2]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+    $this->type("xpath=//div[@class='hrjob-main-region']/div/form//div[2]/div[2][@class='crm-content']/input[2][@class='ac_input']", $values['funding_org_id']);
+    $this->click("xpath=//div[@class='hrjob-main-region']/div/form//div[2]/div[2][@class='crm-content']/input[2][@class='ac_input']");
+    $this->waitForElementPresent("css=div.ac_results-inner li");
+    $this->click("css=div.ac_results-inner li");
+    $this->type('hrjob-funding_notes', $values['funding_notes']);
+    $this->click("xpath=//button[@class='crm-button standard-save']");
+    sleep(1);
+    $this->waitForText('crm-notification-container', "Saved");
   
   	//assert the saved values
   	$this->assertEquals($values['funding_notes'], $this->getValue("hrjob-funding_notes"));
