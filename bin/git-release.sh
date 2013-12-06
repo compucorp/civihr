@@ -48,3 +48,5 @@ do
 done
 git commit -m "Update CiviHR Version (${version}) and Release Date (${releaseDate})" $fileName
 git tag -a ${version} -m "CiviHR Version ${version}"
+echo ""
+echo "Created tag, ${version}. Please push the branch and tag!"
