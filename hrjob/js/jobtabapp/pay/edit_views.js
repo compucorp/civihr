@@ -39,7 +39,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
       e.preventDefault();
       e.stopPropagation();
       var view = new Pay.EditSettings({
-        model: this.model
+    	  model: new HRApp.Entities.Setting()
       });
       HRApp.dialogRegion.show(view);
     },
