@@ -48,16 +48,16 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       //hrjob: automatically update the "Job Title"
       var $position = this.$('[name=position]');
       var $title = this.$('[name=title]');
-      if($position.val() === $title.val()) {
+      if ($position.val() === $title.val()) {
         $position.bind("keyup", function() {
-    	  $title.val($position.val());
-    	  $title.change();
+          $title.val($position.val());
+          $title.change();
         });
         $title.bind("change", function() {
-         if($position.val() !== $title.val()) {	
-    	   $position.unbind("keyup");
-         } 
-    	});
+          if ($position.val() !== $title.val()) {
+            $position.unbind("keyup");
+          }
+        });
       }
     },
     onBindingCreate: function(bindings) {
