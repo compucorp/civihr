@@ -22,6 +22,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
+      var view = this;
+
       this.$('.crm-contact-selector').crmContactField();
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
@@ -32,6 +34,29 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       } else {
         this.$('.hrjob-revision-link').hide();
       }
+
+      // In Civi 4.5+, we can display links in a popup
+      if (CRM.loadForm) {
+        this.$('.hr-optionvalue-link').on('click', function() {
+          var entityName = $(this).attr('data-entity');
+          var fieldName = $(this).attr('data-field');
+          var $form = CRM.loadForm($(this).attr('href'), {
+            openInline: 'a'
+          });
+          $form.on('dialogclose', function() {
+            CRM.api(entityName, 'getoptions', {
+              'field': fieldName
+            }, {
+              success: function(result) {
+                CRM.FieldOptions[entityName][fieldName] = result.values;
+                view.render();
+              }
+            });
+          });
+          return false;
+        });
+      }
+
       var rules = this.createValidationRules();
       this.$('form').validate(rules);
       if (rules.rules) {
