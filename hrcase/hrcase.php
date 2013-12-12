@@ -22,6 +22,7 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  hrcase_example_caseType(FALSE);
   return _hrcase_civix_civicrm_install();
 }
 
@@ -62,7 +63,24 @@ function hrcase_civicrm_uninstall() {
       $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
     }
   }
+  hrcase_example_caseType(TRUE);
   return _hrcase_civix_civicrm_uninstall();
+}
+
+/**
+ * Enable/Disable example case type
+ */
+function hrcase_example_caseType($is_active) {
+  $caseTypesGroupId = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'case_type', 'return' => 'id'));
+  $exampleCaseType = array('adult_day_care_referral', 'housing_support');
+  foreach($exampleCaseType as $exampleCaseType) {
+    $params = array('name' => $exampleCaseType, 'option_group_id' => $caseTypesGroupId);
+    CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+    if($defaults['id']) {
+      CRM_Core_BAO_OptionValue::setIsActive($defaults['id'], $is_active ? 1 : 0);
+    }
+  }
+  CRM_Core_BAO_Navigation::resetNavigation();
 }
 
 /**

@@ -147,4 +147,19 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     )); 
     CRM_Core_Component::flushEnabledComponents();
   }
+
+  public function upgrade_1200() {
+    $this->ctx->log->info('Applying update 1200');
+    $caseTypesGroupId = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'case_type', 'return' => 'id'));
+    $oarray = array('adult_day_care_referral', 'housing_support');
+    foreach($oarray as $oarray) {
+      $params = array('name' => $oarray, 'option_group_id' => $caseTypesGroupId);
+      CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
+      if($defaults['id']) {
+        CRM_Core_BAO_OptionValue::setIsActive($defaults['id'], 0);
+      }
+    }
+    CRM_Core_BAO_Navigation::resetNavigation();
+    return TRUE;
+  }
 }
