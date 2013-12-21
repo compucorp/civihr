@@ -44,7 +44,22 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         ),
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
-          'contact_id' => $contactID,
+          'contactId' => $contactID,
+          'activityTypes' => array(
+            1 => ts('Sick'),
+            2 => ts('Vacation'),
+            3 => ts('TOIL'),
+            4 => ts('TOIL (Credit)'),
+            5 => ts('Maternity'),
+            6 => ts('Paternity'),
+            7 => ts('Adoption'),
+            8 => ts('Other'),
+          ),
+          'periods' => array(
+            10 => 'Jan 1, 2013 to Dec 31, 2013',
+            9 => 'Jan 1, 2012 to Dec 31, 2012',
+            8 => 'Jan 1, 2011 to Dec 31, 2011',
+          ),
         ),
       );
     })

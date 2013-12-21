@@ -5,7 +5,7 @@
     <div class="hrabsence-filter-region"></div>
     <div class="hrabsence-new-region"></div>
   </div>
-  <div class="hrabsence-main-region"></div>
+  <div class="hrabsence-tabs-region"></div>
 </div>
 
 <script type="text/javascript">
