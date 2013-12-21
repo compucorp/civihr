@@ -18,8 +18,12 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     }
     else {
       $session = CRM_Core_Session::singleton();
-      CRM_Utils_System::setTitle(ts('My Absences'));
-      self::registerResources($session->get('userID'));
+      if (is_numeric($session->get('userID'))) {
+        CRM_Utils_System::setTitle(ts('My Absences'));
+        self::registerResources($session->get('userID'));
+      } else {
+        throw new CRM_Core_Exception("Failed to determine contact ID");
+      }
     }
 
     parent::run();
@@ -50,8 +54,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmContactField.js', 125, 'html-header', FALSE)
-      ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE);
-    // ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header')
+      ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE)
+      ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header');
 
     self::addScriptFiles('org.civicrm.hrabsence', 'js/*.js', 200, 'html-header');
     self::addScriptFiles('org.civicrm.hrabsence', 'js/*/*.js', 300, 'html-header');
