@@ -3,7 +3,8 @@ CRM.HRAbsenceApp = new Marionette.Application();
 CRM.HRAbsenceApp.addRegions({
   newRegion: ".hrabsence-new-region",
   filterRegion: ".hrabsence-filter-region",
-  tabsRegion: ".hrabsence-tabs-region"
+  tabsRegion: ".hrabsence-tabs-region",
+  contentRegion: ".hrabsence-content-region"
 });
 
 CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionette, $, _) {
@@ -22,13 +23,22 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
   var API = {
     showList: function() {
-      console.log('todo: showList', absenceCollection);
+      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.List.ListView({
+        criteria: absenceCriteria,
+        collection: absenceCollection
+      }));
     },
     showCalendar: function() {
-      console.log('todo: showCalendar', absenceCollection);
+      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Calendar.CalendarView({
+        criteria: absenceCriteria,
+        collection: absenceCollection
+      }));
     },
     showStatistics: function() {
-      console.log('todo: showStatistics', absenceCollection);
+      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Statistics.StatisticsView({
+        criteria: absenceCriteria,
+        collection: absenceCollection
+      }));
     }
   };
 
@@ -38,12 +48,9 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     '/hrabsence/calendar': 'showCalendar',
     '/hrabsence/statistics': 'showStatistics'
   }, function(apiAction, path) {
-    HRAbsenceApp.on("hrabsence:" + apiAction, function(cid, jobId) {
-      Backbone.history.navigate(path, {
-        success: function() {
-          API[apiAction](cid, jobId);
-        }
-      });
+    HRAbsenceApp.on("hrabsence:" + apiAction, function() {
+      Backbone.history.navigate(path);
+      API[apiAction]();
     });
   });
 
@@ -73,11 +80,6 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       }
     }
 
-    absenceCollection.listenTo(absenceCollection, 'reset', function() {
-      console.log('reset collection', arguments);
-    });
-
-    // absenceCriteria.trigger('change');
-    absenceCriteria.set('foo', 'bang');
+    absenceCollection.fetch({reset: true});
   });
 });

@@ -19,7 +19,15 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   Models.AbsenceCriteria = Backbone.Model.extend({
     defaults: {
       //activity_type_id: ['IN', _.keys(CRM.absenceApp.activityTypes)]
-      target_contact_id: CRM.absenceApp.contactId
+
+      target_contact_id: CRM.absenceApp.contactId,
+
+      // What's a good upper-limit? Typical year probably has 1-20 activities,
+      // so 10-year history might have 200 records. Double and add a little
+      // more.
+      options: {
+        limit: 500
+      }
     }
   });
 });

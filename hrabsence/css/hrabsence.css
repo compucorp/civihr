@@ -16,6 +16,15 @@
 }
 
 .hrabsence-tabs-region {
-    width: 100%;
+    width: 15%;
+    padding: 0.8em;
+    margin: 1em;
+}
 
+.hrabsence-content-region {
+    width: 83%;
+    border: 1px solid black;
+    padding: 0.8em;
+    margin: 1em;
+    float: right;
 }
