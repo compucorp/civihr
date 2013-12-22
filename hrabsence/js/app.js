@@ -50,6 +50,10 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
   }, function(apiAction, path) {
     HRAbsenceApp.on("hrabsence:" + apiAction, function() {
       Backbone.history.navigate(path);
+      HRAbsenceApp.trigger('navigate', {
+        path: path,
+        event: 'hrabsence:'+apiAction
+      });
       API[apiAction]();
     });
   });
@@ -63,12 +67,6 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
       crmCriteriaModel: absenceCriteria
     });
-
-    HRAbsenceApp.newRegion.show(new HRAbsenceApp.New.NewView());
-    HRAbsenceApp.filterRegion.show(new HRAbsenceApp.Filter.FilterView({
-      model: absenceCriteria
-    }));
-    HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
   });
 
   HRAbsenceApp.on("initialize:after", function() {
@@ -78,6 +76,12 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         HRAbsenceApp.trigger('hrabsence:showList');
       }
     }
+
+    HRAbsenceApp.newRegion.show(new HRAbsenceApp.New.NewView());
+    HRAbsenceApp.filterRegion.show(new HRAbsenceApp.Filter.FilterView({
+      model: absenceCriteria
+    }));
+    HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
 
     absenceCollection.fetch({reset: true});
   });

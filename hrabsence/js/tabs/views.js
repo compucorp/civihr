@@ -7,7 +7,13 @@ CRM.HRAbsenceApp.module('Tabs', function(Tabs, HRAbsenceApp, Backbone, Marionett
         e.preventDefault();
         HRAbsenceApp.trigger($(e.currentTarget).attr('data-hrabsence-event'));
       }
+    },
+    initialize: function() {
+      this.listenTo(HRAbsenceApp, 'navigate', this.render);
+    },
+    onRender: function() {
+      //this.$('[data-highlight-on]').removeClass('highlight');
+      this.$('[data-highlight-on="'+Backbone.history.fragment+'"]').addClass('highlight');
     }
-    // FIXME: implement tabs and subviews
   });
 });

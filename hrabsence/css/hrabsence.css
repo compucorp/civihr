@@ -21,6 +21,10 @@
     margin: 1em;
 }
 
+.hrabsence-tabs-region .highlight {
+    font-weight: bold;
+}
+
 .hrabsence-content-region {
     width: 83%;
     border: 1px solid black;
