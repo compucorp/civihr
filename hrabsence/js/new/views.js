@@ -9,7 +9,11 @@ CRM.HRAbsenceApp.module('New', function(New, HRAbsenceApp, Backbone, Marionette,
           'activity_type_id': CRM.absenceApp.activityTypes
         }
       };
+    },
+    events: {
+      "change [name=activity_type_id]": function(e) {
+        alert('TODO: Navigate to new-absence screen (type_id=' + $(e.currentTarget).val() +")");
+      }
     }
-    // FIXME: bind model properties to HTML widgets
   });
 });

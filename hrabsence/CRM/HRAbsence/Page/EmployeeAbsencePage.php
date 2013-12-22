@@ -56,9 +56,9 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
             8 => ts('Other'),
           ),
           'periods' => array(
-            10 => 'Jan 1, 2013 to Dec 31, 2013',
-            9 => 'Jan 1, 2012 to Dec 31, 2012',
             8 => 'Jan 1, 2011 to Dec 31, 2011',
+            9 => 'Jan 1, 2012 to Dec 31, 2012',
+            10 => 'Jan 1, 2013 to Dec 31, 2013'
           ),
         ),
       );

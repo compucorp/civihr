@@ -10,7 +10,32 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
           'period_id': CRM.absenceApp.periods
         }
       };
+    },
+    events: {
+      "change [name=activity_type_id]": function(e) {
+        // TODO: allow multiple values
+        if ($(e.currentTarget).val()) {
+          this.model.set('activity_type_id', $(e.currentTarget).val())
+        } else {
+          this.model.unset('activity_type_id');
+        }
+      },
+      "change [name=period_id]": function(e) {
+        // TODO: allow multiple values
+        if ($(e.currentTarget).val()) {
+          this.model.set('period_id', $(e.currentTarget).val())
+        } else {
+          this.model.unset('period_id');
+        }
+      }
+
+    },
+    onRender: function() {
+      // TODO: allow multiple values
+      this.$('[name=activity_type_id]').val(this.model.get('activity_type_id'));
+
+      // TODO: allow multiple values
+      this.$('[name=period_id]').val(this.model.get('period_id'));
     }
-    // FIXME: bind model properties to HTML widgets
   });
 });

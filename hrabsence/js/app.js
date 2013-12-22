@@ -59,17 +59,16 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       controller: API
     });
 
+    absenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria();
+    absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
+      crmCriteriaModel: absenceCriteria
+    });
+
     HRAbsenceApp.newRegion.show(new HRAbsenceApp.New.NewView());
     HRAbsenceApp.filterRegion.show(new HRAbsenceApp.Filter.FilterView({
       model: absenceCriteria
     }));
     HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
-
-    absenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria();
-    absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
-      crmCriteriaModel: absenceCriteria
-    });
-    //absenceCriteria.updateCollection();
   });
 
   HRAbsenceApp.on("initialize:after", function() {

@@ -14,8 +14,10 @@
   {ts}Period{/ts}:
   {literal}
     <select name="period_id">
-      <% _.each(FieldOptions.period_id, function(label, value){ %>
-      <option value="<%= value %>"><%- label %></option>
+      <% var keys = _.keys(FieldOptions.period_id); %>
+      <% keys.reverse(); %>
+      <% _.each(keys, function(value){ %>
+      <option value="<%= value %>"><%- FieldOptions.period_id[value] %></option>
       <% }) %>
     </select>
   {/literal}
