@@ -365,8 +365,8 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
 
   function isErrorInCoreData($params, &$errorMessage) {
     foreach ($params as $key => $value)  {
-      if ($key == 'contact_id' && empty($value)) {
-        self::addToErrorMsg(ts('Please enter Contact ID'));
+      if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
+        self::addToErrorMsg(ts('Please enter valid Contact ID'), $errorMessage);
       }
       if ($value) {
         $session = CRM_Core_Session::singleton();     
@@ -374,12 +374,17 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
         switch ($key) {
         case 'contact_id':
           //Contact ID
-          $params = array(
-            'contact_id' => $value,
-          );
-          $result = civicrm_api3('contact', 'get', $params);
-          if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
-            self::addToErrorMsg(ts('Contact ID'), $errorMessage);
+          if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
+            self::addToErrorMsg(ts('Please enter Contact ID'), $errorMessage);
+          }
+          else {
+            $params = array(
+              'contact_id' => $value,
+            );
+            $result = civicrm_api3('contact', 'get', $params);
+            if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
+              self::addToErrorMsg(ts('Contact ID'), $errorMessage);
+            }
           }
           break;
 
@@ -450,7 +455,6 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
           if (!empty($value) && !in_array($value, $possibleValues)) {
             self::addToErrorMsg(ts('Health Insurance plan type'), $errorMessage);          
           }
-          exit;
           break;
 
         case 'hrjob_life_insurance_plan_type':
@@ -548,7 +552,7 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
         case 'hrjob_notice_amount':
         case 'hrjob_hours_amount':
           if (!is_numeric($value)) {
-            self::addToErrorMsg(ts("%1 is not numeric", $key));
+            self::addToErrorMsg(ts("%1 is not numeric", $key), $errorMessage);
           }
           break;
         }
