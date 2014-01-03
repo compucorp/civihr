@@ -104,7 +104,7 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     //JOB ID
     $params = $this->getActiveFieldParams('HRJob');
     try{
-      $field = civicrm_api3('HRJob', 'create', $params);
+      $fieldJob = civicrm_api3('HRJob', 'create', $params);
     }
     catch(CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
@@ -116,9 +116,8 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
         if($entity != 'HRJob') {
           $params = $this->getActiveFieldParams($entity);
           if(!empty($params)) {
-            $params['job_id'] = $field['id'];
+            $params['job_id'] = $fieldJob['id'];
             $field = civicrm_api3($entity, 'create', $params);
-            civicrm_api3($entity, 'create', $this->_params);     
           }
         }
       }

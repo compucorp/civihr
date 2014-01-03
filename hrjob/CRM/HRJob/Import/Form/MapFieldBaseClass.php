@@ -186,7 +186,15 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
       $jsSet = FALSE;
       if ($this->get('savedMapping')) {
         if (isset($mappingName[$i])) {
+          if ($mappingName[$i] != ts('- do not import -')) {
+            $mappingHeader = array_keys($this->_mapperFields, $mappingName[$i]);
+            $defaults["mapper[$i]"] = array(
+              $mappingHeader[0],
+            );
+          }
+          else {
             $defaults["mapper[$i]"] = array();
+          }
         }
         else {
           // this load section to help mapping if we ran out of saved columns when doing Load Mapping

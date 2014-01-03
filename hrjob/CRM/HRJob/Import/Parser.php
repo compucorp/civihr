@@ -381,6 +381,7 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
           if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
             self::addToErrorMsg(ts('Contact ID'), $errorMessage);
           }
+          break;
 
         case 'hrjob_contract_type':
           // Contract Type
