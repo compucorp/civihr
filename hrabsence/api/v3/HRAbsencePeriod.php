@@ -60,7 +60,7 @@ function civicrm_api3_h_r_absence_period_delete($params) {
 }
 
 /**
- * HRAbsence.get API
+ * HRAbsencePeriod.get API
  *
  * @param array $params
  * @return array API result descriptor

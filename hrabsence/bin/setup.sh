@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 EXTROOT=$(cd `dirname $0`/..; pwd)
-CIVIROOT="$1"
+CIVIROOT="/var/www/drupal/sites/all/modules/civicrm"
 XMLBUILD="$EXTROOT/build/xml/schema"
 
 if [ -z "$CIVIROOT" -o ! -d "$CIVIROOT" ]; then

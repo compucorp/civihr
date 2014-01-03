@@ -210,7 +210,7 @@ class CRM_HRAbsence_DAO_HRAbsenceEntitlement extends CRM_Core_DAO {
                                                                       'type'      => CRM_Utils_Type::T_INT,
      
      
-                      'FKClassName' => 'CRM_HRAbsence_DAO_HRAbsence',
+                      'FKClassName' => 'CRM_HRAbsence_DAO_HRAbsenceType',
                                                                        ),
 
                                             'hrabsence_entitlement_amount'

@@ -25,10 +25,10 @@
 +--------------------------------------------------------------------+
 */
 
-class CRM_HRAbsence_BAO_HRAbsence extends CRM_HRAbsence_DAO_HRAbsence {
+class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
 
   public static function create($params) {
-  	$entityName = 'HRAbsence';
+  	$entityName = 'HRAbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     if (is_numeric(CRM_Utils_Array::value('is_primary', $params)) || empty($params['id'])) {
@@ -96,7 +96,7 @@ class CRM_HRAbsence_BAO_HRAbsence extends CRM_HRAbsence_DAO_HRAbsence {
    * @return int
    */
   public static function getRecordCount($params) {
-    $dao = new CRM_HRJob_DAO_HRAbsence();
+    $dao = new CRM_HRAbsence_DAO_HRAbsenceType();
     $dao->copyValues($params);
     return $dao->count();
   }

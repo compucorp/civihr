@@ -22,6 +22,10 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
+  $components = CRM_Core_Component::getComponents();
+  if(!array_key_exists("CiviTimesheet",$components)) {
+    CRM_Core_DAO::executeQuery("insert into civicrm_component (name, namespace) values ('CiviTimesheet', 'CRM_Timesheet')");
+  }	 
   $result = civicrm_api3('activity_type', 'get', array());
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     $weight = count($result["values"]);
@@ -115,8 +119,18 @@ function hrabsence_civicrm_caseTypes(&$caseTypes) {
  */
 function hrabsence_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array(
-    'name' => 'HRAbsence',
-    'class' => 'CRM_HRAbsence_DAO_HRAbsence',
+    'name' => 'HRAbsenceType',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsenceType',
     'table' => 'civicrm_absence_type',
   );
+   $entityTypes[] = array(
+    'name' => 'HRAbsencePeriod',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsencePeriod',
+    'table' => 'civicrm_absence_period',
+  );
+  $entityTypes[] = array(
+    'name' => 'HRAbsenceEntitlement',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsenceEntitlement',
+    'table' => 'civicrm_absence_entitlement',
+  ); 
 }

@@ -17,7 +17,8 @@ org.civicrm.hrmed,\
 org.civicrm.hrqual,\
 org.civicrm.hrvisa,\
 org.civicrm.hremerg,\
-org.civicrm.hrcareer
+org.civicrm.hrcareer,\
+org.civicrm.hrabsence
 
 ## List of extensions defining applications/UIs on top of the basic entity types
 APP_EXTS=\
