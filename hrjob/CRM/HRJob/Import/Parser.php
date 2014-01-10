@@ -421,7 +421,7 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
           break;
 
         case 'hrjob_period_type':
-          $possibleValues = array('Temporary, Permanent');
+          $possibleValues = array('Temporary', 'Permanent');
           if (!in_array($value, $possibleValues)) {
             self::addToErrorMsg(ts('Contract Duration'), $errorMessage);
           }
