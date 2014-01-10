@@ -42,6 +42,7 @@
     <type>int unsigned</type>
     <comment>FK to Contact ID for the organization or company which manages healthcare service</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_health_provider</uniqueName>
   </field>
   <foreignKey>
@@ -58,6 +59,7 @@
     <values>Family, Individual</values>
     <comment>.</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_health_plan_type</uniqueName>
   </field>
   <index>
@@ -81,6 +83,7 @@
     <type>int unsigned</type>
     <comment>FK to Contact ID for the organization or company which manages life insurance service</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_health_provider_life_insurance</uniqueName>
   </field>
   <foreignKey>
@@ -97,6 +100,7 @@
     <values>Family, Individual</values>
     <comment>.</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_life_insurance_plan_type</uniqueName>
   </field>
   <index>
