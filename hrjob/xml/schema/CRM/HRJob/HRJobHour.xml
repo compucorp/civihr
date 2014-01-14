@@ -46,6 +46,7 @@
       <optionGroupName>hrjob_hours_type</optionGroupName>
     </pseudoconstant>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_hours_type</uniqueName>
   </field>
   <index>
@@ -60,6 +61,7 @@
     <default>0</default>
     <comment>Amount of time allocated for work (in given period)</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_hours_amount</uniqueName>
   </field>
 
@@ -70,6 +72,7 @@
     <values>Day, Week, Month, Year</values>
     <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_hours_unit</uniqueName>
   </field>
 
@@ -79,6 +82,7 @@
     <type>float</type>
     <comment>Typically, employment at 40 hr/wk is 1 FTE</comment>
     <export>true</export>
+    <import>true</import>
     <uniqueName>hrjob_hours_fte</uniqueName>
   </field>
 </table>
