@@ -26,7 +26,8 @@ org.civicrm.hrui,\
 org.civicrm.hrcase,\
 org.civicrm.hrstaffdir,\
 org.civicrm.hrim,\
-org.civicrm.hrprofile
+org.civicrm.hrprofile,\
+org.civicrm.hrcaseutils
 
 ##################################
 ## Main
