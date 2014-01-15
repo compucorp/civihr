@@ -169,7 +169,7 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
             }
           }
           if ($fields[$key]['type'] == CRM_Utils_Type::T_BOOLEAN ) {
-            $params[$key] = CRM_Utils_String::strtoboolstr($val);
+            $params[$key] = CRM_Utils_String::strtoboolstr($value);
           }
         }
       }
