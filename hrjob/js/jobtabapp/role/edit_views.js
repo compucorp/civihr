@@ -87,6 +87,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
+      var view = this;
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
           reportId: CRM.jobTabApp.loggingReportId,
@@ -95,6 +96,26 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         });
       } else {
         this.$('.hrjob-revision-link').hide();
+      }
+      if (CRM.loadForm) {
+        this.$('.hr-optionvalue-link').on('click', function() {
+          var entityName = $(this).attr('data-entity');
+          var fieldName = $(this).attr('data-field');
+          var $form = CRM.loadForm($(this).attr('href'), {
+            openInline: 'a'
+          });
+          $form.on('dialogclose', function() {
+            CRM.api(entityName, 'getoptions', {
+              'field': fieldName
+            }, {
+              success: function(result) {
+                CRM.FieldOptions[entityName][fieldName] = result.values;
+                view.render();
+              }
+            });
+          });
+          return false;
+        });
       }
     },
     appendHtml: function(collectionView, itemView, index) {
