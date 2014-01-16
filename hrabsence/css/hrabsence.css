@@ -1,0 +1,34 @@
+.hrabsence-toolbar {
+    width: 100%;
+}
+
+.hrabsence-new-region {
+    width: 32%;
+    background: #CDE8FE;
+    padding: 0.8em;
+}
+
+.hrabsence-filter-region {
+    width: 65%;
+    background: #CDE8FE;
+    padding: 0.8em;
+    float: right;
+}
+
+.hrabsence-tabs-region {
+    width: 15%;
+    padding: 0.8em;
+    margin: 1em;
+}
+
+.hrabsence-tabs-region .highlight {
+    font-weight: bold;
+}
+
+.hrabsence-content-region {
+    width: 83%;
+    border: 1px solid black;
+    padding: 0.8em;
+    margin: 1em;
+    float: right;
+}

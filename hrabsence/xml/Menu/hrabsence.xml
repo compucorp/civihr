@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/absences</path>
+    <page_callback>CRM_HRAbsence_Page_EmployeeAbsencePage</page_callback>
+    <title>EmployeeAbsencePage</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>

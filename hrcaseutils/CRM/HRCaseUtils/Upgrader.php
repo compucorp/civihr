@@ -3,7 +3,7 @@
 /**
  * Collection of upgrade steps
  */
-class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
+class CRM_HRCaseUtils_Upgrader extends CRM_HRCaseUtils_Upgrader_Base {
 
   // By convention, functions that look like "function upgrade_NNNN()" are
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
@@ -146,20 +146,5 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
       'enable_components' => $enableComponents,
     )); 
     CRM_Core_Component::flushEnabledComponents();
-  }
-
-  public function upgrade_1200() {
-    $this->ctx->log->info('Applying update 1200');
-    $caseTypesGroupId = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'case_type', 'return' => 'id'));
-    $oarray = array('adult_day_care_referral', 'housing_support');
-    foreach($oarray as $oarray) {
-      $params = array('name' => $oarray, 'option_group_id' => $caseTypesGroupId);
-      CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
-      if($defaults['id']) {
-        CRM_Core_BAO_OptionValue::setIsActive($defaults['id'], 0);
-      }
-    }
-    CRM_Core_BAO_Navigation::resetNavigation();
-    return TRUE;
   }
 }
