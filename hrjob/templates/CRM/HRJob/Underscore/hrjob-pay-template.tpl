@@ -19,9 +19,9 @@
       options: _.extend({'':''}, FieldOptions.pay_grade)
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pay_grade'}
     {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pay_grade'}
+      <a class="hr-optionvalue-link" data-entity="HRJobPay" data-field="pay_grade" href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
     {/if}
     </div>
   </div>
@@ -40,7 +40,8 @@
     {/literal}
     {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='currencies_enabled'}
     {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
+      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='currencies_enabled'}
+      <a class="hr-optionvalue-link" data-entity="HRJobPay" data-field="pay_currency" href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
     {/if}
     </div>
   </div>

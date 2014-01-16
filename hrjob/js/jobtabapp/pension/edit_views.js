@@ -18,6 +18,7 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
       }).done(function( msg ) {
         $('<div class=evidence-file-display>'+msg+'</div>').insertBefore('#evidence_file');
       });
+      this.constructor.__super__.onRender.apply(this);
     },
     onValidateRulesCreate: function(view, r) {
       _.extend(r.rules, {
