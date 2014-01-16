@@ -62,6 +62,32 @@
   }
  
   /**
+   * Get a single activity record by type
+   *
+   * @throws WrongCountException
+   * @return array, activity record (api/v3)
+   */
+  public function getSingleActivity($type) {
+    $idx = $this->getActivityIndex(array('activity_type_id', 'status_id'));
+    $typeId = $type;
+    if (isset($idx[$typeId]) && count($idx[$typeId]) === 1) {
+     return $idx[$typeId];
+    } else {
+      throw new WrongCountException();
+    }
+  }
+ 
+  /**
+   * @return array, Case record (api/v3 format)
+   */
+  public function getCase($case_id) {
+    if ($this->case === NULL) {
+      $resultCase = civicrm_api3('case', 'get', array('id' => $this->caseId ));
+    }
+    return $resultCase;
+  }
+
+  /**
    * Get a list of all activities in the case (indexed by some property/properties)
    *
    * @param array $keys list of properties by which to index activities
