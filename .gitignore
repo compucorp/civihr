@@ -1,4 +1,5 @@
 *~
 *.bak
+hrabsence/build
 hrjob/build
 bin/setup.conf
