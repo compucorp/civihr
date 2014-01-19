@@ -34,7 +34,8 @@
  * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
  */
 function _civicrm_api3_h_r_absence_type_create_spec(&$spec) {
-  $params['is_primary']['api.default'] = 0;
+  $spec['allow_debits']['api.default'] = 1;
+  $spec['allow_credits']['api.default'] = 0;
 }
 
 /**

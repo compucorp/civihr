@@ -57,6 +57,7 @@
            'title' => "TOIL",
            'is_active' => 1,
            'allow_debits' => 1,
+           'allow_credits' => 1,
          ),
       ),
       array (
