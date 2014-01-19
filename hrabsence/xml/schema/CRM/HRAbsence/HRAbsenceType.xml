@@ -63,9 +63,9 @@
       <title>Credit Activity Type ID</title>
       <import>true</import>
       <type>int unsigned</type>
-      <required>true</required>
+      <required>false</required>
       <export>false</export>
-      <default>1</default>
+      <default>null</default>
       <headerPattern>/(activity.)?type(.id$)/i</headerPattern>
       <comment>FK to civicrm_option_value.id, that has to be valid, registered activity type.</comment>
       <pseudoconstant>
@@ -88,9 +88,9 @@
       <title>Debit Activity Type ID</title>
       <import>true</import>
       <type>int unsigned</type>
-      <required>true</required>
+      <required>false</required>
       <export>false</export>
-      <default>1</default>
+      <default>null</default>
       <headerPattern>/(activity.)?type(.id$)/i</headerPattern>
       <comment>FK to civicrm_option_value.id, that has to be valid, registered activity type.</comment>
       <pseudoconstant>

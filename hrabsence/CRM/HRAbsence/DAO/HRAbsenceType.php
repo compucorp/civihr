@@ -195,13 +195,13 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'name' => 'credit_activity_type_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Credit Activity Type ID') ,
-          'required' => true,
+          'required' => false,
           'import' => true,
           'where' => 'civicrm_absence_type.credit_activity_type_id',
           'headerPattern' => '/(activity.)?type(.id$)/i',
           'dataPattern' => '',
           'export' => false,
-          'default' => '1',
+          'default' => 'null',
           'pseudoconstant' => array(
             'optionGroupName' => 'activity_type',
           )
@@ -216,13 +216,13 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'name' => 'debit_activity_type_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Debit Activity Type ID') ,
-          'required' => true,
+          'required' => false,
           'import' => true,
           'where' => 'civicrm_absence_type.debit_activity_type_id',
           'headerPattern' => '/(activity.)?type(.id$)/i',
           'dataPattern' => '',
           'export' => false,
-          'default' => '1',
+          'default' => 'null',
           'pseudoconstant' => array(
             'optionGroupName' => 'activity_type',
           )

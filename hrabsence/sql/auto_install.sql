@@ -17,9 +17,9 @@ CREATE TABLE `civicrm_absence_type` (
      `title` varchar(127)    COMMENT 'Negotiated name for the Absence Type',
      `is_active` tinyint   DEFAULT 1 ,
      `allow_credits` tinyint   DEFAULT 0 ,
-     `credit_activity_type_id` int unsigned NOT NULL  DEFAULT 1 COMMENT 'FK to civicrm_option_value.id, that has to be valid, registered activity type.',
+     `credit_activity_type_id` int unsigned NULL  DEFAULT null COMMENT 'FK to civicrm_option_value.id, that has to be valid, registered activity type.',
      `allow_debits` tinyint   DEFAULT 1 ,
-     `debit_activity_type_id` int unsigned NOT NULL  DEFAULT 1 COMMENT 'FK to civicrm_option_value.id, that has to be valid, registered activity type.' 
+     `debit_activity_type_id` int unsigned NULL  DEFAULT null COMMENT 'FK to civicrm_option_value.id, that has to be valid, registered activity type.' 
 ,
     PRIMARY KEY ( `id` )
  
