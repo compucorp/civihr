@@ -113,6 +113,15 @@ function hrabsence_civicrm_caseTypes(&$caseTypes) {
 }
 
 /**
+ * Implementation of hook_civicrm_alterSettingsFolders
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
+ */
+function myext_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _myext_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+/**
  * Implementation of hook_civicrm_entityTypes
  */
 function hrabsence_civicrm_entityTypes(&$entityTypes) {
