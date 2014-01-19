@@ -22,6 +22,38 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
+  //@FIXME -- need to add new component 'CiviTimesheet'
+
+  $activityTypesResult = civicrm_api3('activity_type', 'get', array());
+  $weight = count($activityTypesResult["values"]);
+
+  if (!in_array("Public Holiday", $activityTypesResult["values"])) {
+    $weight = $weight + 1;
+    $params = array(
+      'weight' => $weight,
+      'label' => 'Public Holiday',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_optgroup' => 0,
+      'is_default' => 0,
+    );
+    $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
+  }
+
+  if (!in_array("Absence", $activityTypesResult["values"])) {
+    $weight = $weight + 1;
+    //@FIXME -- need to add Component ID of 'CiviTimesheet' if exist
+    $params = array(
+      'weight' => $weight,
+      'label' => 'Absence',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_optgroup' => 0,
+      'is_default' => 0,
+    );
+    $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
+  }
+
   return _hrabsence_civix_civicrm_install();
 }
 
@@ -78,4 +110,25 @@ function hrabsence_civicrm_managed(&$entities) {
  */
 function hrabsence_civicrm_caseTypes(&$caseTypes) {
   _hrabsence_civix_civicrm_caseTypes($caseTypes);
+}
+
+/**
+ * Implementation of hook_civicrm_entityTypes
+ */
+function hrabsence_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array(
+    'name' => 'HRAbsenceType',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsenceType',
+    'table' => 'civicrm_absence_type',
+  );
+   $entityTypes[] = array(
+    'name' => 'HRAbsencePeriod',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsencePeriod',
+    'table' => 'civicrm_absence_period',
+  );
+  $entityTypes[] = array(
+    'name' => 'HRAbsenceEntitlement',
+    'class' => 'CRM_HRAbsence_DAO_HRAbsenceEntitlement',
+    'table' => 'civicrm_absence_entitlement',
+  );
 }

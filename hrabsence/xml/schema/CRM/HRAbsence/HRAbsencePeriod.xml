@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRAbsence</base>
+  <class>HRAbsencePeriod</class>
+  <name>civicrm_absence_period</name>
+  <comment>Absence period.</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Absence period ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>name</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Name of absence period</comment>
+    <title>Name</title>
+    <export>true</export>
+    <uniqueName>hrabsence_period_name</uniqueName>
+  </field>
+  <index>
+    <name>index_name</name>
+    <fieldName>name</fieldName>
+  </index>
+
+  <field>
+    <name>title</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Negotiated name for the Absence period</comment>
+    <title>Absence Period Title</title>
+    <export>true</export>
+    <uniqueName>hrabsence_period_title</uniqueName>
+  </field>
+  <index>
+    <name>index_title</name>
+    <fieldName>title</fieldName>
+  </index>
+
+  <field>
+    <name>start_date</name>
+    <type>timestamp</type>
+    <comment>Absence Period Start Date</comment>
+  </field>
+  
+  <field>
+    <name>end_date</name>
+    <type>timestamp</type>
+    <comment>Absence Period End Date</comment>
+  </field>
+</table>
