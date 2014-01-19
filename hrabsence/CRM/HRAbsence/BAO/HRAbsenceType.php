@@ -34,46 +34,43 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     if (!array_key_exists('name', $params) && !array_key_exists('id', $params)) {
       $params['name'] = CRM_Utils_String::munge($params['title']);
     }
+
     $activityTypesResult = civicrm_api3('activity_type', 'get', array());
     if (CRM_Utils_Array::value('allow_debits', $params)) {
-      if (!CRM_Utils_Array::value('is_error', $activityTypesResult)) {
-        $weight = count($activityTypesResult["values"]);
-        $debitActivityLabel = $params['name'];
-        $debitActivityTypeId = array_search($debitActivityLabel, $activityTypesResult["values"]);
-        if (!$debitActivityTypeId) {
-          $weight = $weight + 1;
-          $paramsCreate = array(
-            'weight' => $weight,
-            'label' => $debitActivityLabel,
-            'filter' => 0,
-            'is_active' => 1,
-            'is_optgroup' => 0,
-            'is_default' => 0,
-          );
-          $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-          $debitActivityTypeId = $resultCreateActivityType["id"];
-        }
-        $params["debit_activity_type_id"] = $debitActivityTypeId;
+      $weight = count($activityTypesResult["values"]);
+      $debitActivityLabel = $params['name'];
+      $debitActivityTypeId = array_search($debitActivityLabel, $activityTypesResult["values"]);
+      if (!$debitActivityTypeId) {
+        $weight = $weight + 1;
+        $paramsCreate = array(
+          'weight' => $weight,
+          'label' => $debitActivityLabel,
+          'filter' => 0,
+          'is_active' => 1,
+          'is_optgroup' => 0,
+          'is_default' => 0,
+        );
+        $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
+        $debitActivityTypeId = $resultCreateActivityType["id"];
       }
+      $params["debit_activity_type_id"] = $debitActivityTypeId;
     }
     if (CRM_Utils_Array::value('allow_credits', $params)) {
-      if (!CRM_Utils_Array::value('is_error', $activityTypesResult)) {
-        $weight = count($activityTypesResult["values"]);
-        $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["name"]));
-        $creditActivityTypeId = array_search($creditActivityLabel, $activityTypesResult["values"]);
-        if (!$creditActivityTypeId) {
-          $weight = $weight + 1;
-          $paramsCreate = array(
-            'weight' => $weight,
-            'label' => $creditActivityLabel,
-            'filter' => 0,
-            'is_active' => 1,
-            'is_optgroup' => 0,
-            'is_default' => 0,
-          );
-          $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-          $creditActivityTypeId = $resultCreateActivityType["id"];
-        }
+      $weight = count($activityTypesResult["values"]);
+      $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["name"]));
+      $creditActivityTypeId = array_search($creditActivityLabel, $activityTypesResult["values"]);
+      if (!$creditActivityTypeId) {
+        $weight = $weight + 1;
+        $paramsCreate = array(
+          'weight' => $weight,
+          'label' => $creditActivityLabel,
+          'filter' => 0,
+          'is_active' => 1,
+          'is_optgroup' => 0,
+          'is_default' => 0,
+        );
+        $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
+        $creditActivityTypeId = $resultCreateActivityType["id"];
         $params["credit_activity_type_id"] = $creditActivityTypeId;
       }
     }
