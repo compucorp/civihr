@@ -57,7 +57,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
           'is_default' => 0,
         );
         $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-        $debitActivityTypeId = $resultCreateActivityType["id"];
+        $debitActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
       }
       $params["debit_activity_type_id"] = $debitActivityTypeId;
     }
@@ -76,7 +76,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
           'is_default' => 0,
         );
         $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
-        $creditActivityTypeId = $resultCreateActivityType["id"];
+        $creditActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
         $params["credit_activity_type_id"] = $creditActivityTypeId;
       }
     }
@@ -102,5 +102,24 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     return $dao->count();
   }
 
+  /**
+   * Get the list of absence-related activity types
+   *
+   * @return array (int activity_type_id => string activity_label)
+   */
+  public static function getActivityTypes() {
+    $activityTypes = civicrm_api3('ActivityType', 'get', array());
+    $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array());
+    $result = array();
+    foreach ($absenceTypes['values'] as $absenceType) {
+      if (!empty($absenceType['credit_activity_type_id'])) {
+        $result[$absenceType['credit_activity_type_id']] = $activityTypes['values'][$absenceType['credit_activity_type_id']];
+      }
+      if (!empty($absenceType['debit_activity_type_id'])) {
+        $result[$absenceType['debit_activity_type_id']] = $activityTypes['values'][$absenceType['debit_activity_type_id']];
+      }
+    }
+    return $result;
+  }
 
 }
