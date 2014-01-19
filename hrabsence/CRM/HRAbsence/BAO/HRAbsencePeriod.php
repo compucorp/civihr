@@ -52,4 +52,14 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     $dao->copyValues($params);
     return $dao->count();
   }
+
+  /**
+   * @return array (int id => string title)
+   */
+  public static function getPeriods() {
+    $periods = civicrm_api3('HRAbsencePeriod', 'get', array());
+    $result = CRM_Utils_Array::collect('title', $periods['values']);
+    asort($result);
+    return $result;
+  }
 }
