@@ -31,9 +31,6 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     $entityName = 'HRAbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
-    if (is_numeric(CRM_Utils_Array::value('is_primary', $params)) || empty($params['id'])) {
-      CRM_Core_BAO_Block::handlePrimary($params, get_class());
-    }
     if (!array_key_exists('name', $params) && !array_key_exists('id', $params)) {
       $params['name'] = CRM_Utils_String::munge($params['title']);
     }

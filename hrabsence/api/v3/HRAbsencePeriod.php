@@ -34,7 +34,6 @@
  * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
  */
 function _civicrm_api3_h_r_absence_period_create_spec(&$spec) {
-  $params['is_primary']['api.default'] = 0;
 }
 
 /**

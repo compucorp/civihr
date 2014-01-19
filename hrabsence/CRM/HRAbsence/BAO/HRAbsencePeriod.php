@@ -31,10 +31,6 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     $entityName = 'HRAbsencePeriod';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
-    if (is_numeric(CRM_Utils_Array::value('is_primary', $params)) || empty($params['id'])) {
-      CRM_Core_BAO_Block::handlePrimary($params, get_class());
-    }
-
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new self();
     $instance->copyValues($params);
