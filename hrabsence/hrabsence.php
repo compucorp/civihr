@@ -24,36 +24,36 @@ function hrabsence_civicrm_xmlMenu(&$files) {
 function hrabsence_civicrm_install() {
   //@FIXME -- need to add new component 'CiviTimesheet'
 
-  $result = civicrm_api3('activity_type', 'get', array());
-  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-    $weight = count($result["values"]);
-    if(!array_search("Public Holiday", $result["values"])) {
-      $weight = $weight+1;
-      $params = array(
-        'weight' => $weight,
-        'label' => 'Public Holiday',
-        'filter' => 0,
-        'is_active' => 1,
-        'is_optgroup' => 0,
-        'is_default' => 0,
-	    );
-      $resultCreateActivityType = civicrm_api3('activity_type', 'create', $params);
-	}
+  $activityTypesResult = civicrm_api3('activity_type', 'get', array());
+  $weight = count($activityTypesResult["values"]);
 
-    if(!array_search("Absence", $result["values"])) {
-      $weight = $weight+1;
-      //@FIXME -- need to add Component ID of 'CiviTimesheet' if exist
-      $params = array(
-        'weight' => $weight,
-        'label' => 'Absence',
-        'filter' => 0,
-        'is_active' => 1,
-        'is_optgroup' => 0,
-        'is_default' => 0,
-      );
-	  $resultCreateActivityType = civicrm_api3('activity_type', 'create', $params);
-    }
+  if (!in_array("Public Holiday", $activityTypesResult["values"])) {
+    $weight = $weight + 1;
+    $params = array(
+      'weight' => $weight,
+      'label' => 'Public Holiday',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_optgroup' => 0,
+      'is_default' => 0,
+    );
+    $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
   }
+
+  if (!in_array("Absence", $activityTypesResult["values"])) {
+    $weight = $weight + 1;
+    //@FIXME -- need to add Component ID of 'CiviTimesheet' if exist
+    $params = array(
+      'weight' => $weight,
+      'label' => 'Absence',
+      'filter' => 0,
+      'is_active' => 1,
+      'is_optgroup' => 0,
+      'is_default' => 0,
+    );
+    $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
+  }
+
   return _hrabsence_civix_civicrm_install();
 }
 
