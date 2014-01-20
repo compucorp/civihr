@@ -18,10 +18,10 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
    */
   Models.AbsenceCriteria = Backbone.Model.extend({
     defaults: {
-      //TODO: activity_type_id: ['IN', _.keys(CRM.absenceApp.activityTypes)]
-      activity_type_id: 3,
+      //activity_type_id: int or array(int); optional
+      //activity_type_id: 3,
 
-      // TODO: period_id: ['IN', [period_id: _.last(_.keys(CRM.absenceApp.periods))]]
+      // period_id: int or array(int); optional
       period_id: _.last(_.keys(CRM.absenceApp.periods)),
 
       target_contact_id: CRM.absenceApp.contactId,
