@@ -63,9 +63,12 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       controller: API
     });
 
-    absenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria();
+    absenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria({
+      target_contact_id: CRM.absenceApp.contactId
+    });
     absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
-      crmCriteriaModel: absenceCriteria
+      crmCriteriaModel: absenceCriteria,
+      crmActions: {"get": "getabsences"}
     });
   });
 
