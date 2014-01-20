@@ -322,3 +322,45 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
 function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
 }
+
+function hrui_civicrm_navigationMenu( &$params ) {
+    //  Get the maximum key of $params
+    $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+
+    $maxKey = ( max( array_keys($params) ) );
+    $i =1;
+    foreach ($multipleCustomData as $key => $value) {
+      $i++;
+      $i = $maxKey + $i;
+      $multiValuedData[$i] = array (
+      'attributes' => array (
+        'label'      => $value,
+        'name'       => $value,
+        'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+        'permission' => 'access HRJobs',
+        'operator'   => null,
+        'separator'  => null,
+        'parentID'   => $maxKey+1,
+        'navID'      => $i,
+        'active'     => 1
+      ),
+      'child' => null
+    );
+    }
+
+    $params[15]['child'][$maxKey+1] = array (
+      'attributes' => array (
+        'label'      => 'Import Multi-value Custom Data' ,
+        'name'       => 'multiValueCustomDataImport',
+        'url'        => 'civicrm/import/custom',
+        'permission' => 'access HRJobs',
+        'operator'   => null,
+        'separator'  => null,
+        'parentID'   => 15,
+        'navID'      => $maxKey+1,
+        'active'     => 1
+      ),
+      'child' => $multiValuedData,
+    );
+   
+}
