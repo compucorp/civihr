@@ -1,4 +1,4 @@
-CRM.mockData = CRM.mockData || {};
+CRM.fixtures = CRM.fixtures || {};
 
 /**
  * Combine multiple mock datasets to make a new one
@@ -6,15 +6,16 @@ CRM.mockData = CRM.mockData || {};
  * @param {Array} datasets list of dataset names
  * @return {Array}
  */
-CRM.mockData.get = function(datasets) {
+CRM.fixtures.get = function(datasets) {
   var result = [];
   _.each(datasets, function(name){
-    result = result.concat(CRM.mockData[name]);
+    result = result.concat(CRM.fixtures[name]);
   })
   return result;
 }
 
-CRM.mockData.vacationFeb2013 = [
+// List of activity records of type Vacation (dated Feb 2013)
+CRM.fixtures.vacationFeb2013 = [
   {
     "id": "620",
     "activity_type_id": "10",
@@ -30,7 +31,9 @@ CRM.mockData.vacationFeb2013 = [
     "source_contact_id": "202"
   }
 ];
-CRM.mockData.vacationApr2013 = [
+
+// List of activity records of type Vacation (dated Apr 2013)
+CRM.fixtures.vacationApr2013 = [
   {
     "id": "650",
     "activity_type_id": "10",
@@ -47,7 +50,8 @@ CRM.mockData.vacationApr2013 = [
   }
 ];
 
-CRM.mockData.toilFeb2013 = [
+// List of activity records of type TOIL (dated Feb 2013)
+CRM.fixtures.toilFeb2013 = [
   {
     "id": "625",
     "activity_type_id": "11",

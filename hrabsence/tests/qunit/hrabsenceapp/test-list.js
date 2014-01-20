@@ -6,7 +6,7 @@ module('CRM.HRAbsenceApp.List.ListView', {
 
 test("With vacation and TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.mockData.get(['vacationFeb2013', 'toilFeb2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'toilFeb2013']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -24,7 +24,7 @@ test("With vacation and TOIL records in FY2012", function() {
 
 test("With TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.mockData.get(['toilFeb2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['toilFeb2013']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -41,7 +41,7 @@ test("With TOIL records in FY2012", function() {
 
 test("With vacation records in FY2012 + FY2013", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.mockData.get(['vacationFeb2013', 'vacationApr2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'vacationApr2013']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
