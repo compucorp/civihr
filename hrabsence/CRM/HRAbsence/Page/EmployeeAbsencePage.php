@@ -30,7 +30,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     parent::run();
   }
 
-  public static function registerResources($contactID, $activityTypes = NULL, $periods = NULL) {
+  public static function registerResources($contactID, $absenceTypes = NULL, $activityTypes = NULL, $periods = NULL) {
     static $loaded = FALSE;
     if ($loaded) {
       return;
@@ -38,11 +38,18 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     $loaded = TRUE;
 
     CRM_Core_Resources::singleton()
-      ->addSettingsFactory(function () use ($contactID, $activityTypes, $periods) {
+      ->addSettingsFactory(function () use ($contactID, $absenceTypes, $activityTypes, $periods) {
 
       if ($periods === NULL) {
         $res = civicrm_api3('HRAbsencePeriod', 'get', array());
         $periods = $res['values'];
+      }
+      if ($absenceTypes === NULL) {
+        $res = civicrm_api3('HRAbsenceType', 'get', array());
+        $absenceTypes = $res['values'];
+      }
+      if ($activityTypes === NULL) {
+        $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
       }
 
       return array(
@@ -53,7 +60,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
           'contactId' => $contactID,
-          'activityTypes' => $activityTypes === NULL ? CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes() : $activityTypes,
+          'activityTypes' => $activityTypes,
+          'absenceTypes' => $absenceTypes,
           'periods' => $periods,
           'standardDay' => 8 * 60,
           'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',

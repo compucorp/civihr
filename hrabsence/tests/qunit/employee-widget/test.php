@@ -4,13 +4,35 @@
 // CRM_Core_Resources::singleton()->addSetting(...);
 
 CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources(
-  0,
-  array(
+  0, // contactId
+  array( // absenceTypes
+    100 => array(
+      'id' => 100,
+      'name' => 'Vacation',
+      'title' => 'Vacation',
+      'is_active' => 1,
+      'allow_debits' => 1,
+      'debit_activity_type_id' => 10,
+      'allow_credits' => 0,
+      'credit_activity_type_id' => NULL,
+    ),
+    101 => array(
+      'id' => 101,
+      'name' => 'Vacation',
+      'title' => 'Vacation',
+      'is_active' => 1,
+      'allow_debits' => 1,
+      'debit_activity_type_id' => 11,
+      'allow_credits' => 1,
+      'credit_activity_type_id' => 12,
+    ),
+  ),
+  array( // activityTypes
     10 => 'Vacation',
     11 => 'TOIL',
     12 => 'TOIL (Credit)',
   ),
-  array(
+  array( // periods
     2 => array(
       'id' => 2,
       'name' => 'FY2012',
