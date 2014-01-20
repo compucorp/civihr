@@ -21,7 +21,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       if (is_numeric($session->get('userID'))) {
         CRM_Utils_System::setTitle(ts('My Absences'));
         self::registerResources($session->get('userID'));
-      } else {
+      }
+      else {
         throw new CRM_Core_Exception("Failed to determine contact ID");
       }
     }
@@ -29,7 +30,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     parent::run();
   }
 
-  public static function registerResources($contactID) {
+  public static function registerResources($contactID, $activityTypes = NULL, $periods = NULL) {
     static $loaded = FALSE;
     if ($loaded) {
       return;
@@ -37,7 +38,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     $loaded = TRUE;
 
     CRM_Core_Resources::singleton()
-      ->addSettingsFactory(function () use ($contactID) {
+      ->addSettingsFactory(function () use ($contactID, $activityTypes, $periods) {
 
       return array(
         'PseudoConstant' => array(
@@ -46,8 +47,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
           'contactId' => $contactID,
-          'activityTypes' => CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes(),
-          'periods' => CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods(),
+          'activityTypes' => $activityTypes === NULL ? CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes() : $activityTypes,
+          'periods' => $periods === NULL ? CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods() : $periods,
         ),
       );
     })
