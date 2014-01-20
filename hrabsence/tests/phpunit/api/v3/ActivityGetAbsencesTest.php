@@ -39,8 +39,9 @@ require_once 'CiviTest/CiviUnitTestCase.php';
  */
 
 class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
-  protected $exampleAbsenceType = 'TOIL';
-  protected $exampleActivityType = 'Meeting';
+  const ACTION = 'getabsences';
+  const EXAMPLE_ABSENCE_TYPE = 'TOIL';
+  const EXAMPLE_ACTIVITY_TYPE = 'Meeting';
 
   /**
    * @var int
@@ -78,7 +79,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
 
     foreach (array($this->contactId, $this->contactId2) as $contactId) {
       foreach (array('2012-01-01 01:01', '2012-12-31 23:57', '2013-01-01 01:01') as $datetime) {
-        foreach (array($this->exampleAbsenceType, $this->exampleActivityType) as $activityType) {
+        foreach (array(self::EXAMPLE_ABSENCE_TYPE, self::EXAMPLE_ACTIVITY_TYPE) as $activityType) {
           $params = array(
             'source_contact_id' => $this->sourceContactId,
             'target_contact_id' => $contactId,
@@ -103,19 +104,19 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
   }
 
   public function testGetBlank() {
-    $activities = $this->callAPISuccess('Activity', 'getAbsences', array());
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array());
 
     $this->assertTrue(count($activities['values']) > 0);
 
     $activityTypes = CRM_Core_PseudoConstant::activityType();
     foreach ($activities['values'] as $activity) {
       // no exampleActivityType records! only exampleAbsenceType.
-      $this->assertEquals($this->exampleAbsenceType, $activityTypes[$activity['activity_type_id']]);
+      $this->assertEquals(self::EXAMPLE_ABSENCE_TYPE, $activityTypes[$activity['activity_type_id']]);
     }
   }
 
   public function testGetPeriod() {
-    $activities = $this->callAPISuccess('Activity', 'getAbsences', array(
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
       'period_id' => $this->periods['2013']['id'],
     ));
 
@@ -127,12 +128,12 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     $activityTypes = CRM_Core_PseudoConstant::activityType();
     foreach ($activities['values'] as $activity) {
       // no exampleActivityType records! only exampleAbsenceType.
-      $this->assertEquals($this->exampleAbsenceType, $activityTypes[$activity['activity_type_id']]);
+      $this->assertEquals(self::EXAMPLE_ABSENCE_TYPE, $activityTypes[$activity['activity_type_id']]);
     }
   }
 
   public function testGetPeriods() {
-    $activities = $this->callAPISuccess('Activity', 'getAbsences', array(
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
       'period_id' => array($this->periods['2012']['id'], $this->periods['2013']['id']),
     ));
 
@@ -144,12 +145,12 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     $activityTypes = CRM_Core_PseudoConstant::activityType();
     foreach ($activities['values'] as $activity) {
       // no exampleActivityType records! only exampleAbsenceType.
-      $this->assertEquals($this->exampleAbsenceType, $activityTypes[$activity['activity_type_id']]);
+      $this->assertEquals(self::EXAMPLE_ABSENCE_TYPE, $activityTypes[$activity['activity_type_id']]);
     }
   }
 
   public function testGetTarget() {
-    $activities = $this->callAPISuccess('Activity', 'getAbsences', array(
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
       'target_contact_id' => $this->contactId,
       'return' => array('target_contact_id'),
     ));
@@ -163,7 +164,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     $activityTypes = CRM_Core_PseudoConstant::activityType();
     foreach ($activities['values'] as $activity) {
       // no exampleActivityType records! only exampleAbsenceType.
-      $this->assertEquals($this->exampleAbsenceType, $activityTypes[$activity['activity_type_id']]);
+      $this->assertEquals(self::EXAMPLE_ABSENCE_TYPE, $activityTypes[$activity['activity_type_id']]);
     }
   }
 
