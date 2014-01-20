@@ -55,10 +55,12 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
           'contactId' => $contactID,
           'activityTypes' => $activityTypes === NULL ? CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes() : $activityTypes,
           'periods' => $periods,
-          'standardDay' => 8 * 60
+          'standardDay' => 8 * 60,
+          'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',
         ),
       );
     })
+      ->addScriptFile('civicrm', 'packages/momentjs/moment.min.js', 100, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header')

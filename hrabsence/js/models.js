@@ -1,17 +1,29 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Marionette, $, _) {
   Models.Absence = Backbone.Model.extend({
+    initialize: function(options) {
+      this.listenTo(this, 'change:activity_date_time', this.calculatePeriodId);
+    },
     isInPeriod: function(period) {
-      // FIXME if (this.get('activity_date_time') between period.start_date and period.end_date)
+      var actdate = CRM.HRAbsenceApp.moment(this.get('activity_date_time'));
+      if (actdate.isBefore(CRM.HRAbsenceApp.moment(period.start_date), 'day')) return false;
+      if (actdate.isAfter(CRM.HRAbsenceApp.moment(period.end_date), 'day')) return false;
       return true;
     },
-    getPeriodId: function() {
+    calculatePeriodId: function() {
       for (period in CRM.absenceApp.periods) {
         if (this.isInPeriod(CRM.absenceApp.periods[period])) {
-          return CRM.absenceApp.periods[period].id;
+          this._periodId = CRM.absenceApp.periods[period].id;
+          return;
         }
       }
-      return null;
+      this._periodId = null;
+      if (console.log) console.log("Failed to determine period: " + this.get('activity_date_time'));
+      throw "Failed to determine period: " + this.get('activity_date_time');
+    },
+    getPeriodId: function() {
+      if (!this._periodId) this.calculatePeriodId();
+      return this._periodId;
     },
     getFormattedDuration: function() {
       if (this.get('duration')) {

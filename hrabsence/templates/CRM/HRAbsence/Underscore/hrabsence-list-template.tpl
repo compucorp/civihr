@@ -28,7 +28,9 @@
       <tr class="hrabsence-list-item" data-period-id="<%- period_id %>">
         <td>
           <a href="javascript:alert('Fixme');">
-            <%- FieldOptions.activity_type_id[model.get('activity_type_id')] %> (<%- model.get('activity_date_time') %>) [FIXME-date-range]
+            <%- FieldOptions.activity_type_id[model.get('activity_type_id')] %>
+            (<%- CRM.HRAbsenceApp.moment(model.get('activity_date_time')).format('MMM D, YYYY') %>)
+            [FIXME real-date-range]
           </a>
         </td>
         <td><%- FieldOptions.status_id[model.get('status_id')] %></td>

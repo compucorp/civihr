@@ -56,3 +56,4 @@ test("With vacation records in FY2012 + FY2013", function() {
   equal($el.find('.hrabsence-list-item[data-period-id=2]').length, 1);
   equal($el.find('.hrabsence-list-item[data-period-id=3]').length, 1);
 });
+
