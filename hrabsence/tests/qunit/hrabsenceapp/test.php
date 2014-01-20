@@ -51,5 +51,5 @@ CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources(
 );
 
 CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrabsence', 'tests/qunit/assert.js', 10);
-CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrabsence', 'tests/qunit/employee-widget/mock-data.js', 10);
-CRM_HRAbsence_Page_EmployeeAbsencePage::addScriptFiles('org.civicrm.hrabsence', 'tests/qunit/employee-widget/test-*.js', 20);
+CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrabsence', 'tests/qunit/hrabsenceapp/mock-data.js', 10);
+CRM_HRAbsence_Page_EmployeeAbsencePage::addScriptFiles('org.civicrm.hrabsence', 'tests/qunit/hrabsenceapp/test-*.js', 20);
