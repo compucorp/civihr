@@ -64,7 +64,7 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
-  // make sure only relevant components are enabled 
+  // make sure only relevant components are enabled
   $params = array(
     'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
@@ -97,7 +97,7 @@ function hrui_civicrm_install() {
     }
   }
 
-  // Delete unnecessary reports 
+  // Delete unnecessary reports
   $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
   if (!empty($reports)) {
     foreach ($reports as $reportTitle) {
@@ -161,8 +161,8 @@ function hrui_civicrm_install() {
   //hide communication preferences block
   $groupID = CRM_Core_DAO::getFieldValue(
     'CRM_Core_DAO_OptionGroup',
-    'contact_edit_options', 
-    'id', 
+    'contact_edit_options',
+    'id',
     'name'
   );
 
@@ -206,8 +206,8 @@ function hrui_civicrm_uninstall() {
   // show communication preferences block
   $groupID = CRM_Core_DAO::getFieldValue(
     'CRM_Core_DAO_OptionGroup',
-    'contact_edit_options', 
-    'id', 
+    'contact_edit_options',
+    'id',
     'name'
   );
 
@@ -324,6 +324,8 @@ function hrui_civicrm_managed(&$entities) {
 }
 
 function hrui_civicrm_navigationMenu( &$params ) {
+  // Degrade gracefully on 4.4
+  if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
     //  Get the maximum key of $params
     $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
 
@@ -362,5 +364,5 @@ function hrui_civicrm_navigationMenu( &$params ) {
       ),
       'child' => $multiValuedData,
     );
-   
+  }
 }
