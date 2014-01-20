@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/job/import</path>
+    <page_callback>CRM_HRJob_Import_Controller</page_callback>
+    <title>JOB Import</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+</menu>
