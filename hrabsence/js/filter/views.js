@@ -13,7 +13,7 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
     },
     events: {
       "change [name=activity_type_id]": function(e) {
-        // TODO: allow multiple values
+        // TODO: allow multiple values by treating activity_type_id as an array of int
         if ($(e.currentTarget).val()) {
           this.model.set('activity_type_id', $(e.currentTarget).val())
         } else {
@@ -21,7 +21,7 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
         }
       },
       "change [name=period_id]": function(e) {
-        // TODO: allow multiple values
+        // TODO: allow multiple values by treating period_id as an array of int
         if ($(e.currentTarget).val()) {
           this.model.set('period_id', $(e.currentTarget).val())
         } else {
@@ -31,10 +31,10 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
 
     },
     onRender: function() {
-      // TODO: allow multiple values
+      // TODO: allow multiple values by treating activity_type_id as an array of int
       this.$('[name=activity_type_id]').val(this.model.get('activity_type_id'));
 
-      // TODO: allow multiple values
+      // TODO: allow multiple values by treating period_id as an array of int
       this.$('[name=period_id]').val(this.model.get('period_id'));
     }
   });

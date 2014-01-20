@@ -38,6 +38,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addSettingsFactory(function () use ($contactID) {
+
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
@@ -45,21 +46,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
           'contactId' => $contactID,
-          'activityTypes' => array(
-            1 => ts('Sick'),
-            2 => ts('Vacation'),
-            3 => ts('TOIL'),
-            4 => ts('TOIL (Credit)'),
-            5 => ts('Maternity'),
-            6 => ts('Paternity'),
-            7 => ts('Adoption'),
-            8 => ts('Other'),
-          ),
-          'periods' => array(
-            8 => 'Jan 1, 2011 to Dec 31, 2011',
-            9 => 'Jan 1, 2012 to Dec 31, 2012',
-            10 => 'Jan 1, 2013 to Dec 31, 2013'
-          ),
+          'activityTypes' => CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes(),
+          'periods' => CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods(),
         ),
       );
     })
