@@ -1,11 +1,56 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Marionette, $, _) {
   Models.Absence = Backbone.Model.extend({
+    isInPeriod: function(period) {
+      // FIXME if (this.get('activity_date_time') between period.start_date and period.end_date)
+      return true;
+    },
+    getPeriodId: function() {
+      for (period in CRM.absenceApp.periods) {
+        if (this.isInPeriod(CRM.absenceApp.periods[period])) {
+          return CRM.absenceApp.periods[period].id;
+        }
+      }
+      return null;
+    },
+    getFormattedDuration: function() {
+      if (this.get('duration')) {
+        // FIXME: if activity_type_id is credit, +; if debit, -
+        return '+/- ' + (this.get('duration') / CRM.absenceApp.standardDay).toFixed(2);
+      } else {
+        return '';
+      }
+    }
   });
   CRM.Backbone.extendModel(Models.Absence, 'Activity');
 
   Models.AbsenceCollection = Backbone.Collection.extend({
-    model: Models.Absence
+    model: Models.Absence,
+
+    /** @return array of type-ids (int) */
+    findActiveActivityTypes: function() {
+      return _.uniq(
+        this.map(function(model) {
+          return model.get('activity_type_id');
+        })
+      );
+    },
+
+    /** @return array of period-ids (int) */
+    findActivePeriods: function() {
+      var coll = this;
+      var periodIds = [];
+      _.each(CRM.absenceApp.periods, function(period) {
+        for (key in coll.models) {
+          if (coll.models[key].isInPeriod(period)) {
+            periodIds.push(period.id);
+            return;
+          }
+        }
+      });
+      return periodIds;
+    }
+
   });
   CRM.Backbone.extendCollection(Models.AbsenceCollection);
 

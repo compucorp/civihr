@@ -19,9 +19,14 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
     template: '#hrabsence-list-template',
     templateHelpers: function() {
       return {
+        'active_activity_types': this.options.collection.findActiveActivityTypes(),
+        'collection': this.options.collection,
+        'absences_by_period': this.options.collection.groupBy(function(m) {return m.getPeriodId();}),
+        'periods': CRM.absenceApp.periods,
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
-          'period_id': CRM.absenceApp.periods
+          'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {}),
+          'status_id': CRM.PseudoConstant.activityStatus
         }
       };
     },

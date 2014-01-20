@@ -40,15 +40,22 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addSettingsFactory(function () use ($contactID, $activityTypes, $periods) {
 
+      if ($periods === NULL) {
+        $res = civicrm_api3('HRAbsencePeriod', 'get', array());
+        $periods = $res['values'];
+      }
+
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
+          'activityStatus' => CRM_Core_PseudoConstant::get('CRM_Activity_DAO_Activity', 'status_id'),
         ),
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
           'contactId' => $contactID,
           'activityTypes' => $activityTypes === NULL ? CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes() : $activityTypes,
-          'periods' => $periods === NULL ? CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods() : $periods,
+          'periods' => $periods,
+          'standardDay' => 8 * 60
         ),
       );
     })

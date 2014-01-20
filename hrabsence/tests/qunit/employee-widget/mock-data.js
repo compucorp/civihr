@@ -14,7 +14,7 @@ CRM.mockData.get = function(datasets) {
   return result;
 }
 
-CRM.mockData.vacation2013 = [
+CRM.mockData.vacationFeb2013 = [
   {
     "id": "620",
     "activity_type_id": "10",
@@ -30,8 +30,24 @@ CRM.mockData.vacation2013 = [
     "source_contact_id": "202"
   }
 ];
+CRM.mockData.vacationApr2013 = [
+  {
+    "id": "650",
+    "activity_type_id": "10",
+    "subject": "Vaction day!",
+    "activity_date_time": "2013-04-02 20:10:11",
+    "duration": "480",
+    "status_id": "2",
+    "priority_id": "2",
+    "is_test": "0",
+    "is_auto": "0",
+    "is_current_revision": "1",
+    "is_deleted": "0",
+    "source_contact_id": "202"
+  }
+];
 
-CRM.mockData.toil2013 = [
+CRM.mockData.toilFeb2013 = [
   {
     "id": "625",
     "activity_type_id": "11",

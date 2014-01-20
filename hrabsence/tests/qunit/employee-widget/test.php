@@ -14,8 +14,19 @@ CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources(
     12 => 'TOIL (Credit)',
   ),
   array(
-    3 => 'FY 2013',
-    2 => 'FY 2012',
+    2 => array(
+      'id' => 2,
+      'name' => 'FY2012',
+      'title' => 'FY 2012',
+      'start_date' => '2012-04-01 00:00:00',
+      'end_date' => '2012-03-31 23:59:59',
+    ),
+    3 => array(
+      'id' => 3,
+      'name' => 'FY2013',
+      'title' => 'FY 2013',
+      'start_date' => '2013-04-01 00:00:00',
+      'end_date' => '2013-03-31 23:59:59',
+    ),
   )
 );
-
