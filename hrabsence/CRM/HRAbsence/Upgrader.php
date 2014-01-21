@@ -12,7 +12,42 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed
    */
   public function install() {
+    $this->installActivityTypes();
+
     //$this->executeSqlFile('sql/myinstall.sql');
+  }
+
+  public function installActivityTypes() {
+    $activityTypesResult = civicrm_api3('activity_type', 'get', array());
+    $weight = count($activityTypesResult["values"]);
+
+    if (!in_array("Public Holiday", $activityTypesResult["values"])) {
+      $weight = $weight + 1;
+      $params = array(
+        'weight' => $weight,
+        'label' => 'Public Holiday',
+        'filter' => 0,
+        'is_active' => 1,
+        'is_optgroup' => 0,
+        'is_default' => 0,
+        'grouping' => 'Timesheet',
+      );
+      $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
+    }
+
+    if (!in_array("Absence", $activityTypesResult["values"])) {
+      $weight = $weight + 1;
+      $params = array(
+        'weight' => $weight,
+        'label' => 'Absence',
+        'filter' => 0,
+        'is_active' => 1,
+        'is_optgroup' => 0,
+        'is_default' => 0,
+        'grouping' => 'Timesheet',
+      );
+      $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
+    }
   }
 
   /**

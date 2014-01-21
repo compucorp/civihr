@@ -22,38 +22,6 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
-
-  $activityTypesResult = civicrm_api3('activity_type', 'get', array());
-  $weight = count($activityTypesResult["values"]);
-
-  if (!in_array("Public Holiday", $activityTypesResult["values"])) {
-    $weight = $weight + 1;
-    $params = array(
-      'weight' => $weight,
-      'label' => 'Public Holiday',
-      'filter' => 0,
-      'is_active' => 1,
-      'is_optgroup' => 0,
-      'is_default' => 0,
-      'grouping' => 'Timesheet',
-    );
-    $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
-  }
-
-  if (!in_array("Absence", $activityTypesResult["values"])) {
-    $weight = $weight + 1;
-    $params = array(
-      'weight' => $weight,
-      'label' => 'Absence',
-      'filter' => 0,
-      'is_active' => 1,
-      'is_optgroup' => 0,
-      'is_default' => 0,
-      'grouping' => 'Timesheet',
-    );
-    $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
-  }
-
   return _hrabsence_civix_civicrm_install();
 }
 
@@ -140,4 +108,16 @@ function hrabsence_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRAbsence_DAO_HRAbsenceEntitlement',
     'table' => 'civicrm_absence_entitlement',
   );
+}
+
+/**
+ * Implementation of hook_civicrm_alterFilters
+ *
+ * @param array $wrappers list of API_Wrapper instances
+ * @param array $apiRequest
+ */
+function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  if (strtolower($apiRequest['entity']) == 'activity' && strtolower($apiRequest['action']) == 'get') {
+    $wrappers[] = new CRM_HRAbsence_AbsenceRangeOption();
+  }
 }

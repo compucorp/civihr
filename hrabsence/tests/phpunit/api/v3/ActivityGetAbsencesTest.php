@@ -55,6 +55,9 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
 
   public function setUp() {
     parent::setUp();
+
+    CRM_HRAbsence_Upgrader_Base::instance()->installActivityTypes(NULL);
+
     $this->contactId = $this->individualCreate();
     $this->contactId2 = $this->individualCreate(array(
       'first_name' => 'Alt',
@@ -78,15 +81,37 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     ));
 
     foreach (array($this->contactId, $this->contactId2) as $contactId) {
-      foreach (array('2012-01-01 01:01', '2012-12-31 23:57', '2013-01-01 01:01') as $datetime) {
+      foreach (array('2012-01-01 01:01:00', '2012-12-31 23:57:00', '2013-01-01 01:01:00') as $datetime) {
         foreach (array(self::EXAMPLE_ABSENCE_TYPE, self::EXAMPLE_ACTIVITY_TYPE) as $activityType) {
           $params = array(
+            'activity_type_id' => $activityType,
             'source_contact_id' => $this->sourceContactId,
             'target_contact_id' => $contactId,
             'activity_date_time' => $datetime,
-            'activity_type_id' => $activityType,
           );
-          $this->callAPISuccess('Activity', 'create', $params);
+          $absenceRequest = $this->callAPISuccess('Activity', 'create', $params);
+
+          if ($activityType == self::EXAMPLE_ABSENCE_TYPE) {
+            $relatedParams = array(
+              'activity_type_id' => 'Absence',
+              'source_record_id' => $absenceRequest['id'],
+              'source_contact_id' => $this->sourceContactId,
+              'target_contact_id' => $contactId,
+              'activity_date_time' => date("YmdHis", strtotime($datetime) + 24 * 60 * 60),
+              'duration' => 8 * 60,
+            );
+            $r = $this->callAPISuccess('Activity', 'create', $relatedParams);
+
+            $relatedParams = array(
+              'activity_type_id' => 'Absence',
+              'source_record_id' => $absenceRequest['id'],
+              'source_contact_id' => $this->sourceContactId,
+              'target_contact_id' => $contactId,
+              'activity_date_time' => date("YmdHis", strtotime($datetime) + 3 * 24 * 60 * 60),
+              'duration' => 8 * 60,
+            );
+            $this->callAPISuccess('Activity', 'create', $relatedParams);
+          }
         }
       }
     }
@@ -168,4 +193,32 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     }
   }
 
+  /**
+   * When getting an absence-request activity, pass "options.absence-range=1" to calculate and
+   * return the earliest and latest specific absence dates.
+   */
+  public function testOptionAbsenceRange() {
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
+      'options' => array(
+        'absence-range' => 1,
+      ),
+    ));
+
+    $this->assertEquals(6, count($activities['values']));
+    foreach ($activities['values'] as $activity) {
+      switch ($activity['activity_date_time']) {
+        case '2012-01-01 01:01:00':
+        case '2012-12-31 23:57:00':
+          break;
+        case '2013-01-01 01:01:00':
+          $this->assertEquals('2013-01-02 01:01:00', $activity['absence_range']['low']);
+          $this->assertEquals('2013-01-04 01:01:00', $activity['absence_range']['high']);
+          $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
+          $this->assertEquals(2, $activity['absence_range']['count']);
+          break;
+        default:
+          $this->fail("Unrecognized date time: " . $activity['activity_date_time']);
+      }
+    }
+  }
 }
