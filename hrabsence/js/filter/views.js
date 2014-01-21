@@ -36,6 +36,9 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
 
       // TODO: allow multiple values by treating period_id as an array of int
       this.$('[name=period_id]').val(this.model.get('period_id'));
+      this.$('[name=activity_type_id], [name=period_id]').multiselect({
+        header: false
+      });
     }
   });
 });

@@ -44,3 +44,22 @@
 .hrabsence-list-item:nth-child(even) {
     background: #fafafa;
 }
+
+.ui-multiselect-menu {
+    display: none;
+    width: 213px !important;
+    position: absolute;
+}
+
+.ui-multiselect-menu ul {
+    height: auto !important;
+}
+
+.ui-icon-triangle-1-s {
+    float: left;
+    text-align: center;
+}
+
+button.ui-multiselect {
+    padding: 2px;
+}
