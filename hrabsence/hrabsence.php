@@ -22,7 +22,6 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
-  //@FIXME -- need to add new component 'CiviTimesheet'
 
   $activityTypesResult = civicrm_api3('activity_type', 'get', array());
   $weight = count($activityTypesResult["values"]);
@@ -36,13 +35,13 @@ function hrabsence_civicrm_install() {
       'is_active' => 1,
       'is_optgroup' => 0,
       'is_default' => 0,
+      'grouping' => 'Timesheet',
     );
     $resultCreatePublicHoliday = civicrm_api3('activity_type', 'create', $params);
   }
 
   if (!in_array("Absence", $activityTypesResult["values"])) {
     $weight = $weight + 1;
-    //@FIXME -- need to add Component ID of 'CiviTimesheet' if exist
     $params = array(
       'weight' => $weight,
       'label' => 'Absence',
@@ -50,6 +49,7 @@ function hrabsence_civicrm_install() {
       'is_active' => 1,
       'is_optgroup' => 0,
       'is_default' => 0,
+      'grouping' => 'Timesheet',
     );
     $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
   }
