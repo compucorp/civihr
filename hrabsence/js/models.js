@@ -26,9 +26,9 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       return this._periodId;
     },
     getFormattedDuration: function() {
-      if (this.get('duration')) {
+      if (this.get('absence_range')) {
         // FIXME: if activity_type_id is credit, +; if debit, -
-        return '+/- ' + (this.get('duration') / CRM.absenceApp.standardDay).toFixed(2);
+        return '+/- ' + (this.get('absence_range').duration / CRM.absenceApp.standardDay).toFixed(2);
       } else {
         return '';
       }

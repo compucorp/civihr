@@ -40,7 +40,7 @@
         </td>
         <td><%- FieldOptions.status_id[model.get('status_id')] %></td>
         <% _.each(active_activity_types, function(actId) { %>
-        <td><%- (actId == model.get('activity_type_id')) ? model.getFormattedDuration() : '' %></td>
+        <td data-duration-actid="<%- actId %>"><%- (actId == model.get('activity_type_id')) ? model.getFormattedDuration() : '' %></td>
         <% }); %>
       </tr>
       <% }); %><!-- each model -->
