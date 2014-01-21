@@ -7,7 +7,7 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
         // 'RenderUtil': CRM.HRAbsenceApp.RenderUtil,
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
-          'period_id': CRM.absenceApp.periods
+          'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})
         }
       };
     },

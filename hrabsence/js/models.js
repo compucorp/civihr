@@ -1,11 +1,68 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Marionette, $, _) {
   Models.Absence = Backbone.Model.extend({
+    initialize: function(options) {
+      this.listenTo(this, 'change:activity_date_time', this.calculatePeriodId);
+    },
+    isInPeriod: function(period) {
+      var actdate = CRM.HRAbsenceApp.moment(this.get('activity_date_time'));
+      if (actdate.isBefore(CRM.HRAbsenceApp.moment(period.start_date), 'day')) return false;
+      if (actdate.isAfter(CRM.HRAbsenceApp.moment(period.end_date), 'day')) return false;
+      return true;
+    },
+    calculatePeriodId: function() {
+      for (period in CRM.absenceApp.periods) {
+        if (this.isInPeriod(CRM.absenceApp.periods[period])) {
+          this._periodId = CRM.absenceApp.periods[period].id;
+          return;
+        }
+      }
+      this._periodId = null;
+      if (console.log) console.log("Failed to determine period: " + this.get('activity_date_time'));
+      throw "Failed to determine period: " + this.get('activity_date_time');
+    },
+    getPeriodId: function() {
+      if (!this._periodId) this.calculatePeriodId();
+      return this._periodId;
+    },
+    getFormattedDuration: function() {
+      if (this.get('absence_range')) {
+        // FIXME: if activity_type_id is credit, +; if debit, -
+        return '+/- ' + (this.get('absence_range').duration / CRM.absenceApp.standardDay).toFixed(2);
+      } else {
+        return '';
+      }
+    }
   });
   CRM.Backbone.extendModel(Models.Absence, 'Activity');
 
   Models.AbsenceCollection = Backbone.Collection.extend({
-    model: Models.Absence
+    model: Models.Absence,
+
+    /** @return array of type-ids (int) */
+    findActiveActivityTypes: function() {
+      return _.uniq(
+        this.map(function(model) {
+          return model.get('activity_type_id');
+        })
+      );
+    },
+
+    /** @return array of period-ids (int) */
+    findActivePeriods: function() {
+      var coll = this;
+      var periodIds = [];
+      _.each(CRM.absenceApp.periods, function(period) {
+        for (key in coll.models) {
+          if (coll.models[key].isInPeriod(period)) {
+            periodIds.push(period.id);
+            return;
+          }
+        }
+      });
+      return periodIds;
+    }
+
   });
   CRM.Backbone.extendCollection(Models.AbsenceCollection);
 

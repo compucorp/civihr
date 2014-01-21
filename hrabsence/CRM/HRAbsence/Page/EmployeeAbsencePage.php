@@ -21,7 +21,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       if (is_numeric($session->get('userID'))) {
         CRM_Utils_System::setTitle(ts('My Absences'));
         self::registerResources($session->get('userID'));
-      } else {
+      }
+      else {
         throw new CRM_Core_Exception("Failed to determine contact ID");
       }
     }
@@ -29,7 +30,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     parent::run();
   }
 
-  public static function registerResources($contactID) {
+  public static function registerResources($contactID, $absenceTypes = NULL, $activityTypes = NULL, $periods = NULL) {
     static $loaded = FALSE;
     if ($loaded) {
       return;
@@ -37,20 +38,37 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     $loaded = TRUE;
 
     CRM_Core_Resources::singleton()
-      ->addSettingsFactory(function () use ($contactID) {
+      ->addSettingsFactory(function () use ($contactID, $absenceTypes, $activityTypes, $periods) {
+
+      if ($periods === NULL) {
+        $res = civicrm_api3('HRAbsencePeriod', 'get', array());
+        $periods = $res['values'];
+      }
+      if ($absenceTypes === NULL) {
+        $res = civicrm_api3('HRAbsenceType', 'get', array());
+        $absenceTypes = $res['values'];
+      }
+      if ($activityTypes === NULL) {
+        $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
+      }
 
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
+          'activityStatus' => CRM_Core_PseudoConstant::get('CRM_Activity_DAO_Activity', 'status_id'),
         ),
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
           'contactId' => $contactID,
-          'activityTypes' => CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes(),
-          'periods' => CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods(),
+          'activityTypes' => $activityTypes,
+          'absenceTypes' => $absenceTypes,
+          'periods' => $periods,
+          'standardDay' => 8 * 60,
+          'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',
         ),
       );
     })
+      ->addScriptFile('civicrm', 'packages/momentjs/moment.min.js', 100, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header')
