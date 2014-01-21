@@ -111,11 +111,11 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
         ),
         'filters' =>
         array(
-          'contact_source' =>
+          'contact_target' =>
           array(
             'name' => 'sort_name',
-            'alias' => 'civicrm_contact_source',
-            'title' => ts('Source Contact Name'),
+            'alias' => 'civicrm_contact_target',
+            'title' => ts('Individual'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
@@ -123,15 +123,15 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           array(
             'name' => 'sort_name',
             'alias' => 'civicrm_contact_assignee',
-            'title' => ts('Assignee Contact Name'),
+            'title' => ts('Approved by (Contact Name)'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
-          'contact_target' =>
+          'contact_source' =>
           array(
             'name' => 'sort_name',
-            'alias' => 'civicrm_contact_target',
-            'title' => ts('Individual'),
+            'alias' => 'civicrm_contact_source',
+            'title' => ts('Source Contact Name'),
             'operator' => 'like',
             'type' => CRM_Report_Form::OP_STRING,
           ),
@@ -151,23 +151,23 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
         'dao' => 'CRM_Core_DAO_Email',
         'fields' =>
         array(
-          'contact_source_email' =>
+          'contact_target_email' =>
           array(
             'name' => 'email',
-            'title' => ts('Source Contact Email'),
-            'alias' => 'civicrm_email_source',
+            'title' => ts('Email'),
+            'alias' => 'civicrm_email_target',
           ),
           'contact_assignee_email' =>
           array(
             'name' => 'email',
-            'title' => ts('Assignee Contact Email'),
+            'title' => ts('Approved By (Email)'),
             'alias' => 'civicrm_email_assignee',
           ),
-          'contact_target_email' =>
+          'contact_source_email' =>
           array(
             'name' => 'email',
-            'title' => ts('Target Contact Email'),
-            'alias' => 'civicrm_email_target',
+            'title' => ts('Added By (Email)'),
+            'alias' => 'civicrm_email_source',
           ),
         ),
         'order_bys' =>
@@ -258,7 +258,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           // so we have $this->_alias populated
         ),
       ),
-    ) + $this->addAddressFields(FALSE, TRUE);
+    ) ;
 
     $this->_groupFilter = TRUE;
     $this->_tagFilter = TRUE;
@@ -398,7 +398,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
       }
       $this->_aliases['civicrm_contact'] = 'civicrm_contact_source';
     }
-    $this->addAddressFromClause();
+
   }
 
   function where($recordType = NULL) {
@@ -746,8 +746,6 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
           $entryFound = TRUE;
         }
       }
-
-      $entryFound = $this->alterDisplayAddressFields($row, $rows, $rowNum, 'activity', 'List all activities for this ') ? TRUE : $entryFound;
 
       if (!$entryFound) {
         break;
