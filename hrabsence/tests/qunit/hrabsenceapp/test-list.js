@@ -52,8 +52,11 @@ test("With vacation records in FY2012 + FY2013", function() {
   equal($el.find('.hrabsence-list-period-header').length, 2);
   equal($el.find('.hrabsence-list-period-header[data-period-id=2]').length, 1);
   equal($el.find('.hrabsence-list-period-header[data-period-id=3]').length, 1);
-  equal($el.find('.hrabsence-list-item').length, 2);
+  equal($el.find('.hrabsence-list-item').length, 3);
   equal($el.find('.hrabsence-list-item[data-period-id=2]').length, 1);
-  equal($el.find('.hrabsence-list-item[data-period-id=3]').length, 1);
+  assertLike(cj($el.find('.hrabsence-list-item[data-period-id=2]')[0]).find('.hrabsence-list-desc'), 'Vacation (Feb 15, 2013 - Feb 16, 2013)');
+  equal($el.find('.hrabsence-list-item[data-period-id=3]').length, 2);
+  assertLike(cj($el.find('.hrabsence-list-item[data-period-id=3]')[0]).find('.hrabsence-list-desc'), 'Vacation (Apr 4, 2013)');
+  assertLike(cj($el.find('.hrabsence-list-item[data-period-id=3]')[1]).find('.hrabsence-list-desc'), 'Vacation');
 });
 

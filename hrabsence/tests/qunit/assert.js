@@ -7,3 +7,12 @@ var assertContainsText = function(expectedText, $el, message) {
   }
   ok(found, message);
 };
+
+// Assert that two strings are equivalent, not-with-standing whitespace
+// actual and expected are string literals; or else jQuery DOM objects
+var assertLike = function(actual, expected) {
+  var clean = function(c) { return c.replace(/\s+/g,' ').trim(); }
+  if (actual.text) { actual = actual.text(); }
+  if (expected.text) { expected = expected.text(); }
+  equal(clean(actual), clean(expected));
+}

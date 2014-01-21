@@ -26,11 +26,16 @@
 
       <% _.each(absences, function(model) { %>
       <tr class="hrabsence-list-item" data-period-id="<%- period_id %>">
-        <td>
+        <td class="hrabsence-list-desc">
           <a href="javascript:alert('Fixme');">
             <%- FieldOptions.activity_type_id[model.get('activity_type_id')] %>
-            (<%- CRM.HRAbsenceApp.moment(model.get('activity_date_time')).format('MMM D, YYYY') %>)
-            [FIXME real-date-range]
+            <% if (model.get('absence_range').low && model.get('absence_range').low == model.get('absence_range').high) { %>
+              (<%- CRM.HRAbsenceApp.moment(model.get('absence_range').low).format('MMM D, YYYY') %>)
+            <% } else if (model.get('absence_range').low) { %>
+              (<%- CRM.HRAbsenceApp.moment(model.get('absence_range').low).format('MMM D, YYYY') %>
+              -
+              <%- CRM.HRAbsenceApp.moment(model.get('absence_range').high).format('MMM D, YYYY') %>)
+            <% } %>
           </a>
         </td>
         <td><%- FieldOptions.status_id[model.get('status_id')] %></td>
