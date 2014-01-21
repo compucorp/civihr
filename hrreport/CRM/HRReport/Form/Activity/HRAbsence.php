@@ -48,7 +48,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
     // Lets hide it for now.
     $this->_exposeContactID = FALSE;
 
-    $this->activityTypes = CRM_Core_PseudoConstant::activityType(TRUE, FALSE, FALSE, 'label', TRUE);
+    $this->activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
   
     asort($this->activityTypes);
 
@@ -430,6 +430,9 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           else {
             $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
             if ($op && ($op != 'nnll' || $op != 'nll')) {
+              if ($field['name'] == 'activity_type_id' && empty($this->_params["{$fieldName}_value"])) {
+                $this->_params["{$fieldName}_value"] = array_keys($this->activityTypes);
+              }
               $clause = $this->whereClause($field,
                 $op,
                 CRM_Utils_Array::value("{$fieldName}_value", $this->_params),
