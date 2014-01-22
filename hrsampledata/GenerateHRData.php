@@ -1049,5 +1049,6 @@ class GenerateHRData {
 
 $obj1 = new GenerateHRData();
 $obj1->initID();
-$obj1->generate('Individual');
 $obj1->generate('Organization');
+$obj1->generate('Individual');
+
