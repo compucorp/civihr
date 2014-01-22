@@ -541,20 +541,6 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
 
     $this->assign('columnHeaders', $this->_columnHeaders);
 
-    // Add Special headers
-    $this->_columnHeaders['start_date'] = array(
-      'type' => CRM_Utils_Type::T_DATE,
-      'title' => 'Start Date',
-    );
-    $this->_columnHeaders['end_date'] = array(
-      'type' => CRM_Utils_Type::T_DATE,
-      'title' => 'End Date',
-    );
-    $this->_columnHeaders['qty'] = array(
-      'type' => CRM_Utils_Type::T_FLOAT,
-      'title' => 'Qty',
-    );
-
     //Assign those recordtype to array which have filter operator as 'Is not empty' or 'Is empty'
     $nullFilters = array();
     foreach (array('target', 'source', 'assignee') as $type) {
@@ -569,6 +555,9 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
 
       // 1. fill temp table with target results
     $this->select('target');
+
+    $this->_columnHeaders = self::alterColumns($this->_columnHeaders);
+
     $this->from('target');
     $this->customDataFrom();
     $this->where('target');
@@ -633,6 +622,32 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
 
     // do print / pdf / instance stuff if needed
     $this->endPostProcess($rows);
+  }
+
+  function alterColumns($columnHeaders) {
+    $inserted = FALSE;
+    foreach ($columnHeaders as $key => $value) {
+      if (!$inserted && $key === 'civicrm_activity_status_id') {
+        // Add Special headers
+        $newColumnHeaders['start_date'] = array(
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => 'Start Date',
+        );
+        $newColumnHeaders['end_date'] = array(
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => 'End Date',
+        );
+        $newColumnHeaders['qty'] = array(
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => 'Qty',
+        );
+        $inserted = TRUE;
+      }
+
+      $newColumnHeaders[$key] = $value;
+
+    }
+    return $newColumnHeaders;
   }
 
   function alterDisplay(&$rows) {
