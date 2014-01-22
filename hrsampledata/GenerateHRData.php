@@ -1031,7 +1031,7 @@ class GenerateHRData {
     $employmentPeriods = $employmentPeriodClusters[mt_rand(0, 4)];
 
     foreach ($employmentPeriods as $employmentPeriod) {
-      foreach ($absenceTypes as $absenceType) {
+      foreach ($absenceTypes['values'] as $absenceType) {
         $absenceEntitlementValues = array(
           'contact_id' => $cid,
           'period_id' => $employmentPeriod,
