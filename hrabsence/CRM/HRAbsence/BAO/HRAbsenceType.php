@@ -123,9 +123,9 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
   }
 
   /**
-   * Get the list of absence-related activity types
+   * Get the list of absence-related activity status
    *
-   * @return array (int activity_type_id => string activity_label)
+   * @return array (int activity_status_id => string activity_status_label)
    */
   public static function getActivityStatus() {
     $activityStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');

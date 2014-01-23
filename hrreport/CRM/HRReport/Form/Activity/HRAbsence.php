@@ -658,7 +658,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
     if (CRM_Core_Permission::check('access CiviCRM')) {
       $viewLinks = TRUE;
       $onHover = ts('View Contact Summary for this Contact');
-      $onHoverAct = ts('View Activity Record');
+      $onHoverAct = ts('View Absence Record');
     }
 
     if (!empty($rows)) {
@@ -756,20 +756,11 @@ GROUP BY source_record_id";
               $cid = $rows[$rowNum]['civicrm_contact_contact_source_id'];
             }
 
-            $actionLinks = CRM_Activity_Selector_Activity::actionLinks($row['civicrm_activity_activity_type_id'],
-              CRM_Utils_Array::value('civicrm_activity_source_record_id', $rows[$rowNum]),
-              FALSE,
-              $rows[$rowNum]['civicrm_activity_id']
+            $url = CRM_Utils_System::url('civicrm/absence',
+              'reset=1&id=' . $rows[$rowNum]['civicrm_activity_id'],
+              $this->_absoluteUrl
             );
 
-            $linkValues = array(
-              'id' => $rows[$rowNum]['civicrm_activity_id'],
-              'cid' => $cid,
-              'cxt' => $context,
-            );
-            $url = CRM_Utils_System::url($actionLinks[CRM_Core_Action::VIEW]['url'],
-              CRM_Core_Action::replace($actionLinks[CRM_Core_Action::VIEW]['qs'], $linkValues), TRUE
-            );
             $rows[$rowNum]['civicrm_activity_activity_type_id_link'] = $url;
             $rows[$rowNum]['civicrm_activity_activity_type_id_hover'] = $onHoverAct;
           }
@@ -792,7 +783,6 @@ GROUP BY source_record_id";
           $entryFound = TRUE;
         }
       }
-
       if (!$entryFound) {
         break;
       }
