@@ -45,21 +45,37 @@
     background: #fafafa;
 }
 
-.ui-multiselect-menu {
+.hrabsence-container button.ui-multiselect {
+    border: 1px solid #999999;
+    padding: 1px;
+    min-width: 221px !important;
+}
+
+.page-civicrm-absences .ui-multiselect-menu {
     display: none;
-    width: 221px !important;
+    min-width: 221px !important;
     position: absolute;
 }
 
-.ui-multiselect-menu ul {
+.page-civicrm-absences .ui-multiselect-menu ul {
     height: auto !important;
+    background-color: #F2F1F0 !important;
 }
 
-.ui-icon-triangle-1-s {
+.hrabsence-container button.ui-multiselect .ui-icon-triangle-1-s {
     float: left;
     text-align: center;
+    box-shadow: -2px 1px 0px 3px #888888;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    border-bottom-left-radius: 1px;
+    border-bottom-right-radius: 1px;
 }
 
-button.ui-multiselect {
-    padding: 2px;
+.page-civicrm-absences .ui-multiselect-menu li {
+    line-height: 1.5em;
+}
+
+.page-civicrm-absences .ui-multiselect-menu li label {
+    font-weight: normal !important;
 }
