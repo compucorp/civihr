@@ -445,6 +445,8 @@ class GenerateHRData {
       $this->addEmergencyContact($cid);
       //if Career (CiviHR) extension is enabled, add the sample data
       $this->addCareerData($cid);
+      //if Absence (CiviHR) extension in enabled, add the sample data
+      $this->addAbsenceEntitlements($cid);
     }
   }
 
@@ -519,6 +521,9 @@ class GenerateHRData {
       $org->addressee_display = $org->display_name;
       $org->hash = crc32($org->sort_name);
       $this->_update($org);
+      
+      //if Absence (CiviHR) extension is enabled, add the sample data
+      $this->addAbsencePeriods();
     }
   }
 
@@ -965,10 +970,85 @@ class GenerateHRData {
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
     $dao = CRM_Core_DAO::executeQuery($query);
   }
+  
+  /**
+  * This is a method to create absence periods
+  */
+  private function addAbsencePeriods() {
+    // Create a set of absence periods
+    $periods = array();
+    $periods[] = array(
+      'name' => 'FY2013',
+      'title' => 'Fiscal Year 2013',
+      'start_data' => '2013-04-01 00:00:00',
+      'end_data' => '2014-03-31 23:59:59',
+    );
+
+    $periods[] = array(
+      'name' => 'FY2014',
+      'title' => 'Fiscal Year 2014',
+      'start_data' => '2014-04-01 00:00:00',
+      'end_data' => '2015-03-31 23:59:59',
+    );
+
+    $periods[] = array(
+      'name' => 'FY2015',
+      'title' => 'Fiscal Year 2015',
+      'start_data' => '2015-04-01 00:00:00',
+      'end_data' => '2016-03-31 23:59:59',
+    );
+
+    $periods[] = array(
+      'name' => 'FY2016',
+      'title' => 'Fiscal Year 2016',
+      'start_data' => '2016-04-01 00:00:00',
+      'end_data' => '2017-03-31 23:59:59',
+    );
+
+    foreach ($periods as $absencePeriod) {
+      civicrm_api3('HRAbsencePeriod', 'create', $absencePeriod);
+    }
+  }
+  
+  /**
+   * This is a method to create absence entitlements
+  */
+  private function addAbsenceEntitlements($cid) {
+
+    //create period combinations
+    $employmentPeriodClusters = array(
+      array(1),
+      array(1, 2, 3),
+      array(3, 4, 2),
+      array(4, 3, 1),
+      array(1, 2, 3, 4),
+    );
+
+    //every period will have following absenceTypes
+    $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array());
+
+    //pick up random period
+    $employmentPeriods = $employmentPeriodClusters[mt_rand(0, 4)];
+
+    foreach ($employmentPeriods as $employmentPeriod) {
+      foreach ($absenceTypes['values'] as $absenceType) {
+        $absenceEntitlementValues = array(
+          'contact_id' => $cid,
+          'period_id' => $employmentPeriod,
+          'type_id' => $absenceType['id'],
+          'amount' => mt_rand(5, 15),
+        );
+        //create Entitlement
+        civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
+      }
+    }
+  }
+
 }
 
 
 $obj1 = new GenerateHRData();
 $obj1->initID();
-$obj1->generate('Individual');
 $obj1->generate('Organization');
+$obj1->generate('Individual');
+
