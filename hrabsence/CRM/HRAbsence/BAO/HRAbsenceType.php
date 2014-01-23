@@ -122,4 +122,24 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     return $result;
   }
 
+  /**
+   * Get the list of absence-related activity types
+   *
+   * @return array (int activity_type_id => string activity_label)
+   */
+  public static function getActivityStatus() {
+    $activityStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+    $absenceStatus = array(
+      'Scheduled' => ts('Requested'),
+      'Completed' => ts('Approved'),
+      'Cancelled' => ts('Cancelled'),
+    );
+    $result = array();
+    foreach ($absenceStatus as $name => $title) {
+      if ($key = CRM_Utils_Array::key($name, $activityStatus)) {
+        $result[$key] = $title;
+      }
+    }
+    return $result;
+  }
 }
