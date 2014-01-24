@@ -47,9 +47,8 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
     // There could be multiple contacts. We not clear on which contact id to display.
     // Lets hide it for now.
     $this->_exposeContactID = FALSE;
-
     $this->activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
-  
+    $this->activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
     asort($this->activityTypes);
 
     $this->_columns = array(
@@ -233,7 +232,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           'status_id' =>
           array('title' => ts('Status'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => CRM_Core_PseudoConstant::activityStatus(),
+            'options' => $this->activityStatus,
           ),
         ),
         'order_bys' =>
@@ -652,18 +651,14 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
 
   function alterDisplay(&$rows) {
     // custom code to alter rows
-
-    $entryFound     = FALSE;
-    $activityType   = CRM_Core_PseudoConstant::activityType(TRUE, TRUE, FALSE, 'label', TRUE);
-    $activityStatus = CRM_Core_PseudoConstant::activityStatus();
-    $viewLinks      = FALSE;
-    $seperator      = CRM_Core_DAO::VALUE_SEPARATOR;
-    $context        = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'report');
+    $entryFound = $viewLinks = FALSE;
+    $seperator = CRM_Core_DAO::VALUE_SEPARATOR;
+    $context = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'report');
 
     if (CRM_Core_Permission::check('access CiviCRM')) {
-      $viewLinks  = TRUE;
-      $onHover    = ts('View Contact Summary for this Contact');
-      $onHoverAct = ts('View Activity Record');
+      $viewLinks = TRUE;
+      $onHover = ts('View Contact Summary for this Contact');
+      $onHoverAct = ts('View Absence Record');
     }
 
     if (!empty($rows)) {
@@ -749,7 +744,7 @@ GROUP BY source_record_id";
 
       if (array_key_exists('civicrm_activity_activity_type_id', $row)) {
         if ($value = $row['civicrm_activity_activity_type_id']) {
-          $rows[$rowNum]['civicrm_activity_activity_type_id'] = $activityType[$value];
+          $rows[$rowNum]['civicrm_activity_activity_type_id'] = $this->activityTypes[$value];
           if ($viewLinks) {
             // Check for target contact id(s) and use the first contact id in that list for view activity link if found,
             // else use source contact id
@@ -761,20 +756,11 @@ GROUP BY source_record_id";
               $cid = $rows[$rowNum]['civicrm_contact_contact_source_id'];
             }
 
-            $actionLinks = CRM_Activity_Selector_Activity::actionLinks($row['civicrm_activity_activity_type_id'],
-              CRM_Utils_Array::value('civicrm_activity_source_record_id', $rows[$rowNum]),
-              FALSE,
-              $rows[$rowNum]['civicrm_activity_id']
+            $url = CRM_Utils_System::url('civicrm/absence',
+              'reset=1&id=' . $rows[$rowNum]['civicrm_activity_id'],
+              $this->_absoluteUrl
             );
 
-            $linkValues = array(
-              'id' => $rows[$rowNum]['civicrm_activity_id'],
-              'cid' => $cid,
-              'cxt' => $context,
-            );
-            $url = CRM_Utils_System::url($actionLinks[CRM_Core_Action::VIEW]['url'],
-              CRM_Core_Action::replace($actionLinks[CRM_Core_Action::VIEW]['qs'], $linkValues), TRUE
-            );
             $rows[$rowNum]['civicrm_activity_activity_type_id_link'] = $url;
             $rows[$rowNum]['civicrm_activity_activity_type_id_hover'] = $onHoverAct;
           }
@@ -784,20 +770,19 @@ GROUP BY source_record_id";
 
       if (array_key_exists('civicrm_activity_status_id', $row)) {
         if ($value = $row['civicrm_activity_status_id']) {
-          $rows[$rowNum]['civicrm_activity_status_id'] = $activityStatus[$value];
+          $rows[$rowNum]['civicrm_activity_status_id'] = $this->activityStatus[$value];
           $entryFound = TRUE;
         }
       }
 
       if (array_key_exists('civicrm_activity_activity_date_time', $row) && array_key_exists('civicrm_activity_status_id', $row)) {
         if (CRM_Utils_Date::overdue($rows[$rowNum]['civicrm_activity_activity_date_time']) &&
-          $activityStatus[$row['civicrm_activity_status_id']] != 'Completed'
+          $this->activityStatus[$row['civicrm_activity_status_id']] != 'Approved'
         ) {
           $rows[$rowNum]['class'] = "status-overdue";
           $entryFound = TRUE;
         }
       }
-
       if (!$entryFound) {
         break;
       }
