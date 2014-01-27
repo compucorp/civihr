@@ -16,7 +16,7 @@ class CRM_HRAbsence_TypeLegend {
   private $paletteSize;
 
   /**
-   * @var array (int $id => array('label' => $string, 'cssClass' => $string))
+   * @var array (int $actTypeId => array('label' => $string, 'cssClass' => $string))
    */
   private $map;
 
@@ -47,7 +47,7 @@ class CRM_HRAbsence_TypeLegend {
       }
     }
     $map['mixed'] = array(
-      'label' => ts('Mixed'),
+      'label' => ts('Multiple'),
       'cssClass' => 'hrabsence-bg-mixed',
     );
     $this->map = $map;
@@ -80,6 +80,9 @@ class CRM_HRAbsence_TypeLegend {
     return $this->activityTypes;
   }
 
+  /**
+   * @return array (int $actTypeId => array('label' => $string, 'cssClass' => $string))
+   */
   public function getMap() {
     return $this->map;
   }
