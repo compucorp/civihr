@@ -8,6 +8,7 @@
  * @return {*}
  */
 CRM.HRAbsenceApp.moment = function(ts) {
+  /*
   var CACHE_LIMIT = 400, CACHE_CHUNK = 20, me = CRM.HRAbsenceApp.moment;
   var c = me.cache = (me.cache || new me.Cache());
   if (!c.items[ts]) {
@@ -17,6 +18,8 @@ CRM.HRAbsenceApp.moment = function(ts) {
     c.put(ts, moment(ts, CRM.absenceApp.apiTsFmt));
   }
   return c.items[ts];
+  */
+  return moment(ts, CRM.absenceApp.apiTsFmt)
 };
 
 CRM.HRAbsenceApp.moment.Cache = function() {
