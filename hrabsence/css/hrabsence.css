@@ -80,33 +80,41 @@
     font-weight: normal !important;
 }
 
-.hrabsence-legend { width: 100%; margin: auto; }
+/* **** Calendar - Main Table **** */
 
-.hrabsence-bg-mixed { background: #000000; }
+.hrabsence-calendar td, .hrabsence-calendar th { text-align: center; }
 
-.hrabsence-bg-0-debit { background: #bb0000; }
-.hrabsence-bg-0-credit { background: #880000; }
+/* **** Calendar - Legend **** */
 
-.hrabsence-bg-1-debit { background: #0000bb; }
-.hrabsence-bg-1-credit { background: #000088; }
+.hrabsence-legend h4 { width: 100%; text-align: center; }
+.hrabsence-legend table { width: 100%; }
+.hrabsence-legend table td { margin: auto; text-align: center; width: 50%; }
 
-.hrabsence-bg-2-debit { background: #00bb00; }
-.hrabsence-bg-2-credit { background: #008800; }
+.hrabsence-bg-mixed { background: #000000; color: white; }
 
-.hrabsence-bg-3-debit { background: #eeee00; }
-.hrabsence-bg-3-credit { background: #bbbb00; }
+.hrabsence-bg-0-debit { background: #bb0000; color:  white; }
+.hrabsence-bg-0-credit { background: #880000; color:  white; }
 
-.hrabsence-bg-4-debit { background: #ee00ee; }
-.hrabsence-bg-4-credit { background: #880088; }
+.hrabsence-bg-1-debit { background: #0000bb; color:  white; }
+.hrabsence-bg-1-credit { background: #000088; color:  white; }
 
-.hrabsence-bg-5-debit { background: #6666ff; }
-.hrabsence-bg-5-credit { background: #6666aa; }
+.hrabsence-bg-2-debit { background: #00bb00; color:  white; }
+.hrabsence-bg-2-credit { background: #008800; color:  white; }
 
-.hrabsence-bg-6-debit { background: #88ff88; }
-.hrabsence-bg-6-credit { background: #88dd88; }
+.hrabsence-bg-3-debit { background: #cccc00; color:  white; }
+.hrabsence-bg-3-credit { background: #aaaa00; color:  white; }
 
-.hrabsence-bg-7-debit { background: #00bbbb; }
-.hrabsence-bg-7-credit { background: #008888; }
+.hrabsence-bg-4-debit { background: #ee00ee; color:  white;}
+.hrabsence-bg-4-credit { background: #880088; color:  white; }
 
-.hrabsence-bg-8-debit { background: #888800; }
-.hrabsence-bg-8-credit { background: #444400; }
+.hrabsence-bg-5-debit { background: #6666ff; color:  white; }
+.hrabsence-bg-5-credit { background: #6666aa; color:  white; }
+
+.hrabsence-bg-6-debit { background: #88ff88; color:  black; }
+.hrabsence-bg-6-credit { background: #88dd88; color:  black; }
+
+.hrabsence-bg-7-debit { background: #00bbbb; color:  white; }
+.hrabsence-bg-7-credit { background: #008888; color:  white; }
+
+.hrabsence-bg-8-debit { background: #888800; color:  white; }
+.hrabsence-bg-8-credit { background: #444400; color:  white; }

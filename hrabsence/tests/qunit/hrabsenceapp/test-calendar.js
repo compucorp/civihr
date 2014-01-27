@@ -13,9 +13,9 @@ test("Check Legend", function() {
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  assertLike(cj($el.find('.hrabsence-bg-0-debit ~ td:first')), 'Vacation');
-  assertLike(cj($el.find('.hrabsence-bg-1-debit ~ td:first')), 'TOIL');
-  assertLike(cj($el.find('.hrabsence-bg-1-credit ~ td:first')), 'TOIL (Credit)');
+  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-0-debit')), 'Vacation');
+  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-1-debit')), 'TOIL');
+  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-1-credit')), 'TOIL (Credit)');
 });
 
 test("Check Rows - Single Period", function() {
