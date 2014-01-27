@@ -980,29 +980,29 @@ class GenerateHRData {
     $periods[] = array(
       'name' => 'FY2013',
       'title' => 'Fiscal Year 2013',
-      'start_data' => '2013-04-01 00:00:00',
-      'end_data' => '2014-03-31 23:59:59',
+      'start_date' => '2013-04-01 00:00:00',
+      'end_date' => '2014-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2014',
       'title' => 'Fiscal Year 2014',
-      'start_data' => '2014-04-01 00:00:00',
-      'end_data' => '2015-03-31 23:59:59',
+      'start_date' => '2014-04-01 00:00:00',
+      'end_date' => '2015-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2015',
       'title' => 'Fiscal Year 2015',
-      'start_data' => '2015-04-01 00:00:00',
-      'end_data' => '2016-03-31 23:59:59',
+      'start_date' => '2015-04-01 00:00:00',
+      'end_date' => '2016-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2016',
       'title' => 'Fiscal Year 2016',
-      'start_data' => '2016-04-01 00:00:00',
-      'end_data' => '2017-03-31 23:59:59',
+      'start_date' => '2016-04-01 00:00:00',
+      'end_date' => '2017-03-31 23:59:59',
     );
 
     foreach ($periods as $absencePeriod) {
@@ -1043,10 +1043,7 @@ class GenerateHRData {
       }
     }
   }
-
 }
-
-
 $obj1 = new GenerateHRData();
 $obj1->initID();
 $obj1->generate('Organization');
