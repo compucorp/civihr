@@ -20,9 +20,20 @@
         <tr>
           <td><%- month.format('MMM YYYY') %></td>
           <% for (var i = 1; i<= 31; i++) { %>
-            <% var date = month.clone().date(i); %>
-          <td><%= date.format('dd') %></td>
-          <% } %>
+            <% var date = month.clone().date(i), dateFmt = date.format('YYYY-MM-DD'); %>
+            <% if (date.month() != month.month() || !activity_by_date[dateFmt]) { %>
+              <td data-caldate="<%- dateFmt %>" class="hrabsence-bg-empty"></td>
+            <% } else if (activity_by_date[dateFmt].length == 1) { %>
+              <% var actId = activity_by_date[dateFmt][0].get('activity_type_id'); %>
+              <td data-caldate="<%- dateFmt %>" class="<%= CRM.absenceApp.legend[actId].cssClass %>" title="<%- date.format('ll') %> -- <%- CRM.absenceApp.legend[actId].label %>">
+                <%- date.format('dd') %>
+              </td>
+            <% } else if (activity_by_date[dateFmt].length > 1) { %>
+          <td data-caldate="<%- dateFmt %>" class="<%= CRM.absenceApp.legend['mixed'].cssClass %>" title="<%- CRM.absenceApp.legend['mixed'].label %>">
+            <%- date.format('dd') %>
+          </td>
+            <% } %>
+          <% } // for i %>
         </tr>
         <% } %>
       <% }); %>

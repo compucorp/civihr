@@ -90,6 +90,7 @@
 .hrabsence-legend table { width: 100%; }
 .hrabsence-legend table td { margin: auto; text-align: center; width: 50%; }
 
+.hrabsence-bg-empty { }
 .hrabsence-bg-mixed { background: #000000; color: white; }
 
 .hrabsence-bg-0-debit { background: #bb0000; color:  white; }

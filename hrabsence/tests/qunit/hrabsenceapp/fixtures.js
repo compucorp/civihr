@@ -30,6 +30,10 @@ CRM.fixtures.vacationFeb2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [
+        {id: 201302001, activity_date_time: "2013-02-15 20:10:11", duration: 480},
+        {id: 201302002, activity_date_time: "2013-02-16 20:10:11", duration: 240}
+      ],
       "low": "2013-02-15 20:10:11",
       "high": "2013-02-16 20:10:11",
       "duration": "720",
@@ -54,6 +58,9 @@ CRM.fixtures.vacationApr2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [
+        {id: 2013040201, activity_date_time: "2013-04-04 20:10:11", duration: 480}
+      ],
       "low": "2013-04-04 20:10:11",
       "high": "2013-04-04 20:10:11",
       "duration": "480",
@@ -74,6 +81,7 @@ CRM.fixtures.vacationApr2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [],
       "low": null,
       "high": null,
       "duration": 0,
@@ -98,6 +106,9 @@ CRM.fixtures.toilFeb2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [
+        {id: 20130262501, activity_date_time: "2013-02-13 20:10:11", duration: 240}
+      ],
       "low": "2013-02-13 20:10:11",
       "high": "2013-02-13 20:10:11",
       "duration": "240",
@@ -118,6 +129,9 @@ CRM.fixtures.toilFeb2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [
+        {id: 20130262901, activity_date_time: "2013-02-14 20:10:11", duration: 480}
+      ],
       "low": "2013-02-14 20:10:11",
       "high": "2013-02-14 20:10:11",
       "duration": "480",
@@ -138,6 +152,9 @@ CRM.fixtures.toilFeb2013 = [
     "is_deleted": "0",
     "source_contact_id": "202",
     "absence_range": {
+      "items": [
+        {id: 20130263001, activity_date_time: "2013-02-15 20:10:11", duration: 240}
+      ],
       "low": "2013-02-15 20:10:11",
       "high": "2013-02-15 20:10:11",
       "duration": "240",
