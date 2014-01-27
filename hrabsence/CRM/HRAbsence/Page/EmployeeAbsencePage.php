@@ -77,6 +77,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmContactField.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE)
       ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header')
+      ->addStyleFile('org.civicrm.hrabsence', 'css/jquery.multiselect.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrabsence', 'js/jquery.multiselect.js', 140, 'html-header');
 
     self::addScriptFiles('org.civicrm.hrabsence', 'js/*.js', 200, 'html-header');
