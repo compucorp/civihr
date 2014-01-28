@@ -18,8 +18,8 @@ CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources(
     ),
     101 => array(
       'id' => 101,
-      'name' => 'Vacation',
-      'title' => 'Vacation',
+      'name' => 'TOIL',
+      'title' => 'TOIL',
       'is_active' => 1,
       'allow_debits' => 1,
       'debit_activity_type_id' => 11,

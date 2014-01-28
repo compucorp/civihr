@@ -19,6 +19,10 @@ CRM.HRAbsenceApp.module('Calendar', function(Calendar, HRAbsenceApp, Backbone, M
     template: '#hrabsence-calendar-template',
     templateHelpers: function() {
       return {
+        'active_period_ids': (this.options.criteria && this.options.criteria.get('period_id')) ? this.options.criteria.get('period_id') : _.keys(CRM.absenceApp.periods),
+        'collection': this.options.collection,
+        'periods': CRM.absenceApp.periods,
+        'activity_by_date': this.collection.createDateIndex(),
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})

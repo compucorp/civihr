@@ -39,6 +39,26 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   Models.AbsenceCollection = Backbone.Collection.extend({
     model: Models.Absence,
 
+    /**
+     * Create a listing of absennce-requests, sorted by the actual dates on which
+     * the absence was claimed. Note that a given absence may appear multiple times.
+     *
+     * @return Object keys are dates; each item is an array of AbsenceModel
+     */
+    createDateIndex: function() {
+      var idx = {};
+      this.each(function(activity) {
+        _.each(activity.get('absence_range').items, function(absenceItem){
+          var date = CRM.HRAbsenceApp.moment(absenceItem.activity_date_time).format('YYYY-MM-DD');
+          if (!idx[date]) {
+            idx[date] = [];
+          }
+          idx[date].push(activity);
+        });
+      });
+      return idx;
+    },
+
     /** @return array of type-ids (int) */
     findActiveActivityTypes: function() {
       return _.uniq(

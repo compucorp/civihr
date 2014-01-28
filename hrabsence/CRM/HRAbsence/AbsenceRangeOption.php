@@ -72,11 +72,21 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
 
         $ids = array_keys($result['values']);
         $ids = array_filter($ids, 'is_numeric'); // paranoia
+
+        foreach ($ids as $id) {
+          $result['values'][$id]['absence_range'] = array(
+            'low' => NULL,
+            'high' => NULL,
+            'duration' => 0,
+            'count' => 0,
+            'items' => array(),
+          );
+        }
+
         $sql = "
-          SELECT source_record_id, min(activity_date_time) as low, max(activity_date_time) as high, sum(duration) as duration, count(id) as cnt
+          SELECT id, source_record_id, activity_date_time, duration as duration
           FROM civicrm_activity
           WHERE activity_type_id = %1 AND source_record_id in (" . implode(',', $ids) . ")
-          GROUP BY source_record_id
           ";
         $params = array(
           1 => array($absenceTypeId, 'Integer'),
@@ -84,23 +94,22 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
 
         $dao = CRM_Core_DAO::executeQuery($sql, $params);
         while ($dao->fetch()) {
-          $result['values'][$dao->source_record_id]['absence_range'] = array(
-            'low' => $dao->low,
-            'high' => $dao->high,
-            'duration' => $dao->duration,
-            'count' => $dao->cnt,
-          );
-        }
-
-        foreach ($ids as $id) {
-          if (!isset($result['values'][$id]['absence_range'])) {
-            $result['values'][$id]['absence_range'] = array(
-              'low' => NULL,
-              'high' => NULL,
-              'duration' => 0,
-              'count' => 0,
-            );
+          $ar = &$result['values'][$dao->source_record_id]['absence_range'];
+          if ($ar['low'] === NULL || $ar['low'] > $dao->activity_date_time) {
+            $ar['low'] = $dao->activity_date_time;
           }
+          if ($ar['high'] === NULL || $ar['high'] < $dao->activity_date_time) {
+            $ar['high'] = $dao->activity_date_time;
+          }
+          $ar['duration'] += $dao->duration;
+          $ar['count']++;
+
+          $ar['items'][] = array(
+            'id' => $dao->id,
+            'activity_date_time' => $dao->activity_date_time,
+            'duration' => $dao->duration,
+            // ignore source_record_id; it's implicit
+          );
         }
       }
     }

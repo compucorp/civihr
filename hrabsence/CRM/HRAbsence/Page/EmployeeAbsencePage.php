@@ -62,6 +62,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
           'contactId' => $contactID,
           'activityTypes' => $activityTypes,
           'absenceTypes' => $absenceTypes,
+          'legend' => (new CRM_HRAbsence_TypeLegend(9, $absenceTypes, $activityTypes))->getMap(),
           'periods' => $periods,
           'standardDay' => 8 * 60,
           'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',
