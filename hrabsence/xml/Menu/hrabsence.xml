@@ -6,4 +6,10 @@
     <title>EmployeeAbsencePage</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/absences/set</path>
+    <page_callback>CRM_HRAbsence_Form_EmployeeAbsenceRequestPage</page_callback>
+    <title>EmployeeAbsencePage</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
