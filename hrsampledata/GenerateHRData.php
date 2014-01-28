@@ -447,6 +447,8 @@ class GenerateHRData {
       $this->addCareerData($cid);
       //if Absence (CiviHR) extension in enabled, add the sample data
       $this->addAbsenceEntitlements($cid);
+      //add absence requests to individuals.
+      $this->addAbsenceRequests($cid);
     }
   }
 
@@ -980,29 +982,29 @@ class GenerateHRData {
     $periods[] = array(
       'name' => 'FY2013',
       'title' => 'Fiscal Year 2013',
-      'start_data' => '2013-04-01 00:00:00',
-      'end_data' => '2014-03-31 23:59:59',
+      'start_date' => '2013-04-01 00:00:00',
+      'end_date' => '2014-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2014',
       'title' => 'Fiscal Year 2014',
-      'start_data' => '2014-04-01 00:00:00',
-      'end_data' => '2015-03-31 23:59:59',
+      'start_date' => '2014-04-01 00:00:00',
+      'end_date' => '2015-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2015',
       'title' => 'Fiscal Year 2015',
-      'start_data' => '2015-04-01 00:00:00',
-      'end_data' => '2016-03-31 23:59:59',
+      'start_date' => '2015-04-01 00:00:00',
+      'end_date' => '2016-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2016',
       'title' => 'Fiscal Year 2016',
-      'start_data' => '2016-04-01 00:00:00',
-      'end_data' => '2017-03-31 23:59:59',
+      'start_date' => '2016-04-01 00:00:00',
+      'end_date' => '2017-03-31 23:59:59',
     );
 
     foreach ($periods as $absencePeriod) {
@@ -1043,9 +1045,49 @@ class GenerateHRData {
       }
     }
   }
+  
+  /*
+   * 
+   */
+  private function addAbsenceRequests($cid){
+      
+    $activityTypes = civicrm_api3('ActivityType', 'get', array());
+    
+    $parentActivities = array('Vacation', 'Sick');
+    
+    $absenceRequest = civicrm_api3('Activity', 'create', array(
+      'activity_type_id' => array_search($parentActivities[array_rand($parentActivities)], $activityTypes['values']),
+      'source_contact_id' => $cid, // logged in user
+      'target_contact_id' => $cid, // the person who takes the absence
+      'activity_date_time' => '2014-01-02 14:00:00',
+      'status_id' => mt_rand(1, 2), // Scheduled or Completed
+    ));
 
+    $start_date = "2014-01-5";
+    
+    $duration = array(
+      8*60, //full day
+      4*60, // half day
+      0*60, // blank
+    );
+
+    // create array of absences to be added
+    for($i = 0; $i <= mt_rand(1, 3); $i++){
+      $absenceValues[] = array(
+        'activity_date_time' => date("Y-m-d h:i:s", strtotime("+".$i."day", strtotime($start_date))),
+        'duration' => $duration[array_rand($duration)],
+        'source_contact_id' => $cid,
+      );
+    }
+
+    // add absence
+    civicrm_api3('Activity', 'replace', array(
+      'activity_type_id' => array_search('Absence', $activityTypes['values']),
+      'source_record_id' => $absenceRequest['id'],
+      'values' => $absenceValues,
+    ));
+  }
 }
-
 
 $obj1 = new GenerateHRData();
 $obj1->initID();
