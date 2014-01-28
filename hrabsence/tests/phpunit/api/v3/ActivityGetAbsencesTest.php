@@ -208,13 +208,28 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     foreach ($activities['values'] as $activity) {
       switch ($activity['activity_date_time']) {
         case '2012-01-01 01:01:00':
+          $this->assertEquals('2012-01-02 01:01:00', $activity['absence_range']['low']);
+          $this->assertEquals('2012-01-04 01:01:00', $activity['absence_range']['high']);
+          $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
+          $this->assertEquals(2, $activity['absence_range']['count']);
+          $this->assertEquals(array('2012-01-02 01:01:00', '2012-01-04 01:01:00'), CRM_Utils_Array::collect('activity_date_time', $activity['absence_range']['items']));
+          $this->assertEquals(array(8*60, 8*60), CRM_Utils_Array::collect('duration', $activity['absence_range']['items']));
+          break;
         case '2012-12-31 23:57:00':
+          $this->assertEquals('2013-01-01 23:57:00', $activity['absence_range']['low']);
+          $this->assertEquals('2013-01-03 23:57:00', $activity['absence_range']['high']);
+          $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
+          $this->assertEquals(2, $activity['absence_range']['count']);
+          $this->assertEquals(array('2013-01-01 23:57:00', '2013-01-03 23:57:00'), CRM_Utils_Array::collect('activity_date_time', $activity['absence_range']['items']));
+          $this->assertEquals(array(8*60, 8*60), CRM_Utils_Array::collect('duration', $activity['absence_range']['items']));
           break;
         case '2013-01-01 01:01:00':
           $this->assertEquals('2013-01-02 01:01:00', $activity['absence_range']['low']);
           $this->assertEquals('2013-01-04 01:01:00', $activity['absence_range']['high']);
           $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
           $this->assertEquals(2, $activity['absence_range']['count']);
+          $this->assertEquals(array('2013-01-02 01:01:00', '2013-01-04 01:01:00'), CRM_Utils_Array::collect('activity_date_time', $activity['absence_range']['items']));
+          $this->assertEquals(array(8*60, 8*60), CRM_Utils_Array::collect('duration', $activity['absence_range']['items']));
           break;
         default:
           $this->fail("Unrecognized date time: " . $activity['activity_date_time']);
