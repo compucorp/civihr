@@ -73,32 +73,44 @@
 .hrabsence-legend table { width: 100%; }
 .hrabsence-legend table td { margin: auto; text-align: center; width: 50%; }
 
+/* *** Calendar - Shared by main table and legend *** */
+
+.hrabsence-calendar td, .hrabsence-calendar td a:link, .hrabsence-calendar td a:visited, .hrabsence-calendar td a:hover,
+.hrabsence-legend   td, .hrabsence-legend   td a:link, .hrabsence-legend   td a:visited, .hrabsence-legend   td a:hover {
+    color:  white;
+}
+
+.hrabsence-calendar td.hrabsence-bg-6-debit, .hrabsence-calendar td.hrabsence-bg-6-debit a:link, .hrabsence-calendar td.hrabsence-bg-6-debit a:visited, .hrabsence-calendar td.hrabsence-bg-6-debit a:hover,
+.hrabsence-legend   td.hrabsence-bg-6-debit, .hrabsence-legend   td.hrabsence-bg-6-debit a:link, .hrabsence-legend   td.hrabsence-bg-6-debit a:visited, .hrabsence-legend   td.hrabsence-bg-6-debit a:hover {
+    color:  black;
+}
+
 .hrabsence-bg-empty { }
 .hrabsence-bg-mixed { background: #000000; color: white; }
 
-.hrabsence-bg-0-debit { background: #bb0000; color:  white; }
-.hrabsence-bg-0-credit { background: #880000; color:  white; }
+.hrabsence-bg-0-debit { background: #bb0000; }
+.hrabsence-bg-0-credit { background: #880000;  }
 
-.hrabsence-bg-1-debit { background: #0000bb; color:  white; }
-.hrabsence-bg-1-credit { background: #000088; color:  white; }
+.hrabsence-bg-1-debit { background: #0000bb;  }
+.hrabsence-bg-1-credit { background: #000088; }
 
-.hrabsence-bg-2-debit { background: #00bb00; color:  white; }
-.hrabsence-bg-2-credit { background: #008800; color:  white; }
+.hrabsence-bg-2-debit { background: #00bb00;  }
+.hrabsence-bg-2-credit { background: #008800; }
 
-.hrabsence-bg-3-debit { background: #cccc00; color:  white; }
-.hrabsence-bg-3-credit { background: #aaaa00; color:  white; }
+.hrabsence-bg-3-debit { background: #cccc00;  }
+.hrabsence-bg-3-credit { background: #aaaa00; }
 
-.hrabsence-bg-4-debit { background: #ee00ee; color:  white;}
-.hrabsence-bg-4-credit { background: #880088; color:  white; }
+.hrabsence-bg-4-debit { background: #ee00ee;}
+.hrabsence-bg-4-credit { background: #880088;  }
 
-.hrabsence-bg-5-debit { background: #6666ff; color:  white; }
-.hrabsence-bg-5-credit { background: #6666aa; color:  white; }
+.hrabsence-bg-5-debit { background: #6666ff; }
+.hrabsence-bg-5-credit { background: #6666aa; }
 
-.hrabsence-bg-6-debit { background: #88ff88; color:  black; }
-.hrabsence-bg-6-credit { background: #88dd88; color:  black; }
+.hrabsence-bg-6-debit { background: #88ff88; }
+.hrabsence-bg-6-credit { background: #88dd88; }
 
-.hrabsence-bg-7-debit { background: #00bbbb; color:  white; }
-.hrabsence-bg-7-credit { background: #008888; color:  white; }
+.hrabsence-bg-7-debit { background: #00bbbb; }
+.hrabsence-bg-7-credit { background: #008888; }
 
-.hrabsence-bg-8-debit { background: #888800; color:  white; }
-.hrabsence-bg-8-credit { background: #444400; color:  white; }
+.hrabsence-bg-8-debit { background: #888800; }
+.hrabsence-bg-8-credit { background: #444400; }

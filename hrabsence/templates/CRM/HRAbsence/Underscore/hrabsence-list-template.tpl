@@ -27,7 +27,7 @@
       <% _.each(absences, function(model) { %>
       <tr class="hrabsence-list-item" data-period-id="<%- period_id %>">
         <td class="hrabsence-list-desc">
-          <a href="javascript:alert('Fixme');">
+          <a href="#" class="hrabsence-open" data-activity="<%= model.get('id') %>">
             <%- FieldOptions.activity_type_id[model.get('activity_type_id')] %>
             <% if (model.get('absence_range').low && model.get('absence_range').low == model.get('absence_range').high) { %>
               (<%- CRM.HRAbsenceApp.moment(model.get('absence_range').low).format('MMM D, YYYY') %>)

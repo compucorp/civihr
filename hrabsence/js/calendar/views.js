@@ -36,6 +36,14 @@ CRM.HRAbsenceApp.module('Calendar', function(Calendar, HRAbsenceApp, Backbone, M
     onRender: function() {
       if (console.log) console.log('CalendarView.onRender with ' + this.options.collection.models.length + ' item(s)');
       this.$('.activity-count').text(this.options.collection.models.length);
+      this.$('.hrabsence-open').each(function(){
+        var url = CRM.url('civicrm/absences/set', {
+          reset: 1,
+          action: 4,
+          activityid: $(this).attr('data-activity')
+        });
+        $(this).attr('href', url);
+      });
     }
   });
 });
