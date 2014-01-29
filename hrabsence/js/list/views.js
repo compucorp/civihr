@@ -37,6 +37,14 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
     onRender: function() {
       if (console.log) console.log('ListView.onRender with ' + this.options.collection.models.length + ' item(s)');
       this.$('.activity-count').text(this.options.collection.models.length);
+      this.$('.hrabsence-open').each(function(){
+        var url = CRM.url('civicrm/absences/set', {
+          reset: 1,
+          action: 4,
+          activityid: $(this).attr('data-activity')
+        });
+        $(this).attr('href', url);
+      });
     }
   });
 });
