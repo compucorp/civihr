@@ -121,3 +121,126 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
     $wrappers[] = new CRM_HRAbsence_AbsenceRangeOption();
   }
 }
+
+
+function hrabsence_civicrm_navigationMenu( &$params ) {
+  //  Get the maximum key of $params
+  $maxKey = ( max( array_keys($params) ) );
+  $params[$maxKey+1] = array (
+    'attributes' => array (
+      'label'      => 'Absences',
+      'name'       => 'absences',
+      'url'        => null,
+      'permission' => 'access HRAbsences', 
+      'operator'   => null,
+      'separator'  => null,
+      'parentID'   => null,
+      'navID'      => $maxKey+1,
+      'active'     => 1
+    ),
+    'child' =>  array (
+      $maxKey+2 => array (
+        'attributes' => array (
+          'label'      => 'Absences',
+          'name'       => 'absences',
+          'url'        => null,
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ),
+        'child' => null
+      ) ,
+      $maxKey+3 => array (
+        'attributes' => array (
+          'label'      => 'Calender',
+          'name'       => 'calender',
+          'url'        => null,
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ), 
+        'child' => null
+      ),
+      $maxKey+4 => array (
+        'attributes' => array (
+          'label'      => 'New Absence',
+          'name'       => 'newAbsence',
+          'url'        => null,
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ),
+      ) ,
+      $maxKey+5 => array (
+        'attributes' => array (
+          'label'      => 'Absence Report',
+          'name'       => 'absenceReport',
+          'url'        => null,
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ),
+        'child' => null
+      ) ,
+      $maxKey+6 => array (
+        'attributes' => array (
+          'label'      => 'Manage Entitlements',
+          'name'       => 'manageEntitlements',
+          'url'        => null,
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ),
+        'child' => null
+      ) ,
+    ) 
+  );
+
+  $paramsAbsenceType = array(
+    'version' => 3,
+    'sequential' => 1,
+  );
+  $resultAbsenceType = civicrm_api('HRAbsenceType', 'get', $paramsAbsenceType);
+  $absebceType = $values = array();
+  foreach ($resultAbsenceType['values'] as $key => $val) {
+    $absebceType[$val['id']] = $val['title']; 
+  } 
+
+  if (!empty($absebceType)) {
+    $maxKey_child = $maxKey+7;
+    foreach ($absebceType as $aTypeId => $absebceTypeName) {
+      $maxKey_child = $maxKey_child + 1;
+      $absebceMenuItems[$maxKey_child] = array(
+        'attributes' => array(
+          'label'      => "{$absebceTypeName}",
+          'name'       => "{$absebceTypeName}",
+          'url'        => "civicrm/absences/set?type={$aTypeId}&action=add",
+          'permission' => 'access HRAbsences',
+          'operator'   => NULL,
+          'separator'  => NULL,
+          'parentID'   => $maxKey+4,
+          'navID'      => 1,
+          'active'     => 1
+        )
+      );
+    }
+  }
+  if (!empty($absebceMenuItems)) {
+    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absebceMenuItems;
+  }
+}
