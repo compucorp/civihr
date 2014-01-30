@@ -55,6 +55,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
           'is_active' => 1,
           'is_optgroup' => 0,
           'is_default' => 0,
+          'grouping' => 'Timesheet',
         );
         $resultCreateActivityType = civicrm_api3('activity_type', 'create', $paramsCreate);
         $debitActivityTypeId = $resultCreateActivityType['values'][$resultCreateActivityType["id"]]['value'];
