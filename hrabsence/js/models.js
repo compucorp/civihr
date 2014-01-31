@@ -81,10 +81,79 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         }
       });
       return periodIds;
-    }
+    },
 
+    /** @return array of statistics */
+    createStatistics: function() {
+      var stats = {};
+      this.each(function(model) {
+        var statsKey = model.getPeriodId() + '-' + model.get('activity_type_id');
+	if (!stats[statsKey]) {
+	  stats[statsKey] = {
+	    period_id: model.getPeriodId(),
+	    activity_type_id: model.get('activity_type_id'),
+	    entitlement: 0,
+	    requested: 0,
+	    approved: 0,
+	    balance: 0
+	  };
+        }       
+        if (model.get('status_id') == 2) {
+            stats[statsKey].approved =  (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
+        } else if (model.get('status_id') == 1) {
+	    var s1 = stats[statsKey].requested;
+	    var s2 = model.get('absence_range').duration;
+          stats[statsKey].requested =  (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
+        }
+      });
+      return stats;
+    }
   });
   CRM.Backbone.extendCollection(Models.AbsenceCollection);
+
+  Models.AbsenceType = Backbone.Model.extend({});
+  CRM.Backbone.extendModel(Models.AbsenceType, 'HRAbsenceType');
+  Models.AbsenceTypeCollection = Backbone.Collection.extend({ 
+    model: Models.AbsenceType,
+    getAbsenceTypes: function() {
+      var idx = {};
+	var i = 1;
+      this.each(function(model) {
+        if (model.get('allow_debits') == 1) {
+	  idx[model.get('debit_activity_type_id')] = model.get('id');
+	} 
+	if (model.get('allow_credits') == 1) {
+	  idx[model.get('credit_activity_type_id')] = model.get('id');
+	}
+      });
+      return idx;
+    }
+  });
+  CRM.Backbone.extendCollection(Models.AbsenceTypeCollection);
+
+  Models.Entitlement = Backbone.Model.extend({});
+  CRM.Backbone.extendModel(Models.Entitlement, 'HRAbsenceEntitlement');
+  Models.EntitlementCollection = Backbone.Collection.extend({ 
+    model: Models.Entitlement,
+
+    getEntitlements: function() {
+      var idx = {};
+      this.each(function(model) {
+        var activity = model.get('amount');
+        var actType = model.get('type_id');
+	var pid = model.get('period_id');
+        if (!idx[actType]) {
+          idx[actType] = [];
+        }
+        if (!idx[actType][pid]) {
+          idx[actType][pid] = [];
+        }
+        idx[actType][pid] = activity;
+      });
+      return idx;
+    }
+  });
+  CRM.Backbone.extendCollection(Models.EntitlementCollection);
 
   /**
    * A set of modifiable/displayable filter criteria which is
@@ -111,4 +180,21 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       }
     }
   });
+
+  /**
+   * A set of modifiable/displayable filter criteria which is
+   * used to create a collection. The collection's crmCriteria
+   * are kept in sync with the filter criteria.
+   *
+   * @type {*}
+   */
+  Models.EntitlementCriteria = Backbone.Model.extend({
+    defaults: {
+      contact_id: CRM.absenceApp.contactId,
+      options: {
+        limit: 500
+      }
+    }
+  });
+
 });

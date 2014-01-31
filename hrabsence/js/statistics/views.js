@@ -19,6 +19,9 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
     template: '#hrabsence-statistics-template',
     templateHelpers: function() {
       return {
+        'entitlements': this.options.entitlementCollection.getEntitlements(),
+        'absencetype': this.options.absencetypeCollection.getAbsenceTypes(),
+        'stats': this.options.collection.createStatistics(),
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})
