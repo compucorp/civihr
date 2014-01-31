@@ -81,7 +81,10 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
       crmCriteriaModel: entitlementCriteria
     });
-    absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection(CRM.absenceApp.absenceTypes);
+
+    // NOTE: Generally don't like to put globalish variables in HRAbsenceApp, but this
+    // data doesn't really change much, and it makes AbsenceModel.isDebit() much cleaner.
+    absenceTypeCollection = HRAbsenceApp.absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection(_.values(CRM.absenceApp.absenceTypes));
   });
 
   HRAbsenceApp.on("initialize:after", function() {
@@ -101,4 +104,20 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
   });
+
+  /**
+   *
+   * @param string|int sec the number of seconds in the duration
+   * @return {String}
+   */
+  HRAbsenceApp.formatDuration = function(sec) {
+    sec = parseFloat(sec);
+    if (sec == 0) {
+      return ' 0.00';
+    } else if (sec < 0) {
+      return '' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+    } else {
+      return '+' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+    }
+  };
 });

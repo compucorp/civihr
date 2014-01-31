@@ -65,23 +65,33 @@
 
 /* **** Calendar - Main Table **** */
 
+.hrabsence-calendar { background: white; color: black; }
 .hrabsence-calendar td, .hrabsence-calendar th { text-align: center; }
+
+.hrabsence-calendar td { border: 1px solid #f4f4f4; }
 
 /* **** Calendar - Legend **** */
 
+.hrabsence-legend { background: white; color: black; }
 .hrabsence-legend h4 { width: 100%; text-align: center; }
 .hrabsence-legend table { width: 100%; }
 .hrabsence-legend table td { margin: auto; text-align: center; width: 50%; }
 
 /* *** Calendar - Shared by main table and legend *** */
 
-.hrabsence-calendar td, .hrabsence-calendar td a:link, .hrabsence-calendar td a:visited, .hrabsence-calendar td a:hover,
-.hrabsence-legend   td, .hrabsence-legend   td a:link, .hrabsence-legend   td a:visited, .hrabsence-legend   td a:hover {
+td.hrabsence-cal-item,
+td.hrabsence-cal-item a:link,
+td.hrabsence-cal-item a:visited,
+td.hrabsence-cal-item a:hover
+{
     color:  white;
 }
 
-.hrabsence-calendar td.hrabsence-bg-6-debit, .hrabsence-calendar td.hrabsence-bg-6-debit a:link, .hrabsence-calendar td.hrabsence-bg-6-debit a:visited, .hrabsence-calendar td.hrabsence-bg-6-debit a:hover,
-.hrabsence-legend   td.hrabsence-bg-6-debit, .hrabsence-legend   td.hrabsence-bg-6-debit a:link, .hrabsence-legend   td.hrabsence-bg-6-debit a:visited, .hrabsence-legend   td.hrabsence-bg-6-debit a:hover {
+td.hrabsence-cal-item.hrabsence-bg-6-debit,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:link,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:visited,
+td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
+{
     color:  black;
 }
 

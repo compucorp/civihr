@@ -8,6 +8,7 @@
         <% for (var i = 1; i<= 31; i++) { %>
         <th><%= (i<10) ? '0'+i : i %></th>
         <% } %>
+        <th>{/literal}{ts}Total{/ts}{literal}</th>
       </tr>
     </thead>
     <tbody>
@@ -22,20 +23,27 @@
           <% for (var i = 1; i<= 31; i++) { %>
             <% var date = month.clone().date(i), dateFmt = date.format('YYYY-MM-DD'); %>
             <% if (date.month() != month.month() || !activity_by_date[dateFmt]) { %>
-              <td data-caldate="<%- dateFmt %>" class="hrabsence-bg-empty"></td>
+              <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item hrabsence-bg-empty"></td>
             <% } else if (activity_by_date[dateFmt].length == 1) { %>
               <% var actId = activity_by_date[dateFmt][0].get('activity_type_id'); %>
-              <td data-caldate="<%- dateFmt %>" class="<%= CRM.absenceApp.legend[actId].cssClass %>">
+              <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item <%= CRM.absenceApp.legend[actId].cssClass %>">
                 <a href="#" class="hrabsence-open" data-activity="<%= activity_by_date[dateFmt][0].get('id') %>"  title="<%- date.format('ll') %> -- <%- CRM.absenceApp.legend[actId].label %>">
                   <%- date.format('dd') %>
                 </a>
               </td>
             <% } else if (activity_by_date[dateFmt].length > 1) { %>
-          <td data-caldate="<%- dateFmt %>" class="<%= CRM.absenceApp.legend['mixed'].cssClass %>" title="<%- CRM.absenceApp.legend['mixed'].label %>">
+          <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item <%= CRM.absenceApp.legend['mixed'].cssClass %>" title="<%- CRM.absenceApp.legend['mixed'].label %>">
             <%- date.format('dd') %>
           </td>
             <% } %>
           <% } // for i %>
+          <td class="hrabsence-cal-total">
+            <% var stats = month_stats[month.format('YYYY-MM')]; %>
+            <% if (stats) { %>
+              <% if (stats.creditTotal) { %><%= CRM.HRAbsenceApp.formatDuration(stats.creditTotal) %><br/><% } %>
+              <% if (stats.debitTotal) { %><%= CRM.HRAbsenceApp.formatDuration(-1 * stats.debitTotal) %><% } %>
+            <% } %>
+          </td>
         </tr>
         <% } %>
       <% }); %>
@@ -48,7 +56,7 @@
   <table class="hrabsence-legend">
     <% _.each(CRM.absenceApp.legend, function(legendItem) { %>
       <% if (legendPos%2 == 0) { %><tr> <% } %>
-      <td class="<%- legendItem.cssClass %>"><%- legendItem.label %></td>
+      <td class="hrabsence-cal-item <%- legendItem.cssClass %>"><%- legendItem.label %></td>
       <% if (legendPos%2 == 1 || legendPos == legendCount-1) { %></tr><% } %>
       <% legendPos++; %>
     <% }); %>
