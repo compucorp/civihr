@@ -12,6 +12,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
   // Shared state
   var absenceCriteria; // List of filter criteria
   var absenceCollection; // List of matching absences
+  var entitlementCriteria; // HRAbsenceEntitlement filter criteria
 
   HRAbsenceApp.Router = Marionette.AppRouter.extend({
     appRoutes: {
@@ -37,7 +38,9 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     showStatistics: function() {
       HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Statistics.StatisticsView({
         criteria: absenceCriteria,
-        collection: absenceCollection
+        collection: absenceCollection,
+        entitlementCollection: entitlementCollection,
+        absencetypeCollection: absencetypeCollection
       }));
     }
   };
@@ -71,6 +74,15 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       crmCriteriaModel: absenceCriteria,
       crmActions: {"get": "getabsences"}
     });
+    entitlementCriteria  = new HRAbsenceApp.Models.EntitlementCriteria({
+      contact_id: CRM.absenceApp.contactId,
+      options: {'absence-range': 1}
+    });
+    entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
+	crmCriteriaModel: entitlementCriteria
+    });
+    absencetypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection([], {
+    });
   });
 
   HRAbsenceApp.on("initialize:after", function() {
@@ -88,5 +100,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
 
     absenceCollection.fetch({reset: true});
+    entitlementCollection.fetch({reset: true});
+    absencetypeCollection.fetch({reset: true});
   });
 });
