@@ -222,6 +222,13 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
             'default' => 'this.month',
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
+          'absence_duration' =>
+          array(
+            'title' => ts('Absence Duration'),
+            'default' => 'this.month',
+            'type' => CRM_Utils_Type::T_DATE,
+            'operatorType' => CRM_Report_Form::OP_DATE,
+          ),
           'activity_subject' =>
           array('title' => ts('Subject')),
           'activity_type_id' =>
@@ -419,6 +426,10 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
             $relative = CRM_Utils_Array::value("{$fieldName}_relative", $this->_params);
             $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
             $to       = CRM_Utils_Array::value("{$fieldName}_to", $this->_params);
+
+            if ($fieldName == 'absence_duration') {
+              continue;
+            }
 
             $clause = $this->dateClause($field['name'], $relative, $from, $to, $field['type']);
           }
@@ -662,7 +673,13 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
     }
 
     if (!empty($rows)) {
-      $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
+      $activityTypeIDs = '(' . implode(',',$this->_params['activity_type_id_value']) . ')';
+      list($durationFromDate, $durationToDate) = $this->getFromTo(
+        CRM_Utils_Array::value("absence_duration_relative", $this->_params),
+        CRM_Utils_Array::value("absence_duration_from", $this->_params),
+        CRM_Utils_Array::value("absence_duration_to", $this->_params)
+      );
+
       $sql = "
 SELECT SUM(duration) / ( 8 *60 ) as qty,
 source_record_id ,
@@ -670,8 +687,17 @@ Min(activity_date_time) AS start_date,
 Max(activity_date_time) AS end_date
 FROM civicrm_activity
 WHERE source_record_id IS NOT NULL AND
-activity_type_id = {$activityTypeID}
+activity_type_id IN {$activityTypeIDs}
 GROUP BY source_record_id";
+
+      if ($durationFromDate && $durationToDate) {
+        $sql.= "
+        HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
+        (to_days(Max(activity_date_time))  <= to_days({$durationToDate})))
+        ";
+      }
+
+      $data = array();
 
       $dao= CRM_Core_DAO::executeQuery($sql);
       while ($dao->fetch()) {
@@ -680,7 +706,12 @@ GROUP BY source_record_id";
         $data[$dao->source_record_id]['qty'] = round($dao->qty, 1);
       }
     }
+
     foreach ($rows as $rowNum => $row) {
+      if(!array_key_exists($rows[$rowNum]['civicrm_activity_id'], $data)) {
+        unset($rows[$rowNum]);
+        continue;
+      }
       if (array_key_exists($row['civicrm_activity_id'], $data)) {
         $rows[$rowNum]['start_date'] = $data[$row['civicrm_activity_id']]['start_date'];
         $rows[$rowNum]['end_date'] = $data[$row['civicrm_activity_id']]['end_date'];
