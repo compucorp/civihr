@@ -33,7 +33,6 @@ return array (
             'contact_target' => 1,
             'activity_type_id' => 1,
             'duration' => 1,
-            'activity_date_time' => 1,
             'absence_duration' => 1,
             'status_id' => 1,
             'this.month' => 1,

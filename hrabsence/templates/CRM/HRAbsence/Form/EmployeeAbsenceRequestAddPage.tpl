@@ -24,16 +24,11 @@
  +--------------------------------------------------------------------+
 *}
 {* Search form and results for Event Participants *}
-
+  {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
-{assign var='loggedinuserid' value=$loginuserid}
-{assign var='absencetypes' value=$absenceTypes}
-{assign var='upActivityId' value=$upActivityId}
-{assign var='upfromDate' value=$fromDate}
-{assign var='uptoDate' value=$toDate}
   <table class="" style="width: auto; border: medium none ! important;">
     <tr>
-      <td>Employee </td> 
+      <td>Employee </td>
       <td colspan="2">{$emp_name}</td>
     </tr>
     <tr>
@@ -42,7 +37,7 @@
     </tr>
     <tr>
       <td>Absence Type </td> 
-      <td colspan="2">{if $action eq 1} {$absenceTypes} {elseif $action eq 2} {$selectedAbsenceType} {/if} </td> 
+      <td colspan="2">{$absenceType}</td> 
     </tr>
     <tr class="crm-event-manage-eventinfo-form-block-start_date">
       <td class="label">Dates</td>
@@ -59,12 +54,27 @@
     </tbody>
   </table>
 </div>
-
+<div id='customData'>{include file="CRM/Custom/Form/CustomData.tpl"}</div>
 <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
 
+{include file="CRM/common/customData.tpl" location="bottom"}
 {literal}
   <script type="text/javascript">
     cj(function(cj) {
+
+      {/literal}
+        {if $customValueCount}
+          {foreach from=$customValueCount item="groupCount" key="groupValue"}
+            {if $groupValue}{literal}
+              for ( var i = 1; i < {/literal}{$groupCount}{literal}; i++ ) {
+                CRM.buildCustomData( 'Activity', {/literal}"{$activityType}"{literal}, i, {/literal}{$groupValue}{literal}, true);
+              }
+              {/literal}
+            {/if}
+          {/foreach}
+        {/if}
+      {literal}
+
     cj('#start_date_display').change(function() {
       addabsencetbl();
     })
@@ -99,6 +109,7 @@
       var dd = joindate.getDate();
       var mm = joindate.getMonth() + 1;
       if (mm<10) mm="0"+mm;
+      if (dd<10) dd="0"+dd;
       var y = joindate.getFullYear();
       var start_date = mm + '/' + dd + '/' + y;
       selectedVal.push(x);
@@ -109,11 +120,11 @@
 
 {literal}
   <script type="text/javascript">
-    var uID = '{/literal}{$loggedinuserid}{literal}';
-    var absencesType = '{/literal}{$absencetypes}{literal}';
+    var uID = '{/literal}{$loginUserID}{literal}';
+    var absencesTypeID = cj('#activity_type_id').val();
     var upActivityId = '{/literal}{$upActivityId}{literal}';
-    var upfromDate = '{/literal}{$upfromDate}{literal}';
-    var uptoDate = '{/literal}{$uptoDate}{literal}';
+    var upfromDate = '{/literal}{$fromDate}{literal}';
+    var uptoDate = '{/literal}{$toDate}{literal}';
 
     cj(document).ready(function() {
       {/literal}{if $action eq 2}{literal}
@@ -165,10 +176,9 @@
 {/literal}{/if}{literal}
 {/literal}{if $action eq 1}{literal}
   cj("#tblabsence").hide();
+    var dateValues = [];
   cj("#_qf_EmployeeAbsenceRequestPage_submit-bottom").click(function(event){
     var params = cj.parseJSON('{"sequential": "1"}');
-    CRM.api('Activity', 'create', {'sequential': '1', 'activity_type_id': absencesType, 'source_contact_id': uID}, {success: function(data) {
-    params["entity_id"] = data.id;
     var end_date = cj('#end_date_display').val();
     var start_date = cj('#start_date_display').val();
     var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
@@ -176,17 +186,15 @@
         var selDate = cj('#label_'+x).text();
         var selectopt = cj('#options_'+x+' :selected').text();
         if(selectopt == "Full Day"){
-          CRM.api('Activity', 'create', {'sequential': 1, 'activity_type_id': 'Absence', 'source_contact_id': uID, 'activity_date_time': selDate, 'duration': 480, 'source_record_id': params.entity_id}, {success: function(data) { } });
+          dateValues[x] = selDate +":" + "480";
         }
         else {
           if(selectopt == "Half Day"){
-            CRM.api('Activity', 'create', {'sequential': 1, 'activity_type_id': 'Absence', 'source_contact_id': uID, 'activity_date_time': selDate, 'duration': 240, 'source_record_id': params.entity_id}, {success: function(data) { } } );
+          dateValues[x] = selDate +":" + "240";
           }
         }
       }
-    }});
-    alert("Your absences have been applied.");
-    event.preventDefault();
+    cj("#date_values").val(dateValues.join('|'));
   });
 {/literal}{/if}{literal}
 });
