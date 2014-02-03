@@ -268,8 +268,8 @@ function hrabsence_civicrm_searchColumns( $objectName, &$headers,  &$values, &$s
         $result = civicrm_api('HRAbsenceType', 'get', $params);
         $abesnceTypeId = $result['values'][0]['debit_activity_type_id'];  
         $actContactId = $val['contact_id'];
-        $urlPathView = CRM_Utils_System::url('civicrm/absences/set', "type={$abesnceTypeId}&activityid={$activityId}&action=view&context=search&reset=1");
-        $urlPathEdit = CRM_Utils_System::url('civicrm/absences/set', "type={$abesnceTypeId}&activityid={$activityId}&action=update&context=search&reset=1");
+        $urlPathView = CRM_Utils_System::url('civicrm/absences/set', "atype={$abesnceTypeId}&aid={$activityId}&action=view&context=search&reset=1");
+        $urlPathEdit = CRM_Utils_System::url('civicrm/absences/set', "atype={$abesnceTypeId}&aid={$activityId}&action=update&context=search&reset=1");
         $urlPathDelete = CRM_Utils_System::url('civicrm/activity', "atype={$abesnceTypeId}&id={$activityId}&cid={$actContactId}&action=delete&context=search&reset=1");
         $values[$key]['action'] = '<span><a href="'.$urlPathView.'" class = "action-item action-item-first" title="View Activity" >View</a><a href="'.$urlPathEdit.'" class = "action-item" title="Update Activity">Edit</a><a href="'.$urlPathDelete.'" class = "action-item" title="Delete Activity">Delete</a></span>';
       }
