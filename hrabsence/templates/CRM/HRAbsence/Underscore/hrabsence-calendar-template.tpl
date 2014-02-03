@@ -6,7 +6,7 @@
       <tr>
         <th>{/literal}{ts}Month{/ts}{literal}</th>
         <% for (var i = 1; i<= 31; i++) { %>
-        <th><%= i %></th>
+        <th><%= (i<10) ? '0'+i : i %></th>
         <% } %>
       </tr>
     </thead>
