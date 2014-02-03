@@ -55,7 +55,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       Backbone.history.navigate(path);
       HRAbsenceApp.trigger('navigate', {
         path: path,
-        event: 'hrabsence:'+apiAction
+        event: 'hrabsence:' + apiAction
       });
       API[apiAction]();
     });
@@ -74,15 +74,14 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       crmCriteriaModel: absenceCriteria,
       crmActions: {"get": "getabsences"}
     });
-    entitlementCriteria  = new HRAbsenceApp.Models.EntitlementCriteria({
+    entitlementCriteria = new HRAbsenceApp.Models.EntitlementCriteria({
       contact_id: CRM.absenceApp.contactId,
       options: {'absence-range': 1}
     });
     entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
-	crmCriteriaModel: entitlementCriteria
+      crmCriteriaModel: entitlementCriteria
     });
-    absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection([], {
-    });
+    absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection(CRM.absenceApp.absenceTypes);
   });
 
   HRAbsenceApp.on("initialize:after", function() {
@@ -101,6 +100,5 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
-    absenceTypeCollection.fetch({reset: true});
   });
 });
