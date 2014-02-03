@@ -175,7 +175,7 @@ CRM.fixtures.vacationEnt2013 = [
 ];
 
 // List of absence types
-CRM.fixtures.absneceType1 = [
+CRM.fixtures.absenceTypes = [
   {
     "id": "1",
     "name": "Vacation",

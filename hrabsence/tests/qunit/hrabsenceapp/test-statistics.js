@@ -8,7 +8,7 @@ test("With vacation and TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.Statistics.StatisticsView({
     collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'toilFeb2013'])),
     entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.vacationEnt2013),
-    absencetypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absneceType1)
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absenceTypes)
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -39,7 +39,7 @@ test("With TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.Statistics.StatisticsView({
     collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['toilFeb2013'])),
     entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.vacationEnt2013),
-    absencetypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absneceType1)
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absenceTypes)
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -62,9 +62,9 @@ test("With TOIL records in FY2012", function() {
 
 test("With vacation records in FY2012 + FY2013", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.Statistics.StatisticsView({
-      collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'vacationApr2013'])),
-      entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.vacationEnt2013),
-      absencetypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absneceType1)
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'vacationApr2013'])),
+    entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.vacationEnt2013),
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.absenceTypes)
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
