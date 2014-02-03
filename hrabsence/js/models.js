@@ -48,7 +48,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     createDateIndex: function() {
       var idx = {};
       this.each(function(activity) {
-        _.each(activity.get('absence_range').items, function(absenceItem){
+        _.each(activity.get('absence_range').items, function(absenceItem) {
           var date = CRM.HRAbsenceApp.moment(absenceItem.activity_date_time).format('YYYY-MM-DD');
           if (!idx[date]) {
             idx[date] = [];
@@ -97,13 +97,13 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
             approved: 0,
             balance: 0
           };
-        }      
+        }
         if (model.get('status_id') == 2) {
-            stats[statsKey].approved =  (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
+          stats[statsKey].approved = (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
         } else if (model.get('status_id') == 1) {
-	    var s1 = stats[statsKey].requested;
-	    var s2 = model.get('absence_range').duration;
-          stats[statsKey].requested =  (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
+          var s1 = stats[statsKey].requested;
+          var s2 = model.get('absence_range').duration;
+          stats[statsKey].requested = (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
         }
       });
       return stats;
@@ -113,7 +113,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
 
   Models.AbsenceType = Backbone.Model.extend({});
   CRM.Backbone.extendModel(Models.AbsenceType, 'HRAbsenceType');
-  Models.AbsenceTypeCollection = Backbone.Collection.extend({ 
+  Models.AbsenceTypeCollection = Backbone.Collection.extend({
     model: Models.AbsenceType,
     getAbsenceTypes: function() {
       var idx = {};
@@ -132,7 +132,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
 
   Models.Entitlement = Backbone.Model.extend({});
   CRM.Backbone.extendModel(Models.Entitlement, 'HRAbsenceEntitlement');
-  Models.EntitlementCollection = Backbone.Collection.extend({ 
+  Models.EntitlementCollection = Backbone.Collection.extend({
     model: Models.Entitlement,
 
     getEntitlements: function() {
