@@ -162,3 +162,38 @@ CRM.fixtures.toilFeb2013 = [
     }
   }
 ];
+
+// List of entitlements for type Vacation (dated Feb 2013)
+CRM.fixtures.vacationEnt2013 = [
+  {
+    "id": "1",
+    "contact_id": "202",
+    "period_id": "2",
+    "type_id": "1",
+    "amount": "6",
+  }
+];
+
+// List of absence types
+CRM.fixtures.absneceType1 = [
+  {
+    "id": "1",
+    "name": "Vacation",
+    "title": "Vacation",
+    "is_active": "1",
+    "allow_credits": "0",
+    "credit_activity_type_id": "0",
+    "allow_debits": "1",
+    "debit_activity_type_id": "10",
+  },
+  {
+    "id": "2",
+    "name": "TOIL",
+    "title": "TOIL",
+    "is_active": "1",
+    "allow_credits": "1",
+    "credit_activity_type_id": "12",
+    "allow_debits": "1",
+    "debit_activity_type_id": "11",
+  }
+];
