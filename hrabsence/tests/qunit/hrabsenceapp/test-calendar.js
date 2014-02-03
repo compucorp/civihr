@@ -27,7 +27,7 @@ test("Check Rows - Single Period", function() {
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  equal(cj('table.hrabsence-calendar tr').length, 1+12); // header + FY2013
+  equal(cj('table.hrabsence-calendar tr').length, 1 + 12); // header + FY2013
   assertLike(cj('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
   assertLike(cj('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
   assertLike(cj('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');
@@ -51,13 +51,13 @@ test("Check Rows - Single Period", function() {
 test("Check Rows - Two Periods", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.Calendar.CalendarView({
     criteria: new CRM.HRAbsenceApp.Models.AbsenceCriteria({
-      period_id: [2,3]
+      period_id: [2, 3]
     }),
     collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'toilFeb2013']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  equal(cj('table.hrabsence-calendar tr').length, 1+12+12); // header + FY2012 + FY2013
+  equal(cj('table.hrabsence-calendar tr').length, 1 + 12 + 12); // header + FY2012 + FY2013
   assertLike(cj('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
   assertLike(cj('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
   assertLike(cj('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');

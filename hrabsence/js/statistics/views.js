@@ -20,7 +20,7 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
     templateHelpers: function() {
       return {
         'entitlements': this.options.entitlementCollection.getEntitlements(),
-        'absencetype': this.options.absencetypeCollection.getAbsenceTypes(),
+        'absencetype': this.options.absenceTypeCollection.getAbsenceTypes(),
         'stats': this.options.collection.createStatistics(),
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,

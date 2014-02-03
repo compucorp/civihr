@@ -8,7 +8,7 @@ CRM.fixtures = CRM.fixtures || {};
  */
 CRM.fixtures.get = function(datasets) {
   var result = [];
-  _.each(datasets, function(name){
+  _.each(datasets, function(name) {
     result = result.concat(CRM.fixtures[name]);
   })
   return result;
@@ -175,7 +175,7 @@ CRM.fixtures.vacationEnt2013 = [
 ];
 
 // List of absence types
-CRM.fixtures.absneceType1 = [
+CRM.fixtures.absenceTypes = [
   {
     "id": "1",
     "name": "Vacation",

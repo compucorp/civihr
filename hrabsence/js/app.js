@@ -40,7 +40,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         criteria: absenceCriteria,
         collection: absenceCollection,
         entitlementCollection: entitlementCollection,
-        absencetypeCollection: absencetypeCollection
+        absenceTypeCollection: absenceTypeCollection
       }));
     }
   };
@@ -81,7 +81,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
 	crmCriteriaModel: entitlementCriteria
     });
-    absencetypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection([], {
+    absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection([], {
     });
   });
 
@@ -101,6 +101,6 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
-    absencetypeCollection.fetch({reset: true});
+    absenceTypeCollection.fetch({reset: true});
   });
 });
