@@ -244,3 +244,35 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
     $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absebceMenuItems;
   }
 }
+
+function hrabsence_civicrm_searchColumns( $objectName, &$headers,  &$values, &$selector ) {
+
+  if ( $objectName == 'activity' ) {
+    $paramsAbsenceType = array(
+      'version' => 3,
+      'sequential' => 1,
+    );    
+    $resultAbsenceType = civicrm_api('HRAbsenceType', 'get', $paramsAbsenceType);
+    $absebceType =  array();
+    foreach ($resultAbsenceType['values'] as $key => $val) {
+      $absebceType[$val['id']] = $val['title'];
+    }
+    foreach ($values as $key => $val) {      
+      if ( in_array($val['activity_type'], $absebceType)) {
+        $activityId = $values[$key]['activity_id'];
+        $params = array(
+          'version' => 3,
+          'sequential' => 1,
+          'title' => $val['activity_type'],
+        );
+        $result = civicrm_api('HRAbsenceType', 'get', $params);
+        $abesnceTypeId = $result['values'][0]['debit_activity_type_id'];  
+        $actContactId = $val['contact_id'];
+        $urlPathView = CRM_Utils_System::url('civicrm/absences/set', "atype={$abesnceTypeId}&aid={$activityId}&action=view&context=search&reset=1");
+        $urlPathEdit = CRM_Utils_System::url('civicrm/absences/set', "atype={$abesnceTypeId}&aid={$activityId}&action=update&context=search&reset=1");
+        $urlPathDelete = CRM_Utils_System::url('civicrm/activity', "atype={$abesnceTypeId}&id={$activityId}&cid={$actContactId}&action=delete&context=search&reset=1");
+        $values[$key]['action'] = '<span><a href="'.$urlPathView.'" class = "action-item action-item-first" title="View Activity" >View</a><a href="'.$urlPathEdit.'" class = "action-item" title="Update Activity">Edit</a><a href="'.$urlPathDelete.'" class = "action-item" title="Delete Activity">Delete</a></span>';
+      }
+    } 
+  }
+}
