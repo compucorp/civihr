@@ -205,6 +205,10 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   Models.EntitlementCollection = Backbone.Collection.extend({
     model: Models.Entitlement,
 
+    /**
+     * Get list of entitlement amounts (indexed by activity and period)
+     * @return {Object} e.g. result[activity_type_id][period_id] = amount
+     */
     getEntitlements: function() {
       var idx = {};
       this.each(function(model) {
@@ -212,10 +216,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         var actType = model.get('type_id');
         var pid = model.get('period_id');
         if (!idx[actType]) {
-          idx[actType] = [];
-        }
-        if (!idx[actType][pid]) {
-          idx[actType][pid] = [];
+          idx[actType] = {};
         }
         idx[actType][pid] = activity;
       });
