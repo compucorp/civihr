@@ -40,8 +40,8 @@
           <td class="hrabsence-cal-total">
             <% var stats = month_stats[month.format('YYYY-MM')]; %>
             <% if (stats) { %>
-              <% if (stats.creditTotal) { %><%= CRM.HRAbsenceApp.formatDuration(stats.creditTotal) %><br/><% } %>
-              <% if (stats.debitTotal) { %><%= CRM.HRAbsenceApp.formatDuration(-1 * stats.debitTotal) %><% } %>
+              <% if (stats.creditTotal) { %><div class="credit"><%= CRM.HRAbsenceApp.formatDuration(stats.creditTotal) %></div><% } %>
+              <% if (stats.debitTotal) { %><div class="debit"><%= CRM.HRAbsenceApp.formatDuration(-1 * stats.debitTotal) %></div><% } %>
             <% } %>
           </td>
         </tr>
