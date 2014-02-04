@@ -52,6 +52,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
       }
 
+      $legend = new CRM_HRAbsence_TypeLegend(9, $absenceTypes, $activityTypes);
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
@@ -62,7 +63,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
           'contactId' => $contactID,
           'activityTypes' => $activityTypes,
           'absenceTypes' => $absenceTypes,
-          'legend' => (new CRM_HRAbsence_TypeLegend(9, $absenceTypes, $activityTypes))->getMap(),
+          'legend' => $legend->getMap(),
           'periods' => $periods,
           'standardDay' => 8 * 60,
           'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',
