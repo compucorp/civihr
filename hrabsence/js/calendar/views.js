@@ -23,6 +23,7 @@ CRM.HRAbsenceApp.module('Calendar', function(Calendar, HRAbsenceApp, Backbone, M
         'collection': this.options.collection,
         'periods': CRM.absenceApp.periods,
         'activity_by_date': this.collection.createDateIndex(),
+        'month_stats': this.collection.createMonthStats(),
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})

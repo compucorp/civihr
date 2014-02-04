@@ -55,7 +55,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       Backbone.history.navigate(path);
       HRAbsenceApp.trigger('navigate', {
         path: path,
-        event: 'hrabsence:'+apiAction
+        event: 'hrabsence:' + apiAction
       });
       API[apiAction]();
     });
@@ -74,15 +74,17 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       crmCriteriaModel: absenceCriteria,
       crmActions: {"get": "getabsences"}
     });
-    entitlementCriteria  = new HRAbsenceApp.Models.EntitlementCriteria({
+    entitlementCriteria = new HRAbsenceApp.Models.EntitlementCriteria({
       contact_id: CRM.absenceApp.contactId,
       options: {'absence-range': 1}
     });
     entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
-	crmCriteriaModel: entitlementCriteria
+      crmCriteriaModel: entitlementCriteria
     });
-    absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection([], {
-    });
+
+    // NOTE: Generally don't like to put globalish variables in HRAbsenceApp, but this
+    // data doesn't really change much, and it makes AbsenceModel.isDebit() much cleaner.
+    absenceTypeCollection = HRAbsenceApp.absenceTypeCollection = new HRAbsenceApp.Models.AbsenceTypeCollection(_.values(CRM.absenceApp.absenceTypes));
   });
 
   HRAbsenceApp.on("initialize:after", function() {
@@ -101,6 +103,21 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
-    absenceTypeCollection.fetch({reset: true});
   });
+
+  /**
+   *
+   * @param string|int sec the number of seconds in the duration
+   * @return {String}
+   */
+  HRAbsenceApp.formatDuration = function(sec) {
+    sec = parseFloat(sec);
+    if (sec == 0) {
+      return ' 0.00';
+    } else if (sec < 0) {
+      return '' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+    } else {
+      return '+' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+    }
+  };
 });

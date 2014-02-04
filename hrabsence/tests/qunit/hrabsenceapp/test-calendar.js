@@ -38,6 +38,7 @@ test("Check Rows - Single Period", function() {
   assertLike(feb2013.find('[data-caldate=2013-02-15]').text(), 'Fr'); // date of actual absence
   assertLike(feb2013.find('[data-caldate=2013-02-16]').text(), 'Sa'); // date of actual absence
   assertLike(feb2013.find('[data-caldate=2013-02-17]').text(), ''); // irrelevant day
+  assertLike(feb2013.find('.hrabsence-cal-total').text(), '+0.50 -3.00');
 
   ok(feb2013.find('[data-caldate=2013-02-09]').hasClass('hrabsence-bg-empty')); // irrelevant day
   ok(feb2013.find('[data-caldate=2013-02-10]').hasClass('hrabsence-bg-empty')); // date a request was filed - don't care

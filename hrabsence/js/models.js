@@ -26,9 +26,9 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       return this._periodId;
     },
     getFormattedDuration: function() {
-      if (this.get('absence_range')) {
-        // FIXME: if activity_type_id is credit, +; if debit, -
-        return '+/- ' + (this.get('absence_range').duration / CRM.absenceApp.standardDay).toFixed(2);
+      if (this.get('absence_range') && CRM.HRAbsenceApp.absenceTypeCollection) {
+        var val = parseInt(this.get('absence_range').duration);
+        return CRM.HRAbsenceApp.formatDuration(val * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(this.get('activity_type_id')));
       } else {
         return '';
       }
@@ -57,6 +57,43 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         });
       });
       return idx;
+    },
+
+    /**
+     * Generate statistics about a month based on the listed absences
+     *
+     * @return Object keys are month-codes ("YYYY-MM"); each item is an object with properties:
+     *  - creditCount: the #credits
+     *  - creditTotal: the sum of credits in the month
+     *  - debitCount: the #debits
+     *  - debitTotal: the sum of debits in the month
+     */
+    createMonthStats: function() {
+      var stats = {};
+      this.each(function(activity) {
+        _.each(activity.get('absence_range').items, function(absenceItem){
+          var month = CRM.HRAbsenceApp.moment(absenceItem.activity_date_time).format('YYYY-MM');
+          if (!stats[month]) {
+            stats[month] = {
+              creditCount: 0,
+              creditTotal: 0,
+              debitCount: 0,
+              debitTotal: 0
+            };
+          }
+          var sign = CRM.HRAbsenceApp.absenceTypeCollection ? CRM.HRAbsenceApp.absenceTypeCollection.findDirection(activity.get('activity_type_id')) : 0;
+          if (sign == -1) {
+            stats[month].debitTotal = stats[month].debitTotal + parseInt(absenceItem.duration);
+            stats[month].debitCount++;
+          } else if (sign == 1) {
+            stats[month].creditTotal = stats[month].creditTotal + parseInt(absenceItem.duration);
+            stats[month].creditCount++;
+          } else {
+            if (console.log) console.log('Failed to determine direction', CRM.HRAbsenceApp.absenceTypeCollection, activity);
+          }
+        });
+      });
+      return stats;
     },
 
     /** @return array of type-ids (int) */
@@ -115,7 +152,40 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   CRM.Backbone.extendModel(Models.AbsenceType, 'HRAbsenceType');
   Models.AbsenceTypeCollection = Backbone.Collection.extend({
     model: Models.AbsenceType,
+
+    /**
+     * Determine if the activity type is a credit or debit
+     * @param activityTypeId
+     * @return int|null -1 (debit), +1 (credit)
+     */
+    findDirection: function(activityTypeId) {
+      var absType = this.findAbsenceType(activityTypeId);
+      if (absType) {
+        if (absType.get('allow_debits') == 1 && absType.get('debit_activity_type_id') == activityTypeId) {
+          return -1;
+        }
+        if (absType.get('allow_credits') == 1 && absType.get('credit_activity_type_id') == activityTypeId) {
+          return 1;
+        }
+      }
+      return null;
+    },
+    /**
+     * Find the absence-type which defines the given activity-type
+     *
+     * @param int activityTypeId
+     * @return AbsenceTypeModel|null
+     */
+    findAbsenceType: function(activityTypeId) {
+      var absTypes = this.getAbsenceTypes();
+      return absTypes[activityTypeId] ? this.get(absTypes[activityTypeId]) : null;
+    },
+    /**
+     *
+     * @return {Object} keys are activity-type-ids; values are absence-type id's
+     */
     getAbsenceTypes: function() {
+      // TODO cache
       var idx = {};
       this.each(function(model) {
         if (model.get('allow_debits') == 1) {
