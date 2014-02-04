@@ -14,7 +14,7 @@
     <tbody>
     <% _.each(stats, function(absence){ %>
         <tr class="hrabsence-list-item" data-statistics-id="<%- absence.period_id %>-<%- absence.activity_type_id %>">
-          <td class="hrabsence-statistics-period-desc"><%- FieldOptions.period_id[absence.period_id] %><% console.log(absence) %></td>
+          <td class="hrabsence-statistics-period-desc"><%- FieldOptions.period_id[absence.period_id] %></td>
           <td class="hrabsence-statistics-leave-type"><%- FieldOptions.activity_type_id[absence.activity_type_id] %></td>
           <% if(entitlements[absencetype[absence.activity_type_id]] && entitlements[absencetype[absence.activity_type_id]][absence.period_id]) {%>
             <td class="hrabsence-statistics-entitlement"><%- entitlements[absencetype[absence.activity_type_id]][absence.period_id] %></td>

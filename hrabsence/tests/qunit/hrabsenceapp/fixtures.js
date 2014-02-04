@@ -47,7 +47,7 @@ CRM.fixtures.vacationApr2013 = [
   {
     "id": "20130402000",
     "activity_type_id": "10",
-    "subject": "Vaction day!",
+    "subject": "Vacation day!",
     "activity_date_time": "2013-04-02 20:10:11",
     "duration": "0",
     "status_id": "2",
