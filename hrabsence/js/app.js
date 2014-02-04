@@ -24,9 +24,11 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
   var API = {
     showList: function() {
-      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.List.ListView({
+      HRAbsenceApp.contentRegion.show(CRM.av = new HRAbsenceApp.List.ListView({
         criteria: absenceCriteria,
-        collection: absenceCollection
+        collection: absenceCollection,
+        entitlementCollection: entitlementCollection,
+        absenceTypeCollection: absenceTypeCollection
       }));
     },
     showCalendar: function() {

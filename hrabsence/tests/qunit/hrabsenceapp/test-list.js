@@ -6,7 +6,9 @@ module('CRM.HRAbsenceApp.List.ListView', {
 
 test("With vacation and TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'toilFeb2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'toilFeb2013'])),
+    entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.get(['vacationEnt2013'])),
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.get(['absenceTypes']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -16,15 +18,25 @@ test("With vacation and TOIL records in FY2012", function() {
   equal($el.find('tr:first > :nth-child(5)').text(), 'TOIL (Credit)');
 
   // Both data sets are in Feb 2013 (which is FY 2012)
+
   equal($el.find('.hrabsence-list-period-header').length, 1);
   equal($el.find('.hrabsence-list-period-header[data-period-id=2]').length, 1);
+
   equal($el.find('.hrabsence-list-item').length, 4);
   equal($el.find('.hrabsence-list-item[data-period-id=2]').length, 4);
+
+  equal($el.find('.hrabsence-list-entitlement').length, 1);
+  equal($el.find('.hrabsence-list-entitlement[data-period-id=2]').length, 1);
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[2]).text(), '+6.00'); // Vacation
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[3]).text(), ''); // TOIL, no entitlements
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[4]).text(), ''); // TOIL credit, no entitlements
 });
 
 test("With TOIL records in FY2012", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['toilFeb2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['toilFeb2013'])),
+    entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.get(['vacationEnt2013'])),
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.get(['absenceTypes']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -33,15 +45,25 @@ test("With TOIL records in FY2012", function() {
   equal($el.find('tr:first > :nth-child(4)').text(), 'TOIL (Credit)');
 
   // Data from in Feb 2013 (which is FY 2012)
+
   equal($el.find('.hrabsence-list-period-header').length, 1);
   equal($el.find('.hrabsence-list-period-header[data-period-id=2]').length, 1);
+
   equal($el.find('.hrabsence-list-item').length, 3);
   equal($el.find('.hrabsence-list-item[data-period-id=2]').length, 3);
+
+  equal($el.find('.hrabsence-list-entitlement').length, 1);
+  equal($el.find('.hrabsence-list-entitlement[data-period-id=2]').length, 1);
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[3]).text(), ''); // TOIL, no entitlements
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[4]).text(), ''); // TOIL credit, no entitlements
+
 });
 
 test("With vacation records in FY2012 + FY2013", function() {
   CRM.HRAbsenceApp.contentRegion.show(new CRM.HRAbsenceApp.List.ListView({
-    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'vacationApr2013']))
+    collection: new CRM.HRAbsenceApp.Models.AbsenceCollection(CRM.fixtures.get(['vacationFeb2013', 'vacationApr2013'])),
+    entitlementCollection: new CRM.HRAbsenceApp.Models.EntitlementCollection(CRM.fixtures.get(['vacationEnt2013'])),
+    absenceTypeCollection: new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM.fixtures.get(['absenceTypes']))
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
@@ -52,6 +74,7 @@ test("With vacation records in FY2012 + FY2013", function() {
   equal($el.find('.hrabsence-list-period-header').length, 2);
   equal($el.find('.hrabsence-list-period-header[data-period-id=2]').length, 1);
   equal($el.find('.hrabsence-list-period-header[data-period-id=3]').length, 1);
+
   equal($el.find('.hrabsence-list-item').length, 3);
   equal($el.find('.hrabsence-list-item[data-period-id=2]').length, 1);
   assertLike(cj($el.find('.hrabsence-list-item[data-period-id=2]')[0]).find('.hrabsence-list-desc'), 'Vacation (Feb 15, 2013 - Feb 16, 2013)');
@@ -61,5 +84,15 @@ test("With vacation records in FY2012 + FY2013", function() {
   assertLike(cj($el.find('.hrabsence-list-item[data-period-id=3]')[0]).find('[data-duration-actid=10]'), '-1.00');
   assertLike(cj($el.find('.hrabsence-list-item[data-period-id=3]')[1]).find('.hrabsence-list-desc'), 'Vacation');
   assertLike(cj($el.find('.hrabsence-list-item[data-period-id=3]')[1]).find('[data-duration-actid=10]'), '0.00');
+
+  equal($el.find('.hrabsence-list-entitlement').length, 2);
+  equal($el.find('.hrabsence-list-entitlement[data-period-id=2]').length, 1);
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=2] > td')[2]).text(), '+6.00'); // Vacation FY2012
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=2] > td')[3]).text(), ''); // TOIL, no entitlements
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=2] > td')[4]).text(), ''); // TOIL credit, no entitlements
+  equal($el.find('.hrabsence-list-entitlement[data-period-id=3]').length, 1);
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=3] > td')[2]).text(), ''); // Vacation FY2013
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=3] > td')[3]).text(), ''); // TOIL, no entitlements
+  assertLike(cj($el.find('.hrabsence-list-entitlement[data-period-id=3] > td')[4]).text(), ''); // TOIL credit, no entitlements
 });
 

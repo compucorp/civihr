@@ -20,8 +20,10 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
     templateHelpers: function() {
       return {
         'active_activity_types': this.options.collection.findActiveActivityTypes(),
-        'collection': this.options.collection,
         'absences_by_period': this.options.collection.groupBy(function(m) {return m.getPeriodId();}),
+        'collection': this.options.collection,
+        'absenceTypeCollection': this.options.absenceTypeCollection,
+        'entitlementCollection': this.options.entitlementCollection,
         'periods': CRM.absenceApp.periods,
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,

@@ -172,8 +172,8 @@ CRM.fixtures.vacationEnt2013 = [
   {
     "id": "1",
     "contact_id": "202",
-    "period_id": "2",
-    "type_id": "1",
+    "period_id": "2", // FY2012
+    "type_id": "1", // Vacation
     "amount": "6"
   }
 ];

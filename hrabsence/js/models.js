@@ -154,6 +154,17 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     model: Models.AbsenceType,
 
     /**
+     * Find the absence-type based on its debit_activity_type_id
+     *
+     * @param int actId
+     * @return AbsenceType|null
+     */
+    findByDebitTypeId: function(actId) {
+      return this.find(function(absenceType){
+        return absenceType.get('debit_activity_type_id') == actId;
+      });
+    },
+    /**
      * Determine if the activity type is a credit or debit
      * @param activityTypeId
      * @return int|null -1 (debit), +1 (credit)
@@ -200,25 +211,42 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   });
   CRM.Backbone.extendCollection(Models.AbsenceTypeCollection);
 
-  Models.Entitlement = Backbone.Model.extend({});
+  Models.Entitlement = Backbone.Model.extend({
+    getFormattedAmount: function() {
+      return this.get('amount') ? ('+' + parseFloat(this.get('amount')).toFixed(2)) : '';
+    }
+  });
   CRM.Backbone.extendModel(Models.Entitlement, 'HRAbsenceEntitlement');
   Models.EntitlementCollection = Backbone.Collection.extend({
     model: Models.Entitlement,
 
     /**
-     * Get list of entitlement amounts (indexed by activity and period)
-     * @return {Object} e.g. result[activity_type_id][period_id] = amount
+     *
+     * @param int|Model absenceType
+     * @param int|Model period
+     * @return Entitlement|undefined
+     */
+    findByTypeAndPeriod: function(absenceType, period) {
+      if (!absenceType) return undefined;
+      var absTypeId = (_.isObject(absenceType)) ? absenceType.get('id') : absenceType;
+      var periodId = (_.isObject(period)) ? period.get('id') : period;
+      return this.find(function(entitlement){
+        return entitlement.get('type_id') == absTypeId && entitlement.get('period_id') == periodId;
+      });
+    },
+    /**
+     * Get list of entitlement amounts (indexed by absence-type and period)
+     * @return {Object} e.g. result[absence_type_id][period_id] = amount
      */
     getEntitlements: function() {
       var idx = {};
       this.each(function(model) {
-        var activity = model.get('amount');
-        var actType = model.get('type_id');
+        var absTypeId = model.get('type_id');
         var pid = model.get('period_id');
-        if (!idx[actType]) {
-          idx[actType] = {};
+        if (!idx[absTypeId]) {
+          idx[absTypeId] = {};
         }
-        idx[actType][pid] = activity;
+        idx[absTypeId][pid] = model.get('amount');
       });
       return idx;
     }
