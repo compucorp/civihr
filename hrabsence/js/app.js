@@ -117,6 +117,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
   };
 
   HRAbsenceApp.formatFloat = function(float) {
+    if (_.isString(float)) float = parseFloat(float);
     if (float == 0) {
       return ' 0.00';
     } else if (float < 0) {
