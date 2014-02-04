@@ -36,8 +36,8 @@
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
-      <td>Absense Type </td> 
-      <td colspan="2">{$selectedAbsenceType}</td>
+      <td>Absence Type</td> 
+      <td colspan="2">{$absenceType}</td>
     </tr>
       <tr class="crm-event-manage-eventinfo-form-block-start_date">
         <td class="label">Dates</td>
