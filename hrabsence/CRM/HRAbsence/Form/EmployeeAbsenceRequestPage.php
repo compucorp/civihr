@@ -221,7 +221,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         'version' => 3,
         'sequential' => 1,
         'source_record_id' => $result['id'],
-        'activity_type_id' => $this->_activityTypeID,
+        'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
       );
 
       if ($this->_action & (CRM_Core_Action::ADD)) {

@@ -219,7 +219,6 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           'activity_date_time' =>
           array(
             'title' => ts('Absence Requested Date'),
-            'default' => 'this.month',
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
           'absence_duration' =>
@@ -673,7 +672,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
     }
 
     if (!empty($rows)) {
-      $activityTypeIDs = '(' . implode(',',$this->_params['activity_type_id_value']) . ')';
+      $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
       list($durationFromDate, $durationToDate) = $this->getFromTo(
         CRM_Utils_Array::value("absence_duration_relative", $this->_params),
         CRM_Utils_Array::value("absence_duration_from", $this->_params),
@@ -687,7 +686,7 @@ Min(activity_date_time) AS start_date,
 Max(activity_date_time) AS end_date
 FROM civicrm_activity
 WHERE source_record_id IS NOT NULL AND
-activity_type_id IN {$activityTypeIDs}
+activity_type_id = {$activityTypeID}
 GROUP BY source_record_id";
 
       if ($durationFromDate && $durationToDate) {
