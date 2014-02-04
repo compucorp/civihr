@@ -523,7 +523,7 @@ class GenerateHRData {
       $org->addressee_display = $org->display_name;
       $org->hash = crc32($org->sort_name);
       $this->_update($org);
-      
+
       //if Absence (CiviHR) extension is enabled, add the sample data
       $this->addAbsencePeriods();
     }
@@ -705,7 +705,7 @@ class GenerateHRData {
         'period_end_date' => $this->randomDate(strtotime('2013-01-01'), strtotime('2015-12-31')),
         'notice_amount' => $this->randomItem('notice_amount'),
         'notice_unit' => $this->randomItem('notice_unit'),
-        'location'   => $this->randomItem('location'),
+        'location' => $this->randomItem('location'),
         'department' => $this->randomItem('department'),
         'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
         'funding_org_id' => $this->randomIndex(array_flip($this->Organization)),
@@ -723,11 +723,11 @@ class GenerateHRData {
         //sample data for HRJob Health table
         $healthValues = array(
           'job_id' => $hrJobObj->id,
-          'provider' =>  null,
+          'provider' => NULL,
           'plan_type' => $this->randomItem('plan_type'),
           'description' => $this->randomItem('description'),
           'dependents' => $this->randomItem('dependents'),
-          'provider_life_insurance' => null,
+          'provider_life_insurance' => NULL,
           'plan_type_life_insurance' => $this->randomItem('plan_type_life_insurance'),
           'description_life_insurance' => $this->randomItem('description_life_insurance'),
           'dependents_life_insurance' => $this->randomItem('dependents_life_insurance'),
@@ -972,10 +972,10 @@ class GenerateHRData {
     $query = "INSERT INTO {$tableName} (`entity_id`,`{$columns}`) VALUES ('{$columnValues}')";
     $dao = CRM_Core_DAO::executeQuery($query);
   }
-  
+
   /**
-  * This is a method to create absence periods
-  */
+   * This is a method to create absence periods
+   */
   private function addAbsencePeriods() {
     // Create a set of absence periods
     $periods = array();
@@ -1011,10 +1011,10 @@ class GenerateHRData {
       civicrm_api3('HRAbsencePeriod', 'create', $absencePeriod);
     }
   }
-  
+
   /**
    * This is a method to create absence entitlements
-  */
+   */
   private function addAbsenceEntitlements($cid) {
 
     //create period combinations
@@ -1045,16 +1045,16 @@ class GenerateHRData {
       }
     }
   }
-  
+
   /*
    * 
    */
-  private function addAbsenceRequests($cid){
-      
+  private function addAbsenceRequests($cid) {
+
     $activityTypes = civicrm_api3('ActivityType', 'get', array());
-    
+
     $parentActivities = array('Vacation', 'Sick');
-    
+
     $absenceRequest = civicrm_api3('Activity', 'create', array(
       'activity_type_id' => array_search($parentActivities[array_rand($parentActivities)], $activityTypes['values']),
       'source_contact_id' => $cid, // logged in user
@@ -1064,17 +1064,21 @@ class GenerateHRData {
     ));
 
     $start_date = "2014-01-5";
-    
+
     $duration = array(
-      8*60, //full day
-      4*60, // half day
-      0*60, // blank
+      // 50% full; 33% half; 17% blank
+      8 * 60, // full day
+      8 * 60, // full day
+      8 * 60, // full day
+      4 * 60, // half day
+      4 * 60, // half day
+      0 * 60, // blank
     );
 
     // create array of absences to be added
-    for($i = 0; $i <= mt_rand(1, 3); $i++){
+    for ($i = 0; $i <= mt_rand(1, 3); $i++) {
       $absenceValues[] = array(
-        'activity_date_time' => date("Y-m-d h:i:s", strtotime("+".$i."day", strtotime($start_date))),
+        'activity_date_time' => date("Y-m-d h:i:s", strtotime("+" . $i . "day", strtotime($start_date))),
         'duration' => $duration[array_rand($duration)],
         'source_contact_id' => $cid,
       );
