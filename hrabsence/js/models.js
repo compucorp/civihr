@@ -40,6 +40,21 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     model: Models.Absence,
 
     /**
+     * Calculate a subtotal of all durations
+     * @param filter
+     * @return {Float} add up the
+     */
+    calculateSubtotal: function(filter)  {
+      var duration = 0;
+      this.each(function(absence){
+        if (filter(absence)) {
+          duration = duration + parseFloat(absence.getFormattedDuration());
+        }
+      });
+      return duration;
+    },
+
+    /**
      * Create a listing of absennce-requests, sorted by the actual dates on which
      * the absence was claimed. Note that a given absence may appear multiple times.
      *
