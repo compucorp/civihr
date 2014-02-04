@@ -124,3 +124,6 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 
 .hrabsence-bg-8-debit { background: #888800; }
 .hrabsence-bg-8-credit { background: #444400; }
+
+.hrabsence-cal-total .credit { color: #0a0; }
+.hrabsence-cal-total .debit { color: #a00; }

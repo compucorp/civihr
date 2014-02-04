@@ -20,7 +20,14 @@
         <td>{/literal}{ts}Entitlement{/ts}{literal}</td>
         <td></td>
         <% _.each(active_activity_types, function(actId) { %>
-        <td>FIXME</td>
+        <td>
+          <%
+            var entitlement = entitlementCollection.findByTypeAndPeriod(
+              absenceTypeCollection.findByDebitTypeId(actId),
+              period_id);
+            if (entitlement) { %><%- entitlement.getFormattedAmount() %><% }
+          %>
+        </td>
         <% }); %>
       </tr>
 
@@ -49,7 +56,18 @@
       <td>{/literal}{ts}Balance{/ts}{literal}</td>
         <td></td>
         <% _.each(active_activity_types, function(actId) { %>
-        <td>FIXME</td>
+        <td>
+          <%
+          var balance = collection.calculateSubtotal(function(absence){
+            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id;
+          });
+          var entitlement = entitlementCollection.findByTypeAndPeriod(
+            absenceTypeCollection.findByDebitTypeId(actId),
+            period_id);
+          if (entitlement) balance = balance + parseFloat(entitlement.getFormattedAmount());
+          %>
+          <%- CRM.HRAbsenceApp.formatFloat(balance) %>
+        </td>
         <% }); %>
       </tr>
 

@@ -24,9 +24,11 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
   var API = {
     showList: function() {
-      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.List.ListView({
+      HRAbsenceApp.contentRegion.show(CRM.av = new HRAbsenceApp.List.ListView({
         criteria: absenceCriteria,
-        collection: absenceCollection
+        collection: absenceCollection,
+        entitlementCollection: entitlementCollection,
+        absenceTypeCollection: absenceTypeCollection
       }));
     },
     showCalendar: function() {
@@ -111,13 +113,18 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
    * @return {String}
    */
   HRAbsenceApp.formatDuration = function(sec) {
-    sec = parseFloat(sec);
-    if (sec == 0) {
+    return HRAbsenceApp.formatFloat(parseFloat(sec) / CRM.absenceApp.standardDay);
+  };
+
+  HRAbsenceApp.formatFloat = function(float) {
+    if (_.isString(float)) float = parseFloat(float);
+    if (float == 0) {
       return ' 0.00';
-    } else if (sec < 0) {
-      return '' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+    } else if (float < 0) {
+      return '' + float.toFixed(2);
     } else {
-      return '+' + (sec / CRM.absenceApp.standardDay).toFixed(2);
+      return '+' + float.toFixed(2);
     }
   };
+
 });
