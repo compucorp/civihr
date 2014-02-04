@@ -15,6 +15,7 @@ CRM.fixtures.get = function(datasets) {
 }
 
 // List of activity records of type Vacation (dated Feb 2013)
+// STAT: Vacation Debit (#10): duration=-1.5 day, requests=1, dates=2
 CRM.fixtures.vacationFeb2013 = [
   {
     "id": "201302000",
@@ -43,6 +44,7 @@ CRM.fixtures.vacationFeb2013 = [
 ];
 
 // List of activity records of type Vacation (dated Apr 2013)
+// STAT: Vacation Debit (#10): duration=-1.0 day, requests=2, dates=1
 CRM.fixtures.vacationApr2013 = [
   {
     "id": "20130402000",
@@ -91,6 +93,8 @@ CRM.fixtures.vacationApr2013 = [
 ];
 
 // List of activity records of type TOIL (dated Feb 2013)
+// STAT: TOIL Debit (#11): duration=-1.5, requests=2, dates=2
+// STAT: TOIL Credit (#12): duration=0.5, requests=1, dates=1
 CRM.fixtures.toilFeb2013 = [
   {
     "id": "625",
@@ -170,7 +174,7 @@ CRM.fixtures.vacationEnt2013 = [
     "contact_id": "202",
     "period_id": "2",
     "type_id": "1",
-    "amount": "6",
+    "amount": "6"
   }
 ];
 
@@ -184,7 +188,7 @@ CRM.fixtures.absenceTypes = [
     "allow_credits": "0",
     "credit_activity_type_id": "0",
     "allow_debits": "1",
-    "debit_activity_type_id": "10",
+    "debit_activity_type_id": "10"
   },
   {
     "id": "2",
@@ -194,6 +198,6 @@ CRM.fixtures.absenceTypes = [
     "allow_credits": "1",
     "credit_activity_type_id": "12",
     "allow_debits": "1",
-    "debit_activity_type_id": "11",
+    "debit_activity_type_id": "11"
   }
 ];
