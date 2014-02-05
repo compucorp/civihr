@@ -26,7 +26,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $params = array(
         'weight' => $weight,
         'label' => 'Public Holiday',
-        'filter' => 0,
+        'filter' => 1,
         'is_active' => 1,
         'is_optgroup' => 0,
         'is_default' => 0,
@@ -40,7 +40,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $params = array(
         'weight' => $weight,
         'label' => 'Absence',
-        'filter' => 0,
+        'filter' => 1,
         'is_active' => 1,
         'is_optgroup' => 0,
         'is_default' => 0,
