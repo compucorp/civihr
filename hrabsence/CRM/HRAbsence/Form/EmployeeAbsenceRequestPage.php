@@ -57,7 +57,9 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       'is_primary' => 1,
     );
     $resultHRJob = civicrm_api('HRJob', 'get', $paramsHRJob);
-    $this->assign('emp_position', $resultHRJob['values'][0]['position']);
+    if (!empty($resultHRJob['values'])) {
+      $this->assign('emp_position', $resultHRJob['values'][0]['position']);
+    }
     $this->assign('emp_name', CRM_Contact_BAO_Contact::displayName($this->_targetContactID));
 
    if ($this->_action & CRM_Core_Action::VIEW) {
@@ -68,24 +70,27 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         'option_sort'=>"activity_date_time ASC",
       );
       $resultAbsences = civicrm_api('Activity', 'get', $paramsAbsences);
-
+      $countDays =0; 
       $absenceDateDuration = array();
       foreach ($resultAbsences['values'] as $key => $val) {
         $convertedDate = date("M d, Y", strtotime($val['activity_date_time']));
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
+          $countDays=$countDays+1;
         } else {
           $converteddays = "Half Day";
+          $countDays=$countDays+0.5;
         }
         $absenceDateDuration[$convertedDate]=$converteddays;
       }
       $keys = array_keys($absenceDateDuration);
       $count = count($keys) - 1;
-      $this->assign('fromDate', date("m/d/Y", strtotime($keys[0])));
-      $this->assign('toDate', date("m/d/Y", strtotime($keys[$count])));
+      $this->assign('fromDate', date("M j, Y", strtotime($keys[0])));
+      $this->assign('toDate', date("M j, Y", strtotime($keys[$count])));
       $this->assign('absenceDateDuration', $absenceDateDuration);
-      $this->_fromDate = date("m/d/Y", strtotime($keys[0]));
-      $this->_toDate = date("m/d/Y", strtotime($keys[$count]));
+      $this->_fromDate = date("M j, Y", strtotime($keys[0]));
+      $this->_toDate = date("M j, Y", strtotime($keys[$count]));
+      $this->assign('totalDays',$countDays);
    }
 
    if ($this->_action && (CRM_Core_Action::ADD || CRM_Core_Action::UPDATE)) {
@@ -95,12 +100,14 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
      }
 
      $this->assign('loginUserID', $this->_loginUserID);
-     $this->_managerContactID = $resultHRJob['values'][0]['manager_contact_id'];
+     if (!empty($resultHRJob['values'])) {
+       $this->_managerContactID = $resultHRJob['values'][0]['manager_contact_id'];
+     }
      $this->add('hidden', 'date_values', '', array('id' => 'date_values'));
    }
    $this->addDate('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDate'));
    $this->addDate('end_date', ts('End Date / Time'), FALSE, array('formatType' => 'activityDate'));
-    if ($this->_action && (CRM_Core_Action::UPDATE || CRM_Core_Action::ADD) ) {
+   if ($this->_action && ($this->_action == CRM_Core_Action::ADD || $this->_action == CRM_Core_Action::UPDATE) ) {
       $this->addButtons(
         array(
           array(
@@ -116,21 +123,28 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         )
       );
     }
-    else {
-      $this->addButtons(
-        array(
-          array(
-            'type' => 'cancel',
-            'name' => ts('Cancel'),
-            ),
-          )
-        );
-    }
-  }
+   else {
+     $now = time(); 
+     $fromDate = date("Y-m-d", strtotime($keys[0]));
+     $from_date = strtotime($fromDate);
+     $datediff = $from_date - $now ;
+     $dayDiff = floor($datediff/(60*60*24));
+     if ($dayDiff>0) {
+       $this->addButtons(
+         array(
+           array(
+             'type' => 'cancel',
+             'name' => ts('Cancel Absence Request'),
+           ),
+         )
+       );
+     }
+   }
+ }
 
   function preProcess() {
+    CRM_Utils_System::setTitle( ts('Absence Request: View') );
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
-
     $session = CRM_Core_Session::singleton();
     $this->_loginUserID = $session->get('userID');
 
@@ -150,6 +164,8 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
       $this->_loginUserID = $resultAct['values'][0]['source_contact_id'][0];
+      $groupTree = CRM_Core_BAO_CustomGroup::getTree('Activity', $this, $this->_activityId, 0, $this->_activityTypeID);
+      CRM_Core_BAO_CustomGroup::buildCustomDataView($this, $groupTree);     
     }
     elseif ( $this->_action == 1) {
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
@@ -173,6 +189,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         $this->_targetContactID = $this->_loginUserID;
       }
     }
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css');
     parent::preProcess();
   }
 

@@ -26,45 +26,50 @@
 {* Search form and results for Event Participants *}
 <div class="crm-block crm-content-block">
 {assign var='loggedinuserid' value=$loginuserid}
-  <table class="" style="width: auto; border: medium none ! important;">
+  <table class="absencedetail" style="width: auto; border: medium none ! important;">
     <tr>
-      <td>Employee </td> 
+      <td>Employee: </td> 
       <td colspan="2">{$emp_name}</td>
     </tr>
     <tr>
-      <td>Position </td> 
+      <td>Position: </td> 
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
-      <td>Absence Type</td> 
+      <td>Absence Type: </td> 
       <td colspan="2">{$absenceType}</td>
     </tr>
       <tr class="crm-event-manage-eventinfo-form-block-start_date">
-        <td class="label">Dates</td>
-        <td>{$fromDate}</td>
-        <td>{$toDate}</td>
+        <td class="label">Dates: </td>
+        <td>{$fromDate} - {$toDate}</td>
       </tr>
   </table>
 
 {* <table id="tblabsence" class="report"><tbody><tr><td>Date</td><td>Absence</td></tr></tbody></table> *}
 
-  <table id="tblabsence" class="report">
+  <table id="tblabsence" >
     <tbody>
       <tr>
         <td>Date</td>
 	<td>Absence</td>
       </tr>
       {foreach from=$absenceDateDuration item=val key=key}
-      <tr>
+      <tr class="{cycle values="odd-row,even-row"} {$row.class}" >
         <td>{$key}</td>
 	<td>{$val}</td>
       </tr>
       {/foreach}
+      <tr>
+	<td>Total</td>
+	<td>{$totalDays} days</td>
+      </tr>
     </tbody>
   </table>
 </div>
 
+
+{include file="CRM/Custom/Page/CustomDataView.tpl"} 
+
 <div class="crm-submit-buttons">
   {include file="CRM/common/formButtons.tpl" location="bottom"}
 </div>
-
