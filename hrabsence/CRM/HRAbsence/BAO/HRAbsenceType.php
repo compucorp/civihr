@@ -51,7 +51,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
         $paramsCreate = array(
           'weight' => $weight,
           'label' => $debitActivityLabel,
-          'filter' => 0,
+          'filter' => 1,
           'is_active' => 1,
           'is_optgroup' => 0,
           'is_default' => 0,
@@ -71,7 +71,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
         $paramsCreate = array(
           'weight' => $weight,
           'label' => $creditActivityLabel,
-          'filter' => 0,
+          'filter' => 1,
           'is_active' => 1,
           'is_optgroup' => 0,
           'is_default' => 0,
