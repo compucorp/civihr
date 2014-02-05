@@ -216,19 +216,19 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
     'sequential' => 1,
   );
   $resultAbsenceType = civicrm_api('HRAbsenceType', 'get', $paramsAbsenceType);
-  $absebceType = $values = array();
+  $absenceType = $values = array();
   foreach ($resultAbsenceType['values'] as $key => $val) {
-    $absebceType[$val['id']] = $val['title']; 
+    $absenceType[$val['id']] = $val['title']; 
   } 
 
-  if (!empty($absebceType)) {
+  if (!empty($absenceType)) {
     $maxKey_child = $maxKey+7;
-    foreach ($absebceType as $aTypeId => $absebceTypeName) {
+    foreach ($absenceType as $aTypeId => $absenceTypeName) {
       $maxKey_child = $maxKey_child + 1;
-      $absebceMenuItems[$maxKey_child] = array(
+      $absenceMenuItems[$maxKey_child] = array(
         'attributes' => array(
-          'label'      => "{$absebceTypeName}",
-          'name'       => "{$absebceTypeName}",
+          'label'      => "{$absenceTypeName}",
+          'name'       => "{$absenceTypeName}",
           'url'        => "civicrm/absences/set?type={$aTypeId}&action=add",
           'permission' => 'access HRAbsences',
           'operator'   => NULL,
@@ -240,7 +240,36 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
       );
     }
   }
-  if (!empty($absebceMenuItems)) {
-    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absebceMenuItems;
+  if (!empty($absenceMenuItems)) {
+    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absenceMenuItems;
   }
+}
+
+function hrabsence_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Activity_Form_Activity') {
+    $activityTypeId = $form->_activityTypeId;
+    $activityId = $form->_activityId;
+    $currentlyViewedContactId = $form->_currentlyViewedContactId;
+    $paramsAbsenceType = array(
+      'version' => 3,
+      'sequential' => 1,
+    );
+    $resultAbsenceType = civicrm_api('HRAbsenceType', 'get', $paramsAbsenceType);
+    $absenceType =  array();
+    foreach ($resultAbsenceType['values'] as $key => $val) {
+      $absenceType[$val['id']] = $val['debit_activity_type_id'];
+    }
+
+    if ( in_array($activityTypeId, $absenceType)) {
+      if ($form->_action == CRM_Core_Action::VIEW) {
+        $urlPathView = CRM_Utils_System::url('civicrm/absences/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=view&context=search&reset=1");
+        CRM_Utils_System::redirect($urlPathView);
+      }
+
+      if ($form->_action == CRM_Core_Action::UPDATE) {
+        $urlPathEdit = CRM_Utils_System::url('civicrm/absences/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=update&context=search&reset=1");
+        CRM_Utils_System::redirect($urlPathEdit);
+      }
+    }    
+  } 
 }
