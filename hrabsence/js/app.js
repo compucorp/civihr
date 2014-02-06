@@ -18,7 +18,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     appRoutes: {
       "hrabsence/list": "showList",
       "hrabsence/calendar": "showCalendar",
-      "hrabsence/statistics": "showStatistics"
+      "hrabsence/statistics": "showStatistics",
+      "hrabsence/entitlements": "showEntitlements"
     }
   });
 
@@ -44,6 +45,14 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         entitlementCollection: entitlementCollection,
         absenceTypeCollection: absenceTypeCollection
       }));
+    },
+    showEntitlements: function() {
+      HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Entitlements.EntitlementsView({
+        criteria: absenceCriteria,
+        collection: absenceCollection,
+        entitlementCollection: entitlementCollection,
+        absenceTypeCollection: absenceTypeCollection
+      }));
     }
   };
 
@@ -51,7 +60,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
   _.each({
     '/hrabsence/list': 'showList',
     '/hrabsence/calendar': 'showCalendar',
-    '/hrabsence/statistics': 'showStatistics'
+    '/hrabsence/statistics': 'showStatistics',
+    '/hrabsence/entitlements': 'showEntitlements'
   }, function(apiAction, path) {
     HRAbsenceApp.on("hrabsence:" + apiAction, function() {
       Backbone.history.navigate(path);

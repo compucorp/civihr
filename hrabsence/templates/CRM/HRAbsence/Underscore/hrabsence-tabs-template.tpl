@@ -7,6 +7,9 @@
     <li data-highlight-on="hrabsence/calendar">
       <a class="hrabsence-nav" data-hrabsence-event="hrabsence:showCalendar">Calendar</a>
     </li>
+    <li data-highlight-on="hrabsence/entitlements">
+      <a class="hrabsence-nav" data-hrabsence-event="hrabsence:showEntitlements">Entitlements</a>
+    </li>
     <li data-highlight-on="hrabsence/statistics">
       <a class="hrabsence-nav" data-hrabsence-event="hrabsence:showStatistics">Statistics</a>
     </li>
