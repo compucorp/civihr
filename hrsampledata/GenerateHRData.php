@@ -981,28 +981,28 @@ class GenerateHRData {
     $periods = array();
     $periods[] = array(
       'name' => 'FY2013',
-      'title' => 'Fiscal Year 2013',
+      'title' => 'FY2013 (Apr 2013 - Mar 2014)',
       'start_date' => '2013-04-01 00:00:00',
       'end_date' => '2014-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2014',
-      'title' => 'Fiscal Year 2014',
+      'title' => 'FY2014 (Apr 2014 - Mar 2015)',
       'start_date' => '2014-04-01 00:00:00',
       'end_date' => '2015-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2015',
-      'title' => 'Fiscal Year 2015',
+      'title' => 'FY2015 (Apr 2015 - Mar 2016)',
       'start_date' => '2015-04-01 00:00:00',
       'end_date' => '2016-03-31 23:59:59',
     );
 
     $periods[] = array(
       'name' => 'FY2016',
-      'title' => 'Fiscal Year 2016',
+      'title' => 'FY2016 (Apr 2016 - Mar 2017)',
       'start_date' => '2016-04-01 00:00:00',
       'end_date' => '2017-03-31 23:59:59',
     );
