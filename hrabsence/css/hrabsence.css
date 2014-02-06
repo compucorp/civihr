@@ -6,6 +6,7 @@
     width: 32%;
     background: #CDE8FE;
     padding: 0.8em;
+    min-height: 3em;
 }
 
 .hrabsence-filter-region {
@@ -13,24 +14,48 @@
     background: #CDE8FE;
     padding: 0.8em;
     float: right;
+    min-height: 3em;
 }
 
 .hrabsence-tabs-region {
     width: 15%;
-    padding: 0.8em;
-    margin: 1em;
+    padding: 0.8em 0.8em 0.8em 0;
+    margin: 1em 1em 1em 0;
 }
 
 .hrabsence-tabs-region .highlight {
     font-weight: bold;
+    background-color: #FFFFFF;
+}
+
+.hrabsence-tabs-region ul {
+    list-style: none !important;
+    margin-top: 3.2em !important;
+}
+
+.hrabsence-tabs-region ul li{
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 0.8em;
+    margin-bottom: 0.4em;
+    background-color: #CCCCCC;
+}
+
+.hrabsence-tabs-region ul li a{
+    cursor: pointer;
+    text-decoration: none;
+    color: #1B1B1B;
 }
 
 .hrabsence-content-region {
-    width: 83%;
+    width: 85%;
+    min-height: 15em;
     border: 1px solid black;
-    padding: 0.8em;
-    margin: 1em;
+    padding: 0.8em 0 0.8em 0;
+    margin-top: 1em;
     float: right;
+    z-index: 1;
+    background-color: #FFFFFF;
 }
 
 .hrabsence-list-entitlement, .hrabsence-list-balance {
