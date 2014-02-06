@@ -171,7 +171,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
         'attributes' => array (
           'label'      => 'New Absence',
           'name'       => 'newAbsence',
-          'url'        => 'civicrm/report/list?grp=Absence&reset=1',
+          'url'        => null,
           'permission' => 'access HRAbsences',
           'operator'   => null,
           'separator'  => 1,
@@ -184,7 +184,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
         'attributes' => array (
           'label'      => 'Absence Report',
           'name'       => 'absenceReport',
-          'url'        => null,
+          'url'        => 'civicrm/report/list?grp=Absence&reset=1',
           'permission' => 'access HRAbsences',
           'operator'   => null,
           'separator'  => 1,
