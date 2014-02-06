@@ -20,8 +20,9 @@ CRM.fixtures.vacationFeb2013 = [
   {
     "id": "201302000",
     "activity_type_id": "10",
-    "subject": "Vaction day!",
-    "activity_date_time": "2013-02-10 20:10:11",
+    "subject": "Vacation day!",
+    // the date on which the request was recorded should be irrelevant
+    "activity_date_time": "2017-08-10 20:10:11",
     "duration": "0",
     "status_id": "2",
     "priority_id": "2",
@@ -50,7 +51,8 @@ CRM.fixtures.vacationApr2013 = [
     "id": "20130402000",
     "activity_type_id": "10",
     "subject": "Vacation day!",
-    "activity_date_time": "2013-04-02 20:10:11",
+    // the date on which the request was recorded should be irrelevant
+    "activity_date_time": "2018-04-02 20:10:11",
     "duration": "0",
     "status_id": "2",
     "priority_id": "2",
@@ -72,7 +74,8 @@ CRM.fixtures.vacationApr2013 = [
   {
     "id": "20130425000",
     "activity_type_id": "10",
-    "subject": "Vaction day!",
+    "subject": "Vacation day!",
+    // incomplete request (no start/end date), so file based on request date
     "activity_date_time": "2013-04-25 20:10:11",
     "duration": "480",
     "status_id": "2",
@@ -100,7 +103,8 @@ CRM.fixtures.toilFeb2013 = [
     "id": "625",
     "activity_type_id": "11",
     "subject": "Hello TOIL",
-    "activity_date_time": "2013-02-13 20:10:11",
+    // the date on which the request was recorded should be irrelevant
+    "activity_date_time": "2019-02-13 20:10:11",
     "duration": "0",
     "status_id": "2",
     "priority_id": "2",
@@ -123,7 +127,8 @@ CRM.fixtures.toilFeb2013 = [
     "id": "629",
     "activity_type_id": "11",
     "subject": "Working the over-time",
-    "activity_date_time": "2013-02-14 20:10:11",
+    // the date on which the request was recorded should be irrelevant
+    "activity_date_time": "2009-02-14 20:10:11",
     "duration": "0",
     "status_id": "2",
     "priority_id": "2",
@@ -146,7 +151,8 @@ CRM.fixtures.toilFeb2013 = [
     "id": "630",
     "activity_type_id": "12",
     "subject": "Taking it easy after working the over-time",
-    "activity_date_time": "2013-02-15 20:10:11",
+    // the date on which the request was recorded should be irrelevant
+    "activity_date_time": "2014-02-15 20:10:11",
     "duration": "240",
     "status_id": "2",
     "priority_id": "2",

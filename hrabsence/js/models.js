@@ -5,9 +5,12 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       this.listenTo(this, 'change:activity_date_time', this.calculatePeriodId);
     },
     isInPeriod: function(period) {
-      var actdate = CRM.HRAbsenceApp.moment(this.get('activity_date_time'));
-      if (actdate.isBefore(CRM.HRAbsenceApp.moment(period.start_date), 'day')) return false;
-      if (actdate.isAfter(CRM.HRAbsenceApp.moment(period.end_date), 'day')) return false;
+      var effectiveDateTime = this.get('absence_range').low;
+      if (!effectiveDateTime) effectiveDateTime =this.get('activity_date_time');
+
+      var effectiveMoment = CRM.HRAbsenceApp.moment(effectiveDateTime);
+      if (effectiveMoment.isBefore(CRM.HRAbsenceApp.moment(period.start_date), 'day')) return false;
+      if (effectiveMoment.isAfter(CRM.HRAbsenceApp.moment(period.end_date), 'day')) return false;
       return true;
     },
     calculatePeriodId: function() {
