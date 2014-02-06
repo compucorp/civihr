@@ -184,7 +184,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
         'attributes' => array (
           'label'      => 'Absence Report',
           'name'       => 'absenceReport',
-          'url'        => null,
+          'url'        => 'civicrm/report/list?grp=Absence&reset=1',
           'permission' => 'access HRAbsences',
           'operator'   => null,
           'separator'  => 1,
@@ -211,25 +211,16 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
     ) 
   );
 
-  $paramsAbsenceType = array(
-    'version' => 3,
-    'sequential' => 1,
-  );
-  $resultAbsenceType = civicrm_api('HRAbsenceType', 'get', $paramsAbsenceType);
-  $absebceType = $values = array();
-  foreach ($resultAbsenceType['values'] as $key => $val) {
-    $absebceType[$val['id']] = $val['title']; 
-  } 
-
-  if (!empty($absebceType)) {
+  $absenceType = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
+  if (!empty($absenceType)) {
     $maxKey_child = $maxKey+7;
-    foreach ($absebceType as $aTypeId => $absebceTypeName) {
+    foreach ($absenceType as $aTypeId => $absenceTypeName) {
       $maxKey_child = $maxKey_child + 1;
-      $absebceMenuItems[$maxKey_child] = array(
+      $absenceMenuItems[$maxKey_child] = array(
         'attributes' => array(
-          'label'      => "{$absebceTypeName}",
-          'name'       => "{$absebceTypeName}",
-          'url'        => "civicrm/absences/set?type={$aTypeId}&action=add",
+          'label'      => "{$absenceTypeName}",
+          'name'       => "{$absenceTypeName}",
+          'url'        => "civicrm/absences/set?atype={$aTypeId}&action=add",
           'permission' => 'access HRAbsences',
           'operator'   => NULL,
           'separator'  => NULL,
@@ -240,7 +231,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
       );
     }
   }
-  if (!empty($absebceMenuItems)) {
-    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absebceMenuItems;
+  if (!empty($absenceMenuItems)) {
+    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absenceMenuItems;
   }
 }

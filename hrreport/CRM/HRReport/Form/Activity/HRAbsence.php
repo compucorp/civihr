@@ -71,7 +71,6 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
             'title' => ts('Approved By'),
             'alias' => 'civicrm_contact_assignee',
             'dbAlias' => "civicrm_contact_assignee.sort_name",
-            'default' => TRUE,
           ),
           'contact_source' =>
           array(
@@ -206,6 +205,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
           ),
           'activity_date_time' =>
           array('title' => ts('Absence Requested Date'),
+            'no_display' => TRUE,
             'required' => TRUE,
           ),
           'status_id' =>

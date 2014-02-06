@@ -14,6 +14,7 @@ return array (
       'description' => 'HR Report showing absences at individual level. ',
       'class_name' => 'CRM_HRReport_Form_Activity_HRAbsence',
       'report_url' => 'civihr/absence',
+      'grouping' => 'Absence',
       'component' => '',
     ),
   ),
