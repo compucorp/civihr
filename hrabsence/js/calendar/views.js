@@ -40,8 +40,8 @@ CRM.HRAbsenceApp.module('Calendar', function(Calendar, HRAbsenceApp, Backbone, M
       this.$('.hrabsence-open').each(function(){
         var url = CRM.url('civicrm/absences/set', {
           reset: 1,
-          action: 4,
-          activityid: $(this).attr('data-activity')
+          action: 'update',
+          aid: $(this).attr('data-activity')
         });
         $(this).attr('href', url);
       });
