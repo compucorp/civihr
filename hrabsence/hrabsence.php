@@ -90,6 +90,22 @@ function myext_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 /**
+ * Implementation of hook_civicrm_tabs
+ */
+function hrabsence_civicrm_tabs(&$tabs, $contactID) {
+  CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
+  $tabs[] = array(
+    'id'    => 'absenceTab',
+    'url'   =>  CRM_Utils_System::url( 'civicrm/absences', array(
+      'cid' => $contactID,
+      'snippet' => 1,
+    )),
+    'title' => 'Absences',
+    'weight' => 300 
+  );
+}
+
+/**
  * Implementation of hook_civicrm_entityTypes
  */
 function hrabsence_civicrm_entityTypes(&$entityTypes) {
