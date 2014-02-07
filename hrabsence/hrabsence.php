@@ -234,6 +234,22 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
   if (!empty($absenceMenuItems)) {
     $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absenceMenuItems;
   }
+
+  $reportParent = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
+  $params[$reportParent]['child'][1] = array(
+    'attributes' => array(
+      'label' => 'Absence Report',
+      'name' => 'absenceReport',
+      'url' => 'civicrm/report/list?grp=Absence&reset=1',
+      'permission' => 'access HRAbsences',
+      'operator' => NULL,
+      'separator' => 0,
+      'parentID' => $reportParent,
+      'navID' => 1,
+      'active' => 1,
+    ),
+  );
+
 }
 
 function hrabsence_civicrm_buildForm($formName, &$form) {
