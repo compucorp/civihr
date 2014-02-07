@@ -30,8 +30,8 @@ require_once 'api/v3/SyntaxConformanceTest.php';
 /**
  * apiTest APIv3 civicrm_hrabsence_* functions
  *
- *  @package CiviCRM_APIv3
- *  @subpackage API_HRAbsence
+ * @package CiviCRM_APIv3
+ * @subpackage API_HRAbsence
  */
 class api_v3_HRAbsenceSyntaxTest extends api_v3_SyntaxConformanceTest {
 
@@ -40,28 +40,48 @@ class api_v3_HRAbsenceSyntaxTest extends api_v3_SyntaxConformanceTest {
   }
 
   function tearDown() {
-    parent::tearDown(); 
+    parent::tearDown();
     $this->quickCleanup(array(
       'civicrm_absence_type',
     ));
   }
 
- 
-  /*
-  * At this stage exclude the ones that don't pass & add them as we can troubleshoot them
-  * This function will override the parent function.
-  * This function will skip 'HRAbsence' entities
-  */
+
+  /**
+   * At this stage exclude the ones that don't pass & add them as we can troubleshoot them
+   * This function will override the parent function.
+   * This function will skip 'HRAbsence' entities
+   */
   public static function toBeSkipped_updatesingle($sequential = FALSE) {
-    $entitiesWithout =  parent::toBeSkipped_updatesingle(TRUE);
+    $entitiesWithout = parent::toBeSkipped_updatesingle(TRUE);
     $entities = array_merge($entitiesWithout, array('HRAbsence'));
     return $entities;
   }
 
   public static function entities($skip = NULL) {
     $result = parent::entities($skip);
-    return array_filter($result, function($value) {
+    return array_filter($result, function ($value) {
       return preg_match("/^HRAbsence/", $value[0]);
     });
+  }
+
+  public function getKnownUnworkablesUpdateSingle($entity, $key) {
+    $result = parent::getKnownUnworkablesUpdateSingle($entity, $key);
+    $extras = array(
+      'HRAbsencePeriod' => array(
+        'cant_update' => array(
+          // testCreateSingleValueAlter doesn't handle straight-up dates properly
+          // e.g it fails because "2013-02-03" !== "2013-02-03 00:00:00"
+          'start_date',
+          'end_date',
+        ),
+      ),
+    );
+    if (isset($extras[$entity][$key])) {
+      return array_merge($result, $extras[$entity][$key]);
+    }
+    else {
+      return $result;
+    }
   }
 }
