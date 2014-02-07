@@ -26,7 +26,7 @@
 {* Search form and results for Event Participants *}
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
-  <table class="" style="width: auto; border: medium none ! important;">
+  <table class="abempInfo" style="width: auto; border: medium none ! important;">
     <tr>
       <td>Employee </td>
       <td colspan="2">{$emp_name}</td>
@@ -47,12 +47,17 @@
   </table>
   <table id="tblabsence" class="report">
     <tbody>
-      <tr>
+      <tr class="tblabsencetitle">
         <td>Date</td>
 	<td>Absence</td>
       </tr>
     </tbody>
   </table>
+
+   <div id="commentDisplay">
+     {ts}(Please mark absences for dates that you need off.If you don't normally work on a weekened or holiday, omit it.){/ts}
+   </div>
+
 </div>
 <div id='customData'>{include file="CRM/Custom/Form/CustomData.tpl"}</div>
 <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
@@ -94,12 +99,16 @@
     var start_date = cj('#start_date_display').val();
     if( start_date && end_date ){
       cj("#tblabsence").show();
+      cj("#commentDisplay").show();
     }
     var d = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
     cj('table#tblabsence tbody tr.trabsence').remove();
     var selectedVal = [];
     for (var x = 0; x <= d; x++) {
-      var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+start_date+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
+      var earlierdate = new Date(start_date);
+      var absenceDate = earlierdate.toDateString();
+      var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
+      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
       cj('form#EmployeeAbsenceRequestPage table#tblabsence tbody').append(createSelectBox);
       var datepicker = start_date;
       var parms = datepicker.split("/");
@@ -176,7 +185,8 @@
 {/literal}{/if}{literal}
 {/literal}{if $action eq 1}{literal}
   cj("#tblabsence").hide();
-    var dateValues = [];
+  cj("#commentDisplay").hide();
+  var dateValues = [];
   cj("#_qf_EmployeeAbsenceRequestPage_submit-bottom").click(function(event){
     var params = cj.parseJSON('{"sequential": "1"}');
     var end_date = cj('#end_date_display').val();
@@ -198,5 +208,20 @@
   });
 {/literal}{/if}{literal}
 });
+
+  var countDays = 0;
+  cj('#tblabsence tbody:last').after('<tr class="tblabsencetitle"><td>Total</td><td id="countD">'+countDays+'</td></tr>');
+  cj(document).on('change','#tblabsence select', function(){
+    var end_date = cj('#end_date_display').val();
+    var start_date = cj('#start_date_display').val();
+    var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
+    var totalDays=0;
+    for (var x = 0; x <=diDate; x++) {
+      var selectopt = cj('#options_'+x+' :selected').val();	
+      totalDays = new Number(totalDays) + new Number(selectopt);
+    }
+    totalDays += 'days';
+    cj('#countD').html(totalDays);
+  });
 </script>
 {/literal}

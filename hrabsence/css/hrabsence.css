@@ -172,3 +172,11 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .page-civicrm-absences-set #tabs-wrapper h1 {
     display: none !important;
 }
+
+.page-civicrm-absences-set #commentDisplay {
+    font-style:italic !important;
+}
+
+.page-civicrm-absences-set .tblabsencetitle {
+    font-weight: bold !important;
+}
