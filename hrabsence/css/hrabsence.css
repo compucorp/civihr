@@ -58,6 +58,14 @@
     background-color: #FFFFFF;
 }
 
+.hrabsence-calendar-region {
+    width: 98%;
+    border: 1px solid black;
+    padding: 0.8em;
+    margin: 1em;
+    float: left;
+}
+
 .hrabsence-list-entitlement, .hrabsence-list-balance {
     font-weight: bold;
 }
@@ -126,8 +134,8 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .hrabsence-bg-0-debit { background: #bb0000; }
 .hrabsence-bg-0-credit { background: #880000;  }
 
-.hrabsence-bg-1-debit { background: #0000bb;  }
-.hrabsence-bg-1-credit { background: #000088; }
+.hrabsence-bg-1-debit { background: #0000bb; color:white; }
+.hrabsence-bg-1-credit { background: #000088; color:white; }
 
 .hrabsence-bg-2-debit { background: #00bb00;  }
 .hrabsence-bg-2-credit { background: #008800; }

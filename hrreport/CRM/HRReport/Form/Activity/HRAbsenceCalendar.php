@@ -403,8 +403,6 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
 
     $this->filterStat($statistics);
     $this->assign('statistics', $statistics);
-    //$this->alterDisplay($rows);
-    //$sql = $this->buildQuery();
 
   }
 
