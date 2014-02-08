@@ -5,13 +5,13 @@
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
 return array (
   array (
-    'name' => 'CiviHR Absence Report Template',
+    'name' => 'CiviHR Absence Calendar Report Template',
     'entity' => 'ReportTemplate',
     'params' =>
     array (
       'version' => 3,
-      'label' => 'CiviHR Absence Report',
-      'description' => 'HR Report showing absences at individual level on monthly chart. ',
+      'label' => 'CiviHR Absence Calendar Report',
+      'description' => 'HR Report showing absences at individual level on monthly chart.',
       'class_name' => 'CRM_HRReport_Form_Activity_HRAbsenceCalendar',
       'report_url' => 'civihr/absence/calendar',
       'component' => '',
@@ -24,7 +24,7 @@ return array (
     array (
       'version' => 3,
       'title'   => 'CiviHR Absence Calendar Report',
-      'description' => 'HR Report showing absences at individual level on monthly chart. ',
+      'description' => 'HR Report showing absences at individual level on monthly chart.',
       'report_id'   => 'civihr/absence/calendar',
       'form_values' => serialize(
         array(
