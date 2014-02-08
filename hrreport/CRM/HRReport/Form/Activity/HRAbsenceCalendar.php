@@ -255,6 +255,9 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
     //for legen color code
     if (array_key_exists('activity_type_id_value', $this->_params)) {
       $filteredActivityTypes = array_flip($this->_params['activity_type_id_value']);
+      if ($this->_params['activity_type_id_op'] == 'notin') {
+       $filteredActivityTypes = array_diff_key(array_flip(array_keys($this->activityTypes)), $filteredActivityTypes);
+      }
     }
 
     for ($i=1; $i<=31; $i++) {
