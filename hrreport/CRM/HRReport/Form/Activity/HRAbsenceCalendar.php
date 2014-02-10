@@ -290,7 +290,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
   }
 
   function postProcess() {
-    $this->buildACLClause(array('absence', 'request'));
+    $this->buildACLClause(array('cac'));
     parent::beginPostProcess();
 
     $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
@@ -454,7 +454,7 @@ cc.display_name as contact_name";
     $this->assign('statistics', $statistics);
   }
 
-  function endPostProcess($rows = NULL) {
+  function endPostProcess(&$rows = NULL) {
     $csvRows = array();
     $count = 0;
 
