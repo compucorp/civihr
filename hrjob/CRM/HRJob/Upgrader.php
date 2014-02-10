@@ -259,4 +259,19 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
+  
+  public function upgrade_1200() {
+    $this->ctx->log->info('Applying update 1200');
+    $params = array(
+      'custom_group_id' => 'HRJob_Summary',
+    );
+
+    $results = civicrm_api3('CustomField', 'get', $params);
+
+    foreach ($results['values'] as $result) {
+      $result['is_view'] = 0;
+      civicrm_api3('CustomField', 'create', $result);
+    }
+    return TRUE;
+  }
 }
