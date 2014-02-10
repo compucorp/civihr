@@ -58,6 +58,19 @@
     background-color: #FFFFFF;
 }
 
+.hrabsence-calendar-chart {
+    width: 98%;
+    border: 1px solid black;
+    padding: 0.8em;
+    margin: 1em;
+    float: left;
+}
+
+.hrabsence-calendar-chart table th{
+    border: 1px solid #f4f4f4;
+    text-align: center;
+}
+
 .hrabsence-list-entitlement, .hrabsence-list-balance {
     font-weight: bold;
 }
@@ -91,9 +104,9 @@
 /* **** Calendar - Main Table **** */
 
 .hrabsence-calendar { background: white; color: black; }
-.hrabsence-calendar td, .hrabsence-calendar th { text-align: center; }
+.hrabsence-calendar td, .hrabsence-calendar th, .hrabsence-calendar-chart td { text-align: center; }
 
-.hrabsence-calendar td { border: 1px solid #f4f4f4; }
+.hrabsence-calendar td,  .hrabsence-calendar-chart td { border: 1px solid #f4f4f4; }
 
 /* **** Calendar - Legend **** */
 
@@ -112,6 +125,13 @@ td.hrabsence-cal-item a:hover
     color:  white;
 }
 
+td.hrabsence-cal-chart-item a:link,
+td.hrabsence-cal-chart-item a:visited,
+td.hrabsence-cal-chart-item a:hover
+{
+    color:  white;
+}
+
 td.hrabsence-cal-item.hrabsence-bg-6-debit,
 td.hrabsence-cal-item.hrabsence-bg-6-debit a:link,
 td.hrabsence-cal-item.hrabsence-bg-6-debit a:visited,
@@ -126,8 +146,8 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .hrabsence-bg-0-debit { background: #bb0000; }
 .hrabsence-bg-0-credit { background: #880000;  }
 
-.hrabsence-bg-1-debit { background: #0000bb;  }
-.hrabsence-bg-1-credit { background: #000088; }
+.hrabsence-bg-1-debit { background: #0000bb; color:white; }
+.hrabsence-bg-1-credit { background: #000088; color:white; }
 
 .hrabsence-bg-2-debit { background: #00bb00;  }
 .hrabsence-bg-2-credit { background: #008800; }
