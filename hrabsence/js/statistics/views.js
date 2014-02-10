@@ -19,9 +19,7 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
     template: '#hrabsence-statistics-template',
     templateHelpers: function() {
       return {
-        'entitlements': this.options.entitlementCollection.getEntitlements(),
-        'absencetype': this.options.absenceTypeCollection.getAbsenceTypes(),
-        'stats': this.options.collection.createStatistics(),
+        'stats': this.createStatistics(),
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})
@@ -35,6 +33,60 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
     onRender: function() {
       if (console.log) console.log('StatisticsView.onRender with ' + this.options.collection.models.length + ' item(s)');
       this.$('.activity-count').text(this.options.collection.models.length);
+    },
+
+    /** @return array of statistics */
+    createStatistics: function() {
+      var stats = {};
+      var selectedPeriods = this.options.criteria.get('period_id');
+      var selectedAbsenceType = this.options.criteria.get('activity_type_id');
+      var absencesTypes = this.options.absenceTypeCollection.getAbsenceTypes();
+
+      this.options.entitlementCollection.each(function(model) {
+        var activity_type_id = '';
+        _.each(absencesTypes, function(absenceTypeID, activityTypeID) {
+          if(absenceTypeID == model.get('type_id')) {
+            var activity = activityTypeID;
+            activity_type_id = activityTypeID;
+            var statsKey = model.get('period_id') + '-' + activity_type_id;
+            if((_.contains(selectedPeriods, model.get('period_id')) || !selectedPeriods) &&
+              (_.contains(selectedAbsenceType, activity_type_id) || !selectedAbsenceType)) {
+              if (!stats[statsKey]) {
+                stats[statsKey] = {
+                  period_id: model.get('period_id'),
+                  activity_type_id: activity_type_id,
+                  entitlement: model.get('amount'),
+                  requested: 0,
+                  approved: 0,
+                  balance: 0
+                };
+              }
+            }
+          }
+        });
+      });
+
+      this.options.collection.each(function(model) {
+        var statsKey = model.getPeriodId() + '-' + model.get('activity_type_id');
+        if (!stats[statsKey]) {
+          stats[statsKey] = {
+            period_id: model.getPeriodId(),
+            activity_type_id: model.get('activity_type_id'),
+            entitlement: 0,
+            requested: 0,
+            approved: 0,
+            balance: 0
+          };
+        }
+        if (model.get('status_id') == 2) {
+          stats[statsKey].approved = (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
+        } else if (model.get('status_id') == 1) {
+          var s1 = stats[statsKey].requested;
+          var s2 = model.get('absence_range').duration;
+          stats[statsKey].requested = (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
+        }
+      });
+      return stats;
     }
   });
 });

@@ -16,28 +16,16 @@
         <tr class="hrabsence-list-item" data-statistics-id="<%- absence.period_id %>-<%- absence.activity_type_id %>">
           <td class="hrabsence-statistics-period-desc"><%- FieldOptions.period_id[absence.period_id] %></td>
           <td class="hrabsence-statistics-leave-type"><%- FieldOptions.activity_type_id[absence.activity_type_id] %></td>
-          <% if(entitlements[absencetype[absence.activity_type_id]] && entitlements[absencetype[absence.activity_type_id]][absence.period_id]) {%>
-            <td class="hrabsence-statistics-entitlement">
-              <%- CRM.HRAbsenceApp.formatFloat(entitlements[absencetype[absence.activity_type_id]][absence.period_id]) %>
-            </td>
-          <% } else { %> 
-            <td class="hrabsence-statistics-entitlement"></td>
-          <% } %>
+          <td class="hrabsence-statistics-entitlement"><%- CRM.HRAbsenceApp.formatFloat(absence.entitlement) %></td>
           <td class="hrabsence-statistics-request">
             <%- CRM.HRAbsenceApp.formatDuration(absence.requested) %>
           </td>
           <td class="hrabsence-statistics-approve">
             <%- CRM.HRAbsenceApp.formatDuration(absence.approved) %>
           </td>
-          <% if(entitlements[absencetype[absence.activity_type_id]] && entitlements[absencetype[absence.activity_type_id]][absence.period_id]) {%>
-            <td class="hrabsence-statistics-bal">
-              <%- CRM.HRAbsenceApp.formatFloat(entitlements[absencetype[absence.activity_type_id]][absence.period_id] - (absence.requested/(8*60) + absence.approved/(8*60))) %>
-            </td>
-          <% } else { %>
-            <td class="hrabsence-statistics-bal">
-              <%- CRM.HRAbsenceApp.formatFloat(0-(absence.requested/(8*60) + absence.approved/(8*60))) %>
-            </td>
-          <% } %>
+          <td class="hrabsence-statistics-bal">
+              <%- CRM.HRAbsenceApp.formatFloat(absence.entitlement - (absence.requested/(8*60) + absence.approved/(8*60))) %>
+          </td>
         </tr>
     <% }); %>
     </tbody>
