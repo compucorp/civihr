@@ -224,6 +224,17 @@
       <is_active>1</is_active>
       <option_group_name>type_20130502144049</option_group_name>
     </OptionValue>
+    <OptionValue>
+      <label>National Insurance</label>
+      <value>National Insurance</value>
+      <name>National_Insurance</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>type_20130502144049</option_group_name>
+    </OptionValue>
   </OptionValues>
   <ProfileGroups>
     <ProfileGroup>
