@@ -90,4 +90,14 @@
     <uniqueName>hrjob_pay_currency</uniqueName>
   </field>
 
+  <field>
+    <name>pay_annualized_est</name>
+    <title>Annulized Estimation for Job Pay Amount</title>
+    <type>decimal</type>
+    <default>0</default>
+    <comment>Annulized Estimation for Job Pay Amount</comment>
+    <export>true</export>
+    <uniqueName>hrjob_pay_annualized_est</uniqueName>
+  </field>
+  
 </table>

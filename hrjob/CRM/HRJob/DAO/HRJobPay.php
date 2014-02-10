@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.0                                                 |
+| CiviCRM version 4.4                                                |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -125,6 +125,12 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $pay_currency;
   /**
+   * Annulized Estimation for Job Pay Amount
+   *
+   * @var float
+   */
+  public $pay_annualized_est;
+  /**
    * class constructor
    *
    * @access public
@@ -223,6 +229,15 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
             'optionGroupName' => 'currencies_enabled',
           )
         ) ,
+        'hrjob_pay_annualized_est' => array(
+          'name' => 'pay_annualized_est',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Annulized Estimation for Job Pay Amount') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_annualized_est',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
       );
     }
     return self::$_fields;
@@ -244,6 +259,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
         'pay_currency' => 'hrjob_pay_currency',
+        'pay_annualized_est' => 'hrjob_pay_annualized_est',
       );
     }
     return self::$_fieldKeys;
