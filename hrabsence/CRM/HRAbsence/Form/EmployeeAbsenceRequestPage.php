@@ -54,12 +54,11 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
     $paramsHRJob = array(
-      'version' => 3,
       'sequential' => 1,
       'contact_id' => $this->_targetContactID,
       'is_primary' => 1,
     );
-    $resultHRJob = civicrm_api('HRJob', 'get', $paramsHRJob);
+    $resultHRJob = civicrm_api3('HRJob', 'get', $paramsHRJob);
     if (!empty($resultHRJob['values'])) {
       $this->assign('emp_position', $resultHRJob['values'][0]['position']);
     }
@@ -67,12 +66,11 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
 
    if ($this->_action & CRM_Core_Action::VIEW) {
       $paramsAbsences = array(
-        'version' => 3,
         'sequential' => 1,
         'source_record_id' => $this->_activityId,
         'option_sort'=>"activity_date_time ASC",
       );
-      $resultAbsences = civicrm_api('Activity', 'get', $paramsAbsences);
+      $resultAbsences = civicrm_api3('Activity', 'get', $paramsAbsences);
       $countDays =0; 
       $absenceDateDuration = array();
       foreach ($resultAbsences['values'] as $key => $val) {
@@ -146,12 +144,11 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
    if ($this->_action == (CRM_Core_Action::UPDATE)){
      $this->add('hidden','source_record_id', $this->_aid);
      $params = array(
-       'version' => 3,
        'sequential' => 1,
        'source_record_id' =>  $this->_aid,
        'option_sort'=>"activity_date_time ASC",
      );
-     $result = civicrm_api('Activity', 'get', $params);
+     $result = civicrm_api3('Activity', 'get', $params);
      $start_date = date_create($result['values'][0]['activity_date_time']);
      $end_date = date_create($result['values'][$result['count']-1]['activity_date_time']);
      $this->assign('fromDate',date_format($start_date, 'm/d/Y'));
@@ -171,14 +168,13 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
 
       $this->assign('upActivityId', $this->_activityId);
       $paramsAct = array(
-        'version' => 3,
         'sequential' => 1,
         'id' => $this->_activityId,
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
       );
-      $resultAct = civicrm_api('Activity', 'get', $paramsAct);
+      $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
       $this->_loginUserID = $resultAct['values'][0]['source_contact_id'][0];
@@ -244,7 +240,6 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
 
     if ($this->_action== CRM_Core_Action::ADD) {
       $activityParam = array(
-        'version' => 3,
         'sequential' => 1,
         'source_contact_id' => $this->_loginUserID,
         'target_contact_id' => $this->_targetContactID,
@@ -256,7 +251,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         //we want to keep the activity status in Scheduled for new absence
         $activityParam['status_id'] = CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Scheduled"');
       }
-      $result = civicrm_api('Activity', 'create', $activityParam);
+      $result = civicrm_api3('Activity', 'create', $activityParam);
 
       //save the custom data
       if (!empty($submitValues['hidden_custom'])) {
@@ -269,7 +264,6 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       }
 
       $activityLeavesParam = array(
-        'version' => 3,
         'sequential' => 1,
         'source_record_id' => $result['id'],
         'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
@@ -282,7 +276,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       foreach ($absentDateDurations as $date => $duration) {
         $activityLeavesParam['activity_date_time'] = $date;
         $activityLeavesParam['duration'] = $duration;
-        civicrm_api('Activity', 'create', $activityLeavesParam);
+        civicrm_api3('Activity', 'create', $activityLeavesParam);
       }
 
       CRM_Core_Session::setStatus(ts('Your absences have been applied.'), ts('Saved'), 'success');
@@ -294,22 +288,19 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
     } 
     elseif ($this->_action == CRM_Core_Action::UPDATE) {
       $params = array(
-        'version' => 3,
         'sequential' => 1,
         'source_record_id' => $submitValues['source_record_id'],
       );      
-      $result = civicrm_api('Activity', 'get', $params);
+      $result = civicrm_api3('Activity', 'get', $params);
       $count=$result['values'];
       foreach ($result['values'] as $row_result ){
         $params = array(
-          'version' => 3,
           'sequential' => 1,
           'id'=>$row_result['id'],
         );
-        civicrm_api('Activity', 'delete', $params);
+        civicrm_api3('Activity', 'delete', $params);
       }
       $activityParam = array(
-        'version' => 3,
         'sequential' => 1,
         'source_contact_id' => $this->_loginUserID,
         'target_contact_id' => $this->_targetContactID,
@@ -318,14 +309,13 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       );
       foreach ($absentDateDurations as $date => $duration) {
         $params = array(
-          'version' => 3,
           'sequential' => 1,
           'activity_type_id' => $this->_activityTypeID,
           'source_record_id' => $submitValues['source_record_id'],
           'activity_date_time' => $date,
           'duration' => $duration,
         );
-        $result = civicrm_api('Activity', 'create', $params);
+        $result = civicrm_api3('Activity', 'create', $params);
       }
       $buttonName = $this->controller->getButtonName();
       if ($buttonName == $this->getButtonName('submit')) {
