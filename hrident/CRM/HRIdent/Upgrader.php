@@ -161,15 +161,10 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
       $params = array(
           'version' => 3,
           'sequential' => 1,
-          'option_group_id' => 97,
+          'option_group_id' => 'type_20130502144049',
           'label' => 'National Insurance',
           'value' => 'National Insurance',
           'name' => 'National_Insurance',
-          'is_default' => 0,
-          'weight' => 6,
-          'is_optgroup' => 0,
-          'is_reserved' => 0,
-          'is_active' => 1, 
       );
       
       $result = civicrm_api('OptionValue', 'create', $params);
