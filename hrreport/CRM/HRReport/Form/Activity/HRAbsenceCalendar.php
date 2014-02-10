@@ -149,6 +149,19 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
   function select() {
   }
 
+  function from() {
+    $this->_from = "
+FROM civicrm_activity absence
+INNER JOIN civicrm_activity request ON request.source_record_id = absence.id
+LEFT JOIN civicrm_activity_contact cac ON cac.activity_id = absence.id
+LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
+";
+
+    if ($this->_aclFrom) {
+      $this->_from .= $this->_aclFrom;
+    }
+  }
+
   function where($sourceRecordIds = null) {
     $this->_where = "WHERE
  request.source_record_id IN ( ". implode(',', $sourceRecordIds).") AND cac.record_type_id =3";
@@ -206,10 +219,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
     else {
       $this->_where .= " AND " . implode(' AND ', $clauses);
     }
-
-    if ($this->_aclWhere) {
-      $this->_where .= " AND {$this->_aclWhere} ";
-    }
   }
 
   static function formRule($fields, $file, $self) {
@@ -241,9 +250,53 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
   }
 
   function add2group($groupID) {
+    if(empty($groupID)) {
+      CRM_Core_Session::setStatus(" ", ts('Please select a Group'),'warning');
+      return;
+    }
+    $query = "SELECT cac.contact_id as contact_id {$this->_from} {$this->_where} GROUP BY cac.contact_id";
+    $dao = CRM_Core_DAO::executeQuery($query);
+
+    $contactIDs = array();
+    // Add resulting contacts to group
+    while ($dao->fetch()) {
+          $contactIDs[$dao->contact_id] = $dao->contact_id;
+    }
+
+    if ( !empty($contactIDs) ) {
+      CRM_Contact_BAO_GroupContact::addContactsToGroup($contactIDs, $groupID);
+      CRM_Core_Session::setStatus(ts("Listed contact(s) have been added to the selected group."), ts('Contacts Added'), 'success');
+    }
+    else {
+      CRM_Core_Session::setStatus(ts("The listed records(s) cannot be added to the group."));
+    }
+  }
+
+  function buildACLClause($tableAlias = array()) {
+
+    if (CRM_Core_Permission::check('view all contacts')) {
+      $this->_aclFrom = $this->_aclWhere = NULL;
+      return;
+    }
+
+    $session = CRM_Core_Session::singleton();
+    $contactID = $session->get('userID');
+    if (!$contactID) {
+      $contactID = 0;
+    }
+    $contactID = CRM_Utils_Type::escape($contactID, 'Integer');
+
+    CRM_Contact_BAO_Contact_Permission::cache($contactID);
+    $clauses = array();
+    foreach ($tableAlias as $k => $alias) {
+      $clauses[] = " INNER JOIN civicrm_acl_contact_cache aclContactCache_{$k} ON ( {$alias}.contact_id = aclContactCache_{$k}.contact_id OR {$alias}.contact_id IS NULL ) AND aclContactCache_{$k}.user_id = $contactID ";
+    }
+
+    $this->_aclFrom = implode(" ", $clauses);
   }
 
   function postProcess() {
+    $this->buildACLClause(array('absence', 'request'));
     parent::beginPostProcess();
 
     $absenceCalendar = $filteredActivityTypes = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
@@ -258,10 +311,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
       if ($this->_params['activity_type_id_op'] == 'notin') {
        $filteredActivityTypes = array_diff_key(array_flip(array_keys($this->activityTypes)), $filteredActivityTypes);
       }
-    }
-
-    for ($i=1; $i<=31; $i++) {
-       $monthDays[] = $i;
     }
 
     foreach($absenceTypes as $key => $absenceType) {
@@ -285,7 +334,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
     }
     //for two or more absence type color code
     if (count($legend) >= 2) {
-      $legend['mixed'] = array('title' => ts('Mixed'), 'class' => 'hrabsence-bg-mixed');
+      $legend['Mixed'] = array('title' => ts('Mixed'), 'class' => 'hrabsence-bg-mixed');
     }
 
     if (!empty($legend)) {
@@ -350,7 +399,7 @@ HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
       return;
     }
 
-    $this->_select =  "SELECT
+    $select =  "SELECT
 YEAR(request.activity_date_time) as year,
 MONTH(request.activity_date_time) as month,
 DAY(request.activity_date_time) as day,
@@ -359,16 +408,10 @@ cac.contact_id as contact_id,
 request.source_record_id,
 cc.display_name as contact_name";
 
-    $from = "
-FROM civicrm_activity absence
-INNER JOIN civicrm_activity request ON request.source_record_id = absence.id
-LEFT JOIN civicrm_activity_contact cac ON cac.activity_id = absence.id
-LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
-";
-
+    $this->from();
     $this->where($validSourceRecordIds);
 
-    $sql = "{$this->_select} {$from} {$this->_where}";
+    $sql = "{$select} {$this->_from} {$this->_where}";
     $dao = CRM_Core_DAO::executeQuery($sql);
 
     if (CRM_Core_Permission::check('access CiviCRM')) {
@@ -388,7 +431,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
           array_key_exists($dao->day, $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id]) &&
           $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] != $dao->ati
         ) {
-          $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] = 'mixed';
+          $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] = 'Mixed';
         }
         else {
           $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] = $dao->ati;
@@ -400,15 +443,87 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
         }
         $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['day_name'] = substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1);
       }
-     $this->assign('monthDays', $monthDays);
-     $this->assign('absenceCalendar', $absenceCalendar);
     }
+
+    $this->modifyColumnHeaders();
+    $this->doTemplateAssignment($absenceCalendar);
+    $this->endPostProcess($absenceCalendar);
+  }
+
+  function doTemplateAssignment(&$rows) {
+    $monthDays = $statistics = array();
+
+    for ($i=1; $i<=31; $i++) {
+      $monthDays[] = $i;
+    }
+
+    $this->assign('monthDays', $monthDays);
+    $this->assign('rows', $rows);
 
     $this->filterStat($statistics);
     $this->assign('statistics', $statistics);
-
   }
 
-  function alterDisplay(&$rows) {
+  function endPostProcess($rows) {
+    $csvRows = array();
+    $count = 0;
+
+    foreach ($rows as $year => $yearlyRecord) {
+      foreach ($yearlyRecord as $month => $monthlyrecord) {
+        if (!array_key_exists('contacts', $monthlyrecord)) {
+          continue;
+        }
+        foreach ($monthlyrecord['contacts'] as $contact_id => $record) {
+          $csvRows[$count]['year'] = $year;
+          $csvRows[$count]['month'] = $monthlyrecord['month_name'];
+          $csvRows[$count]['contact_id'] = $contact_id;
+          $csvRows[$count]['individual'] = CRM_Contact_BAO_Contact::displayName($contact_id);
+          for ($i=1; $i<=31; $i++) {
+            $csvRows[$count]['day_'.$i] = "";
+          }
+          foreach ($record as $day => $dayRecord) {
+            if($day == 'link') {
+              continue;
+            }
+            if (array_key_exists($dayRecord['activity_type_id'], $this->activityTypes)) {
+              $csvRows[$count]['day_'.$day] = $this->activityTypes[$dayRecord['activity_type_id']];
+            }
+            else {
+              $csvRows[$count]['day_'.$day] = $dayRecord['activity_type_id'];
+            }
+          }
+          $count++;
+        }
+      }
+    }
+    parent::endPostProcess($csvRows);
+  }
+
+  function modifyColumnHeaders() {
+    $this->_columnHeaders = array(
+      'year' => array(
+        'title' => 'Year',
+        'type' => CRM_Utils_Type::T_INT,
+      ),
+      'month' => array(
+        'title' => 'Month',
+        'type' => CRM_Utils_Type::T_STRING,
+      ),
+      'individual' => array(
+        'title' => 'Individual',
+        'type' => CRM_Utils_Type::T_STRING,
+      ),
+      'contact_id' => array(
+        'title' => 'Contact ID',
+        'type' => CRM_Utils_Type::T_INT,
+      ),
+    );
+
+    for ($i=1; $i<=31; $i++) {
+      $this->_columnHeaders['day_'.$i] = array(
+        'title' => 'Day '.$i,
+        'type' => CRM_Utils_Type::T_STRING,
+      );
+    }
   }
 }

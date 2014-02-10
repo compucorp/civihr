@@ -25,7 +25,7 @@
 *}
 {if $criteriaForm OR $instanceForm OR $instanceFormError}
   <div class="crm-block crm-form-block crm-report-field-form-block">
-    {include file="CRM/Report/Form/Fields.tpl" rows=$absenceCalendar|@count}
+    {include file="CRM/Report/Form/Fields.tpl"}
   </div>
 {/if}
 
@@ -45,8 +45,9 @@
     {/foreach}
   </table>
 {/if}
+{include file="CRM/Report/Form/Actions.tpl"}
 
-{foreach from=$absenceCalendar item=yearRecord key=year}
+{foreach from=$rows item=yearRecord key=year}
   {foreach from=$yearRecord item=monthRecord key=month}
 <div id="report-layout statistics-table">
     <div class="hrabsence-calendar-region">
