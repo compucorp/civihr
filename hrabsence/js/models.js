@@ -136,32 +136,6 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         }
       });
       return periodIds;
-    },
-
-    /** @return array of statistics */
-    createStatistics: function() {
-      var stats = {};
-      this.each(function(model) {
-        var statsKey = model.getPeriodId() + '-' + model.get('activity_type_id');
-        if (!stats[statsKey]) {
-          stats[statsKey] = {
-            period_id: model.getPeriodId(),
-            activity_type_id: model.get('activity_type_id'),
-            entitlement: 0,
-            requested: 0,
-            approved: 0,
-            balance: 0
-          };
-        }
-        if (model.get('status_id') == 2) {
-          stats[statsKey].approved = (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
-        } else if (model.get('status_id') == 1) {
-          var s1 = stats[statsKey].requested;
-          var s2 = model.get('absence_range').duration;
-          stats[statsKey].requested = (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
-        }
-      });
-      return stats;
     }
   });
   CRM.Backbone.extendCollection(Models.AbsenceCollection);

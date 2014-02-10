@@ -181,7 +181,21 @@ CRM.fixtures.vacationEnt2013 = [
     "period_id": "2", // FY2012
     "type_id": "1", // Vacation
     "amount": "6"
-  }
+  },
+  {
+    "id": "2",
+    "contact_id": "202",
+    "period_id": "2", // FY2012
+    "type_id": "2", // TOIL
+    "amount": "5"
+  },
+  {
+    "id": "3",
+    "contact_id": "202",
+    "period_id": "3", // FY2012
+    "type_id": "2", // TOIL
+    "amount": "5"
+  },
 ];
 
 // List of absence types
