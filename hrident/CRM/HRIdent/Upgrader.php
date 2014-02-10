@@ -156,21 +156,19 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     return TRUE;
   }
   
-  public function upgrade_1200(){
-      $this->ctx->log->info('Planning update 1200'); //PEAR Log interface
-      $params = array(
-          'version' => 3,
-          'sequential' => 1,
-          'option_group_id' => 'type_20130502144049',
-          'label' => 'National Insurance',
-          'value' => 'National Insurance',
-          'name' => 'National_Insurance',
-      );
-      
-      $result = civicrm_api('OptionValue', 'create', $params);
-      if($result['is_error'] == 0 ) {
-          return TRUE;
-      }
-      return FALSE;
+  public function upgrade_1200() {
+    $this->ctx->log->info('Planning update 1200'); //PEAR Log interface
+    $params = array(
+      'option_group_id' => 'type_20130502144049',
+      'label' => 'National Insurance',
+      'value' => 'National Insurance',
+      'name' => 'National_Insurance',
+    );
+
+    $result = civicrm_api3('OptionValue', 'create', $params);
+    if ($result['is_error'] == 0) {
+      return TRUE;
+    }
+    return FALSE;
   }
 }
