@@ -66,7 +66,7 @@
 {literal}
   <script type="text/javascript">
     cj(function(cj) {
-
+    cj('span.crm-error').insertAfter('input#end_date_display');
       {/literal}
         {if $customValueCount}
           {foreach from=$customValueCount item="groupCount" key="groupValue"}
@@ -82,6 +82,11 @@
 
     cj('#start_date_display').change(function() {
       addabsencetbl();
+      var end_date = cj('#end_date_display').val();
+      var start_date = cj('#start_date_display').val();
+      if (end_date == ""){
+        cj('#end_date_display').datepicker('setDate', start_date);	
+      }
     })
     cj('#end_date_display').change(function() {
       addabsencetbl();
@@ -108,7 +113,7 @@
       var earlierdate = new Date(start_date);
       var absenceDate = earlierdate.toDateString();
       var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
-      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
+      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
       cj('form#EmployeeAbsenceRequestPage table#tblabsence tbody').append(createSelectBox);
       var datepicker = start_date;
       var parms = datepicker.split("/");
@@ -160,7 +165,7 @@
 	    var joindate = new Date(parms[1]+"/"+subpar2+"/"+parms[0]);
 	    var absenceDate = joindate.toDateString();
 	    var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear();
-	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
+	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
             cj('form#EmployeeAbsenceRequestPage table#tblabsence tbody').append(createSelectBox);
             if(value==240) {
 	      cj("#options_"+x).val('0.5');

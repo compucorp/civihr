@@ -154,6 +154,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
      $this->assign('fromDate',date_format($start_date, 'm/d/Y'));
      $this->assign('toDate',date_format($end_date, 'm/d/Y'));
    }
+    $this->addFormRule(array('CRM_HRAbsence_Form_EmployeeAbsenceRequestPage', 'formRule'));
  }
 
   function preProcess() {
@@ -323,5 +324,21 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absences/set', "reset=1&action=view&aid={$submitValues['source_record_id']}"));
       }
     }
+  }
+
+  function formRule($fields, $files, $self) {
+    $errors = array();
+    $dateFrom = $fields['start_date_display'];        
+    $dateTo = $fields['end_date_display'];
+    $diff = abs(strtotime($dateFrom) - strtotime($dateTo));
+    $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+
+    if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
+      $errors['end_date'] = "From date cannot be greater than to date.";
+    }
+    if ($days > 31) {
+      $errors['end_date'] = "End date should be within a month.";
+    }
+    return $errors;
   }
 }
