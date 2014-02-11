@@ -27,10 +27,16 @@
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
+  {if $permissioneac } 
+    <tr>
+      <td>{include file="CRM/Contact/Form/NewContact.tpl"}</td>
+    </tr>
+  {else}
     <tr>
       <td>Employee </td>
       <td colspan="2">{$emp_name}</td>
     </tr>
+  {/if}
     <tr>
       <td>Position </td> 
       <td colspan="2">{$emp_position}</td>
@@ -67,6 +73,12 @@
   <script type="text/javascript">
     cj(function(cj) {
     cj('span.crm-error').insertAfter('input#end_date_display');
+    var eac = '{/literal}{$permissioneac}{literal}';
+    if (eac){
+      cj(cj('td #contact_1')[0].nextSibling).wrap('<span style="display:none"></style>');
+      cj('#profiles_1').hide(); 
+      cj( "tr.crm-new-contact-form-block-contact-1 td label" ).replaceWith( "<b>Employee</b>" );
+    }
       {/literal}
         {if $customValueCount}
           {foreach from=$customValueCount item="groupCount" key="groupValue"}
@@ -85,7 +97,8 @@
       var end_date = cj('#end_date_display').val();
       var start_date = cj('#start_date_display').val();
       if (end_date == ""){
-        cj('#end_date_display').datepicker('setDate', start_date);	
+        cj('#end_date_display').datepicker('setDate', start_date);
+        addabsencetbl();	
       }
     })
     cj('#end_date_display').change(function() {
@@ -127,7 +140,18 @@
       var y = joindate.getFullYear();
       var start_date = mm + '/' + dd + '/' + y;
       selectedVal.push(x);
+    }    
+    var countDays = 0;
+    var end_date = cj('#end_date_display').val();
+    var start_date = cj('#start_date_display').val();
+    var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
+    var totalDays=0;
+    for (var x = 0; x <=diDate; x++) {
+      var selectopt = cj('#options_'+x+' :selected').val();	
+      totalDays = new Number(totalDays) + new Number(selectopt);
     }
+    totalDays += 'days';
+    cj('#countD').html(totalDays);
   }
   </script>
 {/literal}
