@@ -41,22 +41,24 @@
  * This file is for civievent search
  */
 class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
- public $_customValueCount;
- public $_activityTypeID;
- public $_loginUserID;
- public $_targetContactID;
- public $_managerContactID;
+  public $_customValueCount;
+  public $_activityId;
+  public $_activityTypeID;
+  public $_loginUserID;
+  public $_targetContactID;
+  public $_managerContactID;
+  public $count;
+  protected $_aid;
 
   function buildQuickForm() {
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
     $paramsHRJob = array(
-      'version' => 3,
       'sequential' => 1,
       'contact_id' => $this->_targetContactID,
       'is_primary' => 1,
     );
-    $resultHRJob = civicrm_api('HRJob', 'get', $paramsHRJob);
+    $resultHRJob = civicrm_api3('HRJob', 'get', $paramsHRJob);
     if (!empty($resultHRJob['values'])) {
       $this->assign('emp_position', $resultHRJob['values'][0]['position']);
     }
@@ -64,12 +66,11 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
 
    if ($this->_action & CRM_Core_Action::VIEW) {
       $paramsAbsences = array(
-        'version' => 3,
         'sequential' => 1,
         'source_record_id' => $this->_activityId,
         'option_sort'=>"activity_date_time ASC",
       );
-      $resultAbsences = civicrm_api('Activity', 'get', $paramsAbsences);
+      $resultAbsences = civicrm_api3('Activity', 'get', $paramsAbsences);
       $countDays =0; 
       $absenceDateDuration = array();
       foreach ($resultAbsences['values'] as $key => $val) {
@@ -140,11 +141,26 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
        );
      }
    }
+   if ($this->_action == (CRM_Core_Action::UPDATE)){
+     $this->add('hidden','source_record_id', $this->_aid);
+     $params = array(
+       'sequential' => 1,
+       'source_record_id' =>  $this->_aid,
+       'option_sort'=>"activity_date_time ASC",
+     );
+     $result = civicrm_api3('Activity', 'get', $params);
+     $start_date = date_create($result['values'][0]['activity_date_time']);
+     $end_date = date_create($result['values'][$result['count']-1]['activity_date_time']);
+     $this->assign('fromDate',date_format($start_date, 'm/d/Y'));
+     $this->assign('toDate',date_format($end_date, 'm/d/Y'));
+   }
+    $this->addFormRule(array('CRM_HRAbsence_Form_EmployeeAbsenceRequestPage', 'formRule'));
  }
 
   function preProcess() {
     CRM_Utils_System::setTitle( ts('Absence Request: View') );
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
+    $this->_aid = CRM_Utils_Request::retrieve('aid', 'Int', $this);
     $session = CRM_Core_Session::singleton();
     $this->_loginUserID = $session->get('userID');
 
@@ -153,19 +169,28 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
 
       $this->assign('upActivityId', $this->_activityId);
       $paramsAct = array(
-        'version' => 3,
         'sequential' => 1,
         'id' => $this->_activityId,
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
       );
-      $resultAct = civicrm_api('Activity', 'get', $paramsAct);
+      $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
       $this->_loginUserID = $resultAct['values'][0]['source_contact_id'][0];
-      $groupTree = CRM_Core_BAO_CustomGroup::getTree('Activity', $this, $this->_activityId, 0, $this->_activityTypeID);
-      CRM_Core_BAO_CustomGroup::buildCustomDataView($this, $groupTree);     
+      if ($this->_action == 4) {
+        $groupTree = CRM_Core_BAO_CustomGroup::getTree('Activity', $this, $this->_activityId, 0, $this->_activityTypeID);
+        CRM_Core_BAO_CustomGroup::buildCustomDataView($this, $groupTree);
+      }
+      else {
+        $this->assign('activityType', $this->_activityTypeID);
+        CRM_Custom_Form_CustomData::preProcess(
+          $this, NULL, $this->_activityTypeID,
+          1, 'Activity' , $this->_activityId, TRUE
+        );
+        $this->assign('customValueCount', $this->_customValueCount);
+      }
     }
     elseif ( $this->_action == 1) {
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
@@ -193,6 +218,12 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
     parent::preProcess();
   }
 
+  public function setDefaultValues() {
+    if ($this->_activityId && $this->_action != CRM_Core_Action::VIEW) {
+      return CRM_Custom_Form_CustomData::setDefaultValues($this);
+    }
+  }
+
   public function postProcess() {
     $session = CRM_Core_Session::singleton();
     $submitValues = $this->_submitValues;
@@ -208,9 +239,8 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       }
     }
 
-    if ($this->_action && (CRM_Core_Action::ADD || CRM_Core_Action::UPDATE)) {
+    if ($this->_action== CRM_Core_Action::ADD) {
       $activityParam = array(
-        'version' => 3,
         'sequential' => 1,
         'source_contact_id' => $this->_loginUserID,
         'target_contact_id' => $this->_targetContactID,
@@ -222,7 +252,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
         //we want to keep the activity status in Scheduled for new absence
         $activityParam['status_id'] = CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Scheduled"');
       }
-      $result = civicrm_api('Activity', 'create', $activityParam);
+      $result = civicrm_api3('Activity', 'create', $activityParam);
 
       //save the custom data
       if (!empty($submitValues['hidden_custom'])) {
@@ -235,7 +265,6 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       }
 
       $activityLeavesParam = array(
-        'version' => 3,
         'sequential' => 1,
         'source_record_id' => $result['id'],
         'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
@@ -248,7 +277,7 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       foreach ($absentDateDurations as $date => $duration) {
         $activityLeavesParam['activity_date_time'] = $date;
         $activityLeavesParam['duration'] = $duration;
-        civicrm_api('Activity', 'create', $activityLeavesParam);
+        civicrm_api3('Activity', 'create', $activityLeavesParam);
       }
 
       CRM_Core_Session::setStatus(ts('Your absences have been applied.'), ts('Saved'), 'success');
@@ -257,7 +286,59 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
       if ($buttonName == $this->getButtonName('submit')) {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absences/set', "reset=1&action=view&aid={$result['id']}"));
       }
+    } 
+    elseif ($this->_action == CRM_Core_Action::UPDATE) {
+      $params = array(
+        'sequential' => 1,
+        'source_record_id' => $submitValues['source_record_id'],
+      );      
+      $result = civicrm_api3('Activity', 'get', $params);
+      $count=$result['values'];
+      foreach ($result['values'] as $row_result ){
+        $params = array(
+          'sequential' => 1,
+          'id'=>$row_result['id'],
+        );
+        civicrm_api3('Activity', 'delete', $params);
+      }
+      $activityParam = array(
+        'sequential' => 1,
+        'source_contact_id' => $this->_loginUserID,
+        'target_contact_id' => $this->_targetContactID,
+        'assignee_contact_id' => $this->_managerContactID,
+        'activity_type_id' => $this->_activityTypeID,
+      );
+      foreach ($absentDateDurations as $date => $duration) {
+        $params = array(
+          'sequential' => 1,
+          'activity_type_id' => $this->_activityTypeID,
+          'source_record_id' => $submitValues['source_record_id'],
+          'activity_date_time' => $date,
+          'duration' => $duration,
+        );
+        $result = civicrm_api3('Activity', 'create', $params);
+      }
+      $buttonName = $this->controller->getButtonName();
+      if ($buttonName == $this->getButtonName('submit')) {
+        $this->_aid = $submitValues['source_record_id'];
+        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absences/set', "reset=1&action=view&aid={$submitValues['source_record_id']}"));
+      }
     }
   }
 
+  function formRule($fields, $files, $self) {
+    $errors = array();
+    $dateFrom = $fields['start_date_display'];        
+    $dateTo = $fields['end_date_display'];
+    $diff = abs(strtotime($dateFrom) - strtotime($dateTo));
+    $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+
+    if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
+      $errors['end_date'] = "From date cannot be greater than to date.";
+    }
+    if ($days > 31) {
+      $errors['end_date'] = "End date should be within a month.";
+    }
+    return $errors;
+  }
 }

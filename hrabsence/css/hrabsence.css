@@ -197,6 +197,6 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
     font-style:italic !important;
 }
 
-.page-civicrm-absences-set .tblabsencetitle {
+.page-civicrm-absences-set .tblabsencetitle, .page-civicrm-absences-set .abempInfo tbody tr td:first-child {
     font-weight: bold !important;
 }

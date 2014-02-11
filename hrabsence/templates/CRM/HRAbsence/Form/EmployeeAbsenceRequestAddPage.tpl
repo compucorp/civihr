@@ -66,7 +66,7 @@
 {literal}
   <script type="text/javascript">
     cj(function(cj) {
-
+    cj('span.crm-error').insertAfter('input#end_date_display');
       {/literal}
         {if $customValueCount}
           {foreach from=$customValueCount item="groupCount" key="groupValue"}
@@ -82,6 +82,11 @@
 
     cj('#start_date_display').change(function() {
       addabsencetbl();
+      var end_date = cj('#end_date_display').val();
+      var start_date = cj('#start_date_display').val();
+      if (end_date == ""){
+        cj('#end_date_display').datepicker('setDate', start_date);	
+      }
     })
     cj('#end_date_display').change(function() {
       addabsencetbl();
@@ -108,7 +113,7 @@
       var earlierdate = new Date(start_date);
       var absenceDate = earlierdate.toDateString();
       var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
-      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
+      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
       cj('form#EmployeeAbsenceRequestPage table#tblabsence tbody').append(createSelectBox);
       var datepicker = start_date;
       var parms = datepicker.split("/");
@@ -150,37 +155,55 @@
             var val = value.activity_date_time;
             param[val]=value.duration;
           });   
-	  var x=0;  
+	  var x=0;
+	  var selectopt;
+	  var totalDays=0;  
 	  cj.each(param, function(key, value) {
-            var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+key+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="0.5">Half Day</option><option value="1">Full Day</option></select></td></tr>';
+	    var datepicker = key;
+	    var parms = datepicker.split("-");
+	    var subpar2 = parms[2].substring(0,3);
+	    var joindate = new Date(parms[1]+"/"+subpar2+"/"+parms[0]);
+	    var absenceDate = joindate.toDateString();
+	    var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear();
+	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
             cj('form#EmployeeAbsenceRequestPage table#tblabsence tbody').append(createSelectBox);
             if(value==240) {
 	      cj("#options_"+x).val('0.5');
+	      selectopt = cj('#options_'+x+' :selected').val();
+	      totalDays = new Number(totalDays) + new Number(selectopt);
 	    } 
 	    else {
 	      cj("#options_"+x).val('1');
+	      selectopt = cj('#options_'+x+' :selected').val();
+	      totalDays = new Number(totalDays) + new Number(selectopt);
 	    }
 	    x = new Number(x) + 1;
  	  });
+	  totalDays += '  days';
+	  cj('#countD').html(totalDays);
         }
       });
 
       cj("#_qf_EmployeeAbsenceRequestPage_submit-bottom").click(function(event){
-        for (var x = 0; x <= difDate; x++) {
+        var dateValues = [];
+        var params = cj.parseJSON('{"sequential": "1"}');
+        var end_date = cj('#end_date_display').val();
+        var start_date = cj('#start_date_display').val();
+        var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
+        for (var x = 0; x <= diDate; x++) {
           var selDate = cj('#label_'+x).text();
-	  var selectopt = cj('#options_'+x+' :selected').text();
-	  if(selectopt == "Full Day"){
-	    CRM.api('Activity', 'create', {'sequential': 1, 'activity_type_id': 'Absence', 'source_contact_id': uID, 'activity_date_time': selDate, 'duration': 480, 'source_record_id': upActivityId},{success: function(data) {} });
-	  }
-	  else {
-            if(selectopt == "Half Day"){
-              CRM.api('Activity', 'create', {'sequential': 1, 'activity_type_id': 'Absence', 'source_contact_id': uID, 'activity_date_time': selDate, 'duration': 240, 'source_record_id': upActivityId}, {success: function(data) {} });
+          var selectopt = cj('#options_'+x+' :selected').text();
+          if (selectopt == "Full Day"){
+            dateValues[x] = selDate +":" + "480";
+          }
+          else {
+            if (selectopt == "Half Day"){
+              dateValues[x] = selDate +":" + "240";
             }
-          } 
+          }
         }
-	alert("Your absences have been updated.");
-	event.preventDefault();
-});
+    	cj("#date_values").val(dateValues.join('|'));
+      });
 
 {/literal}{/if}{literal}
 {/literal}{if $action eq 1}{literal}
