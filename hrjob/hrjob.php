@@ -216,7 +216,7 @@ function hrjob_civicrm_entityTypes(&$entityTypes) {
   );
 }
 
-function hrjob_civicrm_triggerInfo(&$info, $tableName) {
+/*function hrjob_civicrm_triggerInfo(&$info, $tableName) {
   $info[] = array(
     'table' => array('civicrm_hrjob'),
     'when' => 'after',
@@ -249,7 +249,7 @@ function hrjob_civicrm_triggerInfo(&$info, $tableName) {
       END IF;
     ",
   );
-}
+}*/
 
 /**
  * Implementation of hook_civicrm_permission
