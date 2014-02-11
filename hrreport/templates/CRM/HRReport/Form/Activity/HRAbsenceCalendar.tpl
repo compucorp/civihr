@@ -62,8 +62,19 @@
           {foreach from=$monthDays item=day1}
             {if ($day1 GT $monthRecord.start_day || $day1 EQ $monthRecord.start_day) AND
               ($day1 LT $monthRecord.end_day || $day1 EQ $monthRecord.end_day)}
-              <th>{$day1}</th>
-            {/if}
+               <th class='hrabsence-cal-chart-item'>
+               {if ($monthRecord.actual_start_day AND
+                ($day1 GT $monthRecord.actual_start_day || $day1 EQ $monthRecord.actual_start_day)) ||
+                ($monthRecord.actual_end_day AND
+                ($day1 LT $monthRecord.actual_end_day || $day1 EQ $monthRecord.actual_end_day))}
+                 {$day1}
+               {elseif empty($monthRecord.actual_start_day) && empty($monthRecord.actual_end_day)}
+                 {$day1}
+               {else}
+                 <font color='white'>{$day1}</font>
+               {/if}
+               </th>
+             {/if}
           {/foreach}
         </tr>
         {if $monthRecord.contacts}

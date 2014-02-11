@@ -358,8 +358,8 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
       }
     }
     //assigning the start_day and end_day to corrosponding month in our absenceCalender array
-    $absenceCalendar[date('Y', strtotime($durationFromDate))][(int)date('m', strtotime($durationFromDate))]['start_day'] = (int)date('d', strtotime($durationFromDate));
-    $absenceCalendar[date('Y', strtotime($durationToDate))][(int)date('m', strtotime($durationToDate))]['end_day'] = (int)date('d', strtotime($durationToDate));
+    $absenceCalendar[date('Y', strtotime($durationFromDate))][(int)date('m', strtotime($durationFromDate))]['actual_start_day'] = (int)date('d', strtotime($durationFromDate));
+    $absenceCalendar[date('Y', strtotime($durationToDate))][(int)date('m', strtotime($durationToDate))]['actual_end_day'] = (int)date('d', strtotime($durationToDate));
 
 
     $sql = "
