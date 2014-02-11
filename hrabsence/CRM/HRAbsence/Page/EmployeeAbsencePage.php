@@ -12,7 +12,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       // through permissioned APIs, but it would be a good precaution.
 
       CRM_Utils_System::setTitle(ts('Absences for %1', array(
-        1 => $contactID
+        1 => CRM_Contact_BAO_Contact::displayName($contactID)
       )));
       self::registerResources($contactID);
     }
