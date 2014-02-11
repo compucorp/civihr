@@ -174,29 +174,29 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .hrabsence-cal-total .debit { color: #a00; }
 
 /* Absence view page */
-.page-civicrm-absences-set .crm-container table.absencedetail tbody tr td:first-child {
+.page-civicrm-absence-set .crm-container table.absencedetail tbody tr td:first-child {
     font-weight: bold !important;
 } 
 
-.page-civicrm-absences-set .crm-container table#tblabsence tbody tr:last-child{
+.page-civicrm-absence-set .crm-container table#tblabsence tbody tr:last-child{
     font-weight: bold;
 }
-.page-civicrm-absences-set .crm-container table#tblabsence tbody tr:first-child{
+.page-civicrm-absence-set .crm-container table#tblabsence tbody tr:first-child{
     background-color: #D3D3D3;
 }
 
-.page-civicrm-absences-set .crm-container table {
+.page-civicrm-absence-set .crm-container table {
     width:70% !important;
 } 
 
-.page-civicrm-absences-set #tabs-wrapper h1 {
+.page-civicrm-absence-set #tabs-wrapper h1 {
     display: none !important;
 }
 
-.page-civicrm-absences-set #commentDisplay {
+.page-civicrm-absence-set #commentDisplay {
     font-style:italic !important;
 }
 
-.page-civicrm-absences-set .tblabsencetitle, .page-civicrm-absences-set .abempInfo tbody tr td:first-child {
+.page-civicrm-absence-set .tblabsencetitle, .page-civicrm-absence-set .abempInfo tbody tr td:first-child {
     font-weight: bold !important;
 }

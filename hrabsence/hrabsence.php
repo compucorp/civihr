@@ -221,7 +221,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
         'attributes' => array(
           'label'      => "{$absenceTypeName}",
           'name'       => "{$absenceTypeName}",
-          'url'        => "civicrm/absences/set?atype={$aTypeId}&action=add",
+          'url'        => "civicrm/absence/set?atype={$aTypeId}&action=add",
           'permission' => 'access HRAbsences',
           'operator'   => NULL,
           'separator'  => NULL,
@@ -269,12 +269,12 @@ function hrabsence_civicrm_buildForm($formName, &$form) {
 
     if ( in_array($activityTypeId, $absenceType)) {
       if ($form->_action == CRM_Core_Action::VIEW) {
-        $urlPathView = CRM_Utils_System::url('civicrm/absences/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=view&context=search&reset=1");
+        $urlPathView = CRM_Utils_System::url('civicrm/absence/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=view&context=search&reset=1");
         CRM_Utils_System::redirect($urlPathView);
       }
 
       if ($form->_action == CRM_Core_Action::UPDATE) {
-        $urlPathEdit = CRM_Utils_System::url('civicrm/absences/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=update&context=search&reset=1");
+        $urlPathEdit = CRM_Utils_System::url('civicrm/absence/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=update&context=search&reset=1");
         CRM_Utils_System::redirect($urlPathEdit);
       }
     }    
