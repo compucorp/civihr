@@ -352,7 +352,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
       for ($j=$startCount; $j<=$endCount; $j++) {
         $absenceCalendar[date('Y', strtotime($durationFromDate))+$i][$j] = array(
           'start_day' => 1,
-          'end_day' => cal_days_in_month(CAL_GREGORIAN,$j,((date('Y', strtotime($durationFromDate))+$i))),
+          'end_day' => date("t", mktime(0,0,0,$j, 1, ((date('Y', strtotime($durationFromDate))+$i)))),
           'month_name' => date("F", mktime(0, 0, 0, $j, 10)),
         );
       }
