@@ -10,6 +10,23 @@
  */
 function _civicrm_api3_activity_getabsences_spec(&$spec) {
   //$spec['magicword']['api.required'] = 1;
+  $spec['target_contact_id'] = array(
+    'name' => 'target_id',
+    'title' => 'Activity Target',
+    'type' => 1,
+    'FKClassName' => 'CRM_Activity_DAO_ActivityContact',
+  );
+  $spec['period_id'] = array(
+    'name' => 'period_id',
+    'title' => 'Absence Period',
+    'type' => 1,
+    'FKClassName' => 'CRM_HRAbsence_DAO_HRAbsencePeriod',
+  );
+  $spec['activity_type_id'] = array(
+    'name' => 'activity_type_id',
+    'title' => 'Activity Type',
+    'type' => 1,
+  );
 }
 
 /**
