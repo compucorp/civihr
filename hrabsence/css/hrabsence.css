@@ -58,12 +58,17 @@
     background-color: #FFFFFF;
 }
 
-.hrabsence-calendar-region {
+.hrabsence-calendar-chart {
     width: 98%;
     border: 1px solid black;
     padding: 0.8em;
     margin: 1em;
     float: left;
+}
+
+.hrabsence-calendar-chart table th{
+    border: 1px solid #f4f4f4;
+    text-align: center;
 }
 
 .hrabsence-list-entitlement, .hrabsence-list-balance {
@@ -99,9 +104,9 @@
 /* **** Calendar - Main Table **** */
 
 .hrabsence-calendar { background: white; color: black; }
-.hrabsence-calendar td, .hrabsence-calendar th { text-align: center; }
+.hrabsence-calendar td, .hrabsence-calendar th, .hrabsence-calendar-chart td { text-align: center; }
 
-.hrabsence-calendar td { border: 1px solid #f4f4f4; }
+.hrabsence-calendar td,  .hrabsence-calendar-chart td { border: 1px solid #f4f4f4; }
 
 /* **** Calendar - Legend **** */
 
@@ -116,6 +121,13 @@ td.hrabsence-cal-item,
 td.hrabsence-cal-item a:link,
 td.hrabsence-cal-item a:visited,
 td.hrabsence-cal-item a:hover
+{
+    color:  white;
+}
+
+td.hrabsence-cal-chart-item a:link,
+td.hrabsence-cal-chart-item a:visited,
+td.hrabsence-cal-chart-item a:hover
 {
     color:  white;
 }

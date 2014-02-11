@@ -50,8 +50,8 @@
 {foreach from=$rows item=yearRecord key=year}
   {foreach from=$yearRecord item=monthRecord key=month}
 <div id="report-layout statistics-table">
-    <div class="hrabsence-calendar-region">
-      <table class="hrabsence-calendar">
+    <div class="hrabsence-calendar-chart">
+      <table class="hrabsence-calendar-chart">
         <tr>
           <th colspan={math equation="(x - y)+2" x=$monthRecord.end_day y=$monthRecord.start_day}>
             {$monthRecord.month_name}&nbsp;&nbsp;{$year}
@@ -69,13 +69,13 @@
         {if $monthRecord.contacts}
           {foreach from=$monthRecord.contacts item=properties key=contact_id}
             <tr>
-              <td style="text-align:left;"><b>{$monthRecord.contacts.$contact_id.link}</b></td>
+              <td style="text-align:left; color:blue;"><b>{$monthRecord.contacts.$contact_id.link}</b></td>
               {foreach from=$monthDays item=day2}
                 {if ($day2 GT $monthRecord.start_day || $day2 EQ $monthRecord.start_day)
                   AND ($day2 LT $monthRecord.end_day || $day2 EQ  $monthRecord.end_day)}
                   {if isset($properties.$day2)}
                     {assign var=activity_type_id value=$properties.$day2.activity_type_id}
-                      <td class={$legend.$activity_type_id.class}>{$properties.$day2.day_name}</td>
+                      <td class='{$legend.$activity_type_id.class} hrabsence-cal-chart-item'>{$properties.$day2.day_name}</td>
                     {else}
                       <td></td>
                   {/if} 
@@ -90,7 +90,7 @@
   {/foreach}  
 {/foreach}
 
-<div class="hrabsence-calendar-region">
+<div class="hrabsence-calendar-chart">
   <table class="hrabsence-legend" style="text-align:center;">
     <tr>
       <th colspan={$legend|@count}>

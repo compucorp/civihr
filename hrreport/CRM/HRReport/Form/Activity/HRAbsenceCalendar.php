@@ -240,12 +240,6 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
         $errors['absence_date_to'] = ts('End date should be after Start date.');
       }
     }
-    if (!array_key_exists('activity_type_id_value', $fields) ||
-      (array_key_exists('activity_type_id_value', $fields) && (count($fields['activity_type_id_value']) == 0)) ||
-      ($fields['activity_type_id_op'] == 'notin' && (count($fields['activity_type_id_value']) == count($self->activityTypes)))
-    ) {
-      $errors['activity_type_id_value'] = ts('Please choose atleast one Absence Type');
-    }
     return $errors;
   }
 
@@ -269,7 +263,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
     }
     else {
       CRM_Core_Session::setStatus(ts("The listed records(s) cannot be added to the group."));
-    }
+   }
   }
 
   function buildACLClause($tableAlias = array()) {
@@ -299,33 +293,21 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
     $this->buildACLClause(array('absence', 'request'));
     parent::beginPostProcess();
 
-    $absenceCalendar = $filteredActivityTypes = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
+    $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
     $viewLinks = FALSE;
 
     $res = civicrm_api3('HRAbsenceType', 'get', array());
     $absenceTypes = $res['values'];
 
-    //for legen color code
-    if (array_key_exists('activity_type_id_value', $this->_params)) {
-      $filteredActivityTypes = array_flip($this->_params['activity_type_id_value']);
-      if ($this->_params['activity_type_id_op'] == 'notin') {
-       $filteredActivityTypes = array_diff_key(array_flip(array_keys($this->activityTypes)), $filteredActivityTypes);
-      }
-    }
-
     foreach($absenceTypes as $key => $absenceType) {
       $count = $key-1;
-      if (array_key_exists('debit_activity_type_id', $absenceType) &&
-        array_key_exists($absenceType['debit_activity_type_id'], $filteredActivityTypes)
-      ) {
+      if (array_key_exists('debit_activity_type_id', $absenceType)) {
         $legend[$absenceType['debit_activity_type_id']] = array(
           'title' => $absenceType['title'],
           'class' => "hrabsence-bg-{$count}-debit"
         );
       }
-      if (array_key_exists('credit_activity_type_id', $absenceType) &&
-        array_key_exists($absenceType['credit_activity_type_id'], $filteredActivityTypes)
-      ) {
+      if (array_key_exists('credit_activity_type_id', $absenceType)) {
         $legend[$absenceType['credit_activity_type_id']] = array(
           'title' => $absenceType['title'] . ' (Credit)',
           'class' => "hrabsence-bg-{$count}-credit"
@@ -403,6 +385,7 @@ HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
 YEAR(request.activity_date_time) as year,
 MONTH(request.activity_date_time) as month,
 DAY(request.activity_date_time) as day,
+absence.id as aid,
 absence.activity_type_id as ati,
 cac.contact_id as contact_id,
 request.source_record_id,
@@ -441,7 +424,14 @@ cc.display_name as contact_name";
           $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id]['link'] =
             "<a title='" . $onHover . "' href='" . $url . "'>".$dao->contact_name."</a>";
         }
-        $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['day_name'] = substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1);
+        if ($absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] != 'Mixed') {
+          $dateUrl = CRM_Utils_System::url("civicrm/absences/set",'reset=1&action=update&aid=' . $dao->aid, $this->_absoluteUrl);
+          $day_name = "<a title='Update this absence' href={$dateUrl}>". substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1) ."</a>";
+        }
+        else {
+          $day_name = substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1);
+        }
+        $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['day_name'] = $day_name;
       }
     }
 
@@ -464,7 +454,7 @@ cc.display_name as contact_name";
     $this->assign('statistics', $statistics);
   }
 
-  function endPostProcess($rows) {
+  function endPostProcess($rows = NULL) {
     $csvRows = array();
     $count = 0;
 

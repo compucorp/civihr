@@ -14,6 +14,7 @@ return array (
       'description' => 'HR Report showing absences at individual level on monthly chart.',
       'class_name' => 'CRM_HRReport_Form_Activity_HRAbsenceCalendar',
       'report_url' => 'civihr/absence/calendar',
+      'grouping' => 'Absence',
       'component' => '',
     ),
   ),
@@ -29,7 +30,6 @@ return array (
       'form_values' => serialize(
         array(
           'absence_duration_relative' => 'this.month',
-          'activity_type_id_value' => array_keys(CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes()),
         )
       ),
     ),
