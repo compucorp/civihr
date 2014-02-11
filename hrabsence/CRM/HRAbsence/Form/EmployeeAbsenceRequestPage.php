@@ -51,6 +51,10 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
   protected $_aid;
 
   function buildQuickForm() {
+    if ($this->_action != (CRM_Core_Action::UPDATE) && CRM_Core_Permission::check('edit all contacts')){
+      $this->assign('permissioneac', 1);
+    }
+    CRM_Contact_Form_NewContact::buildQuickForm($this);
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
     $paramsHRJob = array(
@@ -163,6 +167,9 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
     $this->_aid = CRM_Utils_Request::retrieve('aid', 'Int', $this);
     $session = CRM_Core_Session::singleton();
     $this->_loginUserID = $session->get('userID');
+    if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
+      $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
+    }
 
     if(($this->_action == 4 || $this->_action == 2)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
@@ -227,6 +234,9 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
   public function postProcess() {
     $session = CRM_Core_Session::singleton();
     $submitValues = $this->_submitValues;
+    if (!empty($submitValues['contact_select_id'][1])){
+      $this->_targetContactID = $submitValues['contact_select_id'][1];
+    }
     $absentDateDurations = array();
 
     if (!empty($submitValues['date_values'])) {
@@ -326,11 +336,13 @@ class CRM_HRAbsence_Form_EmployeeAbsenceRequestPage extends CRM_Core_Form {
     }
   }
 
-  function formRule($fields, $files, $self) {
+  static function formRule($fields, $files, $self) {
     $errors = array();
     $dateFrom = $fields['start_date_display'];        
     $dateTo = $fields['end_date_display'];
     $diff = abs(strtotime($dateFrom) - strtotime($dateTo));
+    $years = floor($diff / (365*60*60*24));
+    $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
     $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
 
     if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
