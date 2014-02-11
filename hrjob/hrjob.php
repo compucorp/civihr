@@ -326,7 +326,7 @@ function hrjob_civicrm_navigationMenu( &$params ) {
         'active'     => 1
       ),
       'child' => array (
-        "$maxKey+2" => array (
+        $maxKey+2 => array (
           'attributes' => array (
             'label'      => 'Jobs',
             'name'       => 'jobs',
