@@ -16,6 +16,15 @@ CRM.HRAbsenceApp.module('New', function(New, HRAbsenceApp, Backbone, Marionette,
         var addActivityUrl = CRM.url("civicrm/absences/set", {'reset':1, 'action': 'add', 'atype': newActivityId});
         window.location = addActivityUrl;
       }
+    },
+    onRender: function() {
+      this.$('[name=activity_type_id]').multiselect({
+        minWidth: 250,
+        multiple: false,
+        header: false,
+        noneSelectedText: ts('(Select type)'),
+        selectedText: ts('(Select type)')
+      });
     }
   });
 });

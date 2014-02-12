@@ -71,16 +71,5 @@
        'allow_debits' => 1,
      ),
    ),
-   array(
-     'name' => 'Undecided: Public Holiday Absence Type',
-     'entity' => 'HRAbsenceType',
-     'params' =>
-     array(
-       'version' => 3,
-       'title' => "Undecided: Public Holiday",
-       'is_active' => 1,
-       'allow_debits' => 1,
-     ),
-   )
  ); 
  
