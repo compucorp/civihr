@@ -523,10 +523,10 @@ class GenerateHRData {
       $org->addressee_display = $org->display_name;
       $org->hash = crc32($org->sort_name);
       $this->_update($org);
-
-      //if Absence (CiviHR) extension is enabled, add the sample data
-      $this->addAbsencePeriods();
     }
+    
+    //if Absence (CiviHR) extension is enabled, add the sample data
+    $this->addAbsencePeriods();
   }
 
 
