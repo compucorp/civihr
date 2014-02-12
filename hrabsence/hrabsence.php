@@ -132,7 +132,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
       'label'      => 'Absences',
       'name'       => 'absences',
       'url'        => null,
-      'permission' => 'access HRAbsences', 
+      'permission' => 'access HRAbsences',
       'operator'   => null,
       'separator'  => null,
       'parentID'   => null,
@@ -156,16 +156,16 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
       ) ,
       $maxKey+3 => array (
         'attributes' => array (
-          'label'      => 'Calender',
-          'name'       => 'calender',
-          'url'        => null,
+          'label'      => 'Calendar',
+          'name'       => 'calendar',
+          'url'        => 'civicrm/report/civihr/absence/calendar',
           'permission' => 'access HRAbsences',
           'operator'   => null,
           'separator'  => 1,
           'parentID'   => $maxKey+1,
           'navID'      => 1,
           'active'     => 1
-        ), 
+        ),
         'child' => null
       ),
       $maxKey+4 => array (
@@ -209,7 +209,21 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
         ),
         'child' => null
       ) ,
-    ) 
+      $maxKey+7 => array (
+        'attributes' => array (
+          'label'      => 'Absence Types',
+          'name'       => 'absenceTypes',
+          'url'        => 'civicrm/absence/type?reset=1',
+          'permission' => 'access HRAbsences',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+1,
+          'navID'      => 1,
+          'active'     => 1
+        ),
+        'child' => null
+      ) ,
+    )
   );
 
   $maxKey_child = 0;
@@ -278,6 +292,6 @@ function hrabsence_civicrm_buildForm($formName, &$form) {
         $urlPathEdit = CRM_Utils_System::url('civicrm/absence/set', "atype={$activityTypeId}&aid={$activityId}&cid={$currentlyViewedContactId}&action=update&context=search&reset=1");
         CRM_Utils_System::redirect($urlPathEdit);
       }
-    }    
-  } 
+    }
+  }
 }

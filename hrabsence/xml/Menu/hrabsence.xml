@@ -12,4 +12,10 @@
     <title>AbsenceRequest</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/absence/type</path>
+    <page_callback>CRM_HRAbsence_Page_AbsenceType</page_callback>
+    <title>Absence Types</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

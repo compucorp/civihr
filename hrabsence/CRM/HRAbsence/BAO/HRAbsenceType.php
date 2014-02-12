@@ -104,6 +104,10 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     return $dao->count();
   }
 
+  public static function getDefaultValues($id) {
+    $absenceTypes =  civicrm_api3('HRAbsenceType', 'get', array('id' => $id));
+    return $absenceTypes['values'][$id];
+  }
   /**
    * Get the list of absence-related activity types
    *
@@ -143,5 +147,11 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
       }
     }
     return $result;
+  }
+
+  public static function del($absenceTypeId) {
+    $absenceType = new CRM_HRAbsence_DAO_HRAbsenceType();
+    $absenceType->id = $absenceTypeId;
+    $absenceType->delete();
   }
 }
