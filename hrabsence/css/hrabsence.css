@@ -111,9 +111,9 @@
 /* **** Calendar - Legend **** */
 
 .hrabsence-legend { background: white; color: black; }
-.hrabsence-legend h4 { width: 100%; text-align: center; }
-.hrabsence-legend table { width: 100%; }
-.hrabsence-legend table td { margin: auto; text-align: center; width: 50%; }
+.hrabsence-legend h4 { width: 98%; text-align: center; }
+.hrabsence-legend table { width: 98%; padding: 0.5em; margin: auto; }
+.hrabsence-legend table td { margin: auto; text-align: center; }
 
 /* *** Calendar - Shared by main table and legend *** */
 
