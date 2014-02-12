@@ -51,15 +51,19 @@
   </table>
 
   <div class="hrabsence-legend">
-  <h4>{/literal}{ts}Legend{/ts}{literal}</h4>
   <% var legendPos =0, legendCount = _.size(CRM.absenceApp.legend); %>
   <table class="hrabsence-legend">
+    <tr>
+      <th colspan="<%- _.size(CRM.absenceApp.legend) %>"><h4>{/literal}{ts}Legend{/ts}{literal}</h4></th>
+    </tr>
+    <tr>
+    <% var cellWidth = Math.floor(99 / _.size(CRM.absenceApp.legend)) ; %>
     <% _.each(CRM.absenceApp.legend, function(legendItem) { %>
-      <% if (legendPos%2 == 0) { %><tr> <% } %>
-      <td class="hrabsence-cal-item <%- legendItem.cssClass %>"><%- legendItem.label %></td>
-      <% if (legendPos%2 == 1 || legendPos == legendCount-1) { %></tr><% } %>
-      <% legendPos++; %>
+      <td style="width: <%- cellWidth %>%" class="hrabsence-cal-item <%- legendItem.cssClass %>">
+        <%- legendItem.label %>
+      </td>
     <% }); %>
+    </tr>
   </table>
   </div>
 
