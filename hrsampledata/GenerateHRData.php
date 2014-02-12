@@ -1030,20 +1030,22 @@ class GenerateHRData {
 
     //every period will have following absenceTypes
     $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array());
-
+    
     //pick up random period
     $employmentPeriods = $employmentPeriodClusters[mt_rand(0, 4)];
 
     foreach ($employmentPeriods as $employmentPeriod) {
       foreach ($absenceTypes['values'] as $absenceType) {
-        $absenceEntitlementValues = array(
-          'contact_id' => $cid,
-          'period_id' => $employmentPeriod,
-          'type_id' => $absenceType['id'],
-          'amount' => mt_rand(5, 15),
-        );
-        //create Entitlement
-        civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
+        if ($absenceType['name'] != "TOIL" || $absenceType['name'] != "Other") {
+          $absenceEntitlementValues = array(
+            'contact_id' => $cid,
+            'period_id' => $employmentPeriod,
+            'type_id' => $absenceType['id'],
+            'amount' => mt_rand(5, 15),
+          );
+          //create Entitlement
+          civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
+        }
       }
     }
   }
