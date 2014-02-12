@@ -80,7 +80,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     if (CRM_Contact_BAO_Query::componentPresent($query->_returnProperties, 'hrjob_')) {
       $fields = $this->getFields();
       foreach ($fields as $fldName => $params) {
-        if (CRM_Utils_Array::value($fldName, $query->_returnProperties)) {
+        if (!empty($query->_returnProperties[$fldName])) {
           $query->_select[$fldName]  = "{$params['where']} as $fldName";
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);
@@ -93,7 +93,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   function where(&$query) {
     $grouping = NULL;
     foreach (array_keys($query->_params) as $id) {
-      if (!CRM_Utils_Array::value(0, $query->_params[$id])) {
+      if (empty($query->_params[$id][0])) {
         continue;
       }
       if (substr($query->_params[$id][0], 0, 6) == 'hrjob_') {
@@ -238,12 +238,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   function setTableDependency(&$tables) {
-    if (
-      CRM_Utils_Array::value('civicrm_hrjob_hour', $tables) ||
-      CRM_Utils_Array::value('civicrm_hrjob_health', $tables) ||
-      CRM_Utils_Array::value('civicrm_hrjob_pension', $tables) ||
-      CRM_Utils_Array::value('civicrm_hrjob_pay', $tables) 
-    ) {
+    if (!empty($tables['civicrm_hrjob_hour']) || !empty($tables['civicrm_hrjob_health']) || !empty($tables['civicrm_hrjob_pension'])|| !empty($tables['civicrm_hrjob_pay'])) {
       $tables = array_merge(array('civicrm_hrjob' => 1), $tables);
     }
   }
