@@ -447,8 +447,6 @@ class GenerateHRData {
       $this->addCareerData($cid);
       //if Absence (CiviHR) extension in enabled, add the sample data
       $this->addAbsenceEntitlements($cid);
-      //add absence requests to individuals.
-      $this->addAbsenceRequests($cid);
     }
   }
 
@@ -1030,16 +1028,16 @@ class GenerateHRData {
 
     //every period will have following absenceTypes
     $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array());
-    
+
     //pick up random period
     $employmentPeriods = $employmentPeriodClusters[mt_rand(0, 4)];
 
-    foreach ($employmentPeriods as $employmentPeriod) {
+    foreach ($employmentPeriods as $this->employmentPeriod) {
       foreach ($absenceTypes['values'] as $absenceType) {
-        if ($absenceType['name'] != "TOIL" || $absenceType['name'] != "Other") {
+        if ($absenceType['name'] != "TOIL" && $absenceType['name'] != "Other") {
           $absenceEntitlementValues = array(
             'contact_id' => $cid,
-            'period_id' => $employmentPeriod,
+            'period_id' => $this->employmentPeriod,
             'type_id' => $absenceType['id'],
             'amount' => mt_rand(5, 15),
           );
@@ -1047,6 +1045,8 @@ class GenerateHRData {
           civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
         }
       }
+      // add absence requests per employmentPeriod.
+      $this->addAbsenceRequests($cid);
     }
   }
 
@@ -1059,8 +1059,8 @@ class GenerateHRData {
 
     $parentActivities = array('Vacation', 'Sick');
 
-    $fYStartDate = strtotime($this->_periods[0]['start_date']);
-    $fYEndDate = strtotime($this->_periods[0]['end_date']);
+    $fYStartDate = strtotime($this->_periods[$this->employmentPeriod - 1]['start_date']);
+    $fYEndDate = strtotime($this->_periods[$this->employmentPeriod - 1]['end_date']);
 
     $absenceCount = mt_rand(1, 5);
 
