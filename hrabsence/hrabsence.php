@@ -117,7 +117,8 @@ function hrabsence_civicrm_entityTypes(&$entityTypes) {
  * @param array $apiRequest
  */
 function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
-  if (strtolower($apiRequest['entity']) == 'activity' && strtolower($apiRequest['action']) == 'get') {
+  $action = strtolower($apiRequest['action']);
+  if (strtolower($apiRequest['entity']) == 'activity' && ($action == 'get' || $action == 'getabsences')) {
     $wrappers[] = new CRM_HRAbsence_AbsenceRangeOption();
   }
 }

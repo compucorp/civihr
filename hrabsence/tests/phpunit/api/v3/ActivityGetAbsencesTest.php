@@ -87,7 +87,8 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
             'activity_type_id' => $activityType,
             'source_contact_id' => $this->sourceContactId,
             'target_contact_id' => $contactId,
-            'activity_date_time' => $datetime,
+            'details' => "key is $datetime",
+            'activity_date_time' => '2010-11-12 01:02:03',
           );
           $absenceRequest = $this->callAPISuccess('Activity', 'create', $params);
 
@@ -145,9 +146,9 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
       'period_id' => $this->periods['2013']['id'],
     ));
 
-    $dates = array_unique(CRM_Utils_Array::collect('activity_date_time', $activities['values']));
-    sort($dates);
-    $this->assertEquals(array('2013-01-01 01:01:00'), $dates);
+    $details = array_unique(CRM_Utils_Array::collect('details', $activities['values']));
+    sort($details);
+    $this->assertEquals(array('key is 2012-12-31 23:57:00', 'key is 2013-01-01 01:01:00'), $details);
     $this->assertEquals(count($activities['values']), count(array_unique(CRM_Utils_Array::collect('id', $activities['values'])))); // no dupes
 
     $activityTypes = CRM_Core_PseudoConstant::activityType();
@@ -162,9 +163,9 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
       'period_id' => array($this->periods['2012']['id'], $this->periods['2013']['id']),
     ));
 
-    $dates = array_unique(CRM_Utils_Array::collect('activity_date_time', $activities['values']));
-    sort($dates);
-    $this->assertEquals(array('2012-01-01 01:01:00', '2012-12-31 23:57:00', '2013-01-01 01:01:00'), $dates);
+    $details = array_unique(CRM_Utils_Array::collect('details', $activities['values']));
+    sort($details);
+    $this->assertEquals(array('key is 2012-01-01 01:01:00', 'key is 2012-12-31 23:57:00', 'key is 2013-01-01 01:01:00'), $details);
     $this->assertEquals(count($activities['values']), count(array_unique(CRM_Utils_Array::collect('id', $activities['values'])))); // no dupes
 
     $activityTypes = CRM_Core_PseudoConstant::activityType();
@@ -206,8 +207,8 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
 
     $this->assertEquals(6, count($activities['values']));
     foreach ($activities['values'] as $activity) {
-      switch ($activity['activity_date_time']) {
-        case '2012-01-01 01:01:00':
+      switch ($activity['details']) {
+        case 'key is 2012-01-01 01:01:00':
           $this->assertEquals('2012-01-02 01:01:00', $activity['absence_range']['low']);
           $this->assertEquals('2012-01-04 01:01:00', $activity['absence_range']['high']);
           $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
@@ -215,7 +216,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
           $this->assertEquals(array('2012-01-02 01:01:00', '2012-01-04 01:01:00'), CRM_Utils_Array::collect('activity_date_time', $activity['absence_range']['items']));
           $this->assertEquals(array(8*60, 8*60), CRM_Utils_Array::collect('duration', $activity['absence_range']['items']));
           break;
-        case '2012-12-31 23:57:00':
+        case 'key is 2012-12-31 23:57:00':
           $this->assertEquals('2013-01-01 23:57:00', $activity['absence_range']['low']);
           $this->assertEquals('2013-01-03 23:57:00', $activity['absence_range']['high']);
           $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
@@ -223,7 +224,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
           $this->assertEquals(array('2013-01-01 23:57:00', '2013-01-03 23:57:00'), CRM_Utils_Array::collect('activity_date_time', $activity['absence_range']['items']));
           $this->assertEquals(array(8*60, 8*60), CRM_Utils_Array::collect('duration', $activity['absence_range']['items']));
           break;
-        case '2013-01-01 01:01:00':
+        case 'key is 2013-01-01 01:01:00':
           $this->assertEquals('2013-01-02 01:01:00', $activity['absence_range']['low']);
           $this->assertEquals('2013-01-04 01:01:00', $activity['absence_range']['high']);
           $this->assertEquals(2 * 8 * 60, $activity['absence_range']['duration']);
