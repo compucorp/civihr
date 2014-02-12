@@ -40,7 +40,7 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
       if (console.log) console.log('ListView.onRender with ' + this.options.collection.models.length + ' item(s)');
       this.$('.activity-count').text(this.options.collection.models.length);
       this.$('.hrabsence-open').each(function(){
-        var url = CRM.url('civicrm/absences/set', {
+        var url = CRM.url('civicrm/absence/set', {
           reset: 1,
           action: 'update',
           aid: $(this).attr('data-activity')
