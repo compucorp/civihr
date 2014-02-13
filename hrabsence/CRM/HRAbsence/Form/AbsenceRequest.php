@@ -342,6 +342,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $dateFrom = $fields['start_date_display'];        
     $dateTo = $fields['end_date_display'];
     $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
+    $days = $days + 1;
     if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
       $errors['end_date'] = "From date cannot be greater than to date.";
     }
