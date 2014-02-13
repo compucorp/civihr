@@ -344,7 +344,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('import', $field)) {
+        if (!empty($field['import'])) {
           if ($prefix) {
             self::$_import['hrjob_role'] = & $fields[$name];
           } else {
@@ -368,7 +368,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (CRM_Utils_Array::value('export', $field)) {
+        if (!empty($field['export'])) {
           if ($prefix) {
             self::$_export['hrjob_role'] = & $fields[$name];
           } else {
