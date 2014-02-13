@@ -37,6 +37,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $_targetContactID;
   public $_managerContactID;
   public $count;
+  public $_actStatusId;
   protected $_aid;
 
   function buildQuickForm() {
@@ -110,7 +111,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    }
    $this->addDate('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDate'));
    $this->addDate('end_date', ts('End Date / Time'), FALSE, array('formatType' => 'activityDate'));
-   if ($this->_action && ($this->_action == CRM_Core_Action::ADD || $this->_action == CRM_Core_Action::UPDATE) ) {
+   if ($this->_action && ($this->_action == CRM_Core_Action::ADD) ) {
       $this->addButtons(
         array(
           array(
@@ -119,31 +120,62 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             'spacing' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
             'isDefault' => TRUE,
           ),
-          array(
-            'type' => 'cancel',
-            'name' => ts('Cancel Absence Request'),
-            ),
         )
       );
     }
    else {
+     global $user;
      $now = time(); 
-     $fromDate = date("Y-m-d", strtotime($keys[0]));
-     $from_date = strtotime($fromDate);
-     $datediff = $from_date - $now ;
-     $dayDiff = floor($datediff/(60*60*24));
-     if ($dayDiff>0) {
-       $this->addButtons(
-         array(
+     $datetime1 = new DateTime(date("M j, Y", $now));
+     $datetime2 = new DateTime($this->_toDate);
+     $interval = $datetime1->diff($datetime2);
+     
+     if ( ($interval->days>=0) && ($interval->invert == 0) ) {
+       if ((in_array('administrator', array_values($user->roles)) || ((isset($this->_managerContactID)) == (isset($this->_loginUserID)))) && ($this->_actStatusId == 1)) {        
+         $this->addButtons(
            array(
-             'type' => 'cancel',
-             'name' => ts('Cancel Absence Request'),
-           ),
-         )
-       );
+             array(
+               'type' => 'next',
+               'name' => ts('Cancel Absence Request'),
+             ),
+             array(
+               'type' => 'upload',
+               'name' => ts('Approve'),
+             ),
+             array(
+               'type' => 'submit',
+               'name' => ts('Reject'),
+             ),
+           )
+         );
+       }
+       else {
+         $this->addButtons(
+           array(
+             array(
+               'type' => 'next',
+               'name' => ts('Cancel Absence Request'),
+             ),
+           )
+         ); 
+       }
      }
    }
    if ($this->_action == (CRM_Core_Action::UPDATE)){
+     $this->addButtons(
+       array(
+         array(
+           'type' => 'submit',
+           'name' => ts('Save'),
+           'spacing' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+           'isDefault' => TRUE,
+         ),
+         array(
+           'type' => 'next',
+           'name' => ts('Cancel Absence Request'),
+         ),
+       )
+    ); 
      $this->add('hidden','source_record_id', $this->_aid);
      $params = array(
        'sequential' => 1,
@@ -185,7 +217,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
-      $this->_loginUserID = $resultAct['values'][0]['source_contact_id'][0];
+      $this->_loginUserID = $resultAct['values'][0]['source_contact_id'];
+      $this->_actStatusId = $resultAct['values'][0]['status_id'];
       if ($this->_action == 4) {
         $groupTree = CRM_Core_BAO_CustomGroup::getTree('Activity', $this, $this->_activityId, 0, $this->_activityTypeID);
         CRM_Core_BAO_CustomGroup::buildCustomDataView($this, $groupTree);
@@ -283,7 +316,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if ($this->_action & (CRM_Core_Action::ADD)) {
         $activityLeavesParam['status_id'] = $activityParam['status_id'];
       }
-
       foreach ($absentDateDurations as $date => $duration) {
         $activityLeavesParam['activity_date_time'] = $date;
         $activityLeavesParam['duration'] = $duration;
@@ -298,55 +330,94 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
     } 
     elseif ($this->_action == CRM_Core_Action::UPDATE) {
-      $params = array(
-        'sequential' => 1,
-        'source_record_id' => $submitValues['source_record_id'],
-        'option.limit'=>31,
-      );      
-      $result = civicrm_api3('Activity', 'get', $params);
-      $count=$result['values'];
-      foreach ($result['values'] as $row_result ){
+      if (array_key_exists('_qf_AbsenceRequest_next', $submitValues)) {
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Cancelled"'));
+        $activityParam = array(
+          'sequential' => 1,
+          'id' => $this->_activityId,
+          'activity_type_id' => $this->_activityTypeID,
+          'status_id' => $statusId
+        );   
+        $result = civicrm_api3('Activity', 'create', $activityParam);
+        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
+      }
+      else {
         $params = array(
           'sequential' => 1,
-          'id'=>$row_result['id'],
+          'source_record_id' => $submitValues['source_record_id'],
+          'option.limit'=>31,
+        );      
+        $result = civicrm_api3('Activity', 'get', $params);
+        $count=$result['values'];
+        foreach ($result['values'] as $row_result ){
+          $params = array(
+            'sequential' => 1,
+            'id'=>$row_result['id'],
+          );
+          civicrm_api3('Activity', 'delete', $params);
+        }
+        $activityParam = array(
+          'sequential' => 1,
+          'source_contact_id' => $this->_loginUserID,
+          'target_contact_id' => $this->_targetContactID,
+          'assignee_contact_id' => $this->_managerContactID,
+          'activity_type_id' => $this->_activityTypeID,
         );
-        civicrm_api3('Activity', 'delete', $params);
+      
+        foreach ($absentDateDurations as $date => $duration) {
+          $params = array(
+            'sequential' => 1,
+            'activity_type_id' => $this->_activityTypeID,
+            'source_record_id' => $submitValues['source_record_id'],
+            'activity_date_time' => $date,
+            'duration' => $duration,
+          );
+          $result = civicrm_api3('Activity', 'create', $params);
+        }
+        $buttonName = $this->controller->getButtonName();
+        if ($buttonName == $this->getButtonName('submit')) {
+          $this->_aid = $submitValues['source_record_id'];
+          return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$submitValues['source_record_id']}"));
+        }
+      }
+    } 
+    elseif($this->_action & CRM_Core_Action::VIEW) {
+      if (array_key_exists('_qf_AbsenceRequest_next', $submitValues)) {
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Cancelled"'));
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_upload', $submitValues)) {
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Completed"'));
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_submit', $submitValues)) {
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Not Required"'));
       }
       $activityParam = array(
         'sequential' => 1,
-        'source_contact_id' => $this->_loginUserID,
-        'target_contact_id' => $this->_targetContactID,
-        'assignee_contact_id' => $this->_managerContactID,
+        'id' => $this->_activityId,
         'activity_type_id' => $this->_activityTypeID,
-      );
-      foreach ($absentDateDurations as $date => $duration) {
-        $params = array(
-          'sequential' => 1,
-          'activity_type_id' => $this->_activityTypeID,
-          'source_record_id' => $submitValues['source_record_id'],
-          'activity_date_time' => $date,
-          'duration' => $duration,
-        );
-        $result = civicrm_api3('Activity', 'create', $params);
-      }
-      $buttonName = $this->controller->getButtonName();
-      if ($buttonName == $this->getButtonName('submit')) {
-        $this->_aid = $submitValues['source_record_id'];
-        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$submitValues['source_record_id']}"));
-      }
+        'status_id' => $statusId
+      );   
+      $result = civicrm_api3('Activity', 'create', $activityParam);
+      return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
     }
   }
 
   static function formRule($fields, $files, $self) {
     $errors = array();
-    $dateFrom = $fields['start_date_display'];        
-    $dateTo = $fields['end_date_display'];
-    $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
-    $days = $days + 1;
-    if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
+    if (isset($fields['start_date_display'])) {
+      $dateFrom = $fields['start_date_display']; 
+    }
+    if (isset($fields['start_date_display'])) {       
+      $dateTo = $fields['end_date_display'];
+    }
+    if (isset($dateFrom) && isset($dateTo)){
+      $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
+      $days = $days + 1;
+    }
+    if (strtotime(isset($fields['start_date_display'])) && strtotime(isset($fields['end_date_display'])) && strtotime(isset($fields['start_date_display'])) > strtotime(isset($fields['end_date_display']))) {
       $errors['end_date'] = "From date cannot be greater than to date.";
     }
-    if ($days > 31) {
+    if (isset($days) && $days > 31) {
       $errors['end_date'] = "End date should be within a month.";
     }
     return $errors;
