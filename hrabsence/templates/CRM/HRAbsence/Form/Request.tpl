@@ -1,6 +1,6 @@
 {*
  +--------------------------------------------------------------------+
- | CiviHR version 1.2                                                |
+ | CiviHR version 1.2                                                 |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2013                                |
  +--------------------------------------------------------------------+
@@ -27,9 +27,10 @@
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
-  {if $permissioneac } 
+  {if $contactDataURL AND $permissioneac}
     <tr>
-      <td>{include file="CRM/Contact/Form/NewContact.tpl"}</td>
+      <td>Employee </td>
+      <td colspan="2">{$form.contacts.html}</td>
     </tr>
   {else}
     <tr>
@@ -37,8 +38,8 @@
       <td colspan="2">{$emp_name}</td>
     </tr>
   {/if}
-    <tr>
-      <td>Position </td> 
+    <tr id="position">
+      <td>Position </td>
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
@@ -72,13 +73,22 @@
 {literal}
   <script type="text/javascript">
     cj(function(cj) {
-    cj('span.crm-error').insertAfter('input#end_date_display');
-    var eac = '{/literal}{$permissioneac}{literal}';
-    if (eac){
-      cj(cj('td #contact_1')[0].nextSibling).wrap('<span style="display:none"></style>');
-      cj('#profiles_1').hide(); 
-      cj( "tr.crm-new-contact-form-block-contact-1 td label" ).replaceWith( "<b>Employee</b>" );
+    var dataUrl = "{/literal}{$contactDataURL}{literal}";
+    cj('#contacts').autocomplete( dataUrl, { width : 180, selectFirst : false, matchContains: true });
+    cj('#contacts').result(function( event, data ) {
+    cj("input[name=contacts_id]").val(data[1]);
+    var contactid = data[1];
+    CRM.api('HRJob', 'get', {'sequential': 1, 'contact_id': contactid, 'is_primary': 1},
+      {success: function(data) {
+        cj.each(data.values, function(key, value) {
+	  cj('#position td:nth-child(2)').html(value.position); // do something 
+	});
+      }
     }
+    );
+    });
+    
+    cj('span.crm-error').insertAfter('input#end_date_display');
       {/literal}
         {if $customValueCount}
           {foreach from=$customValueCount item="groupCount" key="groupValue"}
@@ -150,7 +160,11 @@
       var selectopt = cj('#options_'+x+' :selected').val();	
       totalDays = new Number(totalDays) + new Number(selectopt);
     }
-    totalDays += ' days';
+    if (totalDays <= 1) {
+      totalDays += ' day';
+    }else {
+      totalDays += ' days';
+    }
     cj('#countD').html(totalDays);
   }
   </script>
@@ -203,7 +217,11 @@
 	    }
 	    x = new Number(x) + 1;
  	  });
-	  totalDays += '  days';
+          if(totalDays <= 1) {
+	    totalDays += '  day';
+          } else {
+            totalDays += '  days';
+	  }
 	  cj('#countD').html(totalDays);
         }
       });
@@ -267,7 +285,11 @@
       var selectopt = cj('#options_'+x+' :selected').val();	
       totalDays = new Number(totalDays) + new Number(selectopt);
     }
-    totalDays += ' days';
+    if (totalDays <= 1) {
+      totalDays += ' day';
+    } else {
+      totalDays += ' days';
+    }
     cj('#countD').html(totalDays);
   });
 </script>

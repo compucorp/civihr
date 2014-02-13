@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.2                                                |
+ | CiviHR version 1.2                                                 |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2013                                |
  +--------------------------------------------------------------------+
@@ -25,20 +25,9 @@
  +--------------------------------------------------------------------+
 */
 
-/**
- *
- * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
- * $Id$
- *
- */
 
 /**
- * Files required
- */
-
-/**
- * This file is for civievent search
+ * This file is for civiHR Absence
  */
 class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $_customValueCount;
@@ -54,7 +43,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if ($this->_action != (CRM_Core_Action::UPDATE) && CRM_Core_Permission::check('edit all contacts')){
       $this->assign('permissioneac', 1);
     }
-    CRM_Contact_Form_NewContact::buildQuickForm($this);
+    $conId = CRM_Utils_Request::retrieve('cid', 'Positive', $this);
+    if (isset($conId) && $conId == 0 ) {
+      $name = "contacts";
+      $this->add('text', $name, "contacts" );
+      $this->add('hidden', $name.'_id');
+      $contactDataURL =  CRM_Utils_System::url( 'civicrm/ajax/rest', 'className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=contact&contact_type=individual', false, null, false );
+      $this->assign('contactDataURL',$contactDataURL );
+    }
+
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
     $paramsHRJob = array(
@@ -73,6 +70,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'sequential' => 1,
         'source_record_id' => $this->_activityId,
         'option_sort'=>"activity_date_time ASC",
+        'option.limit'=>500,
       );
       $resultAbsences = civicrm_api3('Activity', 'get', $paramsAbsences);
       $countDays =0; 
@@ -151,6 +149,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
        'sequential' => 1,
        'source_record_id' =>  $this->_aid,
        'option_sort'=>"activity_date_time ASC",
+       'option.limit'=>500,
      );
      $result = civicrm_api3('Activity', 'get', $params);
      $start_date = date_create($result['values'][0]['activity_date_time']);
@@ -181,6 +180,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
+        'option.limit'=>500,
       );
       $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
@@ -234,8 +234,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public function postProcess() {
     $session = CRM_Core_Session::singleton();
     $submitValues = $this->_submitValues;
-    if (!empty($submitValues['contact_select_id'][1])){
-      $this->_targetContactID = $submitValues['contact_select_id'][1];
+    if (!empty($submitValues['contacts_id'])){
+      $this->_targetContactID = $submitValues['contacts_id'];
     }
     $absentDateDurations = array();
 
@@ -301,6 +301,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $params = array(
         'sequential' => 1,
         'source_record_id' => $submitValues['source_record_id'],
+        'option.limit'=>500,
       );      
       $result = civicrm_api3('Activity', 'get', $params);
       $count=$result['values'];
@@ -340,11 +341,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $errors = array();
     $dateFrom = $fields['start_date_display'];        
     $dateTo = $fields['end_date_display'];
-    $diff = abs(strtotime($dateFrom) - strtotime($dateTo));
-    $years = floor($diff / (365*60*60*24));
-    $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
-    $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
-
+    $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
     if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
       $errors['end_date'] = "From date cannot be greater than to date.";
     }
