@@ -41,7 +41,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
   function buildQuickForm() {
     if ($this->_action != (CRM_Core_Action::UPDATE) && CRM_Core_Permission::check('edit all contacts')){
-      $this->assign('permissioneac', 1);
+      $this->assign('permEditContact', 1);
     }
     $conId = CRM_Utils_Request::retrieve('cid', 'Positive', $this);
     if (isset($conId) && $conId == 0 ) {
@@ -70,7 +70,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'sequential' => 1,
         'source_record_id' => $this->_activityId,
         'option_sort'=>"activity_date_time ASC",
-        'option.limit'=>500,
+        'option.limit'=>31,
       );
       $resultAbsences = civicrm_api3('Activity', 'get', $paramsAbsences);
       $countDays =0; 
@@ -149,7 +149,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
        'sequential' => 1,
        'source_record_id' =>  $this->_aid,
        'option_sort'=>"activity_date_time ASC",
-       'option.limit'=>500,
+       'option.limit'=>31,
      );
      $result = civicrm_api3('Activity', 'get', $params);
      $start_date = date_create($result['values'][0]['activity_date_time']);
@@ -180,7 +180,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
-        'option.limit'=>500,
+        'option.limit'=>31,
       );
       $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
@@ -301,7 +301,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $params = array(
         'sequential' => 1,
         'source_record_id' => $submitValues['source_record_id'],
-        'option.limit'=>500,
+        'option.limit'=>31,
       );      
       $result = civicrm_api3('Activity', 'get', $params);
       $count=$result['values'];
@@ -342,6 +342,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $dateFrom = $fields['start_date_display'];        
     $dateTo = $fields['end_date_display'];
     $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
+    $days = $days + 1;
     if (strtotime($fields['start_date_display']) && strtotime($fields['end_date_display']) && strtotime($fields['start_date_display']) > strtotime($fields['end_date_display'])) {
       $errors['end_date'] = "From date cannot be greater than to date.";
     }

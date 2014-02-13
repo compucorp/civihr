@@ -27,7 +27,7 @@
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
-  {if $contactDataURL AND $permissioneac}
+  {if $contactDataURL AND $permEditContact}
     <tr>
       <td>Employee </td>
       <td colspan="2">{$form.contacts.html}</td>
@@ -125,7 +125,7 @@
   function addabsencetbl() {
     var end_date = cj('#end_date_display').val();
     var start_date = cj('#start_date_display').val();
-    if( start_date && end_date ){
+    if (start_date && end_date) {
       cj("#tblabsence").show();
       cj("#commentDisplay").show();
     }
@@ -162,7 +162,8 @@
     }
     if (totalDays <= 1) {
       totalDays += ' day';
-    }else {
+    }
+    else {
       totalDays += ' days';
     }
     cj('#countD').html(totalDays);
@@ -187,7 +188,7 @@
         var start_date = cj('#start_date_display').val();
         var difDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
         var param = cj.parseJSON('{}');
-        CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC'},
+        CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC', 'option.limit': 31},
           {success: function(data) {
             cj.each(data.values, function(key, value) {
             var val = value.activity_date_time;
@@ -205,7 +206,7 @@
 	    var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear();
 	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
             cj('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
-            if(value==240) {
+            if (value==240) {
 	      cj("#options_"+x).val('0.5');
 	      selectopt = cj('#options_'+x+' :selected').val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
@@ -217,10 +218,11 @@
 	    }
 	    x = new Number(x) + 1;
  	  });
-          if(totalDays <= 1) {
-	    totalDays += '  day';
-          } else {
-            totalDays += '  days';
+          if (totalDays <= 1) {
+	    totalDays += ' day';
+          }
+          else {
+            totalDays += ' days';
 	  }
 	  cj('#countD').html(totalDays);
         }
@@ -260,11 +262,11 @@
       for (var x = 0; x <= diDate; x++) {
         var selDate = cj('#label_'+x).text();
         var selectopt = cj('#options_'+x+' :selected').text();
-        if(selectopt == "Full Day"){
+        if (selectopt == "Full Day") {
           dateValues[x] = selDate +":" + "480";
         }
         else {
-          if(selectopt == "Half Day"){
+          if (selectopt == "Half Day") {
           dateValues[x] = selDate +":" + "240";
           }
         }
@@ -287,7 +289,8 @@
     }
     if (totalDays <= 1) {
       totalDays += ' day';
-    } else {
+    }
+    else {
       totalDays += ' days';
     }
     cj('#countD').html(totalDays);
