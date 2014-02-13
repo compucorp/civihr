@@ -1016,14 +1016,16 @@ class GenerateHRData {
    * This is a method to create absence entitlements
    */
   private function addAbsenceEntitlements($cid) {
+    $periods = CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods();
+    $periodIds = array_keys($periods);
 
     //create period combinations
     $employmentPeriodClusters = array(
-      array(1),
-      array(1, 2, 3),
-      array(3, 4, 2),
-      array(4, 3, 1),
-      array(1, 2, 3, 4),
+      array($periodIds[0]),
+      array($periodIds[0], $periodIds[1], $periodIds[2]),
+      array($periodIds[2], $periodIds[3], $periodIds[1]),
+      array($periodIds[3], $periodIds[2], $periodIds[0]),
+      array($periodIds[0], $periodIds[1], $periodIds[2], $periodIds[3]),
     );
 
     //every period will have following absenceTypes
@@ -1059,8 +1061,8 @@ class GenerateHRData {
 
     $parentActivities = array('Vacation', 'Sick');
 
-    $fYStartDate = strtotime($this->_periods[$this->employmentPeriod - 1]['start_date']);
-    $fYEndDate = strtotime($this->_periods[$this->employmentPeriod - 1]['end_date']);
+    $fYStartDate = strtotime($this->_periods[$this->employmentPeriod]['start_date']);
+    $fYEndDate = strtotime($this->_periods[$this->employmentPeriod]['end_date']);
 
     $absenceCount = mt_rand(1, 5);
 
