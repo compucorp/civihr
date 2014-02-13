@@ -624,7 +624,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}"
     $this->buildRows($sql, $rows);
 
     // format result set.
-    $this->formatDisplay($rows);
+    $this->formatDisplay($rows, FALSE);
 
     // assign variables to templates
     $this->doTemplateAssignment($rows);
