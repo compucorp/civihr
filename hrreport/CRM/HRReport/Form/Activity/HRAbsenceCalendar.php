@@ -144,6 +144,30 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
   function preProcessCommon() {
     parent::preProcessCommon();
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header');
+
+    //assigning legend to templete
+    $res = civicrm_api3('HRAbsenceType', 'get', array());
+    $absenceTypes = $res['values'];
+    foreach($absenceTypes as $key => $absenceType) {
+      $count = $key-1;
+      if (array_key_exists('debit_activity_type_id', $absenceType)) {
+        $legend[$absenceType['debit_activity_type_id']] = array(
+          'title' => $absenceType['title'],
+          'class' => "hrabsence-bg-{$count}-debit"
+        );
+      }
+      if (array_key_exists('credit_activity_type_id', $absenceType)) {
+        $legend[$absenceType['credit_activity_type_id']] = array(
+          'title' => $absenceType['title'] . ' (Credit)',
+          'class' => "hrabsence-bg-{$count}-credit"
+        );
+      }
+    }
+    //for two or more absence type color code
+    $legend['Mixed'] = array('title' => ts('Mixed'), 'class' => 'hrabsence-bg-mixed');
+
+    $this->assign('legend', $legend);
+    $this->assign('legendWidthPercent', ((1/count($legend))*100).'%');
   }
 
   function select() {
@@ -295,34 +319,6 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
 
     $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
     $viewLinks = FALSE;
-
-    $res = civicrm_api3('HRAbsenceType', 'get', array());
-    $absenceTypes = $res['values'];
-
-    foreach($absenceTypes as $key => $absenceType) {
-      $count = $key-1;
-      if (array_key_exists('debit_activity_type_id', $absenceType)) {
-        $legend[$absenceType['debit_activity_type_id']] = array(
-          'title' => $absenceType['title'],
-          'class' => "hrabsence-bg-{$count}-debit"
-        );
-      }
-      if (array_key_exists('credit_activity_type_id', $absenceType)) {
-        $legend[$absenceType['credit_activity_type_id']] = array(
-          'title' => $absenceType['title'] . ' (Credit)',
-          'class' => "hrabsence-bg-{$count}-credit"
-        );
-      }
-    }
-    //for two or more absence type color code
-    if (count($legend) >= 2) {
-      $legend['Mixed'] = array('title' => ts('Mixed'), 'class' => 'hrabsence-bg-mixed');
-    }
-
-    if (!empty($legend)) {
-      $this->assign('legend', $legend);
-      $this->assign('legendWidthPercent', ((1/count($legend))*100).'%');
-    }
 
     $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
     list($durationFromDate, $durationToDate) = $this->getFromTo(
