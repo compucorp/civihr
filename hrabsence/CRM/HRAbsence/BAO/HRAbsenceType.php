@@ -152,6 +152,17 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
   public static function del($absenceTypeId) {
     $absenceType = new CRM_HRAbsence_DAO_HRAbsenceType();
     $absenceType->id = $absenceTypeId;
+    $absenceType->find(TRUE);
+    $activityTypeId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+
+    if ($absenceType->debit_activity_type_id) {
+      $result =  civicrm_api3('OptionValue', 'get', array('option_group_id' => $activityTypeId, 'value' => $absenceType->debit_activity_type_id));
+      CRM_Core_BAO_OptionValue::del($result['id']);
+    }
+    if ($absenceType->credit_activity_type_id) {
+      $result =  civicrm_api3('OptionValue', 'get', array('option_group_id' => $activityTypeId, 'value' => $absenceType->credit_activity_type_id));
+      CRM_Core_BAO_OptionValue::del($result['id']);
+    }
     $absenceType->delete();
   }
 }
