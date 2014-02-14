@@ -14,6 +14,8 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
   public function install() {
     $this->installActivityTypes();
     $this->addDefaultPeriod();
+    $this->installAbsenceTypes();
+
     //$this->executeSqlFile('sql/myinstall.sql');
   }
 
@@ -63,25 +65,76 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     }
   }
 
-  /**
-   * Example: Run an external SQL script when the module is uninstalled
-   *
-  public function uninstall() {
-   $this->executeSqlFile('sql/myuninstall.sql');
+  public function installAbsenceTypes() {
+    $leaves = TRUE;
+    $weight = 0;
+    $values = '';
+    $options =  CRM_Core_OptionGroup::values('hrjob_leave_type', TRUE, FALSE);
+    if(empty($options)) {
+      $leaves = FALSE;
+      $options = array(
+        "Sick" => "Sick",
+        "Vacation" => "Vacation",
+        "Maternity" => "Maternity",
+        "Paternity" => "Paternity",
+        "TOIL" => "TOIL",
+        "Other" => "Other"
+      );
+    }
+
+    foreach ($options as $orgKey => $orgValue) {
+      $params = array(
+        'title' => $orgValue,
+        'is_active' => 1,
+        'allow_debits' => 1
+      );
+      if ($orgKey == "TOIL") {
+        $params['allow_credits'] = 1;
+      }
+      $absenceTypes = CRM_HRAbsence_BAO_HRAbsenceType::create($params);
+      $values .= " WHEN '{$orgValue}' THEN '{$absenceTypes->id}'";
+    }
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_leave") && $leaves) {
+      $query = "UPDATE civicrm_hrjob_leave
+        SET leave_type = CASE leave_type
+        {$values}
+        END;";
+    }
+    CRM_Core_OptionGroup::deleteAssoc('hrjob_leave_type');
   }
 
   /**
    * Example: Run a simple query when a module is enabled
-   *
+   **/
   public function enable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 1 WHERE bar = "whiz"');
+    CRM_Core_DAO::executeQuery('UPDATE civicrm_hrabsence_type SET is_active = 1');
   }
 
   /**
    * Example: Run a simple query when a module is disabled
-   *
+   **/
   public function disable() {
-    CRM_Core_DAO::executeQuery('UPDATE foo SET is_active = 0 WHERE bar = "whiz"');
+    CRM_Core_DAO::executeQuery('UPDATE civicrm_hrabsence_type SET is_active = 0');
+  }
+
+  /**
+   * Example: Run an external SQL script when the module is uninstalled
+   **/
+  public function uninstall() {
+    $dao = CRM_Core_DAO::executeQuery('SELECT * from civicrm_hrabsence_type');
+    while($dao->fetch()) {
+      if($dao->credit_activity_type_id) {
+        $query = "DELETE FROM civicrm_activity WHERE activity_type_id IN ( {$dao->credit_activity_type_id} )";
+        CRM_Core_BAO_OptionValue::del($dao->credit_activity_type_id);
+      }
+      if($dao->debit_activity_type_id) {
+        $query = "DELETE FROM civicrm_activity WHERE activity_type_id IN ( {$dao->debit_activity_type_id} )";
+        CRM_Core_BAO_OptionValue::del($dao->debit_activity_type_id);
+      }
+    }
+    CRM_Core_DAO::executeQuery('DROP TABLE civicrm_hrabsence_entitlement');
+    CRM_Core_DAO::executeQuery('DROP TABLE civicrm_hrabsence_period');
+    CRM_Core_DAO::executeQuery('DROP TABLE civicrm_hrabsence_type');
   }
 
   /**

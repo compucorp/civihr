@@ -45,12 +45,6 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>hrjob_leave_type</name>
-      <title>Leave Type</title>
-      <is_reserved>1</is_reserved>
-      <is_active>1</is_active>
-    </OptionGroup>
-    <OptionGroup>
       <name>hrjob_location</name>
       <title>Work Location</title>
       <is_reserved>1</is_reserved>
@@ -250,39 +244,6 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_life_provider</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Annual</label>
-      <value>Annual</value>
-      <name>Annual</name>
-      <is_default>0</is_default>
-      <weight>1</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Public</label>
-      <value>Public</value>
-      <name>Public</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Sick</label>
-      <value>Sick</value>
-      <name>Sick</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_leave_type</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Headquarters</label>
