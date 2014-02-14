@@ -447,8 +447,6 @@ class GenerateHRData {
       $this->addCareerData($cid);
       //if Absence (CiviHR) extension in enabled, add the sample data
       $this->addAbsenceEntitlements($cid);
-      //add absence requests to individuals.
-      $this->addAbsenceRequests($cid);
     }
   }
 
@@ -523,10 +521,10 @@ class GenerateHRData {
       $org->addressee_display = $org->display_name;
       $org->hash = crc32($org->sort_name);
       $this->_update($org);
-
-      //if Absence (CiviHR) extension is enabled, add the sample data
-      $this->addAbsencePeriods();
     }
+    
+    //if Absence (CiviHR) extension is enabled, add the sample data
+    $this->addAbsencePeriods();
   }
 
 
@@ -1018,14 +1016,16 @@ class GenerateHRData {
    * This is a method to create absence entitlements
    */
   private function addAbsenceEntitlements($cid) {
+    $periods = CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods();
+    $periodIds = array_keys($periods);
 
     //create period combinations
     $employmentPeriodClusters = array(
-      array(1),
-      array(1, 2, 3),
-      array(3, 4, 2),
-      array(4, 3, 1),
-      array(1, 2, 3, 4),
+      array($periodIds[0]),
+      array($periodIds[0], $periodIds[1], $periodIds[2]),
+      array($periodIds[2], $periodIds[3], $periodIds[1]),
+      array($periodIds[3], $periodIds[2], $periodIds[0]),
+      array($periodIds[0], $periodIds[1], $periodIds[2], $periodIds[3]),
     );
 
     //every period will have following absenceTypes
@@ -1034,17 +1034,21 @@ class GenerateHRData {
     //pick up random period
     $employmentPeriods = $employmentPeriodClusters[mt_rand(0, 4)];
 
-    foreach ($employmentPeriods as $employmentPeriod) {
+    foreach ($employmentPeriods as $this->employmentPeriod) {
       foreach ($absenceTypes['values'] as $absenceType) {
-        $absenceEntitlementValues = array(
-          'contact_id' => $cid,
-          'period_id' => $employmentPeriod,
-          'type_id' => $absenceType['id'],
-          'amount' => mt_rand(5, 15),
-        );
-        //create Entitlement
-        civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
+        if ($absenceType['name'] != "TOIL" && $absenceType['name'] != "Other") {
+          $absenceEntitlementValues = array(
+            'contact_id' => $cid,
+            'period_id' => $this->employmentPeriod,
+            'type_id' => $absenceType['id'],
+            'amount' => mt_rand(5, 15),
+          );
+          //create Entitlement
+          civicrm_api3('HRAbsenceEntitlement', 'create', $absenceEntitlementValues);
+        }
       }
+      // add absence requests per employmentPeriod.
+      $this->addAbsenceRequests($cid);
     }
   }
 
@@ -1052,52 +1056,53 @@ class GenerateHRData {
    * Adds absence requests to records.
    */
   private function addAbsenceRequests($cid) {
-      
+
     $activityTypes = civicrm_api3('ActivityType', 'get', array());
 
     $parentActivities = array('Vacation', 'Sick');
-    
-    $fYStartDate = strtotime($this->_periods[0]['start_date']);
-    $fYEndDate = strtotime($this->_periods[0]['end_date']);
-        
+
+    $fYStartDate = strtotime($this->_periods[$this->employmentPeriod]['start_date']);
+    $fYEndDate = strtotime($this->_periods[$this->employmentPeriod]['end_date']);
+
     $absenceCount = mt_rand(1, 5);
-    
-    while($absenceCount --){
-        $absenceRequest = civicrm_api3('Activity', 'create', array(
-          'activity_type_id' => array_search($parentActivities[array_rand($parentActivities)], $activityTypes['values']),
-          'source_contact_id' => $cid, // logged in user
-          'target_contact_id' => $cid, // the person who takes the absence
-          'activity_date_time' => date("Y-m-d h:i:s", time()),
-          'status_id' => mt_rand(1, 2), // Scheduled or Completed
-        ));
 
-        $start_date = mt_rand($fYStartDate, $fYEndDate);
+    while ($absenceCount --) {
+      $absenceRequest = civicrm_api3('Activity', 'create', array(
+        'activity_type_id' => array_search($parentActivities[array_rand($parentActivities)], $activityTypes['values']),
+        'source_contact_id' => $cid, // logged in user
+        'target_contact_id' => $cid, // the person who takes the absence
+        'activity_date_time' => date("Y-m-d h:i:s", time()),
+        'status_id' => mt_rand(1, 2), // Scheduled or Completed
+      ));
 
-        $duration = array(
-          // 50% full; 33% half; 17% blank
-          8 * 60, // full day
-          8 * 60, // full day
-          8 * 60, // full day
-          4 * 60, // half day
-          4 * 60, // half day
-          0 * 60, // blank
+      $start_date = mt_rand($fYStartDate, $fYEndDate);
+
+      $duration = array(
+        // 50% full; 33% half; 17% blank
+        8 * 60, // full day
+        8 * 60, // full day
+        8 * 60, // full day
+        4 * 60, // half day
+        4 * 60, // half day
+        0 * 60, // blank
+      );
+
+      // create array of absences to be added
+      $absenceValues = array();
+      for ($i = 0; $i <= mt_rand(1, 3); $i++) {
+        $absenceValues[] = array(
+          'activity_date_time' => date("Y-m-d h:i:s", strtotime("+" . $i . "day", $start_date)),
+          'duration' => $duration[array_rand($duration)],
+          'source_contact_id' => $cid,
         );
+      }
 
-        // create array of absences to be added
-        for ($i = 0; $i <= mt_rand(1, 3); $i++) {
-          $absenceValues[] = array(
-            'activity_date_time' => date("Y-m-d h:i:s", strtotime("+" . $i . "day", $start_date)),
-            'duration' => $duration[array_rand($duration)],
-            'source_contact_id' => $cid,
-          );
-        }
-        
-        // add absence
-        civicrm_api3('Activity', 'replace', array(
-          'activity_type_id' => array_search('Absence', $activityTypes['values']),
-          'source_record_id' => $absenceRequest['id'],
-          'values' => $absenceValues,
-        ));
+      // add absence
+      civicrm_api3('Activity', 'replace', array(
+        'activity_type_id' => array_search('Absence', $activityTypes['values']),
+        'source_record_id' => $absenceRequest['id'],
+        'values' => $absenceValues,
+      ));
     }
   }
 }
