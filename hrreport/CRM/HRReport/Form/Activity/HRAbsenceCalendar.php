@@ -67,12 +67,12 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
         ),
         'filters' =>
         array(
-          'display_name' =>
+          'sort_name' =>
           array(
-            'name' => 'display_name',
+            'name' => 'sort_name',
             'title' => ts('Individual'),
             'operator' => 'like',
-            'dbAlias' => 'cc.display_name',
+            'dbAlias' => 'cc.sort_name',
             'type' => CRM_Report_Form::OP_STRING,
           ),
           'current_user' =>
@@ -200,12 +200,12 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
             continue;
           }
           if (array_key_exists("{$fieldName}_value", $this->_params)) {
-            if ($field['name'] == 'activity_type_id' && count($this->_params["{$fieldName}_value"])) {
+            if (($field['name'] == 'activity_type_id' || $field['name'] == 'status_id') && count($this->_params["{$fieldName}_value"])) {
               $sqlOp = $this->getSQLOperator(CRM_Utils_Array::value("{$fieldName}_op", $this->_params));
-              $clause = "absence.activity_type_id {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
+              $clause = "absence.{$fieldName} {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
             }
 
-            if ($field['name'] == 'display_name' && $this->_params["{$fieldName}_value"]) {
+            if ($field['name'] == 'sort_name' && $this->_params["{$fieldName}_value"]) {
               $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
               $clause = $this->whereClause($field,
                 $op,
@@ -317,6 +317,8 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
     $this->buildACLClause(array('cac'));
     parent::beginPostProcess();
 
+    $statusCSSStyle = array(1 => 'font-style:italic;', 2 => 'font-weight:bold;', 3 => 'text-decoration:line-through;');
+
     $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
     $viewLinks = FALSE;
 
@@ -383,9 +385,10 @@ MONTH(request.activity_date_time) as month,
 DAY(request.activity_date_time) as day,
 absence.id as aid,
 absence.activity_type_id as ati,
+absence.status_id status,
 cac.contact_id as contact_id,
 request.source_record_id,
-cc.display_name as contact_name";
+cc.sort_name as contact_name";
 
     $this->from();
     $this->where($validSourceRecordIds);
@@ -418,11 +421,11 @@ cc.display_name as contact_name";
         if ($viewLinks) {
           $url = CRM_Utils_System::url("civicrm/contact/view",'reset=1&cid=' . $dao->contact_id, $this->_absoluteUrl);
           $absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id]['link'] =
-            "<a title='" . $onHover . "' href='" . $url . "'>".$dao->contact_name."</a>";
+            "<a title='" . $onHover . "' href='" . $url . "' style='font-weight:bold;'>".$dao->contact_name."</a>";
         }
         if ($absenceCalendar[$dao->year][$dao->month]['contacts'][$dao->contact_id][$dao->day]['activity_type_id'] != 'Mixed') {
-          $dateUrl = CRM_Utils_System::url("civicrm/absences/set",'reset=1&action=update&aid=' . $dao->aid, $this->_absoluteUrl);
-          $day_name = "<a title='Update this absence' href={$dateUrl}>". substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1) ."</a>";
+          $dateUrl = CRM_Utils_System::url("civicrm/absence/set",'reset=1&action=update&aid=' . $dao->aid, $this->_absoluteUrl);
+          $day_name = "<a title='". $this->activityStatus[$dao->status] ."' href={$dateUrl} style='" . $statusCSSStyle[$dao->status] . "'>" . substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1) ."</a>";
         }
         else {
           $day_name = substr(date("D", mktime(0, 0, 0, $dao->month, $dao->day, $dao->year )), 0, -1);
