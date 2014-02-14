@@ -57,7 +57,7 @@ function hrabsence_civicrm_install() {
     array(
       'label'      => 'Absence Report',
       'name'       => 'absence_report',
-      'url'        => 'civicrm/report/list?grp=Absence&reset=1',
+      'url'        => 'civicrm/report/list?grp=absence&reset=1',
     ),
     array(
       'label'      => 'Manage Entitlements',
@@ -159,17 +159,17 @@ function hrabsence_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array(
     'name' => 'HRAbsenceType',
     'class' => 'CRM_HRAbsence_DAO_HRAbsenceType',
-    'table' => 'civicrm_absence_type',
+    'table' => 'civicrm_hrabsence_type',
   );
    $entityTypes[] = array(
     'name' => 'HRAbsencePeriod',
     'class' => 'CRM_HRAbsence_DAO_HRAbsencePeriod',
-    'table' => 'civicrm_absence_period',
+    'table' => 'civicrm_hrabsence_period',
   );
   $entityTypes[] = array(
     'name' => 'HRAbsenceEntitlement',
     'class' => 'CRM_HRAbsence_DAO_HRAbsenceEntitlement',
-    'table' => 'civicrm_absence_entitlement',
+    'table' => 'civicrm_hrabsence_entitlement',
   );
 }
 

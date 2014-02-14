@@ -1,15 +1,15 @@
-DROP TABLE IF EXISTS `civicrm_absence_entitlement`;
-DROP TABLE IF EXISTS `civicrm_absence_period`;
-DROP TABLE IF EXISTS `civicrm_absence_type`;
+DROP TABLE IF EXISTS `civicrm_hrabsence_entitlement`;
+DROP TABLE IF EXISTS `civicrm_hrabsence_period`;
+DROP TABLE IF EXISTS `civicrm_hrabsence_type`;
 
 -- /*******************************************************
 -- *
--- * civicrm_absence_type
+-- * civicrm_hrabsence_type
 -- *
 -- * Absence types.
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_absence_type` (
+CREATE TABLE `civicrm_hrabsence_type` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Absence type ID',
@@ -41,12 +41,12 @@ CREATE TABLE `civicrm_absence_type` (
 
 -- /*******************************************************
 -- *
--- * civicrm_absence_period
+-- * civicrm_hrabsence_period
 -- *
 -- * Absence period.
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_absence_period` (
+CREATE TABLE `civicrm_hrabsence_period` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Absence period ID',
@@ -69,12 +69,12 @@ CREATE TABLE `civicrm_absence_period` (
 
 -- /*******************************************************
 -- *
--- * civicrm_absence_entitlement
+-- * civicrm_hrabsence_entitlement
 -- *
 -- * Absence entitlement.
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_absence_entitlement` (
+CREATE TABLE `civicrm_hrabsence_entitlement` (
 
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Absence entitlement ID',
@@ -86,5 +86,5 @@ CREATE TABLE `civicrm_absence_entitlement` (
     PRIMARY KEY ( `id` )
  
  
-,          CONSTRAINT FK_civicrm_absence_entitlement_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_absence_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_absence_period`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_absence_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_absence_type`(`id`) ON DELETE CASCADE  
+,          CONSTRAINT FK_civicrm_hrabsence_entitlement_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrabsence_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrabsence_period`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrabsence_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrabsence_type`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

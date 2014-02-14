@@ -3,7 +3,7 @@
 <table>
   <base>CRM/HRAbsence</base>
   <class>HRAbsenceEntitlement</class>
-  <name>civicrm_absence_entitlement</name>
+  <name>civicrm_hrabsence_entitlement</name>
   <comment>Absence entitlement.</comment>
   <log>true</log>
 
@@ -37,7 +37,7 @@
   </field>
   <foreignKey>
     <name>period_id</name>
-    <table>civicrm_absence_period</table>
+    <table>civicrm_hrabsence_period</table>
     <key>id</key>
     <onDelete>CASCADE</onDelete>
   </foreignKey>
@@ -49,7 +49,7 @@
   </field>
   <foreignKey>
     <name>type_id</name>
-    <table>civicrm_absence_type</table>
+    <table>civicrm_hrabsence_type</table>
     <key>id</key>
     <onDelete>CASCADE</onDelete>
   </foreignKey>

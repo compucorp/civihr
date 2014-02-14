@@ -42,7 +42,7 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
    * @var string
    * @static
    */
-  static $_tableName = 'civicrm_absence_period';
+  static $_tableName = 'civicrm_hrabsence_period';
   /**
    * static instance to hold the field values
    *
@@ -122,11 +122,11 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
    * class constructor
    *
    * @access public
-   * @return civicrm_absence_period
+   * @return civicrm_hrabsence_period
    */
   function __construct()
   {
-    $this->__table = 'civicrm_absence_period';
+    $this->__table = 'civicrm_hrabsence_period';
     parent::__construct();
   }
   /**
@@ -151,7 +151,7 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
-          'where' => 'civicrm_absence_period.name',
+          'where' => 'civicrm_hrabsence_period.name',
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
@@ -162,7 +162,7 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
-          'where' => 'civicrm_absence_period.title',
+          'where' => 'civicrm_hrabsence_period.title',
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,

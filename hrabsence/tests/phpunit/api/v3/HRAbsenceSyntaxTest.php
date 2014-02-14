@@ -42,7 +42,7 @@ class api_v3_HRAbsenceSyntaxTest extends api_v3_SyntaxConformanceTest {
   function tearDown() {
     parent::tearDown();
     $this->quickCleanup(array(
-      'civicrm_absence_type',
+      'civicrm_hrabsence_type',
     ));
   }
 

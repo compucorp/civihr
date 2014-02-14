@@ -54,7 +54,7 @@ function hrreport_civicrm_install() {
       'domain_id' => CRM_Core_Config::domainID(),
       'label'     => 'Absence Report',
       'name'      => 'absenceReport',
-      'url'       => 'civicrm/report/list?grp=Absence&reset=1',
+      'url'       => 'civicrm/report/list?grp=absence&reset=1',
       'permission'=> 'access HRAbsences',
       'parent_id' => $reportParentId,
       'is_active' => 1,

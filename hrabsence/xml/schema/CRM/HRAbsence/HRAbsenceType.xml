@@ -3,7 +3,7 @@
 <table>
   <base>CRM/HRAbsence</base>
   <class>HRAbsenceType</class>
-  <name>civicrm_absence_type</name>
+  <name>civicrm_hrabsence_type</name>
   <comment>Absence types.</comment>
   <log>true</log>
 
