@@ -186,6 +186,26 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   }
 }
 
+/**
+ * Implementation of hook_civicrm_tabs
+ */
+function hrabsence_civicrm_tabs(&$tabs, $contactID) {
+  $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
+  if ($contactType != 'Individual') {
+    return;
+  }
+
+  CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
+  $tabs[] = array(
+    'id'    => 'absenceTab',
+    'url'   =>  CRM_Utils_System::url( 'civicrm/absences', array(
+      'cid' => $contactID,
+      'snippet' => 1,
+    )),
+    'title' => ts('Absences'),
+    'weight' => 300
+  );
+}
 
 function hrabsence_civicrm_navigationMenu( &$params ) {
   $absenceMenuItems = array();

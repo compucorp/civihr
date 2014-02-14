@@ -101,6 +101,9 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
   HRAbsenceApp.on("initialize:after", function() {
     if (Backbone.history) {
+      if(Backbone.History.started) {
+        Backbone.history.stop();
+      }
       Backbone.history.start();
       if (Backbone.history.fragment === "") {
         HRAbsenceApp.trigger('hrabsence:showList');
