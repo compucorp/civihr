@@ -9,9 +9,9 @@ CRM.HRApp.addRegions({
 
 CRM.HRApp.on("initialize:after", function() {
   if (Backbone.history) {
-      if(Backbone.History.started) {
-        Backbone.history.stop();
-      }
+    if(Backbone.History.started) {
+      Backbone.history.stop();
+    }
     Backbone.history.start();
   }
 });
