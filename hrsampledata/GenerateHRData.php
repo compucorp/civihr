@@ -1004,8 +1004,6 @@ class GenerateHRData {
       'start_date' => '2016-04-01 00:00:00',
       'end_date' => '2017-03-31 23:59:59',
     );
-
-    $this->_periods = $periods; // to be used in addAbsenceRequests()    
     
     foreach ($periods as $absencePeriod) {
       civicrm_api3('HRAbsencePeriod', 'create', $absencePeriod);
@@ -1061,8 +1059,9 @@ class GenerateHRData {
 
     $parentActivities = array('Vacation', 'Sick');
 
-    $fYStartDate = strtotime($this->_periods[$this->employmentPeriod]['start_date']);
-    $fYEndDate = strtotime($this->_periods[$this->employmentPeriod]['end_date']);
+    $periods = civicrm_api3('HRAbsencePeriod', 'get', array());
+    $fYStartDate = strtotime($periods['values'][$this->employmentPeriod]['start_date']);
+    $fYEndDate = strtotime($periods['values'][$this->employmentPeriod]['end_date']);
 
     $absenceCount = mt_rand(1, 5);
 
