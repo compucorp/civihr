@@ -13,7 +13,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
    */
   public function install() {
     $this->installActivityTypes();
-
+    $this->addDefaultPeriod();
     //$this->executeSqlFile('sql/myinstall.sql');
   }
 
@@ -47,6 +47,19 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         'grouping' => 'Timesheet',
       );
       $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
+    }
+  }
+  
+  public function addDefaultPeriod() {
+    if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) == 0) {
+      $currentYear = date('Y');
+      $params = array(
+        'name' => $currentYear,
+        'title' => $currentYear.' (Jan 1 to Dec 31)',
+        'start_date' => $currentYear.'-01-01 00:00:00',
+        'end_date' => $currentYear.'-12-31 23:59:59',
+      );
+      CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
     }
   }
 
