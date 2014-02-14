@@ -22,15 +22,7 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
-  $calendarUrl = null;
   $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
-  $reportExtensionParam = array('full_name' => 'org.civicrm.hrreport', 'is_active' => 1);
-  $defaults = array();
-  $reportExtension = CRM_Core_BAO_Extension::retrieve($reportExtensionParam, $defaults);
-  if ($reportExtension) {
-    $calendarReportId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'civihr/absence/calendar', 'id', 'report_id');
-    $calendarUrl = "civicrm/report/instance/{$calendarReportId}?reset=1";
-  }
 
   $absenceNavigation = new CRM_Core_DAO_Navigation();
   $params = array (
@@ -55,7 +47,7 @@ function hrabsence_civicrm_install() {
     array(
       'label' => ts('Calendar'),
       'name' => 'calendar',
-      'url'  => $calendarUrl,
+      'url'  => null,
     ),
     array(
       'label' => ts('New Absence'),
@@ -197,7 +189,6 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 
 function hrabsence_civicrm_navigationMenu( &$params ) {
   $absenceMenuItems = array();
-  $maxKey = ( max( array_keys($params) ) );
   $absenceType = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
   $absenceId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
   $newAbsenceId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_absence', 'id', 'name');
@@ -220,6 +211,14 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
   }
   if (!empty($absenceMenuItems)) {
     $params[$absenceId]['child'][$newAbsenceId]['child'] = $absenceMenuItems;
+  }
+  $calendarReportId = CRM_Core_DAO::getFieldValue('CRM_Report_DAO_ReportInstance', 'civihr/absence/calendar', 'id', 'report_id');
+  $calendarId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
+  if ($calendarReportId) {
+    $params[$absenceId]['child'][$calendarId]['attributes']['url'] = "civicrm/report/instance/{$calendarReportId}?reset=1";
+  }
+  else {
+    $params[$absenceId]['child'][$calendarId]['attributes']['active'] = 0;
   }
 }
 
