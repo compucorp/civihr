@@ -483,7 +483,7 @@ class GenerateHRData {
 
       // Some orgs are named after their location
       if ($this->probability(.7)) {
-        $place = $this->randomItem(array('city', 'street_name', 'state'));
+        $place = $this->randomItem(array('city', 'street_name', 'state_province'));
         $namePre = $address[$place];
       }
       $org->organization_name = "$namePre $nameMid $namePost";
@@ -975,6 +975,9 @@ class GenerateHRData {
    * This is a method to create absence periods
    */
   private function addAbsencePeriods() {
+    if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) != 0) {
+      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_absence_period");
+    }
     // Create a set of absence periods
     $periods = array();
     $periods[] = array(
