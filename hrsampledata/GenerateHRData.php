@@ -976,7 +976,7 @@ class GenerateHRData {
    */
   private function addAbsencePeriods() {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) != 0) {
-      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_absence_period");
+      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrabsence_period");
     }
     // Create a set of absence periods
     $periods = array();
