@@ -37,7 +37,7 @@
     <type>int unsigned</type>
     <comment>The purpose for which leave may be taken (sickness, vacation, etc)</comment>
     <pseudoconstant>
-      <table>civicrm_absence_type</table>
+      <table>civicrm_hrabsence_type</table>
       <keyColumn>id</keyColumn>
       <labelColumn>name</labelColumn>
    </pseudoconstant>

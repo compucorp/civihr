@@ -163,12 +163,12 @@ class CRM_HRJob_DAO_HRJobLeave extends CRM_Core_DAO
         ) ,
         'leave_type' => array(
           'name' => 'leave_type',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Leave Type') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_leave_type',
+            'table' => 'civicrm_hrabsence_type',
+            'keyColumn' => 'id',
+            'labelColumn' => 'name',
           )
         ) ,
         'leave_amount' => array(
