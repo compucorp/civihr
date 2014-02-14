@@ -80,7 +80,7 @@
         {if $monthRecord.contacts}
           {foreach from=$monthRecord.contacts item=properties key=contact_id}
             <tr>
-              <td style="text-align:left; color:blue;"><b>{$monthRecord.contacts.$contact_id.link}</b></td>
+              <td style="text-align:left; color:blue;">{$monthRecord.contacts.$contact_id.link}</td>
               {foreach from=$monthDays item=day2}
                 {if ($day2 GT $monthRecord.start_day || $day2 EQ $monthRecord.start_day)
                   AND ($day2 LT $monthRecord.end_day || $day2 EQ  $monthRecord.end_day)}

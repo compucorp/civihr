@@ -47,6 +47,34 @@ function hrreport_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrreport_civicrm_install() {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
+  if ($isEnabled) {
+    $reportParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
+    $params = array(
+      'domain_id' => CRM_Core_Config::domainID(),
+      'label'     => 'Absence Report',
+      'name'      => 'absenceReport',
+      'url'       => 'civicrm/report/list?grp=Absence&reset=1',
+      'permission'=> 'access HRAbsences',
+      'parent_id' => $reportParentId,
+      'is_active' => 1,
+    );
+    CRM_Core_BAO_Navigation::add($params);
+    $absenceParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
+    $calendarId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
+    if (empty($calendarId)) {
+      $params = array(
+        'domain_id' => CRM_Core_Config::domainID(),
+        'label'     => 'Calendar',
+        'name'      => 'calendar',
+        'url'       => null,
+        'permission'=> 'access HRAbsences',
+        'parent_id' => $absenceParentId,
+        'is_active' => 1,
+      );
+      CRM_Core_BAO_Navigation::add($params);
+    }
+  }
   return _hrreport_civix_civicrm_install();
 }
 
@@ -54,6 +82,14 @@ function hrreport_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrreport_civicrm_uninstall() {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
+  if ($isEnabled) {
+    $absenceMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'absenceReport', 'id', 'name');
+    $calendarMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
+    CRM_Core_BAO_Navigation::processDelete($absenceMenuId);
+    CRM_Core_BAO_Navigation::processDelete($calendarMenuId);
+    CRM_Core_BAO_Navigation::resetNavigation();
+  }
   return _hrreport_civix_civicrm_uninstall();
 }
 
@@ -61,6 +97,12 @@ function hrreport_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrreport_civicrm_enable() {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
+  if ($isEnabled) {
+    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'absenceReport'), array('is_active' => 1));
+    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'calendar'), array('is_active' => 1));
+    CRM_Core_BAO_Navigation::resetNavigation();
+  }
   return _hrreport_civix_civicrm_enable();
 }
 
@@ -68,6 +110,12 @@ function hrreport_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrreport_civicrm_disable() {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
+  if ($isEnabled) {
+    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'absenceReport'), array('is_active' => 0));
+    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'calendar'), array('is_active' => 0));
+    CRM_Core_BAO_Navigation::resetNavigation();
+  }
   return _hrreport_civix_civicrm_disable();
 }
 

@@ -22,6 +22,62 @@ function hrabsence_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrabsence_civicrm_install() {
+  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
+
+  $absenceNavigation = new CRM_Core_DAO_Navigation();
+  $params = array (
+    'domain_id'  => CRM_Core_Config::domainID(),
+    'label'      => 'Absences',
+    'name'       => 'Absences',
+    'url'        => null,
+    'permission' => 'access HRAbsences',
+    'operator'   => null,
+    'weight'     => $reportWeight-1,
+    'is_active'  => 1
+  );
+  $absenceNavigation->copyValues($params);
+  $absenceNavigation->save();
+
+  $absenceMenuTree = array(
+    array(
+      'label' => ts('My Absences'),
+      'name' => 'my_absences',
+      'url'  => 'civicrm/absences',
+    ),
+    array(
+      'label' => ts('Calendar'),
+      'name' => 'calendar',
+      'url'  => null,
+    ),
+    array(
+      'label' => ts('New Absence'),
+      'name' => 'new_absence',
+      'url'  => null,
+    ),
+    array(
+      'label'      => 'Absence Report',
+      'name'       => 'absence_report',
+      'url'        => 'civicrm/report/list?grp=Absence&reset=1',
+    ),
+    array(
+      'label'      => 'Manage Entitlements',
+      'name'       => 'manage_entitlements',
+      'url'        =>  null,
+    ),
+    array(
+      'label'      => 'Absence Types',
+      'name'       => 'absenceTypes',
+      'url'        => 'civicrm/absence/type?reset=1',
+    ),
+  );
+
+  foreach ($absenceMenuTree as $key => $menuItems) {
+    $menuItems['has_separator'] = $menuItems['is_active'] = 1;
+    $menuItems['parent_id'] = $absenceNavigation->id;
+    $menuItems['weight'] = $key;
+    CRM_Core_BAO_Navigation::add($menuItems);
+  }
+  CRM_Core_BAO_Navigation::resetNavigation();
   return _hrabsence_civix_civicrm_install();
 }
 
@@ -29,6 +85,9 @@ function hrabsence_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrabsence_civicrm_uninstall() {
+  $absencesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
+  CRM_Core_BAO_Navigation::processDelete($absencesId);
+  CRM_Core_BAO_Navigation::resetNavigation();
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -36,6 +95,8 @@ function hrabsence_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrabsence_civicrm_enable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 1));
+  CRM_Core_BAO_Navigation::resetNavigation();
   return _hrabsence_civix_civicrm_enable();
 }
 
@@ -43,6 +104,8 @@ function hrabsence_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrabsence_civicrm_disable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 0));
+  CRM_Core_BAO_Navigation::resetNavigation();
   return _hrabsence_civix_civicrm_disable();
 }
 
@@ -125,146 +188,38 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 
 
 function hrabsence_civicrm_navigationMenu( &$params ) {
-  //  Get the maximum key of $params
-  $maxKey = ( max( array_keys($params) ) );
-  $params[$maxKey+1] = array (
-    'attributes' => array (
-      'label'      => 'Absences',
-      'name'       => 'absences',
-      'url'        => null,
-      'permission' => 'access HRAbsences',
-      'operator'   => null,
-      'separator'  => null,
-      'parentID'   => null,
-      'navID'      => $maxKey+1,
-      'active'     => 1
-    ),
-    'child' =>  array (
-      $maxKey+2 => array (
-        'attributes' => array (
-          'label'      => ts('My Absences'),
-          'name'       => 'My Absences',
-          'url'        => 'civicrm/absences',
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-        'child' => null
-      ) ,
-      $maxKey+3 => array (
-        'attributes' => array (
-          'label'      => 'Calendar',
-          'name'       => 'calendar',
-          'url'        => 'civicrm/report/civihr/absence/calendar',
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-        'child' => null
-      ),
-      $maxKey+4 => array (
-        'attributes' => array (
-          'label'      => 'New Absence',
-          'name'       => 'newAbsence',
-          'url'        => null,
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-      ) ,
-      $maxKey+5 => array (
-        'attributes' => array (
-          'label'      => 'Absence Report',
-          'name'       => 'absenceReport',
-          'url'        => 'civicrm/report/list?grp=Absence&reset=1',
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-        'child' => null
-      ) ,
-      $maxKey+6 => array (
-        'attributes' => array (
-          'label'      => 'Manage Entitlements',
-          'name'       => 'manageEntitlements',
-          'url'        => null,
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-        'child' => null
-      ) ,
-      $maxKey+7 => array (
-        'attributes' => array (
-          'label'      => 'Absence Types',
-          'name'       => 'absenceTypes',
-          'url'        => 'civicrm/absence/type?reset=1',
-          'permission' => 'access HRAbsences',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+1,
-          'navID'      => 1,
-          'active'     => 1
-        ),
-        'child' => null
-      ) ,
-    )
-  );
-
-  $maxKey_child = 0;
+  $absenceMenuItems = array();
   $absenceType = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
-  if (!empty($absenceType)) {
-    $maxKey_child = $maxKey+7;
-    foreach ($absenceType as $aTypeId => $absenceTypeName) {
-      $maxKey_child = $maxKey_child + 1;
-      $absenceMenuItems[$maxKey_child] = array(
-        'attributes' => array(
-          'label'      => "{$absenceTypeName}",
-          'name'       => "{$absenceTypeName}",
-          'url'        => "civicrm/absence/set?atype={$aTypeId}&action=add",
-          'permission' => 'access HRAbsences',
-          'operator'   => NULL,
-          'separator'  => NULL,
-          'parentID'   => $maxKey+4,
-          'navID'      => 1,
-          'active'     => 1
-        )
-      );
-    }
+  $absenceId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
+  $newAbsenceId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_absence', 'id', 'name');
+  $count = 0;
+  foreach ($absenceType as $aTypeId => $absenceTypeName) {
+    $absenceMenuItems[$count] = array(
+      'attributes' => array(
+        'label'      => "{$absenceTypeName}",
+        'name'       => "{$absenceTypeName}",
+        'url'        => "civicrm/absence/set?atype={$aTypeId}&action=add",
+        'permission' => 'access HRAbsences',
+        'operator'   => NULL,
+        'separator'  => NULL,
+        'parentID'   => $newAbsenceId,
+        'navID'      => 1,
+        'active'     => 1
+      )
+    );
+    $count++;
   }
   if (!empty($absenceMenuItems)) {
-    $params[$maxKey+1]['child'][$maxKey+4]['child'] = $absenceMenuItems;
+    $params[$absenceId]['child'][$newAbsenceId]['child'] = $absenceMenuItems;
   }
-
-  $reportParent = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-  $params[$reportParent]['child'][$maxKey_child+1] = array(
-    'attributes' => array(
-      'label' => 'Absence Report',
-      'name' => 'absenceReport',
-      'url' => 'civicrm/report/list?grp=Absence&reset=1',
-      'permission' => 'access HRAbsences',
-      'operator' => NULL,
-      'separator' => 0,
-      'parentID' => $reportParent,
-      'navID' => 1,
-      'active' => 1,
-    ),
-  );
+  $calendarReportId = CRM_Core_DAO::getFieldValue('CRM_Report_DAO_ReportInstance', 'civihr/absence/calendar', 'id', 'report_id');
+  $calendarId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
+  if ($calendarReportId) {
+    $params[$absenceId]['child'][$calendarId]['attributes']['url'] = "civicrm/report/instance/{$calendarReportId}?reset=1";
+  }
+  else {
+    $params[$absenceId]['child'][$calendarId]['attributes']['active'] = 0;
+  }
 }
 
 function hrabsence_civicrm_buildForm($formName, &$form) {

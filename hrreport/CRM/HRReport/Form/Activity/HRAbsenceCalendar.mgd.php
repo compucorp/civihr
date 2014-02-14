@@ -30,6 +30,7 @@ return array (
       'form_values' => serialize(
         array(
           'absence_duration_relative' => 'this.month',
+          'status_id' => array(2),
         )
       ),
     ),

@@ -617,14 +617,14 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
       $this->_having = "HAVING " . implode(' AND ', $nullFilters);
     }
     $this->orderBy();
-    $this->limit();
+
     $sql = "{$this->_select}
 FROM civireport_activity_temp_target tar
-GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy} {$this->_limit}";
+GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     $this->buildRows($sql, $rows);
 
     // format result set.
-    $this->formatDisplay($rows);
+    $this->formatDisplay($rows, FALSE);
 
     // assign variables to templates
     $this->doTemplateAssignment($rows);
