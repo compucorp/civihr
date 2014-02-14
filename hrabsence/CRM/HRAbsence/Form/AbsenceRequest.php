@@ -173,14 +173,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
          array(
            array(
              'type' => 'submit',
-             'name' => ts('Save'),
-             'spacing' => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-             'isDefault' => TRUE,
-           ),
-           array(
-             'type' => 'submit',
-             'name' => ts('Cancel Absence Request'),
-             'subName' => 'cancel'
+             'name' => ts('Cancel'),
+             'subName' => 'cancelbutton'
            ),
          )
        ); 
@@ -220,8 +214,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
            array(
              array(
                'type' => 'submit',
-               'name' => ts('Cancel Absence Request'),
-               'subName' => 'cancel'
+               'name' => ts('Cancel'),
+               'subName' => 'cancelbutton'
              ),
            )
          ); 
@@ -366,7 +360,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
 
       CRM_Core_Session::setStatus(ts('Your absences have been applied.'), ts('Saved'), 'success');
-
       $buttonName = $this->controller->getButtonName();
       if ($buttonName == $this->getButtonName('submit')) {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
@@ -409,6 +402,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         CRM_Core_Session::setStatus(ts('Your absences have been Rejected.'), ts('Rejected'), 'success');
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
+      elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
+        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
+      }
       else {
         $params = array(
           'sequential' => 1,
@@ -450,6 +446,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
     } 
     elseif($this->_action & CRM_Core_Action::VIEW) {
+      if (CRM_Utils_Request::retrieve('aid', 'Positive', $this)) {
+        $activityIDs = CRM_Utils_Request::retrieve('aid', 'Positive', $this);
+      }
+
       if (array_key_exists('_qf_AbsenceRequest_submit_cancel', $submitValues)) {
         $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Cancelled"'));
         $statusMsg = "Cancelled";
@@ -462,6 +462,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Not Required"'));
         $statusMsg = "Rejected";
       }
+      elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
+        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
+      }
       $activityParam = array(
         'sequential' => 1,
         'id' => $this->_activityId,
@@ -470,7 +473,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       );   
       $result = civicrm_api3('Activity', 'create', $activityParam);
       CRM_Core_Session::setStatus(ts('Your absences have been '.$statusMsg.'.'), ts($statusMsg), 'success');
-      return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
+      return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
   }
 
