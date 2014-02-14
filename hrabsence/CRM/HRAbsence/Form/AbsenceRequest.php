@@ -391,7 +391,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Not Required"'));
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Rejected"'));
         $activityParam = array(
           'sequential' => 1,
           'id' => $this->_activityId,
@@ -459,7 +459,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $statusMsg = "Completed";
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Not Required"'));
+        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Rejected"'));
         $statusMsg = "Rejected";
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
