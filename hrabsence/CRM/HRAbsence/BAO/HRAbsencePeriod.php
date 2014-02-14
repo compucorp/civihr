@@ -38,7 +38,7 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
 
     foreach (array('end_date', 'start_date') as $yesReallyIWantToSaveTheDataInsteadOfSilentlyThrowingItAway) {
       if (isset($params[$yesReallyIWantToSaveTheDataInsteadOfSilentlyThrowingItAway])) {
-        CRM_Core_DAO::executeQuery("UPDATE civicrm_absence_period SET $yesReallyIWantToSaveTheDataInsteadOfSilentlyThrowingItAway = %1 WHERE id = %2", array(
+        CRM_Core_DAO::executeQuery("UPDATE civicrm_hrabsence_period SET $yesReallyIWantToSaveTheDataInsteadOfSilentlyThrowingItAway = %1 WHERE id = %2", array(
           1 => array($params[$yesReallyIWantToSaveTheDataInsteadOfSilentlyThrowingItAway], 'String'),
           2 => array($instance->id, 'Integer'),
         ));

@@ -42,7 +42,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
    * @var string
    * @static
    */
-  static $_tableName = 'civicrm_absence_type';
+  static $_tableName = 'civicrm_hrabsence_type';
   /**
    * static instance to hold the field values
    *
@@ -137,11 +137,11 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
    * class constructor
    *
    * @access public
-   * @return civicrm_absence_type
+   * @return civicrm_hrabsence_type
    */
   function __construct()
   {
-    $this->__table = 'civicrm_absence_type';
+    $this->__table = 'civicrm_hrabsence_type';
     parent::__construct();
   }
   /**
@@ -166,7 +166,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
-          'where' => 'civicrm_absence_type.name',
+          'where' => 'civicrm_hrabsence_type.name',
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
@@ -177,7 +177,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
-          'where' => 'civicrm_absence_type.title',
+          'where' => 'civicrm_hrabsence_type.title',
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
@@ -197,7 +197,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'title' => ts('Credit Activity Type ID') ,
           'required' => false,
           'import' => true,
-          'where' => 'civicrm_absence_type.credit_activity_type_id',
+          'where' => 'civicrm_hrabsence_type.credit_activity_type_id',
           'headerPattern' => '/(activity.)?type(.id$)/i',
           'dataPattern' => '',
           'export' => false,
@@ -218,7 +218,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
           'title' => ts('Debit Activity Type ID') ,
           'required' => false,
           'import' => true,
-          'where' => 'civicrm_absence_type.debit_activity_type_id',
+          'where' => 'civicrm_hrabsence_type.debit_activity_type_id',
           'headerPattern' => '/(activity.)?type(.id$)/i',
           'dataPattern' => '',
           'export' => false,

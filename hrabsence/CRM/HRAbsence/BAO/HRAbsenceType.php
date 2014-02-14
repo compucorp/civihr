@@ -153,16 +153,16 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     $absenceType = new CRM_HRAbsence_DAO_HRAbsenceType();
     $absenceType->id = $absenceTypeId;
     $absenceType->find(TRUE);
-    $activityTypeId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
 
-    if ($absenceType->debit_activity_type_id) {
-      $result =  civicrm_api3('OptionValue', 'get', array('option_group_id' => $activityTypeId, 'value' => $absenceType->debit_activity_type_id));
-      CRM_Core_BAO_OptionValue::del($result['id']);
+    $absenceActivities = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
+
+    if ($absenceType->debit_activity_type_id && $id = CRM_Utils_Array::value($absenceType->debit_activity_type_id, $absenceActivities)) {
+      CRM_Core_BAO_OptionValue::del($id);
     }
-    if ($absenceType->credit_activity_type_id) {
-      $result =  civicrm_api3('OptionValue', 'get', array('option_group_id' => $activityTypeId, 'value' => $absenceType->credit_activity_type_id));
-      CRM_Core_BAO_OptionValue::del($result['id']);
+    if ($absenceType->credit_activity_type_id && $id = CRM_Utils_Array::value($absenceType->credit_activity_type_id, $absenceActivities)) {
+      CRM_Core_BAO_OptionValue::del($id);
     }
+
     $absenceType->delete();
   }
 }

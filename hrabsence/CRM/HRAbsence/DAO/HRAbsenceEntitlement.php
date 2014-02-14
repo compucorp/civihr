@@ -42,7 +42,7 @@ class CRM_HRAbsence_DAO_HRAbsenceEntitlement extends CRM_Core_DAO
    * @var string
    * @static
    */
-  static $_tableName = 'civicrm_absence_entitlement';
+  static $_tableName = 'civicrm_hrabsence_entitlement';
   /**
    * static instance to hold the field values
    *
@@ -122,11 +122,11 @@ class CRM_HRAbsence_DAO_HRAbsenceEntitlement extends CRM_Core_DAO
    * class constructor
    *
    * @access public
-   * @return civicrm_absence_entitlement
+   * @return civicrm_hrabsence_entitlement
    */
   function __construct()
   {
-    $this->__table = 'civicrm_absence_entitlement';
+    $this->__table = 'civicrm_hrabsence_entitlement';
     parent::__construct();
   }
   /**
@@ -141,8 +141,8 @@ class CRM_HRAbsence_DAO_HRAbsenceEntitlement extends CRM_Core_DAO
     if (!self::$_links) {
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'period_id', 'civicrm_absence_period', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'type_id', 'civicrm_absence_type', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'period_id', 'civicrm_hrabsence_period', 'id') ,
+        new CRM_Core_EntityReference(self::getTableName() , 'type_id', 'civicrm_hrabsence_type', 'id') ,
       );
     }
     return self::$_links;

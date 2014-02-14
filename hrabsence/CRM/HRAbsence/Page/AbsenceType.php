@@ -160,7 +160,7 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
           $isDelete = TRUE;
         }
       }
-      if ($dao->credit_activity_type_id) {
+      if (!$isDelete && $dao->credit_activity_type_id) {
         $result = civicrm_api3('Activity', 'get', array('activity_type_id' => $dao->credit_activity_type_id));
         if (count($result['values'])) {
           $isDelete = TRUE;

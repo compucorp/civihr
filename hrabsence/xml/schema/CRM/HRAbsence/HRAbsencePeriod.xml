@@ -3,7 +3,7 @@
 <table>
   <base>CRM/HRAbsence</base>
   <class>HRAbsencePeriod</class>
-  <name>civicrm_absence_period</name>
+  <name>civicrm_hrabsence_period</name>
   <comment>Absence period.</comment>
   <log>true</log>
 
