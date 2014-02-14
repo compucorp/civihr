@@ -78,6 +78,15 @@ function hrabsence_civicrm_install() {
     CRM_Core_BAO_Navigation::add($menuItems);
   }
   CRM_Core_BAO_Navigation::resetNavigation();
+
+  $params = array(
+    'sequential' => 1,
+    'option_group_id' => 'activity_status',
+    'name' => 'Rejected',
+    'is_reserved' => 1,
+    'is_active' => 1,
+  );
+  civicrm_api3('OptionValue', 'create', $params);
   return _hrabsence_civix_civicrm_install();
 }
 
@@ -88,6 +97,22 @@ function hrabsence_civicrm_uninstall() {
   $absencesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
   CRM_Core_BAO_Navigation::processDelete($absencesId);
   CRM_Core_BAO_Navigation::resetNavigation();
+
+  $params = array(
+    'sequential' => 1,
+    'option_group_id' => 'activity_status',
+    'is_reserved' => 1,
+    'name' => 'Rejected',
+    'return' => 'id',
+  );
+
+  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
+    $params = array(
+      'sequential' => 1,
+      'id' => $id,
+    );
+    civicrm_api3('OptionValue', 'delete', $params);
+  }
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -97,6 +122,23 @@ function hrabsence_civicrm_uninstall() {
 function hrabsence_civicrm_enable() {
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 1));
   CRM_Core_BAO_Navigation::resetNavigation();
+
+  $params = array(
+    'sequential' => 1,
+    'option_group_id' => 'activity_status',
+    'is_reserved' => 1,
+    'name' => 'Rejected',
+    'return' => 'id',
+  );
+
+  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
+    $params = array(
+      'sequential' => 1,
+      'id' => $id,
+      'is_active' => 1,
+    );
+    civicrm_api3('OptionValue', 'create', $params);
+  }
   return _hrabsence_civix_civicrm_enable();
 }
 
@@ -106,6 +148,23 @@ function hrabsence_civicrm_enable() {
 function hrabsence_civicrm_disable() {
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 0));
   CRM_Core_BAO_Navigation::resetNavigation();
+
+  $params = array(
+    'sequential' => 1,
+    'option_group_id' => 'activity_status',
+    'is_reserved' => 1,
+    'name' => 'Rejected',
+    'return' => 'id',
+  );
+
+  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
+    $params = array(
+      'sequential' => 1,
+      'id' => $id,
+      'is_active' => 0,
+    );
+    $result = civicrm_api3('OptionValue', 'create', $params);
+  }
   return _hrabsence_civix_civicrm_disable();
 }
 

@@ -139,6 +139,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
       'Scheduled' => ts('Requested'),
       'Completed' => ts('Approved'),
       'Cancelled' => ts('Cancelled'),
+      'Rejected' => ts('Rejected'),
     );
     $result = array();
     foreach ($absenceStatus as $name => $title) {
