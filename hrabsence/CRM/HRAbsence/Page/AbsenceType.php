@@ -110,7 +110,7 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
 
     // what action to take ?
     if ($action & (CRM_Core_Action::UPDATE | CRM_Core_Action::ADD)) {
-      $this->edit($action, $id) ;
+      $this->edit($action, $id);
     }
 
     // parent run
@@ -145,12 +145,31 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
       $action = array_sum(array_keys($this->links()));
 
 
-        if ($dao->is_active) {
-          $action -= CRM_Core_Action::ENABLE;
+      if ($dao->is_active) {
+        $action -= CRM_Core_Action::ENABLE;
+      }
+      else {
+        $action -= CRM_Core_Action::DISABLE;
+      }
+
+      //if this absence type has its related activities/leaves then don't show DELETE action
+      $isDelete = FALSE;
+      if ($dao->debit_activity_type_id) {
+        $result = civicrm_api3('Activity', 'get', array('activity_type_id' => $dao->debit_activity_type_id));
+        if (count($result['values'])) {
+          $isDelete = TRUE;
         }
-        else {
-          $action -= CRM_Core_Action::DISABLE;
+      }
+      if ($dao->credit_activity_type_id) {
+        $result = civicrm_api3('Activity', 'get', array('activity_type_id' => $dao->credit_activity_type_id));
+        if (count($result['values'])) {
+          $isDelete = TRUE;
         }
+      }
+
+      if ($isDelete) {
+        $action -= CRM_Core_Action::DELETE;
+      }
 
       $absenceType[$dao->id]['action'] = CRM_Core_Action::formLink(self::links(), $action,
         array('id' => $dao->id)
