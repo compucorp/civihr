@@ -133,8 +133,10 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
    *
    * @return array (int activity_status_id => string activity_status_label)
    */
-  public static function getActivityStatus() {
+  public static function getActivityStatus($return = 'label') {
+
     $activityStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+
     $absenceStatus = array(
       'Scheduled' => ts('Requested'),
       'Completed' => ts('Approved'),
@@ -145,6 +147,9 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     foreach ($absenceStatus as $name => $title) {
       if ($key = CRM_Utils_Array::key($name, $activityStatus)) {
         $result[$key] = $title;
+        if ($return == 'name') {
+          $result[$key] = $name;
+        }
       }
     }
     return $result;
