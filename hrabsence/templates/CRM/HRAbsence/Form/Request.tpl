@@ -22,7 +22,7 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
-*}
+*}{debug}
 {* Search form and results for Event Participants *}
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
@@ -135,8 +135,14 @@
     for (var x = 0; x <= d; x++) {
       var earlierdate = new Date(start_date);
       var absenceDate = earlierdate.toDateString();
-      var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
-      var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
+      var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
+      var abday = absenceDate.substring(0,3);
+      if (abday == 'Sat' || abday == 'Sun') {
+      	var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select" disabled="disabled" ><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
+      }
+      else {
+      	var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
+      }
       cj('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
       var datepicker = start_date;
       var parms = datepicker.split("/");
@@ -203,7 +209,8 @@
 	    var subpar2 = parms[2].substring(0,3);
 	    var joindate = new Date(parms[1]+"/"+subpar2+"/"+parms[0]);
 	    var absenceDate = joindate.toDateString();
-	    var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear();
+	    var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
+	    var abday = absenceDate.substring(0,3);
 	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
             cj('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
             if (value==240) {
@@ -211,10 +218,14 @@
 	      selectopt = cj('#options_'+x+' :selected').val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
 	    } 
-	    else {
+	    else if (value==480) {
 	      cj("#options_"+x).val('1');
 	      selectopt = cj('#options_'+x+' :selected').val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
+	    }
+	    else {
+	      cj("#options_"+x).val('');
+	      cj("#options_"+x).attr("disabled","disabled");
 	    }
 	    x = new Number(x) + 1;
  	  });
@@ -244,6 +255,9 @@
             if (selectopt == "Half Day"){
               dateValues[x] = selDate +":" + "240";
             }
+	    else {
+	      dateValues[x] = selDate +":" + "0";
+	    }
           }
         }
     	cj("#date_values").val(dateValues.join('|'));
@@ -267,8 +281,11 @@
         }
         else {
           if (selectopt == "Half Day") {
-          dateValues[x] = selDate +":" + "240";
+            dateValues[x] = selDate +":" + "240";
           }
+	  else{
+	    dateValues[x] = selDate +":" + "0";
+	  }
         }
       }
     cj("#date_values").val(dateValues.join('|'));

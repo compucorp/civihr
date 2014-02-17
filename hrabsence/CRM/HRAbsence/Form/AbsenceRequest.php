@@ -81,9 +81,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
           $countDays=$countDays+1;
-        } else {
+        }
+        elseif ($val['duration'] == "240") {
           $converteddays = "Half Day";
           $countDays=$countDays+0.5;
+        }
+        else {
+          $converteddays = "Holiday";
         }
         $absenceDateDuration[$convertedDate]=$converteddays;
       }
@@ -233,7 +237,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
       $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
     }
-
+    
     if(($this->_action == 4 || $this->_action == 2)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 
@@ -312,9 +316,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (!empty($submitValues['date_values'])) {
       foreach(explode('|', $submitValues['date_values']) as $key => $dateString) {
         if ($dateString) {
-          $values = explode(':', $dateString);
+          $values = explode('(', $dateString);
           $date = CRM_Utils_Date::processDate($values[0]);
-          $absentDateDurations[$date] = (int)$values[1];
+          $valuesDate = explode(':', $dateString);
+          $absentDateDurations[$date] = (int)$valuesDate[1];
         }
       }
     }
