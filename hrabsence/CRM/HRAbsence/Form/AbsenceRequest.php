@@ -237,7 +237,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
       $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
     }
-    
     if(($this->_action == 4 || $this->_action == 2)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 

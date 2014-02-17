@@ -22,7 +22,7 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
-*}{debug}
+*}
 {* Search form and results for Event Participants *}
   {assign var='fldName' value=$prefix|cat:'contact'}
 <div class="crm-block crm-content-block">
