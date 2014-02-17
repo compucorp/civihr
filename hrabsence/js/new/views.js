@@ -12,8 +12,9 @@ CRM.HRAbsenceApp.module('New', function(New, HRAbsenceApp, Backbone, Marionette,
     },
     events: {
       "change [name=activity_type_id]": function(e) {
+        var contact_id = CRM.absenceApp.contactId;
         var newActivityId = cj(e.currentTarget).val();
-        var addActivityUrl = CRM.url("civicrm/absence/set", {'reset':1, 'action': 'add', 'atype': newActivityId});
+        var addActivityUrl = CRM.url("civicrm/absence/set", {'reset':1, 'action': 'add', 'atype': newActivityId, 'cid': contact_id});
         window.location = addActivityUrl;
       }
     },
