@@ -51,7 +51,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         criteria: absenceCriteria,
         collection: absenceCollection,
         entitlementCollection: entitlementCollection,
-        absenceTypeCollection: absenceTypeCollection
+        absenceTypeCollection: absenceTypeCollection,
+        jobLeavesCollection: jobLeavesCollection
       }));
     }
   };
@@ -93,6 +94,9 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     entitlementCollection = new HRAbsenceApp.Models.EntitlementCollection([], {
       crmCriteriaModel: entitlementCriteria
     });
+    jobLeavesCollection = new HRAbsenceApp.Models.JobLeavesCollection([], {
+      crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': 1}
+    });
 
     // NOTE: Generally don't like to put globalish variables in HRAbsenceApp, but this
     // data doesn't really change much, and it makes AbsenceModel.isDebit() much cleaner.
@@ -116,6 +120,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     }));
     HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
 
+    jobLeavesCollection.fetch({reset: true});
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
   });

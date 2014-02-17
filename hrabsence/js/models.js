@@ -244,6 +244,35 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     }
   });
   CRM.Backbone.extendCollection(Models.EntitlementCollection);
+ 
+  Models.JobLeaves = Backbone.Model.extend({});
+  CRM.Backbone.extendModel(Models.JobLeaves, 'HRJob');
+  Models.JobLeavesCollection = Backbone.Collection.extend({
+    model: Models.JobLeaves,    
+    /**
+     * Get list of contract position and entitlement info (indexed by job ID)
+     * @return {Object} e.g. result[job_id]
+     */
+    getContractLeaves: function() {
+      var stats = {};
+      this.each(function(model) {
+        var apiparamsget = model.get('api.HRJobLeave.get');
+        _.each(apiparamsget.values, function(contractIds, contractVals) {
+          var statsKey = model.get('id');
+          if (!stats[statsKey]) {
+            stats[statsKey] = {
+              position: model.get('position'),
+              start_date: model.get('period_start_date'),
+              end_date: model.get('period_end_date')
+            };
+          }
+          stats[statsKey][contractIds.leave_type] = contractIds.leave_amount;
+        });
+      });
+      return stats;
+    }
+  });
+  CRM.Backbone.extendCollection(Models.JobLeavesCollection);
 
   /**
    * A set of modifiable/displayable filter criteria which is

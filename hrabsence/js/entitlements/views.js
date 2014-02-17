@@ -23,6 +23,7 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
         'collection': this.options.collection,
         'entitlements': this.options.entitlementCollection.getEntitlements(),
         'absencetype': this.options.absenceTypeCollection.getAbsenceTypes(),
+        'contractEntitlements': this.options.jobLeavesCollection.getContractLeaves(),
         'selectedAbsences': this.options.criteria.get('activity_type_id') ? 
                               _.reduce(this.options.criteria.get('activity_type_id'), function(r,m){r[m]= m; return r;}, {})
                               : CRM.absenceApp.activityTypes,
