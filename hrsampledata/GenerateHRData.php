@@ -768,7 +768,7 @@ class GenerateHRData {
       }
 
       //sample data for HRJob Leave table. For each HRJob, there would be one HRJobLeave for each leave_type.
-      $leaveTypes = array('Annual', 'Public', 'Sick');
+      $leaveTypes = array('1', '2', '3');
       foreach ($leaveTypes as $key => $value) {
         $leaveValues = array(
           'job_id' => $hrJobObj->id,

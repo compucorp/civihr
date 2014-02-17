@@ -34,12 +34,13 @@
   <field>
     <name>leave_type</name>
     <title>Leave Type</title>
-    <type>varchar</type>
-    <length>63</length>
+    <type>int unsigned</type>
     <comment>The purpose for which leave may be taken (sickness, vacation, etc)</comment>
     <pseudoconstant>
-      <optionGroupName>hrjob_leave_type</optionGroupName>
-    </pseudoconstant>
+      <table>civicrm_hrabsence_type</table>
+      <keyColumn>id</keyColumn>
+      <labelColumn>name</labelColumn>
+   </pseudoconstant>
   </field>
   <index>
     <name>UI_leave_type</name>

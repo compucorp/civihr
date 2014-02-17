@@ -259,4 +259,14 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
+  
+  public function upgrade_1200() {
+    $this->ctx->log->info('Applying update 1200');
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_leave") && CRM_Core_DAO::checkTableExists("civicrm_hrabsence_type")) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjob_leave`
+        MODIFY COLUMN `leave_type` int(10) unsigned DEFAULT NULL,
+        ADD CONSTRAINT `FK_civicrm_hrjob_leave_leave_type` FOREIGN KEY (`leave_type`)  REFERENCES `civicrm_absence_type`(`id`) ON DELETE SET NULL");
+  	}
+  	return TRUE;
+  }
 }

@@ -174,7 +174,7 @@ CREATE TABLE `civicrm_hrjob_leave` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobLeave ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
-     `leave_type` varchar(63)    COMMENT 'The purpose for which leave may be taken (sickness, vacation, etc)',
+     `leave_type` int unsigned    COMMENT 'The purpose for which leave may be taken (sickness, vacation, etc)',
      `leave_amount` int unsigned    COMMENT 'The number of leave days' 
 ,
     PRIMARY KEY ( `id` )
