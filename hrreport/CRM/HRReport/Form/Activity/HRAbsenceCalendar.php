@@ -317,7 +317,13 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
     $this->buildACLClause(array('cac'));
     parent::beginPostProcess();
 
-    $statusCSSStyle = array(1 => 'font-style:italic;', 2 => 'font-weight:bold;', 3 => 'text-decoration:line-through;');
+    $activityStatus = array_flip($this->activityStatus);
+    $statusCSSStyle = array(
+      $activityStatus['Requested']  => 'font-style:italic;',
+      $activityStatus['Approved'] => 'font-weight:bold;',
+      $activityStatus['Cancelled'] => 'text-decoration:line-through;',
+      $activityStatus['Rejected'] => 'text-decoration:line-through;'
+    );
 
     $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
     $viewLinks = FALSE;
@@ -365,9 +371,14 @@ SELECT source_record_id
 FROM civicrm_activity
 WHERE source_record_id IS NOT NULL AND
 activity_type_id = {$activityTypeID}
-GROUP BY source_record_id
-HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
-(to_days(Max(activity_date_time))  <= to_days({$durationToDate})))";
+GROUP BY source_record_id";
+
+    if ($durationFromDate && $durationToDate) {
+      $sql.= "
+        HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
+        (to_days(Max(activity_date_time))  <= to_days({$durationToDate})))
+        ";
+    }
 
     $dao = CRM_Core_DAO::executeQuery($sql);
     while ($dao->fetch()) {
