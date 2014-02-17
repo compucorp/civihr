@@ -60,11 +60,6 @@ function hrabsence_civicrm_install() {
       'url'        => 'civicrm/report/list?grp=absence&reset=1',
     ),
     array(
-      'label'      => 'Manage Entitlements',
-      'name'       => 'manage_entitlements',
-      'url'        =>  null,
-    ),
-    array(
       'label'      => 'Absence Types',
       'name'       => 'absenceTypes',
       'url'        => 'civicrm/absence/type?reset=1',
