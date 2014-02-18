@@ -29,25 +29,25 @@
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
   {if $contactDataURL AND $permEditContact}
     <tr>
-      <td>Employee </td>
+      <td>{ts}Employee{/ts}</td>
       <td colspan="2">{$form.contacts.html}</td>
     </tr>
   {else}
     <tr>
-      <td>Employee </td>
+      <td>{ts}Employee{/ts}</td>
       <td colspan="2">{$emp_name}</td>
     </tr>
   {/if}
     <tr id="position">
-      <td>Position </td>
+      <td>{ts}Position{/ts}</td>
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
-      <td>Absence Type </td> 
+      <td>{ts}Absence Type{/ts}</td> 
       <td colspan="2">{$absenceType}</td> 
     </tr>
     <tr class="crm-event-manage-eventinfo-form-block-start_date">
-      <td class="label">Dates</td>
+      <td class="label">{ts}Dates{/ts}</td>
       <td>{include file="CRM/common/jcalendar.tpl" elementName=start_date}</td>
       <td>{include file="CRM/common/jcalendar.tpl" elementName=end_date}</td>
     </tr>
@@ -55,8 +55,8 @@
   <table id="tblabsence" class="report">
     <tbody>
       <tr class="tblabsencetitle">
-        <td>Date</td>
-	<td>Absence</td>
+        <td>{ts}Date{/ts}</td>
+        <td>{ts}Absence{/ts}</td>
       </tr>
     </tbody>
   </table>
@@ -167,10 +167,10 @@
       totalDays = new Number(totalDays) + new Number(selectopt);
     }
     if (totalDays <= 1) {
-      totalDays += ' day';
+      totalDays += ' {/literal}{ts}day{/ts}{literal}';
     }
     else {
-      totalDays += ' days';
+      totalDays += ' {/literal}{ts}days{/ts}{literal}';
     }
     cj('#countD').html(totalDays);
   }
@@ -230,10 +230,10 @@
 	    x = new Number(x) + 1;
  	  });
           if (totalDays <= 1) {
-	    totalDays += ' day';
+	    totalDays += ' {/literal}{ts}day{/ts}{literal}';
           }
           else {
-            totalDays += ' days';
+            totalDays += ' {/literal}{ts}days{/ts}{literal}';
 	  }
 	  cj('#countD').html(totalDays);
         }
@@ -294,7 +294,7 @@
 });
 
   var countDays = 0;
-  cj('#tblabsence tbody:last').after('<tr class="tblabsencetitle"><td>Total</td><td id="countD">'+countDays+'</td></tr>');
+  cj('#tblabsence tbody:last').after('<tr class="tblabsencetitle"><td>{/literal}{ts}Total{/ts}{literal}</td><td id="countD">'+countDays+'</td></tr>');
   cj(document).on('change','#tblabsence select', function(){
     var end_date = cj('#end_date_display').val();
     var start_date = cj('#start_date_display').val();
@@ -305,10 +305,10 @@
       totalDays = new Number(totalDays) + new Number(selectopt);
     }
     if (totalDays <= 1) {
-      totalDays += ' day';
+      totalDays += ' {/literal}{ts}day{/ts}{literal}';
     }
     else {
-      totalDays += ' days';
+      totalDays += ' {/literal}{ts}days{/ts}{literal}';
     }
     cj('#countD').html(totalDays);
   });
