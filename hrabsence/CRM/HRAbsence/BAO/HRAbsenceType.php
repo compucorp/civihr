@@ -171,4 +171,19 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
 
     $absenceType->delete();
   }
+
+  /**
+   * Get the total duration for given Sourse Absence ID
+   *
+   * @param int source Activity ID
+   * @return int
+   */
+  public function getAbsenceDuration($sourceAbsenceId) {
+    $duration = 0;
+    $absences = civicrm_api3('Activity', 'get', array('source_record_id' => $sourceAbsenceId));
+    foreach ($absences['values'] as $absenceKey => $absenceVal) {
+      $duration += $absenceVal['duration'];
+    }
+    return $duration;
+  }
 }
