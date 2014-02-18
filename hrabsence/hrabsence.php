@@ -277,7 +277,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
       'attributes' => array(
         'label'      => "{$absenceTypeName}",
         'name'       => "{$absenceTypeName}",
-        'url'        => "civicrm/absence/set?atype={$aTypeId}&action=add",
+        'url'        => "civicrm/absence/set?atype={$aTypeId}&action=add&cid=0",
         'permission' => 'access HRAbsences',
         'operator'   => NULL,
         'separator'  => NULL,
