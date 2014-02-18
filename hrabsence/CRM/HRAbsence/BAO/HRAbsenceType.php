@@ -173,7 +173,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
   }
 
   /**
-   * Get the total duration for given Sourse Absence ID
+   * Get the total duration for given 'Source Absence ID'
    *
    * @param int source Activity ID
    * @return int
