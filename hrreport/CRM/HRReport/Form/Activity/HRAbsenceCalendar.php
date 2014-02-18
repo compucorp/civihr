@@ -445,6 +445,15 @@ cc.sort_name as contact_name";
       }
     }
 
+    //remove those months from calendar report which don't have any absences
+    foreach ($absenceCalendar as $year => $monthlyRecord) {
+      foreach ($monthlyRecord as $month => $record) {
+        if (!array_key_exists('contacts', $record)) {
+          unset($absenceCalendar[$year][$month]);
+        }
+      }
+    }
+
     $this->modifyColumnHeaders();
     $this->doTemplateAssignment($absenceCalendar);
     $this->endPostProcess($absenceCalendar);
