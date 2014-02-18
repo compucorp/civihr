@@ -28,19 +28,19 @@
 {assign var='loggedinuserid' value=$loginuserid}
   <table class="absencedetail" style="width: auto; border: medium none ! important;">
     <tr>
-      <td>Employee: </td> 
+      <td>{ts}Employee{/ts}</td> 
       <td colspan="2">{$emp_name}</td>
     </tr>
     <tr>
-      <td>Position: </td> 
+      <td>{ts}Position{/ts}</td> 
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
-      <td>Absence Type: </td> 
+      <td>{ts}Absence Type{/ts}</td> 
       <td colspan="2">{$absenceType}</td>
     </tr>
       <tr class="crm-event-manage-eventinfo-form-block-start_date">
-        <td class="label">Dates: </td>
+        <td class="label">{ts}Dates{/ts}</td>
         <td>{$fromDate} - {$toDate}</td>
       </tr>
   </table>
@@ -50,20 +50,20 @@
   <table id="tblabsence" >
     <tbody>
       <tr>
-        <td>Date</td>
-	<td>Absence</td>
+        <td>{ts}Date{/ts}</td>
+        <td>{ts}Absence{/ts}</td>
       </tr>
       {foreach from=$absenceDateDuration item=val key=key}
       {if $val != 'Holiday' }
         <tr class="{cycle values="odd-row,even-row"} {$row.class}" >
           <td>{$key}</td>
-	  <td>{$val}</td>
+          <td>{$val}</td>
         </tr>
       {/if}
       {/foreach}
       <tr>
-	<td>Total</td>
-	<td>{$totalDays} {if $totalDays <= 1 } day {else} days {/if}</td>
+	<td>{ts}Total{/ts}</td>
+	<td>{$totalDays} {if $totalDays <= 1 } {ts}day{/ts} {else} {ts}days{/ts} {/if}</td>
       </tr>
     </tbody>
   </table>

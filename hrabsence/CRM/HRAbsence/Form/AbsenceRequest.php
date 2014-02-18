@@ -164,7 +164,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $countDays = 0;
       $absenceDateDuration = array();
       foreach ($resultAbsences['values'] as $key => $val) {
-        $convertedDate = date("M d, Y", strtotime($val['activity_date_time']));
+        $convertedDate = date("M d, Y (D)", strtotime($val['activity_date_time']));
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
           $countDays = $countDays + 1;
@@ -180,8 +180,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
       $keys = array_keys($absenceDateDuration);
       $count = count($keys) - 1;
-      $this->assign('fromDate', date("M j, Y", strtotime($keys[0])));
-      $this->assign('toDate', date("M j, Y", strtotime($keys[$count])));
+      $fromdateVal = explode('(', $keys[0]);
+      $todateVal = explode('(', $keys[$count]);
+      $this->assign('fromDate', date("M j, Y", strtotime($fromdateVal[0])));
+      $this->assign('toDate', date("M j, Y", strtotime($todateVal[0])));
       $this->assign('absenceDateDuration', $absenceDateDuration);
       $this->_fromDate = date("M j, Y", strtotime($keys[0]));
       $this->_toDate = date("M j, Y", strtotime($keys[$count]));
@@ -287,16 +289,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
                 'name' => ts('Cancel Absence Request'),
                 'subName' => 'cancel'
               ),
-              array(
-                'type' => 'submit',
-                'name' => ts('Approve'),
-                'subName' => 'approve'
-              ),
-              array(
-                'type' => 'submit',
-                'name' => ts('Reject'),
-                'subName' => 'reject'
-              ),
             )
           );
         }
@@ -338,6 +330,12 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (isset($dateFrom) && isset($dateTo)){
       $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
       $days = $days + 1;
+    }
+    if (!$dateFrom) {
+      $errors['start_date'] = ts('From date is required.');
+    }
+    if (!$dateTo) {
+      $errors['end_date'] = ts('End date is required.');
     }
     if (strtotime(isset($fields['start_date_display'])) && strtotime(isset($fields['end_date_display'])) && strtotime(isset($fields['start_date_display'])) > strtotime(isset($fields['end_date_display']))) {
       $errors['end_date'] = ts('From date cannot be greater than to date.');
@@ -495,14 +493,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if (array_key_exists('_qf_AbsenceRequest_submit_cancel', $submitValues)) {
         $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);
         $statusMsg = ts('Your absences have been Cancelled');
-      }
-      elseif (array_key_exists('_qf_AbsenceRequest_submit_approve', $submitValues)) {
-        $statusId = CRM_Utils_Array::key('Completed', $activityStatus);
-        $statusMsg = ts('Your absences have been Completed');
-      }
-      elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
-        $statusId = CRM_Utils_Array::key('Rejected', $activityStatus);
-        $statusMsg = ts('Your absences have been Rejected');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
