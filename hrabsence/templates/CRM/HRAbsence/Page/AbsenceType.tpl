@@ -29,7 +29,7 @@
 {if $rows}
   <div id="ltype">
      <div id="help">
-       <p>&nbsp;Some absence types cannot be deleted because there are existing absences of that type.</p>
+       <p>&nbsp;{ts}Some absence types cannot be deleted because there are existing absences of that type.{/ts}</p>
      </div>
      <div class="form-item">
         {strip}
