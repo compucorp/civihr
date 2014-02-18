@@ -27,9 +27,11 @@
    {include file="CRM/HRAbsence/Form/AbsenceType.tpl"}
 {else}
 {if $rows}
-<div id="ltype">
-<p></p>
-    <div class="form-item">
+  <div id="ltype">
+     <div id="help">
+       <p>&nbsp;{ts}Some absence types cannot be deleted because there are existing absences of that type.{/ts}</p>
+     </div>
+     <div class="form-item">
         {strip}
   {* handle enable/disable actions*}
    {include file="CRM/common/enableDisableApi.tpl"}
