@@ -248,7 +248,14 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   if ($contactType != 'Individual') {
     return;
   }
-
+  $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));
+  $sum = 0;
+  foreach ($absence['values'] as $k => $v) {
+    $absences = civicrm_api3('Activity', 'get', array('source_record_id' => $v['id']));
+    foreach ($absences['values'] as $k => $v) {
+      $sum = $sum + $v['duration'];
+    }
+  }
   CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
   $tabs[] = array(
     'id'    => 'absenceTab',
@@ -256,6 +263,7 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
       'cid' => $contactID,
       'snippet' => 1,
     )),
+    'count' => $sum/(8*60),
     'title' => ts('Absences'),
     'weight' => 300
   );
