@@ -185,8 +185,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->assign('fromDate', date("M j, Y", strtotime($fromdateVal[0])));
       $this->assign('toDate', date("M j, Y", strtotime($todateVal[0])));
       $this->assign('absenceDateDuration', $absenceDateDuration);
-      $this->_fromDate = date("M j, Y", strtotime($keys[0]));
-      $this->_toDate = date("M j, Y", strtotime($keys[$count]));
+      $this->_fromDate = $fromdateVal[0];
+      $this->_toDate = $todateVal[0];
       $this->assign('totalDays', $countDays);
     }
 
