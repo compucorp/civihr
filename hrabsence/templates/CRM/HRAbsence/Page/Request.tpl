@@ -56,8 +56,8 @@
       {foreach from=$absenceDateDuration item=val key=key}
       {if $val != 'Holiday' }
         <tr class="{cycle values="odd-row,even-row"} {$row.class}" >
-          <td>{ts}{$key}{/ts}</td>
-          <td>{ts}{$val}{/ts}</td>
+          <td>{$key}</td>
+          <td>{$val}</td>
         </tr>
       {/if}
       {/foreach}
