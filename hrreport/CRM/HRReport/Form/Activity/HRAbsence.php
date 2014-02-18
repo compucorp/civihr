@@ -221,10 +221,9 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
             'title' => ts('Absence Requested Date'),
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
-          'absence_duration' =>
+          'absence_date' =>
           array(
-            'title' => ts('Absence Duration'),
-            'default' => 'this.month',
+            'title' => ts('Absence Date'),
             'type' => CRM_Utils_Type::T_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),
@@ -426,7 +425,7 @@ class CRM_HRReport_Form_Activity_HRAbsence extends CRM_Report_Form {
             $from     = CRM_Utils_Array::value("{$fieldName}_from", $this->_params);
             $to       = CRM_Utils_Array::value("{$fieldName}_to", $this->_params);
 
-            if ($fieldName == 'absence_duration') {
+            if ($fieldName == 'absence_date') {
               continue;
             }
 
@@ -545,10 +544,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
   }
 
   function postProcess() {
-    $this->buildACLClause(array('civicrm_contact_source', 'civicrm_contact_target', 'civicrm_contact_assignee'));
     $this->beginPostProcess();
-
-    $this->assign('columnHeaders', $this->_columnHeaders);
 
     //Assign those recordtype to array which have filter operator as 'Is not empty' or 'Is empty'
     $nullFilters = array();
@@ -563,9 +559,11 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     }
 
       // 1. fill temp table with target results
+    $this->buildACLClause(array('civicrm_contact_target'));
     $this->select('target');
 
     $this->_columnHeaders = self::alterColumns($this->_columnHeaders);
+    $this->assign('columnHeaders', $this->_columnHeaders);
 
     $this->from('target');
     $this->customDataFrom();
@@ -588,6 +586,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     CRM_Core_DAO::executeQuery($tempQuery);
 
     // 3. fill temp table with assignee results
+    $this->buildACLClause(array('civicrm_contact_assignee'));
     $this->select('assignee');
     $this->from('assignee');
     $this->customDataFrom();
@@ -599,6 +598,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     CRM_Core_DAO::executeQuery($tempQuery);
 
     // 4. fill temp table with source results
+    $this->buildACLClause(array('civicrm_contact_source'));
     $this->select('source');
     $this->from('source');
     $this->customDataFrom();
@@ -674,9 +674,9 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     if (!empty($rows)) {
       $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
       list($durationFromDate, $durationToDate) = $this->getFromTo(
-        CRM_Utils_Array::value("absence_duration_relative", $this->_params),
-        CRM_Utils_Array::value("absence_duration_from", $this->_params),
-        CRM_Utils_Array::value("absence_duration_to", $this->_params)
+        CRM_Utils_Array::value("absence_date_relative", $this->_params),
+        CRM_Utils_Array::value("absence_date_from", $this->_params),
+        CRM_Utils_Array::value("absence_date_to", $this->_params)
       );
 
       $sql = "

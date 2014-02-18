@@ -81,9 +81,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
           $countDays=$countDays+1;
-        } else {
+        }
+        elseif ($val['duration'] == "240") {
           $converteddays = "Half Day";
           $countDays=$countDays+0.5;
+        }
+        else {
+          $converteddays = "Holiday";
         }
         $absenceDateDuration[$convertedDate]=$converteddays;
       }
@@ -233,7 +237,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
       $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
     }
-
     if(($this->_action == 4 || $this->_action == 2)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 
@@ -302,7 +305,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   public function postProcess() {
-    $session = CRM_Core_Session::singleton();
     $submitValues = $this->_submitValues;
     if (!empty($submitValues['contacts_id'])){
       $this->_targetContactID = $submitValues['contacts_id'];
@@ -312,13 +314,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (!empty($submitValues['date_values'])) {
       foreach(explode('|', $submitValues['date_values']) as $key => $dateString) {
         if ($dateString) {
-          $values = explode(':', $dateString);
+          $values = explode('(', $dateString);
           $date = CRM_Utils_Date::processDate($values[0]);
-          $absentDateDurations[$date] = (int)$values[1];
+          $valuesDate = explode(':', $dateString);
+          $absentDateDurations[$date] = (int)$valuesDate[1];
         }
       }
     }
 
+    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
     if ($this->_action== CRM_Core_Action::ADD) {
       $activityParam = array(
         'sequential' => 1,
@@ -330,7 +334,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
       if ($this->_action & (CRM_Core_Action::ADD)) {
         //we want to keep the activity status in Scheduled for new absence
-        $activityParam['status_id'] = CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Scheduled"');
+        $activityParam['status_id'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
       }
       $result = civicrm_api3('Activity', 'create', $activityParam);
 
@@ -367,7 +371,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     elseif ($this->_action == CRM_Core_Action::UPDATE) {
       if (array_key_exists('_qf_AbsenceRequest_submit_cancel', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Cancelled"'));
+        $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);
         $activityParam = array(
           'sequential' => 1,
           'id' => $this->_activityId,
@@ -379,7 +383,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_approve', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Completed"'));
+        $statusId = CRM_Utils_Array::key('Completed', $activityStatus);
         $activityParam = array(
           'sequential' => 1,
           'id' => $this->_activityId,
@@ -391,7 +395,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Rejected"'));
+        $statusId = CRM_Utils_Array::key('Rejected', $activityStatus);
         $activityParam = array(
           'sequential' => 1,
           'id' => $this->_activityId,
@@ -451,16 +455,16 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
 
       if (array_key_exists('_qf_AbsenceRequest_submit_cancel', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Cancelled"'));
-        $statusMsg = "Cancelled";
+        $statusId =  CRM_Utils_Array::key('Cancelled', $activityStatus);
+        $statusMsg = ts('Your absences have been Cancelled');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_approve', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Completed"'));
-        $statusMsg = "Completed";
+        $statusId = CRM_Utils_Array::key('Completed', $activityStatus);
+        $statusMsg = ts('Your absences have been Completed');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
-        $statusId = key(CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Rejected"'));
-        $statusMsg = "Rejected";
+        $statusId = CRM_Utils_Array::key('Rejected', $activityStatus);
+        $statusMsg = ts('Your absences have been Rejected');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
@@ -471,8 +475,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'activity_type_id' => $this->_activityTypeID,
         'status_id' => $statusId
       );   
-      $result = civicrm_api3('Activity', 'create', $activityParam);
-      CRM_Core_Session::setStatus(ts('Your absences have been '.$statusMsg.'.'), ts($statusMsg), 'success');
+      civicrm_api3('Activity', 'create', $activityParam);
+      CRM_Core_Session::setStatus($statusMsg, 'success');
       return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
   }
