@@ -71,8 +71,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
       $this->_loginUserID = $resultAct['values'][0]['source_contact_id'];
       $this->_actStatusId = $resultAct['values'][0]['status_id'];
+      $displayName = CRM_Contact_BAO_Contact::displayName($this->_targetContactID);
+      $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
+      $activityType = $activityTypes[$this->_activityTypeID];
+      $activity = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
+      $activityStatus = $activity[$this->_actStatusId];
+      CRM_Utils_System::setTitle(ts("Absence for  %1 (%2, %3)", array(1 => $displayName, 2 => $activityType, 3 => $activityStatus) ));
+
       if ($this->_action == CRM_Core_Action::VIEW) {
-        CRM_Utils_System::setTitle(ts('Absence Request: View'));
         $groupTree = CRM_Core_BAO_CustomGroup::getTree('Activity', $this, $this->_activityId, 0, $this->_activityTypeID);
         CRM_Core_BAO_CustomGroup::buildCustomDataView($this, $groupTree);
       }
@@ -83,9 +89,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           1, 'Activity', $this->_activityId, TRUE
         );
         $this->assign('customValueCount', $this->_customValueCount);
-      }
-      if ($this->_action == CRM_Core_Action::UPDATE) {
-        CRM_Utils_System::setTitle(ts('Absence Request: Update'));
       }
     }
     elseif ($this->_action == CRM_Core_Action::ADD) {
