@@ -54,6 +54,21 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
       $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
     }
+    $activityTypes = CRM_Core_PseudoConstant::activityType();
+    $paramsHoliday = array(
+      'version' => 3,
+      'sequential' => 1,
+      'activity_type_id' => array_search('Public Holiday', $activityTypes),
+    );
+    $resultHoliday = civicrm_api('Activity', 'get', $paramsHoliday);
+    $publicHolidays = array();
+    foreach ($resultHoliday['values'] as $key => $val) {
+      $pubDate = date("M j, Y", strtotime($val['activity_date_time']));
+      $publicHolidays[$pubDate] = $val['subject'];
+    }
+    $publicHolidays = json_encode($publicHolidays);
+    $this->assign('publicHolidays', $publicHolidays);
+
     if (($this->_action == CRM_Core_Action::VIEW || $this->_action == CRM_Core_Action::UPDATE)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 
