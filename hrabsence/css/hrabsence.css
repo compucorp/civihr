@@ -88,15 +88,15 @@
     padding: 1px;
 }
 
-.page-civicrm-absences .ui-multiselect-menu {
+.page-civicrm-absences .ui-multiselect-menu, .page-civicrm-contact-view .ui-multiselect-menu{
     padding: 1px !important;
 }
 
-.page-civicrm-absences .ui-multiselect-menu ul {
+.page-civicrm-absences .ui-multiselect-menu ul, .page-civicrm-contact-view .ui-multiselect-menu ul {
     background-color: #F2F1F0 !important;
 }
 
-.page-civicrm-absences .ui-multiselect-menu li label span{
+.page-civicrm-absences .ui-multiselect-menu li label span, .page-civicrm-contact-view .ui-multiselect-menu li label span{
     padding-left: 4px;
     font-weight: normal !important;
 }
