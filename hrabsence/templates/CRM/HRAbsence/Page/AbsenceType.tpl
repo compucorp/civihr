@@ -34,7 +34,7 @@
      <div class="form-item">
         {strip}
   {* handle enable/disable actions*}
-   {include file="CRM/common/enableDisableApi.tpl"}
+   {include file="CRM/common/enableDisable.tpl"}
         <table cellpadding="0" cellspacing="0" border="0">
            <thead class="sticky">
             <th>{ts}Title{/ts}</th>
@@ -44,7 +44,7 @@
             <th></th>
           </thead>
          {foreach from=$rows item=row}
-        <tr id="HRAbsenceType-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
+        <tr id="row_{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
           <td class="crm-editable" data-field="title">{$row.title}</td>
           <td>{if $row.allow_credits eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
           <td>{if $row.allow_debits eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>

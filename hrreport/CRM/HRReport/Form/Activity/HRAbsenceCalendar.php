@@ -112,7 +112,6 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
           'absence_date' =>
           array(
             'title' => ts('Absence Date'),
-            'default' => 'this.month',
             'type' => CRM_Utils_Type::T_DATE,
             'operatorType' => CRM_Report_Form::OP_DATE,
           ),

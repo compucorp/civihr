@@ -186,4 +186,8 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
     return $duration;
   }
+
+  static function setIsActive($id, $is_active) {
+    return CRM_Core_DAO::setFieldValue('CRM_HRAbsence_DAO_HRAbsenceType', $id, 'is_active', $is_active);
+  }
 }
