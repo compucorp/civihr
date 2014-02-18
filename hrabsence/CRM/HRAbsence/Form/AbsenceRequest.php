@@ -56,11 +56,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     $activityTypes = CRM_Core_PseudoConstant::activityType();
     $paramsHoliday = array(
-      'version' => 3,
       'sequential' => 1,
       'activity_type_id' => array_search('Public Holiday', $activityTypes),
     );
-    $resultHoliday = civicrm_api('Activity', 'get', $paramsHoliday);
+    $resultHoliday = civicrm_api3('Activity', 'get', $paramsHoliday);
     $publicHolidays = array();
     foreach ($resultHoliday['values'] as $key => $val) {
       $pubDate = date("M j, Y", strtotime($val['activity_date_time']));
