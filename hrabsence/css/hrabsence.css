@@ -200,3 +200,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .page-civicrm-absence-set .tblabsencetitle, .page-civicrm-absence-set .abempInfo tbody tr td:first-child {
     font-weight: bold !important;
 }
+
+.page-civicrm-absence-set table.abempInfo tr td:last-child, .page-civicrm-absence-set table.absencedetail tr td:last-child {
+    border-right:none !important;
+} 
