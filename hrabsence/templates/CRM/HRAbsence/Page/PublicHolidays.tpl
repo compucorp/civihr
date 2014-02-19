@@ -34,14 +34,14 @@
            <thead class="sticky">
             <th>{ts}Title{/ts}</th>
             <th>{ts}Date{/ts}</th>
-            <th>{ts}Status{/ts}</th>
+            <th>{ts}Enabled?{/ts}</th>
             <th></th>
           </thead>
          {foreach from=$rows item=row}
         <tr id="HRAbsence-PublicHoliday-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
           <td class="crm-editable" data-field="title">{$row.subject}</td>
-          <td>{$row.date}</td>
-          <td>{$row.status}</td>
+          <td>{$row.date|truncate:10:''|crmDate}</td>
+          <td>{if $row.status eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
           <td>{$row.action|replace:'xx':$row.id}</td>
         </tr>
         {/foreach}

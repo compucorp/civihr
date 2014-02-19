@@ -68,7 +68,7 @@ function hrabsence_civicrm_install() {
     array(
       'label'      => ts('Public Holidays'),
       'name'       => 'publicHolidays',
-      'url'        => 'civicrm/absence/publicHolidays?reset=1',
+      'url'        => 'civicrm/absence/holidays?reset=1',
     ),
   );
 
