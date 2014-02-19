@@ -63,10 +63,10 @@ function hrjob_civicrm_install() {
         $params['name'] = $subTypeName;
         $params['label'] = $sub_type_name;
         CRM_Contact_BAO_ContactType::add($params);
-      } 
+      }
       elseif($subID && $orgSubType[$subTypeName]['is_active']==0) {
         CRM_Contact_BAO_ContactType::setIsActive($orgSubType[$subTypeName]['id'], 1);
-      }    
+      }
     }
   }
 
@@ -258,8 +258,8 @@ function hrjob_civicrm_triggerInfo(&$info, $tableName) {
  * @return void
  */
 function hrjob_civicrm_permission(&$permissions) {
-  $prefix = ts('CiviHR') . ': '; // name of extension or module
-  $permissions = array(
+  $prefix = ts('CiviHRJob') . ': '; // name of extension or module
+  $permissions += array(
     'access HRJobs' => $prefix . ts('access HRJobs'),
     'edit HRJobs' => $prefix . ts('edit HRJobs'),
     'delete HRJobs' => $prefix . ts('delete HRJobs'),
@@ -281,7 +281,7 @@ function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permiss
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['duplicate'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['delete'] = array('access CiviCRM', 'delete HRJobs');
-  $permissions['HRJob'] = $permissions['h_r_job'];
+  $permissions['CiviHRJob'] = $permissions['h_r_job'];
 }
 
 /**
@@ -312,7 +312,7 @@ function hrjob_getSummaryFields($fresh = FALSE) {
 function hrjob_civicrm_navigationMenu( &$params ) {
     //  Get the maximum key of $params
     $maxKey = ( max( array_keys($params) ) );
- 
+
     $params[15]['child'][$maxKey+1] = array (
       'attributes' => array (
         'label'      => 'Job Import',
