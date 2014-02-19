@@ -269,4 +269,24 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   	}
   	return TRUE;
   }
+
+  public function upgrade_1201() {
+    $this->ctx->log->info('Applying update 1201');
+
+    //get all fields of Custom Group "HRJob_Summary"
+    $params = array(
+      'custom_group_id' => 'HRJob_Summary',
+    );
+    $results = civicrm_api3('CustomField', 'get', $params);
+
+    foreach ($results['values'] as $result) {
+      $result['is_view'] = 0; // make the field editable
+      civicrm_api3('CustomField', 'create', $result);
+    }
+
+    //disable trigger
+    CRM_Core_DAO::triggerRebuild();
+
+    return TRUE;
+  }
 }
