@@ -55,15 +55,20 @@ function hrabsence_civicrm_install() {
       'url'  => null,
     ),
     array(
-      'label'      => 'Absence Types',
+      'label'      => ts('Absence Types'),
       'name'       => 'absenceTypes',
       'url'        => 'civicrm/absence/type?reset=1',
       'has_separator' => 1,
     ),
     array(
-      'label'      => 'Absence Report',
+      'label'      => ts('Absence Report'),
       'name'       => 'absence_report',
       'url'        => 'civicrm/report/list?grp=absence&reset=1',
+    ),
+    array(
+      'label'      => ts('Public Holidays'),
+      'name'       => 'publicHolidays',
+      'url'        => 'civicrm/absence/publicHolidays?reset=1',
     ),
   );
 
