@@ -100,11 +100,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_actStatusId = $resultAct['values'][0]['status_id'];
 
       //check if status is Requested then change the mode to edit if it is already in view mode
-      if (CRM_Utils_Array::value($this->_actStatusId, CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus()) == 'Requested' &&
-        $this->_mode == 'view' &&
+      //else if the action is update but status in Approved or Cancelled or Rejected then change to view mode
+      $absenceStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
+      if ($absenceStatuses[$this->_actStatusId] == 'Requested' && $this->_mode == 'view' &&
         CRM_Core_Permission::check('manage own HRAbsences')
       ) {
-          $this->_mode = 'edit';
+        $this->_mode = 'edit';
+      }
+      elseif ($absenceStatuses[$this->_actStatusId] != 'Requested') {
+        $this->_mode = 'view';
       }
 
       $displayName = CRM_Contact_BAO_Contact::displayName($this->_targetContactID);
