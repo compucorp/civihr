@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{if $action eq 4} 
+{if $mode eq 'view'}
   {include file="CRM/HRAbsence/Page/Request.tpl"} 
 {else}  
   {include file="CRM/HRAbsence/Form/Request.tpl"} 

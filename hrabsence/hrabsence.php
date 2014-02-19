@@ -272,6 +272,38 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   );
 }
 
+/**
+ * Implementation of hook_civicrm_permission
+ *
+ * @param array $permissions
+ * @return void
+ */
+function hrabsence_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRAbsence') . ': '; // name of extension or module
+  $permissions += array(
+    'view HRAbsences' => $prefix . ts('view HRAbsences'),
+    'edit HRAbsences' => $prefix . ts('edit HRAbsences'),
+    'manage own HRAbsences' => $prefix . ts('manage own HRAbsences'),
+  );
+}
+
+/**
+ * Implementaiton of hook_civicrm_alterAPIPermissions
+ *
+ * @param $entity
+ * @param $action
+ * @param $params
+ * @param $permissions
+ * @return void
+ */
+function hrabsence_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $permissions['h_r_absence']['get'] = array('access CiviCRM', 'view HRAbsence');
+  $permissions['h_r_absence']['create'] = array('access CiviCRM');
+  $permissions['h_r_absence']['update'] = array('access CiviCRM', 'edit HRAbsence');
+  $permissions['h_r_absence']['delete'] = array('access CiviCRM');
+  $permissions['CiviHRAbsence'] = $permissions['h_r_absence'];
+}
+
 function hrabsence_civicrm_navigationMenu( &$params ) {
   $absenceMenuItems = array();
   $absenceType = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
