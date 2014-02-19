@@ -31,9 +31,7 @@
       <label for="hrjob-hours_amount">{ts}Hours{/ts}</label>
     </div>
     <div class="crm-content">
-      <div>
-        <input id="hrjob-hours_amount" name="hours_amount" type="text" />
-      </div>
+      <input id="hrjob-hours_amount" name="hours_amount" type="text" />
       <label for="hrjob-hours_unit">{ts}per{/ts}</label>
       {literal}
       <%= RenderUtil.select({

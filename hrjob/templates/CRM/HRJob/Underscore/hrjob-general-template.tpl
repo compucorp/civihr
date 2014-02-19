@@ -157,9 +157,7 @@
       <label for="hrjob-notice_amount">{ts}Notice Period{/ts}</label>
     </div>
     <div class="crm-content">
-      <div>
-        <input id="hrjob-notice_amount" name="notice_amount" type="text" />
-      </div>
+      <input id="hrjob-notice_amount" name="notice_amount" type="text" />
       {literal}
       <%= RenderUtil.select({
         id: 'hrjob-notice_unit',
