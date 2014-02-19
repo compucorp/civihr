@@ -26,7 +26,7 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
         throw "Invalid direction"
     }
   };
-  
+
   /**
    * Converter for currency
    *
@@ -55,7 +55,7 @@ CRM.HRApp.module('Common', function(Common, HRApp, Backbone, Marionette, $, _) {
       default:
         throw "Invalid direction"
     }
-  };  
+  };
 
   /**
    * Marionette-ModelBinding helper

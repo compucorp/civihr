@@ -39,7 +39,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
       e.preventDefault();
       e.stopPropagation();
       var view = new Pay.EditSettings({
-    	  model: new HRApp.Entities.Setting()
+        model: new HRApp.Entities.Setting()
       });
       HRApp.dialogRegion.show(view);
     },
@@ -53,19 +53,19 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
   });
   Pay.EditSettings = HRApp.Common.Views.StandardForm.extend({
     template: '#hrjob-pay-settings-template',
-	templateHelpers: function() {
-	  return {
-	    'isNew': this.model.get('id') ? false : true,
-	    'RenderUtil': CRM.HRApp.RenderUtil,
-	    'FieldOptions': CRM.FieldOptions.HRJobPay
-		};
-	  },
-	onShow: function() {
-	  $('.hrjob-dialog-region').dialog({
-	    modal: true,
-	    title: "Anualized Pay Constants",
-	    width: "auto"
-	  });
-	} 
+    templateHelpers: function() {
+          return {
+            'isNew': this.model.get('id') ? false : true,
+            'RenderUtil': CRM.HRApp.RenderUtil,
+            'FieldOptions': CRM.FieldOptions.HRJobPay
+          };
+    },
+    onShow: function() {
+      $('.hrjob-dialog-region').dialog({
+        modal: true,
+        title: "Anualized Pay Constants",
+        width: "auto"
+      });
+    }
   });
 });

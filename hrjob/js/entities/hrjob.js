@@ -121,16 +121,16 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       er_contrib_pct: '',
       ee_contrib_pct: '',
       pension_type:'',
-      ee_contrib_abs: '' 
+      ee_contrib_abs: ''
     }
   });
-  
-  Entities.Setting = Backbone.Model.extend({
-	    defaults: {
 
-	    }
-	  });
-  
+  Entities.Setting = Backbone.Model.extend({
+    defaults: {
+      // id, group_name, name, value, domain_id, contact_id, is_domain, component_id
+    }
+  });
+
   Entities.HRJobLeave = Backbone.Model.extend({
     defaults: {
       leave_amount: 0
@@ -176,7 +176,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
 
   // FIXME real models
-  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole','Setting'], function(entityName){
+  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole', 'Setting'], function(entityName){
     if (!Entities[entityName]) {
       Entities[entityName] = Backbone.Model.extend({});
     }
