@@ -61,7 +61,18 @@ class CRM_HRReport_Form_Activity_PublicHoliday extends CRM_Report_Form {
         'filters' =>
         array(
           'activity_date_time' =>
-          array('operatorType' => CRM_Report_Form::OP_DATE),
+          array(
+            'operatorType' => CRM_Report_Form::OP_DATE,
+            'default' => 'this.year'
+          ),
+          'activity_status_id' =>
+          array(
+            'name' => 'status_id',
+            'title' => ts('Enabled?'),
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array('' => '', '1' => ts('Yes'), '2' => ts('No')),
+          ),
         ),
         'order_bys' =>
         array(
@@ -132,6 +143,27 @@ class CRM_HRReport_Form_Activity_PublicHoliday extends CRM_Report_Form {
 
             $clause = $this->dateClause($field['name'], $relative, $from, $to, $field['type']);
           }
+
+          if (array_key_exists("{$fieldName}_value", $this->_params)) {
+            if ($field['name'] == 'status_id' && $this->_params["{$fieldName}_value"]) {
+              $status =  CRM_Core_PseudoConstant::activityStatus();
+
+              if($this->_params["{$fieldName}_value"] == 1) {
+                $this->_params["{$fieldName}_value"] = array_search('Scheduled', $status);
+              }
+              elseif($this->_params["{$fieldName}_value"] == 0) {
+                $this->_params["{$fieldName}_value"] = array_search('Cancelled', $status);
+              }
+              $op = CRM_Utils_Array::value("{$fieldName}_op", $this->_params);
+              $clause = $this->whereClause($field,
+                $op,
+                CRM_Utils_Array::value("{$fieldName}_value", $this->_params),
+                CRM_Utils_Array::value("{$fieldName}_min", $this->_params),
+                CRM_Utils_Array::value("{$fieldName}_max", $this->_params)
+              );
+            }
+          }
+
           if (!empty($clause)) {
             $clauses[] = $clause;
           }

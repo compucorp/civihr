@@ -19,7 +19,7 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/absence/publicHolidays</path>
+    <path>civicrm/absence/holidays</path>
     <page_callback>CRM_HRAbsence_Page_PublicHolidays</page_callback>
     <title>Public Holiday</title>
     <access_arguments>access CiviCRM</access_arguments>

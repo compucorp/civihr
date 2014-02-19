@@ -64,15 +64,15 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
       self::$_links = array(
         CRM_Core_Action::UPDATE  => array(
           'name'  => ts('Edit'),
-          'url'   => 'civicrm/absence/publicHolidays',
+          'url'   => 'civicrm/absence/holidays',
           'qs'    => 'action=update&id=%%id%%&reset=1',
-          'title' => ts('Edit Absence Type'),
+          'title' => ts('Edit Public Holiday'),
         ),
         CRM_Core_Action::DELETE  => array(
           'name'  => ts('Delete'),
-          'url'   => 'civicrm/absence/publicHolidays',
+          'url'   => 'civicrm/absence/holidays',
           'qs'    => 'action=delete&id=%%id%%',
-          'title' => ts('Delete Absence Type'),
+          'title' => ts('Delete Public Holiday'),
         ),
       );
     }
@@ -127,8 +127,13 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
       $publicHoliday[$dao->id] = array();
       $publicHoliday[$dao->id]['id'] = $dao->id;
       $publicHoliday[$dao->id]['subject'] = $dao->subject;
+      if (array_search('Scheduled',  CRM_Core_PseudoConstant::activityStatus()) == $dao->status_id) {
+        $publicHoliday[$dao->id]['status'] = 1;
+      }
+      else {
+        $publicHoliday[$dao->id]['status'] = 0;
+      }
       $publicHoliday[$dao->id]['date'] = $dao->activity_date_time;
-      $publicHoliday[$dao->id]['status'] = $status[$dao->status_id];
 
       // form all action links
       $action = array_sum(array_keys($this->links()));
@@ -164,6 +169,6 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
    * @return string user context.
    */
   function userContext($mode = null) {
-    return 'civicrm/absence/publicHolidays';
+    return 'civicrm/absence/holidays';
   }
 }

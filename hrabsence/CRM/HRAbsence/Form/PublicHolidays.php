@@ -52,9 +52,11 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
         list($defaults['activity_date_time'],
           $defaults['activity_date_time_time']
           ) = CRM_Utils_Date::setDateDefaults($defaults['activity_date_time'], 'activityDateTime');
+        $status = CRM_Core_PseudoConstant::activityStatus();
+        $defaults['status_id'] = ($defaults['status_id'] == array_search('Scheduled', $status)) ? 1 : 0;
     }
     else {
-      $defaults['status_id'] = array_search('Available',  CRM_Core_PseudoConstant::activityStatus());
+      $defaults['status_id'] = 1;
     }
 
     return $defaults;
@@ -106,8 +108,7 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
     }
     $this->add('text', 'subject', ts('Title'), CRM_Core_DAO::getAttribute('CRM_Activity_DAO_Activity', 'subject'), TRUE);
     $this->addDateTime('activity_date_time', ts('Date'), TRUE, array('formatType' => 'activityDateTime'));
-    $allStatus = array_intersect_key(array_flip(CRM_Core_PseudoConstant::activityStatus()), array_fill_keys(array('Available', 'Completed', 'Cancelled'),null));
-    $this->add('select', 'status_id', ts('Enabled?'), array_flip($allStatus), TRUE);
+    $this->add('checkbox', 'status_id', ts('Enabled?'));
   }
 
   /**
@@ -129,6 +130,8 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
       $activity_type_id = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Public Holiday', 'return'=> 'value',) );
       $params['activity_type_id'] = $activity_type_id;
       $params['source_contact_id'] = 1;
+      $status = CRM_Core_PseudoConstant::activityStatus();
+      $params['status_id'] =  $params['status_id'] ? array_search('Scheduled', $status) : array_search('Cancelled', $status);
       $params['activity_date_time'] = CRM_Utils_Date::processDate($params['activity_date_time'], $params['activity_date_time_time']);
 
       if ($this->_action & CRM_Core_Action::UPDATE) {
@@ -144,7 +147,7 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
         CRM_Core_Session::setStatus(ts('The Public Holiday \'%1\' has been added.', array( 1 => $publicHoliday->subject)), 'Success', 'success');
       }
 
-      $url = CRM_Utils_System::url('civicrm/absence/publicHolidays', 'reset=1&action=browse');
+      $url = CRM_Utils_System::url('civicrm/absence/holidays', 'reset=1&action=browse');
       $session = CRM_Core_Session::singleton();
       $session->replaceUserContext($url);
     }
