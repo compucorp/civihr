@@ -1113,7 +1113,7 @@ class GenerateHRData {
     $publicHolidays = array('18 April','21 April','5 May','26 May','25 August','25 December','26 December');
     $publicholidays_sub = array('Good Friday','Easter Monday','Early May bank holiday','Spring bank holiday','Summer bank holiday','Christmas Day','Boxing Day');
     $params = array('sequential' => 1,
-      'label' => 'Public Holiday',
+      'name' => 'Public Holiday',
     );
     $result = civicrm_api3('OptionValue', 'get',$params );
     $activity_id = $result['values'][0]['value'];    
