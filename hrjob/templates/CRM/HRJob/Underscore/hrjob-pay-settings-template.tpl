@@ -13,34 +13,34 @@
     <tbody>
       <tr>
         <td>
-          <label for="hrjob-hours_per_year">{ts}Standard work-months per year{/ts}</label>
+          <label for="hrjob-work_months_per_year">{ts}Standard work-months per year{/ts}</label>
         </td>
         <td>
-          <input id="hrjob-months_per_year" name="months_per_year" type="text" />
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label for="hrjob-hours_per_year">{ts}Standard work-weeks per year{/ts}</label>
-        </td>
-        <td>
-          <input id="hrjob-weeks_per_year" name="weeks_per_year" type="text" />
+          <input id="hrjob-work_months_per_year" name="work_months_per_year" type="text" />
         </td>
       </tr>
       <tr>
         <td>
-          <label for="hrjob-days_per_year">{ts}Standard work-days per year{/ts}</label>
+          <label for="hrjob-work_weeks_per_year">{ts}Standard work-weeks per year{/ts}</label>
         </td>
         <td>
-          <input id="hrjob-days_per_year" name="days_per_year" type="text" />
+          <input id="hrjob-work_weeks_per_year" name="work_weeks_per_year" type="text" />
         </td>
       </tr>
       <tr>
         <td>
-          <label for="hrjob-hours_per_year">{ts}Standard work-hours per year{/ts}</label>
+          <label for="hrjob-work_days_per_year">{ts}Standard work-days per year{/ts}</label>
         </td>
         <td>
-          <input id="hrjob-hours_per_year" name="hours_per_year" type="text" />
+          <input id="hrjob-work_days_per_year" name="work_days_per_year" type="text" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="hrjob-work_hours_per_year">{ts}Standard work-hours per year{/ts}</label>
+        </td>
+        <td>
+          <input id="hrjob-work_hours_per_year" name="work_hours_per_year" type="text" />
         </td>
       </tr>
     </tbody>
