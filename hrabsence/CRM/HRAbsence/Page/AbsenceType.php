@@ -70,12 +70,14 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
         ),
         CRM_Core_Action::DISABLE => array(
           'name'  => ts('Disable'),
-          'ref'   => 'crm-enable-disable',
+          'extra' => 'onclick = "enableDisable( %%id%%,\'' . 'CRM_HRAbsence_BAO_HRAbsenceType' . '\',\'' . 'enable-disable' . '\' );"',
+          'ref' => 'disable-action',
           'title' => ts('Disable Absence Type'),
         ),
         CRM_Core_Action::ENABLE  => array(
           'name'  => ts('Enable'),
-          'ref'   => 'crm-enable-disable',
+          'extra' => 'onclick = "enableDisable( %%id%%,\'' . 'CRM_HRAbsence_BAO_HRAbsenceType' . '\',\'' . 'disable-enable' . '\' );"',
+          'ref' => 'enable-action',
           'title' => ts('Enable Absence Type'),
         ),
         CRM_Core_Action::DELETE  => array(
@@ -126,7 +128,6 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @static
    */
   function browse() {
-    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/crm.livePage.js');
     // get all absence types sorted by name
     $absenceType = array();
     $dao = new CRM_HRAbsence_DAO_HRAbsenceType();

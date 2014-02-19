@@ -55,19 +55,20 @@ function hrabsence_civicrm_install() {
       'url'  => null,
     ),
     array(
+      'label'      => 'Absence Types',
+      'name'       => 'absenceTypes',
+      'url'        => 'civicrm/absence/type?reset=1',
+      'has_separator' => 1,
+    ),
+    array(
       'label'      => 'Absence Report',
       'name'       => 'absence_report',
       'url'        => 'civicrm/report/list?grp=absence&reset=1',
     ),
-    array(
-      'label'      => 'Absence Types',
-      'name'       => 'absenceTypes',
-      'url'        => 'civicrm/absence/type?reset=1',
-    ),
   );
 
   foreach ($absenceMenuTree as $key => $menuItems) {
-    $menuItems['has_separator'] = $menuItems['is_active'] = 1;
+    $menuItems['is_active'] = 1;
     $menuItems['parent_id'] = $absenceNavigation->id;
     $menuItems['weight'] = $key;
     CRM_Core_BAO_Navigation::add($menuItems);

@@ -42,7 +42,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceTest extends CiviReportTestCase {
 
   public function dataProvider() {
     $cases = array();
-    foreach (glob(__DIR__ . '/fixtures/absence-list.reports.php') as $file) {
+    foreach (glob(__DIR__ . '/fixtures/absence-*.reports.php') as $file) {
       $cases = array_merge($cases, include $file);
     }
     return $cases;
