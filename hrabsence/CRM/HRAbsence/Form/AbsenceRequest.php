@@ -322,7 +322,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         }
       }
     }
-    $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
+    if ( $this->_action == CRM_Core_Action::UPDATE || $this->_action == CRM_Core_Action::ADD ) {
+      $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
+    }
   }
 
   /**
@@ -348,10 +350,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $days = (strtotime($dateTo)- strtotime($dateFrom))/24/3600;
       $days = $days + 1;
     }
-    if (isset($dateFrom) && !$dateFrom) {
+    if (empty($dateFrom)) {
       $errors['start_date'] = ts('From date is required.');
     }
-    if (isset($dateTo) && !$dateTo) {
+    if (empty($dateTo)) {
       $errors['end_date'] = ts('End date is required.');
     }
     if (strtotime(isset($fields['start_date_display'])) && strtotime(isset($fields['end_date_display'])) && strtotime(isset($fields['start_date_display'])) > strtotime(isset($fields['end_date_display']))) {
