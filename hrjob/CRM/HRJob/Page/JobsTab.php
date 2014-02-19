@@ -53,6 +53,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
           'contact_id' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+          'domain_id' => CRM_Core_Config::domainID(),
           'isLogEnabled'    => (bool) $config->logging,
           'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
           'currencies' => CRM_HRJob_Page_JobsTab::getCurrencyFormats(),

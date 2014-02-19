@@ -126,9 +126,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
 
   Entities.Setting = Backbone.Model.extend({
-    defaults: {
-      // id, group_name, name, value, domain_id, contact_id, is_domain, component_id
-    }
+    // Restrict returned settings to mitigate risk that concurrent processes CRUD the same setting
+    crmReturn: ['work_months_per_year','work_weeks_per_year','work_days_per_year','work_hours_per_year'],
+    defaults: {}
   });
 
   Entities.HRJobLeave = Backbone.Model.extend({
