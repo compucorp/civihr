@@ -304,8 +304,8 @@ function hrabsence_civicrm_permission(&$permissions) {
  */
 function hrabsence_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $permissions['h_r_absence']['get'] = array('access CiviCRM', 'view HRAbsences');
-  $permissions['h_r_absence']['create'] = array('access CiviCRM', 'edit HRAbsence');
-  $permissions['h_r_absence']['update'] = array('access CiviCRM', 'edit HRAbsence');
+  $permissions['h_r_absence']['create'] = array('access CiviCRM', 'edit HRAbsences');
+  $permissions['h_r_absence']['update'] = array('access CiviCRM', 'edit HRAbsences');
   $permissions['h_r_absence']['delete'] = array('access CiviCRM', 'administer CiviCRM');
   $permissions['CiviHRAbsence'] = $permissions['h_r_absence'];
 }
