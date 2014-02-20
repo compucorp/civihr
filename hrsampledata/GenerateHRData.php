@@ -1133,4 +1133,4 @@ $obj1 = new GenerateHRData();
 $obj1->initID();
 $obj1->generate('Organization');
 $obj1->generate('Individual');
-
+CRM_HRJob_Estimator::updateEstimates(); // generator above bypasses API

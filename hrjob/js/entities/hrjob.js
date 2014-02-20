@@ -110,7 +110,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       pay_grade: '',
       pay_amount: '',
       pay_unit: '',
-      pay_currency: ''
+      pay_currency: '',
+      pay_annualized_est: '',
+      pay_is_auto_est: 1
     }
   });
 

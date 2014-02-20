@@ -19,6 +19,10 @@ return array (
     'is_contact' => 0,
     'description' => 'The number of months worked by a typical full-time employee each year',
     'help_text' => null,
+    'validate_callback' => 'CRM_HRJob_Estimator::validateEstimateConstant',
+    'on_change' => array(
+      array('CRM_HRJob_Estimator', 'onUpdateEstimateConstants')
+    ),
   ),
   'work_weeks_per_year' => array(
     'group_name' => 'hrjob',
@@ -39,6 +43,10 @@ return array (
     'is_contact' => 0,
     'description' => 'The number of weeks worked by a typical full-time employee each year',
     'help_text' => null,
+    'validate_callback' => 'CRM_HRJob_Estimator::validateEstimateConstant',
+    'on_change' => array(
+      array('CRM_HRJob_Estimator', 'onUpdateEstimateConstants')
+    ),
   ),
   'work_days_per_year' => array(
     'group_name' => 'hrjob',
@@ -52,13 +60,17 @@ return array (
       'size' => 2,
       'maxlength' => 8,
     ),
-    'default' => 250,
+    'default' => 50 * 5,
     'add' => '4.4',
     'title' => 'Standard work-days per year',
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => 'The number of days worked by a typical full-time employee each year',
     'help_text' => null,
+    'validate_callback' => 'CRM_HRJob_Estimator::validateEstimateConstant',
+    'on_change' => array(
+      array('CRM_HRJob_Estimator', 'onUpdateEstimateConstants')
+    ),
   ),
   'work_hours_per_year' => array(
     'group_name' => 'hrjob',
@@ -72,12 +84,16 @@ return array (
       'size' => 2,
       'maxlength' => 8,
     ),
-    'default' => 2000,
+    'default' => 50 * 5 * 8,
     'add' => '4.4',
     'title' => 'Standard work-hours per year',
     'is_domain' => 1,
     'is_contact' => 0,
     'description' => 'The number of hours worked by a typical full-time employee each year',
     'help_text' => null,
+    'validate_callback' => 'CRM_HRJob_Estimator::validateEstimateConstant',
+    'on_change' => array(
+      array('CRM_HRJob_Estimator', 'onUpdateEstimateConstants')
+    ),
   ),
 );
