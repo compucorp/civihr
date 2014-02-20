@@ -268,7 +268,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           )
         );
       }
-      elseif ($this->_action == (CRM_Core_Action::UPDATE)) {
+      elseif ($this->_action == (CRM_Core_Action::UPDATE) || $this->_mode == 'edit') {
         $this->add('hidden', 'source_record_id', $this->_aid);
         $params = array(
           'sequential' => 1,
