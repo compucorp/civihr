@@ -99,6 +99,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         SET leave_type = CASE leave_type
         {$values}
         END;";
+      CRM_Core_DAO::executeQuery($query);
     }
     CRM_Core_OptionGroup::deleteAssoc('hrjob_leave_type');
   }
@@ -125,10 +126,12 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     while($dao->fetch()) {
       if($dao->credit_activity_type_id) {
         $query = "DELETE FROM civicrm_activity WHERE activity_type_id IN ( {$dao->credit_activity_type_id} )";
+        CRM_Core_DAO::executeQuery($query);
         CRM_Core_BAO_OptionValue::del($dao->credit_activity_type_id);
       }
       if($dao->debit_activity_type_id) {
         $query = "DELETE FROM civicrm_activity WHERE activity_type_id IN ( {$dao->debit_activity_type_id} )";
+        CRM_Core_DAO::executeQuery($query);
         CRM_Core_BAO_OptionValue::del($dao->debit_activity_type_id);
       }
     }
