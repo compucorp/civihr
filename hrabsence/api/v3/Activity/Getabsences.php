@@ -66,7 +66,7 @@ function civicrm_api3_activity_getabsences($params) {
 
   if (!empty($params['period_id'])) {
     $periodIds = (array) $params['period_id'];
-    $dateExprs = array();
+    $dateExprs = array(); // array(string $sqlExpression)
     foreach ($periodIds as $periodId) {
       $period = civicrm_api3('HRAbsencePeriod', 'getsingle', array(
         'id' => $periodId,
