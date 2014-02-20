@@ -35,7 +35,7 @@
   {else}
     <tr>
       <td>{ts}Employee{/ts}</td>
-      <td colspan="2">{$emp_name}</td>
+      <td colspan="2"> {if $permContact} <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=$emp_id"}"> {$emp_name} {else}  {$emp_name} {/if}</td>
     </tr>
   {/if}
     <tr id="position">

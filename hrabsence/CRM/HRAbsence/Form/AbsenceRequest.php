@@ -190,6 +190,27 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->assign('contactDataURL', $contactDataURL);
     }
 
+    if ($this->_mode == 'edit' || $this->_mode == 'view') {
+      $ids = CRM_Core_Permission::group('Access');
+      if (!empty($ids)) {
+        $idacl = CRM_ACL_API::group(CRM_Core_Permission::VIEW, NULL, 'civicrm_saved_search', $ids);
+      }
+      $in = CRM_Contact_BAO_GroupContact::getContactGroup($this->_targetContactID, 'Added');
+      $staticGroups = array();
+      if (!empty($in)) {
+        foreach ($in as $group) {
+          $staticGroups[] = $group['group_id'];
+        }
+      }
+      if ($idacl && $staticGroups) {
+        $arraydiff = array_intersect($idacl, $staticGroups);
+        if (!empty($arraydiff)) { 
+          $this->assign('permContact', 1);
+          $this->assign('emp_id', $this->_targetContactID);
+        }  
+      }
+    }
+
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
     $paramsHRJob = array(
