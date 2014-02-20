@@ -46,6 +46,9 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
           var view = new Pay.EditSettings({
             model: settingsModel
           });
+          view.on('standard:save', function(){
+            HRApp.dialogRegion.close();
+          });
           HRApp.dialogRegion.show(view);
         },
         error: function() {
@@ -77,6 +80,9 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         title: "Anualized Pay Constants",
         width: "auto"
       });
+    },
+    onClose: function() {
+      $('.hrjob-dialog-region').dialog('close');
     }
   });
 });
