@@ -115,7 +115,7 @@ class CRM_HRAbsence_DGWDIHTWT {
    *   prefix '#' => literal number, skip escaping but do validation
    *   prefix '!' => literal, skip escaping and validation
    *   if a value is an array, then it will be imploded
-   * @return CRM_HRAbsence_DGWDIHTWT
+   * @return string SQL expression
    */
   public function interpolate($expr, $args) {
     if ($args === NULL) {
