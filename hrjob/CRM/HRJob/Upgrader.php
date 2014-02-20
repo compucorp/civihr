@@ -220,7 +220,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
           'column' => 'provider_life_insurance'
         )
       );
-      $org_id = array_search('Organization', CRM_Contact_BAO_ContactType::basicTypePairs(false,'id'));
+      $org_id = array_search('Organization', CRM_Contact_BAO_ContactType::basicTypePairs(FALSE,'id'));
       $orgSubType = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
 
       foreach($opt_grp_name as $oKey => $oValue) {
@@ -291,10 +291,16 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   }
 
   public function upgrade_1202() {
-  	$this->ctx->log->info('Applying update 1109');
-  	if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_annualized_est')) {
-  		CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_annualized_est decimal(40,2)   DEFAULT 0 COMMENT "Annulized Estimation for Job Pay Amount" AFTER pay_currency');
-  	}
-  	return TRUE;
+    $this->ctx->log->info('Applying update 1202');
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_annualized_est')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_annualized_est decimal(40,2)   DEFAULT NULL COMMENT "Estimated Annual Pay" AFTER pay_currency');
+    }
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_is_auto_est')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_is_auto_est tinyint   DEFAULT 1 COMMENT "Is the estimate automatically calculated" AFTER pay_annualized_est');
+    }
+
+    return TRUE;
   }
 }

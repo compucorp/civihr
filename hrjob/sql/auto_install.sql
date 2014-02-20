@@ -78,7 +78,8 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
      `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
      `pay_currency` varchar(63)    COMMENT 'Unit for expressing pay currency',
-     `pay_annualized_est` decimal(40,2)   DEFAULT 0    COMMENT 'Annulized Estimation for Job Pay Amount'
+     `pay_annualized_est` decimal(20,2)   DEFAULT 0 COMMENT 'Estimated Annual Pay',
+     `pay_is_auto_est` tinyint   DEFAULT 1 COMMENT 'Is the estimate automatically calculated'
 ,
     PRIMARY KEY ( `id` )
  
