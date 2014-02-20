@@ -11,16 +11,25 @@
  *     ->where('status_id IN (#statuses)', array('#statuses' => array(1,2,3))
  *     ->where('subject like @subj', array('@subj' => '%hello%'))
  *     ->where('!dynamicColumn = 1', array('!dynamicColumn' => 'coalesce(is_active,0)'))
+ *     ->where('!column = @value', array(
+ *        '!column' => $customField->column_name,
+ *        '@value' => $form['foo']
+ *      ))
  * echo $select->toSQL();
  *
  * Design principles:
- *  - No particular knowledge of the underlying SQL system (except for escaping rules)
- *  - No particular knowledge of the underlying data model
- *  - SQL clauses correspond to PHP functions ("WHERE foo = bar" => $select->where("foo=bar"))
- *  - PHP functions accept individual expressions or lists of expressions
- *  - PHP functions accept variables for interpolation into the SQL expression
- *  - Variables use prefixing - eg "@varname" for escaped strings; "#varname" for ints; "!varname" for raw strings
- *  - Variables may be individual values or arrays
+ *  - Portable
+ *    - No knowledge of the underlying SQL API (except for escaping -- CRM_Core_DAO::escapeString)
+ *    - No knowledge of the underlying data model
+ *    - Single file
+ *  - SQL clauses correspond to PHP functions ($select->where("foo_id=123"))
+ *  - Variable escaping is concise and controllable based on prefixes, eg
+ *    - similar to Drupal's t()
+ *    - use "@varname" to insert the escaped value
+ *    - use "!varname" to insert raw (unescaped) values
+ *    - use "#varname" to insert a numerical value (these are validated but not escaped)
+ *    - to disable any preprocessing, simply omit the variable list
+ *  - Variables may be individual values or arrays; arrays are imploded with commas
  *  - Conditionals are AND'd; if you need OR's, do it yourself
  */
 class CRM_HRAbsence_DGWDIHTWT {
