@@ -55,7 +55,7 @@ function hrreport_civicrm_install() {
       'label'     => 'Absence Report',
       'name'      => 'absenceReport',
       'url'       => 'civicrm/report/list?grp=absence&reset=1',
-      'permission'=> 'access HRAbsences',
+      'permission'=> 'access HRReport',
       'parent_id' => $reportParentId,
       'is_active' => 1,
     );
@@ -68,7 +68,7 @@ function hrreport_civicrm_install() {
         'label'     => 'Calendar',
         'name'      => 'calendar',
         'url'       => null,
-        'permission'=> 'access HRAbsences',
+        'permission'=> 'access HRReport',
         'parent_id' => $absenceParentId,
         'is_active' => 1,
       );
@@ -117,6 +117,19 @@ function hrreport_civicrm_disable() {
     CRM_Core_BAO_Navigation::resetNavigation();
   }
   return _hrreport_civix_civicrm_disable();
+}
+
+/**
+ * Implementation of hook_civicrm_permission
+ *
+ * @param array $permissions
+ * @return void
+ */
+function hrreport_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRReport') . ': '; // name of extension or module
+  $permissions += array(
+    'access HRReport' => $prefix . ts('access HRReport'),
+  );
 }
 
 /**

@@ -195,7 +195,7 @@
     var uptoDate = '{/literal}{$toDate}{literal}';
 
     cj(document).ready(function() {
-      {/literal}{if $action eq 2}{literal}
+      {/literal}{if $mode eq 'edit'}{literal}
         cj("#tblabsence").show();
         cj('input#start_date_display').val(upfromDate);
         cj('input#end_date_display').val(uptoDate);
