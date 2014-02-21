@@ -34,7 +34,7 @@
  */
 
 /**
- * Page for displaying list of absence types
+ * Page for displaying list of absence periods
  */
 class CRM_HRAbsence_Page_AbsencePeriod extends CRM_Core_Page_Basic {
   /**
@@ -108,7 +108,7 @@ class CRM_HRAbsence_Page_AbsencePeriod extends CRM_Core_Page_Basic {
   }
 
   /**
-   * Browse all absence types
+   * Browse all absence periods
    *
    *
    * @return void
@@ -116,10 +116,10 @@ class CRM_HRAbsence_Page_AbsencePeriod extends CRM_Core_Page_Basic {
    * @static
    */
   function browse() {
-    // get all absence types sorted by name
+    // get all absence periods sorted by start date
     $absencePeriod = array();
     $dao = new CRM_HRAbsence_DAO_HRAbsencePeriod();
-    $dao->orderBy('name');
+    $dao->orderBy('start_date');
     $dao->find();
 
     while ($dao->fetch()) {
