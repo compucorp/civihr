@@ -103,15 +103,15 @@ function setDefaultValues() {
     $this->addDateTime('start_date', ts('Start Date'), TRUE, array('formatType' => 'activityDateTime'));
     $this->addDateTime('end_date', ts('End Date'), TRUE, array('formatType' => 'activityDateTime'));
 
-    $this->addRule('title', ts('Title already exists in Database.'), 'objectExists', array(
-      'CRM_HRAbsence_DAO_HRAbsencePeriod',
-      $this->_id
-    ));
     $this->addFormRule(array('CRM_HRAbsence_Form_AbsencePeriod', 'formRule'), $this);
   }
 
   static function formRule($fields, $files, $self) {
     $errors = array();
+
+    if (CRM_Core_DAO::getFieldValue('CRM_HRAbsence_DAO_HRAbsencePeriod', $fields['title'], 'id', 'title')) {
+      $errors['title'] = ts('Title already exists in Database.');
+    }
 
     $start = CRM_Utils_Date::processDate($fields['start_date']);
     $end = CRM_Utils_Date::processDate($fields['end_date']);
