@@ -50,7 +50,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   function preProcess() {
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
     if (!CRM_Core_Permission::check('administer CiviCRM')) {
-      if (CRM_Core_Permission::check('edit HRAbsences')) {
+      if (CRM_Core_Permission::check('edit HRAbsences') || CRM_Core_Permission::check('manage own HRAbsences')) {
         $this->_mode = 'edit';
       }
       elseif (CRM_Core_Permission::check('view HRAbsences')) {
@@ -293,7 +293,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $today = time();
         $date1 = new DateTime(date("M j, Y", $today));
         $intervals = $date1->diff($end_date);
-        if ((($intervals->days >= 0) && ($intervals->invert == 0)) && (CRM_Core_Permission::check('manage own HRAbsences'))) {
+        if ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
+          (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences'))
+        ) {
           $this->addButtons(
             array(
               array(
@@ -320,7 +322,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             )
           );
         }
-        else {
+        elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactId == $this->_loginUserID)) {
           $this->addButtons(
             array(
               array(
@@ -590,9 +592,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     if ($idacl && $staticGroups) {
       $arraydiff = array_intersect($idacl, $staticGroups);
-      if (!empty($arraydiff)) { 
+      if (!empty($arraydiff)) {
         return TRUE;
-      }  
-    }    
+      }
+    }
   }
 }

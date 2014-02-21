@@ -403,7 +403,9 @@ cc.sort_name as contact_name";
     $this->from();
     $this->where($validSourceRecordIds);
 
-    $sql = "{$select} {$this->_from} {$this->_where}";
+    $sql = "{$select} {$this->_from} {$this->_where}
+ORDER BY YEAR(request.activity_date_time), MONTH(request.activity_date_time), cc.sort_name
+";
     $dao = CRM_Core_DAO::executeQuery($sql);
 
     if (CRM_Core_Permission::check('access CiviCRM')) {
