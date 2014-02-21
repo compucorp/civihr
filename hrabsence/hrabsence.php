@@ -264,7 +264,7 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
  */
 function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
-    if ($contactType != 'Individual' || !(CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
+  if ($contactType != 'Individual' || !(CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
     return;
   }
   $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));

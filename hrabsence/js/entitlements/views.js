@@ -47,7 +47,7 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
           .filter('[data-absence-type-id='+entitlement.get('type_id')+']')
           .val(entitlement.get('amount'));
       });
-     if(!CRM.Permissions.enableEntitlement) {
+     if (!CRM.Permissions.enableEntitlement) {
        view.$(".hrabsence-annualentitlement-input").attr('disabled','disabled');
      }
     },

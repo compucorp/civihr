@@ -7,7 +7,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     $contactID = CRM_Utils_Request::retrieve('cid', 'Integer');
 
     if (!empty($contactID)) {
-      if(!(self::checkPermissions($contactID, 'viewWidget'))) {
+      if (!(self::checkPermissions($contactID, 'viewWidget'))) {
         CRM_Core_Error::fatal(ts('You do not have permission to access this page'));
       }
       CRM_Utils_System::setTitle(ts('Absences for %1', array(
@@ -169,7 +169,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       }
       break;
     case 'enableNewAbsence': //enable new absence
-      if ((CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') || (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID))) { 
+      if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') || (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) { 
         return TRUE;
       }
       break;
