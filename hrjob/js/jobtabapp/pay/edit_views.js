@@ -45,25 +45,13 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     },
     doAnnualizedEstEdit: function(e) {
       e.stopPropagation();
-      var settingsModel = new HRApp.Entities.Setting({
-        id: CRM.jobTabApp.domain_id
+      var view = new Pay.EditSettings({
+        model: this.options.settings
       });
-      settingsModel.fetch({
-        success: function() {
-          HRApp.trigger('ui:unblock');
-          var view = new Pay.EditSettings({
-            model: settingsModel
-          });
-          view.on('standard:save', function(){
-            HRApp.dialogRegion.close();
-          });
-          HRApp.dialogRegion.show(view);
-        },
-        error: function() {
-          HRApp.trigger('ui:unblock');
-          // Note: CRM.Backbone.sync displays API errors with CRM.alert
-        }
+      view.on('standard:save', function(){
+        HRApp.dialogRegion.close();
       });
+      HRApp.dialogRegion.show(view);
     },
     onValidateRulesCreate: function(view, r) {
       _.extend(r.rules, {
@@ -76,11 +64,11 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
   Pay.EditSettings = HRApp.Common.Views.StandardForm.extend({
     template: '#hrjob-pay-settings-template',
     templateHelpers: function() {
-          return {
-            'isNew': this.model.get('id') ? false : true,
-            'RenderUtil': CRM.HRApp.RenderUtil,
-            'FieldOptions': CRM.FieldOptions.HRJobPay
-          };
+      return {
+        'isNew': this.model.get('id') ? false : true,
+        'RenderUtil': CRM.HRApp.RenderUtil,
+        'FieldOptions': CRM.FieldOptions.HRJobPay
+      };
     },
     onShow: function() {
       $('.hrjob-dialog-region').dialog({
