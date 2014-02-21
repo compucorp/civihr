@@ -86,12 +86,12 @@ INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, 
 --
 
 INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`) VALUES
-(1, 1, 'Annual', 1),
-(2, 1, 'Public', 2),
-(3, 1, 'Sick', 3),
-(16, 6, 'Annual', 4),
-(17, 6, 'Public', 5),
-(18, 6, 'Sick', 6);
+(1, 1, 1, 1),
+(2, 1, 2, 2),
+(3, 1, 3, 3),
+(16, 6, 1, 4),
+(17, 6, 2, 5),
+(18, 6, 3, 6);
 
 --
 -- Dumping data for table `civicrm_hrjob_pay`

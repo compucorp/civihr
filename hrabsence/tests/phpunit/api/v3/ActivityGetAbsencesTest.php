@@ -84,7 +84,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
       foreach (array('2012-01-01 01:01:00', '2012-12-31 23:57:00', '2013-01-01 01:01:00') as $datetime) {
         foreach (array(self::EXAMPLE_ABSENCE_TYPE, self::EXAMPLE_ACTIVITY_TYPE) as $activityType) {
           $params = array(
-            'activity_type_id' => $activityType,
+            'activity_type_id' => 'Absence',
             'source_contact_id' => $this->sourceContactId,
             'target_contact_id' => $contactId,
             'details' => "key is $datetime",
