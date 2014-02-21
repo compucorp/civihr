@@ -17,11 +17,19 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     }),
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
+      var view = this;
       if (this.model.get('pay_grade') == 'paid') {
         this.$('.hrjob-needs-pay_grade').show();
       } else {
         this.$('.hrjob-needs-pay_grade').hide();
       }
+      this.$('[name=pay_is_auto_est]').lockButton({
+        lockedText: ts('Automatic estimate'),
+        unlockedText: ts('Manual estimate'),
+        for: this.$('[name=pay_annualized_est]'),
+        value: this.model.get('pay_annualized_est') // FIXME
+      });
+      this.$('.pay_annualized_est_expl').text(ts('(TODO: Explanatory message)'));
     },
     togglePayGrade: function() {
       var view = this;

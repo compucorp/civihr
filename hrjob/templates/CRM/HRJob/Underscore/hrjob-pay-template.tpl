@@ -64,13 +64,19 @@
 
   <div class="crm-summary-row hrjob-needs-pay_grade">
     <div class="crm-label">
-      <label for="hrjob-pay_annualized_est">{ts}Pay Rate (Annualized){/ts}</label>
+      <label for="hrjob-pay_annualized_est">{ts}Annual Pay Estimate{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-pay_annualized_est" name="pay_annualized_est" type="text" />
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
+      <div>
+        <input id="hrjob-pay_annualized_est" name="pay_annualized_est" type="text" />
+        <input id="hrjob-pay_is_auto_est" name="pay_is_auto_est" type="hidden" />
+      </div>
+      <div>
+        <span class="pay_annualized_est_expl"></span>
+        {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
         <span class="batch-edit pay_annualized_est_edit"></span>
-      {/if}
+        {/if}
+      </div>
     </div>
   </div>
   <%= RenderUtil.standardButtons() %>
