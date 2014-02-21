@@ -71,12 +71,33 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
         'location' => 'Home',
         'organization' => 'XYZ Inc',
       ),
+      'api.HRAbsenceType.create' => array(
+        'name' => 'Annual',
+        'title' => 'Annual',
+        'is_active' => 1,
+        'allow_credits' => 0,
+        'allow_debits' => 0,
+      ),
+      'api.HRAbsenceType.create.1' => array(
+        'name' => 'Public',
+        'title' => 'Public',
+        'is_active' => 1,
+        'allow_credits' => 0,
+        'allow_debits' => 0,
+      ),
+      'api.HRAbsenceType.create.2' => array(
+        'name' => 'Sick',
+        'title' => 'Sick',
+        'is_active' => 1,
+        'allow_credits' => 0,
+        'allow_debits' => 0,
+      ),
       'api.HRJobLeave.create' => array(
-        'leave_type' => 'Annual',
+        'leave_type' => 1,
         'leave_amount' => 10,
       ),
       'api.HRJobLeave.create.1' => array(
-        'leave_type' => 'Sick',
+        'leave_type' => 3,
         'leave_amount' => 7
       ),
     );
@@ -86,6 +107,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     parent::tearDown();
     $this->quickCleanup(array(
       'civicrm_hrjob',
+      'civicrm_hrabsence_type',
       'civicrm_hrjob_health',
       'civicrm_hrjob_hour',
       'civicrm_hrjob_leave',
@@ -158,12 +180,12 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       //assert the creation of multiple leaves
       $this->assertAPISuccess($hrJobResult['api.HRJobLeave.create']);
       foreach ($hrJobResult['api.HRJobLeave.create']['values'] as $key => $hrJobLeaveResult) {
-        $this->assertEquals('Annual', $hrJobLeaveResult['leave_type']);
+        $this->assertEquals(1, $hrJobLeaveResult['leave_type']);
         $this->assertEquals(10, $hrJobLeaveResult['leave_amount']);
       }
       $this->assertAPISuccess($hrJobResult['api.HRJobLeave.create.1']);
       foreach ($hrJobResult['api.HRJobLeave.create.1']['values'] as $key => $hrJobLeaveResult) {
-        $this->assertEquals('Sick', $hrJobLeaveResult['leave_type']);
+        $this->assertEquals(3, $hrJobLeaveResult['leave_type']);
         $this->assertEquals(7, $hrJobLeaveResult['leave_amount']);
       }
     }
