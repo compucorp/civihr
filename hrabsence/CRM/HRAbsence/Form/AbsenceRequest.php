@@ -191,23 +191,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
 
     if ($this->_mode == 'edit' || $this->_mode == 'view') {
-      $ids = CRM_Core_Permission::group('Access');
-      if (!empty($ids)) {
-        $idacl = CRM_ACL_API::group(CRM_Core_Permission::VIEW, NULL, 'civicrm_saved_search', $ids);
-      }
-      $in = CRM_Contact_BAO_GroupContact::getContactGroup($this->_targetContactID, 'Added');
-      $staticGroups = array();
-      if (!empty($in)) {
-        foreach ($in as $group) {
-          $staticGroups[] = $group['group_id'];
-        }
-      }
-      if ($idacl && $staticGroups) {
-        $arraydiff = array_intersect($idacl, $staticGroups);
-        if (!empty($arraydiff)) { 
-          $this->assign('permContact', 1);
-          $this->assign('emp_id', $this->_targetContactID);
-        }  
+      if ($this->isContactAccessible($this->_targetContactID)) {
+        $this->assign('permContact', 1);
+        $this->assign('emp_id', $this->_targetContactID);
       }
     }
 
@@ -588,5 +574,25 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       CRM_Core_Session::setStatus($statusMsg, 'success');
       return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
+  }
+
+  public function isContactAccessible($contactID) {
+    $ids = CRM_Core_Permission::group('Access');
+    if (!empty($ids)) {
+      $idacl = CRM_ACL_API::group(CRM_Core_Permission::VIEW, NULL, 'civicrm_saved_search', $ids);
+    }
+    $in = CRM_Contact_BAO_GroupContact::getContactGroup($contactID, 'Added');
+    $staticGroups = array();
+    if (!empty($in)) {
+      foreach ($in as $group) {
+        $staticGroups[] = $group['group_id'];
+      }
+    }
+    if ($idacl && $staticGroups) {
+      $arraydiff = array_intersect($idacl, $staticGroups);
+      if (!empty($arraydiff)) { 
+        return TRUE;
+      }  
+    }    
   }
 }
