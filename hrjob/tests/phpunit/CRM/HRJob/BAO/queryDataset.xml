@@ -143,21 +143,21 @@
     <civicrm_hrjob_leave
         id="1"
         job_id="1"
-        leave_type="Annual"
+        leave_type="1"
         leave_amount="15"
     />
   
     <civicrm_hrjob_leave
         id="2"
         job_id="1"
-        leave_type="Public"
+        leave_type="2"
         leave_amount="8"
     />
 
     <civicrm_hrjob_leave
         id="3"
         job_id="1"
-        leave_type="Sick"
+        leave_type="3"
         leave_amount="7"
     />
 
@@ -239,21 +239,21 @@
     <civicrm_hrjob_leave
         id="4"
         job_id="2"
-        leave_type="Annual"
+        leave_type="1"
         leave_amount="26"
     />
   
     <civicrm_hrjob_leave
         id="5"
         job_id="2"
-        leave_type="Public"
+        leave_type="2"
         leave_amount="18"
     />
 
     <civicrm_hrjob_leave
         id="6"
         job_id="2"
-        leave_type="Sick"
+        leave_type="3"
         leave_amount="8"
     />
 
@@ -320,21 +320,21 @@
     <civicrm_hrjob_leave
         id="7"
         job_id="3"
-        leave_type="Annual"
+        leave_type="1"
         leave_amount="10"
     />
   
     <civicrm_hrjob_leave
         id="8"
         job_id="3"
-        leave_type="Public"
+        leave_type="2"
         leave_amount="10"
     />
 
     <civicrm_hrjob_leave
         id="9"
         job_id="3"
-        leave_type="Sick"
+        leave_type="3"
         leave_amount="10"
     />
 
@@ -414,21 +414,21 @@
     <civicrm_hrjob_leave
         id="10"
         job_id="4"
-        leave_type="Annual"
+        leave_type="1"
         leave_amount="12"
     />
   
     <civicrm_hrjob_leave
         id="11"
         job_id="4"
-        leave_type="Public"
+        leave_type="2"
         leave_amount="10"
     />
 
     <civicrm_hrjob_leave
         id="12"
         job_id="4"
-        leave_type="Sick"
+        leave_type="3"
         leave_amount="11"
     />
 

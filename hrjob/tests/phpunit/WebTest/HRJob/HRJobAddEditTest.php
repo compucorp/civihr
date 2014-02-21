@@ -86,9 +86,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'dependents_life_insurance' => 'Own',
     ));
     $this->_addJobLeaveData(1, array(
-      'annual' => 8,
-      'public' => 9,
-      'sick' => 10,
+      '1' => 8,
+      '2' => 9,
+      '3' => 10,
     ));
 
     $this->_addJobPayData(1, array(
@@ -203,16 +203,16 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), 'Edit');
     
     $this->_addJobLeaveData(2, array(
-      'annual' => 7,
-      'public' => 6,
-      'sick' => 8,
+      '1' => 7,
+      '2' => 6,
+      '3' => 8,
     ));
 
     //edit LeaveData
     $this->_addJobLeaveData(2, array(
-      'annual' => 9,
-      'public' => 9,
-      'sick' => 9,
+      '1' => 9,
+      '2' => 9,
+      '3' => 9,
     ), 'Edit');
 
     $this->_addJobPayData(2, array(
@@ -385,9 +385,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     }
     $tbodyXPath = "xpath=//div[@class='hrjob-main-region']/div//table/tbody";
     $this->waitForElementPresent("$tbodyXPath/tr[3]/td[2]/input");
-    $this->type("$tbodyXPath/tr[1]/td[2]/input", $values['annual']);
-    $this->type("$tbodyXPath/tr[2]/td[2]/input", $values['public']);
-    $this->type("$tbodyXPath/tr[3]/td[2]/input", $values['sick']);
+    $this->type("$tbodyXPath/tr[1]/td[2]/input", $values['1']);
+    $this->type("$tbodyXPath/tr[2]/td[2]/input", $values['2']);
+    $this->type("$tbodyXPath/tr[3]/td[2]/input", $values['3']);
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
