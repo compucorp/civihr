@@ -16,12 +16,18 @@
     <path>civicrm/absence/type</path>
     <page_callback>CRM_HRAbsence_Page_AbsenceType</page_callback>
     <title>Absence Types</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer CiviCRM</access_arguments>
   </item>
   <item>
     <path>civicrm/absence/holidays</path>
     <page_callback>CRM_HRAbsence_Page_PublicHolidays</page_callback>
     <title>Public Holiday</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/absence/period</path>
+    <page_callback>CRM_HRAbsence_Page_AbsencePeriod</page_callback>
+    <title>Absence Periods</title>
+    <access_arguments>administer CiviCRM</access_arguments>
   </item>
 </menu>

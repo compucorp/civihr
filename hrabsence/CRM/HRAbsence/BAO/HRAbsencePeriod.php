@@ -71,4 +71,16 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     asort($result);
     return $result;
   }
+
+  public static function getDefaultValues($id) {
+    $absencePeriod =  civicrm_api3('HRAbsencePeriod', 'get', array('id' => $id));
+    return $absencePeriod['values'][$id];
+  }
+
+  public static function del($absencePeriodId) {
+    $absencePeriod = new CRM_HRAbsence_DAO_HRAbsencePeriod();
+    $absencePeriod->id = $absencePeriodId;
+    $absencePeriod->find(TRUE);
+    $absencePeriod->delete();
+  }
 }

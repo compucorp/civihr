@@ -64,6 +64,12 @@ function hrabsence_civicrm_install() {
       'permission' => 'administer CiviCRM',
     ),
     array(
+      'label'      => ts('Absence Periods'),
+      'name'       => 'absencePeriods',
+      'url'        => 'civicrm/absence/period?reset=1',
+      'permission' => 'administer CiviCRM',
+    ),
+    array(
       'label'      => ts('Absence Types'),
       'name'       => 'absenceTypes',
       'url'        => 'civicrm/absence/type?reset=1',
