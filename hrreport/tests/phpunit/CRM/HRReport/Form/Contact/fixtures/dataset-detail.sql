@@ -159,17 +159,17 @@ INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `de
 --
 
 INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, `hours_unit`, `hours_fte`) VALUES
-(1, 1, 'casual', 32.00, 'Week', 1.50),
-(2, 2, 'casual', 16.00, 'Day', 2.00),
-(3, 9, 'full', 8.00, 'Year', 1.00),
-(4, 12, 'full', 16.00, 'Year', 3.00),
-(5, 13, 'full', 8.00, 'Year', 1.00),
-(6, 16, 'part', 32.00, 'Day', 1.00),
-(7, 20, 'casual', 40.00, 'Day', 3.00),
-(8, 24, 'part', 32.00, 'Week', 1.00),
-(9, 26, 'full', 24.00, 'Day', 2.00),
-(10, 29, 'casual', 40.00, 'Week', 3.00),
-(11, 31, 'casual', 16.00, 'Day', 1.00);
+(1,  1,  'casual', 32.00, 'Week', 1.10),
+(2,  2,  'casual', 16.00, 'Day',  0.50),
+(3,  9,  'full',   8.00,  'Year', 1.00),
+(4,  12, 'full',   16.00, 'Year', 0.75),
+(5,  13, 'full',   8.00,  'Year', 1.00),
+(6,  16, 'part',   32.00, 'Day',  1.00),
+(7,  20, 'casual', 40.00, 'Day',  0.66),
+(8,  24, 'part',   32.00, 'Week', 1.00),
+(9,  26, 'full',   24.00, 'Day',  1.00),
+(10, 29, 'casual', 40.00, 'Week', 0.75),
+(11, 31, 'casual', 16.00, 'Day',  1.00);
 
 --
 -- Dumping data for table `civicrm_hrjob_leave`
@@ -280,21 +280,21 @@ INSERT INTO `civicrm_hrjob_leave` (`id`, `job_id`, `leave_type`, `leave_amount`)
 -- Dumping data for table `civicrm_hrjob_pay`
 --
 
-INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay_unit`) VALUES
-(1, 2, 'Paid', 80.00, 'Day'),
-(2, 3, 'Paid', 200.00, 'Hour'),
-(3, 4, 'Unpaid', 200.00, 'Day'),
-(4, 7, 'Paid', 90.00, 'Day'),
-(5, 10, 'Paid', 40.00, 'Year'),
-(6, 15, 'Paid', 200.00, 'Hour'),
-(7, 16, 'Unpaid', 200.00, 'Year'),
-(8, 17, 'Paid', 80.00, 'Day'),
-(9, 21, 'Unpaid', 90.00, 'Year'),
-(10, 25, 'Unpaid', 40.00, 'Day'),
-(11, 27, 'Paid', 80.00, 'Year'),
-(12, 28, 'Unpaid', 200.00, 'Year'),
-(13, 31, 'Paid', 200.00, 'Day'),
-(14, 33, 'Paid', 80.00, 'Year');
+INSERT INTO `civicrm_hrjob_pay` (`id`, `job_id`, `pay_grade`, `pay_amount`, `pay_unit`, `pay_annualized_est`, `pay_is_auto_est`, `pay_currency`) VALUES
+(1,  2,  'Paid',   80.00,  'Day',  0.50*80*250,    0, NULL),
+(2,  3,  'Paid',   200.00, 'Hour', 0.75*200*2000,  0, NULL),
+(3,  4,  'Unpaid', 200.00, 'Day',  1.00*200*250,   0, NULL),
+(4,  7,  'Paid',   90.00,  'Day',  1.10*90*250,    0, NULL),
+(5,  10, 'Paid',   40.00,  'Year', 0.50*40,        0, NULL),
+(6,  15, 'Paid',   200.00, 'Hour', 0.750*200*2000, 0, NULL),
+(7,  16, 'Unpaid', 200.00, 'Year', 1.00*200,       0, NULL),
+(8,  17, 'Paid',   80.00,  'Day',  1.10*80*2000,   0, NULL),
+(9,  21, 'Unpaid', 90.00,  'Year', 0.50*90,        0, NULL),
+(10, 25, 'Unpaid', 40.00,  'Day',  0.75*40*250,    0, NULL),
+(11, 27, 'Paid',   80.00,  'Year', 1.00*80,        0, NULL),
+(12, 28, 'Unpaid', 200.00, 'Year', 1.00*200,       0, NULL),
+(13, 31, 'Paid',   200.00, 'Day',  1.10*200*2000,  0, NULL),
+(14, 33, 'Paid',   80.00,  'Year', 1.10*80,        0, NULL);
 
 --
 -- Dumping data for table `civicrm_hrjob_pension`
