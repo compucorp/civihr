@@ -106,17 +106,18 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
   HRAbsenceApp.on("initialize:after", function() {
     if (Backbone.history) {
       var url = Backbone.history.fragment;
-      if(Backbone.History.started) {
+      if (Backbone.History.started) {
         Backbone.history.stop();
         url = '';
       }
       Backbone.history.start();
-      if (url === "") {
+      if (!url) {
         HRAbsenceApp.trigger('hrabsence:showList');
       }
     }
-
-    HRAbsenceApp.newRegion.show(new HRAbsenceApp.New.NewView());
+    if (CRM.Permissions.newAbsences) {
+      HRAbsenceApp.newRegion.show(new HRAbsenceApp.New.NewView());
+    }
     HRAbsenceApp.filterRegion.show(new HRAbsenceApp.Filter.FilterView({
       model: absenceCriteria
     }));

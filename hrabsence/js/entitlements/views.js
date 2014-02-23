@@ -46,8 +46,10 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
           .filter('[data-period-id='+entitlement.get('period_id')+']')
           .filter('[data-absence-type-id='+entitlement.get('type_id')+']')
           .val(entitlement.get('amount'));
-        //FIXME: Set the "disable" property based on whether user has permission to edit entitlements
       });
+     if (!CRM.Permissions.enableEntitlement) {
+       view.$(".hrabsence-annualentitlement-input").attr('disabled','disabled');
+     }
     },
     events: {
       "change .hrabsence-annualentitlement-input": function(event) {
