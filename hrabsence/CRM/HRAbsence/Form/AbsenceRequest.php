@@ -107,7 +107,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       ) {
         $this->_mode = 'edit';
       }
-      elseif ($absenceStatuses[$this->_actStatusId] != 'Requested') {
+      elseif ($absenceStatuses[$this->_actStatusId] != 'Requested' && !CRM_Core_Permission::check('administer CiviCRM')) {
         $this->_mode = 'view';
       }
 
@@ -293,8 +293,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $today = time();
         $date1 = new DateTime(date("M j, Y", $today));
         $intervals = $date1->diff($end_date);
-        if ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
-          (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences'))
+        if (CRM_Core_Permission::check('administer CiviCRM') ||
+          ((($intervals->days >= 0) && ($intervals->invert == 0)) && CRM_Core_Permission::check('edit HRAbsences'))
         ) {
           $this->addButtons(
             array(
@@ -322,7 +322,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             )
           );
         }
-        elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactId == $this->_loginUserID)) {
+        elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactID == $this->_loginUserID)) {
           $this->addButtons(
             array(
               array(
@@ -482,7 +482,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
     }
-    elseif ($this->_action == CRM_Core_Action::UPDATE) {
+    elseif ($this->_mode == 'edit') {
       if (array_key_exists('_qf_AbsenceRequest_submit_cancel', $submitValues)) {
         $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);
         $activityParam = array(
@@ -554,7 +554,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         }
       }
     }
-    elseif ($this->_action & CRM_Core_Action::VIEW) {
+    else {
       if (CRM_Utils_Request::retrieve('aid', 'Positive', $this)) {
         $activityIDs = CRM_Utils_Request::retrieve('aid', 'Positive', $this);
       }
