@@ -141,7 +141,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->assign('customValueCount', $this->_customValueCount);
       }
     }
-    elseif ($this->_action == CRM_Core_Action::ADD && self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT) {
+    elseif ($this->_action == CRM_Core_Action::ADD) {
       $this->_mode = 'edit';
       CRM_Utils_System::setTitle(ts('Absence Request: Add'));
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
@@ -267,6 +267,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->assign('loginUserID', $this->_loginUserID);
       if (!empty($resultHRJob['values'])) {
         $this->_managerContactID = $resultHRJob['values'][0]['manager_contact_id'];
+      }
+      if (empty($this->_managerContactID)) {
+        CRM_Core_Session::setStatus(ts('Absence will be reviewed by site admin, as there is no manager assigned for requested absence.'), NULL , 'warning');
+        $this->_managerContactID = NULL;
       }
       $this->add('hidden', 'date_values', '', array('id' => 'date_values'));
     }
