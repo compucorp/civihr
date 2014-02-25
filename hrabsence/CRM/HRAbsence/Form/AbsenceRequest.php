@@ -68,11 +68,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->assign('contactId', CRM_Utils_Request::retrieve('cid', 'Positive', $this));
     }
     $activityTypes = CRM_Core_PseudoConstant::activityType();
-    $paramsHoliday = array(
-      'sequential' => 1,
+    $resultHoliday = civicrm_api3('Activity', 'get', array(
       'activity_type_id' => array_search('Public Holiday', $activityTypes),
-    );
-    $resultHoliday = civicrm_api3('Activity', 'get', $paramsHoliday);
+    ));
     $publicHolidays = array();
     foreach ($resultHoliday['values'] as $key => $val) {
       $pubDate = date("M j, Y", strtotime($val['activity_date_time']));
@@ -85,15 +83,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 
       $this->assign('upActivityId', $this->_activityId);
-      $paramsAct = array(
+      $resultAct = civicrm_api3('Activity', 'get', array(
         'sequential' => 1,
         'id' => $this->_activityId,
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
         'option.limit' => 31,
-      );
-      $resultAct = civicrm_api3('Activity', 'get', $paramsAct);
+      ));
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
       $this->_loginUserID = $resultAct['values'][0]['source_contact_id'];
@@ -111,6 +108,16 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_mode = 'view';
       }
 
+      //check for ACL View/Edit permission
+      if (empty($this->_mode)) {
+        if (self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT) {
+          $this->_mode = 'edit';
+        }
+        elseif (self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::VIEW) {
+          $this->_mode = 'view';
+        }
+      }
+       
       $displayName = CRM_Contact_BAO_Contact::displayName($this->_targetContactID);
       $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
       $activityType = $activityTypes[$this->_activityTypeID];
@@ -132,6 +139,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
     }
     elseif ($this->_action == CRM_Core_Action::ADD) {
+      $this->_mode = 'edit';
       CRM_Utils_System::setTitle(ts('Absence Request: Add'));
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
 
@@ -191,7 +199,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
 
     if ($this->_mode == 'edit' || $this->_mode == 'view') {
-      if ($this->isContactAccessible($this->_targetContactID)) {
+      if (self::isContactAccessible($this->_targetContactID)) {
         $this->assign('permContact', 1);
         $this->assign('emp_id', $this->_targetContactID);
       }
@@ -199,25 +207,22 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
-    $paramsHRJob = array(
+    $resultHRJob = civicrm_api3('HRJob', 'get', array(
       'sequential' => 1,
       'contact_id' => $this->_targetContactID,
       'is_primary' => 1,
-    );
-    $resultHRJob = civicrm_api3('HRJob', 'get', $paramsHRJob);
+    ));
     if (!empty($resultHRJob['values'])) {
       $this->assign('emp_position', $resultHRJob['values'][0]['position']);
     }
     $this->assign('emp_name', CRM_Contact_BAO_Contact::displayName($this->_targetContactID));
 
     if ($this->_mode == 'view') {
-      $paramsAbsences = array(
-        'sequential' => 1,
+      $resultAbsences = civicrm_api3('Activity', 'get', array(
         'source_record_id' => $this->_activityId,
         'option_sort' => "activity_date_time ASC",
         'option.limit' => 31,
-      );
-      $resultAbsences = civicrm_api3('Activity', 'get', $paramsAbsences);
+      ));
       $countDays = 0;
       $absenceDateDuration = array();
       foreach ($resultAbsences['values'] as $key => $val) {
@@ -257,6 +262,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if (!empty($resultHRJob['values'])) {
         $this->_managerContactID = $resultHRJob['values'][0]['manager_contact_id'];
       }
+      if (empty($this->_managerContactID)) {
+        CRM_Core_Session::setStatus(ts('Absence will be reviewed by site admin, as there is no manager assigned for requested absence.'), NULL , 'warning');
+        $this->_managerContactID = NULL;
+      }
       $this->add('hidden', 'date_values', '', array('id' => 'date_values'));
     }
     $this->addDate('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDate'));
@@ -277,13 +286,12 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
       elseif ($this->_action == (CRM_Core_Action::UPDATE) || $this->_mode == 'edit') {
         $this->add('hidden', 'source_record_id', $this->_aid);
-        $params = array(
-          'sequential' => 1,
+        $result = civicrm_api3('Activity', 'get', array(
+          'sequential' => 1,                                              
           'source_record_id' => $this->_aid,
           'option_sort' => "activity_date_time ASC",
           'option.limit' => 31,
-        );
-        $result = civicrm_api3('Activity', 'get', $params);
+        ));
         $start_date = date_create($result['values'][0]['activity_date_time']);
         $end_date = date_create($result['values'][$result['count'] - 1]['activity_date_time']);
         $this->assign('fromDate', date_format($start_date, 'm/d/Y'));
@@ -294,8 +302,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $date1 = new DateTime(date("M j, Y", $today));
         $intervals = $date1->diff($end_date);
         if (CRM_Core_Permission::check('administer CiviCRM') ||
-          ((($intervals->days >= 0) && ($intervals->invert == 0)) && CRM_Core_Permission::check('edit HRAbsences'))
-        ) {
+            ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
+             (CRM_Core_Permission::check('edit HRAbsences') || self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
+             )
+            ) {
           $this->addButtons(
             array(
               array(
@@ -325,6 +335,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactID == $this->_loginUserID)) {
           $this->addButtons(
             array(
+              array(
+                'type' => 'submit',
+                'name' => ts('Save'),
+                'isDefault' => TRUE
+              ),
               array(
                 'type' => 'submit',
                 'name' => ts('Cancel'),
@@ -510,7 +525,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       elseif (array_key_exists('_qf_AbsenceRequest_submit_reject', $submitValues)) {
         $statusId = CRM_Utils_Array::key('Rejected', $activityStatus);
         $activityParam = array(
-          'sequential' => 1,
           'id' => $this->_activityId,
           'activity_type_id' => $this->_activityTypeID,
           'status_id' => $statusId
@@ -523,29 +537,23 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
       else {
-        $params = array(
-          'sequential' => 1,
+        $result = civicrm_api3('Activity', 'get', array(
           'source_record_id' => $submitValues['source_record_id'],
           'option.limit' => 31,
-        );
-        $result = civicrm_api3('Activity', 'get', $params);
+        ));
         foreach ($result['values'] as $row_result) {
-          $params = array(
-            'sequential' => 1,
+          civicrm_api3('Activity', 'delete', array(
             'id' => $row_result['id'],
-          );
-          civicrm_api3('Activity', 'delete', $params);
+          ));
         }
 
         foreach ($absentDateDurations as $date => $duration) {
-          $params = array(
-            'sequential' => 1,
+          $result = civicrm_api3('Activity', 'create', array(
             'activity_type_id' => $this->_activityTypeID,
             'source_record_id' => $submitValues['source_record_id'],
             'activity_date_time' => $date,
             'duration' => $duration,
-          );
-          $result = civicrm_api3('Activity', 'create', $params);
+          ));
         }
         $buttonName = $this->controller->getButtonName();
         if ($buttonName == $this->getButtonName('submit')) {
@@ -566,35 +574,25 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       elseif (array_key_exists('_qf_AbsenceRequest_submit_cancelbutton', $submitValues)) {
         return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
-      $activityParam = array(
-        'sequential' => 1,
+      civicrm_api3('Activity', 'create', array(
         'id' => $this->_activityId,
         'activity_type_id' => $this->_activityTypeID,
         'status_id' => $statusId
-      );
-      civicrm_api3('Activity', 'create', $activityParam);
+      ));
       CRM_Core_Session::setStatus($statusMsg, 'success');
       return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
   }
 
-  public function isContactAccessible($contactID) {
-    $ids = CRM_Core_Permission::group('Access');
-    if (!empty($ids)) {
-      $idacl = CRM_ACL_API::group(CRM_Core_Permission::VIEW, NULL, 'civicrm_saved_search', $ids);
+  public static function isContactAccessible($contactID) {
+    if (CRM_Contact_BAO_Contact_Permission::allow($contactID, CRM_Core_Permission::EDIT)) {
+      return CRM_Core_Permission::EDIT;
     }
-    $in = CRM_Contact_BAO_GroupContact::getContactGroup($contactID, 'Added');
-    $staticGroups = array();
-    if (!empty($in)) {
-      foreach ($in as $group) {
-        $staticGroups[] = $group['group_id'];
-      }
+    elseif (CRM_Contact_BAO_Contact_Permission::allow($contactID, CRM_Core_Permission::VIEW)) {
+      return CRM_Core_Permission::VIEW;
     }
-    if ($idacl && $staticGroups) {
-      $arraydiff = array_intersect($idacl, $staticGroups);
-      if (!empty($arraydiff)) {
-        return TRUE;
-      }
+    else {
+      return FALSE;
     }
   }
 }
