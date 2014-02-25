@@ -1,6 +1,6 @@
-## Upgrade: CiviHR (1.1 => 1.2)
+## Upgrade: CiviHR (1.1 => 1.2-beta1)
 
-> CiviHR 1.2 requires CiviCRM 4.4.3+.
+> CiviHR 1.2-beta1 requires CiviCRM 4.4.3+.
 >
 > If you have an older version of CiviCRM, first upgrade CiviCRM to 4.4.3 or above.
 > (Please follow steps mentioned at:
@@ -8,16 +8,16 @@
 
 Make a backup of the CiviCRM database.
 
-Download CiviHR 1.2:
+Download CiviHR 1.2-beta1:
 
 ```
 cd </path/to/extension/dir>
 (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
 rm -rf civihr
-wget https://github.com/civicrm/civihr/archive/1.2.0.zip
-unzip 1.2.0.zip
-mv civihr-1.2.0 civihr
+wget https://github.com/civicrm/civihr/archive/1.2-beta1.zip
+unzip 1.2-beta1.zip
+mv civihr-1.2-beta1 civihr
 ```
 Goto 'Administer => System Settings => Manage Extension' and click the "Refresh" button.
 
