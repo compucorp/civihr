@@ -1,6 +1,6 @@
 ## Pre-requisites
 
-CiviCRM 4.4.0 or higher
+CiviCRM 4.4.3 or higher
 
 > NOTE: CiviHR includes some significant changes to the nomal CiviCRM
 > user-experience.  As with any significant change or addition, CiviHR
@@ -13,9 +13,9 @@ CiviCRM 4.4.0 or higher
 cd </path/to/extension/dir>
 #  (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
-wget https://github.com/civicrm/civihr/archive/1.1.0.zip
-unzip civihr-1.1.0.zip
-mv civihr-1.1.0 civihr
+wget https://github.com/civicrm/civihr/archive/1.2.0.zip
+unzip civihr-1.2.0.zip
+mv civihr-1.2.0 civihr
 ```
 
 > NOTE: On some misconfigured systems, the "wget" command may display a warning
@@ -56,6 +56,7 @@ individually:
  * org.civicrm.hrdemog: Extended Demographics
  * org.civicrm.hremerg: Emergency Contacts
  * org.civicrm.hrident: Identification
+ * org.civicrm.hrabsence: Absences
  * org.civicrm.hrjob: Jobs and Roles
  * org.civicrm.hrmed: Medical and Disability
  * org.civicrm.hrqual: Qualifications
