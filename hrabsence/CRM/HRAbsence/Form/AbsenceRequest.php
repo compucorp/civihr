@@ -263,7 +263,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_managerContactID = $resultHRJob['values'][0]['manager_contact_id'];
       }
       if (empty($this->_managerContactID)) {
-        CRM_Core_Session::setStatus(ts('Absence will be reviewed by site admin, as there is no manager assigned for requested absence.'), NULL , 'warning');
         $this->_managerContactID = NULL;
       }
       $this->add('hidden', 'date_values', '', array('id' => 'date_values'));
@@ -303,7 +302,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $intervals = $date1->diff($end_date);
         if (CRM_Core_Permission::check('administer CiviCRM') ||
             ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
-             (CRM_Core_Permission::check('edit HRAbsences') || self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
+             (($this->_managerContactID && $this->_managerContactID == $this->loginUserID) ||
+              self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
              )
             ) {
           $this->addButtons(
@@ -332,7 +332,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             )
           );
         }
-        elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactID == $this->_loginUserID)) {
+        elseif (CRM_Core_Permission::check('edit HRAbsences') || (CRM_Core_Permission::check('manage own HRAbsences') && $this->_targetContactID == $this->_loginUserID)) {
           $this->addButtons(
             array(
               array(
