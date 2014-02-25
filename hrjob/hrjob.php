@@ -331,7 +331,7 @@ function hrjob_civicrm_navigationMenu( &$params ) {
         'permission' => 'access HRJobs',
         'operator'   => null,
         'separator'  => null,
-        'parentID'   => 15,
+        'parentID'   => $contactNavId,
         'navID'      => $maxKey+1,
         'active'     => 1
       ),
@@ -344,7 +344,7 @@ function hrjob_civicrm_navigationMenu( &$params ) {
             'permission' => 'access HRJobs',
             'operator'   => null,
             'separator'  => 1,
-            'parentID'   => 15,
+            'parentID'   => $contactNavId,
             'navID'      => $maxKey+2,
             'active'     => 1
           ),
