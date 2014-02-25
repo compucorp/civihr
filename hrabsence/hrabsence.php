@@ -313,7 +313,7 @@ function hrabsence_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $session = CRM_Core_Session::singleton();
   $cid = $session->get('userID');
   if ($entity == 'h_r_absence_entitlement' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM', 'manage own HRAbsences');
+    $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM');
   } else {
     $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM', 'view HRAbsences');
   }

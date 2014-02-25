@@ -281,8 +281,10 @@ function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permiss
   $cid = $session->get('userID');
   if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
     $permissions['h_r_job']['get'] = array('access own HRJobs');
+    $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
   } else {
     $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+    $permissions['h_r_job_leave']['get'] = array('access HRJobs');
   }
   $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
@@ -319,8 +321,9 @@ function hrjob_getSummaryFields($fresh = FALSE) {
 function hrjob_civicrm_navigationMenu( &$params ) {
     //  Get the maximum key of $params
     $maxKey = ( max( array_keys($params) ) );
+    $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
 
-    $params[15]['child'][$maxKey+1] = array (
+    $params[$contactNavId]['child'][$maxKey+1] = array (
       'attributes' => array (
         'label'      => 'Job Import',
         'name'       => 'jobImport',
@@ -328,7 +331,7 @@ function hrjob_civicrm_navigationMenu( &$params ) {
         'permission' => 'access HRJobs',
         'operator'   => null,
         'separator'  => null,
-        'parentID'   => 15,
+        'parentID'   => $contactNavId,
         'navID'      => $maxKey+1,
         'active'     => 1
       ),
@@ -341,7 +344,7 @@ function hrjob_civicrm_navigationMenu( &$params ) {
             'permission' => 'access HRJobs',
             'operator'   => null,
             'separator'  => 1,
-            'parentID'   => 15,
+            'parentID'   => $contactNavId,
             'navID'      => $maxKey+2,
             'active'     => 1
           ),
