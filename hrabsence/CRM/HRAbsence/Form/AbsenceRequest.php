@@ -111,6 +111,16 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_mode = 'view';
       }
 
+      //check for ACL View/Edit permission
+      if (empty($this->_mode)) {
+        if (self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT) {
+          $this->_mode = 'edit';
+        }
+        elseif (self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::VIEW) {
+          $this->_mode = 'view';
+        }
+      }
+       
       $displayName = CRM_Contact_BAO_Contact::displayName($this->_targetContactID);
       $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
       $activityType = $activityTypes[$this->_activityTypeID];
@@ -131,7 +141,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->assign('customValueCount', $this->_customValueCount);
       }
     }
-    elseif ($this->_action == CRM_Core_Action::ADD) {
+    elseif ($this->_action == CRM_Core_Action::ADD && self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT) {
+      $this->_mode = 'edit';
       CRM_Utils_System::setTitle(ts('Absence Request: Add'));
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
 
@@ -191,7 +202,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
 
     if ($this->_mode == 'edit' || $this->_mode == 'view') {
-      if ($this->isContactAccessible($this->_targetContactID)) {
+      if (self::isContactAccessible($this->_targetContactID)) {
         $this->assign('permContact', 1);
         $this->assign('emp_id', $this->_targetContactID);
       }
@@ -294,8 +305,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $date1 = new DateTime(date("M j, Y", $today));
         $intervals = $date1->diff($end_date);
         if (CRM_Core_Permission::check('administer CiviCRM') ||
-          ((($intervals->days >= 0) && ($intervals->invert == 0)) && CRM_Core_Permission::check('edit HRAbsences'))
-        ) {
+            ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
+             (CRM_Core_Permission::check('edit HRAbsences') || self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
+             )
+            ) {
           $this->addButtons(
             array(
               array(
@@ -325,6 +338,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         elseif (CRM_Core_Permission::check('manage own HRAbsences') && ($this->_targetContactID == $this->_loginUserID)) {
           $this->addButtons(
             array(
+              array(
+                'type' => 'submit',
+                'name' => ts('Save'),
+                'isDefault' => TRUE
+              ),
               array(
                 'type' => 'submit',
                 'name' => ts('Cancel'),
@@ -578,23 +596,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
   }
 
-  public function isContactAccessible($contactID) {
-    $ids = CRM_Core_Permission::group('Access');
-    if (!empty($ids)) {
-      $idacl = CRM_ACL_API::group(CRM_Core_Permission::VIEW, NULL, 'civicrm_saved_search', $ids);
+  public static function isContactAccessible($contactID) {
+    if (CRM_Contact_BAO_Contact_Permission::allow($contactID, CRM_Core_Permission::EDIT)) {
+      return CRM_Core_Permission::EDIT;
     }
-    $in = CRM_Contact_BAO_GroupContact::getContactGroup($contactID, 'Added');
-    $staticGroups = array();
-    if (!empty($in)) {
-      foreach ($in as $group) {
-        $staticGroups[] = $group['group_id'];
-      }
+    elseif (CRM_Contact_BAO_Contact_Permission::allow($contactID, CRM_Core_Permission::VIEW)) {
+      return CRM_Core_Permission::VIEW;
     }
-    if ($idacl && $staticGroups) {
-      $arraydiff = array_intersect($idacl, $staticGroups);
-      if (!empty($arraydiff)) {
-        return TRUE;
-      }
+    else {
+      return FALSE;
     }
   }
 }
