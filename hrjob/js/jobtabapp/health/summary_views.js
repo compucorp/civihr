@@ -8,8 +8,8 @@ CRM.HRApp.module('JobTabApp.Health', function(Health, HRApp, Backbone, Marionett
       };
     },
     modelEvents: {
-	'change:provider': 'renderProvider',
-	'change:life_insurance_provider': 'renderProvider'
+      'change:provider': 'renderProvider',
+      'change:life_insurance_provider': 'renderProvider'
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);

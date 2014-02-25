@@ -1,9 +1,9 @@
-"Job Level","Job Contract Duration","Job Normal Place of Work","Monthly Cost Equivalents","Annual Cost Equivalents"
-"Junior Manager","Permanent","Headquarters","20.000000","240.00"
-"Junior Manager","Temporary","Home", , 
-"Junior Staff","Permanent","Headquarters","23.333333","280.00"
-"Junior Staff","Permanent","Home","40.833333","490.00"
-"Senior Manager","Permanent","Headquarters","26.666667","320.00"
-"Senior Manager","Temporary","Home","23.333333","280.00"
-"Senior Staff","Permanent","Headquarters","6.666667","80.00"
-"Senior Staff","Permanent","Home","7.500000","90.00"
+"Job Level","Job Normal Place of Work","Monthly Cost Equivalents","Annual Cost Equivalents"
+"Junior Manager","Headquarters","36668.333333","440020.00"
+"Junior Manager","Home", , 
+"Junior Staff","Headquarters","850.00","10200.00"
+"Junior Staff","Home","4187.083333","50245.00"
+"Senior Manager","Headquarters","25631.666667","307580.00"
+"Senior Manager","Home","39666.666667","476000.00"
+"Senior Staff","Headquarters","7.333333","88.00"
+"Senior Staff","Home","2062.500000","24750.00"

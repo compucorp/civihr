@@ -53,7 +53,6 @@ return array (
         array(
           'fields' => array(
             'hrjob_level_type'  => 1,
-            'hrjob_period_type' => 1,
             'hrjob_location'    => 1,
             'monthly_cost_eq'   => 1,
             'annual_cost_eq'    => 1,

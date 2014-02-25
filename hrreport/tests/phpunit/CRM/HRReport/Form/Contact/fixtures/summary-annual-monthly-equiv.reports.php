@@ -6,7 +6,6 @@ return array(
     array(
       'fields' => array(
         'hrjob_level_type',
-        'hrjob_period_type',
         'hrjob_location',
         'monthly_cost_eq',
         'annual_cost_eq',

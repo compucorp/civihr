@@ -84,11 +84,11 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
       $.ajax({ type: "POST",
         url: fileurl,
         data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob" },
-        success: function(html){
+        success: function(html) {
           $('#del_'+fileID[1]).remove();
             var successMsg = ts('The selected attachment has been deleted.');
             CRM.alert(successMsg, ts('Removed'), 'success');
-	}
+        }
       });
     }
   });

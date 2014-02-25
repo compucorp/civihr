@@ -220,7 +220,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
           'column' => 'provider_life_insurance'
         )
       );
-      $org_id = array_search('Organization', CRM_Contact_BAO_ContactType::basicTypePairs(false,'id'));
+      $org_id = array_search('Organization', CRM_Contact_BAO_ContactType::basicTypePairs(FALSE,'id'));
       $orgSubType = CRM_Contact_BAO_ContactType::subTypeInfo('Organization');
 
       foreach($opt_grp_name as $oKey => $oValue) {
@@ -286,6 +286,43 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
 
     //disable trigger
     CRM_Core_DAO::triggerRebuild();
+
+    return TRUE;
+  }
+
+  public function upgrade_1202() {
+    $this->ctx->log->info('Applying update 1202');
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_annualized_est')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_annualized_est decimal(40,2)   DEFAULT NULL COMMENT "Estimated Annual Pay" AFTER pay_currency');
+    }
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_is_auto_est')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_is_auto_est tinyint   DEFAULT 1 COMMENT "Is the estimate automatically calculated" AFTER pay_annualized_est');
+    }
+
+    $defaults = array(
+      'Year' => 1,
+      'Month' => 12,
+      'Week' => 50,
+      'Day' => 50 * 5,
+      'Hour' => 50 * 5 * 8,
+    );
+    foreach ($defaults as $unit => $multiple) {
+      // See also: CRM_HRJob_Estimator::updateEstimate*
+      // After HR-1.2.0 ships, don't make changes to the logic of upgrade_1202.
+      CRM_Core_DAO::executeQuery('
+        UPDATE civicrm_hrjob_pay p, civicrm_hrjob_hour h
+        SET p.pay_annualized_est = %1 * h.hours_fte * p.pay_amount
+        WHERE p.job_id = h.job_id
+        AND p.pay_unit = %2
+        AND p.pay_is_auto_est = 1
+      ', array(
+          1 => array($multiple, 'Float'),
+          2 => array($unit, 'String'),
+        )
+      );
+    }
 
     return TRUE;
   }

@@ -325,10 +325,10 @@
   </hours_unit>
 
   <hours_fte>
-    <item>1</item>
-    <item>1.5</item>
-    <item>2</item>
-    <item>3</item>
+    <item>0.5</item>
+    <item>0.75</item>
+    <item>1.0</item>
+    <item>1.1</item>
   </hours_fte>
 
   <pay_amount>

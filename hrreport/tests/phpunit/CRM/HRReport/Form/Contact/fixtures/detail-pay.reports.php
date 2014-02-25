@@ -13,6 +13,7 @@ return array(
         'hrjob_pay_amount',
         'hrjob_pay_unit',
         'hrjob_pay_currency',
+        'hrjob_pay_annualized_est',
       ),
       'filters' => array(
         'hrjob_pay_grade_op' => 'in',

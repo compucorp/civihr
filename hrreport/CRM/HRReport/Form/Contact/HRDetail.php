@@ -331,12 +331,14 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           'hrjob_pay_amount'   => array(),
           'hrjob_pay_unit'     => array(),
           'hrjob_pay_currency' => array(),
+          'hrjob_pay_annualized_est' => array(),
         ),
         'filters' =>
         array(
           'hrjob_pay_grade'  => array(),
           'hrjob_pay_amount' => array(),
           'hrjob_pay_unit'   => array(),
+          'hrjob_pay_annualized_est' => array(),
         ),
         'grouping' => array('job-fields' => 'Job'),
       ),

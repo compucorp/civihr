@@ -374,14 +374,14 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'grouping' => 'stats-fields',
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
-      'name' => 'pay_amount',
+      'name' => 'pay_annualized_est',
       'title' => ts('Monthly Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
-      'dbAlias'  => '(SUM(hrjob_pay_civireport.pay_amount)/12)',
+      'dbAlias'  => '(SUM(hrjob_pay_civireport.pay_annualized_est)/12)',
       'grouping' => 'stats-fields',
     );
     $this->_columns['civicrm_hrjob_pay']['fields']['annual_cost_eq'] = array(
-      'name' => 'pay_amount',
+      'name' => 'pay_annualized_est',
       'title' => ts('Annual Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
       'statistics' => array('sum' => ts('Annual Cost Equivalents'),),
@@ -463,7 +463,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $statistics = parent::statistics($rows);
     if (!empty($this->_statFields)) {
       if ((array_key_exists("monthly_cost_eq",$this->_params["fields"]) || array_key_exists("annual_cost_eq",$this->_params["fields"])) && array_key_exists("hrjob_pay_currency",$this->_params["fields"])) {
-      	$this->_select .=", count({$this->_aliases["civicrm_hrjob_pay"]}.pay_amount) as count";
+      	$this->_select .=", count({$this->_aliases["civicrm_hrjob_pay"]}.pay_annualized_est) as count";
       	$groupByCurrency = "GROUP BY {$this->_aliases["civicrm_hrjob_pay"]}.pay_currency";
       	$sql = "{$this->_select} {$this->_from} {$this->_where} {$groupByCurrency} {$this->_having} {$this->_orderBy} {$this->_limit}";
       	$dao = CRM_Core_DAO::executeQuery($sql);

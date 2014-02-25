@@ -57,8 +57,17 @@ a.hrjob-nav.selected {
     color: #000000;
     font-weight: bold;
 }
-.hrjob-container input, .hrjob-container select, .hrjob-container textarea {
+.hrjob-container input[type=text], .hrjob-container select, .hrjob-container textarea {
     width: 95%;
+}
+input#hrjob-notice_amount,
+select#hrjob-notice_unit,
+input#hrjob-pay_amount,
+select#hrjob-pay_unit,
+input#hrjob-hours_amount,
+select#hrjob-hours_unit,
+input#hrjob-pay_annualized_est{
+    width: 15em;
 }
 .hrjob-duplicate-notice {
     text-align: center;
@@ -78,4 +87,17 @@ div.hrjob-tree-items {
        and use this one
     */
     padding: 2px 6px !important;
+}
+.hrjob-container .lock-button {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.hrjob-container .batch-edit {
+    vertical-align: middle;
+}
+
+.pay_annualized_est_expl {
+    font-size: 0.8em;
+    font-style: italic;
 }

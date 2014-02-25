@@ -90,4 +90,21 @@
     <uniqueName>hrjob_pay_currency</uniqueName>
   </field>
 
+  <field>
+    <name>pay_annualized_est</name>
+    <title>Estimated Annual Pay</title>
+    <type>decimal</type>
+    <default>0</default>
+    <comment>Estimated Annual Pay</comment>
+    <export>true</export>
+    <uniqueName>hrjob_pay_annualized_est</uniqueName>
+  </field>
+
+  <field>
+    <name>pay_is_auto_est</name>
+    <type>boolean</type>
+    <default>1</default>
+    <comment>Is the estimate automatically calculated</comment>
+  </field>
+
 </table>

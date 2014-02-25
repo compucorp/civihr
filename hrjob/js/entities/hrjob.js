@@ -110,7 +110,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       pay_grade: '',
       pay_amount: '',
       pay_unit: '',
-      pay_currency: ''
+      pay_currency: '',
+      pay_annualized_est: '',
+      pay_is_auto_est: 1
     }
   });
 
@@ -121,8 +123,14 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       er_contrib_pct: '',
       ee_contrib_pct: '',
       pension_type:'',
-      ee_contrib_abs: '' 
+      ee_contrib_abs: ''
     }
+  });
+
+  Entities.Setting = Backbone.Model.extend({
+    // Restrict returned settings to mitigate risk that concurrent processes CRUD the same setting
+    crmReturn: ['work_months_per_year','work_weeks_per_year','work_days_per_year','work_hours_per_year'],
+    defaults: {}
   });
 
   Entities.HRJobLeave = Backbone.Model.extend({
@@ -170,7 +178,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   });
 
   // FIXME real models
-  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole'], function(entityName){
+  _.each(['HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole', 'Setting'], function(entityName){
     if (!Entities[entityName]) {
       Entities[entityName] = Backbone.Model.extend({});
     }

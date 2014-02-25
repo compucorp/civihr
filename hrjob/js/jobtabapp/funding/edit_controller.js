@@ -1,6 +1,6 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marionette, $, _) {
-	Funding.Controller = {
+  Funding.Controller = {
     addFunding: function(cid, jobCollection) {
       var model = new HRApp.Entities.HRJob({
         contact_id: cid

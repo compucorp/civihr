@@ -49,8 +49,8 @@ CRM.HRApp.module('JobTabApp.Summary', function(Summary, HRApp, Backbone, Marione
         collection: models.HRJobLeave
       }));
       this.payRegion.show(new HRApp.JobTabApp.Pay.ShowView({
-    	model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
-      })); 
+        model: models.HRJobPay.first() || new HRApp.Entities.HRJobPay()
+      }));
       this.pensionRegion.show(new Summary.SimpleItemView({
         template: '#hrjob-pension-summary-template',
         crmEntityName: 'HRJobPension',

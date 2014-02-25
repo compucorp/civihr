@@ -125,6 +125,18 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $pay_currency;
   /**
+   * Job Pay (Annual Est)
+   *
+   * @var float
+   */
+  public $pay_annualized_est;
+  /**
+   * Is the estimate automatically calculated
+   *
+   * @var boolean
+   */
+  public $pay_is_auto_est;
+  /**
    * class constructor
    *
    * @access public
@@ -178,11 +190,11 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'title' => ts('Job Pay Grade') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_grade',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_pay_grade',
           )
@@ -191,21 +203,21 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'name' => 'pay_amount',
           'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Job Pay Amount') ,
-          'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_amount',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
         ) ,
         'hrjob_pay_unit' => array(
           'name' => 'pay_unit',
           'type' => CRM_Utils_Type::T_ENUM,
           'title' => ts('Job Pay Unit') ,
-          'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_unit',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
           'enumValues' => 'Hour, Day, Week, Month, Year',
         ) ,
         'hrjob_pay_currency' => array(
@@ -214,14 +226,28 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'title' => ts('Job Pay Currency') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_currency',
           'headerPattern' => '',
           'dataPattern' => '',
+          'export' => true,
           'pseudoconstant' => array(
             'optionGroupName' => 'currencies_enabled',
           )
+        ) ,
+        'hrjob_pay_annualized_est' => array(
+          'name' => 'pay_annualized_est',
+          'type' => CRM_Utils_Type::T_MONEY,
+          'title' => ts('Job Pay (Annual Est)') ,
+          'export' => true,
+          'where' => 'civicrm_hrjob_pay.pay_annualized_est',
+          'headerPattern' => '',
+          'dataPattern' => '',
+        ) ,
+        'pay_is_auto_est' => array(
+          'name' => 'pay_is_auto_est',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'default' => '1',
         ) ,
       );
     }
@@ -244,6 +270,8 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
         'pay_currency' => 'hrjob_pay_currency',
+        'pay_annualized_est' => 'hrjob_pay_annualized_est',
+        'pay_is_auto_est' => 'pay_is_auto_est',
       );
     }
     return self::$_fieldKeys;
@@ -282,7 +310,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
       self::$_import = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (!empty($field['import'])) {
+        if (CRM_Utils_Array::value('import', $field)) {
           if ($prefix) {
             self::$_import['hrjob_pay'] = & $fields[$name];
           } else {
@@ -306,7 +334,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
       self::$_export = array();
       $fields = self::fields();
       foreach($fields as $name => $field) {
-        if (!empty($field['export'])) {
+        if (CRM_Utils_Array::value('export', $field)) {
           if ($prefix) {
             self::$_export['hrjob_pay'] = & $fields[$name];
           } else {
