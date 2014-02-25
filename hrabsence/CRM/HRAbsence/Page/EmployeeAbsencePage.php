@@ -161,20 +161,26 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
   public static function checkPermissions($contactID, $case=NULL) {
     $session = CRM_Core_Session::singleton();
     $cid = $session->get('userID');
-    $aclPerm = CRM_HRAbsence_Form_AbsenceRequest::isContactAccessible($cid);
+    $aclPerm = CRM_HRAbsence_Form_AbsenceRequest::isContactAccessible($contactID);
     switch ($case) {
     case 'viewWidget'://view widget
-      if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('view HRAbsences')  || CRM_Core_Permission::check('edit HRAbsences') || (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) {
+      if (CRM_Core_Permission::check('administer CiviCRM') ||
+        CRM_Core_Permission::check('view HRAbsences') || $aclPerm ||
+        CRM_Core_Permission::check('edit HRAbsences') ||
+        (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) {
         return TRUE;
       }
       break;
     case 'enableNewAbsence': //enable new absence
-      if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') || (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) { 
+      if (CRM_Core_Permission::check('administer CiviCRM') ||
+        (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm == CRM_Core_Permission::EDIT) ||
+        (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) { 
         return TRUE;
       }
       break;
     case 'enableEntitlements': //enable entitlements
-      if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ) { 
+      if (CRM_Core_Permission::check('administer CiviCRM') ||
+        (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm == CRM_Core_Permission::EDIT) ) { 
         return TRUE;
       }
       break;

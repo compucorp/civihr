@@ -281,8 +281,10 @@ function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permiss
   $cid = $session->get('userID');
   if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
     $permissions['h_r_job']['get'] = array('access own HRJobs');
+    $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
   } else {
     $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+    $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
   }
   $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
