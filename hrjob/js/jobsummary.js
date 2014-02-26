@@ -51,5 +51,9 @@ function lengthEmployment(joinDate,finalDate) {
   else {
     duration = moment().preciseDiff(join_date);
   }
+  var diffDate =  now.diff(join_date, 'days');
+  if (diffDate <= 0 ) {
+    duration = '';
+  }
   return (duration);
 }
