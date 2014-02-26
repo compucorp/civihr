@@ -397,5 +397,6 @@ function hrjob_civicrm_pageRun( &$page ) {
     $gid = array_search('HRJob_Summary', $groups);
     CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid,));
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/jobsummary.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/readable-range.js');
   }
 }
