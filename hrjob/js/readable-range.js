@@ -32,7 +32,7 @@
         var yDiff = m2.year() - m1.year();
         var mDiff = m2.month() - m1.month();
         var dDiff = m2.date() - m1.date();
-//code commented to show only year,month and days on job summary 
+//code commented to show only year,month and days on job summary
 /*
         var hourDiff = m2.hour() - m1.hour();
         var minDiff = m2.minute() - m1.minute();
@@ -79,7 +79,7 @@
         if (dDiff) {
             result.push(pluralize(dDiff, 'day'));
         }
-//code commented to show only year,month and days on job summary 
+//code commented to show only year,month and days on job summary
 /*
         if (hourDiff) {
             result.push(pluralize(hourDiff, 'hour'));
