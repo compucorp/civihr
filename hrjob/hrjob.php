@@ -55,16 +55,16 @@ function hrjob_civicrm_install() {
   $params['parent_id'] = $org_id;
   $params['is_active'] = 1;
 
-  if($org_id) {
+  if ($org_id) {
     foreach($sub_type_name as $sub_type_name) {
       $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
       $subID = array_key_exists( $subTypeName, $orgSubType );
-      if(!$subID) {
+      if (!$subID) {
         $params['name'] = $subTypeName;
         $params['label'] = $sub_type_name;
         CRM_Contact_BAO_ContactType::add($params);
       }
-      elseif($subID && $orgSubType[$subTypeName]['is_active']==0) {
+      elseif ($subID && $orgSubType[$subTypeName]['is_active']==0) {
         CRM_Contact_BAO_ContactType::setIsActive($orgSubType[$subTypeName]['id'], 1);
       }
     }
@@ -389,4 +389,13 @@ function hrjob_civicrm_caseTypes(&$caseTypes) {
  */
 function hrjob_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hrjob_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+function hrjob_civicrm_pageRun( &$page ) {
+  if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('HRJob_Summary', $groups);
+    CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid,));
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/jobsummary.js');
+  }
 }
