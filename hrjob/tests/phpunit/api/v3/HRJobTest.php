@@ -304,52 +304,6 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
 
   //TODO check for length of employment field value
 
-  /**
-   * @param array $jobFixtures list of API calls to make for creating the jobs
-   * @param array $expectedDates list of job-summary values that are expected
-   
-  function testJobSummaryDates($jobFixtures, $expectedDates) {
-    // Make some noise to ensure we filter correctly
-    $this->callAPISuccess('HRJob', 'create', array(
-      'contact_id' => $this->individualCreate(array('email' => 'ignore1@example.com')),
-      'period_start_date' => '2001-02-03',
-      'period_end_date' => '2030-04-05',
-    ));
-
-    // Make the contact+jobs we care about
-    $cid = $this->individualCreate();
-    foreach ($jobFixtures as $jobFixture) {
-      $this->callAPISuccess('HRJob', 'create', $jobFixture + array('contact_id' => $cid));
-    }
-
-    // Make some more noise
-    $this->callAPISuccess('HRJob', 'create', array(
-      'contact_id' => $this->individualCreate(array('email' => 'ignore2@example.com')),
-      'period_start_date' => '2002-02-03',
-      'period_end_date' => '2050-04-05',
-    ));
-
-    // Check the stats for the contact we care about
-    $fields = hrjob_getSummaryFields(TRUE);
-    $result = $this->callAPISuccess('contact', 'get', array(
-      'id' => $cid,
-      'return' => array($fields['Initial_Join_Date']['field'], $fields['Final_Termination_Date']['field']),
-    ));
-    $this->assertEquals(1, $result['count']);
-    $this->assertTrue(
-      isset(
-      $expectedDates['start'],
-      $result['values'][$result['id']][$fields['Initial_Join_Date']['field']],
-      $expectedDates['end'],
-      $result['values'][$result['id']][$fields['Final_Termination_Date']['field']]
-      )
-    );
-    $this->assertEquals($expectedDates['start'], $result['values'][$result['id']][$fields['Initial_Join_Date']['field']], 'Compare Initial_Join_Date');
-    $this->assertEquals($expectedDates['end'], $result['values'][$result['id']][$fields['Final_Termination_Date']['field']], 'Compare Final_Termination_Date');
-  }
-  */
-  // TODO test summary transitions
-
   function testDuplicateWithChange() {
     $cid = $this->individualCreate();
     $original = $this->callAPISuccess('HRJob', 'create', $this->fixtures['fullJob'] + array('contact_id' => $cid));
