@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRRecruitment</base>
+  <class>HRVacancy</class>
+  <name>civicrm_hrvacancy</name>
+  <comment>Recruitment Vacancy.</comment>
+  <log>true</log>
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Recruitment Vacancy ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+  <field>
+    <name>salary</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Salary offered in vacancy</comment>
+    <title>Salary</title>
+  </field>
+  <field>
+    <name>position</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Job Position offered in vacancy</comment>
+    <title>Position</title>
+  </field>
+  <field>
+    <name>description</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Description of vacancy</comment>
+    <title>Description</title>
+  </field>
+  <field>
+    <name>benefits</name>
+    <type>varchar</type>
+    <length>254</length>
+    <title>Benefits</title>
+  </field>
+  <field>
+    <name>requirements</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Requirements of vacancy</comment>
+    <title>Requirements</title>
+  </field>
+  <field>
+    <name>location</name>
+    <type>varchar</type>
+    <length>254</length>
+    <comment>Location of vacancy</comment>
+    <title>Location</title>
+  </field>
+  <field>
+    <name>is_template</name>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>Whether the Vacancy has template</comment>
+  </field>
+  <field>
+    <name>status_id</name>
+    <type>int unsigned</type>
+    <comment>Status of Vacancy</comment>
+  </field>
+  <field>
+    <name>start_date</name>
+    <type>timestamp</type>
+    <comment>Vacancy Start Date</comment>
+  </field>
+  <field>
+    <name>end_date</name>
+    <type>timestamp</type>
+    <comment>Vacancy End Date</comment>
+  </field>
+</table>
