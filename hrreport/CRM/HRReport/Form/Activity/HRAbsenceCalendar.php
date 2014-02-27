@@ -367,7 +367,7 @@ activity_type_id = {$activityTypeID}
 
     $dao = CRM_Core_DAO::executeQuery($sql);
     while ($dao->fetch()) {
-      if (property_exists($dao, 'fromDate') && property_exists($dao, 'toDate')) {
+      if (property_exists($dao, 'fromDate')) {
         $durationFromDate = CRM_Utils_Date::processDate($dao->fromDate);
         $durationToDate = CRM_Utils_Date::processDate($dao->toDate);
         $validSourceRecordIds = 'all';
