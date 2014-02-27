@@ -140,6 +140,13 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
     parent::__construct();
   }
 
+  function setDefaultValues($freeze = TRUE) {
+    parent::setDefaultValues($freeze);
+    $this->_defaults["status_id_op"] = 'in';
+    $this->_defaults["status_id_value"] = array('1','2');
+    return $this->_defaults;
+  }
+
   function preProcessCommon() {
     parent::preProcessCommon();
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header');
