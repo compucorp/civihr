@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRRecruitment</base>
+  <class>HRVacancyPermission</class>
+  <name>civicrm_hrvacancy_permission</name>
+  <comment>Recruitment Vacancy Permissions.</comment>
+  <log>true</log>
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Vacancy Permission ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact ID</comment>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  <field>
+    <name>vacancy_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Vacancy ID</comment>
+  </field>
+  <foreignKey>
+    <name>vacancy_id</name>
+    <table>civicrm_hrvacancy</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  <field>
+    <name>permission</name>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>Permission of Vacancy</comment>
+  </field>
+</table>
