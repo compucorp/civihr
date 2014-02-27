@@ -218,7 +218,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $statusTypes = array_flip(CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name'));
 
     $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
-    CRM_Core_Error::debug( '$this', $this->_targetContactID );
     $resultHRJob = civicrm_api3('HRJob', 'get', array(
       'sequential' => 1,
       'contact_id' => $this->_targetContactID,
