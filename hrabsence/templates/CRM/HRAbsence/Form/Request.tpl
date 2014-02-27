@@ -243,9 +243,11 @@
 	      totalDays = new Number(totalDays) + new Number(selectopt);
 	    }
 	    else {
-	      cj("#options_"+x).val('');
-	      cj("#options_"+x).attr("disabled","disabled");
-	    }
+              cj("#options_"+x).val('');
+              if (abday == 'Sat' || abday == 'Sun') {
+	        cj("#options_"+x).attr("disabled","disabled");
+	      }
+            }
 	    x = new Number(x) + 1;
  	  });
           if (totalDays <= 1) {
