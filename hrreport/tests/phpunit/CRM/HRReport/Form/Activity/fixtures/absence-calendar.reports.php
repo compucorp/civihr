@@ -46,7 +46,7 @@ return array(
         'absence_date_from' => '20140101',
         'absence_date_to' => '20161231',
         'status_id_op' => 'in',
-        'status_id_value' => array(1, 2, 3, 9),
+        'status_id_value' => array(1, 2),
       ),
     ),
     'fixtures/dataset-absence.sql',
