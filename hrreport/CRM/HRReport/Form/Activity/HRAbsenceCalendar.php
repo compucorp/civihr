@@ -48,7 +48,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
     // Lets hide it for now.
     $this->_exposeContactID = FALSE;
     $this->activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
-    $this->activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
+    $this->activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
     asort($this->activityTypes);
 
     $this->_columns = array(
@@ -142,8 +142,8 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
 
   function setDefaultValues($freeze = TRUE) {
     parent::setDefaultValues($freeze);
-    $this->_defaults["status_id_op"] = 'in';
-    $this->_defaults["status_id_value"] = array('1','2');
+    $activityStatus = array_flip($this->activityStatus);
+    $this->_defaults["status_id_value"] = array($activityStatus['Scheduled'], $activityStatus['Completed']);
     return $this->_defaults;
   }
 
@@ -193,8 +193,17 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
   }
 
   function where($sourceRecordIds = null) {
+    $targetValue = CRM_Core_OptionGroup::getValue('activity_contacts', 'Activity Targets', 'name');
     $this->_where = "WHERE
- request.source_record_id IN ( ". implode(',', $sourceRecordIds).") AND cac.record_type_id =3";
+cac.record_type_id = {$targetValue} ";
+
+    if (is_array($sourceRecordIds)) {
+      $this->_where .= "AND request.source_record_id IN (" . implode(',', $sourceRecordIds) . ") ";
+    }
+    elseif ($sourceRecordIds == 'all') {
+      $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
+      $this->_where .= "AND request.activity_type_id = {$activityTypeID} ";
+    }
 
     $clauses = array();
     foreach ($this->_columns as $tableName => $table) {
@@ -253,10 +262,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
 
   static function formRule($fields, $file, $self) {
     $errors = array();
-    if ($fields['absence_date_relative'] == NULL) {
-      $errors['absence_date_relative'] = ts('Please choose a Date Range');
-    }
-    elseif ($fields['absence_date_relative'] == '0') {
+    if ($fields['absence_date_relative'] == '0') {
       if (empty($fields['absence_date_from'])) {
         $errors['absence_date_from'] = ts('Please choose a From Date');
           }
@@ -325,13 +331,14 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
 
     $activityStatus = array_flip($this->activityStatus);
     $statusCSSStyle = array(
-      $activityStatus['Requested']  => 'font-style:italic;',
-      $activityStatus['Approved'] => 'font-weight:bold;',
+      $activityStatus['Scheduled']  => 'font-style:italic;',
+      $activityStatus['Completed'] => 'font-weight:bold;',
       $activityStatus['Cancelled'] => 'text-decoration:line-through;',
       $activityStatus['Rejected'] => 'text-decoration:line-through;'
     );
 
-    $absenceCalendar = $monthDays = $validSourceRecordIds = $statistics = $legend = array();
+    $absenceCalendar = $monthDays  = $statistics = $legend = array();
+    $validSourceRecordIds = null;
     $viewLinks = FALSE;
 
     $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
@@ -340,6 +347,36 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
       CRM_Utils_Array::value("absence_date_from", $this->_params),
       CRM_Utils_Array::value("absence_date_to", $this->_params)
     );
+
+    $sql = "
+FROM civicrm_activity
+WHERE source_record_id IS NOT NULL AND
+activity_type_id = {$activityTypeID}
+";
+
+    if ($durationFromDate && $durationToDate) {
+      $sql = "SELECT source_record_id " . $sql;
+      $sql .= "
+        GROUP BY source_record_id
+        HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
+        (to_days(Max(activity_date_time))  <= to_days({$durationToDate})))
+        ";
+    }
+    else {
+      $sql = "SELECT Min(activity_date_time) as fromDate, Max(activity_date_time) as toDate" . $sql;
+    }
+
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      if (property_exists($dao, 'fromDate')) {
+        $durationFromDate = CRM_Utils_Date::processDate($dao->fromDate);
+        $durationToDate = CRM_Utils_Date::processDate($dao->toDate);
+        $validSourceRecordIds = 'all';
+      }
+      else {
+        $validSourceRecordIds[] = $dao->source_record_id;
+      }
+    }
 
     $durationYearCount =(date('Y', strtotime($durationToDate)))-(date('Y', strtotime($durationFromDate)));
     for ($i=0 ; $i<=$durationYearCount ; $i++) {
@@ -371,27 +408,7 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
     $absenceCalendar[date('Y', strtotime($durationFromDate))][(int)date('m', strtotime($durationFromDate))]['actual_start_day'] = (int)date('d', strtotime($durationFromDate));
     $absenceCalendar[date('Y', strtotime($durationToDate))][(int)date('m', strtotime($durationToDate))]['actual_end_day'] = (int)date('d', strtotime($durationToDate));
 
-
-    $sql = "
-SELECT source_record_id
-FROM civicrm_activity
-WHERE source_record_id IS NOT NULL AND
-activity_type_id = {$activityTypeID}
-GROUP BY source_record_id";
-
-    if ($durationFromDate && $durationToDate) {
-      $sql.= "
-        HAVING ((to_days({$durationFromDate}) <= to_days(Min(activity_date_time))) AND
-        (to_days(Max(activity_date_time))  <= to_days({$durationToDate})))
-        ";
-    }
-
-    $dao = CRM_Core_DAO::executeQuery($sql);
-    while ($dao->fetch()) {
-      $validSourceRecordIds[] = $dao->source_record_id;
-    }
-
-    if (count($validSourceRecordIds) == 0) {
+    if (count($validSourceRecordIds) == 0 || !$validSourceRecordIds) {
       CRM_Core_Session::setStatus(ts("There is no absence record for chosen Absence Date range"), ts('No Result Found'));
       return;
     }
