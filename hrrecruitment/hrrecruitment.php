@@ -22,6 +22,62 @@ function hrrecruitment_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrrecruitment_civicrm_install() {
+  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
+
+  $vacancyNavigation = new CRM_Core_DAO_Navigation();
+  $params = array (
+    'domain_id'  => CRM_Core_Config::domainID(),
+    'label'      => 'Vacancies',
+    'name'       => 'Vacancies',
+    'url'        => null,
+    'operator'   => null,
+    'weight'     => $reportWeight-1,
+    'is_active'  => 1
+  );
+  $vacancyNavigation->copyValues($params);
+  $vacancyNavigation->save();
+
+  $vacancyMenuTree = array(
+    array(
+      'label' => ts('Dashboard'),
+      'name' => 'dashboard',
+      'url'  =>  null,
+      'permission' => null,
+    ),
+    array(
+      'label' => ts('New Vacancy'),
+      'name' => 'new_vacancy',
+      'url'  => null,
+      'permission' => null,
+    ),
+    array(
+      'label' => ts('New Template'),
+      'name' => 'new_template',
+      'url'  => null,
+      'permission' => null,
+    ),
+    array(
+      'label'      => ts('Find Vacancies'),
+      'name'       => 'find_vacancies',
+      'url'        => null,
+      'permission' => null,
+    ),
+    array(
+      'label'      => ts('Reports'),
+      'name'       => 'reports',
+      'url'        => null,
+      'permission' => null,
+    ),
+  );
+
+  foreach ($vacancyMenuTree as $key => $menuItems) {
+    $menuItems['is_active'] = 1;
+    $menuItems['parent_id'] = $vacancyNavigation->id;
+    $menuItems['weight'] = $key;
+    CRM_Core_BAO_Navigation::add($menuItems);
+  }
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrrecruitment_civix_civicrm_install();
 }
 
@@ -78,4 +134,31 @@ function hrrecruitment_civicrm_managed(&$entities) {
  */
 function hrrecruitment_civicrm_caseTypes(&$caseTypes) {
   _hrrecruitment_civix_civicrm_caseTypes($caseTypes);
+}
+
+function hrrecruitment_civicrm_navigationMenu( &$params ) {
+  $vacanciesMenuItems = array();
+  $vacanciesType = array("Draft", "Open", "Closed", "Rejected", "Cancelled" );
+  $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
+  $newVacanciesId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_vacancy', 'id', 'name');
+  $count = 0;
+  foreach ($vacanciesType as $cTypeId => $vacanciesTypeName) {
+    $vacanciesMenuItems[$count] = array(
+      'attributes' => array(
+        'label'      => "{$vacanciesTypeName}",
+        'name'       => "{$vacanciesTypeName}",
+        'url'        => NULL,
+        'permission' => NULL,
+        'operator'   => 'OR',
+        'separator'  => NULL,
+        'parentID'   => $newVacanciesId,
+        'navID'      => 1,
+        'active'     => 1
+      )
+    );
+    $count++;
+  }
+  if (!empty($vacanciesMenuItems)) {
+    $params[$vacanciesId]['child'][$newVacanciesId]['child'] = $vacanciesMenuItems;
+  }
 }
