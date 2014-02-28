@@ -279,12 +279,18 @@ function hrjob_civicrm_permission(&$permissions) {
 function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $session = CRM_Core_Session::singleton();
   $cid = $session->get('userID');
-  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions['h_r_job']['get'] = array('access own HRJobs');
+  if($entity == 'h_r_job_leave' &&
+    ( $cid == $params['contact_id'] || $params['api.has_parent'] == 1 ) &&
+    $action == 'get') {
     $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
   } else {
-    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
     $permissions['h_r_job_leave']['get'] = array('access HRJobs');
+  }
+
+  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
+    $permissions['h_r_job']['get'] = array('access own HRJobs');
+   } else {
+    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
   }
   $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
