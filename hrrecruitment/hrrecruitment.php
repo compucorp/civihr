@@ -22,12 +22,48 @@ function hrrecruitment_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrrecruitment_civicrm_install() {
-  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
+  $activityTypesResult = civicrm_api3('activity_type', 'get', array());
+  $weight = count($activityTypesResult["values"]);
+  foreach (array('Evaluation', 'Comment') as $activityType) {
+    if (!in_array($activityType, $activityTypesResult["values"])) {
+      civicrm_api3('activity_type', 'create', array(
+          'weight'      => $weight++,
+          'name'        => $activityType,
+          'label'       => ts($activityType),
+          'filter'      => 1,
+          'is_active'   => 1,
+        )
+      );
+    }
+  }
 
+  $result = civicrm_api3('OptionGroup', 'create', array(
+    'name' => 'vacancy_status',
+    'title' => ts('Vacancy Status'),
+    'is_reserved' => 1,
+    'is_active' => 1,
+    )
+  );
+
+  foreach (array('Draft', 'Open', 'Closed', 'Cancelled', 'Rejected') as $key => $status) {
+    $statusParam = array(
+      'option_group_id' => $result['id'],
+      'label' => ts($status),
+      'name' => $status,
+      'value' => $key+1,
+      'is_active' => 1,
+    );
+    if ($status == 'Draft') {
+      $statusParam['is_default'] = 1;
+    }
+    civicrm_api3('OptionValue', 'create', $statusParam);
+  }
+
+  $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
   $vacancyNavigation = new CRM_Core_DAO_Navigation();
   $params = array (
     'domain_id'  => CRM_Core_Config::domainID(),
-    'label'      => 'Vacancies',
+    'label'      => ts('Vacancies'),
     'name'       => 'Vacancies',
     'url'        => null,
     'operator'   => null,
@@ -39,21 +75,21 @@ function hrrecruitment_civicrm_install() {
 
   $vacancyMenuTree = array(
     array(
-      'label' => ts('Dashboard'),
-      'name' => 'dashboard',
-      'url'  =>  null,
+      'label'      => ts('Dashboard'),
+      'name'       => 'dashboard',
+      'url'        => null,
       'permission' => null,
     ),
     array(
-      'label' => ts('New Vacancy'),
-      'name' => 'new_vacancy',
-      'url'  => null,
+      'label'      => ts('New Vacancy'),
+      'name'       => 'new_vacancy',
+      'url'        => null,
       'permission' => null,
     ),
     array(
-      'label' => ts('New Template'),
-      'name' => 'new_template',
-      'url'  => null,
+      'label'      => ts('New Template'),
+      'name'       => 'new_template',
+      'url'        => null,
       'permission' => null,
     ),
     array(
@@ -85,6 +121,19 @@ function hrrecruitment_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrrecruitment_civicrm_uninstall() {
+  $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
+  CRM_Core_BAO_Navigation::processDelete($vacanciesId);
+  CRM_Core_BAO_Navigation::resetNavigation();
+
+  if ($statusId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name')) {
+    civicrm_api3('OptionGroup', 'delete', array('id' => $statusId));
+  }
+
+  foreach (array('Evaluation', 'Comment') as $activityType) {
+    if ($id = civicrm_api3('OptionValue', 'getvalue', array('name' => $activityType, 'return' => 'id'))) {
+      civicrm_api3('OptionValue', 'delete', array('id' => $id));
+    }
+  }
   return _hrrecruitment_civix_civicrm_uninstall();
 }
 
@@ -92,6 +141,24 @@ function hrrecruitment_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrrecruitment_civicrm_enable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Vacancies'), array('is_active' => 1));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
+  if ($vacancyStatusID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name')) {
+    civicrm_api3('OptionGroup', 'create', array('id' => $vacancyStatusID, 'is_active' => 1));
+
+    $statusIDs = CRM_Core_OptionGroup::valuesByID($vacancyStatusID, FALSE, FALSE, FALSE, 'id', FALSE);
+    foreach ($statusIDs as $statusID) {
+      civicrm_api3('OptionValue', 'create', array('id' => $statusID, 'is_active' => 1));
+    }
+  }
+
+  foreach (array('Evaluation', 'Comment') as $activityType) {
+    if ($id = civicrm_api3('OptionValue', 'getvalue', array('name' => $activityType, 'return' => 'id'))) {
+      civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
+    }
+  }
+
   return _hrrecruitment_civix_civicrm_enable();
 }
 
@@ -99,6 +166,23 @@ function hrrecruitment_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrrecruitment_civicrm_disable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Vacancies'), array('is_active' => 0));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
+  if ($vacancyStatusID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name')) {
+    $statusIDs = CRM_Core_OptionGroup::valuesByID($vacancyStatusID, FALSE, FALSE, FALSE, 'id');
+    foreach ($statusIDs as $statusID) {
+      civicrm_api3('OptionValue', 'create', array('id' => $statusID, 'is_active' => 0));
+    }
+    civicrm_api3('OptionGroup', 'create', array('id' => $vacancyStatusID, 'is_active' => 0));
+  }
+
+  foreach (array('Evaluation', 'Comment') as $activityType) {
+    if ($id = civicrm_api3('OptionValue', 'getvalue', array('name' => $activityType, 'return' => 'id'))) {
+      civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
+    }
+  }
+
   return _hrrecruitment_civix_civicrm_disable();
 }
 
@@ -138,15 +222,15 @@ function hrrecruitment_civicrm_caseTypes(&$caseTypes) {
 
 function hrrecruitment_civicrm_navigationMenu( &$params ) {
   $vacanciesMenuItems = array();
-  $vacanciesType = array("Draft", "Open", "Closed", "Rejected", "Cancelled" );
+  $vacancieStatuses = CRM_Core_OptionGroup::values('vacancy_status');
   $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
   $newVacanciesId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_vacancy', 'id', 'name');
   $count = 0;
-  foreach ($vacanciesType as $cTypeId => $vacanciesTypeName) {
+  foreach ($vacancieStatuses as $value => $vacancyStatus) {
     $vacanciesMenuItems[$count] = array(
       'attributes' => array(
-        'label'      => "{$vacanciesTypeName}",
-        'name'       => "{$vacanciesTypeName}",
+        'label'      => "{$vacancyStatus}",
+        'name'       => "{$vacancyStatus}",
         'url'        => NULL,
         'permission' => NULL,
         'operator'   => 'OR',
