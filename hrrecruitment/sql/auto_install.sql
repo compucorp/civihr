@@ -22,8 +22,8 @@ CREATE TABLE `civicrm_hrvacancy` (
      `location` varchar(254)    COMMENT 'Location of vacancy',
      `is_template` tinyint   DEFAULT 0 COMMENT 'Whether the Vacancy has template',
      `status_id` int unsigned    COMMENT 'Status of Vacancy',
-     `start_date` timestamp    COMMENT 'Vacancy Start Date',
-     `end_date` timestamp    COMMENT 'Vacancy End Date' 
+     `start_date` date    COMMENT 'Vacancy Start Date',
+     `end_date` date    COMMENT 'Vacancy End Date' 
 ,
     PRIMARY KEY ( `id` )
  
