@@ -32,8 +32,6 @@ function hrrecruitment_civicrm_install() {
           'label'       => ts($activityType),
           'filter'      => 1,
           'is_active'   => 1,
-          'is_optgroup' => 0,
-          'is_default'  => 0,
         )
       );
     }
