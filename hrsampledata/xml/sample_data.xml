@@ -593,4 +593,44 @@
     <item>VT123456</item>
     <item>AB67564</item>
   </sponsor_certificate_number>
+
+  <salary>
+    <item>$50-$70k/yr</item>
+    <item>$30-$40k/yr</item>
+    <item>$110-$130k/yr</item>
+  </salary>
+  
+  <vacancyposition>
+    <item>Senior Support Speacialist</item>
+    <item>Junior Support Speacialist</item>
+    <item>Senior Deletion Confirmation Speacialist</item>
+  </vacancyposition>
+
+  <vacancydescription>
+    <item>Answer phone calls and emails from irate customers.</item>
+  </vacancydescription>
+  
+  <benefits>
+    <item>Receive money</item>
+    <item>Have a place to park</item>
+    <item>See a doctor every time you lose a limb</item>
+  </benefits>
+
+  <requirements>
+    <item>2+limbs</item>
+    <item>3+ears</item>
+    <item>Patience</item>
+  </requirements>
+
+  <vacancylocation>
+    <item>New York Office</item>
+    <item>Timbuktu Office</item>
+    <item>Headquarters</item>
+  </vacancylocation>
+  <permission>
+    <item>View Applicants</item>
+    <item>Evaluate Applicants</item>
+    <item>Manage Applicants</item>
+    <item>Administer Applicants</item>
+  </permission>
 </sample_data>

@@ -144,13 +144,13 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
   /**
    * Vacancy Start Date
    *
-   * @var timestamp
+   * @var date
    */
   public $start_date;
   /**
    * Vacancy End Date
    *
-   * @var timestamp
+   * @var date
    */
   public $end_date;
   /**
@@ -231,12 +231,12 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
         ) ,
         'start_date' => array(
           'name' => 'start_date',
-          'type' => CRM_Utils_Type::T_TIMESTAMP,
+          'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Start Date') ,
         ) ,
         'end_date' => array(
           'name' => 'end_date',
-          'type' => CRM_Utils_Type::T_TIMESTAMP,
+          'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('End Date') ,
         ) ,
       );

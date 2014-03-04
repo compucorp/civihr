@@ -447,6 +447,8 @@ class GenerateHRData {
       $this->addCareerData($cid);
       //if Absence (CiviHR) extension in enabled, add the sample data
       $this->addAbsenceEntitlements($cid);
+      //if Recruitment (CiviHR) extension in enabled, add the sample data
+      $this->addVacancies($cid);
     }
     $this->addHolidays($cid);
   }
@@ -1126,7 +1128,78 @@ class GenerateHRData {
       $i++;      
     }
   }
-
+  private function addVacancies($cid) {
+    //sample data for HRRecruitment table
+    for ($i = 1; $i <= mt_rand(1, 3); $i++) {
+      $vacanciesValues = array(
+                               'salary' => $this->randomItem('salary'),
+                               'position' => $this->randomItem('vacancyposition'),
+                               'description' => $this->randomItem('vacancydescription'),
+                               'benefits' => $this->randomItem('benefits'),
+                               'requirements' => $this->randomItem('requirements'),
+                               'location' => $this->randomItem('vacancylocation'),
+                               'is_template' => 0,
+                               'status_id' => 0,
+                               'start_date' => $this->randomDate(strtotime('2009-01-01'), strtotime('2011-12-31')),
+                               'end_date' =>  $this->randomDate(strtotime('2012-01-01'), strtotime('2014-12-31')),
+                               );
+      if ($i == 1) {
+        $vacanciesValues['is_template'] = 1;
+        $vacanciesValues['status_id'] = 1;
+      }
+      $hrVacancies[] = $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancy', $vacanciesValues);
+    }
+    //For each HRVacancies, there may be 0 or 1 records for each of these entity types: HRVacancyCases, HRVacancyStage, HRVacancy_permission.
+    foreach ($hrVacancies as $key => $hrVacanciesObj) {
+      //sample data for HRVacancy Cases table
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        $vacancyCaseValues = array(
+                                   'case_id' => mt_rand(0, 1),
+                                   'vacancy_id' => $hrVacanciesObj->id,
+                                   );
+        $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyCase', $vacancyCaseValues);
+      }
+      //sample data for HRVacancy Stages table
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        $vacancyStagesValues = array(
+                                     'case_status_id' => mt_rand(0, 1),
+                                     'vacancy_id' => $hrVacanciesObj->id,
+                                     'weight' => mt_rand(0, 1),
+                                     );
+        $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyStage', $vacancyStagesValues);
+      }
+      //sample data for HRPermission table
+      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+        $vacancyPermissionValues = array(
+                                         'contact_id' => $cid,
+                                         'vacancy_id' => $hrVacanciesObj->id,
+                                         'permission' => $this->randomItem('permission'),
+                                         );
+        $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyPermission', $vacancyPermissionValues);
+      }
+      //sample data for HRPermission UFJoin table sample data will be entered in later stage
+      /* for ($i = 1; $i <= mt_rand(0, 1); $i++) { */
+      /*   $vacancyUFJoinValues = array( */
+      /*                                'module' => 'Vacancy', */
+      /*                                'entity_id' => $hrVacanciesObj->id, */
+      /*                                'entity_table' => 'civicrm_hrvacancy', */
+      /*                                'uf_group_id' => '1', */
+      /*                                ); */
+      /*   $this->insertVacancyData('CRM_Core_DAO_UFJoin', $vacancyUFJoinValues); */
+      /* } */
+    }
+  }
+  /**
+   * This is a common method called to insert the data into HRVacancies tables
+   */
+  function insertVacancyData($className, $values) {
+    $dao = new $className();
+    foreach ($values as $columnName => $columnValue) {
+      $dao->$columnName = $columnValue;
+    }
+    $dao->save();
+    return $dao;
+  }
 }
 
 $obj1 = new GenerateHRData();
