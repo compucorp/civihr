@@ -161,7 +161,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->assign('customValueCount', $this->_customValueCount);
       }
 
-      if (CRM_Utils_Request::retrieve('cid', 'Positive', $this)) {
+      if (CRM_Utils_Request::retrieve('cid', 'Positive', $this) !== NULL) {
         $this->_targetContactID = CRM_Utils_Request::retrieve('cid', 'Positive', $this);
       }
       else {
@@ -186,9 +186,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    * @return None
    */
   public function setDefaultValues() {
+    $defaults = array(
+      'contacts_id' => $this->_targetContactID ? $this->_targetContactID : NULL,
+    );
     if ($this->_activityId && $this->_action != CRM_Core_Action::VIEW) {
-      return CRM_Custom_Form_CustomData::setDefaultValues($this);
+      $defaults += CRM_Custom_Form_CustomData::setDefaultValues($this);
     }
+    return $defaults;
   }
 
   /**
@@ -236,23 +240,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         ),
       );
 
-    if ($this->_mode == 'edit') {
-      $this->assign('permEditContact', 1);
-    }
-    $conId = CRM_Utils_Request::retrieve('cid', 'Positive', $this);
-    if (isset($conId) && $conId == 0) {
-      $name = "contacts";
-      $this->add('text', $name, "contacts");
-      $this->add('hidden', $name . '_id');
-      $contactDataURL = CRM_Utils_System::url('civicrm/ajax/rest', 'className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=contact&contact_type=individual', FALSE, NULL, FALSE);
-      $this->assign('contactDataURL', $contactDataURL);
-    }
-
-    if ($this->_mode == 'edit' || $this->_mode == 'view') {
-      if (self::isContactAccessible($this->_targetContactID)) {
-        $this->assign('permContact', 1);
-        $this->assign('emp_id', $this->_targetContactID);
-      }
+    $contactField = $this->addEntityRef('contacts_id', ts('Employee'), array('api' => array('params' => array('contact_type' => 'Individual'))), TRUE);
+    // No edit allowed
+    if ($this->_targetContactID) {
+      $contactField->freeze();
     }
 
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();

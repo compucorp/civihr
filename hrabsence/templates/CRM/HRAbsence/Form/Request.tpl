@@ -26,17 +26,10 @@
 {* Form to Add, Edit, Approve, Reject absence request *}
 <div class="crm-block crm-content-block">
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
-  {if $contactDataURL AND $permEditContact}
     <tr>
-      <td>{ts}Employee{/ts}</td>
-      <td colspan="2">{$form.contacts.html}</td>
+      <td>{$form.contacts_id.label}</td>
+      <td colspan="2">{$form.contacts_id.html}</td>
     </tr>
-  {else}
-    <tr>
-      <td>{ts}Employee{/ts}</td>
-      <td colspan="2"> {if $permContact} <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=$emp_id"}"> {$emp_name} {else}  {$emp_name} {/if}</td>
-    </tr>
-  {/if}
     <tr id="position">
       <td>{ts}Position{/ts}</td>
       <td colspan="2">{$emp_position}</td>
@@ -72,8 +65,8 @@
 {literal}
   <script type="text/javascript">
     cj(function($) {
-    var $form = $('form#{/literal}{$form.formName}{literal}'),
-      dataUrl = "{/literal}{$contactDataURL}{literal}",
+    var
+      $form = $('form#{/literal}{$form.formName}{literal}'),
       additn = 0,
       uID = '{/literal}{$loginUserID}{literal}',
       absencesTypeID = $('#activity_type_id', $form).val(),
@@ -82,20 +75,15 @@
       uptoDate = '{/literal}{$toDate}{literal}',
       difDate,
       pubHoliday,
-      param={};
+      param = {};
 
-    $('#contacts', $form).autocomplete( dataUrl, { width : 180, selectFirst : false, matchContains: true });
-    $('#contacts', $form).result(function( event, data ) {
-    $("input[name=contacts_id]", $form).val(data[1]);
-    var contactid = data[1];
-    CRM.api('HRJob', 'get', {'sequential': 1, 'contact_id': contactid, 'is_primary': 1},
-      {success: function(data) {
-        $.each(data.values, function(key, value) {
-          $('#position td:nth-child(2)', $form).html(value.position);
-	});
-      }
-    }
-    );
+    $("input[name=contacts_id]", $form).change(function() {
+      CRM.api3('HRJob', 'get', {'sequential': 1, 'contact_id': $(this).val(), 'is_primary': 1})
+        .done(function(data) {
+          $.each(data.values, function(key, value) {
+            $('#position td:nth-child(2)', $form).html(value.position);
+          });
+        });
     });
     
     $('span.crm-error', $form).insertAfter('input#end_date_display', $form);
