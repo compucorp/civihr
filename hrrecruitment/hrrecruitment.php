@@ -77,25 +77,25 @@ function hrrecruitment_civicrm_install() {
     array(
       'label'      => ts('Dashboard'),
       'name'       => 'dashboard',
-      'url'        => null,
+      'url'        => 'civicrm/vacancy/dashboard',
       'permission' => null,
     ),
     array(
       'label'      => ts('New Vacancy'),
       'name'       => 'new_vacancy',
-      'url'        => null,
+      'url'        => 'civicrm/vacancy/add?reset=1',
       'permission' => null,
     ),
     array(
       'label'      => ts('New Template'),
       'name'       => 'new_template',
-      'url'        => null,
+      'url'        => 'civicrm/vacancy/add?reset=1&template=1',
       'permission' => null,
     ),
     array(
       'label'      => ts('Find Vacancies'),
       'name'       => 'find_vacancies',
-      'url'        => null,
+      'url'        => 'civicrm/vacancy/search?reset=1',
       'permission' => null,
     ),
     array(
@@ -224,18 +224,18 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
   $vacanciesMenuItems = array();
   $vacancieStatuses = CRM_Core_OptionGroup::values('vacancy_status');
   $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
-  $newVacanciesId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_vacancy', 'id', 'name');
+  $parentVacanciesId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'find_vacancies', 'id', 'name');
   $count = 0;
   foreach ($vacancieStatuses as $value => $vacancyStatus) {
     $vacanciesMenuItems[$count] = array(
       'attributes' => array(
         'label'      => "{$vacancyStatus}",
         'name'       => "{$vacancyStatus}",
-        'url'        => NULL,
+        'url'        => "civicrm/vacancy/search?reset=1&id={$value}",
         'permission' => NULL,
         'operator'   => 'OR',
         'separator'  => NULL,
-        'parentID'   => $newVacanciesId,
+        'parentID'   => $parentVacanciesId,
         'navID'      => 1,
         'active'     => 1
       )
@@ -243,6 +243,6 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
     $count++;
   }
   if (!empty($vacanciesMenuItems)) {
-    $params[$vacanciesId]['child'][$newVacanciesId]['child'] = $vacanciesMenuItems;
+    $params[$vacanciesId]['child'][$parentVacanciesId]['child'] = $vacanciesMenuItems;
   }
 }
