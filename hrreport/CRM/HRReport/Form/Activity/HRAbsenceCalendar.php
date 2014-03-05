@@ -123,7 +123,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceCalendar extends CRM_Report_Form {
           'status_id' =>
           array('title' => ts('Status'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => $this->activityStatus,
+            'options' => CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus(),
           ),
         ),
       ),
