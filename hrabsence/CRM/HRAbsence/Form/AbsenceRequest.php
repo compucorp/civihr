@@ -177,6 +177,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     parent::preProcess();
   }
 
+  /**
+   * This function sets the default values for the form. Note that in edit/view mode
+   * the default values are retrieved from the database
+   *
+   * @access public
+   *
+   * @return None
+   */
   public function setDefaultValues() {
     if ($this->_activityId && $this->_action != CRM_Core_Action::VIEW) {
       return CRM_Custom_Form_CustomData::setDefaultValues($this);
@@ -184,7 +192,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   /**
-   * Function to build the form
+   * Function to actually build the components of the form
    *
    * @return void
    * @access public
@@ -382,7 +390,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    *
    * @param array $fields  the input form values
    * @param array $files   the uploaded files if any
-   * @param array $options additional user data
+   * @param array $self reference to form object
    *
    * @return true if no errors, else array of errors
    * @access public
@@ -416,11 +424,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   /**
-   * Function to process the form
+   * This function is called after the user submits the form.
    *
    * @access public
    *
-   * @return void
+   * @return none
    */
   public function postProcess() {
     $submitValues = $this->_submitValues;
@@ -479,7 +487,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
       $buttonName = $this->controller->getButtonName();
       if ($buttonName == $this->getButtonName('submit')) {
-        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
+        return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
     }
     elseif ($this->_mode == 'edit') {
@@ -542,7 +550,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $buttonName = $this->controller->getButtonName();
         if ($buttonName == $this->getButtonName('submit')) {
           $this->_aid = $submitValues['source_record_id'];
-          return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$submitValues['source_record_id']}"));
+          return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
         }
       }
     }
@@ -563,11 +571,18 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'activity_type_id' => $this->_activityTypeID,
         'status_id' => $statusId
       ));
-      CRM_Core_Session::setStatus($statusMsg, 'success');
+      CRM_Core_Session::setStatus($statusMsg, '', 'success');
       return CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$activityIDs}"));
     }
   }
 
+  /**
+   * Function to check permission
+   *
+   * @return int 1 (edit), 2 (view)|FALSE
+   * @access public
+   * @static
+   */
   public static function isContactAccessible($contactID) {
     if (CRM_Contact_BAO_Contact_Permission::allow($contactID, CRM_Core_Permission::EDIT)) {
       return CRM_Core_Permission::EDIT;
