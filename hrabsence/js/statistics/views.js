@@ -45,11 +45,11 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
       this.options.entitlementCollection.each(function(model) {
         var activity_type_id = '';
         _.each(absencesTypes, function(absenceTypeID, activityTypeID) {
-          if(absenceTypeID == model.get('type_id')) {
+          if (absenceTypeID == model.get('type_id')) {
             var activity = activityTypeID;
             activity_type_id = activityTypeID;
             var statsKey = model.get('period_id') + '-' + activity_type_id;
-            if((_.contains(selectedPeriods, model.get('period_id')) || !selectedPeriods) &&
+            if ((_.contains(selectedPeriods, model.get('period_id')) || !selectedPeriods) &&
               (_.contains(selectedAbsenceType, activity_type_id) || !selectedAbsenceType)) {
               if (!stats[statsKey]) {
                 stats[statsKey] = {
@@ -58,7 +58,7 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
                   entitlement: model.get('amount'),
                   requested: 0,
                   approved: 0,
-                  balance: 0
+                  balance: model.get('amount')
                 };
               }
             }
@@ -79,11 +79,20 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
           };
         }
         if (model.get('status_id') == 2) {
-          stats[statsKey].approved = (parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration));
+          stats[statsKey].approved = parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration);
         } else if (model.get('status_id') == 1) {
-          var s1 = stats[statsKey].requested;
-          var s2 = model.get('absence_range').duration;
-          stats[statsKey].requested = (parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration));
+          stats[statsKey].requested = parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration);
+        }
+      });
+
+      _.each(stats, function(stats, statsKey) {
+        stats.approved = CRM.HRAbsenceApp.formatDuration(stats.approved) * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(stats.activity_type_id);
+        stats.requested = CRM.HRAbsenceApp.formatDuration(stats.requested) * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(stats.activity_type_id);
+        if (CRM.HRAbsenceApp.absenceTypeCollection.findDirection(stats.activity_type_id) == -1) {
+          stats.balance = (parseFloat(stats.entitlement) + (parseFloat(stats.requested) + parseFloat(stats.approved)));
+        } else {
+          stats.entitlement = 0;
+          stats.balance = (parseFloat(stats.requested) + parseFloat(stats.approved)) * 1;
         }
       });
       return stats;

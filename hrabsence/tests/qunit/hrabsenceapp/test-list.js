@@ -31,14 +31,14 @@ test("With vacation and TOIL records in FY2012", function() {
   equal($el.find('.hrabsence-list-entitlement').length, 1);
   equal($el.find('.hrabsence-list-entitlement[data-period-id=2]').length, 1);
   assertLike(cj($el.find('.hrabsence-list-entitlement > td')[2]).text(), '+6.00'); // Vacation
-  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[3]).text(), ''); // TOIL, no entitlements
+  assertLike(cj($el.find('.hrabsence-list-entitlement > td')[3]).text(), '+5.00'); // TOIL, no entitlements
   assertLike(cj($el.find('.hrabsence-list-entitlement > td')[4]).text(), ''); // TOIL credit, no entitlements
 
   // Check balance rows
   equal($el.find('.hrabsence-list-balance').length, 1);
   equal($el.find('.hrabsence-list-balance[data-period-id=2]').length, 1);
   assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[2]).text(), '+4.50'); // Vacation FY2012
-  assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[3]).text(), '-1.50'); // TOIL FY2012
+  assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[3]).text(), '+3.50'); // TOIL FY2012
   assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[4]).text(), '+0.50'); // TOIL credit FY2012
 });
 
@@ -73,7 +73,7 @@ test("With TOIL records in FY2012", function() {
   // Check balance rows
   equal($el.find('.hrabsence-list-balance').length, 1);
   equal($el.find('.hrabsence-list-balance[data-period-id=2]').length, 1);
-  assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[2]).text(), '-1.50'); // TOIL FY2012
+  assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[2]).text(), '+3.50'); // TOIL FY2012
   assertLike(cj($el.find('.hrabsence-list-balance[data-period-id=2] > td')[3]).text(), '+0.50'); // TOIL credit FY2012
 });
 

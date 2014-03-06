@@ -32,16 +32,20 @@
     <thead>
       <tr class="hrabsence-annualentitlements-period-header">
         <th>{/literal}{ts}Period{/ts}{literal}</th>
-        <% _.each(selectedAbsences, function(absenceId, absencetypeId) { %>
-        <th><%- FieldOptions.activity_type_id[absencetypeId] %></th>
-        <% }); %> <!-- end foreach absence type -->
+        <% _.each(selectedAbsences, function(absenceId, absencetypeId) {
+          if (CRM.HRAbsenceApp.absenceTypeCollection.findDirection(absencetypeId) == -1) {
+        %>
+          <th><%- FieldOptions.activity_type_id[absencetypeId] %></th>
+        <% }}); %> <!-- end foreach absence type -->
       </tr>
     </thead>
     <tbody>
     <% _.each(selectedPeriod, function(period_id){ %>
       <tr class="hrabsence-list-item" data-period-id="<%- periods[period_id].id %>">
         <td class="hrabsence-annualentitlements-period"><%- periods[period_id].title %></td>
-        <% _.each(selectedAbsences, function(absenceId, absencetypeId) { %>
+        <% _.each(selectedAbsences, function(absenceId, absencetypeId) {
+          if (CRM.HRAbsenceApp.absenceTypeCollection.findDirection(absencetypeId) == -1) {
+        %>
           <td>
             <input
               type="text"
@@ -51,7 +55,7 @@
               data-absence-type-id=<%- absencetype[absencetypeId] %>
               />
           </td>
-        <% }); %> <!-- end foreach absence type -->
+        <% }}); %> <!-- end foreach absence type -->
       </tr>
     <% }); %> <!-- each period -->
     </tbody>
