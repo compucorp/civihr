@@ -26,15 +26,6 @@
 */
 
 /**
- * HRVacancy.create API specification (optional)
- * This is used for documentation and validation.
- *
- * @param array $spec description of fields supported by this API call
- * @return void
- * @see http://wiki.civicrm.org/confluence/display/CRM/API+Architecture+Standards
- */
-
-/**
  * HRVacancy.create API
  *
  * @param array $params
