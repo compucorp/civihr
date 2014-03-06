@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/vacancy/add</path>
+    <page_callback>CRM_HRRecruitment_Form_HRVacancy</page_callback>
+    <title>New Vacancy</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
