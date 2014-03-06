@@ -104,9 +104,9 @@
 
     $('#start_date_display', $form).change(function() {
       addabsencetbl();
-      var end_date = $('#end_date_display', $form).val();
-      var start_date = $('#start_date_display', $form).val();
-      if (end_date == ""){
+      var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+      var start_date = $('#start_date_display', $form).datepicker( "getDate" );
+      if (!end_date){
         $('#end_date_display', $form).datepicker('setDate', start_date);
         addabsencetbl();	
       }
@@ -116,15 +116,15 @@
     })
 
     var additn = 0;
-    $(document).on('change','#tblabsence select', function(){
+    $form.on('change','#tblabsence select', function(){
       var selectoptn = $(this).val();
       additn = new Number(additn) + new Number(selectoptn);
     });
   
   // Function is used to add absence table based on selected date.
   function addabsencetbl() {
-    var end_date = $('#end_date_display', $form).val();
-    var start_date = $('#start_date_display', $form).val();
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    var start_date = $('#start_date_display', $form).datepicker( "getDate" );
     if (start_date && end_date) {
       $("#tblabsence", $form).show();
       $("#commentDisplay", $form).show();
@@ -153,22 +153,19 @@
       	var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
       }
       $('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
-      var datepicker = start_date;
-      var parms = datepicker.split("/");
-      var joindate = new Date(parms[0]+"/"+parms[1]+"/"+parms[2]);
       var numberOfDaysToAdd = 1;
-      joindate.setDate(joindate.getDate() + numberOfDaysToAdd);
-      var dd = joindate.getDate();
-      var mm = joindate.getMonth() + 1;
+      start_date.setDate(start_date.getDate() + numberOfDaysToAdd);
+      var dd = start_date.getDate();
+      var mm = start_date.getMonth() + 1;
       if (mm<10) mm="0"+mm;
       if (dd<10) dd="0"+dd;
-      var y = joindate.getFullYear();
-      var start_date = mm + '/' + dd + '/' + y;
+      var y = start_date.getFullYear();
+      var start_date = new Date(mm+"/"+dd+"/"+y);
       selectedVal.push(x);
     }    
     var countDays = 0;
-    var end_date = $('#end_date_display', $form).val();
-    var start_date = $('#start_date_display', $form).val();
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    var start_date = $('#start_date_display', $form).datepicker( "getDate" );
     var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
     var totalDays=0;
     for (var x = 0; x <=diDate; x++) {
@@ -190,13 +187,12 @@
     var upfromDate = '{/literal}{$fromDate}{literal}';
     var uptoDate = '{/literal}{$toDate}{literal}';
 
-    $(document).ready(function() {
       {/literal}{if $mode eq 'edit'}{literal}
         $("#tblabsence", $form).show();
-        $('input#start_date_display', $form).val(upfromDate);
-        $('input#end_date_display', $form).val(uptoDate);
-        var end_date = $('#end_date_display', $form).val();
-        var start_date = $('#start_date_display', $form).val();
+        $('input#start_date_display', $form).datepicker('setDate', upfromDate);
+        $('input#end_date_display', $form).datepicker('setDate', uptoDate);
+        var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+        var start_date = $('#start_date_display', $form).datepicker( "getDate" );
         var difDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
         var pubHoliday = {/literal}{$publicHolidays}{literal};
         var param = {};
@@ -258,8 +254,8 @@
 
       $("#_qf_AbsenceRequest_submit-bottom", $form).click(function(event){
         var dateValues = [];
-        var end_date = $('#end_date_display', $form).val();
-        var start_date = $('#start_date_display', $form).val();
+        var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+        var start_date = $('#start_date_display', $form).datepicker( "getDate" );
         var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
         for (var x = 0; x <= diDate; x++) {
           var selDate = $('#label_'+x, $form).text();
@@ -285,8 +281,8 @@
   $("#commentDisplay", $form).hide();
   var dateValues = [];
   $("#_qf_AbsenceRequest_submit-bottom", $form).click(function(event){
-    var end_date = $('#end_date_display', $form).val();
-    var start_date = $('#start_date_display', $form).val();
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    var start_date = $('#start_date_display', $form).datepicker( "getDate" );
     var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
       for (var x = 0; x <= diDate; x++) {
         var selDate = $('#label_'+x, $form).text();
@@ -306,13 +302,12 @@
     $("#date_values", $form).val(dateValues.join('|'));
   });
 {/literal}{/if}{literal}
-});
 
   var countDays = 0;
   $('#tblabsence tbody:last', $form).after('<tr class="tblabsencetitle"><td>{/literal}{ts}Total{/ts}{literal}</td><td id="countD">'+countDays+'</td></tr>');
-  $(document).on('change','#tblabsence select', function(){
-    var end_date = $('#end_date_display', $form).val();
-    var start_date = $('#start_date_display', $form).val();
+  $form.on('change','#tblabsence select', function(){
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    var start_date = $('#start_date_display', $form).datepicker( "getDate" );
     var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
     var totalDays=0;
     for (var x = 0; x <=diDate; x++) {
