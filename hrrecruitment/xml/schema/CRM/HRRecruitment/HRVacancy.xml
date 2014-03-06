@@ -70,12 +70,12 @@
   </field>
   <field>
     <name>start_date</name>
-    <type>date</type>
+    <type>timestamp</type>
     <comment>Vacancy Start Date</comment>
   </field>
   <field>
     <name>end_date</name>
-    <type>date</type>
+    <type>timestamp</type>
     <comment>Vacancy End Date</comment>
   </field>
 </table>

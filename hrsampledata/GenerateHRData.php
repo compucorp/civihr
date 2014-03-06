@@ -221,37 +221,37 @@ class GenerateHRData {
    *   if none are specified - date is between today - 1year
    *   and today
    *
-   * @param  int $startDate Start Date in Unix timestamp
-   * @param  int $endDate   End Date in Unix timestamp
+   * @param  string $startDate   Start Date value, default in 'Ymd' format
+   * @param  string $endDate     End Date value, default in 'Ymd' format
+   * #param  string $dateFormat  Date format string default in Ymd format
    * @access private
    *
    * @return string randomly generated date in the format "Ymd"
    *
    */
-  private function randomDate($startDate = 0, $endDate = 0) {
+  private function randomDate($startDate = null, $endDate = null, $dateFormat = "Ymd") {
 
     // number of seconds per year
     $numSecond = 31536000;
-    $dateFormat = "Ymdhis";
     $today = time();
 
     // both are defined
     if ($startDate && $endDate) {
-      return date($dateFormat, mt_rand($startDate, $endDate));
+      return date($dateFormat, rand(strtotime($startDate), strtotime($endDate)));
     }
 
     // only startDate is defined
     if ($startDate) {
-      return date($dateFormat, mt_rand($startDate, $startDate + $numSecond));
+      return date($dateFormat, rand(strtotime($startDate), strtotime($startDate)+$numSecond));
     }
 
     // only endDate is defined
     if ($startDate) {
-      return date($dateFormat, mt_rand($endDate - $numSecond, $endDate));
+      return date($dateFormat, rand(strtotime($endDate)-$numSecond, strtotime($endDate)));
     }
 
     // none are defined
-    return date($dateFormat, mt_rand($today - $numSecond, $today));
+    return date($dateFormat, rand($today - $numSecond, $today));
   }
 
   /**
@@ -525,7 +525,7 @@ class GenerateHRData {
       $org->hash = crc32($org->sort_name);
       $this->_update($org);
     }
-    
+
     //if Absence (CiviHR) extension is enabled, add the sample data
     $this->addAbsencePeriods();
   }
@@ -702,8 +702,8 @@ class GenerateHRData {
         'contract_type' => $this->randomItem('contract_type'),
         'level_type' => $this->randomItem('level_type'),
         'period_type' => $this->randomItem('period_type'),
-        'period_start_date' => $this->randomDate(strtotime('2009-01-01'), strtotime('2012-12-31')),
-        'period_end_date' => $this->randomDate(strtotime('2013-01-01'), strtotime('2015-12-31')),
+        'period_start_date' => $this->randomDate('20090101', '20121231'),
+        'period_end_date' => $this->randomDate('20130101', '20151231'),
         'notice_amount' => $this->randomItem('notice_amount'),
         'notice_unit' => $this->randomItem('notice_unit'),
         'location' => $this->randomItem('location'),
@@ -826,8 +826,8 @@ class GenerateHRData {
       'entity_id' => $cid,
       'type' => $this->randomItem('type'),
       'number' => $this->randomItem('number'),
-      'issue_date' => $this->randomDate('1284267600', '1354514400'),
-      'expire_date' => $this->randomDate('1356328800', '1368421200'),
+      'issue_date' => $this->randomDate('20090101', '20111231'),
+      'expire_date' => $this->randomDate('20120101', '20141231'),
       'country' => $this->randomItem('country'),
       'state_province' => $this->randomItem('state_province'),
       'evidence_note' => $this->randomItem('evidence_note'),
@@ -872,8 +872,8 @@ class GenerateHRData {
       'name_of_certification' => $this->randomItem('name_of_certification'),
       'certification_authority' => $this->randomItem('certification_authority'),
       'grade_achieved' => $this->randomItem('grade_achieved'),
-      'attain_date' => $this->randomDate('1346328800', '1356328800'),
-      'expiry_date' => $this->randomDate('1356328800', '1368421200'),
+      'attain_date' => $this->randomDate('20090101', '20111231'),
+      'expiry_date' => $this->randomDate('20120101', '20141231'),
       'evidence_note' => $this->randomItem('evidence_note'),
     );
 
@@ -891,8 +891,8 @@ class GenerateHRData {
     $values = array(
       'entity_id' => $cid,
       'visa_type' => $this->randomItem('visa_type'),
-      'start_date' => $this->randomDate('1284267600', '1354514400'),
-      'end_date' => $this->randomDate('1356328800', '1368421200'),
+      'start_date' => $this->randomDate('20090101', '20111231'),
+      'end_date' => $this->randomDate('20120101', '20141231'),
       'conditions' => $this->randomItem('conditions'),
       'visa_number' => $this->randomItem('visa_number'),
       'evidence_note' => $this->randomItem('evidence_note'),
@@ -930,8 +930,8 @@ class GenerateHRData {
 
     $values = array(
       'entity_id' => $cid,
-      'start_date' => $this->randomDate('1284267600', '1354514400'),
-      'end_date' => $this->randomDate('1356328800', '1368421200'),
+      'start_date' => $this->randomDate('20090101', '20111231'),
+      'end_date' => $this->randomDate('20120101', '20141231'),
       'name_of_organisation' => $this->randomItem('name_of_organisation'),
       'occupation_type' => $this->randomItem('occupation_type'),
       'job_title_course_name' => $this->randomItem('job_title_course_name'),
@@ -1108,7 +1108,7 @@ class GenerateHRData {
     $publicholidays_sub = array('Good Friday','Easter Monday','Early May bank holiday','Spring bank holiday','Summer bank holiday','Christmas Day','Boxing Day');
     $params = array('sequential' => 1,
       'name' => 'Public Holiday',
-      'return'=> 'value',              
+      'return'=> 'value',
     );
     $activity_id = civicrm_api3('OptionValue', 'getvalue', $params );
     $holidayId = civicrm_api3('Activity', 'get', array('activity_type_id'=> $activity_id ,));
@@ -1117,32 +1117,32 @@ class GenerateHRData {
     }
     $holidayCount = 7;
     $i = 0;
-    
+
     while ($holidayCount --) {
       $result = civicrm_api3('Activity', 'create',array(
         'activity_type_id' => $activity_id  ,
         'activity_date_time' => date("Y-m-d h:i:s", strtotime($publicHolidays[$i])) ,
         'subject' => $publicholidays_sub[$i],
         'source_contact_id' => $cid,
-      ));      
-      $i++;      
+      ));
+      $i++;
     }
   }
   private function addVacancies($cid) {
     //sample data for HRRecruitment table
     for ($i = 1; $i <= mt_rand(1, 3); $i++) {
       $vacanciesValues = array(
-                               'salary' => $this->randomItem('salary'),
-                               'position' => $this->randomItem('vacancyposition'),
-                               'description' => $this->randomItem('vacancydescription'),
-                               'benefits' => $this->randomItem('benefits'),
-                               'requirements' => $this->randomItem('requirements'),
-                               'location' => $this->randomItem('vacancylocation'),
-                               'is_template' => 0,
-                               'status_id' => 0,
-                               'start_date' => $this->randomDate(strtotime('2009-01-01'), strtotime('2011-12-31')),
-                               'end_date' =>  $this->randomDate(strtotime('2012-01-01'), strtotime('2014-12-31')),
-                               );
+        'salary' => $this->randomItem('salary'),
+        'position' => $this->randomItem('vacancyposition'),
+        'description' => $this->randomItem('vacancydescription'),
+        'benefits' => $this->randomItem('benefits'),
+        'requirements' => $this->randomItem('requirements'),
+        'location' => $this->randomItem('vacancylocation'),
+        'is_template' => 0,
+        'status_id' => 0,
+        'start_date' => $this->randomDate('2009-01-01 09:30:00', '2011-12-31 20:00:00', 'Y-m-d H:i:s'),
+        'end_date' =>  $this->randomDate('2012-01-01 09:30:00', '2014-12-31 20:00:00', 'Y-m-d H:i:s'),
+      );
       if ($i == 1) {
         $vacanciesValues['is_template'] = 1;
         $vacanciesValues['status_id'] = 1;
