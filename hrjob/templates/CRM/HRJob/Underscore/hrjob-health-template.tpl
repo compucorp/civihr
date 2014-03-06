@@ -12,7 +12,7 @@
       <label for="hrjob-provider">{ts}Provider{/ts}&nbsp;{help id='hrjob-health-provider' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-provider" name="provider" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Health_Insurance_Provider" type="text" />
+      <input id="hrjob-provider" name="provider" class="hr-contact-ref" data-api-params='{literal}{"params":{"contact_type":"Organization","contact_sub_type":"Health_Insurance_Provider"}}{/literal}' placeholder="{ts}- select -{/ts}" />
     </div>
   </div>
 
@@ -59,7 +59,7 @@
       <label for="hrjob-provider_life_insurance">{ts}Provider{/ts}&nbsp;{help id='hrjob-life-provider' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-provider_life_insurance" name="provider_life_insurance" class="crm-contact-selector" urlParam = "org=1&contact_sub_type=Life_Insurance_Provider" type="text" />
+      <input id="hrjob-provider_life_insurance" name="provider_life_insurance" class="hr-contact-ref" data-api-params='{literal}{"params":{"contact_type":"Organization","contact_sub_type":"Life_Insurance_Provider"}}{/literal}' placeholder="{ts}- select -{/ts}" />
     </div>
   </div>
 

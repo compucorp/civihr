@@ -22,7 +22,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
-      this.$('.crm-contact-selector').crmContactField();
+      this.$('.hr-contact-ref').css('width', '95%').crmEntityRef();
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
           reportId: CRM.jobTabApp.loggingReportId,
