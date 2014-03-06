@@ -193,8 +193,9 @@ LEFT JOIN civicrm_contact cc ON cac.contact_id = cc.id
   }
 
   function where($sourceRecordIds = null) {
+    $targetValue = CRM_Core_OptionGroup::getValue('activity_contacts', 'Activity Targets', 'name');
     $this->_where = "WHERE
-cac.record_type_id = 3 ";
+cac.record_type_id = {$targetValue} ";
 
     if (is_array($sourceRecordIds)) {
       $this->_where .= "AND request.source_record_id IN (" . implode(',', $sourceRecordIds) . ") ";
