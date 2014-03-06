@@ -55,16 +55,16 @@ function hrjob_civicrm_install() {
   $params['parent_id'] = $org_id;
   $params['is_active'] = 1;
 
-  if($org_id) {
+  if ($org_id) {
     foreach($sub_type_name as $sub_type_name) {
       $subTypeName = ucfirst(CRM_Utils_String::munge($sub_type_name));
       $subID = array_key_exists( $subTypeName, $orgSubType );
-      if(!$subID) {
+      if (!$subID) {
         $params['name'] = $subTypeName;
         $params['label'] = $sub_type_name;
         CRM_Contact_BAO_ContactType::add($params);
       }
-      elseif($subID && $orgSubType[$subTypeName]['is_active']==0) {
+      elseif ($subID && $orgSubType[$subTypeName]['is_active']==0) {
         CRM_Contact_BAO_ContactType::setIsActive($orgSubType[$subTypeName]['id'], 1);
       }
     }
@@ -279,12 +279,18 @@ function hrjob_civicrm_permission(&$permissions) {
 function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $session = CRM_Core_Session::singleton();
   $cid = $session->get('userID');
-  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions['h_r_job']['get'] = array('access own HRJobs');
+  if($entity == 'h_r_job_leave' &&
+    ( $cid == $params['contact_id'] || $params['api.has_parent'] == 1 ) &&
+    $action == 'get') {
     $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
   } else {
-    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
     $permissions['h_r_job_leave']['get'] = array('access HRJobs');
+  }
+
+  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
+    $permissions['h_r_job']['get'] = array('access own HRJobs');
+   } else {
+    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
   }
   $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
   $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
@@ -389,4 +395,14 @@ function hrjob_civicrm_caseTypes(&$caseTypes) {
  */
 function hrjob_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hrjob_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+function hrjob_civicrm_pageRun( &$page ) {
+  if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('HRJob_Summary', $groups);
+    CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid,));
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/jobsummary.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjob', 'js/readable-range.js');
+  }
 }

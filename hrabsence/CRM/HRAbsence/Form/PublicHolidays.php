@@ -118,6 +118,7 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
    * @return void
    */
   public function postProcess() {
+    $session = CRM_Core_Session::singleton();
     if ($this->_action & CRM_Core_Action::DELETE) {
       $params['id'] = $this->_id;
       CRM_Activity_BAO_Activity::deleteActivity($params);
@@ -129,7 +130,7 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
       $params = $this->exportValues();
       $activity_type_id = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Public Holiday', 'return'=> 'value',) );
       $params['activity_type_id'] = $activity_type_id;
-      $params['source_contact_id'] = 1;
+      $params['source_contact_id'] = $session->get('userID');
       $status = CRM_Core_PseudoConstant::activityStatus();
       $params['status_id'] =  $params['status_id'] ? array_search('Scheduled', $status) : array_search('Cancelled', $status);
       $params['activity_date_time'] = CRM_Utils_Date::processDate($params['activity_date_time'], $params['activity_date_time_time']);

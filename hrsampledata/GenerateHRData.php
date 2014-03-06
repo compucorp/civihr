@@ -1104,8 +1104,8 @@ class GenerateHRData {
   }
 
   private function addHolidays($cid) {
-    $publicHolidays = array('18 April','21 April','5 May','26 May','25 August','25 December','26 December');
-    $publicholidays_sub = array('Good Friday','Easter Monday','Early May bank holiday','Spring bank holiday','Summer bank holiday','Christmas Day','Boxing Day');
+    $publicHolidays = array('1 January', '18 April','21 April','5 May','26 May','25 August','25 December','26 December');
+    $publicholidays_sub = array("New Year's Day", 'Good Friday','Easter Monday','Early May bank holiday','Spring bank holiday','Summer bank holiday','Christmas Day','Boxing Day');
     $params = array('sequential' => 1,
       'name' => 'Public Holiday',
       'return'=> 'value',

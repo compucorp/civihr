@@ -125,7 +125,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $pay_currency;
   /**
-   * Job Pay (Annual Est)
+   * Estimated Annual Pay
    *
    * @var float
    */
@@ -238,7 +238,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_annualized_est' => array(
           'name' => 'pay_annualized_est',
           'type' => CRM_Utils_Type::T_MONEY,
-          'title' => ts('Job Pay (Annual Est)') ,
+          'title' => ts('Estimated Annual Pay') ,
           'export' => true,
           'where' => 'civicrm_hrjob_pay.pay_annualized_est',
           'headerPattern' => '',

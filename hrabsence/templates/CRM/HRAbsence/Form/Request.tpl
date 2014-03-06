@@ -244,7 +244,9 @@
 	    }
 	    else {
 	      cj("#options_"+x).val('');
-	      cj("#options_"+x).attr("disabled","disabled");
+                if (abday == 'Sat' || abday == 'Sun') {
+                  cj("#options_"+x).attr("disabled","disabled");
+                }
 	    }
 	    x = new Number(x) + 1;
  	  });

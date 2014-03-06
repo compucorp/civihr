@@ -28,7 +28,7 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {}),
-          'status_id': CRM.PseudoConstant.activityStatus
+          'status_id': CRM.PseudoConstant.absenceStatus
         }
       };
     },
