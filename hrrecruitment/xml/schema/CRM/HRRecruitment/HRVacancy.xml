@@ -67,6 +67,10 @@
     <name>status_id</name>
     <type>int unsigned</type>
     <comment>Status of Vacancy</comment>
+    <title>Status</title>
+    <pseudoconstant>
+      <optionGroupName>vacancy_status</optionGroupName>
+    </pseudoconstant>
   </field>
   <field>
     <name>start_date</name>

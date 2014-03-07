@@ -228,6 +228,10 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
         'status_id' => array(
           'name' => 'status_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Status') ,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'vacancy_status',
+          )
         ) ,
         'start_date' => array(
           'name' => 'start_date',
