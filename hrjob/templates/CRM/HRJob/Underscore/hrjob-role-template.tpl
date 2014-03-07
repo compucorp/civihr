@@ -88,7 +88,7 @@
         <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="hr-contact-ref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
 

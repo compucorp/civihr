@@ -12,7 +12,7 @@
       <label for="hrjob-position">{ts}Position{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-position" name="position" class="form-text-big" type="text" />
+      <input id="hrjob-position" name="position" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -21,7 +21,7 @@
       <label for="hrjob-title">{ts}Title{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-title" name="title" class="form-text-big" type="text" />
+      <input id="hrjob-title" name="title" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -87,7 +87,7 @@
       <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="hr-contact-ref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
     </div>
   </div>
 

@@ -8,7 +8,7 @@
 *}
 {literal}
 <script id="renderutil-select-template" type="text/template">
-  <select id="<%= id %>" name="<%= name %>">
+  <select class="crm-form-select crm-select2" id="<%= id %>" name="<%= name %>">
     <% _.each(options, function(optionLabel, optionValue) { %>
     <option value="<%- optionValue %>" <%= selected == optionValue ? 'selected' : ''  %>><%- optionLabel %></option>
     <% }); %>

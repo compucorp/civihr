@@ -57,8 +57,8 @@ a.hrjob-nav.selected {
     color: #000000;
     font-weight: bold;
 }
-.hrjob-container input[type=text], .hrjob-container select, .hrjob-container textarea {
-    width: 95%;
+.hrjob-container input[type=text], .hrjob-container .crm-form-entityref, .hrjob-container select, .hrjob-container textarea {
+    width: 95%!important;
 }
 input#hrjob-notice_amount,
 select#hrjob-notice_unit,

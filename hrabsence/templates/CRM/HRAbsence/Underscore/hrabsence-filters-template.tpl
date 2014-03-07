@@ -3,7 +3,7 @@
   <form>
   {ts}Filter{/ts}:
   {literal}
-    <select name="activity_type_id" multiple="multiple">
+    <select class="crm-form-select crm-select2" name="activity_type_id" multiple="multiple">
       <% _.each(FieldOptions.activity_type_id, function(label, value){ %>
       <option value="<%= value %>"><%- label %></option>
       <% }) %>
@@ -12,7 +12,7 @@
 
   {ts}Period{/ts}:
   {literal}
-    <select name="period_id" multiple="multiple">
+    <select class="crm-form-select crm-select2" name="period_id" multiple="multiple">
       <% var keys = _.keys(FieldOptions.period_id); %>
       <% keys.reverse(); %>
       <% _.each(keys, function(value){ %>
