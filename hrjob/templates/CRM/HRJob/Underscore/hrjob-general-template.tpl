@@ -37,10 +37,7 @@
         options: _.extend({'':''}, FieldOptions.contract_type)
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_contract_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_contract_type'}
     </div>
   </div>
 
@@ -56,10 +53,7 @@
         options: _.extend({'':''}, FieldOptions.department)
         }) %>
       {/literal}
-      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_department'}
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-      {/if}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
     </div>
   </div>
 
@@ -75,10 +69,7 @@
         options: _.extend({'':''}, FieldOptions.level_type)
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_level_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}
     </div>
   </div>
 
@@ -103,10 +94,7 @@
       options: _.extend({'':''}, FieldOptions.location)
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_location'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}
     </div>
   </div>
 

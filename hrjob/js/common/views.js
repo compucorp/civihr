@@ -44,6 +44,9 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
           }
         });
       }
+      this.$('a.crm-option-edit-link').each(function() {
+        $(this).siblings('select').attr('data-option-edit-path', $(this).data('option-edit-path'));
+      });
       // Needed for re-rendering
       $(this.$el).trigger('crmLoad');
     },
