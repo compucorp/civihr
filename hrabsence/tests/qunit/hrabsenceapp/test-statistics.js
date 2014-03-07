@@ -20,22 +20,22 @@ test("With vacation and TOIL records in FY2012", function() {
   equal($el.find('tbody tr:first td:nth-child(2)').text(), 'Vacation');
   assertLike($el.find('tbody tr:first td:nth-child(3)').text(), '+6.00');
   assertLike($el.find('tbody tr:first td:nth-child(4)').text(), '0.00');
-  assertLike($el.find('tbody tr:first td:nth-child(5)').text(), '+1.50');
+  assertLike($el.find('tbody tr:first td:nth-child(5)').text(), '-1.50');
   assertLike($el.find('tbody tr:first td:nth-child(6)').text(), '+4.50');
 
   equal($el.find('tbody tr:nth-child(2) td:first').length, 1);
   equal($el.find('tbody tr:nth-child(2) td:nth-child(2)').text(), 'TOIL');
   assertLike($el.find('tbody tr:nth-child(2) td:nth-child(3)').text(), '+5.00');
   assertLike($el.find('tbody tr:nth-child(2) td:nth-child(4)').text(), '0.00');
-  assertLike($el.find('tbody tr:nth-child(2) td:nth-child(5)').text(), '+1.50');
+  assertLike($el.find('tbody tr:nth-child(2) td:nth-child(5)').text(), '-1.50');
   assertLike($el.find('tbody tr:nth-child(2) td:nth-child(6)').text(), '+3.50');
 
   equal($el.find('tbody tr:nth-child(3) td:first').length, 1);
   equal($el.find('tbody tr:nth-child(3) td:nth-child(2)').text(), 'TOIL (Credit)');
-  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(3)').text(), '+5.00');
+  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(3)').text(), '0.00');
   assertLike($el.find('tbody tr:nth-child(3) td:nth-child(4)').text(), '0.00');
   assertLike($el.find('tbody tr:nth-child(3) td:nth-child(5)').text(), '+0.50');
-  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(6)').text(), '+4.50');
+  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(6)').text(), '+0.50');
 });
 
 test("With TOIL records in FY2012", function() {
@@ -61,15 +61,15 @@ test("With TOIL records in FY2012", function() {
   equal($el.find('tbody tr:nth-child(2) td:nth-child(2)').text(), 'TOIL');
   equal($el.find('tbody tr:nth-child(2) td:nth-child(3)').text(), '+5.00');
   assertLike($el.find('tbody tr:nth-child(2) td:nth-child(4)').text(), '0.00');
-  assertLike($el.find('tbody tr:nth-child(2) td:nth-child(5)').text(), '+1.50');
+  assertLike($el.find('tbody tr:nth-child(2) td:nth-child(5)').text(), '-1.50');
   assertLike($el.find('tbody tr:nth-child(2) td:nth-child(6)').text(), '+3.50');
 
   equal($el.find('tbody tr:nth-child(3) td:first').length, 1);
   equal($el.find('tbody tr:nth-child(3) td:nth-child(2)').text(), 'TOIL (Credit)');
-  equal($el.find('tbody tr:nth-child(3) td:nth-child(3)').text(), '+5.00');
+  equal($el.find('tbody tr:nth-child(3) td:nth-child(3)').text(), ' 0.00');
   assertLike($el.find('tbody tr:nth-child(3) td:nth-child(4)').text(), '0.00');
   assertLike($el.find('tbody tr:nth-child(3) td:nth-child(5)').text(), '+0.50');
-  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(6)').text(), '+4.50');
+  assertLike($el.find('tbody tr:nth-child(3) td:nth-child(6)').text(), '+0.50');
 
 });
 
@@ -110,7 +110,7 @@ test("With vacation records in FY2012 + FY2013", function() {
 
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-bal')), '+5.00');
+  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-bal')), '0.00');
 
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-leave-type')), 'TOIL');
@@ -118,5 +118,5 @@ test("With vacation records in FY2012 + FY2013", function() {
 
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
   assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-bal')), '+5.00');
+  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-bal')), '0.00');
 });

@@ -17,15 +17,9 @@
           <td class="hrabsence-statistics-period-desc"><%- FieldOptions.period_id[absence.period_id] %></td>
           <td class="hrabsence-statistics-leave-type"><%- FieldOptions.activity_type_id[absence.activity_type_id] %></td>
           <td class="hrabsence-statistics-entitlement"><%- CRM.HRAbsenceApp.formatFloat(absence.entitlement) %></td>
-          <td class="hrabsence-statistics-request">
-            <%- CRM.HRAbsenceApp.formatDuration(absence.requested) %>
-          </td>
-          <td class="hrabsence-statistics-approve">
-            <%- CRM.HRAbsenceApp.formatDuration(absence.approved) %>
-          </td>
-          <td class="hrabsence-statistics-bal">
-              <%- CRM.HRAbsenceApp.formatFloat(absence.entitlement - (absence.requested/(8*60) + absence.approved/(8*60))) %>
-          </td>
+          <td class="hrabsence-statistics-request"><%- CRM.HRAbsenceApp.formatFloat(absence.requested) %></td>
+          <td class="hrabsence-statistics-approve"><%- CRM.HRAbsenceApp.formatFloat(absence.approved) %></td>
+          <td class="hrabsence-statistics-bal"><%- CRM.HRAbsenceApp.formatFloat(absence.balance) %></td>
         </tr>
     <% }); %>
     </tbody>
