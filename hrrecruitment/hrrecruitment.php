@@ -45,16 +45,27 @@ function hrrecruitment_civicrm_install() {
     )
   );
 
-  foreach (array('Draft', 'Open', 'Closed', 'Cancelled', 'Rejected') as $key => $status) {
+  $vacancyStatus = array(
+    'Draft' => ts('Draft'),
+    'Open' => ts('Open'),
+    'Closed' => ts('Closed'),
+    'Cancelled' => ts('Cancelled'),
+    'Rejected' => ts('Rejected')
+  );
+  $weight = 1;
+  foreach ($vacancyStatus as $name => $label) {
     $statusParam = array(
       'option_group_id' => $result['id'],
-      'label' => ts($status),
-      'name' => $status,
-      'value' => $key+1,
+      'label' => $label,
+      'name' => $name,
+      'value' => $weight++,
       'is_active' => 1,
     );
-    if ($status == 'Draft') {
+    if ($name == 'Draft') {
       $statusParam['is_default'] = 1;
+    }
+    elseif ($name == 'Open') {
+      $statusParam['is_reserved'] = 1;
     }
     civicrm_api3('OptionValue', 'create', $statusParam);
   }
@@ -77,7 +88,7 @@ function hrrecruitment_civicrm_install() {
     array(
       'label'      => ts('Dashboard'),
       'name'       => 'dashboard',
-      'url'        => 'civicrm/vacancy/dashboard',
+      'url'        => 'civicrm/vacancy/dashboard?reset=1',
       'permission' => null,
     ),
     array(
@@ -239,7 +250,7 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
       'attributes' => array(
         'label'      => "{$vacancyStatus}",
         'name'       => "{$vacancyStatus}",
-        'url'        => "civicrm/vacancy/search?reset=1&status={$value}",
+        'url'        => "civicrm/vacancy/search?force=1&status={$value}",
         'permission' => NULL,
         'operator'   => 'OR',
         'separator'  => NULL,
