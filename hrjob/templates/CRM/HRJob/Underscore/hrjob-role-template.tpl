@@ -45,7 +45,7 @@
         <%= RenderUtil.select({
         id: 'hrjob-department',
         name: 'department',
-        options: _.extend({'':''}, FieldOptions.department)
+        entity: 'HRJobRole'
         }) %>
       {/literal}
       {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
@@ -70,7 +70,7 @@
         <%= RenderUtil.select({
         id: 'hrjob-location',
         name: 'location',
-        options: _.extend({'':''}, FieldOptions.location)
+        entity: 'HRJobRole'
         }) %>
       {/literal}
       {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}

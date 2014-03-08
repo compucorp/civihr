@@ -3,10 +3,14 @@ CRM.HRApp.module('RenderUtil', function(RenderUtil, HRApp, Backbone, Marionette,
   CRM.HRApp.on("initialize:before", function(){
     RenderUtil._select = _.template($('#renderutil-select-template').html());
     RenderUtil.select = function(args) {
-      var defaults = {
-        selected: null
+      var settings = {
+        selected: null,
+        entity: null,
+        field: args.field || args.name
       };
-      return RenderUtil._select(_.extend(defaults, args));
+      _.extend(settings, args);
+      settings.options = args.options || CRM.FieldOptions[args.entity][settings.field];
+      return RenderUtil._select(settings);
     };
     RenderUtil.standardButtons = _.template($('#renderutil-standardButtons-template').html());
     RenderUtil.required = _.template($('#common-required-template').html());

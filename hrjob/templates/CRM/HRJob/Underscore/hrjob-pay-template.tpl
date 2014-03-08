@@ -16,7 +16,7 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_grade',
       name: 'pay_grade',
-      options: _.extend({'':''}, FieldOptions.pay_grade)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pay_grade'}
@@ -32,7 +32,7 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_currency',
       name: 'pay_currency',
-      options: _.extend({'':''}, FieldOptions.pay_currency)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='currencies_enabled'}
@@ -50,7 +50,7 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_unit',
       name: 'pay_unit',
-      options: _.extend({'':''}, FieldOptions.pay_unit)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
     </div>

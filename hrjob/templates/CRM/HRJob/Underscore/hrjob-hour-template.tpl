@@ -16,7 +16,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_type',
         name: 'hours_type',
-        options: _.extend({'':''}, FieldOptions.hours_type)
+        entity: 'HRJobHour'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_hours_type'}
@@ -34,7 +34,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_unit',
         name: 'hours_unit',
-        options: _.extend({'':''}, FieldOptions.hours_unit)
+        entity: 'HRJobHour'
       }) %>
       {/literal}
     </div>

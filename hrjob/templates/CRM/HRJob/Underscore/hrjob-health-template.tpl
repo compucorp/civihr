@@ -25,7 +25,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-plan_type',
         name: 'plan_type',
-        options: _.extend({'':''}, FieldOptions.plan_type)
+        entity: 'HRJobHealth'
       }) %>
     {/literal}
     </div>
@@ -72,7 +72,8 @@
       <%= RenderUtil.select({
         id: 'hrjob-plan_type_life_insurance',
         name: 'plan_type_life_insurance',
-        options: _.extend({'':''}, FieldOptions.plan_type_life_insurance)
+        field: 'plan_type',
+        entity: 'HRJobHealth'
       }) %>
     {/literal}
     </div>

@@ -44,6 +44,7 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
           }
         });
       }
+      // Attach data needed for optionList editing
       this.$('a.crm-option-edit-link').each(function() {
         $(this).siblings('select').attr('data-option-edit-path', $(this).data('option-edit-path'));
       });
@@ -74,7 +75,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     events: {
       'click .standard-save': 'doSave',
-      'click .standard-reset': 'doReset'
+      'click .standard-reset': 'doReset',
+      'crmOptionsUpdated select': 'updateOptions'
     },
     doSave: function() {
       var view = this;
@@ -111,6 +113,17 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
         options.warnTitle = ts('Abandon Changes?');
         options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
       }
+    },
+    // This is triggered after an option list is edited
+    updateOptions: function(e, options) {
+      var
+        $el = $(e.target),
+        entity = $el.data('api-entity'),
+        field = $el.data('api-field'),
+      // FIXME: really we should always be working with option lists as arrays
+      // Since we're not doing that, here's a hack to convert the array to an object
+        opts = _.mapValues(_.indexBy(options, 'key'), 'value');
+      CRM.FieldOptions[entity][field] = opts;
     }
   });
 

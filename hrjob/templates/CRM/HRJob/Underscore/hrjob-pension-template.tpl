@@ -16,8 +16,8 @@
       <%= RenderUtil.select({
         id: 'hrjob-is_enrolled',
         name: 'is_enrolled',
+        entity: 'HRJobPension',
         options: {
-          '': '',
           '0': '{/literal}{ts}No{/ts}{literal}',
           '1': '{/literal}{ts}Yes{/ts}{literal}',
           '2': '{/literal}{ts}Opted out{/ts}{literal}'
@@ -36,7 +36,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-pension_type',
         name: 'pension_type',
-        options: _.extend({'':''}, FieldOptions.pension_type)
+        entity: 'HRJobPension'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pension_type'}

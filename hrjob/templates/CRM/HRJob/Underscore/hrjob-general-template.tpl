@@ -34,7 +34,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-contract_type',
         name: 'contract_type',
-        options: _.extend({'':''}, FieldOptions.contract_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_contract_type'}
@@ -50,7 +50,7 @@
         <%= RenderUtil.select({
         id: 'hrjob-department',
         name: 'department',
-        options: _.extend({'':''}, FieldOptions.department)
+        entity: 'HRJob'
         }) %>
       {/literal}
       {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
@@ -66,7 +66,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-level_type',
         name: 'level_type',
-        options: _.extend({'':''}, FieldOptions.level_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}
@@ -91,7 +91,7 @@
       <%= RenderUtil.select({
       id: 'hrjob-level_type',
       name: 'location',
-      options: _.extend({'':''}, FieldOptions.location)
+      entity: 'HRJob'
       }) %>
     {/literal}
     {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}
@@ -116,7 +116,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-period_type',
         name: 'period_type',
-        options: _.extend({'':''}, FieldOptions.period_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
     </div>
@@ -150,7 +150,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-notice_unit',
         name: 'notice_unit',
-        options: _.extend({'':''}, FieldOptions.notice_unit)
+        entity: 'HRJob'
       }) %>
       {/literal}
     </div>
