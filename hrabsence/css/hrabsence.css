@@ -175,7 +175,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 
 /* Absence view page */
 .page-civicrm-absence-set .crm-container table.absencedetail tbody tr td:first-child {
-    font-weight: bold !important;
+    font-weight: bold;
 } 
 
 .page-civicrm-absence-set .crm-container table#tblabsence tbody tr:last-child{
@@ -190,17 +190,17 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 } 
 
 .page-civicrm-absence-set #tabs-wrapper h1 {
-    display: none !important;
+    display: none;
 }
 
 .page-civicrm-absence-set #commentDisplay {
-    font-style:italic !important;
+    font-style:italic;
 }
 
 .page-civicrm-absence-set .tblabsencetitle, .page-civicrm-absence-set .abempInfo tbody tr td:first-child {
-    font-weight: bold !important;
+    font-weight: bold;
 }
 
 .page-civicrm-absence-set table.abempInfo tr td:last-child, .page-civicrm-absence-set table.absencedetail tr td:last-child {
-    border-right:none !important;
+    border-right:none;
 } 

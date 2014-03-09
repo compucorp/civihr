@@ -23,8 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{* Search form and results for Event Participants *}
-  {assign var='fldName' value=$prefix|cat:'contact'}
+{* Form to Add, Edit, Approve, Reject absence request *}
 <div class="crm-block crm-content-block">
   <table class="abempInfo" style="width: auto; border: medium none ! important;">
   {if $contactDataURL AND $permEditContact}
@@ -72,23 +71,34 @@
 {include file="CRM/common/customData.tpl" location="bottom"}
 {literal}
   <script type="text/javascript">
-    cj(function(cj) {
-    var dataUrl = "{/literal}{$contactDataURL}{literal}";
-    cj('#contacts').autocomplete( dataUrl, { width : 180, selectFirst : false, matchContains: true });
-    cj('#contacts').result(function( event, data ) {
-    cj("input[name=contacts_id]").val(data[1]);
+    cj(function($) {
+    var $form = $('form#{/literal}{$form.formName}{literal}'),
+      dataUrl = "{/literal}{$contactDataURL}{literal}",
+      additn = 0,
+      uID = '{/literal}{$loginUserID}{literal}',
+      absencesTypeID = $('#activity_type_id', $form).val(),
+      upActivityId = '{/literal}{$upActivityId}{literal}',
+      upfromDate = '{/literal}{$fromDate}{literal}',
+      uptoDate = '{/literal}{$toDate}{literal}',
+      difDate,
+      pubHoliday,
+      param={};
+
+    $('#contacts', $form).autocomplete( dataUrl, { width : 180, selectFirst : false, matchContains: true });
+    $('#contacts', $form).result(function( event, data ) {
+    $("input[name=contacts_id]", $form).val(data[1]);
     var contactid = data[1];
     CRM.api('HRJob', 'get', {'sequential': 1, 'contact_id': contactid, 'is_primary': 1},
       {success: function(data) {
-        cj.each(data.values, function(key, value) {
-	  cj('#position td:nth-child(2)').html(value.position); // do something 
+        $.each(data.values, function(key, value) {
+          $('#position td:nth-child(2)', $form).html(value.position);
 	});
       }
     }
     );
     });
     
-    cj('span.crm-error').insertAfter('input#end_date_display');
+    $('span.crm-error', $form).insertAfter('input#end_date_display', $form);
       {/literal}
         {if $customValueCount}
           {foreach from=$customValueCount item="groupCount" key="groupValue"}
@@ -102,152 +112,69 @@
         {/if}
       {literal}
 
-    cj('#start_date_display').change(function() {
-      addabsencetbl();
-      var end_date = cj('#end_date_display').val();
-      var start_date = cj('#start_date_display').val();
-      if (end_date == ""){
-        cj('#end_date_display').datepicker('setDate', start_date);
-        addabsencetbl();	
-      }
-    })
-    cj('#end_date_display').change(function() {
+    $('#start_date_display', $form).change(function() {
       addabsencetbl();
     })
-
-    var additn = 0;
-    cj(document).on('change','#tblabsence select', function(){
-      var selectoptn = cj(this).val();
-      additn = new Number(additn) + new Number(selectoptn);
-    });
-  });  
-
-  function addabsencetbl() {
-    var end_date = cj('#end_date_display').val();
-    var start_date = cj('#start_date_display').val();
-    if (start_date && end_date) {
-      cj("#tblabsence").show();
-      cj("#commentDisplay").show();
-    }
-    var pubHoliday = {/literal}{$publicHolidays}{literal};
-    var d = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
-    cj('table#tblabsence tbody tr.trabsence').remove();
-    var selectedVal = [];
-    for (var x = 0; x <= d; x++) {
-      var earlierdate = new Date(start_date);
-      var absenceDate = earlierdate.toDateString();
-      var sDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
-      if ( sDate in pubHoliday ) {
-        var holidayDes = pubHoliday[sDate];
-        var holidayDesc = ", "+holidayDes;
-        var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+''+holidayDesc+')';
-      }
-      else{
-        var startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
-      }
-      var abday = absenceDate.substring(0,3);
-      if ((abday == 'Sat' || abday == 'Sun') || (sDate in pubHoliday)) {
-        var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select" disabled="disabled" ><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
-      }
-      else {
-      	var createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
-      }
-      cj('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
-      var datepicker = start_date;
-      var parms = datepicker.split("/");
-      var joindate = new Date(parms[0]+"/"+parms[1]+"/"+parms[2]);
-      var numberOfDaysToAdd = 1;
-      joindate.setDate(joindate.getDate() + numberOfDaysToAdd);
-      var dd = joindate.getDate();
-      var mm = joindate.getMonth() + 1;
-      if (mm<10) mm="0"+mm;
-      if (dd<10) dd="0"+dd;
-      var y = joindate.getFullYear();
-      var start_date = mm + '/' + dd + '/' + y;
-      selectedVal.push(x);
-    }    
-    var countDays = 0;
-    var end_date = cj('#end_date_display').val();
-    var start_date = cj('#start_date_display').val();
-    var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
-    var totalDays=0;
-    for (var x = 0; x <=diDate; x++) {
-      var selectopt = cj('#options_'+x+' :selected').val();	
-      totalDays = new Number(totalDays) + new Number(selectopt);
-    }
-    if (totalDays <= 1) {
-      totalDays += ' {/literal}{ts}day{/ts}{literal}';
-    }
-    else {
-      totalDays += ' {/literal}{ts}days{/ts}{literal}';
-    }
-    cj('#countD').html(totalDays);
-  }
-  </script>
-{/literal}
-
-{literal}
-  <script type="text/javascript">
-    var uID = '{/literal}{$loginUserID}{literal}';
-    var absencesTypeID = cj('#activity_type_id').val();
-    var upActivityId = '{/literal}{$upActivityId}{literal}';
-    var upfromDate = '{/literal}{$fromDate}{literal}';
-    var uptoDate = '{/literal}{$toDate}{literal}';
-
-    cj(document).ready(function() {
+    $('#end_date_display', $form).change(function() {
+      addabsencetbl();
+    })
+  
       {/literal}{if $mode eq 'edit'}{literal}
-        cj("#tblabsence").show();
-        cj('input#start_date_display').val(upfromDate);
-        cj('input#end_date_display').val(uptoDate);
-        var end_date = cj('#end_date_display').val();
-        var start_date = cj('#start_date_display').val();
-        var difDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
-        var pubHoliday = {/literal}{$publicHolidays}{literal};
-        var param = cj.parseJSON('{}');
+        $("#tblabsence", $form).show();
+        $('input#start_date_display', $form).datepicker('setDate', upfromDate);
+        $('input#end_date_display', $form).datepicker('setDate', uptoDate);
+        end_date = $('#end_date_display', $form).datepicker( "getDate" );
+        start_date = $('#start_date_display', $form).datepicker( "getDate" );
+        difDate = Math.floor((end_date - start_date) / 86400000);
+        pubHoliday = {/literal}{$publicHolidays}{literal};
         CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC', 'option.limit': 31},
           {success: function(data) {
-            cj.each(data.values, function(key, value) {
+            $.each(data.values, function(key, value) {
             var val = value.activity_date_time;
             param[val]=value.duration;
           });   
-	  var x=0;
-          var selectopt;
-          var totalDays=0;
-          cj.each(param, function(key, value) {
-            var datepicker = key;
-            var parms = datepicker.split("-");
-            var subpar2 = parms[2].substring(0,3);
-            var joindate = new Date(parms[1]+"/"+subpar2+"/"+parms[0]);
-            var absenceDate = joindate.toDateString();
-            var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
-            var abday = absenceDate.substring(0,3);
-            var sDate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear();
+	  var x=0,
+            selectopt,
+            totalDays=0;
+          $.each(param, function(key, value) {
+            var datepicker = key,
+              parms = datepicker.split("-"),
+              subpar2 = parms[2].substring(0,3),
+              joindate = new Date(parms[1]+"/"+subpar2+"/"+parms[0]),
+              absenceDate = joindate.toDateString(),
+              abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+')',
+              abday = absenceDate.substring(0,3),
+              sDate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear(),
+              holidayDes,
+              holidayDesc,
+              abdate,
+              createSelectBox;
             if ( sDate in pubHoliday ) {
-              var holidayDes = pubHoliday[sDate];
-              var holidayDesc = ", "+holidayDes;
-              var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+''+holidayDesc+')';
+              holidayDes = pubHoliday[sDate];
+              holidayDesc = ", "+holidayDes;
+              abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+''+holidayDesc+')';
             }
             else {
-              var abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
+              abdate = absenceDate.substring(4,7)+' '+joindate.getDate()+','+' '+joindate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
             }
-	    var createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
-            cj('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
+	    createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
+            $('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
             if (value==240) {
-	      cj("#options_"+x).val('0.5');
-	      selectopt = cj('#options_'+x+' :selected').val();
-	      totalDays = new Number(totalDays) + new Number(selectopt);
+              $("#options_"+x).val('0.5');
+              selectopt = $('#options_'+x+' :selected').val();
+              totalDays = new Number(totalDays) + new Number(selectopt);
 	    } 
 	    else if (value==480) {
-	      cj("#options_"+x).val('1');
-	      selectopt = cj('#options_'+x+' :selected').val();
+	      $("#options_"+x, $form).val('1');
+	      selectopt = $('#options_'+x+' :selected', $form).val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
 	    }
 	    else {
-	      cj("#options_"+x).val('');
+	      $("#options_"+x, $form).val('');
                 if (abday == 'Sat' || abday == 'Sun') {
-                  cj("#options_"+x).attr("disabled","disabled");
+                  $("#options_"+x, $form).attr("disabled","disabled");
                 }
-	    }
+           }
 	    x = new Number(x) + 1;
  	  });
           if (totalDays <= 1) {
@@ -256,19 +183,20 @@
           else {
             totalDays += ' {/literal}{ts}days{/ts}{literal}';
 	  }
-	  cj('#countD').html(totalDays);
+	  $('#countD', $form).html(totalDays);
         }
       });
 
-      cj("#_qf_AbsenceRequest_submit-bottom").click(function(event){
-        var dateValues = [];
-        var params = cj.parseJSON('{"sequential": "1"}');
-        var end_date = cj('#end_date_display').val();
-        var start_date = cj('#start_date_display').val();
-        var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
+      $("#_qf_AbsenceRequest_done_save-bottom", $form).click(function(event){
+        var dateValues = [],
+          end_date = $('#end_date_display', $form).datepicker( "getDate" ),
+          start_date = $('#start_date_display', $form).datepicker( "getDate" ),
+          diDate = Math.floor((end_date - start_date) / 86400000),
+          selDate,
+          selectopt=0;
         for (var x = 0; x <= diDate; x++) {
-          var selDate = cj('#label_'+x).text();
-          var selectopt = cj('#options_'+x+' :selected').text();
+          selDate = $('#label_'+x, $form).text();
+          selectopt = $('#options_'+x+' :selected', $form).text();
           if (selectopt == "Full Day"){
             dateValues[x] = selDate +":" + "480";
           }
@@ -281,22 +209,23 @@
 	    }
           }
         }
-    	cj("#date_values").val(dateValues.join('|'));
+    	$("#date_values", $form).val(dateValues.join('|'));
       });
 
 {/literal}{/if}{literal}
 {/literal}{if $action eq 1}{literal}
-  cj("#tblabsence").hide();
-  cj("#commentDisplay").hide();
+  $("#tblabsence", $form).hide();
+  $("#commentDisplay", $form).hide();
   var dateValues = [];
-  cj("#_qf_AbsenceRequest_submit-bottom").click(function(event){
-    var params = cj.parseJSON('{"sequential": "1"}');
-    var end_date = cj('#end_date_display').val();
-    var start_date = cj('#start_date_display').val();
-    var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
+  $("_qf_AbsenceRequest_done_save-bottom", $form).click(function(event){
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" ),
+      start_date = $('#start_date_display', $form).datepicker( "getDate" ),
+      diDate = Math.floor((end_date - start_date) / 86400000),
+      selDate,
+      selectopt = 0;
       for (var x = 0; x <= diDate; x++) {
-        var selDate = cj('#label_'+x).text();
-        var selectopt = cj('#options_'+x+' :selected').text();
+        selDate = $('#label_'+x, $form).text();
+        selectopt = $('#options_'+x+' :selected', $form).text();
         if (selectopt == "Full Day") {
           dateValues[x] = selDate +":" + "480";
         }
@@ -309,20 +238,23 @@
 	  }
         }
       }
-    cj("#date_values").val(dateValues.join('|'));
+    $("#date_values", $form).val(dateValues.join('|'));
   });
 {/literal}{/if}{literal}
-});
 
   var countDays = 0;
-  cj('#tblabsence tbody:last').after('<tr class="tblabsencetitle"><td>{/literal}{ts}Total{/ts}{literal}</td><td id="countD">'+countDays+'</td></tr>');
-  cj(document).on('change','#tblabsence select', function(){
-    var end_date = cj('#end_date_display').val();
-    var start_date = cj('#start_date_display').val();
-    var diDate = Math.floor(( Date.parse(end_date) - Date.parse(start_date) ) / 86400000);
-    var totalDays=0;
+  $('#tblabsence tbody:last', $form).after('<tr class="tblabsencetitle"><td>{/literal}{ts}Total{/ts}{literal}</td><td id="countD">'+countDays+'</td></tr>');
+  $form.on('change','#tblabsence select', function(){
+    var selectoptn = $(this).val(),
+      additn = 0,
+      end_date = $('#end_date_display', $form).datepicker( "getDate" ),
+      start_date = $('#start_date_display', $form).datepicker( "getDate" ),
+      diDate = Math.floor((end_date - start_date) / 86400000);
+      totalDays=0,
+      selectopt=0;
+      additn = new Number(additn) + new Number(selectoptn);
     for (var x = 0; x <=diDate; x++) {
-      var selectopt = cj('#options_'+x+' :selected').val();	
+      selectopt = $('#options_'+x+' :selected', $form).val();
       totalDays = new Number(totalDays) + new Number(selectopt);
     }
     if (totalDays <= 1) {
@@ -331,7 +263,89 @@
     else {
       totalDays += ' {/literal}{ts}days{/ts}{literal}';
     }
-    cj('#countD').html(totalDays);
+    $('#countD', $form).html(totalDays);
   });
+
+ // Function is used to add absence table based on selected date.
+  function addabsencetbl() {
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" ),
+      start_date = $('#start_date_display', $form).datepicker( "getDate" ),
+      pubHoliday = {/literal}{$publicHolidays}{literal},
+      d,
+      selectedVal = [],
+      earlierdate,
+      absenceDate,
+      sDate,
+      holidayDes,
+      holidayDesc,
+      startDate,
+      abday,
+      createSelectBox,
+      numberOfDaysToAdd,
+      dd,
+      mm,
+      y,
+      countDays = 0,
+      diDate,
+      totalDays=0,
+      selectopt=0;
+
+    if (!end_date){
+      $('#end_date_display', $form).datepicker('setDate', start_date);
+      end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    }
+    if (start_date && end_date) {
+      $("#tblabsence", $form).show();
+      $("#commentDisplay", $form).show();
+    }
+    d = Math.floor((end_date - start_date) / 86400000);
+    $('table#tblabsence tbody tr.trabsence', $form).remove();
+    for (var x = 0; x <= d; x++) {
+      earlierdate = new Date(start_date);
+      absenceDate = earlierdate.toDateString();
+      sDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear();
+      if ( sDate in pubHoliday ) {
+        holidayDes = pubHoliday[sDate];
+        holidayDesc = ", "+holidayDes;
+        startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+''+holidayDesc+')';
+      }
+      else{
+        startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
+      }
+      abday = absenceDate.substring(0,3);
+      if ((abday == 'Sat' || abday == 'Sun') || (sDate in pubHoliday)) {
+        createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select" disabled="disabled" ><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
+      }
+      else {
+      	createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
+      }
+      $('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
+      numberOfDaysToAdd = 1;
+      start_date.setDate(start_date.getDate() + numberOfDaysToAdd);
+      dd = start_date.getDate();
+      mm = start_date.getMonth() + 1;
+      if (mm<10) mm="0"+mm;
+      if (dd<10) dd="0"+dd;
+      y = start_date.getFullYear();
+      start_date = new Date(mm+"/"+dd+"/"+y);
+      selectedVal.push(x);
+    }    
+    end_date = $('#end_date_display', $form).datepicker( "getDate" );
+    start_date = $('#start_date_display', $form).datepicker( "getDate" );
+    diDate = Math.floor((end_date - start_date) / 86400000);
+    for (var x = 0; x <=diDate; x++) {
+      selectopt = $('#options_'+x+' :selected', $form).val();	
+      totalDays = new Number(totalDays) + new Number(selectopt);
+    }
+    if (totalDays <= 1) {
+      totalDays += ' {/literal}{ts}day{/ts}{literal}';
+    }
+    else {
+      totalDays += ' {/literal}{ts}days{/ts}{literal}';
+    }
+    $('#countD', $form).html(totalDays);
+  }
+
+});
 </script>
 {/literal}
