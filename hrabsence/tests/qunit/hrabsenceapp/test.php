@@ -4,7 +4,7 @@
 // CRM_Core_Resources::singleton()->addSetting(...);
 
 CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources(
-  0, // contactId
+  202, // contactId
   array( // absenceTypes
     100 => array(
       'id' => 100,
