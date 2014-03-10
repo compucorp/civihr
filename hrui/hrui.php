@@ -290,10 +290,11 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * Implementation of hook_civicrm_tabs
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
-  $count = count($tabs);
-  for ($i = 0; $i < $count; $i++) {
-    if ($tabs[$i]['id'] != 'log') {
-      $tab[$i] = $tabs[$i]['title'];
+  $newTabs = array();
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['id'] != 'log') {
+      $newTabs[$i] = $tab['title'];
     }
     else {
       $changeLogTabID = $i;
@@ -301,10 +302,10 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
   }
 
   //sort alphabetically
-  asort($tab);
+  asort($newTabs);
   $weight = 0;
   //assign the weights based on alphabetic order
-  foreach ($tab as $key => $value) {
+  foreach ($newTabs as $key => $value) {
     $weight += 10;
     $tabs[$key]['weight'] = $weight;
   }

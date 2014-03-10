@@ -94,18 +94,21 @@ function hremerg_civicrm_managed(&$entities) {
   return _hremerg_civix_civicrm_managed($entities);
 }
 
-function hremerg_civicrm_pageRun($page) {
-  if ($page instanceof CRM_Contact_Page_View_Relationship) {
-    $relationshipTypes = CRM_Core_PseudoConstant::relationshipType();
-    foreach ($relationshipTypes as $id => $value) {
-      if ($value['label_a_b'] == 'Emergency Contact is') {
-        CRM_Core_Resources::singleton()->addSetting(array(
-          'hremerg' => array(
-            'relationshipTypeId' => $id,
-           ),
-        ));
+/**
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function hremerg_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Contact_Form_Relationship' && empty($form->_caseId)) {
+    if ($form->elementExists('relationship_type_id') && $form->_contactType == 'Individual') {
+      $relationshipType = civicrm_api3('relationship_type', 'get', array('name_a_b' => 'Emergency Contact'));
+      $select = $form->getElement('relationship_type_id');
+      $select->freeze();
+      $select->setLabel('');
+      $form->getElement('related_contact_id')->setLabel('');
+      if ($form->getAction() & CRM_Core_Action::ADD && !empty($relationshipType['id'])) {
+        $form->setDefaults(array('relationship_type_id' => $relationshipType['id'] . '_a_b'));
       }
     }
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   }
 }
