@@ -1115,15 +1115,17 @@ class GenerateHRData {
     }
     $holidayCount = 7;
     $i = 0;
-    
+    $status = CRM_Core_PseudoConstant::activityStatus();
+   
     while ($holidayCount --) {
       $result = civicrm_api3('Activity', 'create',array(
         'activity_type_id' => $activity_id  ,
         'activity_date_time' => date("Y-m-d h:i:s", strtotime($publicHolidays[$i])) ,
-        'subject' => $publicholidays_sub[$i],
+        'status_id' => array_search('Scheduled', $status) ,
+        'subject' => $publicholidays_sub[$i] ,
         'source_contact_id' => $cid,
-      ));      
-      $i++;      
+      ));
+      $i++;
     }
   }
 
