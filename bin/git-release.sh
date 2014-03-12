@@ -15,6 +15,7 @@ hrjob \
 hrmed \
 hrprofile
 hrqual \
+hrrecruitment \
 hrreport \
 hrsampledata \
 hrstaffdir \
