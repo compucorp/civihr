@@ -1130,6 +1130,14 @@ class GenerateHRData {
   }
   private function addVacancies($cid) {
     //sample data for HRRecruitment table
+    $grpParams['name'] = 'vacancy_status';
+    $optionValues = $ids = array();
+    CRM_Core_OptionValue::getValues($grpParams,$optionValues);
+    foreach ($optionValues as $Id => $value) {
+      $ids[] = $value['value'];
+    }
+    $status_id = array_flip($ids);
+
     for ($i = 1; $i <= mt_rand(1, 3); $i++) {
       $vacanciesValues = array(
         'salary' => $this->randomItem('salary'),
@@ -1139,13 +1147,12 @@ class GenerateHRData {
         'requirements' => $this->randomItem('requirements'),
         'location' => $this->randomItem('vacancylocation'),
         'is_template' => 0,
-        'status_id' => 0,
-        'start_date' => $this->randomDate('2009-01-01 09:30:00', '2011-12-31 20:00:00', 'Y-m-d H:i:s'),
-        'end_date' =>  $this->randomDate('2012-01-01 09:30:00', '2014-12-31 20:00:00', 'Y-m-d H:i:s'),
+        'status_id' => array_rand($status_id,1),
+        'start_date' => $this->randomDate('2009-01-01', '2011-12-31','YmdHis'),
+        'end_date' =>  $this->randomDate('2012-01-01', '2014-12-31','YmdHis'),
       );
       if ($i == 1) {
         $vacanciesValues['is_template'] = 1;
-        $vacanciesValues['status_id'] = 1;
       }
       $hrVacancies[] = $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancy', $vacanciesValues);
     }
