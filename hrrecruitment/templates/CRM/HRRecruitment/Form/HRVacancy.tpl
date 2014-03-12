@@ -25,10 +25,12 @@
 *}
 <div class="crm-block crm-form-block">
     <table class="form-layout-compressed">
-        <tr>
-            <td class="label">{$form.template_id.label}</td>
-            <td>{$form.template_id.html}</td>
-        </tr>
+        {if !$isTemplate}
+            <tr>
+                <td class="label">{$form.template_id.label}</td>
+                <td>{$form.template_id.html}</td>
+            </tr>
+        {/if}
         <tr>
             <td class="label">{$form.position.label}</td>
             <td>{$form.position.html}</td>
@@ -67,26 +69,45 @@
         </tr>
     </table>
     {*Stages Block*}
-    <fieldset class="crm-collapsible">
-        <legend class="collapsible-title">{ts}Stages{/ts}</legend>
-    </fieldset>
+    {if !$isTemplate}
+        <fieldset>
+            <legend class="collapsible-title">{ts}Stages{/ts}</legend>
+            <table class="form-layout-compressed">
+                <tr>
+                    <td>{$form.stages.html}</td>
+                </tr>
+            </table>
+        </fieldset>
+    {/if}
     {*Application Block*}
-    <fieldset class="crm-collapsible">
+    <fieldset>
         <legend class="collapsible-title">{ts}Application Form{/ts}</legend>
         <table class="form-layout-compressed">
             <tr>
-                <td></td>
                 <td>{$form.application_profile.html}</td>
             </tr>
         </table>
     </fieldset>
     {*Evaluation Block*}
-    <fieldset class="crm-collapsible">
+    <fieldset>
         <legend class="collapsible-title">{ts}Evaluation Form{/ts}</legend>
         <table class="form-layout-compressed">
             <tr>
-                <td></td>
                 <td>{$form.evaluation_profile.html}</td>
+            </tr>
+        </table>
+    </fieldset>
+    {*Permission block*}
+    <fieldset>
+        <legend class="collapsible-title">{ts}Permissions{/ts}</legend>
+        <table class="form-layout-compressed">
+            <tr class="columnheader">
+                <td scope="column">{ts}Person{/ts}</td>
+                <td scope="column">{ts}Permission{/ts}</td>    
+            </tr>
+            <tr>
+                <td>{$form.permission_contact_id.html}</td>
+                <td>{$form.permission.html}</td>
             </tr>
         </table>
     </fieldset>
