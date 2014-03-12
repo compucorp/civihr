@@ -132,7 +132,7 @@ class CRM_HRAbsence_Form_PublicHolidays extends CRM_Core_Form {
       $params['activity_type_id'] = $activity_type_id;
       $params['source_contact_id'] = $session->get('userID');
       $status = CRM_Core_PseudoConstant::activityStatus();
-      $params['status_id'] =  $params['status_id'] ? array_search('Scheduled', $status) : array_search('Cancelled', $status);
+      $params['status_id'] =  !empty($params['status_id']) ? array_search('Scheduled', $status) : array_search('Cancelled', $status);
       $params['activity_date_time'] = CRM_Utils_Date::processDate($params['activity_date_time'], $params['activity_date_time_time']);
 
       if ($this->_action & CRM_Core_Action::UPDATE) {
