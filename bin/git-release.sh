@@ -2,9 +2,11 @@
 ##################################
 fileName=""
 ## List of extensions
-ENTITY_EXTS=( hrbank \
+ENTITY_EXTS=( hrabsence \
+hrbank \
 hrcareer \
 hrcase \
+hrcaseutils \
 hrdemog \
 hremerg \
 hrident \
@@ -13,6 +15,7 @@ hrjob \
 hrmed \
 hrprofile
 hrqual \
+hrrecruitment \
 hrreport \
 hrsampledata \
 hrstaffdir \

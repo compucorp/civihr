@@ -1122,7 +1122,8 @@ class GenerateHRData {
       $result = civicrm_api3('Activity', 'create',array(
         'activity_type_id' => $activity_id  ,
         'activity_date_time' => date("Y-m-d h:i:s", strtotime($publicHolidays[$i])) ,
-        'subject' => $publicholidays_sub[$i],
+        'status_id' => CRM_Core_OptionGroup::values('activity_status', FALSE, NULL, NULL, 'AND v.name = "Scheduled"'),
+        'subject' => $publicholidays_sub[$i] ,
         'source_contact_id' => $cid,
       ));
       $i++;
