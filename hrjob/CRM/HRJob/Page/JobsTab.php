@@ -61,11 +61,9 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       );
     })
       ->addScriptFile('civicrm', 'packages/backbone/json2.js', 100, 'html-header', FALSE)
-      ->addScriptFile('civicrm', 'packages/backbone/underscore.js', 110, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.js', 120, 'html-header')
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
-      ->addScriptFile('civicrm', 'js/jquery/jquery.crmContactField.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', 125, 'html-header', FALSE)
       ->addScriptFile('org.civicrm.hrjob', 'js/jquery/jquery.hrContactLink.js', 125, 'html-header', FALSE)
       ->addScriptFile('org.civicrm.hrjob', 'js/jquery/jquery.lockButton.js', 125, 'html-header', FALSE)

@@ -16,13 +16,10 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_grade',
       name: 'pay_grade',
-      options: _.extend({'':''}, FieldOptions.pay_grade)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pay_grade'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pay_grade'}
     </div>
   </div>
 
@@ -35,13 +32,10 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_currency',
       name: 'pay_currency',
-      options: _.extend({'':''}, FieldOptions.pay_currency)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='currencies_enabled'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='currencies_enabled'}
     </div>
   </div>
 
@@ -56,7 +50,7 @@
       <%= RenderUtil.select({
       id: 'hrjob-pay_unit',
       name: 'pay_unit',
-      options: _.extend({'':''}, FieldOptions.pay_unit)
+      entity: 'HRJobPay'
       }) %>
     {/literal}
     </div>

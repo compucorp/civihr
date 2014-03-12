@@ -22,7 +22,6 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
-      this.$('.crm-contact-selector').crmContactField();
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
           reportId: CRM.jobTabApp.loggingReportId,
@@ -41,9 +40,20 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
           if (rule.required && !$label.data('has-required')) {
             $label.data('has-required', true);
             $label.append(HRApp.RenderUtil.required());
+            $label.siblings('.crm-content').find('input, select').addClass('required');
           }
         });
       }
+      // Attach data needed for optionList editing
+      this.$('a.crm-option-edit-link').each(function() {
+        $(this).siblings('select').attr('data-option-edit-path', $(this).data('option-edit-path'));
+      });
+      // Needed for re-rendering
+      $(this.$el).trigger('crmLoad');
+    },
+    // Needed for initial render
+    onShow: function() {
+      $(this.$el).trigger('crmLoad');
     },
     /**
      *
@@ -65,7 +75,8 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
     },
     events: {
       'click .standard-save': 'doSave',
-      'click .standard-reset': 'doReset'
+      'click .standard-reset': 'doReset',
+      'crmOptionsUpdated select': 'updateOptions'
     },
     doSave: function() {
       var view = this;
@@ -102,6 +113,17 @@ CRM.HRApp.module('Common.Views', function(Views, HRApp, Backbone, Marionette, $,
         options.warnTitle = ts('Abandon Changes?');
         options.warnMessages.push(ts('There are unsaved changes! Are you sure you want to abandon the changes?'));
       }
+    },
+    // This is triggered after an option list is edited
+    updateOptions: function(e, options) {
+      var
+        $el = $(e.target),
+        entity = $el.data('api-entity'),
+        field = $el.data('api-field'),
+      // FIXME: really we should always be working with option lists as arrays
+      // Since we're not doing that, here's a hack to convert the array to an object
+        opts = _.mapValues(_.indexBy(options, 'key'), 'value');
+      CRM.FieldOptions[entity][field] = opts;
     }
   });
 

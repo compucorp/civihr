@@ -64,7 +64,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
-      this.$('.crm-contact-selector').crmContactField();
+      $(this.$el).trigger('crmLoad');
+    },
+    onShow: function() {
+      $(this.$el).trigger('crmLoad');
     }
   });
 

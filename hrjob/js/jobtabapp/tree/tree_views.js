@@ -62,6 +62,7 @@ CRM.HRApp.module('JobTabApp.Tree', function(Tree, HRApp, Backbone, Marionette, $
     },
     onRender: function() {
       this.selectRoute(CRM.HRApp.Common.Navigation.getCurrentRoute());
+      CRM.tabHeader.updateCount('#tab_hrjob', this.collection.length);
     },
     /**
      * Designate a particular path (eg "#9/hrjob/10/pay")

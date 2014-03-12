@@ -16,8 +16,8 @@
       <%= RenderUtil.select({
         id: 'hrjob-is_enrolled',
         name: 'is_enrolled',
+        entity: 'HRJobPension',
         options: {
-          '': '',
           '0': '{/literal}{ts}No{/ts}{literal}',
           '1': '{/literal}{ts}Yes{/ts}{literal}',
           '2': '{/literal}{ts}Opted out{/ts}{literal}'
@@ -36,13 +36,10 @@
       <%= RenderUtil.select({
         id: 'hrjob-pension_type',
         name: 'pension_type',
-        options: _.extend({'':''}, FieldOptions.pension_type)
+        entity: 'HRJobPension'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_pension_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pension_type'}
     </div>
   </div>
 
@@ -51,7 +48,7 @@
       <label for="hrjob-er_contrib_pct">{ts}Employer Contribution (%){/ts}&nbsp;{help id='hrjob-employer' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-er_contrib_pct" name="er_contrib_pct" class="form-text-big" type="text" />
+      <input id="hrjob-er_contrib_pct" name="er_contrib_pct" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -60,7 +57,7 @@
       <label for="hrjob-ee_contrib_pct">{ts}Employee Contribution (%){/ts}&nbsp;{help id='hrjob-employee' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-ee_contrib_pct" name="ee_contrib_pct" class="form-text-big" type="text" />
+      <input id="hrjob-ee_contrib_pct" name="ee_contrib_pct" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -69,7 +66,7 @@
       <label for="hrjob-ee_contrib_abs">{ts}Employee Contribution (absolute amount){/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-ee_contrib_abs" name="ee_contrib_abs" class="form-text-big" type="text" />
+      <input id="hrjob-ee_contrib_abs" name="ee_contrib_abs" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -87,7 +84,7 @@
       <label for="hrjob-ee_evidence_note">{ts}Evidence Note{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-ee_evidence_note" name="ee_evidence_note" class="form-text-big" type="text" />
+      <input id="hrjob-ee_evidence_note" name="ee_evidence_note" class="crm-form-text" type="text" />
     </div>
   </div>
   <%= RenderUtil.standardButtons() %>

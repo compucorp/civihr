@@ -12,7 +12,7 @@
       <label for="hrjob-position">{ts}Position{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-position" name="position" class="form-text-big" type="text" />
+      <input id="hrjob-position" name="position" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -21,7 +21,7 @@
       <label for="hrjob-title">{ts}Title{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-title" name="title" class="form-text-big" type="text" />
+      <input id="hrjob-title" name="title" class="crm-form-text" type="text" />
     </div>
   </div>
 
@@ -34,13 +34,10 @@
       <%= RenderUtil.select({
         id: 'hrjob-contract_type',
         name: 'contract_type',
-        options: _.extend({'':''}, FieldOptions.contract_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_contract_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_contract_type'}
     </div>
   </div>
 
@@ -53,13 +50,10 @@
         <%= RenderUtil.select({
         id: 'hrjob-department',
         name: 'department',
-        options: _.extend({'':''}, FieldOptions.department)
+        entity: 'HRJob'
         }) %>
       {/literal}
-      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_department'}
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-      {/if}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
     </div>
   </div>
 
@@ -72,13 +66,10 @@
       <%= RenderUtil.select({
         id: 'hrjob-level_type',
         name: 'level_type',
-        options: _.extend({'':''}, FieldOptions.level_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_level_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}
     </div>
   </div>
 
@@ -87,7 +78,7 @@
       <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-contact-selector" type="text" />
+      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
     </div>
   </div>
 
@@ -100,13 +91,10 @@
       <%= RenderUtil.select({
       id: 'hrjob-level_type',
       name: 'location',
-      options: _.extend({'':''}, FieldOptions.location)
+      entity: 'HRJob'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_location'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}
     </div>
   </div>
 
@@ -128,7 +116,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-period_type',
         name: 'period_type',
-        options: _.extend({'':''}, FieldOptions.period_type)
+        entity: 'HRJob'
       }) %>
     {/literal}
     </div>
@@ -162,7 +150,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-notice_unit',
         name: 'notice_unit',
-        options: _.extend({'':''}, FieldOptions.notice_unit)
+        entity: 'HRJob'
       }) %>
       {/literal}
     </div>

@@ -45,13 +45,10 @@
         <%= RenderUtil.select({
         id: 'hrjob-department',
         name: 'department',
-        options: _.extend({'':''}, FieldOptions.department)
+        entity: 'HRJobRole'
         }) %>
       {/literal}
-      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_department'}
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-      {/if}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
       </div>
     </div>
 
@@ -73,13 +70,10 @@
         <%= RenderUtil.select({
         id: 'hrjob-location',
         name: 'location',
-        options: _.extend({'':''}, FieldOptions.location)
+        entity: 'HRJobRole'
         }) %>
       {/literal}
-      {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_location'}
-      {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-        <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-      {/if}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_location'}
       </div>
     </div>
 
@@ -88,7 +82,7 @@
         <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-contact-selector" />
+        <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
 

@@ -16,13 +16,10 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_type',
         name: 'hours_type',
-        options: _.extend({'':''}, FieldOptions.hours_type)
+        entity: 'HRJobHour'
       }) %>
     {/literal}
-    {crmAPI var='result' entity='OptionGroup' action='get' sequential=1 name='hrjob_hours_type'}
-    {if call_user_func(array('CRM_Core_Permission','check'), 'administer CiviCRM') }
-      <a href="{crmURL p='civicrm/admin/optionValue' q='reset=1&gid='}{$result.id}" target="_blank"><span class="batch-edit"></span></a>
-    {/if}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_hours_type'}
     </div>
   </div>
 
@@ -37,7 +34,7 @@
       <%= RenderUtil.select({
         id: 'hrjob-hours_unit',
         name: 'hours_unit',
-        options: _.extend({'':''}, FieldOptions.hours_unit)
+        entity: 'HRJobHour'
       }) %>
       {/literal}
     </div>

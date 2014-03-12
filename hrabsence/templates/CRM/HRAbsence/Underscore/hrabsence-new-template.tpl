@@ -2,7 +2,7 @@
   <form>
   {ts}New Absence{/ts}:
   {literal}
-    <select name="activity_type_id">
+    <select class="crm-form-select crm-select2" name="activity_type_id">
       <% _.each(FieldOptions.activity_type_id, function(label, value){ %>
       <option value="<%= value %>"><%- label %></option>
       <% }) %>

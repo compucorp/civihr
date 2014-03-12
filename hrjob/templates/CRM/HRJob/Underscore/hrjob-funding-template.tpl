@@ -16,7 +16,7 @@
       <label for="hrjob-funding_org_id">{ts}Funding organization{/ts}</label>
     </div>
     <div class="crm-content">
-      <input id="funding_org_id" name="funding_org_id" class="crm-contact-selector" urlParam = "org=1" type="text" />
+      <input id="funding_org_id" name="funding_org_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
     </div>
   </div>
 
