@@ -63,7 +63,8 @@ class CRM_HRReport_Form_Activity_PublicHoliday extends CRM_Report_Form {
           'activity_date_time' =>
           array(
             'operatorType' => CRM_Report_Form::OP_DATE,
-            'default' => 'this.year'
+            'default' => 'this.year',
+            'title' => ts('Public Holiday'),
           ),
           'activity_status_id' =>
           array(
@@ -77,7 +78,7 @@ class CRM_HRReport_Form_Activity_PublicHoliday extends CRM_Report_Form {
         'order_bys' =>
         array(
           'activity_date_time' =>
-          array('title' => ts('Activity Date')),
+          array('title' => ts('Public Holiday')),
         ),
         'grouping' => 'activity-fields',
         'alias' => 'activity',
