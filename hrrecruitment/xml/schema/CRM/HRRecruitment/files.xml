@@ -2,7 +2,6 @@
 
 <tables xmlns:xi="http://www.w3.org/2001/XInclude">
   <xi:include href="HRVacancy.xml" parse="xml" />
-  <xi:include href="HRVacancyCase.xml" parse="xml" />
   <xi:include href="HRVacancyStage.xml" parse="xml" />
   <xi:include href="HRVacancyPermission.xml" parse="xml" />
 </tables>
