@@ -70,7 +70,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>vacancy_id_69</column_name>
+      <column_name>vacancy_id</column_name>
       <in_selector>0</in_selector>
       <custom_group_name>Vacancy</custom_group_name>
     </CustomField>
