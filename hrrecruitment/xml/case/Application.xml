@@ -72,4 +72,12 @@
     </ActivitySet>
   </ActivitySets>
 
+  <CaseRoles>
+    <RelationshipType>
+      <name>Case Coordinator</name>
+      <creator>1</creator>
+      <manager>1</manager>
+    </RelationshipType>
+  </CaseRoles>
+
 </CaseType>
