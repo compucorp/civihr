@@ -1,7 +1,7 @@
 <?php
 /*
 +--------------------------------------------------------------------+
-| CiviHR version 1.2                                                 |
+| CiviHR version 1.3                                                 |
 +--------------------------------------------------------------------+
 | Copyright CiviCRM LLC (c) 2004-2013                                |
 +--------------------------------------------------------------------+
@@ -26,4 +26,27 @@
 */
 
 class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
+
+  /**
+   * Function to format the Vacancy parameters before saving
+   *
+   * @return array   Formated array before being used for create/update Vacancy
+   */
+  public static function formatParams($params) {
+    $formattedParams = array();
+    $instance = new self();
+    $fields = $instance->fields();
+    foreach ($fields as $name => $dontCare) {
+      if (strpos($name, '_date') !== FALSE) {
+        $formattedParams[$name]  = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
+      }
+      elseif ($name == 'is_template' && !array_key_exists('template_id', $params)) {
+        $formattedParams[$name] = 1;
+      }
+      elseif(isset($params[$name])) {
+        $formattedParams[$name] = $params[$name];
+      }
+    }
+    return $formattedParams;
+  }
 }

@@ -70,6 +70,18 @@ function hrrecruitment_civicrm_install() {
     civicrm_api3('OptionValue', 'create', $statusParam);
   }
 
+  $vacancyCaseStatuses = array('Apply', 'Ongoing', 'Phone Interview', 'Manager Interview', 'Board Interview', 'Group Interview', 'Psych Exam', 'Offer', 'Hired');
+  foreach ($vacancyCaseStatuses as $key => $label) {
+    $caseStatusParam = array(
+      'option_group_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'case_status', 'id', 'name'),
+      'label' => ts($label),
+      'name' => CRM_Utils_String::munge($label),
+      'value' => $key,
+      'grouping' => 'Vacancy',
+    );
+    civicrm_api3('OptionValue', 'create', $caseStatusParam);
+  }
+
   $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'weight', 'name');
   $vacancyNavigation = new CRM_Core_DAO_Navigation();
   $params = array (
@@ -145,6 +157,12 @@ function hrrecruitment_civicrm_uninstall() {
       civicrm_api3('OptionValue', 'delete', array('id' => $id));
     }
   }
+
+  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id');
+  foreach ($CaseStatuses as $id => $dontCare) {
+    civicrm_api3('OptionValue', 'delete', array('id' => $id));
+  }
+
   return _hrrecruitment_civix_civicrm_uninstall();
 }
 
@@ -162,6 +180,11 @@ function hrrecruitment_civicrm_enable() {
     foreach ($statusIDs as $statusID) {
       civicrm_api3('OptionValue', 'create', array('id' => $statusID, 'is_active' => 1));
     }
+  }
+
+  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id', FALSE);
+  foreach ($CaseStatuses as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
   }
 
   foreach (array('Evaluation', 'Comment') as $activityType) {
@@ -194,6 +217,11 @@ function hrrecruitment_civicrm_disable() {
     }
   }
 
+  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id');
+  foreach ($CaseStatuses as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
+  }
+
   return _hrrecruitment_civix_civicrm_disable();
 }
 
@@ -208,6 +236,22 @@ function hrrecruitment_civicrm_disable() {
  */
 function hrrecruitment_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
   return _hrrecruitment_civix_civicrm_upgrade($op, $queue);
+}
+
+/**
+ * Implementation of hook_civicrm_permission
+ *
+ * @param array $permissions
+ * @return void
+ */
+function hrrecruitment_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRRecruitment') . ': '; // name of extension or module
+  $permissions += array(
+    'view Applicants' => $prefix . ts('View Applicants'),
+    'evaluate Applicants' => $prefix . ts('Evaluate Applicants'),
+    'manage Applicants' => $prefix . ts('Manage Applicants'),
+    'administer Applicants' => $prefix . ts('Administer Applicants'),
+  );
 }
 
 /**
