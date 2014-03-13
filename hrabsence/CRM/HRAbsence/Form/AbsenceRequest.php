@@ -388,7 +388,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     if ( $this->_action == CRM_Core_Action::UPDATE || $this->_action == CRM_Core_Action::ADD ) {
       $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
-    }      
+    }
   }
 
   /**
@@ -499,7 +499,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     elseif ($this->_mode == 'edit') {
       if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $submitValues)) {
-        $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);       
+        $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);
         $activityParam = array(
           'sequential' => 1,
           'id' => $this->_activityId,
