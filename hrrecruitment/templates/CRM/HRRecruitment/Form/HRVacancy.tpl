@@ -105,9 +105,18 @@
                 <td scope="column">{ts}Person{/ts}</td>
                 <td scope="column">{ts}Permission{/ts}</td>    
             </tr>
+            {section name='i' start=1 loop=$rowCount}
+                {assign var='rowNumber' value=$smarty.section.i.index}
+                <tr id="permission-{$rowNumber}" class="permission-block {if $rowNumber GT $showPermissionRow}hiddenElement{/if}">
+                    <td>{$form.permission_contact_id.$rowNumber.html}</td>
+                    <td>{$form.permission.$rowNumber.html}
+                        &nbsp;<a class="permission-delete-link" href="#"><span class="icon delete-icon"></span></a></td>
+                </tr>
+            {/section}
             <tr>
-                <td>{$form.permission_contact_id.html}</td>
-                <td>{$form.permission.html}</td>
+                <td>
+                    <a href="#" class="crm-hover-button" id="addMorePermission"><span class="icon add-icon"></span> {ts}add another permission{/ts}</a>
+                </td>
             </tr>
         </table>
     </fieldset>
@@ -123,6 +132,22 @@
         .crmSnippet({url: CRM.url('civicrm/vacancy/add', {action: 'add', reset: 1, template_id: $(this).val()})})
         .crmSnippet('refresh');
     })
+
+    $('#addMorePermission').on('click', function () {
+      if ($('tr.permission-block').hasClass("hiddenElement")) {
+        $('tr.hiddenElement').filter(':first').show().removeClass('hiddenElement');
+      }
+      if ($('tr.hiddenElement').length < 1) {
+        $('#addMorePermission').hide();
+      }
+      return false;
+    });
+
+    $('.permission-delete-link').click(function(){
+      $(this).closest('tr').addClass('hiddenElement').removeAttr('style');
+      $('#addMorePermission').show();
+      return false;
+    });
   });
 </script>
 {/literal}

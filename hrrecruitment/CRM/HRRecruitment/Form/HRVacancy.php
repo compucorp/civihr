@@ -173,8 +173,18 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Applicants') as $permission) {
       $vacancyPermissions[$permission] = array_pop(explode(':', $permissions[$permission]));
     }
-    $this->addEntityRef('permission_contact_id');
-    $this->add('select', 'permission', '', array('' => ts('- select -')) + $vacancyPermissions, FALSE, array('class' => 'crm-select2 huge'));
+
+    $rowCount = 5;
+    for ($rowNumber = 1; $rowNumber <= $rowCount; $rowNumber++) {
+      $this->add(
+        'select', "permission[{$rowNumber}]",
+        '', array('' => ts('- select -')) + $vacancyPermissions,
+        FALSE, array('class' => 'crm-select2 huge')
+      );
+      $this->addEntityRef("permission_contact_id[{$rowNumber}]");
+    }
+    $this->assign('rowCount', $rowCount);
+    $this->assign('showPermissionRow', 1);
 
     $this->addButtons(array(
         array(
@@ -237,11 +247,15 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     }
 
     if (!empty($params['permission']) && !empty($params['permission_contact_id'])) {
-      $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
-      $dao->contact_id = $params['permission_contact_id'];
-      $dao->permission = $params['permission'];
-      $dao->vacancy_id = $result['id'];
-      $dao->save();
+      foreach ($params['permission'] as $key => $permission) {
+        if ($permission && $params['permission_contact_id'][$key]) {
+          $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
+          $dao->contact_id = $params['permission_contact_id'][$key];
+          $dao->permission = $permission;
+          $dao->vacancy_id = $result['id'];
+          $dao->save();
+        }
+      }
     }
   }
 }
