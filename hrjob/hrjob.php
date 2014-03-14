@@ -324,42 +324,6 @@ function hrjob_getSummaryFields($fresh = FALSE) {
   return $cache;
 }
 
-function hrjob_civicrm_navigationMenu( &$params ) {
-    //  Get the maximum key of $params
-    $maxKey = ( max( array_keys($params) ) );
-    $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-
-    $params[$contactNavId]['child'][$maxKey+1] = array (
-      'attributes' => array (
-        'label'      => 'Job Import',
-        'name'       => 'jobImport',
-        'url'        => null,
-        'permission' => 'access HRJobs',
-        'operator'   => null,
-        'separator'  => null,
-        'parentID'   => $contactNavId,
-        'navID'      => $maxKey+1,
-        'active'     => 1
-      ),
-      'child' => array (
-        $maxKey+2 => array (
-          'attributes' => array (
-            'label'      => 'Jobs',
-            'name'       => 'jobs',
-            'url'        => 'civicrm/job/import',
-            'permission' => 'access HRJobs',
-            'operator'   => null,
-            'separator'  => 1,
-            'parentID'   => $contactNavId,
-            'navID'      => $maxKey+2,
-            'active'     => 1
-          ),
-          'child' => null
-        )
-      )
-    );
-}
-
 /**
  * Helper function to load data into DB between iterations of the unit-test
  */

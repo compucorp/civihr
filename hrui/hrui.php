@@ -324,13 +324,13 @@ function hrui_civicrm_managed(&$entities) {
 }
 
 function hrui_civicrm_navigationMenu( &$params ) {
+  $maxKey = ( max( array_keys($params) ) );
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $i = 1;
   // Degrade gracefully on 4.4
   if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
     //  Get the maximum key of $params
     $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
-
-    $maxKey = ( max( array_keys($params) ) );
-    $i =1;
     foreach ($multipleCustomData as $key => $value) {
       $i++;
       $i = $maxKey + $i;
@@ -347,10 +347,9 @@ function hrui_civicrm_navigationMenu( &$params ) {
         'active'     => 1
       ),
       'child' => null
-    );
+      );
     }
-
-    $params[15]['child'][$maxKey+1] = array (
+    $params[$contactNavId]['child'][$maxKey+1] = array (
       'attributes' => array (
         'label'      => 'Import Multi-value Custom Data' ,
         'name'       => 'multiValueCustomDataImport',
@@ -358,11 +357,40 @@ function hrui_civicrm_navigationMenu( &$params ) {
         'permission' => 'access HRJobs',
         'operator'   => null,
         'separator'  => null,
-        'parentID'   => 15,
+        'parentID'   => $contactNavId,
         'navID'      => $maxKey+1,
         'active'     => 1
       ),
       'child' => $multiValuedData,
     );
   }
+  $params[$contactNavId]['child'][$maxKey+$i] = array (
+    'attributes' => array (
+      'label'      => 'Job Import',
+      'name'       => 'jobImport',
+      'url'        => null,
+      'permission' => 'access HRJobs',
+      'operator'   => null,
+      'separator'  => null,
+      'parentID'   => $contactNavId,
+      'navID'      => $maxKey+$i,
+      'active'     => 1
+    ),
+    'child' => array (
+      $maxKey+$i+1 => array (
+        'attributes' => array (
+          'label'      => 'Jobs',
+          'name'       => 'jobs',
+          'url'        => 'civicrm/job/import',
+          'permission' => 'access HRJobs',
+          'operator'   => null,
+          'separator'  => 1,
+          'parentID'   => $maxKey+$i,
+          'navID'      => $maxKey+$i+1,
+          'active'     => 1
+        ),
+        'child' => null
+      )
+    )
+  );
 }
