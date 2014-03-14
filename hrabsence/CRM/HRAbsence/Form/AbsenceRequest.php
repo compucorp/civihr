@@ -327,7 +327,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     if ($this->_mode == 'edit') {
       if ($this->_action && ($this->_action == CRM_Core_Action::ADD)) {
-        $result = civicrm_api3('HRJob', 'get', array('manager_contact_id'=> $this->_loginUserID));
         $saveButton = array(
           'type' => 'done',
           'name' => ts('Save'),
@@ -340,12 +339,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'subName' => 'saveandapprove',
           'isDefault' => TRUE,
         );
-        if(!empty($result['values'])){
           $this->addButtons(array($saveButton,$approveButton));
-        }
-        else{
-          $this->addButtons(array($saveButton));
-        }
       }
       else {
         $this->add('hidden', 'source_record_id', $this->_aid);
