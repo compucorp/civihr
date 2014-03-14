@@ -227,7 +227,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
    */
   function copy() {
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE, 0, 'GET');
-    $urlString = 'civicrm/vacancy/search';
+    $urlString = 'civicrm/vacancy/find';
     $copyVacancy = CRM_HRRecruitment_BAO_HRVacancy::copy($id);
     $urlParams = 'reset=1';
     // Redirect to Copied HRVacancy Configuration

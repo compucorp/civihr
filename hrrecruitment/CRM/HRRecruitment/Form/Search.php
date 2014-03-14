@@ -31,6 +31,11 @@
  */
 class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
 
+  function preProcess() {
+    $vacancyStatus = CRM_Utils_Request::retrieve('status', 'String', $this);
+    CRM_Utils_System::setTitle(ts("Find Vacancies: {$vacancyStatus}"));
+  }
+
   /**
    * Build the form
    *

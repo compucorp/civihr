@@ -93,7 +93,7 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
     $result = civicrm_api3('HRVacancy', 'delete', $params);
     if (!empty($result)) {
       CRM_Core_Session::setStatus(ts("'%1' has been deleted.", array(1 => $this->_jobPosition)), ts('Vacancy Deleted'), 'success');
-      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/vacancy/search', 'reset=1'));
+      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
     }
   }
 }

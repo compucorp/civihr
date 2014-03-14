@@ -7,8 +7,8 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/vacancy/search</path>
-    <title>Find Vacancy</title>
+    <path>civicrm/vacancy/find</path>
+    <title>Find Vacancies</title>
     <page_callback>CRM_HRRecruitment_Page_SearchVacancy</page_callback>
     <access_arguments>access CiviCRM</access_arguments>
     <page_type>1</page_type>
