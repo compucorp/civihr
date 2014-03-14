@@ -6,4 +6,12 @@
     <title>New Vacancy</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/vacancy/search</path>
+    <title>Find Vacancy</title>
+    <page_callback>CRM_HRRecruitment_Page_SearchVacancy</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+    <page_type>1</page_type>
+    <is_ssl>true</is_ssl>
+  </item>
 </menu>

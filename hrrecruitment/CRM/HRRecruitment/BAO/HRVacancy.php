@@ -49,4 +49,33 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
     }
     return $formattedParams;
   }
+
+  /**
+   * This function is to make a copy of a Vacancy
+   *
+   * @param int     $id          the vacancy id to copy
+   *        obj     $newVacancy    object of CRM_HRRecruitment_DAO_HRVacancy
+   *        boolean $afterCreate call to copy after the create function
+   * @return void
+   * @access public
+   */
+  static function copy($id, $newVacancy = NULL, $afterCreate = FALSE) {
+    $defaults = $vacancyValues = array();
+    $vacancyParams = array('id' => $id);
+    $returnProperties = array('position', 'salary' , 'status_id', 'is_template');
+    CRM_Core_DAO::commonRetrieve('CRM_HRRecruitment_DAO_HRVacancy', $vacancyParams, $vacancyValues, $returnProperties);
+    $fieldsFix = ($afterCreate) ? array( ) : array('prefix' => array('position' => ts('Copy of') . ' '));
+    if ($newVacancy && is_a($newVacancy, 'CRM_HRRecruitment_DAO_HRVacancy')) {
+      $copyVacancy = $newVacancy;
+    }
+
+    if (!isset($copyVacancy)) {
+      $copyVacancy = &CRM_Core_DAO::copyGeneric('CRM_HRRecruitment_DAO_HRVacancy',
+        array('id' => $id),'',
+          $fieldsFix
+        );
+    }
+    CRM_Utils_System::flushCache();
+    return $copyVacancy;
+  }
 }
