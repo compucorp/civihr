@@ -47,27 +47,27 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $deleteExtra = ts('Are you sure you want to delete this Vacancy?');
 
       self::$_actionLinks = array(
-                                  CRM_Core_Action::UPDATE => array(
-                                                                   'name' => ts('Edit'),
-                                                                   'url' => 'civicrm/vacancy/add',
-                                                                   'qs' => 'action=update&id=%%id%%',
-                                                                   'title' => ts('Edit Vacancy'),
-                                                                   ),
-                                  CRM_Core_Action::DELETE => array(
-                                                                   'name' => ts('Delete'),
-                                                                   'url' => CRM_Utils_System::currentPath(),
-                                                                   'qs' => 'action=delete&id=%%id%%',
-                                                                   'extra' => 'onclick = "return confirm(\'' . $deleteExtra . '\');"',
-                                                                   'title' => ts('Delete Vacancy'),
-                                                                   ),
-                                  CRM_Core_Action::COPY => array(
-                                                                 'name' => ts('Copy'),
-                                                                 'url' => CRM_Utils_System::currentPath(),
-                                                                 'qs' => 'reset=1&action=copy&id=%%id%%',
-                                                                 'extra' => 'onclick = "return confirm(\'' . $copyExtra . '\');"',
-                                                                 'title' => ts('Copy Vacancy'),
-                                                                 ),
-                                  );
+        CRM_Core_Action::UPDATE => array(
+          'name' => ts('Edit'),
+          'url' => 'civicrm/vacancy/add',
+          'qs' => 'action=update&id=%%id%%',
+          'title' => ts('Edit Vacancy'),
+        ),
+        CRM_Core_Action::DELETE => array(
+          'name' => ts('Delete'),
+          'url' => CRM_Utils_System::currentPath(),
+          'qs' => 'action=delete&id=%%id%%',
+          'extra' => 'onclick = "return confirm(\'' . $deleteExtra . '\');"',
+          'title' => ts('Delete Vacancy'),
+        ),
+        CRM_Core_Action::COPY => array(
+          'name' => ts('Copy'),
+          'url' => CRM_Utils_System::currentPath(),
+          'qs' => 'reset=1&action=copy&id=%%id%%',
+          'extra' => 'onclick = "return confirm(\'' . $copyExtra . '\');"',
+          'title' => ts('Copy Vacancy'),
+        ),
+      );
     }
     return self::$_actionLinks;
   }
