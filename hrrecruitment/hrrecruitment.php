@@ -118,7 +118,7 @@ function hrrecruitment_civicrm_install() {
     array(
       'label'      => ts('Find Vacancies'),
       'name'       => 'find_vacancies',
-      'url'        => 'civicrm/vacancy/search?reset=1',
+      'url'        => 'civicrm/vacancy/find?reset=1',
       'permission' => null,
     ),
     array(
@@ -294,7 +294,7 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
       'attributes' => array(
         'label'      => "{$vacancyStatus}",
         'name'       => "{$vacancyStatus}",
-        'url'        => "civicrm/vacancy/search?force=1&status={$value}",
+        'url'        => "civicrm/vacancy/find?force=1&status={$vacancyStatus}",
         'permission' => NULL,
         'operator'   => 'OR',
         'separator'  => NULL,
