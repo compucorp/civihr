@@ -84,9 +84,15 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
       $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
       $dao->vacancy_id = $id;
-      $dao->find(TRUE);
-      $defaults['permission'] = $dao->permission;
-      $defaults['permission_contact_id'] = $dao->contact_id;
+      $dao->find();
+      $count = 1;
+      while ($dao->fetch()) {
+        $defaults['permission'][$count] = $dao->permission;
+        $defaults['permission_contact_id'][$count] = $dao->contact_id;
+        $count++;
+      }
+      //show that only number of permission row(s) which have defaults
+      $this->assign('showPermissionRow', $count-1);
 
       foreach (array('application_profile', 'evaluation_profile') as $profileName) {
         $dao = new CRM_Core_DAO_UFJoin;
@@ -173,8 +179,18 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Applicants') as $permission) {
       $vacancyPermissions[$permission] = array_pop(explode(':', $permissions[$permission]));
     }
-    $this->addEntityRef('permission_contact_id');
-    $this->add('select', 'permission', '', array('' => ts('- select -')) + $vacancyPermissions, FALSE, array('class' => 'crm-select2 huge'));
+
+    $rowCount = 5;
+    for ($rowNumber = 1; $rowNumber <= $rowCount; $rowNumber++) {
+      $this->add(
+        'select', "permission[{$rowNumber}]",
+        '', array('' => ts('- select -')) + $vacancyPermissions,
+        FALSE, array('class' => 'crm-select2 huge')
+      );
+      $this->addEntityRef("permission_contact_id[{$rowNumber}]");
+    }
+    $this->assign('rowCount', $rowCount);
+    $this->assign('showPermissionRow', 1);
 
     $this->addButtons(array(
         array(
@@ -237,11 +253,15 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     }
 
     if (!empty($params['permission']) && !empty($params['permission_contact_id'])) {
-      $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
-      $dao->contact_id = $params['permission_contact_id'];
-      $dao->permission = $params['permission'];
-      $dao->vacancy_id = $result['id'];
-      $dao->save();
+      foreach ($params['permission'] as $key => $permission) {
+        if ($permission && $params['permission_contact_id'][$key]) {
+          $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
+          $dao->contact_id = $params['permission_contact_id'][$key];
+          $dao->permission = $permission;
+          $dao->vacancy_id = $result['id'];
+          $dao->save();
+        }
+      }
     }
   }
 }
