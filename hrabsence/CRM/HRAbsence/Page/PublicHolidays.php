@@ -45,6 +45,8 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
    */
   static $_links = null;
 
+  public $useLivePageJS = TRUE;
+
   /**
    * Get BAO Name
    *
@@ -116,7 +118,6 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
    * @static
    */
   function browse() {
-    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/crm.livePage.js');
     $status = CRM_Core_PseudoConstant::activityStatus();
     $publicHoliday = array();
     $dao = new CRM_Activity_DAO_Activity();

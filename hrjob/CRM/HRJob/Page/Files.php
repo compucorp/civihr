@@ -61,7 +61,7 @@ class CRM_HRJob_Page_Files extends CRM_Core_Page {
           $file_url = "<a href=\"$url\">{$uri}</a>";
         }
         if(isset($fid)) {
-          $deleteurl = "<div class=evidence-file-delete><a class='action-item action-item-first' href='javascript:void(0)' id=file_{$fid}>Delete Attached File</a></div>";
+          $deleteurl = "<div class=evidence-file-delete><a class='action-item crm-hover-button' href='javascript:void(0)' id=file_{$fid}>Delete Attached File</a></div>";
           echo "<div id='del_{$fid}'>{$file_url}{$deleteurl}</div>";
         }
       }
