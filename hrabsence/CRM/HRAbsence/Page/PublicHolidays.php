@@ -118,11 +118,9 @@ class CRM_HRAbsence_Page_PublicHolidays extends CRM_Core_Page_Basic {
    * @static
    */
   function browse() {
-    $status = CRM_Core_PseudoConstant::activityStatus();
     $publicHoliday = array();
     $dao = new CRM_Activity_DAO_Activity();
-    $activity_type_id = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Public Holiday', 'return'=> 'value',) );
-    $dao->activity_type_id = $activity_type_id;
+    $dao->activity_type_id = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Public Holiday', 'return'=> 'value'));
     $dao->find();
     while ($dao->fetch()) {
       $publicHoliday[$dao->id] = array();
