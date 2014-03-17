@@ -49,8 +49,9 @@
           <td>
             <input
               type="text"
+              readonly="readonly"
               size="5"
-              class="hrabsence-annualentitlement-input"
+              class="hrabsence-annualentitlement-input crm-editable-enabled"
               data-period-id=<%- periods[period_id].id %>
               data-absence-type-id=<%- absencetype[absencetypeId] %>
               />
