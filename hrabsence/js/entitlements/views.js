@@ -52,6 +52,16 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
      }
     },
     events: {
+      "click .hrabsence-annualentitlement-input": function(event) {
+        $(event.currentTarget)
+          .removeClass('crm-editable-enabled')
+          .prop('readonly', false);
+      },
+      "keyup .hrabsence-annualentitlement-input": function(event) {
+        if (event.keyCode === 13) {
+          $(event.currentTarget).blur().change();
+        }
+      },
       "change .hrabsence-annualentitlement-input": function(event) {
         var periodId = $(event.currentTarget).attr('data-period-id');
         var typeId = $(event.currentTarget).attr('data-absence-type-id');
@@ -59,10 +69,12 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
 
         //validate if amount is numeric
         if(amount && !($.isNumeric(amount))) {
-          CRM.alert("Enter numeric value for entitlement amount", '', 'error');
-          $(event.currentTarget).css({'background-color':'#FBE3E4','color':'#98396D'});
+          $(event.currentTarget).crmError(ts("Enter numeric value for entitlement amount"));
           return;
         }
+        $(event.currentTarget)
+          .addClass('crm-editable-enabled')
+          .prop('readonly', true);
         var entitlements = this.options.entitlementCollection.find(function(e){
           return e.get('period_id') == periodId && e.get('type_id') == typeId;
         });
