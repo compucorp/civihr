@@ -548,7 +548,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         }
         foreach ($absentDateDurations as $date => $duration) {
           $result = civicrm_api3('Activity', 'create', array(
-            'activity_type_id' => $this->_activityTypeID,
+            'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
             'source_record_id' => $submitValues['source_record_id'],
             'activity_date_time' => $date,
             'duration' => $duration,
