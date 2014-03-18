@@ -76,6 +76,8 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     // get the requested action 
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE, 'browse');
 
+    // get the requested action 
+    $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
     // assign vars to templates
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
@@ -108,14 +110,15 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     }
 
     // finally browse the custom groups
-    $this->browse();
+    $this->browse($action , $status);
 
     // parent run
     return parent::run();
   }
 
-  function browse($action = NULL){
-    $params = array();
+
+  function browse($action = NULL, $status){
+    $params = array($status);
     $whereClause = $this->whereClause($params, TRUE, $this->_force);
     $this->_force = $this->_searchResult = NULL;
     $this->search();
@@ -136,7 +139,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $permissions[] = CRM_Core_Permission::DELETE;
     }
     $mask = CRM_Core_Action::mask($permissions);
-    $dao = CRM_Core_DAO::executeQuery($query,$params, TRUE, 'CRM_HRRecruitment_DAO_HRVacancy');
+    $dao = CRM_Core_DAO::executeQuery($query, $params, TRUE, 'CRM_HRRecruitment_DAO_HRVacancy');
     $rowsVacancy =array();
 
     while ($dao->fetch()) {
@@ -158,13 +161,13 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $row['salary'] = $dao->salary;
       $row['startdate'] = $dao->start_date;
       $row['enddate'] =$dao->end_date;
-      $row['action'] = CRM_Core_Action::formLink(self::links(), $mask,array('id' => $dao->id));
+      $row['action'] = CRM_Core_Action::formLink(self::links(), $mask, array('id' => $dao->id));
       $rowsVacancy[] = $row;
     }
     $this->assign('rows', $rowsVacancy);
   }
 
-  function whereClause() {
+  function whereClause($status) {
     $values    = array();
     $clauses   = array();
     $title     = $this->get('job_position');
@@ -173,17 +176,32 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $clauses[] = "position LIKE '%".$title."%'";
     }
     $value = $this->get('status_type_id');
-    $val = array();
-    if ($value) {
-      if (is_array($value)) {
-        foreach ($value as $k => $v) {
-          if ($v) {
-            $val[$k] = $k;
-          }
-        }
-        $type = implode(',', $val);
+    if (empty($value)) {
+      $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name');
+      $paramsVacancy = array(        
+        'sequential' => 1,
+        'option_group_id' => $vacanciesId,
+        'name' => $status[0],
+      );
+      $result = civicrm_api3('OptionValue', 'get', $paramsVacancy);
+      if (isset($result['values'][0]['value'])) {
+        $value = $result['values'][0]['value'];
+        $clauses[] = "status_id IN ({$value})";
       }
-      $clauses[] = "status_id IN ({$type})";
+    }
+    else {
+      $val = array();
+      if ($value) {
+        if (is_array($value)) {
+          foreach ($value as $k => $v) {
+            if ($v) {
+              $val[$k] = $k;
+            }
+          }
+          $type = implode(',', $val);
+        }
+        $clauses[] = "status_id IN ({$type})";
+      }
     }
     $location= $this->get('location_type_id');
     $val = array();
@@ -194,7 +212,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
             $val[$k] = "'".$k."'";
           }
         }
-        $type = implode(',', $val);
+        $type = implode(',', $val);	
       }
       $clauses[] = "location IN ({$type})";
     }

@@ -263,5 +263,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         }
       }
     }
+   
+    if ($this->_action & CRM_Core_Action::UPDATE) {
+      if ($this->controller->getButtonName('submit') == "_qf_HRVacancy_next") {
+        CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
+      }
+    } 
   }
 }
