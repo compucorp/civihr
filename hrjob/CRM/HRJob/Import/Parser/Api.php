@@ -58,7 +58,7 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     $errorMessages = array();
 
     foreach ($this->_entity as $entity) {
-      $this->_params = $this->getActiveFieldParams($entity);
+      $this->_params = $this->getActiveFieldParams();
       foreach ($this->_requiredFields as $requiredFieldKey => $requiredFieldVal) {
         if (empty($this->_params[$requiredFieldVal])) {
           $errorRequired = TRUE;
@@ -104,7 +104,12 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     $this->_params['skipRecentView'] = TRUE;
     $this->_params['check_permissions'] = TRUE;
     //JOB ID
-    $params = $this->getActiveFieldParams('HRJob');
+    $params = $this->getActiveFieldParams();
+    for ($i = 0; $i < $this->_activeFieldCount; $i++) {
+      if (!isset($this->_activeEntityFields['HRJob'][$this->_activeFields[$i]->_name])) {
+        unset($params[$this->_activeFields[$i]->_name]);
+      }
+    }
     self::formatData($params);
     try{
       $fieldJob = civicrm_api3('HRJob', 'create', $params);
@@ -117,7 +122,12 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     try{
       foreach ($this->_entity as $entity) {
         if ($entity != 'HRJob') {
-          $params = $this->getActiveFieldParams($entity);
+          $params = $this->getActiveFieldParams();
+          for ($i = 0; $i < $this->_activeFieldCount; $i++) {
+            if (!isset($this->_activeEntityFields[$entity][$this->_activeFields[$i]->_name])) {
+              unset($params[$this->_activeFields[$i]->_name]);
+            }
+          }
           self::formatData($params);
           if (!empty($params)) {
             $params['job_id'] = $fieldJob['id'];
@@ -163,9 +173,9 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
           }
           if (array_key_exists('pseudoconstant', $fields[$key])) {
             $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
-            if ($val = array_search(strtolower(trim($value)), array_map('strtolower', array_flip($options)))) {
-              $flipOpt = array_flip($options);
-              $params[$key] = $flipOpt[$val];
+            if (array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
+              $flipOpt = array_change_key_case($options);
+              $params[$key] = $flipOpt[strtolower(trim($value))];
             }
           }
           if ($fields[$key]['type'] == CRM_Utils_Type::T_BOOLEAN ) {

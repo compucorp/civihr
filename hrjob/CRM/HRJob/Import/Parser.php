@@ -264,6 +264,7 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
     }
     return $this->fini();
   }
+
   /**
    * Given a list of the importable field keys that the user has selected
    * set the active fields array to this list
@@ -283,26 +284,6 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
         $this->_activeFields[] = clone($this->_fields[$key]);
       }
     }
-  }
-
-  /**
-   * function to format the field values for input to the api
-   *
-   * @return array (reference ) associative array of name/value pairs
-   * @access public
-   */
-  function &getActiveFieldParams($entity) {
-    $params = array();
-    for ($i = 0; $i < $this->_activeFieldCount; $i++) {
-      if (isset($this->_activeFields[$i]->_value)
-        && !isset($params[$this->_activeFields[$i]->_name])
-        && !isset($this->_activeFields[$i]->_related)
-        && isset($this->_activeEntityFields[$entity][$this->_activeFields[$i]->_name])
-      ) {
-        $params[$this->_activeFields[$i]->_name] = $this->_activeFields[$i]->_value;
-      }
-    }
-    return $params;
   }
 
   function addField($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
@@ -381,7 +362,7 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
           }
           if (array_key_exists('pseudoconstant', $fields[$key])) {
             $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
-            if (!self::in_value(trim($value), array_flip($options))) {
+            if (!array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
               self::addToErrorMsg($fields[$key]['title'], $errorMessage);
             }
           }
