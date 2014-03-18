@@ -43,6 +43,20 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
    *
    * @return void
    */
+
+  function setDefaultValues() {
+    $grpParams['name'] = 'vacancy_status';
+    CRM_Core_OptionValue::getValues($grpParams,$optionValues);
+    foreach ($optionValues as $statusId => $statusName) {
+      if ($statusName['name']== CRM_Utils_Request::retrieve('status', 'String',$this)) {	
+        $id = $statusName['value'];
+        $defaults = array();
+        $defaults["status_type_id[$id]"] = 1;
+        return $defaults;
+      }    
+    }
+  }
+
   public function buildQuickForm() {
     $this->addElement('text', 'job_position', ts('Job Position:'));
     $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
