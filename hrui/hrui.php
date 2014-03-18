@@ -364,33 +364,4 @@ function hrui_civicrm_navigationMenu( &$params ) {
       'child' => $multiValuedData,
     );
   }
-  $params[$contactNavId]['child'][$maxKey+$i] = array (
-    'attributes' => array (
-      'label'      => 'Job Import',
-      'name'       => 'jobImport',
-      'url'        => null,
-      'permission' => 'access HRJobs',
-      'operator'   => null,
-      'separator'  => null,
-      'parentID'   => $contactNavId,
-      'navID'      => $maxKey+$i,
-      'active'     => 1
-    ),
-    'child' => array (
-      $maxKey+$i+1 => array (
-        'attributes' => array (
-          'label'      => 'Jobs',
-          'name'       => 'jobs',
-          'url'        => 'civicrm/job/import',
-          'permission' => 'access HRJobs',
-          'operator'   => null,
-          'separator'  => 1,
-          'parentID'   => $maxKey+$i,
-          'navID'      => $maxKey+$i+1,
-          'active'     => 1
-        ),
-        'child' => null
-      )
-    )
-  );
 }
