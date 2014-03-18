@@ -318,16 +318,19 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     if ($this->_mode == 'edit') {
       if ($this->_action && ($this->_action == CRM_Core_Action::ADD)) {
-        $this->addButtons(
-          array(
-            array(
-              'type' => 'done',
-              'name' => ts('Save'),
-              'subName' => 'save',
-              'isDefault' => TRUE,
-            ),
-          )
+        $saveButton = array(
+          'type' => 'done',
+          'name' => ts('Save'),
+          'subName' => 'save',
+          'isDefault' => TRUE,
         );
+        $approveButton = array(
+          'type' => 'done',
+          'name' => ts('Save and Approve'),
+          'subName' => 'saveandapprove',
+          'isDefault' => TRUE,
+        );
+          $this->addButtons(array($saveButton,$approveButton));
       }
       else {
         $this->add('hidden', 'source_record_id', $this->_aid);
@@ -455,9 +458,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'assignee_contact_id' => $this->_managerContactID,
         'activity_type_id' => $this->_activityTypeID,
       );
-
-      //we want to keep the activity status in Scheduled for new absence
-      $activityParam['status_id'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
+      if (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
+        $activityParam['status_id'] = CRM_Utils_Array::key('Completed', $activityStatus);
+      }
+      else {
+        //we want to keep the activity status in Scheduled for new absence if save button is clicked
+        $activityParam['status_id'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
+      }
       $result = civicrm_api3('Activity', 'create', $activityParam);
 
       //save the custom data
@@ -482,9 +489,12 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         civicrm_api3('Activity', 'create', $activityLeavesParam);
       }
 
-      CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
-      $buttonName = $this->controller->getButtonName();
       if (array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) {
+        CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
+        $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
+      }
+      elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
+        CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
     }
@@ -539,7 +549,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         }
         foreach ($absentDateDurations as $date => $duration) {
           $result = civicrm_api3('Activity', 'create', array(
-            'activity_type_id' => $this->_activityTypeID,
+            'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
             'source_record_id' => $submitValues['source_record_id'],
             'activity_date_time' => $date,
             'duration' => $duration,
