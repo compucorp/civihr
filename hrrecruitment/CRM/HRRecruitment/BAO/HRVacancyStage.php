@@ -25,5 +25,19 @@
 +--------------------------------------------------------------------+
 */
 class CRM_HRRecruitment_BAO_HRVacancyStage extends CRM_HRRecruitment_DAO_HRVacancyStage {
-}
 
+ /**
+   * Function to fetch casestatuses
+   *
+   * @param int     $id    the vacancy id
+   * @return array - array of related  casestatus based on job position.
+   */
+  public static function caseStage($id) {
+    $result = civicrm_api3('HRVacancyStage', 'get', array('vacancy_id'=> $id ));
+    $case_status = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
+    foreach ($result['values'] as $id => $status) {
+      $caseStatus[] = $case_status[$status['case_status_id']]; 
+    }
+    return $caseStatus;
+  }  
+}
