@@ -70,6 +70,36 @@ function hrjob_civicrm_install() {
     }
   }
 
+  //Add job import navigation menu
+  $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+
+  $importJobNavigation = new CRM_Core_DAO_Navigation();
+  $params = array (
+    'domain_id'  => CRM_Core_Config::domainID(),
+    'label'      => ts('Import Jobs'),
+    'name'       => 'jobImport',
+    'url'        => null,
+    'parent_id'  => $contactNavId,
+    'weight'     => $weight+1,
+    'permission' => 'access HRJobs',
+    'separator'  => 1,
+    'is_active'  => 1
+  );
+  $importJobNavigation->copyValues($params);
+  $importJobNavigation->save();
+  $importJobMenuTree = array(
+    'label' => ts('Jobs'),
+    'name' => 'jobs',
+    'url'  => 'civicrm/job/import',
+    'permission' => 'access HRJobs',
+    'is_active'  => 1,
+    'parent_id'  => $importJobNavigation->id,
+    'weight'     => 1,
+  );
+  CRM_Core_BAO_Navigation::add($importJobMenuTree);
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_install();
 }
 
@@ -87,6 +117,12 @@ function hrjob_civicrm_uninstall() {
       CRM_Contact_BAO_ContactType::del($id);
     }
   }
+
+  //delete job import navigation menu
+  $importJobId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
+  CRM_Core_BAO_Navigation::processDelete($importJobId);
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_uninstall();
 }
 
@@ -94,6 +130,9 @@ function hrjob_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrjob_civicrm_enable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 1));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_enable();
 }
 
@@ -101,6 +140,9 @@ function hrjob_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrjob_civicrm_disable() {
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 0));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrjob_civix_civicrm_disable();
 }
 
@@ -322,42 +364,6 @@ function hrjob_getSummaryFields($fresh = FALSE) {
     }
   }
   return $cache;
-}
-
-function hrjob_civicrm_navigationMenu( &$params ) {
-    //  Get the maximum key of $params
-    $maxKey = ( max( array_keys($params) ) );
-    $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-
-    $params[$contactNavId]['child'][$maxKey+1] = array (
-      'attributes' => array (
-        'label'      => 'Job Import',
-        'name'       => 'jobImport',
-        'url'        => null,
-        'permission' => 'access HRJobs',
-        'operator'   => null,
-        'separator'  => null,
-        'parentID'   => $contactNavId,
-        'navID'      => $maxKey+1,
-        'active'     => 1
-      ),
-      'child' => array (
-        $maxKey+2 => array (
-          'attributes' => array (
-            'label'      => 'Jobs',
-            'name'       => 'jobs',
-            'url'        => 'civicrm/job/import',
-            'permission' => 'access HRJobs',
-            'operator'   => null,
-            'separator'  => 1,
-            'parentID'   => $contactNavId,
-            'navID'      => $maxKey+2,
-            'active'     => 1
-          ),
-          'child' => null
-        )
-      )
-    );
 }
 
 /**
