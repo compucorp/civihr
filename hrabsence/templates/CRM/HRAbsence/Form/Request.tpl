@@ -216,53 +216,37 @@
 {/literal}{if $action eq 1}{literal}
   $("#tblabsence", $form).hide();
   $("#commentDisplay", $form).hide();
-  var dateValues = [];
   $("#_qf_AbsenceRequest_done_save-bottom", $form).click(function(event){
-    var end_date = $('#end_date_display', $form).datepicker( "getDate" ),
-      start_date = $('#start_date_display', $form).datepicker( "getDate" ),
-      diDate = Math.floor((end_date - start_date) / 86400000),
-      selDate,
-      selectopt = 0;
-      for (var x = 0; x <= diDate; x++) {
-        selDate = $('#label_'+x, $form).text();
-        selectopt = $('#options_'+x+' :selected', $form).text();
-        if (selectopt == "Full Day") {
-          dateValues[x] = selDate +":" + "480";
-        }
-        else {
-          if (selectopt == "Half Day") {
-            dateValues[x] = selDate +":" + "240";
-          }
-	  else{
-	    dateValues[x] = selDate +":" + "0";
-	  }
-        }
-      }
-    $("#date_values", $form).val(dateValues.join('|'));
+    save();
   });
   $("#_qf_AbsenceRequest_done_saveandapprove-bottom", $form).click(function(event){
-    var end_date = $('#end_date_display', $form).datepicker( "getDate" ),
-      start_date = $('#start_date_display', $form).datepicker( "getDate" ),
-      diDate = Math.floor((end_date - start_date) / 86400000),
-      selDate,
-      selectopt = 0;
-      for (var x = 0; x <= diDate; x++) {
-        selDate = $('#label_'+x, $form).text();
-        selectopt = $('#options_'+x+' :selected', $form).text();
-        if (selectopt == "Full Day") {
-          dateValues[x] = selDate +":" + "480";
-        }
-        else {
-          if (selectopt == "Half Day") {
-            dateValues[x] = selDate +":" + "240";
-          }
-	  else{
-	    dateValues[x] = selDate +":" + "0";
-	  }
-        }
-      }
-    $("#date_values", $form).val(dateValues.join('|'));
+    save();
   });
+
+  function save () {
+    var dateValues = [];
+    var end_date = $('#end_date_display', $form).datepicker( "getDate" ),
+    start_date = $('#start_date_display', $form).datepicker( "getDate" ),
+    diDate = Math.floor((end_date - start_date) / 86400000),
+    selDate,
+    selectopt = 0;
+    for (var x = 0; x <= diDate; x++) {
+      selDate = $('#label_'+x, $form).text();
+      selectopt = $('#options_'+x+' :selected', $form).text();
+      if (selectopt == "Full Day") {
+        dateValues[x] = selDate +":" + "480";
+      }
+      else {
+        if (selectopt == "Half Day") {
+          dateValues[x] = selDate +":" + "240";
+        }
+        else{
+          dateValues[x] = selDate +":" + "0";
+	}
+      }
+    }
+    $("#date_values", $form).val(dateValues.join('|'));
+  }
 {/literal}{/if}{literal}
 
   var countDays = 0;
