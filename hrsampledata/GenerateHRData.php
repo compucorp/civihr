@@ -1140,9 +1140,10 @@ class GenerateHRData {
     $status_id = array_flip($ids);
 
     for ($i = 1; $i <= mt_rand(1, 3); $i++) {
+      $position = $this->randomItem('vacancyposition');
       $vacanciesValues = array(
         'salary' => $this->randomItem('salary'),
-        'position' => $this->randomItem('vacancyposition'),
+        'position' => $position,
         'description' => $this->randomItem('vacancydescription'),
         'benefits' => $this->randomItem('benefits'),
         'requirements' => $this->randomItem('requirements'),
@@ -1158,31 +1159,40 @@ class GenerateHRData {
       $hrVacancies[] = $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancy', $vacanciesValues);
     }
     //For each HRVacancies, there may be 0 or 1 records for each of these entity types: HRVacancyCases, HRVacancyStage, HRVacancy_permission.
+    $gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Vacancy', 'id', 'name');
+
     foreach ($hrVacancies as $key => $hrVacanciesObj) {
       //sample data for HRVacancy Cases table
       for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        $vacancyCaseValues = array(
-                                   'case_id' => mt_rand(0, 1),
-                                   'vacancy_id' => $hrVacanciesObj->id,
-                                   );
-        $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyCase', $vacancyCaseValues);
+        $applicationParams = array( 'contact_id' =>$cid,
+          'case_type_id' => 'Application',
+          'subject' => $position,
+          'status_id'=> array_rand($status_id,1));
+        $case = CRM_Case_BAO_Case::create($applicationParams);
+        $applicationParams['case_id'] = $case->id;
+        $caseContact = CRM_Case_BAO_Case::addCaseToContact($applicationParams);
+
+        $values = array( 'entity_id' =>  $case->id,
+          'vacancy_id' => $hrVacanciesObj->id
+        );
+        $this->insertCustomData($gid, $values);
       }
       //sample data for HRVacancy Stages table
       for ($i = 1; $i <= mt_rand(0, 1); $i++) {
         $vacancyStagesValues = array(
-                                     'case_status_id' => mt_rand(0, 1),
-                                     'vacancy_id' => $hrVacanciesObj->id,
-                                     'weight' => mt_rand(0, 1),
-                                     );
+          'case_status_id' => mt_rand(0, 1),
+          'vacancy_id' => $hrVacanciesObj->id,
+          'weight' => mt_rand(0, 1),
+        );
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyStage', $vacancyStagesValues);
       }
       //sample data for HRPermission table
       for ($i = 1; $i <= mt_rand(0, 1); $i++) {
         $vacancyPermissionValues = array(
-                                         'contact_id' => $cid,
-                                         'vacancy_id' => $hrVacanciesObj->id,
-                                         'permission' => $this->randomItem('permission'),
-                                         );
+          'contact_id' => $cid,
+          'vacancy_id' => $hrVacanciesObj->id,
+          'permission' => $this->randomItem('permission'),
+        );
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyPermission', $vacancyPermissionValues);
       }
       //sample data for HRPermission UFJoin table sample data will be entered in later stage
@@ -1197,6 +1207,7 @@ class GenerateHRData {
       /* } */
     }
   }
+
   /**
    * This is a common method called to insert the data into HRVacancies tables
    */
