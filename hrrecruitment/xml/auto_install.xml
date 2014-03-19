@@ -12,14 +12,14 @@
       <help_post></help_post>
       <weight>17</weight>
       <is_active>1</is_active>
-      <table_name>civicrm_value_application_17</table_name>
+      <table_name>civicrm_value_application</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
       <is_reserved>0</is_reserved>
     </CustomGroup>
     <CustomGroup>
-      <name>Vacancy</name>
+      <name>application_case</name>
       <title>Vacancy</title>
       <extends>Case</extends>
       <extends_entity_column_value_option_group>case_type</extends_entity_column_value_option_group>
@@ -30,7 +30,7 @@
       <help_post></help_post>
       <weight>18</weight>
       <is_active>1</is_active>
-      <table_name>civicrm_value_vacancy_17</table_name>
+      <table_name>civicrm_value_vacancy</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
@@ -57,8 +57,8 @@
       <custom_group_name>Application</custom_group_name>
     </CustomField>
     <CustomField>
-      <name>Vacancy_ID</name>
-      <label>Vacancy ID</label>
+      <name>vacancy_id</name>
+      <label>Vacancy</label>
       <data_type>Int</data_type>
       <html_type>Text</html_type>
       <is_required>1</is_required>
@@ -72,7 +72,7 @@
       <note_rows>4</note_rows>
       <column_name>vacancy_id</column_name>
       <in_selector>0</in_selector>
-      <custom_group_name>Vacancy</custom_group_name>
+      <custom_group_name>application_case</custom_group_name>
     </CustomField>
   </CustomFields>
   <ProfileGroups>
