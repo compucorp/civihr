@@ -281,6 +281,11 @@ function hrrecruitment_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRRecruitment_DAO_HRVacancy',
     'table' => 'civicrm_hrvacancy',
   );
+  $entityTypes[] = array(
+    'name' => 'HRVacancyStage',
+    'class' => 'CRM_HRRecruitment_DAO_HRVacancyStage',
+    'table' => 'civicrm_hrvacancy_stage',
+  );
 }
 
 function hrrecruitment_civicrm_navigationMenu( &$params ) {
