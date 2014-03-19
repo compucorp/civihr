@@ -1159,7 +1159,7 @@ class GenerateHRData {
       $hrVacancies[] = $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancy', $vacanciesValues);
     }
     //For each HRVacancies, there may be 0 or 1 records for each of these entity types: HRVacancyCases, HRVacancyStage, HRVacancy_permission.
-    $gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Vacancy', 'id', 'name');
+    $gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
 
     foreach ($hrVacancies as $key => $hrVacanciesObj) {
       //sample data for HRVacancy Cases table
