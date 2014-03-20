@@ -65,6 +65,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $id = $this->_id;
 
     if ($id || ($id = CRM_Utils_Request::retrieve('template_id', 'Integer', $this))) {
+
+      if (CRM_Utils_Request::retrieve('template_id', 'Integer', $this)) {
+        $defaults['template_id'] = $id;
+      }
+
       $result = civicrm_api3('HRVacancy', 'get', array('id' => $id));
       $defaults = $result['values'][$id];
 
@@ -91,8 +96,12 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         $defaults['permission_contact_id'][$count] = $dao->contact_id;
         $count++;
       }
-      //show that only number of permission row(s) which have defaults
-      $this->assign('showPermissionRow', $count-1);
+      $count--;
+
+      //show that only number of permission row(s) which have defaults if any
+      if ($count) {
+        $this->assign('showPermissionRow', $count);
+      }
 
       foreach (array('application_profile', 'evaluation_profile') as $profileName) {
         $dao = new CRM_Core_DAO_UFJoin;
@@ -123,14 +132,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
    * @return void
    * @access public
    */
-  public function buildQuickForm() {
+  function buildQuickForm() {
     $attributes = CRM_Core_DAO::getAttribute('CRM_HRRecruitment_DAO_HRVacancy');
 
-    $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 1, 'return' => 'position'));
     $templates  = $vacancyPermissions = array();
-    foreach ($result['values'] as $id => $vacancy) {
-      $templates[$id] = $vacancy['position'];
-    }
+
     $this->add('text', 'position', ts('Job Position'), $attributes['position'], TRUE);
     $this->addSelect('location', array('label' => ts('Location'), 'entity' => 'HRJob', 'field' => 'location'));
     $this->add('text', 'salary', ts('Salary'), $attributes['salary']);
@@ -142,6 +148,10 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->addSelect('status_id', array(), TRUE);
 
     if (!$this->_isTemplate) {
+      $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 1, 'return' => 'position'));
+      foreach ($result['values'] as $id => $vacancy) {
+        $templates[$id] = $vacancy['position'];
+      }
       $this->add('select', 'template_id', ts('From Template'), array('' => ts('- select -')) + $templates, FALSE, array('class' => 'crm-select2 huge'));
 
       $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
@@ -214,6 +224,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->exportValues();
+    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     if ($this->_id) {
       $params['id'] = $this->_id;
@@ -222,8 +233,15 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_stage WHERE vacancy_id = {$this->_id}");
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_permission WHERE vacancy_id = {$this->_id}");
     }
+    else {
+      $vacancyParams['created_date'] = date('YmdHis');
+      $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
+    }
 
-    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
+    if($this->_isTemplate) {
+      $vacancyParams['is_template'] = $this->_isTemplate;
+    }
+
     $result = civicrm_api3('HRVacancy', 'create', $vacancyParams);
 
     if (isset($params['stages']) && count($params['stages'])) {

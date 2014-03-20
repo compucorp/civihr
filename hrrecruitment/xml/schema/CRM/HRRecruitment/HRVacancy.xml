@@ -82,4 +82,20 @@
     <type>datetime</type>
     <comment>Vacancy End Date</comment>
   </field>
+  <field>
+    <name>created_date</name>
+    <type>datetime</type>
+    <comment>Vacancy End Date</comment>
+  </field>
+  <field>
+    <name>created_id</name>
+    <type>int unsigned</type>
+    <comment>FK to civicrm_contact, who created this vacancy</comment>
+    <foreignKey>
+      <name>created_id</name>
+      <table>civicrm_contact</table>
+      <key>id</key>
+      <onDelete>SET NULL</onDelete>
+  </foreignKey>
+  </field>
 </table>
