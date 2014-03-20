@@ -289,28 +289,28 @@ function hrrecruitment_civicrm_entityTypes(&$entityTypes) {
 }
 
 function hrrecruitment_civicrm_navigationMenu( &$params ) {
-  $vacanciesMenuItems = array();
-  $vacancieStatuses = CRM_Core_OptionGroup::values('vacancy_status');
-  $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
-  $parentVacanciesId =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'find_vacancies', 'id', 'name');
+  $vacancyMenuItems = array();
+  $vacancyStatus = CRM_Core_OptionGroup::values('vacancy_status');
+  $vacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
+  $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'find_vacancies', 'id', 'name');
   $count = 0;
-  foreach ($vacancieStatuses as $value => $vacancyStatus) {
-    $vacanciesMenuItems[$count] = array(
+  foreach ($vacancyStatus as $value => $status) {
+    $vacancyMenuItems[$count] = array(
       'attributes' => array(
-        'label'      => "{$vacancyStatus}",
-        'name'       => "{$vacancyStatus}",
-        'url'        => "civicrm/vacancy/find?force=1&status={$vacancyStatus}",
+        'label'      => "{$status}",
+        'name'       => "{$status}",
+        'url'        => "civicrm/vacancy/find?force=1&status={$value}",
         'permission' => NULL,
         'operator'   => 'OR',
         'separator'  => NULL,
-        'parentID'   => $parentVacanciesId,
+        'parentID'   => $parentID,
         'navID'      => 1,
         'active'     => 1
       )
     );
     $count++;
   }
-  if (!empty($vacanciesMenuItems)) {
-    $params[$vacanciesId]['child'][$parentVacanciesId]['child'] = $vacanciesMenuItems;
+  if (!empty($vacancyMenuItems)) {
+    $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
   }
 }

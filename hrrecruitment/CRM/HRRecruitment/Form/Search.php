@@ -31,38 +31,64 @@
  */
 class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
 
+  /**
+   * the status id of the vacancy that we are searching
+   *
+   * @var int
+   * @public
+   */
+  public $_statusID;
+
+  /**
+   * Function to set variables up before form is built
+   *
+   * @return void
+   * @access public
+   */
   function preProcess() {
-    $vacancyStatus = CRM_Utils_Request::retrieve('status', 'String', $this);
-    CRM_Utils_System::setTitle(ts("Find Vacancies: {$vacancyStatus}"));
+
+    $this->_statusID = CRM_Utils_Request::retrieve('status', 'String', $this);
+    $vacancyStatus = '';
+    if ($this->_statusID) {
+      $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE, FALSE,
+        FALSE, "AND v.value = {$this->_statusID}");
+      $vacancyStatus = $status[$this->_statusID];
+    }
+
+    CRM_Utils_System::setTitle(ts('Find %1 Vacancies', array(1 => $vacancyStatus)));
   }
 
   /**
-   * Build the form
+   * This function sets the default values for the form. Note that in edit/view mode
+   * the default values are retrieved from the database
    *
    * @access public
    *
    * @return void
    */
-
   function setDefaultValues() {
-    $grpParams['name'] = 'vacancy_status';
-    CRM_Core_OptionValue::getValues($grpParams,$optionValues);
-    foreach ($optionValues as $statusId => $statusName) {
-      if ($statusName['name']== CRM_Utils_Request::retrieve('status', 'String',$this)) {	
-        $id = $statusName['value'];
-        $defaults = array();
-        $defaults["status_type_id[$id]"] = 1;
-        return $defaults;
-      }    
+    $defaults = array();
+    if (!empty($this->_statusID)) {
+      $defaults["status_type_id[$this->_statusID]"] = 1;
     }
+
+    return $defaults;
   }
 
+  /**
+   * Function to actually build the form
+   *
+   * @return void
+   * @access public
+   */
   public function buildQuickForm() {
-    $this->addElement('text', 'job_position', ts('Job Position:'));
+    $this->addElement('text', 'job_position', ts('Job Position'));
+
     $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
     foreach ($status as $statusId => $statusName) {
       $this->addElement('checkbox', "status_type_id[$statusId]", 'Status', $statusName);
     }
+
     $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
     foreach ($location as $locationId => $locationName) {
       $this->addElement('checkbox', "location_type_id[$locationId]", 'Location', $locationName);
@@ -78,6 +104,17 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
     );
   }
 
+  /**
+   * The post processing of the form gets done here.
+   *
+   * The processing consists of using a Selector / Controller framework for getting the
+   * search results.
+   *
+   * @param
+   *
+   * @return void
+   * @access public
+   */
   function postProcess() {
     $params = $this->controller->exportValues($this->_name);
     $parent = $this->controller->getParent();
