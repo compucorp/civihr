@@ -168,26 +168,16 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
   }
 
   function whereClause($status) {
-    $values    = array();
-    $clauses   = array();
-    $title     = $this->get('job_position');
+    $clauses = array();
+    $title = $this->get('job_position');
 
     if ($title) {
-      $clauses[] = "position LIKE '%".$title."%'";
+      $clauses[] = "position LIKE '%" . $title . "%'";
     }
     $value = $this->get('status_type_id');
-    if (empty($value)) {
-      $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name');
-      $paramsVacancy = array(        
-        'sequential' => 1,
-        'option_group_id' => $vacanciesId,
-        'name' => $status[0],
-      );
-      $result = civicrm_api3('OptionValue', 'get', $paramsVacancy);
-      if (isset($result['values'][0]['value'])) {
-        $value = $result['values'][0]['value'];
-        $clauses[] = "status_id IN ({$value})";
-      }
+
+    if (empty($value) && CRM_Utils_Rule::integer($status[0])) {
+      $clauses[] = "status_id IN ({$status[0]})";
     }
     else {
       $val = array();
@@ -216,6 +206,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       }
       $clauses[] = "location IN ({$type})";
     }
+
     return !empty($clauses) ? implode(' AND ', $clauses) : '(1)';
   }
 
