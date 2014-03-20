@@ -154,6 +154,19 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
    */
   public $end_date;
   /**
+   * Vacancy Created Date
+   *
+   * @var datetime
+   */
+  public $created_date;
+  /**
+   * FK to civicrm_contact, who created this vacancy
+   *
+   * @var int unsigned
+   */
+  public $created_id;
+
+  /**
    * class constructor
    *
    * @access public
@@ -163,6 +176,22 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
   {
     $this->__table = 'civicrm_hrvacancy';
     parent::__construct();
+  }
+  /**
+   * return foreign keys and entity references
+   *
+   * @static
+   * @access public
+   * @return array of CRM_Core_EntityReference
+   */
+  static function getReferenceColumns()
+  {
+    if (!self::$_links) {
+      self::$_links = array(
+        new CRM_Core_EntityReference(self::getTableName() , 'created_id', 'civicrm_contact', 'id') ,
+      );
+    }
+    return self::$_links;
   }
   /**
    * returns all the column names of this table
@@ -243,6 +272,15 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('End Date') ,
         ) ,
+        'created_date' => array(
+          'name' => 'created_date',
+          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+        ) ,
+        'created_id' => array(
+          'name' => 'created_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
+        ) ,
       );
     }
     return self::$_fields;
@@ -269,6 +307,8 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
         'status_id' => 'status_id',
         'start_date' => 'start_date',
         'end_date' => 'end_date',
+        'created_date' => 'created_date',
+        'created_id' => 'created_id',
       );
     }
     return self::$_fieldKeys;

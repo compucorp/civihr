@@ -14,4 +14,9 @@
     <page_type>1</page_type>
     <is_ssl>true</is_ssl>
   </item>
+  <item>
+    <path>civicrm/vacancy/apply</path>
+    <title>Application Form</title>
+    <page_callback>CRM_HRRecruitment_Form_Application</page_callback>
+  </item>
 </menu>

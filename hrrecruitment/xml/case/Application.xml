@@ -74,9 +74,8 @@
 
   <CaseRoles>
     <RelationshipType>
-      <name>Case Coordinator</name>
+      <name>Recruiting Manager is</name>
       <creator>1</creator>
-      <manager>1</manager>
     </RelationshipType>
   </CaseRoles>
 
