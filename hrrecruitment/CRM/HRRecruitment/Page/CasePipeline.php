@@ -61,11 +61,7 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'packages/jquery/plugins/jstree/jquery.jstree.js', 0, 'html-header', FALSE)
       ->addStyleFile('civicrm', 'packages/jquery/plugins/jstree/themes/default/style.css', 0, 'html-header')
-      ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js')
-      ->addSetting(array(
-          'summaryPrint' => array('mode' => $this->_print),
-          'tabSettings' => array('active' => CRM_Utils_Request::retrieve('selectedChild', 'String', $this, FALSE, 'summary')),
-      ));
+      ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js');
 
     //Change page title to designate against which position you are viewing this page
     $position = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_vid, 'position');
@@ -73,17 +69,23 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
 
     $vacancyStages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vid);
     $allTabs = array();
+    $current = TRUE;
     foreach ($vacancyStages as $key => $vacancyStage) {
       $allTabs[$key] = array(
-        'title' => $vacancyStage['label'],
-        'id' => $vacancyStage['label'],
-        'url' => NULL,
+        'title' => $vacancyStage['title'],
+        'link' => NULL,
         'weight' => $vacancyStage['weight'],
         'count' => $vacancyStage['count'],
+        'active' => TRUE,
+        'valid' => $vacancyStage['valid'],
       );
+      if ($current) {
+        $allTabs[$key]['current'] = $current;
+        $current = FALSE;
+      }
     }
 
-    $this->assign('allTabs', $allTabs);
+    $this->assign('tabHeader', $allTabs);
   }
 }
 
