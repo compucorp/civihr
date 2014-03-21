@@ -171,7 +171,7 @@ function hrrecruitment_civicrm_uninstall() {
     }
   }
 
-  foreach (array('Application', 'Vacancy') as $cgName) {
+  foreach (array('Application', 'application_case') as $cgName) {
     $customGroup = new CRM_Core_DAO_CustomGroup();
     $customGroup->name = $cgName;
     $customGroup->find(TRUE);
@@ -220,7 +220,7 @@ function hrrecruitment_civicrm_enable() {
     }
   }
 
-  foreach (array('Application', 'Vacancy') as $cgName) {
+  foreach (array('Application', 'application_case') as $cgName) {
     $customGroup = new CRM_Core_DAO_CustomGroup();
     $customGroup->name = $cgName;
     $customGroup->find(TRUE);
@@ -262,7 +262,7 @@ function hrrecruitment_civicrm_disable() {
     }
   }
 
-  foreach (array('Application', 'Vacancy') as $cgName) {
+  foreach (array('Application', 'application_case') as $cgName) {
     $customGroup = new CRM_Core_DAO_CustomGroup();
     $customGroup->name = $cgName;
     $customGroup->find(TRUE);

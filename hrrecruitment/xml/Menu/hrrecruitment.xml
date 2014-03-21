@@ -19,4 +19,10 @@
     <title>Application Form</title>
     <page_callback>CRM_HRRecruitment_Form_Application</page_callback>
   </item>
+  <item>
+    <path>civicrm/case/pipeline</path>
+    <title>Recruitment Pipeline</title>
+    <page_callback>CRM_HRRecruitment_Page_CasePipeline</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
