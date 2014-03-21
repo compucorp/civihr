@@ -55,14 +55,16 @@ GROUP BY cc.status_id
 
     foreach ($result['values'] as $id => $status) {
       $caseStatus[$id] = array(
-        'label' => $case_status[$status['case_status_id']],
+        'title' => $case_status[$status['case_status_id']],
         'weight' => $status['weight'],
       );
       if (!empty($stagesCount[$status['case_status_id']])) {
         $caseStatus[$id]['count'] = $stagesCount[$status['case_status_id']];
+        $caseStatus[$id]['valid'] = TRUE;
       }
       else {
         $caseStatus[$id]['count'] = 0;
+        $caseStatus[$id]['valid'] = FALSE;
       }
     }
     return $caseStatus;

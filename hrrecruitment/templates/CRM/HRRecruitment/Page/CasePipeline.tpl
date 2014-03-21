@@ -23,28 +23,5 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-  <div class="crm-block crm-content-block crm-contact-page crm-inline-edit-container">
-    <div id="mainTabContainer">
-      <ul class="crm-contact-tabs-list">
-        {foreach from=$allTabs key=tabName item=tabValue}
-          <li id="tab_{$tabValue.id}" class="crm-tab-button ui-corner-all crm-count-{$tabValue.count}{if isset($tabValue.class)} {$tabValue.class}{/if}">
-            <a href="{$tabValue.url}" title="{$tabValue.title}">
-              <span> </span> {$tabValue.title}
-              <em>{$tabValue.count}</em>
-            </a>
-          </li>
-        {/foreach}
-      </ul>
-    </div>
-  </div>
-{literal}
-<script type="text/javascript">
-  cj(function($) {
-    var title = '{/literal}{$title}{literal}';
-    if(title) {
-      $("h1").html(title);
-    }
-  });
-</script>
-{/literal}
+{include file="CRM/common/TabHeader.tpl"}
 
