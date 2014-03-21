@@ -29,7 +29,7 @@ function hrrecruitment_civicrm_install() {
       civicrm_api3('activity_type', 'create', array(
           'weight' => $weight++,
           'name' => $activityType,
-          'label' => ts($activityType),
+          'label' => $activityType,
           'filter' => 1,
           'is_active' => 1,
         )
@@ -76,7 +76,7 @@ function hrrecruitment_civicrm_install() {
     $count++;
     $caseStatusParam = array(
       'option_group_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'case_status', 'id', 'name'),
-      'label' => ts($label),
+      'label' => $label,
       'name' => CRM_Utils_String::munge($label),
       'value' => $count,
       'grouping' => 'Vacancy',
