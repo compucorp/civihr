@@ -30,14 +30,41 @@ class CRM_HRRecruitment_BAO_HRVacancyStage extends CRM_HRRecruitment_DAO_HRVacan
    * Function to fetch casestatuses
    *
    * @param int     $id    the vacancy id
-   * @return array - array of related  casestatus based on job position.
+   * @return array - array of related  casestatus based on job position
+   * in key(as id) => value array (contains label, weight and count) format.
    */
   public static function caseStage($id) {
     $result = civicrm_api3('HRVacancyStage', 'get', array('vacancy_id'=> $id ));
     $case_status = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
+
+    $customTableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'table_name', 'name');
+
+    //array to store contact count(as value) against each case status/vacancy stage(as key)
+    $stagesCount = array();
+
+    $sql = "SELECT COUNT(ccc.contact_id) as count, cc.status_id as status
+FROM {$customTableName} cg
+LEFT JOIN civicrm_case cc ON cc.id = cg.entity_id AND cg.vacancy_id = {$id}
+LEFT JOIN civicrm_case_contact ccc ON ccc.case_id = cc.id
+GROUP BY cc.status_id
+";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while($dao->fetch()) {
+      $stagesCount[$dao->status] = $dao->count;
+    }
+
     foreach ($result['values'] as $id => $status) {
-      $caseStatus[] = $case_status[$status['case_status_id']]; 
+      $caseStatus[$id] = array(
+        'label' => $case_status[$status['case_status_id']],
+        'weight' => $status['weight'],
+      );
+      if (!empty($stagesCount[$status['case_status_id']])) {
+        $caseStatus[$id]['count'] = $stagesCount[$status['case_status_id']];
+      }
+      else {
+        $caseStatus[$id]['count'] = 0;
+      }
     }
     return $caseStatus;
-  }  
+  }
 }
