@@ -81,15 +81,15 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     // assign vars to templates
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
-   
+
     // what action to take ?
     if ($action & CRM_Core_Action::DELETE) {
       $session = CRM_Core_Session::singleton();
       $session->pushUserContext(CRM_Utils_System::url(CRM_Utils_System::currentPath(), 'reset=1&action=browse'));
       $controller = new CRM_Core_Controller_Simple('CRM_HRRecruitment_Form_Search_Delete',
-                                                   'Delete Vacancy',
-                                                   $action
-                                                   );
+        'Delete Vacancy',
+        $action
+      );
       $controller->set('id', $id);
       $controller->process();
       return $controller->run();
@@ -98,9 +98,9 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $session = CRM_Core_Session::singleton();
       $session->pushUserContext(CRM_Utils_System::url('civicrm/vacancy', 'reset=1&action=browse'));
       $controller = new CRM_Core_Controller_Simple('CRM_HRRecruitment_Form_HRVacancy',
-                                                   'Edit Vacancy',
-                                                   $action
-                                                   );
+        'Edit Vacancy',
+        $action
+      );
       $controller->set('id', $id);
       $controller->process();
       return $controller->run();
@@ -110,7 +110,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     }
 
     // finally browse the custom groups
-    $this->browse($action , $status);
+    $this->browse($action, $status);
 
     // parent run
     return parent::run();
@@ -124,9 +124,9 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $this->search();
     $params = array();
     $this->_force = CRM_Utils_Request::retrieve('force', 'Boolean',
-                                                $this, FALSE
-                                                );
-    $this->search(); 
+      $this, FALSE
+    );
+    $this->search();
     $query = "SELECT *
     FROM civicrm_hrvacancy
     WHERE  $whereClause";
@@ -140,31 +140,21 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     }
     $mask = CRM_Core_Action::mask($permissions);
     $dao = CRM_Core_DAO::executeQuery($query, $params, TRUE, 'CRM_HRRecruitment_DAO_HRVacancy');
-    $rowsVacancy =array();
+    $rows = array();
 
+    $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
     while ($dao->fetch()) {
-      $row = array();
-      $vacanciesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'vacancy_status', 'id', 'name');
-      $paramsVacancy = array(
-        'sequential' => 1,
-        'option_group_id' => $vacanciesId,
-        'value' => $dao->status_id,
-      );
-      $result = civicrm_api3('OptionValue', 'get', $paramsVacancy);
-      if (isset($result['values'][0]['label'])) {
-        $row['status_label'] =  $result['values'][0]['label'];
-      }
-      $row['status_id'] = $dao->status_id;
-      $row['id'] = $dao->id;
-      $row['position'] = $dao->position;
-      $row['location'] = $dao->location;
-      $row['salary'] = $dao->salary;
-      $row['startdate'] = $dao->start_date;
-      $row['enddate'] =$dao->end_date;
-      $row['action'] = CRM_Core_Action::formLink(self::links(), $mask, array('id' => $dao->id));
-      $rowsVacancy[] = $row;
+      $rows[$dao->id]['status'] = $status[$dao->status_id];
+      $rows[$dao->id]['id'] = $dao->id;
+      $rows[$dao->id]['position'] = $dao->position;
+      $rows[$dao->id]['location'] = $dao->location;
+      $rows[$dao->id]['salary'] = $dao->salary;
+      $rows[$dao->id]['start_date'] = $dao->start_date;
+      $rows[$dao->id]['end_date'] = $dao->end_date;
+      $rows[$dao->id]['action'] = CRM_Core_Action::formLink(self::links(), $mask, array('id' => $dao->id));
     }
-    $this->assign('rows', $rowsVacancy);
+
+    $this->assign('rows', $rows);
   }
 
   function whereClause($status) {
@@ -212,11 +202,11 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
 
   function search() {
     if (isset($this->_action) &
-        (CRM_Core_Action::ADD |
-         CRM_Core_Action::UPDATE |
-         CRM_Core_Action::DELETE
-         )
-        ) {
+      (CRM_Core_Action::ADD |
+        CRM_Core_Action::UPDATE |
+        CRM_Core_Action::DELETE
+      )
+    ) {
       return;
     }
 
