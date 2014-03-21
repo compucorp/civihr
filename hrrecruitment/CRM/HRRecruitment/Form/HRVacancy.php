@@ -187,7 +187,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
     $permissions = CRM_Core_Permission_Base::getAllModulePermissions();
     foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Applicants') as $permission) {
-      $vacancyPermissions[$permission] = array_pop(explode(':', $permissions[$permission]));
+      $explodedPerms = explode(':', $permissions[$permission]);
+      $vacancyPermissions[$permission] = array_pop($explodedPerms);
     }
 
     $rowCount = 5;
