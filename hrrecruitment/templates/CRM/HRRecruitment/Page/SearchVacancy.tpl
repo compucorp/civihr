@@ -25,26 +25,26 @@
 *}
 {include file="CRM/HRRecruitment/Form/Search.tpl"}
 {if $rows}
-<table>
-  <tr>
-    <th>{ts}Job Position{/ts}</th>
-    <th>{ts}Location{/ts}</th>
-    <th>{ts}Salary{/ts}</th>
-    <th>{ts}Application Dates{/ts}</th>
-    <th>{ts}Status{/ts}</th>
-    <th>{ts}{/ts}</th>
-  </tr>
-{foreach from=$rows item=row}
-  <tr class="{cycle values="odd-row,even-row"} {$row.class}">
-    <td id="{$row.id}">{$row.position}</td>
-    <td>{$row.location}</td>
-    <td>{$row.salary}</td>
-    <td>{$row.startdate|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.enddate|crmDate:"%e %b %Y"}</td>
-    <td>{$row.status_label}</td>
-    <td>{$row.action|replace:'xx':$row.id}</td>
-  </tr>
-{/foreach}
-</table>
+  <table>
+    <tr>
+      <th>{ts}Job Position{/ts}</th>
+      <th>{ts}Location{/ts}</th>
+      <th>{ts}Salary{/ts}</th>
+      <th>{ts}Application Dates{/ts}</th>
+      <th>{ts}Status{/ts}</th>
+      <th>{ts}{/ts}</th>
+    </tr>
+    {foreach from=$rows item=row}
+      <tr class="{cycle values="odd-row,even-row"} {$row.class}">
+        <td id="{$row.id}"><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=`$row.id`"}">{$row.position}</a></td>
+        <td>{$row.location}</td>
+        <td>{$row.salary}</td>
+        <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
+        <td>{$row.status}</td>
+        <td>{$row.action|replace:'xx':$row.id}</td>
+      </tr>
+    {/foreach}
+  </table>
 {else}
   <div class="status messages">
     {ts}No Such Vacancy List Found{/ts}
