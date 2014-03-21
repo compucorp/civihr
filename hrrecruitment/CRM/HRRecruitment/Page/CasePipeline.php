@@ -69,7 +69,7 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
 
     //Change page title to designate against which position you are viewing this page
     $position = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_vid, 'position');
-    $this->assign('title' , "{$this->_title} : {$position}");
+    CRM_Utils_System::setTitle(ts('%1 : %2', array(1 => $this->_title, 2 => $position)));
 
     $vacancyStages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vid);
     $allTabs = array();
