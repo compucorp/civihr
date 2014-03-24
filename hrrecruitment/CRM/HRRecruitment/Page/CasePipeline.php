@@ -87,5 +87,9 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
 
     $this->assign('tabHeader', $allTabs);
   }
+
+  function getTemplateFileName() {
+    return "CRM/common/TabHeader.tpl";
+  }
 }
 
