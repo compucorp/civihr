@@ -73,12 +73,12 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     if(empty($options)) {
       $leaves = FALSE;
       $options = array(
-        "Sick" => "Sick",
-        "Vacation" => "Vacation",
-        "Maternity" => "Maternity",
-        "Paternity" => "Paternity",
-        "TOIL" => "TOIL",
-        "Other" => "Other"
+        'Sick' => 'Sick',
+        'Vacation' => 'Vacation',
+        'Maternity' => 'Maternity',
+        'Paternity' => 'Paternity',
+        'TOIL' => 'TOIL',
+        'Other' => 'Other'
       );
     }
     $seperator = CRM_Core_DAO::VALUE_SEPARATOR;
@@ -88,13 +88,24 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         'is_active' => 1,
         'allow_debits' => 1
       );
-      if ($orgKey == "TOIL") {
+      if ($orgKey == 'TOIL') {
         $params['allow_credits'] = 1;
       }
+
       $absenceTypes = CRM_HRAbsence_BAO_HRAbsenceType::create($params);
+      if ($orgKey == 'Sick') {
+        $sickTypeID = $absenceTypes->debit_activity_type_id;
+      }
       $values .= " WHEN '{$orgValue}' THEN '{$absenceTypes->id}'";
-      $absencetypeid .= $absenceTypes->debit_activity_type_id.$seperator;
+
+      if ($absenceTypes->debit_activity_type_id) {
+        $absenceTypeID[] = $absenceTypes->debit_activity_type_id;
+      }
+      if ($absenceTypes->credit_activity_type_id) {
+        $absenceTypeID[] = $absenceTypes->credit_activity_type_id;
+      }
     }
+
     if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_leave") && $leaves) {
       $query = "UPDATE civicrm_hrjob_leave
         SET leave_type = CASE leave_type
@@ -103,26 +114,23 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       CRM_Core_DAO::executeQuery($query);
     }
     CRM_Core_OptionGroup::deleteAssoc('hrjob_leave_type');
-   
+
+    $absenceTypeIDs = implode($seperator, $absenceTypeID);
     $paramsCGroup = array(
       'title' => 'Absence Comment',
-      'name' => 'absence_comment',
       'extends' => array(
         '0' => 'Activity',
       ),
-      'weight' => 4,
-      'collapse_display' => 1,
       'style' => 'Inline',
-      'extends_entity_column_value' =>  array(
-        '0' => $absencetypeid
+      'extends_entity_column_value' => array(
+        '0' => $absenceTypeIDs
       ),
       'is_active' => 1,
     );
     $resultCGroup = civicrm_api3('custom_group', 'create', $paramsCGroup);
-    
+
     $paramsCField = array(
       'custom_group_id' => $resultCGroup['id'],
-      'name' => 'comment',
       'label' => 'Comment',
       'html_type' => 'TextArea',
       'data_type' => 'Memo',
@@ -130,25 +138,16 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       'is_searchable' => 0,
       'is_active' => 1,
     );
-    $resultCField = civicrm_api3('custom_field', 'create', $paramsCField);
-
-    $params = array(
-      'name' => 'Sick',
-      'return' => 'value',
-    );
-    $result = civicrm_api3('OptionValue', 'getvalue', $params);
+    civicrm_api3('custom_field', 'create', $paramsCField);
 
     $paramsSGroup = array(
-      'title' => 'Sick Type',
-      'name' => 'sick_type',
+      'title' => 'Type of Sickness',
       'extends' => array(
         '0' => 'Activity',
        ),
-      'weight' => 4,
-      'collapse_display' => 1,
       'style' => 'Inline',
       'extends_entity_column_value' => array(
-        '0' => $result
+        '0' => $sickTypeID
       ),
       'is_active' => 1,
     );
@@ -156,7 +155,6 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     $paramsSField = array(
       'custom_group_id' => $resultSGroup['id'],
-      'name' => 'sick_type',
       'label' => 'Sick Type',
       'html_type' => 'Select',
       'data_type' => 'String',
@@ -166,14 +164,14 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     );
     $resultSField = civicrm_api3('custom_field', 'create', $paramsSField);
 
-    $sickType = array("Cold","Cough","Fever");
+    $sickType = array('Cold','Cough','Fever');
     foreach ($sickType as $Key => $val) {
       $paramsOVal = array(
         'sequential' => 1,
         'name' => $val,
         'option_group_id' => $resultSField['values'][$resultSField['id']]['option_group_id'],
       );
-      $resultOVal = civicrm_api3('OptionValue', 'create', $paramsOVal);
+      civicrm_api3('OptionValue', 'create', $paramsOVal);
     }
   }
 
