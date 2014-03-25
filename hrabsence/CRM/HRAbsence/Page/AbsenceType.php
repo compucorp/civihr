@@ -70,14 +70,12 @@ class CRM_HRAbsence_Page_AbsenceType extends CRM_Core_Page_Basic {
         ),
         CRM_Core_Action::DISABLE => array(
           'name'  => ts('Disable'),
-          'extra' => 'onclick = "enableDisable( %%id%%,\'' . 'CRM_HRAbsence_BAO_HRAbsenceType' . '\',\'' . 'enable-disable' . '\' );"',
-          'ref' => 'disable-action',
+          'class' => 'crm-enable-disable',
           'title' => ts('Disable Absence Type'),
         ),
         CRM_Core_Action::ENABLE  => array(
           'name'  => ts('Enable'),
-          'extra' => 'onclick = "enableDisable( %%id%%,\'' . 'CRM_HRAbsence_BAO_HRAbsenceType' . '\',\'' . 'disable-enable' . '\' );"',
-          'ref' => 'enable-action',
+          'class' => 'crm-enable-disable',
           'title' => ts('Enable Absence Type'),
         ),
         CRM_Core_Action::DELETE  => array(
