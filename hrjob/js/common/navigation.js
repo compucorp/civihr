@@ -34,15 +34,14 @@ CRM.HRApp.module('Common.Navigation', function(Navigation, HRApp, Backbone, Mari
     if (options.warnMessages.length == 0) {
       doNavigate();
     } else {
-      var buttons = {};
-      buttons[ts('Continue')] = doNavigate;
-      buttons[ts('Cancel')] = function() {
-        if (options.cancel) options.cancel(route, options);
-      };
-      CRM.confirm(buttons, {
+      CRM.confirm({
         title: options.warnTitle,
         message: options.warnMessages.join(' ')
-      });
+      })
+        .on('crmConfirm:yes', doNavigate)
+        .on('crmConfirm:no', function() {
+          if (options.cancel) options.cancel(route, options);
+        });
     }
   };
 
