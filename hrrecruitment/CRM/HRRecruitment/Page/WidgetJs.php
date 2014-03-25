@@ -51,7 +51,7 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     //Add js file
     $templateDir = array("{$civicrm_root}packages/jquery/", "{$civicrm_root}packages/jquery/jquery-ui/js/");
     foreach ($templateDir as $templateDir) {
-      $files = (array) glob($templateDir . '*.js', GLOB_BRACE);
+      $files = (array) glob($templateDir . '*.min.js', GLOB_BRACE);
       foreach ($files as $file) {
         $output .= file_get_contents($file);
       }
