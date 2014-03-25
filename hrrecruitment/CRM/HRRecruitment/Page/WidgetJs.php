@@ -82,18 +82,23 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     $output .= '$(".hr-job-position-link").bind("click",function(e){
       e.preventDefault();
       var infourl = $(this).attr("href") + "&callback=?";
-      var ht = "";
-	    $.getJSON(infourl).done(function(result) {
+      $.getJSON(infourl).done(function(result) {
         c_.templateSettings.variable = \'rc\';
         $("#vacancyListDialog").html(infoTemplate(result));
         $("#vacancyListDialog").dialog({
           modal: true,
           width: 600,
           title: result.position,
-          buttons: {
-            "Apply Now": function() { window.location = result.apply; },
-            "Close": function() { $(this).dialog("close"); }
-          }
+          buttons: [
+            {
+              text: result.applyButton,
+              click: function () { window.location = result.apply; }
+            },
+            {
+              text: result.close,
+              click: function () { $(this).dialog("close"); }
+            }
+          ]
         });
       });
     });';
@@ -111,7 +116,7 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
       $row[$vacancyVal['id']]['id'] = $vacancyVal['id'];
       $row[$vacancyVal['id']]['position'] = ts($vacancyVal['position']);
       $row[$vacancyVal['id']]['positionLink'] = "{$base_url}/civicrm/vacancy/info?id={$vacancyVal['id']}";
-      $row[$vacancyVal['id']]['location'] = $vacancyVal['location'];
+      $row[$vacancyVal['id']]['location'] = ts($vacancyVal['location']);
       $row[$vacancyVal['id']]['salary'] = $vacancyVal['salary'];
       $row[$vacancyVal['id']]['startDate'] = CRM_Utils_Date::customFormat($vacancyVal['start_date']);
       $row[$vacancyVal['id']]['endDate'] = CRM_Utils_Date::customFormat($vacancyVal['end_date']);
@@ -135,15 +140,18 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     $vacancy = civicrm_api3('HRVacancy','get', array('id'=>$vacancyId));
     foreach ($vacancy['values'] as $vacancyKey => $vacancyVal) {
       CRM_Utils_System::setTitle(ts("{$vacancyVal['position']}"));
-      $row['position'] = $vacancyVal['position'];
+      $row['position'] = ts($vacancyVal['position']);
       $row['id'] = $vacancyVal['id'];
       $row['salary'] = $vacancyVal['salary'];
-      $row['location'] = $vacancyVal['location'];
+      $row['location'] = ts($vacancyVal['location']);
       $row['description'] = ts($vacancyVal['description']);
-      $row['benefits'] = $vacancyVal['benefits'];
-      $row['requirements'] = $vacancyVal['requirements'];
+      $row['benefits'] = ts($vacancyVal['benefits']);
+      $row['requirements'] = ts($vacancyVal['requirements']);
       $row['apply'] = "{$base_url}/civicrm/vacancy/apply?id={$vacancyVal['id']}";
     }
+    $row['applyButton'] = ts("Apply Now");
+    $row['close'] = ts("Close");
+
     if (!empty($_GET['callback'])) {
       echo $_GET['callback'] .'('. json_encode($row) .')';
     }
