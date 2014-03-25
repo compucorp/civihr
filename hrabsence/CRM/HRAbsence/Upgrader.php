@@ -286,5 +286,87 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     }
     return TRUE;
   } // */
+  public function upgrade_1201() {
+    $this->ctx->log->info('Planning update 1201'); // PEAR Log interface
 
+    $seperator = CRM_Core_DAO::VALUE_SEPARATOR;
+   
+    $params = array(
+      'version' => 3,
+      'sequential' => 1,
+    );
+    $result = civicrm_api3('HRAbsenceType', 'get', $params);
+    foreach ($result['values'] as $key => $value) {
+      if ($value['title'] == 'Sick') {
+        $sickTypeID = $value['debit_activity_type_id'];
+      }
+      if ($value['debit_activity_type_id']) {
+        $absenceTypeID[] = $value['debit_activity_type_id'];
+      }
+      if ($value['credit_activity_type_id']) {
+        $absenceTypeID[] = $value['credit_activity_type_id'];
+      }
+    }
+    $absenceTypeid = array_unique($absenceTypeID);
+    $absenceTypeIDs = implode($seperator, $absenceTypeid);
+
+    $paramsCGroup = array(
+      'title' => 'Absence Comment',
+      'extends' => array(
+        '0' => 'Activity',
+      ),
+      'style' => 'Inline',
+      'extends_entity_column_value' => array(
+        '0' => $absenceTypeIDs
+      ),
+      'is_active' => 1,
+    );
+    $resultCGroup = civicrm_api3('custom_group', 'create', $paramsCGroup);
+
+    $paramsCField = array(
+      'custom_group_id' => $resultCGroup['id'],
+      'label' => 'Comment',
+      'html_type' => 'TextArea',
+      'data_type' => 'Memo',
+      'is_required' => 1,
+      'is_searchable' => 0,
+      'is_active' => 1,
+    );
+    civicrm_api3('custom_field', 'create', $paramsCField);
+
+    $paramsSGroup = array(
+      'title' => 'Type of Sickness',
+      'extends' => array(
+        '0' => 'Activity',
+       ),
+      'style' => 'Inline',
+      'extends_entity_column_value' => array(
+        '0' => $sickTypeID
+      ),
+      'is_active' => 1,
+    );
+    $resultSGroup = civicrm_api3('custom_group', 'create', $paramsSGroup);
+
+    $paramsSField = array(
+      'custom_group_id' => $resultSGroup['id'],
+      'label' => 'Sick Type',
+      'html_type' => 'Select',
+      'data_type' => 'String',
+      'is_required' => 1,
+      'is_searchable' => 0,
+      'is_active' => 1,
+    );
+    $resultSField = civicrm_api3('custom_field', 'create', $paramsSField);
+
+    $sickType = array('Cold','Cough','Fever');
+    foreach ($sickType as $Key => $val) {
+      $paramsOVal = array(
+        'sequential' => 1,
+        'name' => $val,
+        'option_group_id' => $resultSField['values'][$resultSField['id']]['option_group_id'],
+      );
+      civicrm_api3('OptionValue', 'create', $paramsOVal);
+    }
+    return TRUE;
+  }
 }
