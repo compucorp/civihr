@@ -237,7 +237,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
         ) ,
-        'contact_id' => array(
+        'hrjob_contact_id' => array(
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Contact ID') ,
@@ -441,7 +441,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'contact_id' => 'contact_id',
+        'contact_id' => 'hrjob_contact_id',
         'position' => 'hrjob_position',
         'title' => 'hrjob_title',
         'department' => 'hrjob_department',
