@@ -23,7 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{include file="CRM/UF/Form/Block.tpl" fields=$applicationProfileFields prefix='application'}
+{include file="CRM/UF/Form/Block.tpl"}
  <div class="crm-submit-buttons">
         {include file="CRM/common/formButtons.tpl"}
  </div>

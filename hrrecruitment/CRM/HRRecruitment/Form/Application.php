@@ -83,14 +83,14 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
         TRUE, NULL,
         CRM_Core_Permission::CREATE
     );
-    $this->assign('applicationProfileFields', $applicationProfileFields);
+    $this->assign('fields', $applicationProfileFields);
     foreach ($applicationProfileFields as $name => $field) {
-      CRM_Core_BAO_UFGroup::buildProfile($this, $field, CRM_Profile_Form::MODE_CREATE, NULL, FALSE, FALSE, NULL, 'application');
+      CRM_Core_BAO_UFGroup::buildProfile($this, $field, CRM_Profile_Form::MODE_CREATE, NULL, FALSE, FALSE, NULL);
     }
 
     $this->addButtons(array(
         array(
-          'type' => 'next',
+          'type' => 'upload',
           'name' => ts('Apply'),
           'isDefault' => TRUE,
         ),
@@ -109,11 +109,11 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
    * @return void
    */
   public function postProcess() {
-    $params = $this->exportValues();
+    $params = $this->controller->exportValues($this->_name);
 
     //Check the contact provided in Application form is existing or new
     $profileContactType = CRM_Core_BAO_UFGroup::getContactType($this->_profileID);
-    $dedupeParams = CRM_Dedupe_Finder::formatParams($params['application'], $profileContactType);
+    $dedupeParams = CRM_Dedupe_Finder::formatParams($params, $profileContactType);
     $dedupeParams['check_permission'] = FALSE;
     $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, $profileContactType);
     $applicantID = NULL;
@@ -122,7 +122,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
         $applicantID = CRM_Utils_Array::value(0, $ids);
     }
     $applicantID = CRM_Contact_BAO_Contact::createProfileContact(
-        $params['application'], CRM_Core_DAO::$_nullArray,
+        $params, CRM_Core_DAO::$_nullArray,
         $applicantID, NULL,
         $this->_profileID
       );
@@ -157,6 +157,9 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
       'activity_date_time' => $params['start_date'],
     );
     $xmlProcessor->run('Application', $xmlProcessorParams);
+
+    //process Custom data
+    CRM_Core_BAO_CustomValueTable::postprocess(&$params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
 
     //Process case to vacancy one-to-one mapping in custom table 'application_case'
     $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
