@@ -622,11 +622,6 @@
     <item>Patience</item>
   </requirements>
 
-  <vacancylocation>
-    <item>New York Office</item>
-    <item>Timbuktu Office</item>
-    <item>Headquarters</item>
-  </vacancylocation>
   <permission>
     <item>View Applicants</item>
     <item>Evaluate Applicants</item>
