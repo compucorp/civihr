@@ -54,19 +54,39 @@ GROUP BY cc.status_id
     }
 
     foreach ($result['values'] as $id => $status) {
-      $caseStatus[$id] = array(
+      $caseStatus[$status['case_status_id']] = array(
         'title' => $case_status[$status['case_status_id']],
         'weight' => $status['weight'],
+        'count' => CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0),
       );
-      if (!empty($stagesCount[$status['case_status_id']])) {
-        $caseStatus[$id]['count'] = $stagesCount[$status['case_status_id']];
-        $caseStatus[$id]['valid'] = TRUE;
-      }
-      else {
-        $caseStatus[$id]['count'] = 0;
-        $caseStatus[$id]['valid'] = FALSE;
-      }
     }
     return $caseStatus;
+  }
+
+  /**
+   * @param int $vid
+   * @param int $statusId
+   * @return array
+   */
+  static function getCasesAtStage($vid, $statusId) {
+    $contacts = array();
+    $customTableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'table_name', 'name');
+    $sql = "SELECT ccc.contact_id, contact.sort_name, cc.id as case_id
+FROM {$customTableName} cg
+INNER JOIN civicrm_case cc ON cc.id = cg.entity_id
+INNER JOIN civicrm_case_contact ccc ON ccc.case_id = cc.id
+INNER JOIN civicrm_contact contact ON ccc.contact_id = contact.id
+WHERE cg.vacancy_id = {$vid} AND cc.status_id = {$statusId}
+ORDER BY contact.sort_name
+";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while($dao->fetch()) {
+      $contacts[$dao->case_id] = array(
+        'case_id' => $dao->case_id,
+        'contact_id' => $dao->contact_id,
+        'sort_name' => $dao->sort_name,
+      );
+    }
+    return $contacts;
   }
 }
