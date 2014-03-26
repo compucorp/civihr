@@ -110,7 +110,7 @@
                 <tr id="permission-{$rowNumber}" class="permission-block {if $rowNumber GT $showPermissionRow}hiddenElement{/if}">
                     <td>{$form.permission_contact_id.$rowNumber.html}</td>
                     <td>{$form.permission.$rowNumber.html}
-                        &nbsp;<a class="permission-delete-link" href="#"><span class="icon delete-icon"></span></a></td>
+                        &nbsp;<a class="crm-hover-button permission-delete-link" href="#"><span class="icon delete-icon"></span></a></td>
                 </tr>
             {/section}
             <tr>
