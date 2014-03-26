@@ -243,7 +243,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     if ($this->_id) {
-      $params['id'] = $this->_id;
+      $vacancyParams['id'] = $this->_id;
 
       //on Edit first of all delete all the entries from hrvacancy stage and permission if any
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_stage WHERE vacancy_id = {$this->_id}");
