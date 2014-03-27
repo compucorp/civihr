@@ -5,7 +5,9 @@
     <CustomGroup>
       <name>Application</name>
       <title>Application</title>
-      <extends>Contact</extends>
+      <extends>Case</extends>
+      <extends_entity_column_value_option_group>case_type</extends_entity_column_value_option_group>
+      <extends_entity_column_value>Application</extends_entity_column_value>
       <style>Inline</style>
       <collapse_display>1</collapse_display>
       <help_pre></help_pre>
@@ -167,7 +169,7 @@
       <in_selector>0</in_selector>
       <is_searchable>0</is_searchable>
       <label>Resume</label>
-      <field_type>Individual</field_type>
+      <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
@@ -210,6 +212,12 @@
       <module>Profile</module>
       <weight>15</weight>
       <profile_group_name>Evaluation Form</profile_group_name>
+    </ProfileJoin>
+    <ProfileJoin>
+      <is_active>1</is_active>
+      <module>Profile</module>
+      <weight>16</weight>
+      <profile_group_name>Application Form</profile_group_name>
     </ProfileJoin>
   </ProfileJoins>
 </CustomData>

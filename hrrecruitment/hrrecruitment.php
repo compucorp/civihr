@@ -143,6 +143,30 @@ function hrrecruitment_civicrm_install() {
 }
 
 /**
+ * Implementation of hook_civicrm_postInstall
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ */
+function hrrecruitment_civicrm_postInstall() {
+  $cgDAO = new CRM_Core_DAO_CustomGroup();
+  $cgDAO->extends_entity_column_value = 'Application';
+  $cgDAO->find();
+  $value = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
+  while ($cgDAO->fetch()) {
+    if ($value) {
+      $cgDAO->extends_entity_column_value = CRM_Core_DAO::VALUE_SEPARATOR . $value['result'] . CRM_Core_DAO::VALUE_SEPARATOR;
+      $cgDAO->save();
+    }
+  }
+
+  //change the profile Type of Aplication
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'application_profile', 'id', 'name')) {
+    $fieldsType = CRM_Core_BAO_UFGroup::calculateGroupType($ufID, TRUE);
+    CRM_Core_BAO_UFGroup::updateGroupTypes($ufID, $fieldsType);
+  }
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function hrrecruitment_civicrm_uninstall() {

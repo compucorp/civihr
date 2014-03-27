@@ -182,7 +182,10 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         ),
       ),
     );
-    $this->addProfileSelector('application_profile', '', array('Individual', 'Contact'), array(), $entities['Individual']);
+
+    $caseTypes = CRM_Case_PseudoConstant::caseType();
+    $caseTypes = array_keys($caseTypes);
+    $this->addProfileSelector('application_profile', '', array('Individual', 'Contact', 'Case'), array('CaseType' => $caseTypes), $entities['Individual']);
     $this->addProfileSelector('evaluation_profile', '', array('Activity'), array(), $entities['Activity']);
 
     $permissions = CRM_Core_Permission_Base::getAllModulePermissions();
@@ -198,7 +201,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         '', array('' => ts('- select -')) + $vacancyPermissions,
         FALSE, array('class' => 'crm-select2 huge')
       );
-      $this->addEntityRef("permission_contact_id[{$rowNumber}]");
+      $this->addEntityRef("permission_contact_id[{$rowNumber}]", NULL, array('api' => array('params' => array('contact_type' => 'Individual'))));
     }
     $this->assign('rowCount', $rowCount);
     $this->assign('showPermissionRow', 1);
@@ -215,7 +218,19 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         ),
       )
     );
+
+    $this->addFormRule(array('CRM_HRRecruitment_Form_HRVacancy', 'formRule'));
   }
+
+  static function formRule($fields, $files, $self) {
+    $errors = array();
+    if (empty($fields['stages'])) {
+      $errors['stages'] = ts('Please select at least one Vacancy stage');
+    }
+
+    return $errors;
+  }
+
 
   /**
    * Function to process the form
@@ -228,7 +243,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     if ($this->_id) {
-      $params['id'] = $this->_id;
+      $vacancyParams['id'] = $this->_id;
 
       //on Edit first of all delete all the entries from hrvacancy stage and permission if any
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_stage WHERE vacancy_id = {$this->_id}");
@@ -282,11 +297,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         }
       }
     }
-   
+
     if ($this->_action & CRM_Core_Action::UPDATE) {
       if ($this->controller->getButtonName('submit') == "_qf_HRVacancy_next") {
         CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
       }
-    } 
+    }
   }
 }
