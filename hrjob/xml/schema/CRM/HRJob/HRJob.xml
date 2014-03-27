@@ -24,6 +24,7 @@
     <comment>FK to Contact ID</comment>
     <import>true</import>
     <title>Contact ID</title>
+    <uniqueName>hrjob_contact_id</uniqueName>
   </field>
   <foreignKey>
     <name>contact_id</name>

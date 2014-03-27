@@ -161,7 +161,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         );
         $this->assign('customValueCount', $this->_customValueCount);
       }
-
+      $this->_targetContactID = 0;
       if (CRM_Utils_Request::retrieve('cid', 'Positive', $this) !== NULL) {
         $this->_targetContactID = CRM_Utils_Request::retrieve('cid', 'Positive', $this);
       }
@@ -170,7 +170,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         //who will applying leave for himself
         $this->_targetContactID = $this->_loginUserID;
       }
-      $this->_managerContactID = CRM_Core_DAO::getFieldValue('CRM_HRJob_DAO_HRJob', $this->_targetContactID, 'manager_contact_id', 'contact_id');
+      if ($this->_targetContactID) {
+        $this->_managerContactID = CRM_Core_DAO::getFieldValue('CRM_HRJob_DAO_HRJob', $this->_targetContactID, 'manager_contact_id', 'contact_id');
+      } else {
+        $this->_managerContactID = NULL;
+      }
     }
 
     $this->assign('mode', $this->_mode);
