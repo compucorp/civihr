@@ -25,4 +25,23 @@
     <page_callback>CRM_HRRecruitment_Page_CasePipeline</page_callback>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/vacancy/list.js</path>
+    <page_callback>CRM_HRRecruitment_Page_WidgetJs</page_callback>
+    <title>Public Vacancy List</title>
+    <is_public>true</is_public>
+  </item>
+  <item>
+    <path>civicrm/vacancy</path>
+    <page_callback>CRM_HRRecruitment_Page_VacancyList</page_callback>
+    <title>Public Vacancy List</title>
+    <is_public>true</is_public>
+  </item>
+  <item>
+    <path>civicrm/vacancy/info</path>
+    <path_arguments>id=%%id%%</path_arguments>
+    <page_callback>CRM_HRRecruitment_Page_WidgetJs::vacancyInfo</page_callback>
+    <title>Job</title>
+    <is_public>true</is_public>
+  </item>
 </menu>
