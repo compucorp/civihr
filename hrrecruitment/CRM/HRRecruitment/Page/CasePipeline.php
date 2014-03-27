@@ -38,58 +38,72 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
    */
   protected $_vid;
 
+  /**
+   * @var int
+   */
+  protected $_statusId;
+
   function preProcess() {
     // process url params
-    if ($this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive', $this)) {
+    if ($this->_vid = CRM_Utils_Request::retrieve('vid', 'Positive')) {
       $this->assign('vid', $this->_vid);
     }
     else {
       CRM_Core_Error::fatal(ts('There is no vacancy information provided'));
     }
+    $this->_statusId = CRM_Utils_Request::retrieve('status_id', 'Positive');
   }
 
   function run() {
     $this->preProcess();
 
-    $this->view();
+    if (!$this->_statusId) {
+      $this->topTabs();
+    }
+    else {
+      $this->viewStage();
+    }
 
     return parent::run();
   }
 
-  function view() {
-    // Add js for tabs
+  /**
+   * View the header with a tab per stage
+   */
+  function topTabs() {
     CRM_Core_Resources::singleton()
-      ->addScriptFile('civicrm', 'packages/jquery/plugins/jstree/jquery.jstree.js', 0, 'html-header', FALSE)
-      ->addStyleFile('civicrm', 'packages/jquery/plugins/jstree/themes/default/style.css', 0, 'html-header')
-      ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js');
+      ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js')
+      ->addStyleFile('org.civicrm.hrrecruitment', 'css/casePipeline.css')
+      ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Page/CasePipeline.js');
 
     //Change page title to designate against which position you are viewing this page
     $position = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_vid, 'position');
-    CRM_Utils_System::setTitle(ts('%1 : %2', array(1 => $this->_title, 2 => $position)));
+    CRM_Utils_System::setTitle(ts('%1: %2', array(1 => $this->_title, 2 => $position)));
 
     $vacancyStages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vid);
-    $allTabs = array();
-    $current = TRUE;
-    foreach ($vacancyStages as $key => $vacancyStage) {
-      $allTabs[$key] = array(
-        'title' => $vacancyStage['title'],
-        'link' => NULL,
-        'weight' => $vacancyStage['weight'],
-        'count' => $vacancyStage['count'],
-        'active' => TRUE,
-        'valid' => $vacancyStage['valid'],
-      );
-      if ($current) {
-        $allTabs[$key]['current'] = $current;
-        $current = FALSE;
-      }
+    foreach ($vacancyStages as $key => &$stage) {
+      $stage['active'] = $stage['valid'] = TRUE;
+      $stage['link'] = CRM_Utils_System::url('civicrm/case/pipeline', array('reset' => 1, 'status_id' => $key, 'vid' => $this->_vid));
     }
 
-    $this->assign('tabHeader', $allTabs);
+    $this->assign('tabHeader', $vacancyStages);
   }
 
+  /**
+   * View a particular stage in a tab
+   */
+  function viewStage() {
+    $contacts = CRM_HRRecruitment_BAO_HRVacancyStage::getCasesAtStage($this->_vid, $this->_statusId);
+    $this->assign('contacts', $contacts);
+    $this->ajaxResponse['tabCount'] = count($contacts);
+  }
+
+  /**
+   * Returns approprate template file if we are viewing the main page or a tab
+   * @return string
+   */
   function getTemplateFileName() {
-    return "CRM/common/TabHeader.tpl";
+    return $this->_statusId ? "CRM/HRRecruitment/Page/HRVacancyStage.tpl" : "CRM/common/TabHeader.tpl";
   }
 }
 

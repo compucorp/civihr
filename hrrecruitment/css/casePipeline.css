@@ -1,0 +1,9 @@
+.hr-pipeline-case-contacts {
+  float: left;
+  width: 30%;
+}
+.hr-pipeline-case-details {
+  float: right;
+  width: 70%;
+  min-height: 5em;
+}
