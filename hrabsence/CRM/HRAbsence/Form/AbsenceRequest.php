@@ -339,7 +339,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'subName' => 'saveandapprove',
           'isDefault' => TRUE,
         );
-          $this->addButtons(array($saveButton,$approveButton));
+        if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
+          ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID))
+          {
+            $this->addButtons(array($saveButton,$approveButton));
+          }
+        else {
+          $this->addButtons(array($saveButton));
+        }
       }
       else {
         $this->add('hidden', 'source_record_id', $this->_aid);
@@ -366,7 +373,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
               self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
           )
         ) {
-          unset($buttons[$this->_actStatusId]);
+          if($this->_actStatusId != $statusTypes['Scheduled']) {
+            unset($buttons[$this->_actStatusId]);
+          }
         }
         elseif ((CRM_Core_Permission::check('manage own HRAbsences') && $this->_targetContactID == $this->_loginUserID)) {
           unset($buttons[$statusTypes['Completed']], $buttons[$statusTypes['Rejected']]);
