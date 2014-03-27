@@ -611,26 +611,21 @@
   </vacancydescription>
   
   <benefits>
-    <item>Receive money</item>
+    <item>Gym, Sports Club</item>
     <item>Have a place to park</item>
-    <item>See a doctor every time you lose a limb</item>
+    <item>Free Health Care Service</item>
   </benefits>
 
   <requirements>
-    <item>2+limbs</item>
-    <item>3+ears</item>
-    <item>Patience</item>
+    <item>Pro-actively looks to build cross discipline experience and increase knowledge through working with other engineers and technicians.</item>
+    <item>Reports progress and technical problems to project and supervisor.</item>
+    <item>You have at least five years of experience managing a complex business across multiple locations.</item>
   </requirements>
 
-  <vacancylocation>
-    <item>New York Office</item>
-    <item>Timbuktu Office</item>
-    <item>Headquarters</item>
-  </vacancylocation>
   <permission>
-    <item>View Applicants</item>
-    <item>Evaluate Applicants</item>
-    <item>Manage Applicants</item>
-    <item>Administer Applicants</item>
+    <item>view Applicants</item>
+    <item>evaluate Applicants</item>
+    <item>manage Applicants</item>
+    <item>administer Applicants</item>
   </permission>
 </sample_data>
