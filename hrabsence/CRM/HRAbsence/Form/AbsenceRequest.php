@@ -570,6 +570,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
         }
       }
+      if (!empty($submitValues['hidden_custom'])) {
+        $customFields = CRM_Utils_Array::crmArrayMerge(
+          CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, $this->_activityTypeID),
+          CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, NULL, NULL, TRUE)
+        );
+        $customValues = CRM_Core_BAO_CustomField::postProcess($submitValues, $customFields, $result['id'], 'Activity');
+        CRM_Core_BAO_CustomValueTable::store($customValues, 'civicrm_activity', $result['id']);
+      }
     }
     else {
       if (CRM_Utils_Request::retrieve('aid', 'Positive', $this)) {
