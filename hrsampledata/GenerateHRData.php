@@ -1169,7 +1169,8 @@ class GenerateHRData {
     //There are 6 sample Vacancies created, next is to create Entities - VacancyStage, VacancyPermission, Cases
     foreach ($hrVacancies as $key => $hrVacanciesObj) {
       $count=1;
-      $openCaseStatus = $selectedCaseStatuses = NULL;
+      $openCaseStatus = NULL;
+      $selectedCaseStatuses = array();
       $randCaseStatus = $caseStatuses;
       for ($i = 1; $i <= mt_rand(1, count($caseStatuses)); $i++) {
         $vacancyStagesValues = array(
@@ -1221,7 +1222,7 @@ class GenerateHRData {
             if ($i == 1) {
               $caseParams['status_id'] = $openCaseStatus;
             }
-            else {
+            elseif (count($selectedCaseStatuses)) {
               $caseParams['status_id'] = array_rand($selectedCaseStatuses, 1);
             }
             $caseObj = CRM_Case_BAO_Case::create($caseParams);
