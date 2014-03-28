@@ -77,7 +77,10 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE, 'browse');
 
     // get the requested action
-    $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
+    $status = $this->get('status');
+    if (!$status) {
+      $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
+    }
     // assign vars to templates
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
