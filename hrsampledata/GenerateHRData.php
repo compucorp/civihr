@@ -217,12 +217,12 @@ class GenerateHRData {
 
     //TODO : in future if we need cType as 'Organization'
     //Generate contact of type individual randomly
+    $contact->contact_type = $cType;
     if ($cType == 'Individual') {
       list($gender_id, $gender) = $this->randomKeyValue($this->gender);
       $contact->gender_id = $gender_id;
       $contact->first_name = $this->randomItem($gender . '_name');
       $contact->middle_name = $this->probability(.5) ? '' : ucfirst($this->randomChar());
-      $contact->contact_type = $cType;
       $contact->last_name = $this->randomItem('last_name');
       $contact->sort_name = $contact->last_name . ', '. $contact->first_name;
     }

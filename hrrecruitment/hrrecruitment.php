@@ -185,10 +185,10 @@ function hrrecruitment_civicrm_uninstall() {
   }
 
   //Delete cases and related contact of type Application on uninstall
-  if ($caseType = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => 'case_type', 'name' => 'Application', 'return' => 'value'))
+  if ($caseTypeID = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => 'case_type', 'name' => 'Application', 'return' => 'value'))
   ) {
     $caseDAO = new CRM_Case_DAO_Case();
-    $caseDAO->case_type_id = $caseType;
+    $caseDAO->case_type_id = $caseTypeID;
     $caseDAO->find();
     while ($caseDAO->fetch()) {
       CRM_Case_BAO_Case::deleteCase($caseDAO->id);
