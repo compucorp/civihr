@@ -73,11 +73,14 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
   }
 
   function run() {
-    // get the requested action 
+    // get the requested action
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE, 'browse');
 
-    // get the requested action 
-    $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
+    // get the requested action
+    $status = $this->get('status');
+    if (!$status) {
+      $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
+    }
     // assign vars to templates
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
@@ -143,11 +146,12 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $rows = array();
 
     $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
+    $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
     while ($dao->fetch()) {
       $rows[$dao->id]['status'] = $status[$dao->status_id];
       $rows[$dao->id]['id'] = $dao->id;
       $rows[$dao->id]['position'] = $dao->position;
-      $rows[$dao->id]['location'] = $dao->location;
+      $rows[$dao->id]['location'] = $location[$dao->location];
       $rows[$dao->id]['salary'] = $dao->salary;
       $rows[$dao->id]['start_date'] = $dao->start_date;
       $rows[$dao->id]['end_date'] = $dao->end_date;
@@ -192,7 +196,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
             $val[$k] = "'".$k."'";
           }
         }
-        $type = implode(',', $val);	
+        $type = implode(',', $val);
       }
       $clauses[] = "location IN ({$type})";
     }
@@ -235,7 +239,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $urlParams .= '&action=update&id=' . $copyVacancy->id;
     }
     return CRM_Utils_System::redirect(CRM_Utils_System::url($urlString, $urlParams));
-  } 
+  }
 }
 
 

@@ -1138,6 +1138,7 @@ class GenerateHRData {
       $ids[] = $value['value'];
     }
     $status_id = array_flip($ids);
+    $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
 
     for ($i = 1; $i <= mt_rand(1, 3); $i++) {
       $position = $this->randomItem('vacancyposition');
@@ -1147,7 +1148,7 @@ class GenerateHRData {
         'description' => $this->randomItem('vacancydescription'),
         'benefits' => $this->randomItem('benefits'),
         'requirements' => $this->randomItem('requirements'),
-        'location' => $this->randomItem('vacancylocation'),
+        'location' => array_rand($location,1),
         'is_template' => 0,
         'status_id' => array_rand($status_id,1),
         'start_date' => $this->randomDate('2009-01-01', '2011-12-31','YmdHis'),
