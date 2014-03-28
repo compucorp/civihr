@@ -23,23 +23,8 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<div class="crm-clearfix hr-pipeline-tab">
-  <div class="hr-pipeline-case-contacts">
-    <table class="row-highlight">
-      <thead>
-        <tr>
-          <th>{ts}Applicant{/ts}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {foreach from=$contacts item="contact"}
-          <tr id="case-{$contact.case_id}" class="crm-entity {cycle values="odd-row,even-row"}">
-            <td><a class="hr-pipeline-case-link" href="{crmURL p='civicrm/case/hrapplicantprofile' q="reset=1&case_id=`$contact.case_id`&cid=`$contact.contact_id`"}">{$contact.sort_name}</a></td>
-          </tr>
-        {/foreach}
-      </tbody>
-    </table>
-  </div>
-  <div class="hr-pipeline-case-details">
-  </div>
+<div class="crm-clearfix hr-case-application-profile">
+  {include file="CRM/UF/Form/Block.tpl" fields=$profileFields}
+  {include file="CRM/Case/Page/CustomDataView.tpl"}
+  {include file="CRM/Case/Form/ActivityTab.tpl"}
 </div>
