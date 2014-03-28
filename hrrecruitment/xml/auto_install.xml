@@ -38,6 +38,24 @@
       <created_date>0000-00-00 00:00:00</created_date>
       <is_reserved>0</is_reserved>
     </CustomGroup>
+    <CustomGroup>
+      <name>Evaluation_fields</name>
+      <title>Evaluation fields</title>
+      <extends>Activity</extends>
+      <extends_entity_column_value_option_group>activity_type</extends_entity_column_value_option_group>
+      <extends_entity_column_value>Evaluation</extends_entity_column_value>
+      <style>Inline</style>
+      <collapse_display>1</collapse_display>
+      <help_pre></help_pre>
+      <help_post></help_post>
+      <weight>19</weight>
+      <is_active>1</is_active>
+      <table_name>civicrm_value_evaluation_fields</table_name>
+      <is_multiple>0</is_multiple>
+      <collapse_adv_display>0</collapse_adv_display>
+      <created_date>0000-00-00 00:00:00</created_date>
+      <is_reserved>0</is_reserved>
+    </CustomGroup>
   </CustomGroups>
   <CustomFields>
     <CustomField>
@@ -75,6 +93,44 @@
       <column_name>vacancy_id</column_name>
       <in_selector>0</in_selector>
       <custom_group_name>application_case</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Rate_the_applicant_s_communication_skills</name>
+      <label>Rate the applicant's communication skills</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>1</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>rate_the_applicant_s_communicati</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+      <custom_group_name>Evaluation_fields</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Rate_the_applicant_s_technical_skills</name>
+      <label>Rate the applicant's technical skills</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>rate_the_applicant_s_technical_s</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+      <custom_group_name>Evaluation_fields</custom_group_name>
     </CustomField>
   </CustomFields>
   <ProfileGroups>
@@ -205,6 +261,38 @@
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Evaluation Form</profile_group_name>
     </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_evaluation_fields.rate_the_applicant_s_communicati</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>3</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Rate the applicant's communication skills</label>
+      <field_type>Activity</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Evaluation Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_evaluation_fields.rate_the_applicant_s_technical_s</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>4</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Rate the applicant's technical skills</label>
+      <field_type>Activity</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Evaluation Form</profile_group_name>
+    </ProfileField>
   </ProfileFields>
   <ProfileJoins>
     <ProfileJoin>
@@ -220,4 +308,86 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileJoin>
   </ProfileJoins>
+  <OptionGroups>
+    <OptionGroup>
+      <name>rate_the_applicant_s_communicati</name>
+      <title>Rate the applicant's communication skills</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>rate_the_applicant_s_technical_s</name>
+      <title>Rate the applicant's technical skills</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+  <OptionValues>
+    <OptionValue>
+      <label>Good</label>
+      <value>1</value>
+      <name>Good</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Acceptable</label>
+      <value>2</value>
+      <name>Acceptable</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Excellent</label>
+      <value>3</value>
+      <name>Excellent</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Good</label>
+      <value>1</value>
+      <name>Good</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Acceptable</label>
+      <value>2</value>
+      <name>Acceptable</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Excellent</label>
+      <value>3</value>
+      <name>Excellent</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+  </OptionValues>
 </CustomData>
