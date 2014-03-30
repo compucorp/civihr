@@ -80,11 +80,85 @@ class GenerateHRData {
    * Public wrapper for calling private "add" functions
    * Provides user feedback
    */
-  public function generate($itemName) {
-    echo "Adding $itemName\n";
-    $fn = "add$itemName";
-    $this->$fn();
+  public function generate() {
+    $enabledExtensions = array();
+    $dao = CRM_Core_DAO::executeQuery("SELECT full_name FROM civicrm_extension WHERE is_active = 1");
+    while ($dao->fetch()) {
+      $enabledExtensions[] = $dao->full_name;
+    }
+
+    foreach (array('Organization', 'Individual') as $cType) {
+      echo "Adding $cType\n";
+      $count = 1;
+      foreach ($this->$cType as $cid) {
+        if ($cType == 'Organizatifon') {
+          $org = $this->addOrganization($cid);
+          $this->_update($org);
+          foreach ($enabledExtensions as $extension) {
+            switch ($extension) {
+              case 'org.civicrm.hrabsence':
+                //if Absence (CiviHR) extension is enabled, add the sample data
+                $this->addAbsencePeriods();
+                break;
+            }
+          }
+        }
+        else {
+          $this->addIndividual($cid);
+          foreach ($enabledExtensions as $extension) {
+            switch ($extension) {
+              case 'org.civicrm.hrjob':
+                //if Job(CiviHR) extension is enabled, add the sample data
+                $this->addJobData($cid);
+                break;
+              case 'org.civicrm.hrident':
+                //if Identification (CiviHR) extension is enabled, add the sample data
+                $this->addIdentificationData($cid);
+                break;
+              case 'org.civicrm.hrmed':
+                //if Medical and Disability (CiviHR) extension is enabled, add the sample data
+                $this->addMedicalData($cid);
+                break;
+              case 'org.civicrm.hrqual':
+                //if Qualifications (CiviHR) extension is enabled, add the sample data
+                $this->addQualifications($cid);
+                break;
+              case 'org.civicrm.hrvisa':
+                //if Immigration / Visas (CiviHR) extension is enabled, add the sample data
+                $this->addVisaDetails($cid);
+                break;
+              case 'org.civicrm.hremerg':
+                //if Emergency Contacts (CiviHR) extension is enabled, add the sample data
+                $this->addEmergencyContact($cid);
+                break;
+              case 'org.civicrm.hrcareer':
+                //if Career (CiviHR) extension is enabled, add the sample data
+                $this->addCareerData($cid);
+                break;
+              case 'org.civicrm.hrabsence':
+                //if Absence (CiviHR) extension in enabled, add the sample data
+                $this->addAbsenceEntitlements($cid);
+                break;
+              case 'org.civicrm.hrrecruitment':
+                //if Recruitment (CiviHR) extension in enabled, add the sample data
+                if ($count == 1) {
+                  $this->addVacancies($cid);
+                }
+                break;
+              default:
+                $this->addHolidays($cid);
+                break;
+            }
+          }
+          $count++;
+        }
+      }
+    }
+    if (in_array('org.civicrm.hrjob', $enabledExtensions)) {
+      CRM_HRJob_Estimator::updateEstimates();
+    }
   }
+
 
   /**
    * this function creates arrays for the following
@@ -204,6 +278,31 @@ class GenerateHRData {
       return 1;
     }
     return 0;
+  }
+
+  /**
+   * Generate a random contact of type $cType.
+   *
+   * @param  string  Contact Type, default as 'Individual'
+   * @return int     Contact ID of created contact
+   */
+  private function randomContact($cType = 'Individual') {
+    $contact = new CRM_Contact_DAO_Contact();
+
+    //TODO : in future if we need cType as 'Organization'
+    //Generate contact of type individual randomly
+    $contact->contact_type = $cType;
+    if ($cType == 'Individual') {
+      list($gender_id, $gender) = $this->randomKeyValue($this->gender);
+      $contact->gender_id = $gender_id;
+      $contact->first_name = $this->randomItem($gender . '_name');
+      $contact->middle_name = $this->probability(.5) ? '' : ucfirst($this->randomChar());
+      $contact->last_name = $this->randomItem('last_name');
+      $contact->sort_name = $contact->last_name . ', '. $contact->first_name;
+    }
+    $contact->save();
+
+    return $contact->id;
   }
 
   /**
@@ -357,100 +456,77 @@ class GenerateHRData {
    * job_title 'Job Title $contact_uuid'
    *
    */
-  private function addIndividual() {
-
+   function addIndividual($cid) {
     $contact = new CRM_Contact_DAO_Contact();
     $year = 60 * 60 * 24 * 365.25;
     $now = time();
 
-    foreach ($this->Individual as $cid) {
-      $contact->contact_type = $this->getContactType($cid);
-      $contact->is_deceased = $contact->gender_id = $contact->birth_date = $contact->deceased_date = $email = NULL;
-      list($gender_id, $gender) = $this->randomKeyValue($this->gender);
-      $birth_date = mt_rand($now - 90 * $year, $now - 10 * $year);
+    $contact->contact_type = $this->getContactType($cid);
+    $contact->is_deceased = $contact->gender_id = $contact->birth_date = $contact->deceased_date = $email = NULL;
+    list($gender_id, $gender) = $this->randomKeyValue($this->gender);
+    $birth_date = mt_rand($now - 90 * $year, $now - 10 * $year);
 
-      $contact->last_name = $this->randomItem('last_name');
-      $this->_addAddress($cid);
-      $contact->first_name = $this->randomItem($gender . '_name');
-      $contact->middle_name = $this->probability(.5) ? '' : ucfirst($this->randomChar());
-      $age = intval(($now - $birth_date) / $year);
+    $contact->last_name = $this->randomItem('last_name');
+    $this->_addAddress($cid);
+    $contact->first_name = $this->randomItem($gender . '_name');
+    $contact->middle_name = $this->probability(.5) ? '' : ucfirst($this->randomChar());
+    $age = intval(($now - $birth_date) / $year);
 
-      // Prefix and suffix by gender and age
-      $contact->prefix_id = $contact->suffix_id = $prefix = $suffix = NULL;
-      if ($this->probability(.5) && $age > 20) {
-        list($contact->prefix_id, $prefix) = $this->randomKeyValue($this->prefix[$gender_id]);
-        $prefix .= ' ';
-      }
-      if ($gender == 'male' && $this->probability(.50)) {
-        list($contact->suffix_id, $suffix) = $this->randomKeyValue($this->suffix);
-        $suffix = ' ' . $suffix;
-      }
-      if ($this->probability(.7)) {
-        $contact->gender_id = $gender_id;
-      }
-      if ($this->probability(.7)) {
-        $contact->birth_date = date("Ymd", $birth_date);
-      }
+    // Prefix and suffix by gender and age
+    $contact->prefix_id = $contact->suffix_id = $prefix = $suffix = NULL;
+    if ($this->probability(.5) && $age > 20) {
+      list($contact->prefix_id, $prefix) = $this->randomKeyValue($this->prefix[$gender_id]);
+      $prefix .= ' ';
+    }
+    if ($gender == 'male' && $this->probability(.50)) {
+      list($contact->suffix_id, $suffix) = $this->randomKeyValue($this->suffix);
+      $suffix = ' ' . $suffix;
+    }
+    if ($this->probability(.7)) {
+      $contact->gender_id = $gender_id;
+    }
+    if ($this->probability(.7)) {
+      $contact->birth_date = date("Ymd", $birth_date);
+    }
 
-      // Deceased probability based on age
-      if ($age > 40) {
+    // Deceased probability based on age
+    if ($age > 40) {
         $contact->is_deceased = $this->probability(($age - 30) / 100);
         if ($contact->is_deceased && $this->probability(.7)) {
           $contact->deceased_date = $this->randomDate();
         }
       }
 
-      // Add 0, 1 or 2 email address
-      $count = mt_rand(0, 2);
-      for ($i = 0; $i < $count; ++$i) {
-        $email = $this->_individualEmail($contact);
-        $this->_addEmail($cid, $email, self::WORK);
-      }
-
-      // Add 0, 1 or 2 phones
-      $count = mt_rand(0, 2);
-      for ($i = 0; $i < $count; ++$i) {
-        $this->_addPhone($cid);
-      }
-
-      // Occasionally you get contacts with just an email in the db
-      if ($this->probability(.2) && $email) {
-        $contact->first_name = $contact->last_name = $contact->middle_name = NULL;
-        $contact->is_deceased = $contact->gender_id = $contact->birth_date = $contact->deceased_date = NULL;
-        $contact->display_name = $contact->sort_name = $email;
-        $contact->postal_greeting_display = $contact->email_greeting_display = "Dear $email";
-      }
-      else {
-        $contact->display_name = $prefix . $contact->first_name . ' ' . $contact->last_name . $suffix;
-        $contact->sort_name = $contact->last_name . ', ' . $contact->first_name;
-        $contact->postal_greeting_display = $contact->email_greeting_display = 'Dear ' . $contact->first_name;
-      }
-      $contact->addressee_id = $contact->postal_greeting_id = $contact->email_greeting_id = 1;
-      $contact->addressee_display = $contact->display_name;
-      $contact->hash = crc32($contact->sort_name);
-      $contact->id = $cid;
-      $this->_update($contact);
-
-      //if Job(CiviHR) extension is enabled, add the sample data
-      $this->addJobData($cid);
-      //if Identification (CiviHR) extension is enabled, add the sample data
-      $this->addIdentificationData($cid);
-      //if Medical and Disability (CiviHR) extension is enabled, add the sample data
-      $this->addMedicalData($cid);
-      //if Qualifications (CiviHR) extension is enabled, add the sample data
-      $this->addQualifications($cid);
-      //if Immigration / Visas (CiviHR) extension is enabled, add the sample data
-      $this->addVisaDetails($cid);
-      //if Emergency Contacts (CiviHR) extension is enabled, add the sample data
-      $this->addEmergencyContact($cid);
-      //if Career (CiviHR) extension is enabled, add the sample data
-      $this->addCareerData($cid);
-      //if Absence (CiviHR) extension in enabled, add the sample data
-      $this->addAbsenceEntitlements($cid);
-      //if Recruitment (CiviHR) extension in enabled, add the sample data
-      $this->addVacancies($cid);
+    // Add 0, 1 or 2 email address
+    $count = mt_rand(0, 2);
+    for ($i = 0; $i < $count; ++$i) {
+      $email = $this->_individualEmail($contact);
+      $this->_addEmail($cid, $email, self::WORK);
     }
-    $this->addHolidays($cid);
+
+    // Add 0, 1 or 2 phones
+    $count = mt_rand(0, 2);
+    for ($i = 0; $i < $count; ++$i) {
+        $this->_addPhone($cid);
+    }
+
+    // Occasionally you get contacts with just an email in the db
+    if ($this->probability(.2) && $email) {
+      $contact->first_name = $contact->last_name = $contact->middle_name = NULL;
+      $contact->is_deceased = $contact->gender_id = $contact->birth_date = $contact->deceased_date = NULL;
+      $contact->display_name = $contact->sort_name = $email;
+      $contact->postal_greeting_display = $contact->email_greeting_display = "Dear $email";
+    }
+    else {
+      $contact->display_name = $prefix . $contact->first_name . ' ' . $contact->last_name . $suffix;
+      $contact->sort_name = $contact->last_name . ', ' . $contact->first_name;
+      $contact->postal_greeting_display = $contact->email_greeting_display = 'Dear ' . $contact->first_name;
+    }
+    $contact->addressee_id = $contact->postal_greeting_id = $contact->email_greeting_id = 1;
+    $contact->addressee_display = $contact->display_name;
+    $contact->hash = crc32($contact->sort_name);
+    $contact->id = $cid;
+    $this->_update($contact);
   }
 
 
@@ -468,66 +544,61 @@ class GenerateHRData {
    * primary_contact_id - random individual contact uuid
    *
    */
-  private function addOrganization() {
+  function addOrganization($id) {
 
     $org = new CRM_Contact_DAO_Contact();
     $employees = $this->Individual;
     shuffle($employees);
 
-    foreach ($this->Organization as $key => $id) {
-      $org->primary_contact_id = $website = $email = NULL;
-      $org->id = $id;
-      $org->contact_type = $this->getContactType($id);
-      $address = $this->_addAddress($id, self::MAIN);
+    $org->primary_contact_id = $website = $email = NULL;
+    $org->id = $id;
+    $org->contact_type = $this->getContactType($id);
+    $address = $this->_addAddress($id, self::MAIN);
 
-      $namePre = $this->randomItem('organization_prefix');
-      $nameMid = $this->randomItem('organization_name');
-      $namePost = $this->randomItem('organization_suffix');
+    $namePre = $this->randomItem('organization_prefix');
+    $nameMid = $this->randomItem('organization_name');
+    $namePost = $this->randomItem('organization_suffix');
 
-      // Some orgs are named after their location
-      if ($this->probability(.7)) {
-        $place = $this->randomItem(array('city', 'street_name', 'state_province'));
-        $namePre = $address[$place];
-      }
-      $org->organization_name = "$namePre $nameMid $namePost";
+    // Some orgs are named after their location
+    if ($this->probability(.7)) {
+      $place = $this->randomItem(array('city', 'street_name', 'state_province'));
+      $namePre = $address[$place];
+    }
+    $org->organization_name = "$namePre $nameMid $namePost";
 
-      // Most orgs have a website and email
-      if ($this->probability(.8)) {
-        $website = $this->_addWebsite($id, $org->organization_name);
-        $url = str_replace('http://', '', $website['url']);
-        $email = $this->randomItem('email_address') . '@' . $url;
-        $this->_addEmail($id, $email, self::MAIN);
-      }
-
-      // current employee
-      if ($this->probability(.8)) {
-        $indiv = new CRM_Contact_DAO_Contact();
-        $org->primary_contact_id = $indiv->id = $employees[$key];
-        $indiv->organization_name = $org->organization_name;
-        $indiv->employer_id = $id;
-        $this->_update($indiv);
-        // Share address with employee
-        if ($this->probability(.8)) {
-          $this->_addAddress($indiv->id, $id);
-        }
-        // Add work email for employee
-        if ($website) {
-          $indiv->find(TRUE);
-          $email = $this->_individualEmail($indiv, $url);
-          $this->_addEmail($indiv->id, $email, self::WORK);
-        }
-      }
-
-      // need to update the sort name for the main contact table
-      $org->display_name = $org->sort_name = $org->organization_name;
-      $org->addressee_id = 3;
-      $org->addressee_display = $org->display_name;
-      $org->hash = crc32($org->sort_name);
-      $this->_update($org);
+    // Most orgs have a website and email
+    if ($this->probability(.8)) {
+      $website = $this->_addWebsite($id, $org->organization_name);
+      $url = str_replace('http://', '', $website['url']);
+      $email = $this->randomItem('email_address') . '@' . $url;
+      $this->_addEmail($id, $email, self::MAIN);
     }
 
-    //if Absence (CiviHR) extension is enabled, add the sample data
-    $this->addAbsencePeriods();
+    // current employee
+    if ($this->probability(.8)) {
+      $indiv = new CRM_Contact_DAO_Contact();
+      $org->primary_contact_id = $indiv->id = $employees[$key];
+      $indiv->organization_name = $org->organization_name;
+      $indiv->employer_id = $id;
+      $this->_update($indiv);
+      // Share address with employee
+      if ($this->probability(.8)) {
+        $this->_addAddress($indiv->id, $id);
+      }
+      // Add work email for employee
+      if ($website) {
+        $indiv->find(TRUE);
+        $email = $this->_individualEmail($indiv, $url);
+        $this->_addEmail($indiv->id, $email, self::WORK);
+      }
+    }
+
+    // need to update the sort name for the main contact table
+    $org->display_name = $org->sort_name = $org->organization_name;
+    $org->addressee_id = 3;
+    $org->addressee_display = $org->display_name;
+    $org->hash = crc32($org->sort_name);
+    return $org;
   }
 
 
@@ -687,7 +758,7 @@ class GenerateHRData {
   /**
    * This method populates all the HRJob Entity tables
    */
-  private function addJobData($cid) {
+  public function addJobData($cid) {
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrjob', 'is_active', 'full_name')) {
       return;
     }
@@ -817,7 +888,7 @@ class GenerateHRData {
   /**
    * This method populates the Identification Custom Table
    */
-  private function addIdentificationData($cid) {
+  function addIdentificationData($cid) {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
       return;
     }
@@ -839,7 +910,7 @@ class GenerateHRData {
   /**
    * This method populates the Medical & Disability Custom Table
    */
-  private function addMedicalData($cid) {
+  function addMedicalData($cid) {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'id', 'name')) {
       return;
     }
@@ -858,7 +929,7 @@ class GenerateHRData {
   /**
    * This method populates the Qualifications Custom Table
    */
-  private function addQualifications($cid) {
+  function addQualifications($cid) {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
       return;
     }
@@ -883,7 +954,7 @@ class GenerateHRData {
   /**
    * This method populates the Visa/Immigration Custom Table
    */
-  private function addVisaDetails($cid) {
+  function addVisaDetails($cid) {
     if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Immigration', 'id', 'name')) {
       return;
     }
@@ -977,7 +1048,7 @@ class GenerateHRData {
   /**
    * This is a method to create absence periods
    */
-  private function addAbsencePeriods() {
+  function addAbsencePeriods() {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) != 0) {
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrabsence_period");
     }
@@ -1011,7 +1082,7 @@ class GenerateHRData {
   /**
    * This is a method to create absence entitlements
    */
-  private function addAbsenceEntitlements($cid) {
+  function addAbsenceEntitlements($cid) {
     $periods = CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods();
     $periodIds = array_keys($periods);
 
@@ -1103,7 +1174,7 @@ class GenerateHRData {
     }
   }
 
-  private function addHolidays($cid) {
+  function addHolidays($cid) {
     $publicHolidays = array('1 January', '18 April','21 April','5 May','26 May','25 August','25 December','26 December');
     $publicholidays_sub = array("New Year's Day", 'Good Friday','Easter Monday','Early May bank holiday','Spring bank holiday','Summer bank holiday','Christmas Day','Boxing Day');
     $params = array('sequential' => 1,
@@ -1129,17 +1200,17 @@ class GenerateHRData {
       $i++;
     }
   }
-  private function addVacancies($cid) {
+  function addVacancies($cid) {
     //sample data for HRRecruitment table
     $grpParams['name'] = 'vacancy_status';
     $optionValues = $ids = array();
-    CRM_Core_OptionValue::getValues($grpParams,$optionValues);
-    foreach ($optionValues as $Id => $value) {
-      $ids[] = $value['value'];
-    }
-    $status_id = array_flip($ids);
+    $ids = CRM_Core_OptionGroup::values('vacancy_status');
+    $caseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
+    $vacancyStatuses = CRM_Core_OptionGroup::values('vacancy_status');
 
-    for ($i = 1; $i <= mt_rand(1, 3); $i++) {
+    $totalcount = 6;
+    $setNewVacancy = FALSE;
+    for ($i = 1; $i <= $totalcount; $i++) {
       $position = $this->randomItem('vacancyposition');
       $vacanciesValues = array(
         'salary' => $this->randomItem('salary'),
@@ -1147,64 +1218,113 @@ class GenerateHRData {
         'description' => $this->randomItem('vacancydescription'),
         'benefits' => $this->randomItem('benefits'),
         'requirements' => $this->randomItem('requirements'),
-        'location' => $this->randomItem('vacancylocation'),
-        'is_template' => 0,
-        'status_id' => array_rand($status_id,1),
+        'location' => $this->randomItem('location'),
+        'is_template' => mt_rand(0 ,1),
+        'status_id' => array_rand($vacancyStatuses, 1),
         'start_date' => $this->randomDate('2009-01-01', '2011-12-31','YmdHis'),
         'end_date' =>  $this->randomDate('2012-01-01', '2014-12-31','YmdHis'),
+        'created_id' => $cid,
+        'created_date' => $this->randomDate(),
       );
-      if ($i == 1) {
-        $vacanciesValues['is_template'] = 1;
+      if ($vacanciesValues['is_template'] == 1) {
+        //template vacancies doesn't have statuses
+        unset($vacanciesValues['status_id']);
+      }
+      else {
+        $setNewVacancy = TRUE;
+      }
+
+      //ensure that atleast there is one vacancy not all template
+      if (!$setNewVacancy && $i == $totalcount) {
+        $totalcount++;
       }
       $hrVacancies[] = $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancy', $vacanciesValues);
     }
-    //For each HRVacancies, there may be 0 or 1 records for each of these entity types: HRVacancyCases, HRVacancyStage, HRVacancy_permission.
-    $gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
 
+    //There are 6 sample Vacancies created, next is to create Entities - VacancyStage, VacancyPermission, Cases
     foreach ($hrVacancies as $key => $hrVacanciesObj) {
-      //sample data for HRVacancy Cases table
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        $applicationParams = array( 'contact_id' =>$cid,
-          'case_type_id' => 'Application',
-          'subject' => $position,
-          'status_id'=> array_rand($status_id,1));
-        $case = CRM_Case_BAO_Case::create($applicationParams);
-        $applicationParams['case_id'] = $case->id;
-        $caseContact = CRM_Case_BAO_Case::addCaseToContact($applicationParams);
-
-        $values = array( 'entity_id' =>  $case->id,
-          'vacancy_id' => $hrVacanciesObj->id
-        );
-        $this->insertCustomData($gid, $values);
-      }
-      //sample data for HRVacancy Stages table
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+      $count=1;
+      $openCaseStatus = NULL;
+      $selectedCaseStatuses = array();
+      $randCaseStatus = $caseStatuses;
+      for ($i = 1; $i <= mt_rand(1, count($caseStatuses)); $i++) {
         $vacancyStagesValues = array(
-          'case_status_id' => mt_rand(0, 1),
+          'case_status_id' => array_rand($randCaseStatus, 1),
           'vacancy_id' => $hrVacanciesObj->id,
-          'weight' => mt_rand(0, 1),
+          'weight' => $count,
         );
+
+        if ($count == 1) {
+          //atleast first case created against this vacancy have its status as its first vacancy stage
+          $openCaseStatus = $vacancyStagesValues['case_status_id'];
+        }
+        else {
+          $selectedCaseStatuses[] = $vacancyStagesValues['case_status_id'];
+        }
+        array_pop($randCaseStatus);
+        $count++;
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyStage', $vacancyStagesValues);
       }
       //sample data for HRPermission table
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
+      for ($i = 1; $i <= mt_rand(1, 4); $i++) {
         $vacancyPermissionValues = array(
-          'contact_id' => $cid,
+          'contact_id' => $this->randomContact(),
           'vacancy_id' => $hrVacanciesObj->id,
           'permission' => $this->randomItem('permission'),
         );
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyPermission', $vacancyPermissionValues);
       }
-      //sample data for HRPermission UFJoin table sample data will be entered in later stage
-      /* for ($i = 1; $i <= mt_rand(0, 1); $i++) { */
-      /*   $vacancyUFJoinValues = array( */
-      /*                                'module' => 'Vacancy', */
-      /*                                'entity_id' => $hrVacanciesObj->id, */
-      /*                                'entity_table' => 'civicrm_hrvacancy', */
-      /*                                'uf_group_id' => '1', */
-      /*                                ); */
-      /*   $this->insertVacancyData('CRM_Core_DAO_UFJoin', $vacancyUFJoinValues); */
-      /* } */
+
+      foreach (array('application_profile', 'evaluation_profile') as $profileName) {
+        $ufgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $profileName, 'id', 'name');
+        $vacancyUFJoinValues =  array(
+          'module' => 'Vacancy',
+          'entity_id' => $hrVacanciesObj->id,
+          'entity_table' => 'civicrm_hrvacancy',
+          'uf_group_id' => $ufgID,
+          'module_data' => $profileName,
+        );
+        $this->insertVacancyData('CRM_Core_DAO_UFJoin', $vacancyUFJoinValues);
+
+        $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name'));
+        if (!$hrVacanciesObj->is_template) {
+          $randCaseStatus = $caseStatuses;
+          for ($i = 1; $i <= mt_rand(1, 4); $i++) {
+            $applicantID = $this->randomContact();
+            $caseParams['case_type_id'] = $caseTypes['Application'];
+            $caseParams['start_date'] = $this->randomDate();
+
+            if ($i == 1) {
+              $caseParams['status_id'] = $openCaseStatus;
+            }
+            elseif (count($selectedCaseStatuses)) {
+              $caseParams['status_id'] = array_rand($selectedCaseStatuses, 1);
+            }
+            $caseObj = CRM_Case_BAO_Case::create($caseParams);
+
+            $contactParams = array(
+              'case_id' => $caseObj->id,
+              'contact_id' => $applicantID,
+            );
+            CRM_Case_BAO_Case::addCaseToContact($contactParams);
+
+            $xmlProcessor = new CRM_Case_XMLProcessor_Process();
+            $xmlProcessorParams = array(
+              'clientID' => $applicantID,
+              'creatorID' => $cid,
+              'standardTimeline' => 1,
+              'activityTypeName' => 'Open Case',
+              'caseID' => $caseObj->id,
+              'activity_date_time' => $caseParams['start_date'],
+            );
+            $xmlProcessor->run('Application', $xmlProcessorParams);
+
+            $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
+            $result = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cgID, 'name' => 'vacancy_id'));
+            civicrm_api3('custom_value' , 'create', array("custom_{$result['id']}" => $hrVacanciesObj->id, 'entity_id' => $caseObj->id));
+          }
+        }
+      }
     }
   }
 
@@ -1223,6 +1343,4 @@ class GenerateHRData {
 
 $obj1 = new GenerateHRData();
 $obj1->initID();
-$obj1->generate('Organization');
-$obj1->generate('Individual');
-CRM_HRJob_Estimator::updateEstimates(); // generator above bypasses API
+$obj1->generate();
