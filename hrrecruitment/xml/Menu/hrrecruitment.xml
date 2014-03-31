@@ -44,4 +44,10 @@
     <title>Job</title>
     <is_public>true</is_public>
   </item>
+  <item>
+    <path>civicrm/case/hrapplicantprofile</path>
+    <title>Applicant Profile</title>
+    <page_callback>CRM_HRRecruitment_Form_CaseProfile</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>
