@@ -119,6 +119,7 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
     $params = $this->controller->exportValues($this->_name);
     $parent = $this->controller->getParent();
     $parent->set('searchResult', 1);
+    $parent->set('status', null);
     if (!empty($params)) {
       $fields = array('job_position', 'status_type_id', 'location_type_id');
       foreach ($fields as $field) {

@@ -381,7 +381,7 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
       'attributes' => array(
         'label'      => "{$status}",
         'name'       => "{$status}",
-        'url'        => "civicrm/vacancy/find?force=1&status={$value}",
+        'url'        => "civicrm/vacancy/find?force=1&status={$value}&reset=1",
         'permission' => NULL,
         'operator'   => 'OR',
         'separator'  => NULL,
