@@ -202,7 +202,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     }
     return !empty($clauses) ? implode(' AND ', $clauses) : '(1)';
   }
-  
+
   function search() {
     if (isset($this->_action) &
       (CRM_Core_Action::ADD |
