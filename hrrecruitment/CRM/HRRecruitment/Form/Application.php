@@ -159,7 +159,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     $xmlProcessor->run('Application', $xmlProcessorParams);
 
     //process Custom data
-    CRM_Core_BAO_CustomValueTable::postprocess(&$params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
+    CRM_Core_BAO_CustomValueTable::postprocess($params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
 
     //Process case to vacancy one-to-one mapping in custom table 'application_case'
     $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
