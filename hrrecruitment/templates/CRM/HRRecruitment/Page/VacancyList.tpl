@@ -43,7 +43,7 @@
               <td class="crm-job_position"><a class="hr-job-position-link" href="{crmURL p="civicrm/vacancy" q="reset=1&id=`$row.id`"}">{$row.position}</a></td>
               <td class="crm-location">{$row.location}</td>
               <td class="crm-salary">{$row.salary}</td>
-              <td class="crm-application_dates">{$row.startDate|crmDate} - {$row.endDate|crmDate}</td>
+              <td class="crm-application_dates">{$row.startDate} - {$row.endDate}</td>
               <td><a href="{crmURL p="civicrm/vacancy/apply" q="reset=1&id=`$row.id`"}">{ts}Apply Now{/ts}</a></td>
             </tr>
           {/foreach}
