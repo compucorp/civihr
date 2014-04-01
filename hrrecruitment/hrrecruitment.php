@@ -301,6 +301,22 @@ function hrrecruitment_civicrm_disable() {
   return _hrrecruitment_civix_civicrm_disable();
 }
 
+function hrrecruitment_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = FALSE, $selectAttributes = array()) {
+  $cfVacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'vacancy_id', 'id', 'name');
+  $sql = "SELECT id, position FROM civicrm_hrvacancy WHERE is_template = 0";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  $options = array();
+  while ($dao->fetch()) {
+    $vacancies[$dao->id] = $dao->position;
+  }
+
+  if (!empty($vacancies) && !$detailedFormat ) {
+    foreach ($vacancies AS $id => $position) {
+      $options[$id] = $position;
+    }
+  }
+}
+
 /**
  * Implementation of hook_civicrm_upgrade
  *
