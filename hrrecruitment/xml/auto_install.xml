@@ -80,7 +80,7 @@
       <name>vacancy_id</name>
       <label>Vacancy</label>
       <data_type>Int</data_type>
-      <html_type>Text</html_type>
+      <html_type>Select</html_type>
       <is_required>1</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
