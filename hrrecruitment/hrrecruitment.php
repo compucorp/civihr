@@ -151,7 +151,6 @@ function hrrecruitment_civicrm_postInstall() {
   $value = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
   $value = CRM_Core_DAO::VALUE_SEPARATOR . $value . CRM_Core_DAO::VALUE_SEPARATOR;
   $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$value}' WHERE extends_entity_column_value = 'Application'";
-  CRM_Core_Error::debug( '$sql', $sql );
   CRM_Core_DAO::executeQuery($sql);
 
   //change the profile Type of Aplication
