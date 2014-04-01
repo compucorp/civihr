@@ -148,16 +148,10 @@ function hrrecruitment_civicrm_install() {
  * Note: This hook only runs in CiviCRM 4.4+.
  */
 function hrrecruitment_civicrm_postInstall() {
-  $cgDAO = new CRM_Core_DAO_CustomGroup();
-  $cgDAO->extends_entity_column_value = 'Application';
-  $cgDAO->find();
   $value = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
-  while ($cgDAO->fetch()) {
-    if ($value) {
-      $cgDAO->extends_entity_column_value = CRM_Core_DAO::VALUE_SEPARATOR . $value['result'] . CRM_Core_DAO::VALUE_SEPARATOR;
-      $cgDAO->save();
-    }
-  }
+  $value = CRM_Core_DAO::VALUE_SEPARATOR . $value . CRM_Core_DAO::VALUE_SEPARATOR;
+  $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$value}' WHERE extends_entity_column_value = 'Application'";
+  CRM_Core_DAO::executeQuery($sql);
 
   //change the profile Type of Aplication
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'application_profile', 'id', 'name')) {
@@ -305,6 +299,22 @@ function hrrecruitment_civicrm_disable() {
   }
 
   return _hrrecruitment_civix_civicrm_disable();
+}
+
+function hrrecruitment_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = FALSE, $selectAttributes = array()) {
+  $cfVacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'vacancy_id', 'id', 'name');
+  $sql = "SELECT id, position FROM civicrm_hrvacancy WHERE is_template = 0";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  $options = array();
+  while ($dao->fetch()) {
+    $vacancies[$dao->id] = $dao->position;
+  }
+
+  if (!empty($vacancies) && !$detailedFormat ) {
+    foreach ($vacancies AS $id => $position) {
+      $options[$id] = $position;
+    }
+  }
 }
 
 /**
