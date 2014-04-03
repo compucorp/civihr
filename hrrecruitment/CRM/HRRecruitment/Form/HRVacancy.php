@@ -50,6 +50,18 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
     $this->assign('isTemplate', $this->_isTemplate);
     $this->_id = CRM_Utils_Request::retrieve('id', 'Integer', $this);
+    if ($this->_isTemplate) {
+      CRM_Utils_System::setTitle(ts('New Vacancy Template'));
+    }
+    if ($this->_id) {
+      if ($this->_isTemplate = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_id, 'is_template')) {
+        CRM_Utils_System::setTitle(ts('Edit Vacancy Template'));
+      }
+      else {
+        CRM_Utils_System::setTitle(ts('Edit Vacancy'));
+      }
+    }
+
   }
 
  /**
