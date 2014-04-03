@@ -1,0 +1,60 @@
+.arrow-right {
+
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+}
+
+font{
+	margin-left:-50px;
+	margin-right:10px;
+}
+
+ul.vacancy-summary {
+	font-weight: bold;
+	list-style: none;
+}
+
+li.vacancy-position {
+	display: table-cell;
+}
+
+.stage-1{
+	border-left: 70px solid firebrick;
+	color: white;
+}
+
+.stage-2{
+	border-left: 70px solid tomato;
+	color: white;
+}
+
+.stage-3{
+	border-left: 70px solid orange;
+	color: white;
+}
+
+.stage-4{
+	border-left: 70px solid yellow;
+}
+
+.stage-5{
+	border-left: 70px solid cyan;
+}
+
+.stage-6{
+	border-left: 70px solid palegreen;
+}
+
+.stage-7{
+	border-left: 70px solid yellowgreen;
+	color: white;
+}
+
+.stage-8{
+	border-left: 70px solid lightseagreen;
+	color: white;
+}
+
+.stage-end{
+	border-left: 70px solid green;
+}
