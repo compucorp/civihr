@@ -230,43 +230,11 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>activity_subject</field_name>
-      <is_active>1</is_active>
-      <is_view>0</is_view>
-      <is_required>0</is_required>
-      <weight>1</weight>
-      <help_post></help_post>
-      <help_pre></help_pre>
-      <visibility>User and User Admin Only</visibility>
-      <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
-      <label>Subject</label>
-      <field_type>Activity</field_type>
-      <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>Evaluation Form</profile_group_name>
-    </ProfileField>
-    <ProfileField>
-      <field_name>activity_details</field_name>
-      <is_active>1</is_active>
-      <is_view>0</is_view>
-      <is_required>0</is_required>
-      <weight>2</weight>
-      <help_post></help_post>
-      <help_pre></help_pre>
-      <visibility>User and User Admin Only</visibility>
-      <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
-      <label>Details</label>
-      <field_type>Activity</field_type>
-      <is_multi_summary>0</is_multi_summary>
-      <profile_group_name>Evaluation Form</profile_group_name>
-    </ProfileField>
-    <ProfileField>
       <field_name>custom.civicrm_value_evaluation_fields.rate_the_applicant_s_communicati</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
-      <weight>3</weight>
+      <weight>1</weight>
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
@@ -282,7 +250,7 @@
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
-      <weight>4</weight>
+      <weight>2</weight>
       <help_post></help_post>
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
@@ -324,9 +292,9 @@
   </OptionGroups>
   <OptionValues>
     <OptionValue>
-      <label>Good</label>
+      <label>1 - Poor</label>
       <value>1</value>
-      <name>Good</name>
+      <name>Poor</name>
       <is_default>0</is_default>
       <weight>1</weight>
       <is_optgroup>0</is_optgroup>
@@ -335,9 +303,9 @@
       <option_group_name>rate_the_applicant_s_communicati</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Acceptable</label>
+      <label>2 - Average</label>
       <value>2</value>
-      <name>Acceptable</name>
+      <name>Average</name>
       <is_default>0</is_default>
       <weight>2</weight>
       <is_optgroup>0</is_optgroup>
@@ -346,9 +314,9 @@
       <option_group_name>rate_the_applicant_s_communicati</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Excellent</label>
+      <label>3 - Acceptable</label>
       <value>3</value>
-      <name>Excellent</name>
+      <name>Acceptable</name>
       <is_default>0</is_default>
       <weight>3</weight>
       <is_optgroup>0</is_optgroup>
@@ -357,9 +325,31 @@
       <option_group_name>rate_the_applicant_s_communicati</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Good</label>
-      <value>1</value>
+      <label>4 - Good</label>
+      <value>4</value>
       <name>Good</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>5 - Excellent</label>
+      <value>5</value>
+      <name>Excellent</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_communicati</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>1 - Poor</label>
+      <value>1</value>
+      <name>Poor</name>
       <is_default>0</is_default>
       <weight>1</weight>
       <is_optgroup>0</is_optgroup>
@@ -368,9 +358,9 @@
       <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Acceptable</label>
+      <label>2 - Average</label>
       <value>2</value>
-      <name>Acceptable</name>
+      <name>Average</name>
       <is_default>0</is_default>
       <weight>2</weight>
       <is_optgroup>0</is_optgroup>
@@ -379,11 +369,33 @@
       <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
     </OptionValue>
     <OptionValue>
-      <label>Excellent</label>
+      <label>3 - Acceptable</label>
       <value>3</value>
-      <name>Excellent</name>
+      <name>Acceptable</name>
       <is_default>0</is_default>
       <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>4 - Good</label>
+      <value>4</value>
+      <name>Good</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>5 - Excellent</label>
+      <value>5</value>
+      <name>Excellent</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
