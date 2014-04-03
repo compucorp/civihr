@@ -33,7 +33,7 @@ class CRM_HRRecruitment_BAO_HRVacancyStage extends CRM_HRRecruitment_DAO_HRVacan
    * @return array - array of related  casestatus based on job position
    * in key(as id) => value array (contains label, weight and count) format.
    */
-  public static function caseStage($id) {
+  public static function caseStage($id, $usedForDashboard = FALSE, $isDraft = FALSE) {
     $result = civicrm_api3('HRVacancyStage', 'get', array('vacancy_id'=> $id ));
     $case_status = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
 
@@ -41,6 +41,13 @@ class CRM_HRRecruitment_BAO_HRVacancyStage extends CRM_HRRecruitment_DAO_HRVacan
 
     //array to store contact count(as value) against each case status/vacancy stage(as key)
     $stagesCount = array();
+
+    //initialize $countDraftStages which holds the total count of vacancy stages of status Draft
+    //and remove stages from display if there is no applicant count on each stage
+    if ($isDraft) {
+      $countDraftStages = 0;
+      $vacancyStatuses =  CRM_Core_OptionGroup::values('vacancy_status');
+    }
 
     $sql = "SELECT COUNT(ccc.contact_id) as count, cc.status_id as status
 FROM {$customTableName} cg
@@ -54,12 +61,33 @@ GROUP BY cc.status_id
     }
 
     foreach ($result['values'] as $id => $status) {
-      $caseStatus[$status['case_status_id']] = array(
-        'title' => $case_status[$status['case_status_id']],
-        'weight' => $status['weight'],
-        'count' => CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0),
-      );
+      if ($usedForDashboard) {
+        $count = CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0);
+        $caseStatus[$status['weight']] = array(
+          'title' => $case_status[$status['case_status_id']],
+          'count' => $count,
+        );
+        if ($isDraft) {
+          $countDraftStages += $count;
+        }
+      }
+      else {
+        $caseStatus[$status['case_status_id']] = array(
+          'title' => $case_status[$status['case_status_id']],
+          'weight' => $status['weight'],
+          'count' => CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0),
+        );
+      }
     }
+
+    if (isset($countDraftStages) && !$countDraftStages && $isDraft) {
+      return;
+    }
+    //sort stages on basis of weight
+    if ($usedForDashboard) {
+      ksort($caseStatus);
+    }
+
     return $caseStatus;
   }
 

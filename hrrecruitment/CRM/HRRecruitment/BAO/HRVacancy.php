@@ -78,4 +78,43 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
     CRM_Utils_System::flushCache();
     return $copyVacancy;
   }
+
+  static function getVacanciesByStatus() {
+    $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 0));
+    $statuses = CRM_Core_OptionGroup::values('vacancy_status');
+    $vacancies = $statusesCount = array();
+    //initialize $statusesCount which hold the number of vacancies of status 'Draft' and 'Open'
+    foreach (array('Draft', 'Open') as $statusName) {
+      $value = array_search($statusName, $statuses);
+      $statusesCount[$value] = 0;
+    }
+
+    foreach ($result['values'] as $id => $vacancy) {
+      $isDraft = FALSE;
+      if (isset($statusesCount[$vacancy['status_id']])) {
+        $statusesCount[$vacancy['status_id']] += 1;
+        if ($vacancy['status_id'] == array_search('Draft', $statuses)) {
+          $isDraft = TRUE;
+        }
+        $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
+          'position' => $vacancy['position'],
+          'location' => $vacancy['location'],
+          'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'],'%b %E, %Y'),
+          'stages' => CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id, TRUE, $isDraft),
+        );
+        $vacancies[$vacancy['status_id']] = array('title' => $statuses[$vacancy['status_id']]) + $vacancyEntry;
+      }
+    }
+
+    //append $statusCount result to vacancy's position as title
+    foreach ($statusesCount as $status => $count) {
+      if ($count) {
+        $vacancies[$status]['title'] .= " ({$count})";
+      }
+      else {
+        $vacancies += array($status => array('title' => "{$statuses[$status]} ({$count})"));
+      }
+    }
+    return $vacancies;
+  }
 }
