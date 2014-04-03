@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <menu>
+   <item>
+    <path>civicrm/vacancy/dashboard</path>
+    <page_callback>CRM_HRRecruitment_Page_Dashboard</page_callback>
+    <title>Vacancy Dashboard</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
   <item>
     <path>civicrm/vacancy/add</path>
     <page_callback>CRM_HRRecruitment_Form_HRVacancy</page_callback>
