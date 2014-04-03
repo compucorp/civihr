@@ -125,6 +125,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
       'civicrm_activity',
       'civicrm_activity_contact',
       'civicrm_hrabsence_period',
+      'civicrm_hrabsence_type',
     );
     $this->quickCleanup($tablesToTruncate, TRUE);
     parent::tearDown();
