@@ -301,6 +301,22 @@ function hrrecruitment_civicrm_disable() {
   return _hrrecruitment_civix_civicrm_disable();
 }
 
+function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_Activity') {
+    $statusID = CRM_Utils_Request::retrieve('statusid', 'Positive');
+    if (isset($statusID)) {
+      $cID = CRM_Utils_Request::retrieve('cid', 'Positive');
+      $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
+      $displayName = CRM_Contact_BAO_Contact::displayName($cID);
+      CRM_Utils_System::setTitle($displayName . ' ( ' . $CaseStatuses[$statusID] . ' ) ');
+
+      $defaults['case_status_id'] = $statusID;
+      $form->freeze('case_status_id');
+      $form->setDefaults($defaults);
+    }
+  }
+}
+
 function hrrecruitment_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = FALSE, $selectAttributes = array()) {
   $cfVacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField', 'vacancy_id', 'id', 'name');
   if ($fieldID == $cfVacancyID) {
