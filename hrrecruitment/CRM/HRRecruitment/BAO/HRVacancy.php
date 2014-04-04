@@ -100,8 +100,18 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
           'position' => $vacancy['position'],
           'location' => $vacancy['location'],
           'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'],'%b %E, %Y'),
-          'stages' => CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id, TRUE, $isDraft),
         );
+
+        //assign stages by weight
+        $stages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id);
+        foreach($stages as $stage) {
+          $vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages'][$stage['weight']] = array(
+            'title' => $stage['title'],
+            'count' => $stage['count'],
+          );
+        }
+        ksort($vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages']);
+
         $vacancies[$vacancy['status_id']] = array('title' => $statuses[$vacancy['status_id']]) + $vacancyEntry;
       }
     }

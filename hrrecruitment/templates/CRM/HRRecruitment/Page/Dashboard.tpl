@@ -23,8 +23,11 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<table>
-<tr><td width=70%>{include file="CRM/HRRecruitment/Page/Summary.tpl"}</td>
-<td>{*TODO: include Recent Activity template*}</td>
-</tr>
-</table>
+<div class="crm-clearfix hr-pipeline-tab">
+    <div class="hr-dashboard-vacancy-summary">
+        {include file="CRM/HRRecruitment/Page/Summary.tpl"}
+    </div>
+    <div class="hr-dashboard-recent-activity">
+        {*TODO: include Recent Activity template*}
+    </div>
+</div>

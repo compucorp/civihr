@@ -24,36 +24,44 @@
  +--------------------------------------------------------------------+
 *}
 {foreach from=$vacanciesByStatus item="status" key="statusID"}
-<ul class="vacancy-summary">
-  <div class="crm-accordion-header"><h1>{$status.title}</h1></div>
-    <div class="crm-accordion-body">
-      {if isset($status.$statusID.vacancies)}
-        {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
-          <li id="vacancy-position">
-            <table style="background-color: #EBEBEB;">
-              <tr><td><h3><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}">{$vacancy.position}</a></h3></td></tr>
-              <tr><td>{$vacancy.location}</td></tr>
-              <tr><td>({$vacancy.date})</td></tr>
-              {if !empty($vacancy.stages)}
-              <tr>
-                <td>
-                  <br>
-                  <div>
-                    {foreach from=$vacancy.stages key="weight" item="stage"}
-                      <span class="arrow-right {if $weight eq $vacancy.stages|@count}stage-end{else}stage-{$weight}{/if}" title="{$stage.count} Application(s) with status '{$stage.title}'">
-                        <font>{$stage.count}</font>
-                      </span>
-                    {/foreach}
-                  </div>
-                  <br>
-                </td>
-              </tr>
-            {/if}
-          </table>
-        </li>
-      {/foreach}
-    {/if}
-  </div>
-
-</ul>
+<table>
+  <tr>
+    <td>
+      <div class="crm-accordion-header"><h1>{$status.title}</h1></div>
+        <dt>
+        {if isset($status.$statusID.vacancies)}
+          {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
+            <li class="hr-vacancy">
+              <table style="background-color: #EBEBEB;" style="float:{cycle values='right,left'}" >
+                <tr>
+                  <td><h3><b>
+                      <a class="hr-vacancy-title" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}">{$vacancy.position}</a>
+                  </b></h3></td>
+                </tr>
+                <tr><td>{$vacancy.location}</td></tr>
+                <tr><td>({$vacancy.date})</td></tr>
+                {if !empty($vacancy.stages)}
+                  <tr>
+                    <td>
+                      <ul class="hr-stage-pipeline">
+                        {foreach from=$vacancy.stages key="weight" item="stage"}
+                          {math assign=fraction equation="x/y" x=$weight y=$vacancy.stages|@count}
+                          {math assign=red equation="150-(100*x)" x=$fraction format="%.00f"}
+                          {math assign=green equation="200*x" x=$fraction format="%.00f"}
+                          <li class="hr-stage" style="border-left: 70px solid rgb({$red},{$green}, 50);">
+                            <a class="hr-stage-link" href=# title="{$stage.count} Application(s) with status '{$stage.title}'">{$stage.count}</a>
+                          </li>
+                        {/foreach}
+                      </ul>
+                    </td>
+                  </tr>
+                {/if}
+              </table>
+            </li>
+          {/foreach}
+        {/if}
+      </dt>
+    </td>
+  </tr>
+</table>
 {/foreach}
