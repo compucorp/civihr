@@ -28,23 +28,7 @@
  * Form for Applicant profile View.
  *
  */
-class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
-
-  /**
-   * the id of the case
-   *
-   * @int
-   * @access protected
-   */
-  protected $_caseID;
-
-  /**
-   * the id of the contact
-   *
-   * @int
-   * @access protected
-   */
-  protected $_contactID;
+class CRM_HRRecruitment_Form_CaseProfile extends CRM_Core_Form {
 
   /**
    * the id of the application profile
@@ -53,6 +37,14 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
    * @access protected
    */
   protected $_profileID;
+
+  /**
+   * the id of the vacancy
+   *
+   * @int
+   * @access protected
+   */
+  protected $_vacancyID;
 
   /**
    * the fields needed to build this form
@@ -66,8 +58,13 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     if ($this->_contactID = CRM_Utils_Request::retrieve('cid', 'Positive')) {
       $this->assign('contactID', $this->_contactID);
     }
+    $this->_statusId = CRM_Utils_Request::retrieve('status_id', 'Positive');
+
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js')
+      ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Page/CasePipeline.js');
     if ($this->_caseID = CRM_Utils_Request::retrieve('case_id', 'Positive')) {
-      $this->assign('case_id', $this->_caseID);
+      $this->assign('caseID', $this->_caseID);
       $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
       $gid = array_search('application_case', $groups);
       $cgID = array('custom_group_id'=>$gid);
@@ -77,7 +74,7 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         "custom_{$cfID['id']}" => 1,
       );
       $result = CRM_Core_BAO_CustomValueTable::getValues($params);
-      $vacancyID = $result["custom_{$cfID['id']}"];
+      $this->_vacancyID = $vacancyID = $result["custom_{$cfID['id']}"];
       $ufJoinParams = array(
         'module' => 'Vacancy',
         'entity_id' => $vacancyID,
@@ -122,10 +119,26 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         }
       }
     }
+    if (isset($this->_defStatus)) {
+      $this->_defaults['stages'] = $this->_defStatus;
+    }
     return $this->_defaults;
   }
 
   public function buildQuickForm() {
+    $cs = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vacancyID);
+    $this->_statuses = $cs;
+    $weight = $cs[$this->_statusId];
+
+    foreach ($cs as $csID => $csV) {
+      if( $csV['weight'] == $weight['weight']+1 ) {
+        $this->_defStatus = $csID;
+        $this->assign('statusID', $csID);
+      }
+      $stageOption[$csID] = $csV['title'];
+    }
+    $this->add('select', 'stages', ts(''), $stageOption , FALSE);
+
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
     foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
       CRM_Core_BAO_UFGroup::buildProfile($this, $profileFields[$profileFieldKey], CRM_Profile_Form::MODE_EDIT, $this->_contactID, TRUE);

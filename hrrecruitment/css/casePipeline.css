@@ -7,3 +7,9 @@
   width: 70%;
   min-height: 5em;
 }
+.hr-case-application-action-button {
+  float: right;
+}
+.hr-case-application-action-button .highWeight{
+  font-weight: bold;
+}
