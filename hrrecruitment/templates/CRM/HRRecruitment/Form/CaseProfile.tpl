@@ -55,6 +55,7 @@ cj(function($){
       active = 'a.button, a.action-item, a.crm-popup',
       link,
       sourceUrl = {/literal}"{crmURL p='civicrm/case/activity' h=0 q='reset=1&action=add&cid='}{$contactID}&atype=16&selectedChild=activity"{literal};
+
     sourceUrl = sourceUrl + '&caseid={/literal}{$caseID}{literal}';
     sourceUrl = sourceUrl + '&statusid=' + tabid;
     link = "<a href="+sourceUrl+" id='hrcaseApplicantLink' class='action-item crm-popup'>"+$this.val()+"</a>";
@@ -73,10 +74,7 @@ cj(function($){
         CRM.tabHeader.focus('#tab_'+tabid);
         CRM.tabHeader.resetTab('#tab_'+tabid);
       });
-    $('#crm-main-content-wrapper')
-
   }
-
 });
 </script>
 {/literal}
