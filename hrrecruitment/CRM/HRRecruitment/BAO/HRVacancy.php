@@ -60,7 +60,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
    * @access public
    */
   static function copy($id, $newVacancy = NULL, $afterCreate = FALSE) {
-    $defaults = $vacancyValues = array();
+    $vacancyValues = array();
     $vacancyParams = array('id' => $id);
     $returnProperties = array('position', 'salary' , 'status_id', 'is_template');
     CRM_Core_DAO::commonRetrieve('CRM_HRRecruitment_DAO_HRVacancy', $vacancyParams, $vacancyValues, $returnProperties);
