@@ -1,60 +1,46 @@
-.arrow-right {
-
-	border-top: 20px solid transparent;
-	border-bottom: 20px solid transparent;
+div.hr-dashboard-vacancy-summary {
+  float: left;
+  width: 70%;
+  font-weight: bold;
 }
 
-font{
-	margin-left:-50px;
-	margin-right:10px;
+.hr-dashboard-recent-activity {
+  float: right;
+  width: 30%;
+  min-height: 5em;
 }
 
-ul.vacancy-summary {
-	font-weight: bold;
-	list-style: none;
+.hr-stage-pipeline ul, .hr-vacancy {
+  list-style: none;
+  display: inline;
+  float:left;
+  width:50%;
 }
 
-li.vacancy-position {
-	display: table-cell;
+li.hr-vacancy-position {
+  display: table-cell;
 }
 
-.stage-1{
-	border-left: 70px solid firebrick;
-	color: white;
+.hr-vacancy-title {
+font-size:17px;
 }
 
-.stage-2{
-	border-left: 70px solid tomato;
-	color: white;
+.hr-stage {
+    width: 0;
+    height: 0;
+    display: block;
+    float: left;
+    margin: 0 -15px;
+    padding: 0;
+    border-top: 22px solid transparent;
+    border-bottom: 22px solid transparent;
 }
 
-.stage-3{
-	border-left: 70px solid orange;
-	color: white;
-}
-
-.stage-4{
-	border-left: 70px solid yellow;
-}
-
-.stage-5{
-	border-left: 70px solid cyan;
-}
-
-.stage-6{
-	border-left: 70px solid palegreen;
-}
-
-.stage-7{
-	border-left: 70px solid yellowgreen;
-	color: white;
-}
-
-.stage-8{
-	border-left: 70px solid lightseagreen;
-	color: white;
-}
-
-.stage-end{
-	border-left: 70px solid green;
+a:visited.hr-stage-link, a:link.hr-stage-link{
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    position: relative;
+    right: 60px;
+    top: -9px;
 }
