@@ -24,19 +24,18 @@
  +--------------------------------------------------------------------+
 *}
 {foreach from=$vacanciesByStatus item="status" key="statusID"}
-<table>
-  <tr>
-    <td>
-      <div class="crm-accordion-header"><h1>{$status.title}</h1></div>
-        <dt>
+  <div class="crm-clearfix">
+    <div class="crm-accordion-header">{$status.title}</div>
+      <div class="crm-accordion-body crm-clearfix">
         {if isset($status.$statusID.vacancies)}
           {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
-            <li class="hr-vacancy">
-              <table style="background-color: #EBEBEB;" style="float:{cycle values='right,left'}" >
+              <table class="hr-vacancy" style="float:{cycle values='right,left'}" >
                 <tr>
-                  <td><h3><b>
+                  <td>
+                    <h3>
                       <a class="hr-vacancy-title" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}">{$vacancy.position}</a>
-                  </b></h3></td>
+                    </h3>
+                  </td>
                 </tr>
                 <tr><td>{$vacancy.location}</td></tr>
                 <tr><td>({$vacancy.date})</td></tr>
@@ -49,7 +48,7 @@
                           {math assign=red equation="150-(100*x)" x=$fraction format="%.00f"}
                           {math assign=green equation="200*x" x=$fraction format="%.00f"}
                           <li class="hr-stage" style="border-left: 70px solid rgb({$red},{$green}, 50);">
-                            <a class="hr-stage-link" href=# title="{$stage.count} Application(s) with status '{$stage.title}'">{$stage.count}</a>
+                            <a class="hr-stage-link" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}" title="{ts 1=$stage.count 2=$stage.title}%1 application(s) with status '%2'{/ts}">{$stage.count}</a>
                           </li>
                         {/foreach}
                       </ul>
@@ -57,11 +56,8 @@
                   </tr>
                 {/if}
               </table>
-            </li>
           {/foreach}
         {/if}
-      </dt>
-    </td>
-  </tr>
-</table>
+      </div>
+  </div>
 {/foreach}
