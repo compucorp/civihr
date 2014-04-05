@@ -9,20 +9,16 @@ div.hr-dashboard-vacancy-summary {
   width: 30%;
   min-height: 5em;
 }
-
-.hr-stage-pipeline ul, .hr-vacancy {
+table.hr-vacancy {
+  float:left;
+  width:50%;
+  background-color: #EBEBEB;
+}
+.hr-stage-pipeline ul {
   list-style: none;
   display: inline;
   float:left;
   width:50%;
-}
-
-li.hr-vacancy-position {
-  display: table-cell;
-}
-
-.hr-vacancy-title {
-font-size:17px;
 }
 
 .hr-stage {
@@ -36,7 +32,8 @@ font-size:17px;
     border-bottom: 22px solid transparent;
 }
 
-a:visited.hr-stage-link, a:link.hr-stage-link{
+.hr-stage a:visited.hr-stage-link,
+.hr-stage a:link.hr-stage-link {
     color: white;
     font-weight: bold;
     text-decoration: none;
