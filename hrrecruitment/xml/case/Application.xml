@@ -13,13 +13,10 @@
       <name>Follow up</name>
     </ActivityType>
     <ActivityType>
-      <name>Change Case Type</name>
-    </ActivityType>
-    <ActivityType>
       <name>Change Case Status</name>
     </ActivityType>
     <ActivityType>
-      <name>Change Case Start Date</name>
+      <name>Assign Case Role</name>
     </ActivityType>
     <ActivityType>
       <name>Link Cases</name>
@@ -34,6 +31,9 @@
     </ActivityType>
     <ActivityType>
       <name>Phone Call</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Comment</name>
     </ActivityType>
 
   </ActivityTypes>
