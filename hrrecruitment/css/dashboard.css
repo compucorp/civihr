@@ -4,21 +4,43 @@ div.hr-dashboard-vacancy-summary {
   font-weight: bold;
 }
 
+div.hr-dashboard-vacancy-summary div{
+  padding: 2px;
+}
+
 .hr-dashboard-recent-activity {
   float: right;
-  width: 30%;
+  width: 29%;
   min-height: 5em;
-}
-table.hr-vacancy {
-  float:left;
-  width:50%;
   background-color: #EBEBEB;
+  border-radius: 6px;
+  border-style: solid;
+  border-color: grey;
+  border-width: 1px;
 }
-.hr-stage-pipeline ul {
-  list-style: none;
-  display: inline;
-  float:left;
-  width:50%;
+
+.hr-recent-activity-title{
+  color: white;
+  background-color: #5D677B;
+  padding: 3px 15px 5px;
+}
+
+.hr-dashboard-recent-activity li {
+  list-style:none;
+  padding: 10px;
+  margin-left: -13px;
+  margin-right: 3px;
+}
+
+.hr-recent-activity-block {
+  font-size: 15px;
+}
+
+table.hr-vacancy {
+  width:48.5%;
+  background-color: #EBEBEB;
+  border-color: darkgrey;
+  margin: 3px 5px 5px;
 }
 
 .hr-stage {

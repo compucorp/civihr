@@ -24,10 +24,24 @@
  +--------------------------------------------------------------------+
 *}
 <div class="crm-clearfix hr-pipeline-tab">
-    <div class="hr-dashboard-vacancy-summary">
-        {include file="CRM/HRRecruitment/Page/Summary.tpl"}
+  <div class="hr-dashboard-vacancy-summary">
+    {include file="CRM/HRRecruitment/Page/Summary.tpl"}
+  </div>
+  <div class="hr-dashboard-recent-activity">
+    <div class="hr-recent-activity-title">
+      <h1>{ts}Recent Activities{/ts}</h1>
     </div>
-    <div class="hr-dashboard-recent-activity">
-        {*TODO: include Recent Activity template*}
-    </div>
+    <ul>
+      {foreach from=$recentActivities item="status" item="activity"}
+        <li>
+          <div class="hr-recent-activity-block">
+            {$activity.activity}
+          </div>
+          <div>
+            {$activity.time}
+          </div>
+        </li>
+      {/foreach}
+    </ul>
+  </div>
 </div>

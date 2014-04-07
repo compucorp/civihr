@@ -35,7 +35,9 @@ class CRM_HRRecruitment_Page_Dashboard extends CRM_Core_Page {
     $resources = CRM_Core_Resources::singleton();
     $resources->addStyleFile('org.civicrm.hrrecruitment', 'css/dashboard.css');
     $vacancies = CRM_HRRecruitment_BAO_HRVacancy::getVacanciesByStatus();
+    $recentActivities = CRM_HRRecruitment_BAO_HRVacancy::recentApplicationActivities();
     $this->assign('vacanciesByStatus', $vacancies);
+    $this->assign('recentActivities', $recentActivities);
     parent::run();
   }
 }
