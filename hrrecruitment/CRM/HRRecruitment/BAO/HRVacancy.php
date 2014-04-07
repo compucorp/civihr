@@ -25,7 +25,7 @@
 +--------------------------------------------------------------------+
 */
 
-class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
+class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
 
   /**
    * Function to format the Vacancy parameters before saving
@@ -38,12 +38,12 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
     $fields = $instance->fields();
     foreach ($fields as $name => $dontCare) {
       if (strpos($name, '_date') !== FALSE && strpos($name, 'created_') === FALSE) {
-        $formattedParams[$name]  = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
+        $formattedParams[$name] = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
       }
       elseif ($name == 'is_template' && !array_key_exists('template_id', $params)) {
         $formattedParams[$name] = 1;
       }
-      elseif(isset($params[$name])) {
+      elseif (isset($params[$name])) {
         $formattedParams[$name] = $params[$name];
       }
     }
@@ -53,7 +53,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
   /**
    * This function is to make a copy of a Vacancy
    *
-   * @param int     $id          the vacancy id to copy
+   * @param int $id          the vacancy id to copy
    *        obj     $newVacancy    object of CRM_HRRecruitment_DAO_HRVacancy
    *        boolean $afterCreate call to copy after the create function
    * @return void
@@ -62,18 +62,18 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
   static function copy($id, $newVacancy = NULL, $afterCreate = FALSE) {
     $vacancyValues = array();
     $vacancyParams = array('id' => $id);
-    $returnProperties = array('position', 'salary' , 'status_id', 'is_template');
+    $returnProperties = array('position', 'salary', 'status_id', 'is_template');
     CRM_Core_DAO::commonRetrieve('CRM_HRRecruitment_DAO_HRVacancy', $vacancyParams, $vacancyValues, $returnProperties);
-    $fieldsFix = ($afterCreate) ? array( ) : array('prefix' => array('position' => ts('Copy of') . ' '));
+    $fieldsFix = ($afterCreate) ? array() : array('prefix' => array('position' => ts('Copy of') . ' '));
     if ($newVacancy && is_a($newVacancy, 'CRM_HRRecruitment_DAO_HRVacancy')) {
       $copyVacancy = $newVacancy;
     }
 
     if (!isset($copyVacancy)) {
-      $copyVacancy = &CRM_Core_DAO::copyGeneric('CRM_HRRecruitment_DAO_HRVacancy',
-        array('id' => $id),'',
-          $fieldsFix
-        );
+      $copyVacancy = & CRM_Core_DAO::copyGeneric('CRM_HRRecruitment_DAO_HRVacancy',
+        array('id' => $id), '',
+        $fieldsFix
+      );
     }
     CRM_Utils_System::flushCache();
     return $copyVacancy;
@@ -99,12 +99,12 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
         $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
           'position' => $vacancy['position'],
           'location' => $vacancy['location'],
-          'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'],'%b %E, %Y'),
+          'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
         );
 
         //assign stages by weight
         $stages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id);
-        foreach($stages as $stage) {
+        foreach ($stages as $stage) {
           $vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages'][$stage['weight']] = array(
             'title' => $stage['title'],
             'count' => $stage['count'],
@@ -169,7 +169,11 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
       $position = "<a href='" . CRM_Utils_System::url('civicrm/case/pipeline', "reset=1&vid={$vacancyDAO->id}") . "'>{$vacancyDAO->position}</a>";
 
       //Case Activity Source link
-      $sourceID = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => 'activity_contacts', 'name' => 'Activity Source', 'return' => 'value'));
+      $sourceID = civicrm_api3('OptionValue', 'getvalue', array(
+        'option_group_id' => 'activity_contacts',
+        'name' => 'Activity Source',
+        'return' => 'value'
+      ));
       $sourceContact = CRM_Activity_BAO_ActivityContact::getNames($dao->case_activity_id, $sourceID);
       $sourceContactID = key($sourceContact);
       $source = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$sourceContactID}") . "'>{$sourceContact[$sourceContactID]}</a>";
@@ -210,5 +214,51 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy{
     }
 
     return $recentActivities;
+  }
+
+  /**
+   * Given the list of params in the params array, fetch the object
+   * and store the values in the values array
+   *
+   * @param array $params input parameters to find object
+   * @param array $values output values of the object
+   *
+   * @return CRM_HRRecruitment_DAO_HRVacancy|null the found object or null
+   * @access public
+   * @static
+   */
+
+  static function retrieve(&$params, &$defaults) {
+    $vacancy = new CRM_HRRecruitment_DAO_HRVacancy();
+    $vacancy->copyValues($params);
+    if ($vacancy->find(TRUE)) {
+      CRM_Core_DAO::storeValues($vacancy, $defaults);
+
+      $stage = new CRM_HRRecruitment_DAO_HRVacancyStage();
+      $stage->vacancy_id = $vacancy->id;
+      $stage->find();
+      while ($stage->fetch()) {
+        $defaults['stages'][$stage->weight] = $stage->case_status_id;
+      }
+
+      $permission = new CRM_HRRecruitment_DAO_HRVacancyPermission();
+      $permission->vacancy_id = $vacancy->id;
+      $permission->find();
+      $count = 1;
+      while ($permission->fetch()) {
+        $defaults['permission'][$count] = $permission->permission;
+        $defaults['permission_contact_id'][$count] = $permission->contact_id;
+        $count++;
+      }
+
+      foreach (array('application_profile', 'evaluation_profile') as $profileName) {
+        $ufJoin = new CRM_Core_DAO_UFJoin;
+        $ufJoin->module = 'Vacancy';
+        $ufJoin->entity_id = $vacancy->id;
+        $ufJoin->module_data = $profileName;
+        $ufJoin->find(TRUE);
+        $defaults[$profileName] = $ufJoin->uf_group_id;
+      }
+    }
   }
 }
