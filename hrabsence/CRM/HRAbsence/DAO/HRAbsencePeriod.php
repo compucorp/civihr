@@ -236,7 +236,7 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('import', $field)) {
           if ($prefix) {
-            self::$_import['absence_period'] = & $fields[$name];
+            self::$_import['hrabsence_period'] = & $fields[$name];
           } else {
             self::$_import[$name] = & $fields[$name];
           }
@@ -260,7 +260,7 @@ class CRM_HRAbsence_DAO_HRAbsencePeriod extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('export', $field)) {
           if ($prefix) {
-            self::$_export['absence_period'] = & $fields[$name];
+            self::$_export['hrabsence_period'] = & $fields[$name];
           } else {
             self::$_export[$name] = & $fields[$name];
           }
