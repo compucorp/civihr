@@ -51,7 +51,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $resultCreateAbsence = civicrm_api3('activity_type', 'create', $params);
     }
   }
-  
+
   public function addDefaultPeriod() {
     if (CRM_HRAbsence_BAO_HRAbsencePeriod::getRecordCount($params = array()) == 0) {
       $currentYear = date('Y');
@@ -70,7 +70,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     $weight = 0;
     $values = '';
     $options =  CRM_Core_OptionGroup::values('hrjob_leave_type', TRUE, FALSE);
-    if(empty($options)) {
+    if (empty($options)) {
       $leaves = FALSE;
       $options = array(
         'Sick' => 'Sick',
@@ -93,16 +93,19 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       }
 
       $absenceTypes = CRM_HRAbsence_BAO_HRAbsenceType::create($params);
-      if ($orgKey == 'Sick') {
-        $sickTypeID = $absenceTypes->debit_activity_type_id;
-      }
       $values .= " WHEN '{$orgValue}' THEN '{$absenceTypes->id}'";
 
       if ($absenceTypes->debit_activity_type_id) {
         $absenceTypeID[] = $absenceTypes->debit_activity_type_id;
+        if ($orgKey == 'Sick') {
+          $sickTypeID = $absenceTypes->debit_activity_type_id;
+        }
       }
       if ($absenceTypes->credit_activity_type_id) {
         $absenceTypeID[] = $absenceTypes->credit_activity_type_id;
+        if ($orgKey == 'Sick') {
+          $sickTypeID = $absenceTypes->debit_activity_type_id;
+        }
       }
     }
 
@@ -138,7 +141,10 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       'is_searchable' => 0,
       'is_active' => 1,
     );
-    civicrm_api3('custom_field', 'create', $paramsCField);
+    $resultCField = civicrm_api3('custom_field', 'get', $paramsCField);
+    if ($resultCField['count'] == 0) {
+      $resultCField = civicrm_api3('custom_field', 'create', $paramsCField);
+    }
 
     $paramsSGroup = array(
       'title' => 'Type of Sickness',
@@ -162,7 +168,10 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       'is_searchable' => 0,
       'is_active' => 1,
     );
-    $resultSField = civicrm_api3('custom_field', 'create', $paramsSField);
+    $resultSField = civicrm_api3('custom_field', 'get', $paramsSField);
+    if ($resultSField['count'] == 0) {
+      $resultSField = civicrm_api3('custom_field', 'create', $paramsSField);
+    }
 
     $sickType = array('Cold','Cough','Fever');
     foreach ($sickType as $Key => $val) {
@@ -290,7 +299,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     $this->ctx->log->info('Planning update 1201'); // PEAR Log interface
 
     $seperator = CRM_Core_DAO::VALUE_SEPARATOR;
-   
+
     $params = array(
       'version' => 3,
       'sequential' => 1,

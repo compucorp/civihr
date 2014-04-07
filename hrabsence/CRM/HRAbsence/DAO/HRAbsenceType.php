@@ -290,7 +290,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('import', $field)) {
           if ($prefix) {
-            self::$_import['absence_type'] = & $fields[$name];
+            self::$_import['hrabsence_type'] = & $fields[$name];
           } else {
             self::$_import[$name] = & $fields[$name];
           }
@@ -314,7 +314,7 @@ class CRM_HRAbsence_DAO_HRAbsenceType extends CRM_Core_DAO
       foreach($fields as $name => $field) {
         if (CRM_Utils_Array::value('export', $field)) {
           if ($prefix) {
-            self::$_export['absence_type'] = & $fields[$name];
+            self::$_export['hrabsence_type'] = & $fields[$name];
           } else {
             self::$_export[$name] = & $fields[$name];
           }
