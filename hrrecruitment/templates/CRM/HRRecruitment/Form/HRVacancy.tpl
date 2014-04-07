@@ -69,7 +69,7 @@
     </tr>
   </table>
   {*Stages Block*}
-  {if !$isTemplate}
+  {*if !$isTemplate*}
     <fieldset>
       <legend class="collapsible-title">{ts}Stages{/ts}</legend>
       <table class="form-layout-compressed">
@@ -78,7 +78,7 @@
         </tr>
       </table>
     </fieldset>
-  {/if}
+  {*/if*}
   {*Application Block*}
   <fieldset>
     <legend class="collapsible-title">{ts}Application Form{/ts}</legend>
