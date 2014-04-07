@@ -75,7 +75,30 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
         $fieldsFix
       );
     }
+
+    CRM_Core_DAO::copyGeneric('CRM_HRRecruitment_DAO_HRVacancyStage',
+      array(
+        'vacancy_id' => $id,
+      ),
+      array('vacancy_id' => $copyVacancy->id)
+    );
+
+    CRM_Core_DAO::copyGeneric('CRM_Core_DAO_UFJoin',
+      array(
+        'entity_id' => $id,
+        'entity_table' => 'civicrm_hrvacancy',
+      ),
+      array('entity_id' => $copyVacancy->id)
+    );
+
+    CRM_Core_DAO::copyGeneric('CRM_HRRecruitment_DAO_HRVacancyPermission',
+      array(
+        'vacancy_id' => $id,
+      ),
+      array('vacancy_id' => $copyVacancy->id)
+    );
     CRM_Utils_System::flushCache();
+
     return $copyVacancy;
   }
 
