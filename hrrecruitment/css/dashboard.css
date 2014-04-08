@@ -28,8 +28,14 @@ div.hr-dashboard-vacancy-summary div{
 .hr-dashboard-recent-activity li {
   list-style:none;
   padding: 10px;
-  margin-left: -13px;
-  margin-right: 3px;
+  margin-left: -15px;
+  margin-right: 5px;
+}
+
+.hr-dashboard-recent-activity li:hover {
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: inset 0 0 5px #000000;
 }
 
 .hr-recent-activity-block {
