@@ -60,22 +60,22 @@ div.hr-vacancy > div > table {
 }
 
 .hr-stage {
-    width: 0;
-    height: 0;
-    display: block;
-    float: left;
-    margin: 0 -15px;
-    padding: 0;
-    border-top: 22px solid transparent;
-    border-bottom: 22px solid transparent;
+  width: 0;
+  height: 0;
+  display: block;
+  float: left;
+  margin: 0 -15px;
+  padding: 0;
+  border-top: 22px solid transparent;
+  border-bottom: 22px solid transparent;
 }
 
 .hr-stage a:visited.hr-stage-link,
 .hr-stage a:link.hr-stage-link {
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-    position: relative;
-    right: 60px;
-    top: -9px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  position: relative;
+  right: 60px;
+  top: -9px;
 }
