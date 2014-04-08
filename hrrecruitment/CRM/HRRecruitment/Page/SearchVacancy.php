@@ -121,8 +121,18 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
 
 
   function browse($action = NULL, $status){
+
+    $template = CRM_Utils_Request::retrieve('template', 'Positive', $this, FALSE, 0);
     $params = array($status);
     $whereClause = $this->whereClause($params, TRUE, $this->_force);
+
+    if ($template) {
+      $whereClause .= ' AND is_template = 1';
+    }
+    else {
+      // because is_template != 1 would be to simple
+      $whereClause .= ' AND (is_template = 0 OR is_template IS NULL)';
+    }
     $this->_force = $this->_searchResult = NULL;
     $this->search();
     $params = array();
@@ -130,7 +140,8 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $this, FALSE
     );
     $this->search();
-    $query = "SELECT *
+
+    $query = "SELECT id, status_id, position, salary, location, start_date, end_date
     FROM civicrm_hrvacancy
     WHERE  $whereClause";
 
@@ -155,9 +166,21 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
       $rows[$dao->id]['salary'] = $dao->salary;
       $rows[$dao->id]['start_date'] = $dao->start_date;
       $rows[$dao->id]['end_date'] = $dao->end_date;
-      $rows[$dao->id]['action'] = CRM_Core_Action::formLink(self::links(), $mask, array('id' => $dao->id));
+      $actionLink = self::links();
+      if ($template) {
+        $actionLink[CRM_Core_Action::UPDATE]['title'] = ts('Edit Vacancy Template');
+        $actionLink[CRM_Core_Action::COPY]['title'] = ts('Copy Vacancy Template');
+        $actionLink[CRM_Core_Action::DELETE]['title'] = ts('Delete Vacancy Template');
+        $actionLink[CRM_Core_Action::DELETE]['qs'] .= '&template=1';
+      }
+
+      $rows[$dao->id]['action'] = CRM_Core_Action::formLink($actionLink, $mask, array('id' => $dao->id));
     }
 
+    $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
+    if (isset($this->_isTemplate)) {
+      $this->assign('isTemplate', $this->_isTemplate);
+    }
     $this->assign('rows', $rows);
   }
 
