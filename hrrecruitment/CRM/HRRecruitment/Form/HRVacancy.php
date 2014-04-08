@@ -145,6 +145,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         $templates[$id] = $vacancy['position'];
       }
 
+      //hide 'From Template' on edit screen
       if (empty($this->_id)) {
         $this->add('select', 'template_id', ts('From Template'), array('' => ts('- select -')) + $templates, FALSE, array('class' => 'crm-select2 huge'));
       }
