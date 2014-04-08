@@ -357,7 +357,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     $customTableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'table_name', 'name');
     $query = "SELECT entity_id FROM {$customTableName} WHERE vacancy_id = {$vacancyID}";
     $ctDAO = CRM_Core_DAO::executeQuery($query);
-    while($ctDAO->fetch()) {
+    while ($ctDAO->fetch()) {
       CRM_Case_BAO_Case::deleteCase($ctDAO->entity_id);
     }
     $vacancy->delete();
