@@ -89,14 +89,13 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
       return $defaults;
     }
-    else {
-      foreach (array('application_profile', 'evaluation_profile') as $profileName) {
-        if ($ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $profileName, 'id', 'name')) {
-          $defaults[$profileName] = $ufGroupID;
-        }
+
+    foreach (array('application_profile', 'evaluation_profile') as $profileName) {
+      if ($ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $profileName, 'id', 'name')) {
+        $defaults[$profileName] = $ufGroupID;
       }
-      $defaults['status_id'] = CRM_Core_OptionGroup::getDefaultValue('vacancy_status');
     }
+    $defaults['status_id'] = CRM_Core_OptionGroup::getDefaultValue('vacancy_status');
 
     return $defaults;
   }
@@ -110,21 +109,19 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
   function buildQuickForm() {
     $attributes = CRM_Core_DAO::getAttribute('CRM_HRRecruitment_DAO_HRVacancy');
 
-    $templates = $vacancyPermissions = array();
-
     $this->add('text', 'position', ts('Job Position'), $attributes['position'], TRUE);
     $this->addSelect('location', array('label' => ts('Location'), 'entity' => 'HRJob', 'field' => 'location'));
     $this->add('text', 'salary', ts('Salary'), $attributes['salary']);
+
     $this->addWysiwyg('description', ts('Description'), array('rows' => 2, 'cols' => 40));
     $this->addWysiwyg('benefits', ts('Benefits'), array('rows' => 2, 'cols' => 40));
-    $this->addWysiwyg('requirements', ts('Requirements'),  array('rows' => 2, 'cols' => 40));
+    $this->addWysiwyg('requirements', ts('Requirements'), array('rows' => 2, 'cols' => 40));
+
     $this->addDateTime('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDateTime'));
     $this->addDateTime('end_date', ts('End Date'), FALSE, array('formatType' => 'activityDateTime'));
 
-
-    $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
-    $include = &$this->addElement('advmultiselect', 'stages',
-      '', $CaseStatuses,
+    $include = & $this->addElement('advmultiselect', 'stages',
+      '', CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'"),
       array(
         'size' => 5,
         'style' => 'width:150px',
@@ -134,6 +131,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $include->setButtonAttributes('add', array('value' => ts('Enable >>')));
     $include->setButtonAttributes('remove', array('value' => ts('<< Disable')));
 
+    $templates = $vacancyPermissions = array();
     if (!$this->_isTemplate) {
       $this->addSelect('status_id', array(), TRUE);
       $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 1, 'return' => 'position'));
@@ -182,7 +180,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->assign('rowCount', $rowCount);
     $this->assign('showPermissionRow', 1);
 
-    $this->addButtons(array(
+    $this->addButtons(
+      array(
         array(
           'type' => 'next',
           'name' => ts('Save'),
