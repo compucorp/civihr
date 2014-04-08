@@ -54,6 +54,7 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
    */
   public function preProcess() {
     $this->_id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
+    $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
     $this->_jobPosition = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_id, 'position');
     parent::preProcess();
   }
@@ -65,10 +66,14 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
    * @access public
    */
   public function buildQuickForm() {
+    $btnName = ts('Delete Vacancy');
+    if ($this->_isTemplate) {
+      $btnName = ts('Delete Vacancy Template');
+    }
     $buttons = array(
       array(
         'type' => 'next',
-        'name' => ts('Delete Vacancy'),
+        'name' => $btnName,
         'isDefault' => TRUE,
       ),
       array(
@@ -93,7 +98,12 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
     $result = civicrm_api3('HRVacancy', 'delete', $params);
     if (!empty($result)) {
       CRM_Core_Session::setStatus(ts("'%1' has been deleted.", array(1 => $this->_jobPosition)), ts('Vacancy Deleted'), 'success');
-      CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
+      if ($this->_isTemplate) {
+        CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1&template=1'));
+      }
+      else {
+        CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
+      }
     }
   }
 }

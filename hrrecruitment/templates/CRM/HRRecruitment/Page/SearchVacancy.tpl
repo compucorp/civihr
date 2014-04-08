@@ -24,6 +24,7 @@
  +--------------------------------------------------------------------+
 *}
 {include file="CRM/HRRecruitment/Form/Search.tpl"}
+
 {if $rows}
   <table>
     <tr>
@@ -31,7 +32,9 @@
       <th>{ts}Location{/ts}</th>
       <th>{ts}Salary{/ts}</th>
       <th>{ts}Application Dates{/ts}</th>
+      {if !$isTemplate}
       <th>{ts}Status{/ts}</th>
+      {/if}
       <th>{ts}{/ts}</th>
     </tr>
     {foreach from=$rows item=row}
@@ -40,7 +43,9 @@
         <td>{$row.location}</td>
         <td>{$row.salary}</td>
         <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
+        {if !$isTemplate}
         <td>{$row.status}</td>
+        {/if}
         <td>{$row.action|replace:'xx':$row.id}</td>
       </tr>
     {/foreach}

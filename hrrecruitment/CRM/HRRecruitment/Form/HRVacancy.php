@@ -200,7 +200,20 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       )
     );
 
+    $session = CRM_Core_Session::singleton();
+    if ($this->_isTemplate) {
+      $this->_cancelURL = CRM_Utils_System::url('civicrm/vacancy/find',
+        'reset=1&template=1'
+      );
+    }
+    else {
+      $this->_cancelURL = CRM_Utils_System::url('civicrm/vacancy/find',
+        'reset=1'
+      );
+    }
+
     $this->addFormRule(array('CRM_HRRecruitment_Form_HRVacancy', 'formRule'));
+    $session->replaceUserContext($this->_cancelURL);
   }
 
   /**

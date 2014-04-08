@@ -124,9 +124,15 @@ function hrrecruitment_civicrm_install() {
       'permission' => null,
     ),
     array(
-      'label' => ts('Reports'),
-      'name' => 'reports',
-      'url' => null,
+      'label' => ts('Find Templates'),
+      'name' => 'find_templates',
+      'url' => 'civicrm/vacancy/find?reset=1&template=1',
+      'permission' => null,
+    ),
+    array(
+      'label' => ts('Public Vacancy List'),
+      'name' => 'public_list',
+      'url' => 'civicrm/vacancy?reset=1',
       'permission' => null,
     ),
   );

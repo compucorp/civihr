@@ -55,7 +55,14 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
       $vacancyStatus = $status[$this->_statusID];
     }
 
-    CRM_Utils_System::setTitle(ts('Find %1 Vacancies', array(1 => $vacancyStatus)));
+    $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
+    $this->assign('isTemplate', $this->_isTemplate);
+    if ($this->_isTemplate) {
+      CRM_Utils_System::setTitle(ts('Find Vacancy Templates'));
+    }
+    else {
+      CRM_Utils_System::setTitle(ts('Find %1 Vacancies', array(1 => $vacancyStatus)));
+    }
   }
 
   /**
