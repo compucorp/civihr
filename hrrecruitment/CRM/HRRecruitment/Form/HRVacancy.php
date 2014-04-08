@@ -77,6 +77,12 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
     if ($this->_id) {
       $params['id'] = $this->_id;
+    }
+    else {
+      $defaults['template_id'] = $params['id'] = CRM_Utils_Request::retrieve('template_id', 'Integer', $this);
+    }
+
+    if (!empty($params['id'])) {
       CRM_HRRecruitment_BAO_HRVacancy::retrieve($params, $defaults);
       //format vacancy start/end date
       list($defaults['start_date'], $defaults['start_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['start_date'], 'activityDateTime');
@@ -226,60 +232,14 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     if ($this->_id) {
-      $vacancyParams['id'] = $this->_id;
-
-      //on Edit first of all delete all the entries from hrvacancy stage and permission if any
-      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_stage WHERE vacancy_id = {$this->_id}");
-      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_permission WHERE vacancy_id = {$this->_id}");
-    }
-    else {
-      $vacancyParams['created_date'] = date('YmdHis');
-      $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
+      $params['id'] = $this->_id;
     }
 
-    if($this->_isTemplate) {
-      $vacancyParams['is_template'] = $this->_isTemplate;
+    if ($this->_isTemplate) {
+      $params['is_template'] = $this->_isTemplate;
     }
 
-    $result = civicrm_api3('HRVacancy', 'create', $vacancyParams);
-
-    if (isset($params['stages']) && count($params['stages'])) {
-      foreach ($params['stages'] as $key => $stage_id) {
-        $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
-        $dao->case_status_id = $stage_id;
-        $dao->vacancy_id = $result['id'];
-        $dao->weight = $key+1;
-        $dao->save();
-      }
-    }
-
-    foreach (array('application_profile', 'evaluation_profile') as $profileName) {
-      if (!empty($params[$profileName])) {
-        $dao = new CRM_Core_DAO_UFJoin();
-        $dao->module = 'Vacancy';
-        $dao->entity_table = 'civicrm_hrvacancy';
-        $dao->entity_id = $result['id'];
-        $dao->module_data = $profileName;
-
-        if ($this->_id) {
-          $dao->find(TRUE);
-        }
-        $dao->uf_group_id = $params[$profileName];
-        $dao->save();
-      }
-    }
-
-    if (!empty($params['permission']) && !empty($params['permission_contact_id'])) {
-      foreach ($params['permission'] as $key => $permission) {
-        if ($permission && $params['permission_contact_id'][$key]) {
-          $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
-          $dao->contact_id = $params['permission_contact_id'][$key];
-          $dao->permission = $permission;
-          $dao->vacancy_id = $result['id'];
-          $dao->save();
-        }
-      }
-    }
+    CRM_HRRecruitment_BAO_HRVacancy::create($params);
 
     if ($this->controller->getButtonName('submit') == "_qf_HRVacancy_next") {
       CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));

@@ -27,6 +27,67 @@
 
 class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
 
+  public static function create(&$params) {
+    $vacancy = new self();
+
+    if (!empty($params['id'])) {
+      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_stage WHERE vacancy_id = {$params['id']}");
+      CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_permission WHERE vacancy_id = {$params['id']}");
+    }
+
+    $vacancyParams['created_date'] = date('YmdHis');
+    $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
+    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
+
+    $entityName = 'HRVacancy';
+    $hook = empty($params['id']) ? 'create' : 'edit';
+    CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
+
+    $vacancy->copyValues($vacancyParams);
+    $vacancy->save();
+
+    if (isset($params['stages']) && count($params['stages'])) {
+      foreach ($params['stages'] as $key => $stage_id) {
+        $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
+        $dao->case_status_id = $stage_id;
+        $dao->vacancy_id = $vacancy->id;
+        $dao->weight = $key+1;
+        $dao->save();
+      }
+    }
+
+    foreach (array('application_profile', 'evaluation_profile') as $profileName) {
+      if (!empty($params[$profileName])) {
+        $dao = new CRM_Core_DAO_UFJoin();
+        $dao->module = 'Vacancy';
+        $dao->entity_table = 'civicrm_hrvacancy';
+        $dao->entity_id = $vacancy->id;
+        $dao->module_data = $profileName;
+        if (!empty($params['id'])) {
+          $dao->find(TRUE);
+        }
+        $dao->uf_group_id = $params[$profileName];
+        $dao->save();
+      }
+    }
+
+    if (!empty($params['permission']) && !empty($params['permission_contact_id'])) {
+      foreach ($params['permission'] as $key => $permission) {
+        if ($permission && $params['permission_contact_id'][$key]) {
+          $dao = new CRM_HRRecruitment_DAO_HRVacancyPermission();
+          $dao->contact_id = $params['permission_contact_id'][$key];
+          $dao->permission = $permission;
+          $dao->vacancy_id = $vacancy->id;
+          $dao->save();
+        }
+      }
+    }
+
+    CRM_Utils_Hook::post($hook, $entityName, $vacancy->id, $vacancy);
+
+    return $vacancy;
+  }
+
   /**
    * Function to format the Vacancy parameters before saving
    *
@@ -254,7 +315,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
    */
 
   static function retrieve(&$params, &$defaults) {
-    $vacancy = new CRM_HRRecruitment_DAO_HRVacancy();
+    $vacancy = new self();
     $vacancy->copyValues($params);
     if ($vacancy->find(TRUE)) {
       CRM_Core_DAO::storeValues($vacancy, $defaults);
@@ -286,4 +347,20 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
       }
     }
   }
+
+  public static function del($vacancyID) {
+    $vacancy = new self();
+    $vacancy->id = $vacancyID;
+    $vacancy->find(TRUE);
+
+    //Delete all Application cases linked to this vacancy
+    $customTableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'table_name', 'name');
+    $query = "SELECT entity_id FROM {$customTableName} WHERE vacancy_id = {$vacancyID}";
+    $ctDAO = CRM_Core_DAO::executeQuery($query);
+    while($ctDAO->fetch()) {
+      CRM_Case_BAO_Case::deleteCase($ctDAO->entity_id);
+    }
+    $vacancy->delete();
+  }
+
 }
