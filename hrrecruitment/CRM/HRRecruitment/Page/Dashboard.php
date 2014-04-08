@@ -30,6 +30,7 @@
  */
 class CRM_HRRecruitment_Page_Dashboard extends CRM_Core_Page {
 
+ public $useLivePageJS = TRUE;
 
   function run() {
     $resources = CRM_Core_Resources::singleton();

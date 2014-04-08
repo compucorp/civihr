@@ -205,8 +205,10 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           );
           break;
         case 'Change Case Status':
+          $subject = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $dao->case_activity_id, 'subject');
+          $subject = str_replace('Assignment status changed', '', $subject);
           $recentActivities[] = array(
-            'activity' => "{$source} changed the status of {$position}",
+            'activity' => "{$source} changed the status of {$position} {$subject}",
             'time' => $dateString
           );
           break;

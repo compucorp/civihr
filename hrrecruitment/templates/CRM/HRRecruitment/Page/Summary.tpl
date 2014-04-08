@@ -25,7 +25,7 @@
 *}
 {foreach from=$vacanciesByStatus item="status" key="statusID"}
   <div class="crm-clearfix">
-    <div class="crm-accordion-header"><h2>{$status.title}</h2></div>
+      <div class="crm-accordion-header"><h2>{$status.title}</h2></div>
       <div class="crm-accordion-body crm-clearfix">
         {if isset($status.$statusID.vacancies)}
           {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
@@ -34,6 +34,7 @@
                   <td>
                     <h3>
                       <a class="hr-vacancy-title" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}">{$vacancy.position}</a>
+                      <a class="crm-hover-button action-item" href="{crmURL p='civicrm/vacancy/add' q="reset=1&id=$vacancyID"}" title="Edit this vacancy"><span class="icon edit-icon"></span></a>
                     </h3>
                   </td>
                 </tr>
