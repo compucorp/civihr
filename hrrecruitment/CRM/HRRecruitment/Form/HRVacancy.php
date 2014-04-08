@@ -144,7 +144,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       foreach ($result['values'] as $id => $vacancy) {
         $templates[$id] = $vacancy['position'];
       }
-      $this->add('select', 'template_id', ts('From Template'), array('' => ts('- select -')) + $templates, FALSE, array('class' => 'crm-select2 huge'));
+
+      //hide 'From Template' on edit screen
+      if (empty($this->_id)) {
+        $this->add('select', 'template_id', ts('From Template'), array('' => ts('- select -')) + $templates, FALSE, array('class' => 'crm-select2 huge'));
+      }
     }
 
     $entities = array(
