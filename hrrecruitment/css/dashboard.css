@@ -1,11 +1,15 @@
+#crm-container h2 {
+  border: 0 none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.4em;
+  color: white;
+}
+
 div.hr-dashboard-vacancy-summary {
   float: left;
   width: 70%;
   font-weight: bold;
-}
-
-div.hr-dashboard-vacancy-summary div{
-  padding: 2px;
 }
 
 .hr-dashboard-recent-activity {
@@ -42,11 +46,17 @@ div.hr-dashboard-vacancy-summary div{
   font-size: 15px;
 }
 
-table.hr-vacancy {
-  width:48.5%;
+div.hr-vacancy {
+  width:50%;
+}
+
+div.hr-vacancy > div {
+  padding: .5em;
+}
+
+div.hr-vacancy > div > table {
   background-color: #EBEBEB;
   border-color: darkgrey;
-  margin: 3px 5px 5px;
 }
 
 .hr-stage {

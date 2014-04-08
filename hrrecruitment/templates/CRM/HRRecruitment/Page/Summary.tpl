@@ -25,11 +25,13 @@
 *}
 {foreach from=$vacanciesByStatus item="status" key="statusID"}
   <div class="crm-clearfix">
-      <div class="crm-accordion-header"><h2>{$status.title}</h2></div>
-      <div class="crm-accordion-body crm-clearfix">
-        {if isset($status.$statusID.vacancies)}
-          {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
-              <table class="hr-vacancy" style="float:{cycle values='left,right'}" >
+    <div class="crm-accordion-header"><h2>{$status.title}</h2></div>
+    <div class="crm-accordion-body crm-clearfix">
+      {if isset($status.$statusID.vacancies)}
+        {foreach from=$status.$statusID.vacancies key="vacancyID" item="vacancy"}
+          <div class="hr-vacancy" style="float:{cycle values='left,right'}">
+            <div>
+              <table>
                 <tr>
                   <td>
                     <h3>
@@ -57,8 +59,10 @@
                   </tr>
                 {/if}
               </table>
-          {/foreach}
-        {/if}
-      </div>
+            </div>
+          </div>
+        {/foreach}
+      {/if}
+    </div>
   </div>
 {/foreach}

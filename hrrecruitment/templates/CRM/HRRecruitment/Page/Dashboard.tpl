@@ -29,7 +29,7 @@
   </div>
   <div class="hr-dashboard-recent-activity">
     <div class="hr-recent-activity-title">
-      <h1>{ts}Recent Activities{/ts}</h1>
+      <h2>{ts}Recent Activities{/ts}</h2>
     </div>
     <ul>
       {foreach from=$recentActivities item="status" item="activity"}
