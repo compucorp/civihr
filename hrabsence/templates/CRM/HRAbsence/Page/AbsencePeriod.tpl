@@ -40,8 +40,8 @@
          {foreach from=$rows item=row}
         <tr id="row_{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
           <td class="crm-editable" data-field="title">{$row.title}</td>
-          <td>{$row.start_date|crmDate}</td>
-          <td>{$row.end_date|crmDate}</td>
+          <td>{$row.start_date|truncate:10:''|crmDate}</td>
+          <td>{$row.end_date|truncate:10:''|crmDate}</td>
           <td>{$row.action|replace:'xx':$row.id}</td>
         </tr>
         {/foreach}
