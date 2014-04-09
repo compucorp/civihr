@@ -66,8 +66,19 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     if ($this->_contactID = CRM_Utils_Request::retrieve('cid', 'Positive')) {
       $this->assign('contactID', $this->_contactID);
     }
+    $this->_statusId = CRM_Utils_Request::retrieve('cStatus', 'Positive');
+
+    $commentActivity = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment');
+    $this->assign('commentActivity', $commentActivity);
+    $activityStatus = CRM_Core_PseudoConstant::activityStatus();
+    $activityStatsId = array_search('Completed', $activityStatus);
+    $this->assign('activityStatsId', $activityStatsId);
+
+    $emailActivity = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Email');
+    $this->assign('emailActivity', $emailActivity);
+
     if ($this->_caseID = CRM_Utils_Request::retrieve('case_id', 'Positive')) {
-      $this->assign('case_id', $this->_caseID);
+      $this->assign('caseID', $this->_caseID);
       $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
       $gid = array_search('application_case', $groups);
       $cgID = array('custom_group_id'=>$gid);
@@ -77,7 +88,7 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         "custom_{$cfID['id']}" => 1,
       );
       $result = CRM_Core_BAO_CustomValueTable::getValues($params);
-      $vacancyID = $result["custom_{$cfID['id']}"];
+      $this->_vacancyID = $vacancyID = $result["custom_{$cfID['id']}"];
       $ufJoinParams = array(
         'module' => 'Vacancy',
         'entity_id' => $vacancyID,
@@ -122,10 +133,55 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         }
       }
     }
+    if (isset($this->_defStatus)) {
+      $this->_defaults['stages'] = $this->_defStatus;
+    }
     return $this->_defaults;
   }
 
   public function buildQuickForm() {
+    //Add Change case status
+    $this->_statuses = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vacancyID);
+    $this->_defStatus = null;
+    $weight = $this->_statuses[$this->_statusId];
+    $statusChangeID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status');
+    foreach ($this->_statuses as $csID => $csV) {
+      $url = CRM_Utils_System::url('civicrm/case/activity',
+        "action=add&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$statusChangeID}&cStatus={$csID}",
+        FALSE, NULL, FALSE
+      );
+      $stageOption[$url] = $csV['title'];
+      if( $csV['weight'] > $weight['weight'] && !isset($this->_defStatus) ) {
+        $this->_defStatus = $url;
+      }
+    }
+    $this->add('select', 'stages', '',
+      array('' => ts(" - Change status - ")) + $stageOption,
+      FALSE, array(
+        'class' => 'crm-select2 crm-action-menu',
+      )
+    );
+
+    //Add new activity - attach letter
+    $activityLetterId = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Attach Letter');
+    $attachLetter = CRM_Utils_System::url('civicrm/case/activity',
+        "action=add&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$activityLetterId}",
+        FALSE, NULL, FALSE
+      );
+    $newActivity[$attachLetter] = ts("Attach Letter");
+
+    $this->add('select', 'new_activity', '',
+      array('' => ts(" - New Activity - ")) + $newActivity,
+      FALSE, array(
+        'class' => 'crm-select2 crm-action-menu',
+      )
+    );
+
+    //Evaluation ID
+    $evaluationID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
+    $this->assign('evaluationID', $evaluationID);
+
+    //Add application profile
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
     foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
       CRM_Core_BAO_UFGroup::buildProfile($this, $profileFields[$profileFieldKey], CRM_Profile_Form::MODE_EDIT, $this->_contactID, TRUE);

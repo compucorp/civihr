@@ -23,6 +23,14 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
+<div class="crm-clearfix hr-case-application-action-button">
+  <a title="Email" class="crm-popup button" href="/civihr/civicrm/activity/email/add?atype={$emailActivity}&statusid={$activityStatsId}&caseid={$caseID}&action=add&cid={$contactID}&reset=1&context=standalone">Email</a>
+  <a title="Comment" class="crm-popup button" href="/civihr/civicrm/case/activity/add?action=add&reset=1&cid={$contactID}&caseid={$caseID}&statusid={$activityStatsId}&selectedChild=activity&atype={$commentActivity}">Comment</a>
+  <a title="Comment" class="crm-popup button" href="/civihr/civicrm/case/activity/add?action=add&reset=1&cid={$contactID}&caseid={$caseID}&selectedChild=activity&atype={$evaluationID}">Evaluation</a>
+  <span class="hr-activity-action-item">{$form.new_activity.html}</span>
+  <span class="hr-case-action-item">{$form.stages.html}</span>
+</div>
+
 <div class="crm-clearfix hr-case-application-profile">
   {include file="CRM/UF/Form/Block.tpl" fields=$profileFields}
   {include file="CRM/Case/Page/CustomDataView.tpl"}
