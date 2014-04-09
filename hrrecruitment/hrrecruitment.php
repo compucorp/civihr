@@ -24,13 +24,12 @@ function hrrecruitment_civicrm_xmlMenu(&$files) {
 function hrrecruitment_civicrm_install() {
   $activityTypesResult = civicrm_api3('activity_type', 'get', array());
   $weight = count($activityTypesResult["values"]);
-  foreach (array('Evaluation', 'Comment') as $activityType) {
+  foreach (array('Evaluation', 'Comment', 'Attach Letter') as $activityType) {
     if (!in_array($activityType, $activityTypesResult["values"])) {
       civicrm_api3('activity_type', 'create', array(
           'weight' => $weight++,
           'name' => $activityType,
           'label' => $activityType,
-          'filter' => 1,
           'is_active' => 1,
         )
       );
@@ -412,5 +411,20 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
   }
   if (!empty($vacancyMenuItems)) {
     $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
+  }
+}
+
+function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_Activity') {
+    $aType = CRM_Utils_Request::retrieve('atype', 'Positive');
+    $statusID = CRM_Utils_Request::retrieve('statusid', 'Positive');
+    $activityTypes = CRM_Core_PseudoConstant::activityType();
+    $activityType = array_search('Comment', $activityTypes);
+    if ($aType == $activityType) {
+      if (isset($statusID)) {
+        $defaults['status_id'] = $statusID;
+        $form->setDefaults($defaults);
+      }
+    }
   }
 }

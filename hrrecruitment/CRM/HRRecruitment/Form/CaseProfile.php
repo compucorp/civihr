@@ -55,6 +55,14 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
   protected $_profileID;
 
   /**
+   * the id of the activity type id
+   *
+   * @int
+   * @access protected
+   */
+  protected $_activityType;
+
+  /**
    * the fields needed to build this form
    *
    * @var array
@@ -66,6 +74,14 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     if ($this->_contactID = CRM_Utils_Request::retrieve('cid', 'Positive')) {
       $this->assign('contactID', $this->_contactID);
     }
+    $activityType = CRM_Core_PseudoConstant::activityType();
+    $this->_activityType = array_search('Comment', $activityType);
+    $this->assign('activityType', $this->_activityType);
+
+    $activityStatus = CRM_Core_PseudoConstant::activityStatus();
+    $activityStatsId = array_search('Completed', $activityStatus);
+    $this->assign('activityStatsId', $activityStatsId);
+
     if ($this->_caseID = CRM_Utils_Request::retrieve('case_id', 'Positive')) {
       $this->assign('case_id', $this->_caseID);
       $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
@@ -126,6 +142,12 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
   }
 
   public function buildQuickForm() {
+    $activityLetter = CRM_Core_PseudoConstant::activityType();
+    $activityLetterId = array_search('Attach Letter', $activityLetter);
+    $this->assign('activityLetterId', $activityLetterId);
+    $newActivity = array(" - New Activity - ");
+    $newActivity[$activityLetterId] = "Attach Letter";
+    $this->add('select', 'new_activity', ts(''), $newActivity , FALSE);
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
     foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
       CRM_Core_BAO_UFGroup::buildProfile($this, $profileFields[$profileFieldKey], CRM_Profile_Form::MODE_EDIT, $this->_contactID, TRUE);
