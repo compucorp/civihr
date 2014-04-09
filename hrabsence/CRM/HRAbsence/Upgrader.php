@@ -109,7 +109,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       }
     }
 
-    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_leave") && $leaves) {
+    if (CRM_Core_DAO::checkTableExists('civicrm_hrjob_leave') && $leaves) {
       $query = "UPDATE civicrm_hrjob_leave
         SET leave_type = CASE leave_type
         {$values}
@@ -137,8 +137,6 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       'label' => 'Comment',
       'html_type' => 'TextArea',
       'data_type' => 'Memo',
-      'is_required' => 1,
-      'is_searchable' => 0,
       'is_active' => 1,
     );
     $resultCField = civicrm_api3('custom_field', 'get', $paramsCField);
@@ -164,8 +162,6 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       'label' => 'Sick Type',
       'html_type' => 'Select',
       'data_type' => 'String',
-      'is_required' => 1,
-      'is_searchable' => 0,
       'is_active' => 1,
     );
     $resultSField = civicrm_api3('custom_field', 'get', $paramsSField);
