@@ -5,6 +5,7 @@
 -- * Recruitment Vacancy.
 -- *
 -- *******************************************************/
+
 CREATE TABLE `civicrm_hrvacancy` (
 
 
@@ -20,11 +21,12 @@ CREATE TABLE `civicrm_hrvacancy` (
      `start_date` datetime    COMMENT 'Vacancy Start Date',
      `end_date` datetime    COMMENT 'Vacancy End Date',
      `created_date` datetime    COMMENT 'Vacancy Created Date',
-     `created_id` int unsigned COMMENT 'FK to civicrm_contact, who created this vacancy'
+     `created_id` int unsigned    COMMENT 'FK to civicrm_contact, who created this vacancy' 
 ,
     PRIMARY KEY ( `id` )
  
-, CONSTRAINT FK_civicrm_vacancy_created_id FOREIGN KEY (`created_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
+ 
+,          CONSTRAINT FK_civicrm_hrvacancy_created_id FOREIGN KEY (`created_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
