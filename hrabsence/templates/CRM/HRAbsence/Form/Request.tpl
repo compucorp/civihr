@@ -171,10 +171,7 @@
 	    }
 	    else {
 	      $("#options_"+x, $form).val('');
-                if (abday == 'Sat' || abday == 'Sun') {
-                  $("#options_"+x, $form).attr("disabled","disabled");
-                }
-           }
+      }
 	    x = new Number(x) + 1;
  	  });
           if (totalDays <= 1) {
@@ -320,7 +317,7 @@
       }
       abday = absenceDate.substring(0,3);
       if ((abday == 'Sat' || abday == 'Sun') || (sDate in pubHoliday)) {
-        createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select" disabled="disabled" ><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
+        createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
       }
       else {
       	createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="form-select"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
