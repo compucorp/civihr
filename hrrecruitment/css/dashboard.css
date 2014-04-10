@@ -29,21 +29,12 @@ div.hr-dashboard-vacancy-summary {
   padding: 3px 15px 5px;
 }
 
-.hr-dashboard-recent-activity li {
-  list-style:none;
+.hr-dashboard-recent-activity td {
   padding: 10px;
-  margin-left: -15px;
-  margin-right: 5px;
-}
-
-.hr-dashboard-recent-activity li:hover {
-  background-color: white;
-  border-radius: 3px;
-  box-shadow: inset 0 0 5px #000000;
 }
 
 .hr-recent-activity-block {
-  font-size: 15px;
+  font-size: 1.1em;
 }
 
 div.hr-vacancy {

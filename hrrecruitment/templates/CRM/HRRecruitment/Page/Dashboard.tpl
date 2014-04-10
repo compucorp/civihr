@@ -28,20 +28,6 @@
     {include file="CRM/HRRecruitment/Page/Summary.tpl"}
   </div>
   <div class="hr-dashboard-recent-activity">
-    <div class="hr-recent-activity-title">
-      <h2>{ts}Recent Activities{/ts}</h2>
-    </div>
-    <ul>
-      {foreach from=$recentActivities item="status" item="activity"}
-        <li>
-          <div class="hr-recent-activity-block">
-            {$activity.activity}
-          </div>
-          <div>
-            {$activity.time}
-          </div>
-        </li>
-      {/foreach}
-    </ul>
+    {include file="CRM/HRRecruitment/Page/RecentActivity.tpl"}
   </div>
 </div>
