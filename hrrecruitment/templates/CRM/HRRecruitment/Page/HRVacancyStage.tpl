@@ -28,18 +28,21 @@
     <table class="row-highlight">
       <thead>
         <tr>
+          <th><input type="checkbox" class="select-rows" /></th>
           <th>{ts}Applicant{/ts}</th>
         </tr>
       </thead>
       <tbody>
         {foreach from=$contacts item="contact"}
-          <tr id="case-{$contact.case_id}" class="crm-entity {cycle values="odd-row,even-row"}">
-            <td><a class="hr-pipeline-case-link" href="{crmURL p='civicrm/case/hrapplicantprofile' q="reset=1&case_id=`$contact.case_id`&cid=`$contact.contact_id`"}">{$contact.sort_name}</a></td>
+          <tr data-case_id="{$contact.case_id}" data-cid="{$contact.contact_id}" {cycle values="odd-row,even-row"}">
+            <td><input type="checkbox" class="select-row" name="case_{$contact.case_id}" /></td>
+            <td><a class="hr-pipeline-contact-link" href="{crmURL p='civicrm/contact/view' q="reset=1&cid=`$contact.contact_id`"}">{$contact.sort_name}</a></td>
           </tr>
         {/foreach}
       </tbody>
     </table>
   </div>
   <div class="hr-pipeline-case-details">
+    <div class="hr-applicant-selection-msg">{ts}0 applicants selected{/ts}</div>
   </div>
 </div>
