@@ -23,11 +23,20 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<div class="crm-clearfix hr-pipeline-tab">
-  <div class="hr-dashboard-vacancy-summary">
-    {include file="CRM/HRRecruitment/Page/Summary.tpl"}
-  </div>
-  <div class="hr-dashboard-recent-activity">
-    {include file="CRM/HRRecruitment/Page/RecentActivity.tpl"}
-  </div>
+<div class="hr-recent-activity-title">
+  <h2>{ts}Recent Activities{/ts}</h2>
 </div>
+<table class="row-highlight">
+  {foreach from=$recentActivities item="status" item="activity"}
+    <tr class="{cycle values="odd-row,even-row"}">
+      <td>
+        <div class="hr-recent-activity-block">
+          {$activity.activity}
+        </div>
+        <div class="hr-recent-activity-time">
+          {$activity.time}
+        </div>
+      </td>
+    </tr>
+  {/foreach}
+</table>
