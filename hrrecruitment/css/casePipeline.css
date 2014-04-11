@@ -2,8 +2,13 @@
   float: left;
   width: 30%;
 }
-.hr-pipeline-case-details {
+.hr-pipeline-case-view-panel {
   float: right;
   width: 70%;
   min-height: 5em;
+}
+.hr-applicant-selection-msg {
+  color: #5b5b5b;
+  font-weight: bold;
+  margin: 2em;
 }
