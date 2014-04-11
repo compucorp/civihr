@@ -84,6 +84,7 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
     foreach ($vacancyStages as $key => &$stage) {
       $stage['active'] = $stage['valid'] = TRUE;
       $stage['link'] = CRM_Utils_System::url('civicrm/case/pipeline', array('reset' => 1, 'status_id' => $key, 'vid' => $this->_vid));
+      $stage['extra'] = "data-status_id='$key'";
     }
 
     $this->assign('tabHeader', $vacancyStages);
@@ -93,9 +94,35 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
    * View a particular stage in a tab
    */
   function viewStage() {
+    // Data needed for contact list
     $contacts = CRM_HRRecruitment_BAO_HRVacancyStage::getCasesAtStage($this->_vid, $this->_statusId);
     $this->assign('contacts', $contacts);
     $this->ajaxResponse['tabCount'] = count($contacts);
+
+    // Data needed for activity buttons/menu
+    $xmlProcessor = new CRM_Case_XMLProcessor_Process();
+    $activities = $xmlProcessor->get('Application', 'ActivityTypes', TRUE);
+
+    // Special activities we don't want in the action menu
+    foreach (array('Open Case', 'Comment', 'Email', 'Evaluation', 'Change Case Status', 'Link Cases', 'Assign Case Role') as $remove) {
+      $type = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', $remove);
+      if ($type) {
+        // Assign to the tpl as camelCase
+        $this->assign(str_replace(' ', '', lcfirst($remove . 'Activity')), $type);
+        // And remove from the list
+        unset($activities[$type]);
+      }
+    }
+    $this->assign('activities', $activities);
+
+    // Data needed for status menu
+    $this->assign('statusId', $this->_statusId);
+    $caseStatus = array();
+    foreach(CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vid) as $id => $stage) {
+      $caseStatus[$stage['weight']] = $stage + array('id' => $id);
+    }
+    ksort($caseStatus);
+    $this->assign('caseStatus', $caseStatus);
   }
 
   /**
