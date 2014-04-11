@@ -2,6 +2,10 @@
   float: left;
   width: 30%;
 }
+.hr-pipeline-case-contacts th:first-child,
+.hr-pipeline-case-contacts td:first-child {
+  width: 1em;
+}
 .hr-pipeline-case-view-panel {
   float: right;
   width: 70%;
