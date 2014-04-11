@@ -28,7 +28,7 @@
 /**
  * This class is to build the form for Deleting Particular Vacancy
  */
-class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form { 
+class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
 
   /**
    * page jobPosition
@@ -53,6 +53,9 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
    * @access public
    */
   public function preProcess() {
+    if (!CRM_Core_Permission::check('administer Applicants')) {
+      CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to delete this vacancy.'));
+    }
     $this->_id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
     $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
     $this->_jobPosition = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_id, 'position');

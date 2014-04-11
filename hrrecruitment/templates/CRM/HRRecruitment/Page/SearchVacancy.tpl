@@ -39,7 +39,7 @@
     </tr>
     {foreach from=$rows item=row}
       <tr class="{cycle values="odd-row,even-row"} {$row.class}">
-        <td id="{$row.id}"><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=`$row.id`"}">{$row.position}</a></td>
+        <td id="{$row.id}"> {if call_user_func(array('CRM_Core_Permission','check'), 'administer Applicants')} <a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=`$row.id`"}">{$row.position}</a> {else} {$row.position} {/if} </td>
         <td>{$row.location}</td>
         <td>{$row.salary}</td>
         <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
