@@ -68,9 +68,12 @@
   <field>
     <name>hours_unit</name>
     <title>Job Hours Unit</title>
-    <type>enum</type>
-    <values>Day, Week, Month, Year</values>
+    <type>varchar</type>
+    <length>63</length>
     <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
+    <pseudoconstant>
+      <callback>CRM_HRJob_SelectValues::commonUnit</callback>
+    </pseudoconstant>
     <export>true</export>
     <import>true</import>
     <uniqueName>hrjob_hours_unit</uniqueName>

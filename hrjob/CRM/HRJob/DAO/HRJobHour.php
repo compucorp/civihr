@@ -115,7 +115,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
   /**
    * Period during which hours are allocated (eg 5 hours per day; 5 hours per week)
    *
-   * @var enum('Day', 'Week', 'Month', 'Year')
+   * @var string
    */
   public $hours_unit;
   /**
@@ -199,14 +199,18 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         ) ,
         'hrjob_hours_unit' => array(
           'name' => 'hours_unit',
-          'type' => CRM_Utils_Type::T_ENUM,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job Hours Unit') ,
           'export' => true,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
           'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_unit',
           'headerPattern' => '',
           'dataPattern' => '',
-          'enumValues' => 'Day, Week, Month, Year',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::commonUnit',
+          )
         ) ,
         'hrjob_hours_fte' => array(
           'name' => 'hours_fte',
@@ -311,55 +315,5 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
       }
     }
     return self::$_export;
-  }
-  /**
-   * returns an array containing the enum fields of the civicrm_hrjob_hour table
-   *
-   * @return array (reference)  the array of enum fields
-   */
-  static function &getEnums()
-  {
-    static $enums = array(
-      'hours_unit',
-    );
-    return $enums;
-  }
-  /**
-   * returns a ts()-translated enum value for display purposes
-   *
-   * @param string $field  the enum field in question
-   * @param string $value  the enum value up for translation
-   *
-   * @return string  the display value of the enum
-   */
-  static function tsEnum($field, $value)
-  {
-    static $translations = null;
-    if (!$translations) {
-      $translations = array(
-        'hours_unit' => array(
-          'Day' => ts('Day') ,
-          'Week' => ts('Week') ,
-          'Month' => ts('Month') ,
-          'Year' => ts('Year') ,
-        ) ,
-      );
-    }
-    return $translations[$field][$value];
-  }
-  /**
-   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob_hour
-   *
-   * @param array $values (reference)  the array up for enhancing
-   * @return void
-   */
-  static function addDisplayEnums(&$values)
-  {
-    $enumFields = & CRM_HRJob_DAO_HRJobHour::getEnums();
-    foreach($enumFields as $enum) {
-      if (isset($values[$enum])) {
-        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJobHour::tsEnum($enum, $values[$enum]);
-      }
-    }
   }
 }

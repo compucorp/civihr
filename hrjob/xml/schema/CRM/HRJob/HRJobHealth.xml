@@ -55,9 +55,12 @@
   <field>
     <name>plan_type</name>
     <title>Job Healthcare Plan</title>
-    <type>enum</type>
-    <values>Family, Individual</values>
+    <type>varchar</type>
+    <length>63</length>
     <comment>.</comment>
+    <pseudoconstant>
+      <callback>CRM_HRJob_SelectValues::planType</callback>
+    </pseudoconstant>
     <export>true</export>
     <import>true</import>
     <uniqueName>hrjob_health_plan_type</uniqueName>
@@ -96,9 +99,12 @@
   <field>
     <name>plan_type_life_insurance</name>
     <title>Job life insurance Plan</title>
-    <type>enum</type>
-    <values>Family, Individual</values>
+    <type>varchar</type>
+    <length>63</length>
     <comment>.</comment>
+    <pseudoconstant>
+      <callback>CRM_HRJob_SelectValues::planTypeLifeInsurance</callback>
+    </pseudoconstant>
     <export>true</export>
     <import>true</import>
     <uniqueName>hrjob_life_insurance_plan_type</uniqueName>

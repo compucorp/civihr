@@ -109,7 +109,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
   /**
    * .
    *
-   * @var enum('Family', 'Individual')
+   * @var string
    */
   public $plan_type;
   /**
@@ -131,7 +131,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
   /**
    * .
    *
-   * @var enum('Family', 'Individual')
+   * @var string
    */
   public $plan_type_life_insurance;
   /**
@@ -207,14 +207,18 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         ) ,
         'hrjob_health_plan_type' => array(
           'name' => 'plan_type',
-          'type' => CRM_Utils_Type::T_ENUM,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job Healthcare Plan') ,
           'export' => true,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
           'import' => true,
           'where' => 'civicrm_hrjob_health.plan_type',
           'headerPattern' => '',
           'dataPattern' => '',
-          'enumValues' => 'Family, Individual',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::planType',
+          )
         ) ,
         'description' => array(
           'name' => 'description',
@@ -239,14 +243,18 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         ) ,
         'hrjob_life_insurance_plan_type' => array(
           'name' => 'plan_type_life_insurance',
-          'type' => CRM_Utils_Type::T_ENUM,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job life insurance Plan') ,
           'export' => true,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
           'import' => true,
           'where' => 'civicrm_hrjob_health.plan_type_life_insurance',
           'headerPattern' => '',
           'dataPattern' => '',
-          'enumValues' => 'Family, Individual',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::planTypeLifeInsurance',
+          )
         ) ,
         'description_life_insurance' => array(
           'name' => 'description_life_insurance',
@@ -355,58 +363,5 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
       }
     }
     return self::$_export;
-  }
-  /**
-   * returns an array containing the enum fields of the civicrm_hrjob_health table
-   *
-   * @return array (reference)  the array of enum fields
-   */
-  static function &getEnums()
-  {
-    static $enums = array(
-      'plan_type',
-      'plan_type_life_insurance',
-    );
-    return $enums;
-  }
-  /**
-   * returns a ts()-translated enum value for display purposes
-   *
-   * @param string $field  the enum field in question
-   * @param string $value  the enum value up for translation
-   *
-   * @return string  the display value of the enum
-   */
-  static function tsEnum($field, $value)
-  {
-    static $translations = null;
-    if (!$translations) {
-      $translations = array(
-        'plan_type' => array(
-          'Family' => ts('Family') ,
-          'Individual' => ts('Individual') ,
-        ) ,
-        'plan_type_life_insurance' => array(
-          'Family' => ts('Family') ,
-          'Individual' => ts('Individual') ,
-        ) ,
-      );
-    }
-    return $translations[$field][$value];
-  }
-  /**
-   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob_health
-   *
-   * @param array $values (reference)  the array up for enhancing
-   * @return void
-   */
-  static function addDisplayEnums(&$values)
-  {
-    $enumFields = & CRM_HRJob_DAO_HRJobHealth::getEnums();
-    foreach($enumFields as $enum) {
-      if (isset($values[$enum])) {
-        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJobHealth::tsEnum($enum, $values[$enum]);
-      }
-    }
   }
 }

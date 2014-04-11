@@ -145,10 +145,13 @@
 
   <field>
     <name>period_type</name>
-    <type>enum</type>
-    <values>Temporary, Permanent</values>
-    <comment>.</comment>
     <title>Job Contract Duration</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>.</comment>
+    <pseudoconstant>
+      <callback>CRM_HRJob_SelectValues::periodType</callback>
+    </pseudoconstant>
     <export>true</export>
     <import>true</import>
     <uniqueName>hrjob_period_type</uniqueName>
@@ -188,15 +191,19 @@
     <uniqueName>hrjob_notice_amount</uniqueName>
   </field>
 
-  <field>
-    <name>notice_unit</name>
-    <title>Job Notice Period Unit</title>
-    <type>enum</type>
-    <values>Day, Week, Month, Year</values>
-    <import>true</import>
-    <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
-    <uniqueName>hrjob_notice_unit</uniqueName>
-  </field>
+   <field>
+     <name>notice_unit</name>
+     <title>Job Notice Period Unit</title>
+     <type>varchar</type>
+     <length>63</length>
+     <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
+     <pseudoconstant>
+       <callback>CRM_HRJob_SelectValues::commonUnit</callback>
+     </pseudoconstant>
+     <export>true</export>
+     <import>true</import> 
+     <uniqueName>hrjob_notice_unit</uniqueName>
+   </field>
 
   <field>
     <name>manager_contact_id</name>
