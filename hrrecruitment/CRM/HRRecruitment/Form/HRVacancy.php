@@ -89,8 +89,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       list($defaults['end_date'], $defaults['end_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['end_date'], 'activityDateTime');
 
       //show that only number of permission row(s) which have defaults if any
-      if ($count = count($defaults['permission'])) {
-        $this->assign('showPermissionRow', $count);
+      if (!empty($defaults['permission']) && count($defaults['permission'])) {
+        $this->assign('showPermissionRow', count($defaults['permission']));
       }
 
       return $defaults;

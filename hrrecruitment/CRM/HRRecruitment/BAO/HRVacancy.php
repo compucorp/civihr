@@ -35,9 +35,9 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
       CRM_Core_DAO::executeQuery("DELETE FROM civicrm_hrvacancy_permission WHERE vacancy_id = {$params['id']}");
     }
 
+    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
     $vacancyParams['created_date'] = date('YmdHis');
     $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
-    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     $entityName = 'HRVacancy';
     $hook = empty($params['id']) ? 'create' : 'edit';
@@ -100,9 +100,6 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     foreach ($fields as $name => $dontCare) {
       if (strpos($name, '_date') !== FALSE && strpos($name, 'created_') === FALSE) {
         $formattedParams[$name] = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
-      }
-      elseif ($name == 'is_template' && !array_key_exists('template_id', $params)) {
-        $formattedParams[$name] = 1;
       }
       elseif (isset($params[$name])) {
         $formattedParams[$name] = $params[$name];
