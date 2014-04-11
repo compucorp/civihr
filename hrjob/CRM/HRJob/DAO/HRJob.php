@@ -148,7 +148,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
   /**
    * .
    *
-   * @var enum('Temporary', 'Permanent')
+   * @var string
    */
   public $period_type;
   /**
@@ -172,7 +172,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
   /**
    * Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.
    *
-   * @var enum('Day', 'Week', 'Month', 'Year')
+   * @var string
    */
   public $notice_unit;
   /**
@@ -339,14 +339,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         ) ,
         'hrjob_period_type' => array(
           'name' => 'period_type',
-          'type' => CRM_Utils_Type::T_ENUM,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job Contract Duration') ,
           'export' => true,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
           'import' => true,
           'where' => 'civicrm_hrjob.period_type',
           'headerPattern' => '',
           'dataPattern' => '',
-          'enumValues' => 'Temporary, Permanent',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::periodType',
+          )
         ) ,
         'hrjob_period_start_date' => array(
           'name' => 'period_start_date',
@@ -380,14 +384,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         ) ,
         'hrjob_notice_unit' => array(
           'name' => 'notice_unit',
-          'type' => CRM_Utils_Type::T_ENUM,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Job Notice Period Unit') ,
           'export' => true,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
           'import' => true,
           'where' => 'civicrm_hrjob.notice_unit',
           'headerPattern' => '',
           'dataPattern' => '',
-          'enumValues' => 'Day, Week, Month, Year',
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::commonUnit',
+          )
         ) ,
         'hrjob_manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -530,60 +538,5 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       }
     }
     return self::$_export;
-  }
-  /**
-   * returns an array containing the enum fields of the civicrm_hrjob table
-   *
-   * @return array (reference)  the array of enum fields
-   */
-  static function &getEnums()
-  {
-    static $enums = array(
-      'period_type',
-      'notice_unit',
-    );
-    return $enums;
-  }
-  /**
-   * returns a ts()-translated enum value for display purposes
-   *
-   * @param string $field  the enum field in question
-   * @param string $value  the enum value up for translation
-   *
-   * @return string  the display value of the enum
-   */
-  static function tsEnum($field, $value)
-  {
-    static $translations = null;
-    if (!$translations) {
-      $translations = array(
-        'period_type' => array(
-          'Temporary' => ts('Temporary') ,
-          'Permanent' => ts('Permanent') ,
-        ) ,
-        'notice_unit' => array(
-          'Day' => ts('Day') ,
-          'Week' => ts('Week') ,
-          'Month' => ts('Month') ,
-          'Year' => ts('Year') ,
-        ) ,
-      );
-    }
-    return $translations[$field][$value];
-  }
-  /**
-   * adds $value['foo_display'] for each $value['foo'] enum from civicrm_hrjob
-   *
-   * @param array $values (reference)  the array up for enhancing
-   * @return void
-   */
-  static function addDisplayEnums(&$values)
-  {
-    $enumFields = & CRM_HRJob_DAO_HRJob::getEnums();
-    foreach($enumFields as $enum) {
-      if (isset($values[$enum])) {
-        $values[$enum . '_display'] = CRM_HRJob_DAO_HRJob::tsEnum($enum, $values[$enum]);
-      }
-    }
   }
 }

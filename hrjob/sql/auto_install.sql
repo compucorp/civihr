@@ -26,11 +26,11 @@ CREATE TABLE `civicrm_hrjob` (
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
      `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
-     `period_type` enum('Temporary', 'Permanent')    COMMENT '.',
+     `period_type` varchar(63)    COMMENT '.',
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
      `notice_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
-     `notice_unit` enum('Day', 'Week', 'Month', 'Year')    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
+     `notice_unit` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `location` varchar(127)    COMMENT 'Normal place of work',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
@@ -76,7 +76,7 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
-     `pay_unit` enum('Hour', 'Day', 'Week', 'Month', 'Year')    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
+     `pay_unit` varchar(63)    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
      `pay_currency` varchar(63)    COMMENT 'Unit for expressing pay currency',
      `pay_annualized_est` decimal(20,2)   DEFAULT 0 COMMENT 'Estimated Annual Pay',
      `pay_is_auto_est` tinyint   DEFAULT 1 COMMENT 'Is the estimate automatically calculated'
@@ -106,11 +106,11 @@ CREATE TABLE `civicrm_hrjob_health` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHealth ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `provider` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages healthcare service',
-     `plan_type` enum('Family', 'Individual')    COMMENT '.',
+     `plan_type` varchar(63)   COMMENT '.',
      `description` text    ,
      `dependents` text,
      `provider_life_insurance` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages life insurance service',
-     `plan_type_life_insurance` enum('Family', 'Individual')    COMMENT '.',
+     `plan_type_life_insurance` varchar(63)    COMMENT '.',
      `description_life_insurance` text,
      `dependents_life_insurance` text 
 ,
@@ -149,7 +149,7 @@ CREATE TABLE `civicrm_hrjob_hour` (
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `hours_type` varchar(63)    COMMENT 'Full-Time, Part-Time, Casual',
      `hours_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in given period)',
-     `hours_unit` enum('Day', 'Week', 'Month', 'Year')    COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
+     `hours_unit` varchar(63)   COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
      `hours_fte` double    COMMENT 'Typically, employment at 40 hr/wk is 1 FTE' 
 ,
     PRIMARY KEY ( `id` )
