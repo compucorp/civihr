@@ -70,14 +70,25 @@ function hrrecruitment_civicrm_install() {
     civicrm_api3('OptionValue', 'create', $statusParam);
   }
 
-  $vacancyCaseStatuses = array('Apply', 'Ongoing', 'Phone Interview', 'Manager Interview', 'Board Interview', 'Group Interview', 'Psych Exam', 'Offer', 'Hired');
+  $stages = array(
+    'Apply' => ts('Apply'),
+    'Ongoing_Vacancy' => ts('Ongoing'),
+    'Phone_Interview' => ts('Phone Interview'),
+    'Manager_Interview' => ts('Manager Interview'),
+    'Board_Interview' => ts('Board Interview'),
+    'Group_Interview' => ts('Group Interview'),
+    'Psych_Exam' => ts('Psych Exam'),
+    'Offer' => ts('Offer'),
+    'Hired' => ts('Hired'),
+  );
   $count = count(CRM_Core_OptionGroup::values('case_status'));
-  foreach ($vacancyCaseStatuses as $key => $label) {
+  foreach ($stages as $name => $label) {
     $count++;
+
     $caseStatusParam = array(
       'option_group_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'case_status', 'id', 'name'),
       'label' => $label,
-      'name' => CRM_Utils_String::munge($label),
+      'name' => $name,
       'value' => $count,
       'grouping' => 'Vacancy',
     );
@@ -159,7 +170,7 @@ function hrrecruitment_civicrm_postInstall() {
   $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$value}' WHERE extends_entity_column_value = 'Application'";
   CRM_Core_DAO::executeQuery($sql);
 
-  //change the profile Type of Aplication
+  //change the profile Type of Application
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'application_profile', 'id', 'name')) {
     $fieldsType = CRM_Core_BAO_UFGroup::calculateGroupType($ufID, TRUE);
     CRM_Core_BAO_UFGroup::updateGroupTypes($ufID, $fieldsType);
@@ -414,3 +425,4 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
     $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
   }
 }
+
