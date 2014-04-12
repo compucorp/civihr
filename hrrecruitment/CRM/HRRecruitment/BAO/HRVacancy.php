@@ -161,39 +161,46 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
   }
 
   static function getVacanciesByStatus() {
-    $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 0));
     $statuses = CRM_Core_OptionGroup::values('vacancy_status');
     $vacancies = $statusesCount = array();
     //initialize $statusesCount which hold the number of vacancies of status 'Draft' and 'Open'
-    foreach (array('Draft', 'Open') as $statusName) {
+    foreach (array('Open', 'Draft') as $statusName) {
       $value = array_search($statusName, $statuses);
       $statusesCount[$value] = 0;
-    }
 
-    foreach ($result['values'] as $id => $vacancy) {
-      $isDraft = FALSE;
-      if (isset($statusesCount[$vacancy['status_id']])) {
-        $statusesCount[$vacancy['status_id']] += 1;
-        if ($vacancy['status_id'] == array_search('Draft', $statuses)) {
-          $isDraft = TRUE;
-        }
-        $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
-          'position' => $vacancy['position'],
-          'location' => $vacancy['location'],
-          'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
-        );
+      //Retrieve top four recently modified vacancies of either status 'Draft' or 'Open'
+      $result = civicrm_api3('HRVacancy', 'get', array('is_template' => 0, 'status_id' => $value, 'sort' => 'created_date DESC', 'option.limit' => 4));
 
-        //assign stages by weight
-        $stages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id);
-        foreach ($stages as $stage) {
-          $vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages'][$stage['weight']] = array(
-            'title' => $stage['title'],
-            'count' => $stage['count'],
+      foreach ($result['values'] as $id => $vacancy) {
+        $isDraft = FALSE;
+        if (isset($statusesCount[$vacancy['status_id']])) {
+          $statusesCount[$vacancy['status_id']] += 1;
+          if ($vacancy['status_id'] == array_search('Draft', $statuses)) {
+            $isDraft = TRUE;
+          }
+          $position = "<a class='hr-vacancy-title' href='" . CRM_Utils_System::url('civicrm/case/pipeline', "reset=1&vid={$id}") . "'>{$vacancy['position']}</a>";
+          //show the pencil icon to edit vacancy only if the user has appropriate permission
+          if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('administer Vacancy')) {
+            $position .= "<a class='crm-hover-button action-item' title='" . ts('Edit this vacancy') . "' href='" . CRM_Utils_System::url('civicrm/vacancy/add', "reset=1&id={$id}") . "'><span class='icon edit-icon'></span></a>";
+          }
+          $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
+            'position' => $position,
+            'location' => $vacancy['location'],
+            'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
           );
-        }
-        ksort($vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages']);
 
-        $vacancies[$vacancy['status_id']] = array('title' => $statuses[$vacancy['status_id']]) + $vacancyEntry;
+          //assign stages by weight
+          $stages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id);
+          foreach ($stages as $stage) {
+            $vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages'][$stage['weight']] = array(
+              'title' => $stage['title'],
+              'count' => $stage['count'],
+            );
+          }
+          ksort($vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages']);
+
+          $vacancies[$vacancy['status_id']] = array('title' => $statuses[$vacancy['status_id']]) + $vacancyEntry;
+        }
       }
     }
 
@@ -229,20 +236,6 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
       $vacancyDAO->id = $ctDAO->vacancy_id;
       $vacancyDAO->find(TRUE);
 
-      //Take the date diff from Case Activity date to current date and express in Day/Hour/Minute
-      $dateDiff = date_diff(date_create(), date_create($dao->case_activity_date));
-      $dateString = NULL;
-      if ($dateDiff->d) {
-        $dateString .= " {$dateDiff->d} day(s)";
-      }
-      if ($dateDiff->h) {
-        $dateString .= " {$dateDiff->h} hour(s)";
-      }
-      if ($dateDiff->i) {
-        $dateString .= " {$dateDiff->i} minute(s)";
-      }
-      $dateString .= ' ago';
-
       //Applicant contact link
       $applicant = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$dao->contact_id}") . "'>{$dao->sort_name}</a>";
 
@@ -258,17 +251,18 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
       $sourceContact = CRM_Activity_BAO_ActivityContact::getNames($dao->case_activity_id, $sourceID);
       $sourceContactID = key($sourceContact);
       $source = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$sourceContactID}") . "'>{$sourceContact[$sourceContactID]}</a>";
+
       switch ($dao->case_activity_type_name) {
         case 'Open Case':
           $recentActivities[] = array(
             'activity' => "{$applicant} applied for {$position}",
-            'time' => $dateString
+            'time' => $dao->case_activity_date
           );
           break;
         case 'Comment':
           $recentActivities[] = array(
             'activity' => "{$source} commented on {$position}",
-            'time' => $dateString
+            'time' => $dao->case_activity_date
           );
           break;
         case 'Phone Call':
@@ -276,13 +270,13 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
         case 'Follow up':
           $recentActivities[] = array(
             'activity' => "{$source} had a {$dao->case_activity_type_name} with {$applicant} (vis-a-vis {$position})",
-            'time' => $dateString
+            'time' => $dao->case_activity_date
           );
           break;
         case 'Email':
           $recentActivities[] = array(
             'activity' => "{$source} sent email to {$applicant}",
-            'time' => $dateString
+            'time' => $dao->case_activity_date
           );
           break;
         case 'Change Case Status':
@@ -290,7 +284,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           $subject = str_replace('Assignment status changed', '', $subject);
           $recentActivities[] = array(
             'activity' => "{$source} changed the status of {$position} {$subject}",
-            'time' => $dateString
+            'time' => $dao->case_activity_date
           );
           break;
       }

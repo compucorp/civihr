@@ -103,37 +103,37 @@ function hrrecruitment_civicrm_install() {
       'label' => ts('Dashboard'),
       'name' => 'dashboard',
       'url' => 'civicrm/vacancy/dashboard?reset=1',
-      'permission' => null,
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Applicants, administer CiviCRM',
     ),
     array(
       'label' => ts('New Vacancy'),
       'name' => 'new_vacancy',
       'url' => 'civicrm/vacancy/add?reset=1',
-      'permission' => null,
+      'permission' => 'administer Applicants, administer CiviCRM',
     ),
     array(
       'label' => ts('New Template'),
       'name' => 'new_template',
       'url' => 'civicrm/vacancy/add?reset=1&template=1',
-      'permission' => null,
+      'permission' => 'administer Vacancy, administer CiviCRM',
     ),
     array(
       'label' => ts('Find Vacancies'),
       'name' => 'find_vacancies',
       'url' => 'civicrm/vacancy/find?reset=1',
-      'permission' => null,
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
     ),
     array(
       'label' => ts('Find Templates'),
       'name' => 'find_templates',
       'url' => 'civicrm/vacancy/find?reset=1&template=1',
-      'permission' => null,
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
     ),
     array(
       'label' => ts('Public Vacancy List'),
       'name' => 'public_list',
       'url' => 'civicrm/vacancy?reset=1',
-      'permission' => null,
+      'permission' => NULL,
     ),
   );
 
@@ -347,10 +347,11 @@ function hrrecruitment_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrrecruitment_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHRRecruitment') . ': '; // name of extension or module
   $permissions += array(
+    'access Vacancy' => $prefix . ts('Access Vacancy'),
     'view Applicants' => $prefix . ts('View Applicants'),
     'evaluate Applicants' => $prefix . ts('Evaluate Applicants'),
     'manage Applicants' => $prefix . ts('Manage Applicants'),
-    'administer Applicants' => $prefix . ts('Administer Applicants'),
+    'administer Vacancy' => $prefix . ts('Administer Vacancy'),
   );
 }
 

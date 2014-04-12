@@ -173,7 +173,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->addProfileSelector('evaluation_profile', '', array('Activity'), array(), $entities['Activity']);
 
     $permissions = CRM_Core_Permission_Base::getAllModulePermissions();
-    foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Applicants') as $permission) {
+    foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Vacancy') as $permission) {
       $explodedPerms = explode(':', $permissions[$permission]);
       $vacancyPermissions[$permission] = array_pop($explodedPerms);
     }
