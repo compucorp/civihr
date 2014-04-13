@@ -146,10 +146,10 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     WHERE  $whereClause";
 
     $permissions = array(CRM_Core_Permission::VIEW);
-    if (CRM_Core_Permission::check('edit contributions')) {
+    if (CRM_Core_Permission::check('administer Applicants')) {
       $permissions[] = CRM_Core_Permission::EDIT;
     }
-    if (CRM_Core_Permission::check('delete in CiviContribute')) {
+    if (CRM_Core_Permission::check('administer Applicants')) {
       $permissions[] = CRM_Core_Permission::DELETE;
     }
     $mask = CRM_Core_Action::mask($permissions);
