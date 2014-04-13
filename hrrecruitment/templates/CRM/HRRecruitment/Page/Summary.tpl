@@ -35,8 +35,7 @@
                 <tr>
                   <td>
                     <h3>
-                      <a class="hr-vacancy-title" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}">{$vacancy.position}</a>
-                      <a class="crm-hover-button action-item" href="{crmURL p='civicrm/vacancy/add' q="reset=1&id=$vacancyID"}" title="{ts}Edit this vacancy{/ts}"><span class="icon edit-icon"></span></a>
+                      {$vacancy.position}
                     </h3>
                   </td>
                 </tr>
