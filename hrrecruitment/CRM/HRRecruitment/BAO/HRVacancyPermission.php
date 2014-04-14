@@ -61,7 +61,6 @@ class CRM_HRRecruitment_BAO_HRVacancyPermission extends CRM_HRRecruitment_DAO_HR
     }
 
     while ($dao->fetch()) {
-      $vacancyPermissions[] = $dao->permission;
       if (count($checkPermissions)) {
         if (in_array($dao->permission, $checkPermissions)) {
           return TRUE;
