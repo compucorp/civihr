@@ -46,15 +46,7 @@
     cj(document).ready(function($) {
       $('.hr-recent-activity-time').each(function(){
         var recentActvityDate = moment($(this).text(), "YYYY-MM-DD hh:mm:ss");
-        if (moment().diff(recentActvityDate,'hours') == 0) {
-          $(this).html(recentActvityDate.startOf('minute').fromNow());
-        }
-        else if (moment().diff(recentActvityDate,'days') == 0) {
-          $(this).html(recentActvityDate.startOf('hour').fromNow());
-	}
-        else {
-           $(this).html(recentActvityDate.fromNow());
-        }
+        $(this).html(recentActvityDate.fromNow());
       });
     })
   </script>

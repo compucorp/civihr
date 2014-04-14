@@ -626,6 +626,6 @@
     <item>view Applicants</item>
     <item>evaluate Applicants</item>
     <item>manage Applicants</item>
-    <item>administer Applicants</item>
+    <item>administer Vacancy</item>
   </permission>
 </sample_data>

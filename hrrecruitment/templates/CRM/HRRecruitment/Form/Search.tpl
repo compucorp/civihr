@@ -36,14 +36,14 @@
           <table class="form-layout">
             <tr>
               <td class="font-size12pt" colspan="3">
-                {$form.job_position.label}&nbsp;&nbsp;{$form.job_position.html|crmAddClass:'twenty'}
+                {$form.position.label}&nbsp;&nbsp;{$form.position.html|crmAddClass:'twenty'}
               </td>
             </tr>
             <tr>
               <td width="25%">
                 <label>{ts}Location{/ts}</label><br/>
                 <div class="listing-box">
-                  {foreach from=$form.location_type_id item="location_val"}
+                  {foreach from=$form.location item="location_val"}
                     <div class="{cycle values="odd-row,even-row"}">
                       {$location_val.html}
                     </div>
@@ -54,7 +54,7 @@
               <td colspan="2" width="25%">
                 <label>{ts}Status{/ts}</label><br/>
                 <div class="listing-box">
-                  {foreach from=$form.status_type_id item="status_val"}
+                  {foreach from=$form.status_id item="status_val"}
                     <div class="{cycle values="odd-row,even-row"}">
                       {$status_val.html}
                     </div>

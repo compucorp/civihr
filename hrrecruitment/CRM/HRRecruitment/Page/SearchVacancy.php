@@ -75,11 +75,13 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
   function run() {
     // get the requested action
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE, 'browse');
+    $searchParams = array();
 
-    // get the requested action
-    $status = $this->get('status');
-    if (!$status) {
-      $status = CRM_Utils_Request::retrieve('status', 'String', $this, FALSE, 'browse');
+    foreach(array('position', 'status_id', 'location') as $searchField) {
+      $searchValue = $this->get($searchField);
+      if (!empty($searchValue)) {
+        $searchParams[$searchField] = $searchValue;
+      }
     }
     // assign vars to templates
     $this->assign('action', $action);
@@ -113,26 +115,25 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     }
 
     // finally browse the custom groups
-    $this->browse($action, $status);
+    $this->browse($action, $searchParams);
 
     // parent run
     return parent::run();
   }
 
 
-  function browse($action = NULL, $status){
-
+  function browse($action = NULL, $searchParams = array()){
     $template = CRM_Utils_Request::retrieve('template', 'Positive', $this, FALSE, 0);
-    $params = array($status);
-    $whereClause = $this->whereClause($params, TRUE, $this->_force);
 
     if ($template) {
-      $whereClause .= ' AND is_template = 1';
+      $searchParams['is_template'] = 1;
     }
     else {
-      // because is_template != 1 would be to simple
-      $whereClause .= ' AND (is_template = 0 OR is_template IS NULL)';
+      $searchParams['is_template'] = 0;
     }
+
+    $whereClause = $this->whereClause($searchParams);
+
     $this->_force = $this->_searchResult = NULL;
     $this->search();
     $params = array();
@@ -141,40 +142,37 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     );
     $this->search();
 
-    $query = "SELECT id, status_id, position, salary, location, start_date, end_date
+    $query = "SELECT *
     FROM civicrm_hrvacancy
-    WHERE  $whereClause";
+    $whereClause";
 
-    $permissions = array(CRM_Core_Permission::VIEW);
-    if (CRM_Core_Permission::check('edit contributions')) {
-      $permissions[] = CRM_Core_Permission::EDIT;
-    }
-    if (CRM_Core_Permission::check('delete in CiviContribute')) {
-      $permissions[] = CRM_Core_Permission::DELETE;
-    }
-    $mask = CRM_Core_Action::mask($permissions);
-    $dao = CRM_Core_DAO::executeQuery($query, $params, TRUE, 'CRM_HRRecruitment_DAO_HRVacancy');
+    $dao = CRM_Core_DAO::executeQuery($query);
     $rows = array();
 
-    $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
+    $vacancyStatuses = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
     $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
     while ($dao->fetch()) {
-      $rows[$dao->id]['status'] = (isset($status[$dao->status_id]) ? $status[$dao->status_id] : NULL);
-      $rows[$dao->id]['id'] = $dao->id;
       $rows[$dao->id]['position'] = $dao->position;
       $rows[$dao->id]['location'] = $location[$dao->location];
       $rows[$dao->id]['salary'] = $dao->salary;
       $rows[$dao->id]['start_date'] = $dao->start_date;
       $rows[$dao->id]['end_date'] = $dao->end_date;
-      $actionLink = self::links();
-      if ($template) {
-        $actionLink[CRM_Core_Action::UPDATE]['title'] = ts('Edit Vacancy Template');
-        $actionLink[CRM_Core_Action::COPY]['title'] = ts('Copy Vacancy Template');
-        $actionLink[CRM_Core_Action::DELETE]['title'] = ts('Delete Vacancy Template');
-        $actionLink[CRM_Core_Action::DELETE]['qs'] .= '&template=1';
+      $hasPermission = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($dao->id, array('administer CiviCRM', 'administer Vacancy', 'Edit Vacancy'));
+
+      if (empty($template)) {
+        $rows[$dao->id]['status'] = $vacancyStatuses[$dao->status_id];
       }
 
-      $rows[$dao->id]['action'] = CRM_Core_Action::formLink($actionLink, $mask, array('id' => $dao->id));
+      if ($hasPermission) {
+        $actionLink = self::links();
+        if ($template) {
+          $actionLink[CRM_Core_Action::UPDATE]['title'] = ts('Edit Vacancy Template');
+          $actionLink[CRM_Core_Action::COPY]['title'] = ts('Copy Vacancy Template');
+          $actionLink[CRM_Core_Action::DELETE]['title'] = ts('Delete Vacancy Template');
+          $actionLink[CRM_Core_Action::DELETE]['qs'] .= '&template=1';
+        }
+        $rows[$dao->id]['action'] = CRM_Core_Action::formLink($actionLink, array(), array('id' => $dao->id));
+      }
     }
 
     $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
@@ -184,46 +182,30 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $this->assign('rows', $rows);
   }
 
-  function whereClause($status) {
+  function whereClause($searchParams) {
     $clauses = array();
-    $title = $this->get('job_position');
+    $whereClause = "WHERE ";
 
-    if ($title) {
-      $clauses[] = "position LIKE '%" . $title . "%'";
-    }
-    $value = $this->get('status_type_id');
-
-    if (empty($value) && CRM_Utils_Rule::integer($status[0])) {
-      $clauses[] = "status_id IN ({$status[0]})";
-    }
-    else {
-      $val = array();
-      if ($value) {
-        if (is_array($value)) {
-          foreach ($value as $k => $v) {
-            if ($v) {
-              $val[$k] = $k;
-            }
-          }
-          $type = implode(',', $val);
-        }
-        $clauses[] = "status_id IN ({$type})";
+    foreach ($searchParams as $column => $value) {
+      switch ($column) {
+        case 'is_template':
+          $clauses[] = "$column = $value";
+          break;
+        case 'position':
+          $clauses[] = "$column LIKE '%$value%'";
+          break;
+        case 'location':
+          $clauses[] = "$column IN ('" . implode("','", array_keys($value)) . "')";
+          break;
+        case 'status_id':
+          $clauses[] = "$column IN (" . implode(',', array_keys($value)) . ")";
+          break;
       }
     }
-    $location= $this->get('location_type_id');
-    $val = array();
-    if ($location) {
-      if (is_array($location)) {
-        foreach ($location as $k => $v) {
-          if ($v) {
-            $val[$k] = "'".$k."'";
-          }
-        }
-        $type = implode(',', $val);
-      }
-      $clauses[] = "location IN ({$type})";
-    }
-    return !empty($clauses) ? implode(' AND ', $clauses) : '(1)';
+
+    $whereClause .= implode(' AND ', $clauses );
+
+    return $whereClause;
   }
 
   function search() {
