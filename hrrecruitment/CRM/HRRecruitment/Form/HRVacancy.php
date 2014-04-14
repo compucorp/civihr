@@ -1,3 +1,4 @@
+
 <?php
 
 /*
@@ -47,6 +48,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
    * @access public
    */
   function preProcess() {
+
     $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
     $this->assign('isTemplate', $this->_isTemplate);
     $this->_id = CRM_Utils_Request::retrieve('id', 'Integer', $this);
@@ -61,7 +63,17 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         CRM_Utils_System::setTitle(ts('Edit Vacancy'));
       }
     }
-
+    $session = CRM_Core_Session::singleton();
+    $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
+    $permission = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_id);
+    if ($this->_action == CRM_Core_Action::UPDATE && (!in_array("administer Vacancy",$permission) && (!in_array("administer CiviCRM",$permission)))) {
+      $session->pushUserContext(CRM_Utils_System::url('civicrm'));
+      CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to edit.'));
+    }
+    else if (!$this->_action == CRM_Core_Action::UPDATE && !CRM_Core_Permission::check('administer Vacancy')) {
+      $session->pushUserContext(CRM_Utils_System::url('civicrm'));
+      CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to add.'));
+    }
   }
 
  /**
