@@ -89,16 +89,16 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
    * @access public
    */
   public function buildQuickForm() {
-    $this->addElement('text', 'job_position', ts('Job Position'));
+    $this->addElement('text', 'position', ts('Job Position'));
 
     $status = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
     foreach ($status as $statusId => $statusName) {
-      $this->addElement('checkbox', "status_type_id[$statusId]", 'Status', $statusName);
+      $this->addElement('checkbox', "status_id[$statusId]", 'Status', $statusName);
     }
 
     $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
     foreach ($location as $locationId => $locationName) {
-      $this->addElement('checkbox', "location_type_id[$locationId]", 'Location', $locationName);
+      $this->addElement('checkbox', "location[$locationId]", 'Location', $locationName);
     }
     $this->addButtons(
       array(
@@ -126,11 +126,10 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
     $params = $this->controller->exportValues($this->_name);
     $parent = $this->controller->getParent();
     $parent->set('searchResult', 1);
-    $parent->set('status', null);
     if (!empty($params)) {
-      $fields = array('job_position', 'status_type_id', 'location_type_id');
+      $fields = array('position', 'status_id', 'location');
       foreach ($fields as $field) {
-        if (isset($params[$field]) && !CRM_Utils_System::isNull($params[$field])) {
+        if (!empty($params[$field]) && !CRM_Utils_System::isNull($params[$field])) {
           $parent->set($field, $params[$field]);
         }
         else {

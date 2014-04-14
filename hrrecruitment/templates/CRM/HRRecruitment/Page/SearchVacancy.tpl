@@ -37,16 +37,16 @@
       {/if}
       <th>{ts}{/ts}</th>
     </tr>
-    {foreach from=$rows item=row}
+    {foreach from=$rows item=row key=id}
       <tr class="{cycle values="odd-row,even-row"} {$row.class}">
-        <td id="{$row.id}"><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=`$row.id`"}">{$row.position}</a></td>
+        <td id="{$row.id}"><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$id"}">{$row.position}</a></td>
         <td>{$row.location}</td>
         <td>{$row.salary}</td>
         <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
         {if !$isTemplate}
         <td>{$row.status}</td>
         {/if}
-        <td>{$row.action|replace:'xx':$row.id}</td>
+        <td>{$row.action|replace:'xx':$id}</td>
       </tr>
     {/foreach}
   </table>
