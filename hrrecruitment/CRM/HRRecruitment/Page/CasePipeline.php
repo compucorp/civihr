@@ -52,6 +52,9 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
       CRM_Core_Error::fatal(ts('There is no vacancy information provided'));
     }
     $this->_statusId = CRM_Utils_Request::retrieve('status_id', 'Positive');
+
+    $permission = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid);
+    $this->assign('permission',$permission);
   }
 
   function run() {
