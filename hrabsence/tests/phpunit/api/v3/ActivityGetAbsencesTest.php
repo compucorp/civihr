@@ -57,7 +57,7 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
     parent::setUp();
 
     CRM_HRAbsence_Upgrader_Base::instance()->installActivityTypes(NULL);
-    CRM_HRAbsence_Upgrader_Base::instance()->installAbsenceTypes(NULL);
+    CRM_HRAbsence_Upgrader_Base::instance()->installAbsenceTypes(TRUE);
 
     $this->contactId = $this->individualCreate();
     $this->contactId2 = $this->individualCreate(array(
