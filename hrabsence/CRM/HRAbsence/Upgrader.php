@@ -65,7 +65,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     }
   }
 
-  public function installAbsenceTypes() {
+  public function installAbsenceTypes($isTest = FALSE) {
     $leaves = TRUE;
     $weight = 0;
     $values = '';
@@ -117,6 +117,12 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       CRM_Core_DAO::executeQuery($query);
     }
     CRM_Core_OptionGroup::deleteAssoc('hrjob_leave_type');
+
+    //no need to create/check absence type related custom group and its field
+    //beyond this point while running test cases because it is already installed
+    if ($isTest) {
+      return;
+    }
 
     $absenceTypeIDs = implode($seperator, $absenceTypeID);
     $paramsCGroup = array(
