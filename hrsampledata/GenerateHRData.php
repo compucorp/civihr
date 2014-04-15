@@ -298,7 +298,9 @@ class GenerateHRData {
       $contact->first_name = $this->randomItem($gender . '_name');
       $contact->middle_name = $this->probability(.5) ? '' : ucfirst($this->randomChar());
       $contact->last_name = $this->randomItem('last_name');
-      $contact->sort_name = $contact->last_name . ', '. $contact->first_name;
+      $contact->sort_name = $contact->last_name . ', ' . $contact->first_name;
+      $contact->display_name = $contact->first_name . ' ' . $contact->last_name;
+
     }
     $contact->save();
 
@@ -1210,6 +1212,7 @@ class GenerateHRData {
 
     $totalcount = 6;
     $setNewVacancy = FALSE;
+    $templatePosition = array();
     for ($i = 1; $i <= $totalcount; $i++) {
       $position = $this->randomItem('vacancyposition');
       $vacanciesValues = array(
@@ -1221,14 +1224,21 @@ class GenerateHRData {
         'location' => $this->randomItem('location'),
         'is_template' => mt_rand(0 ,1),
         'status_id' => array_rand($vacancyStatuses, 1),
-        'start_date' => $this->randomDate('2009-01-01', '2011-12-31','YmdHis'),
-        'end_date' =>  $this->randomDate('2012-01-01', '2014-12-31','YmdHis'),
+        'start_date' => $this->randomDate('20130701', '20140101','YmdHis'),
+        'end_date' =>  $this->randomDate('20140102', '20151231','YmdHis'),
         'created_id' => $cid,
         'created_date' => $this->randomDate(),
       );
       if ($vacanciesValues['is_template'] == 1) {
-        //template vacancies doesn't have statuses
-        unset($vacanciesValues['status_id']);
+        if (array_key_exists($position, $templatePosition)) {
+          //always create distict template
+          continue;
+        }
+        else {
+          //template vacancies doesn't have statuses
+          $templatePosition[$position] = NULL;
+          unset($vacanciesValues['status_id']);
+        }
       }
       else {
         $setNewVacancy = TRUE;
@@ -1243,28 +1253,31 @@ class GenerateHRData {
 
     //There are 6 sample Vacancies created, next is to create Entities - VacancyStage, VacancyPermission, Cases
     foreach ($hrVacancies as $key => $hrVacanciesObj) {
-      $count=1;
-      $openCaseStatus = NULL;
       $selectedCaseStatuses = array();
+      $lastSelectedCaseStatus = NULL;
       $randCaseStatus = $caseStatuses;
-      for ($i = 1; $i <= mt_rand(1, count($caseStatuses)); $i++) {
+      //First Vacancy status always be Apply status
+      $ignoreCaseStatus = array_search('Apply', $randCaseStatus);
+
+      for ($i = 1; $i <= mt_rand(1, 6); $i++) {
+        $randomValue = array_rand($randCaseStatus, 1);
+        if ($randomValue == $ignoreCaseStatus) {
+          continue;
+        }
+        unset($randCaseStatus[$randomValue]);
+      }
+
+      $count = 1;
+      foreach ($randCaseStatus as $caseStatus => $dontCare) {
         $vacancyStagesValues = array(
-          'case_status_id' => array_rand($randCaseStatus, 1),
+          'case_status_id' => $caseStatus,
           'vacancy_id' => $hrVacanciesObj->id,
           'weight' => $count,
         );
-
-        if ($count == 1) {
-          //atleast first case created against this vacancy have its status as its first vacancy stage
-          $openCaseStatus = $vacancyStagesValues['case_status_id'];
-        }
-        else {
-          $selectedCaseStatuses[] = $vacancyStagesValues['case_status_id'];
-        }
-        array_pop($randCaseStatus);
         $count++;
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyStage', $vacancyStagesValues);
       }
+
       //sample data for HRPermission table
       for ($i = 1; $i <= mt_rand(1, 4); $i++) {
         $vacancyPermissionValues = array(
@@ -1288,18 +1301,12 @@ class GenerateHRData {
 
         $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name'));
         if (!$hrVacanciesObj->is_template) {
-          $randCaseStatus = $caseStatuses;
           for ($i = 1; $i <= mt_rand(1, 4); $i++) {
             $applicantID = $this->randomContact();
             $caseParams['case_type_id'] = $caseTypes['Application'];
-            $caseParams['start_date'] = $this->randomDate();
+            $caseParams['start_date'] = $this->randomDate($hrVacanciesObj->start_date, $hrVacanciesObj->end_date);
+            $caseParams['status_id'] = array_rand($randCaseStatus, 1);
 
-            if ($i == 1) {
-              $caseParams['status_id'] = $openCaseStatus;
-            }
-            elseif (count($selectedCaseStatuses)) {
-              $caseParams['status_id'] = array_rand($selectedCaseStatuses, 1);
-            }
             $caseObj = CRM_Case_BAO_Case::create($caseParams);
 
             $contactParams = array(
