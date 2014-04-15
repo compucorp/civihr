@@ -115,6 +115,7 @@ function hrrecruitment_civicrm_install() {
       'name' => 'dashboard',
       'url' => 'civicrm/vacancy/dashboard?reset=1',
       'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Applicants, administer CiviCRM',
+      'permission_operator' => 'OR',
     ),
     array(
       'label' => ts('Public Vacancy List'),
