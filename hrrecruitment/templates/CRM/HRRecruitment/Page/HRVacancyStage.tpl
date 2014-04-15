@@ -46,7 +46,6 @@
     <div class="hr-pipeline-case-actions" style="opacity: .5">
       <a class="button hr-activity-button" href="#civicrm/activity/email/add" data-atype="{$emailActivity}" data-context="standalone"><div class="icon ui-icon-mail-closed"></div>{ts}Email{/ts}</a>
       <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$commentActivity}"><div class="icon ui-icon-comment"></div>{ts}Comment{/ts}</a>
-      <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$evaluationActivity}"><div class="icon ui-icon-note"></div>{ts}Evaluation{/ts}</a>
       <select class="crm-select2 crm-form-select crm-action-menu hr-activity-menu action-icon-plus">
         <option value="">{ts}Add activity{/ts}</option>
         {foreach from=$activities key="id" item="title"}

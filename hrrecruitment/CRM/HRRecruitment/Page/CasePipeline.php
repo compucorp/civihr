@@ -85,6 +85,7 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
       $stage['active'] = $stage['valid'] = TRUE;
       $stage['link'] = CRM_Utils_System::url('civicrm/case/pipeline', array('reset' => 1, 'status_id' => $key, 'vid' => $this->_vid));
       $stage['extra'] = "data-status_id='$key'";
+      $stage['class'] = 'livePage';
     }
 
     $this->assign('tabHeader', $vacancyStages);
