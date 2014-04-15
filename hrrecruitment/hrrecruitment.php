@@ -86,11 +86,12 @@ function hrrecruitment_civicrm_install() {
     $count++;
 
     $caseStatusParam = array(
-      'option_group_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'case_status', 'id', 'name'),
+      'option_group_id' => 'case_status',
       'label' => $label,
       'name' => $name,
       'value' => $count,
       'grouping' => 'Vacancy',
+      'filter' => 1,
     );
     civicrm_api3('OptionValue', 'create', $caseStatusParam);
   }
