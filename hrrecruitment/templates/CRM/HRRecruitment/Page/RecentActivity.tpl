@@ -33,21 +33,10 @@
         <div class="hr-recent-activity-block">
           {$activity.activity}
         </div>
-        <div class="hr-recent-activity-time">
-          {$activity.time}
+        <div class="hr-recent-activity-time" data-time="{$activity.time}">
+          &nbsp;
         </div>
       </td>
     </tr>
   {/foreach}
 </table>
-
-{literal}
-  <script type="text/javascript">
-    cj(document).ready(function($) {
-      $('.hr-recent-activity-time').each(function(){
-        var recentActvityDate = moment($(this).text(), "YYYY-MM-DD hh:mm:ss");
-        $(this).html(recentActvityDate.fromNow());
-      });
-    })
-  </script>
-{/literal}
