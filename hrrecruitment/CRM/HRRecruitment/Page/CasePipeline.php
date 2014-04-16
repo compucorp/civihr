@@ -52,6 +52,13 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
       CRM_Core_Error::fatal(ts('There is no vacancy information provided'));
     }
     $this->_statusId = CRM_Utils_Request::retrieve('status_id', 'Positive');
+
+    $allper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("administer Vacancy","administer CiviCRM","manage Applicants","evaluate Applicants"));
+    $administerper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("administer Vacancy","administer CiviCRM"));
+    $evaluateper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("evaluate Applicants"));
+    $this->assign('allper',$allper);
+    $this->assign('administerper',$administerper);
+    $this->assign('evaluateper',$evaluateper);
   }
 
   function run() {

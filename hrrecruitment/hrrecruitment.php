@@ -115,7 +115,7 @@ function hrrecruitment_civicrm_install() {
       'label' => ts('Dashboard'),
       'name' => 'dashboard',
       'url' => 'civicrm/vacancy/dashboard?reset=1',
-      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Applicants, administer CiviCRM',
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
       'permission_operator' => 'OR',
     ),
     array(
@@ -129,7 +129,7 @@ function hrrecruitment_civicrm_install() {
       'label' => ts('New Vacancy'),
       'name' => 'new_vacancy',
       'url' => 'civicrm/vacancy/add?reset=1',
-      'permission' => 'administer Applicants, administer CiviCRM',
+      'permission' => 'administer Vacancy, administer CiviCRM',
       'permission_operator' => 'OR',
     ),
     array(
