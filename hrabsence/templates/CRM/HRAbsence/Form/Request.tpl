@@ -64,7 +64,7 @@
 {include file="CRM/common/customData.tpl" location="bottom"}
 {literal}
   <script type="text/javascript">
-    cj(function($) {
+    CRM.$(function($) {
     var
       $form = $('form#{/literal}{$form.formName}{literal}'),
       additn = 0,

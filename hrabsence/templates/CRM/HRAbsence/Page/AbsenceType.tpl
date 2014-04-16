@@ -63,7 +63,7 @@
     </div>
   </div>
   <script type="text/javascript">
-    cj('.crm-editable').crmEditable();
+    CRM.$('.crm-editable').crmEditable();
   </script>
 {else}
     <div class="messages status no-popup">

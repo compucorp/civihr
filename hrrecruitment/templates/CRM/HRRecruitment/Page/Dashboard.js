@@ -1,3 +1,4 @@
+// https://civicrm.org/licensing
 (function($) {
   function updateTimes() {
     $('.hr-recent-activity-time').each(function () {
