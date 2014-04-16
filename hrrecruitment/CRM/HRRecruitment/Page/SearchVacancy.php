@@ -50,7 +50,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
         CRM_Core_Action::UPDATE => array(
           'name' => ts('Edit'),
           'url' => 'civicrm/vacancy/add',
-          'qs' => 'action=update&id=%%id%%',
+          'qs' => 'id=%%id%%',
           'title' => ts('Edit Vacancy'),
         ),
         CRM_Core_Action::DELETE => array(
