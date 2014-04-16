@@ -1,6 +1,6 @@
-// Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
-cj(function($) {
-  cj('body').on('crmFormLoad', function(event) {
+// http://civicrm.org/licensing
+CRM.$(function($) {
+  $('body').on('crmFormLoad', function(event) {
     if (event.profileName == 'hrcareer_tab') {
       var accessName = $('[data-crm-custom="Career:End_Date"]').attr('name');
       if($('div#editrow-' + accessName + ' a.helpicon').length == 0) {

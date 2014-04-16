@@ -1,3 +1,4 @@
+// https://civicrm.org/licensing
 (function($, _) {
   function loadDetails(context) {
     var url,
