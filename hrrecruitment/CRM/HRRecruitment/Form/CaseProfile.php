@@ -72,21 +72,41 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
       $gid = array_search('application_case', $groups);
       $cgID = array('custom_group_id'=>$gid);
       CRM_Core_BAO_CustomField::retrieve($cgID, $cfID);
+      $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($this->_caseID);
+      foreach (array('application_profile', 'evaluation_profile') as $profileName) {
+        $dao = new CRM_Core_DAO_UFJoin;
+        $dao->module = 'Vacancy';
+        $dao->entity_id = $vacancyID;
+        $dao->module_data = $profileName;
+        $dao->find(TRUE);
+        $profile[$profileName] = $dao->uf_group_id;
+      }
+      //Evaluation ID
+      $evaluationID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
+      $this->assign('evaluationID', $evaluationID);
+
+
       $params = array(
-        "entityID" => $this->_caseID,
-        "custom_{$cfID['id']}" => 1,
+        'activity_type_id' => $evaluationID,
       );
-      $result = CRM_Core_BAO_CustomValueTable::getValues($params);
-      $vacancyID = $result["custom_{$cfID['id']}"];
-      $ufJoinParams = array(
-        'module' => 'Vacancy',
-        'entity_id' => $vacancyID,
-        'module_data' => 'application_profile',
+
+      $url = CRM_Utils_System::url('civicrm/case/activity',
+        "action=add&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}",
+        FALSE, NULL, FALSE
       );
-      $ufJoin = new CRM_Core_DAO_UFJoin();
-      $ufJoin->copyValues($ufJoinParams);
-      $ufJoin->find(TRUE);
-      $this->_profileID = $ufJoin->uf_group_id;
+
+      $caseActivity = CRM_Case_BAO_Case::getCaseActivity($this->_caseID, $params, $this->_contactID);
+      foreach ($caseActivity as $caseActivity) {
+        $evalID = $caseActivity['id'];
+        $url = CRM_Utils_System::url('civicrm/case/activity',
+          "action=update&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}&id={$evalID}",
+          FALSE, NULL, FALSE
+        );
+      }
+      $this->assign('evalURL', $url);
+      $this->_profileID = $profile['application_profile'];
+      $this->_evalProfileID = $profile['evaluation_profile'];
+      $this->assign('evalProfileID', $this->_evalProfileID);
     }
   }
 

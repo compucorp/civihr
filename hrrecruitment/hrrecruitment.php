@@ -30,7 +30,6 @@ function hrrecruitment_civicrm_install() {
           'weight' => $weight++,
           'name' => $activityType,
           'label' => $activityType,
-          'filter' => 1,
           'is_active' => 1,
         )
       );
@@ -435,3 +434,78 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
   }
 }
 
+function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_Activity') {
+    $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : $form->_defaultValues['activity_type_id'];
+    if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation')) {
+      $caseID = CRM_Utils_Request::retrieve('caseid', 'Positive');
+      $activityID = CRM_Utils_Request::retrieve('id', 'Positive');
+      $contactID = CRM_Utils_Request::retrieve('cid', 'Positive');
+
+      $dao = new CRM_Core_DAO_UFJoin;
+      $dao->module = 'Vacancy';
+      $dao->entity_id = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($caseID);
+      $dao->module_data = 'evaluation_profile';
+      $dao->find(TRUE);
+      $profileID = $dao->uf_group_id;
+      $profileFields = CRM_Core_BAO_UFGroup::getFields($profileID);
+      $form->assign('fields', $profileFields);
+
+      CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $profileFields, $def);
+      $form->setDefaults($def);
+
+      foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
+        CRM_Core_BAO_UFGroup::buildProfile($form, $profileFieldVal, CRM_Profile_Form::MODE_EDIT, $contactID, TRUE, FALSE, NULL);
+        $form->_fields[$profileFieldKey] = $profileFields[$profileFieldKey];
+        $params[$profileFieldKey] = $profileFieldVal;
+      }
+
+      if (!empty($activityID)) {
+        $params['entityID'] = $activityID;
+        $form->addElement('hidden', 'evaluationProfile', $profileID);
+        $defVal = CRM_Core_BAO_CustomValueTable::getValues($params);
+        $form->setDefaults($defVal);
+      }
+
+      CRM_Core_Region::instance('form-profile')->add(array(
+          'template' => 'CRM/Profile/Form/Edit.tpl',
+        ));
+    }
+  }
+}
+
+function hrrecruitment_civicrm_postProcess( $formName, &$form ) {
+  if ($formName == 'CRM_Case_Form_Activity') {
+    if (!empty($form->_submitValues['evaluationProfile'])) {
+      $pID = $form->_submitValues['evaluationProfile'];
+      $profileContactType = CRM_Core_BAO_UFGroup::getContactType($pID);
+      $dedupeParams = CRM_Dedupe_Finder::formatParams($params, $profileContactType);
+      $dedupeParams['check_permission'] = FALSE;
+      $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, $profileContactType);
+      $applicantID = $form->_currentlyViewedContactId;
+      if(count($ids)) {
+        $applicantID = CRM_Utils_Array::value(0, $ids);
+      }
+      $applicantID = CRM_Contact_BAO_Contact::createProfileContact(
+        $form->_submitValues, CRM_Core_DAO::$_nullArray,
+        $applicantID, NULL,
+        $pID
+      );
+
+      $profileFields = CRM_Core_BAO_UFGroup::getFields($form->_submitValues['evaluationProfile']);
+      foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
+        $params = array(
+          "entityID" => $_POST['new_activity_id'],
+          $profileFieldKey => $form->_submitValues[$profileFieldKey],
+        );
+        CRM_Core_BAO_CustomValueTable::setValues($params);
+      }
+    }
+  }
+}
+
+function hrrecruitment_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+  if ($objectName == 'Activity' && ($op == 'create' || $op == 'edit')) {
+    $_POST['new_activity_id'] = $objectId;
+  }
+}

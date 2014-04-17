@@ -354,4 +354,26 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     $vacancy->delete();
   }
 
+  /**
+   * This function is to get Vacancy ID from Application ID
+   *
+   * @param int $caseID - Case ID of type Application
+   *
+   * @return int
+   * @access public
+   */
+  public static function getVacancyIDByCase($caseID) {
+    $applCaseID = CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_CustomField', 'custom_group_id', 'application_case');
+    $cgID = array('custom_group_id' => $applCaseID);
+    CRM_Core_BAO_CustomField::retrieve($cgID, $cfID);
+
+    $params = array(
+      "entityID" => $caseID,
+      "custom_{$cfID['id']}" => 1,
+    );
+    $result = CRM_Core_BAO_CustomValueTable::getValues($params);
+    $vacancyID = $result["custom_{$cfID['id']}"];
+    return $vacancyID;
+  }
+
 }
