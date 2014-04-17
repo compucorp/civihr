@@ -594,33 +594,9 @@
     <item>AB67564</item>
   </sponsor_certificate_number>
 
-  <salary>
-    <item>$50-$70k/yr</item>
-    <item>$30-$40k/yr</item>
-    <item>$110-$130k/yr</item>
-  </salary>
-  
-  <vacancyposition>
-    <item>Senior Support Specialist</item>
-    <item>Junior Support Specialist</item>
-    <item>Senior Deletion Confirmation Specialist</item>
-  </vacancyposition>
-
   <vacancydescription>
     <item>Answer phone calls and emails from irate customers.</item>
   </vacancydescription>
-  
-  <benefits>
-    <item>Gym, Sports Club</item>
-    <item>Have a place to park</item>
-    <item>Free Health Care Service</item>
-  </benefits>
-
-  <requirements>
-    <item>Pro-actively looks to build cross discipline experience and increase knowledge through working with other engineers and technicians.</item>
-    <item>Reports progress and technical problems to project and supervisor.</item>
-    <item>You have at least five years of experience managing a complex business across multiple locations.</item>
-  </requirements>
 
   <permission>
     <item>view Applicants</item>
@@ -628,4 +604,14 @@
     <item>manage Applicants</item>
     <item>administer Vacancy</item>
   </permission>
+
+  <comment>
+    <item>This guy is a clear winner, even his job profile says so.</item>
+    <item>I googled this guy. Funny man!</item>
+  </comment>
+
+  <phonecall>
+    <item>Applicant is not able to be on joining date because of personal reason.</item>
+    <item>Has negotiation with payscale.</item>
+  </phonecall>
 </sample_data>

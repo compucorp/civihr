@@ -32,21 +32,18 @@
   </field>
   <field>
     <name>description</name>
-    <type>varchar</type>
-    <length>254</length>
+    <type>longtext</type>
     <comment>Description of vacancy</comment>
     <title>Description</title>
   </field>
   <field>
     <name>benefits</name>
-    <type>varchar</type>
-    <length>254</length>
+    <type>longtext</type>
     <title>Benefits</title>
   </field>
   <field>
     <name>requirements</name>
-    <type>varchar</type>
-    <length>254</length>
+    <type>longtext</type>
     <comment>Requirements of vacancy</comment>
     <title>Requirements</title>
   </field>

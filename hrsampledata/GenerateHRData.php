@@ -355,6 +355,80 @@ class GenerateHRData {
     return date($dateFormat, rand($today - $numSecond, $today));
   }
 
+  private function randomVacancy() {
+    return array(
+      array(
+        'position' => 'Senior Support Specialist',
+        'salary' => '$50-$70k/yr',
+        'requirements' => 'Experience : At least 4 years</br>
+      <ul>
+        <li>Pro-actively looks to build cross discipline experience and increase knowledge through working with other engineers and technicians.</li>
+        <li>Facilitate and Lead in all system upgrades, fixes and enhancements</li>
+        <li>Work with IT Director to implement special projects</li>
+        <li>Interacts with vendors to support personnel and other IT staff to resolve users issues and requests</li>
+      </ul>',
+        'benefits' => '<ul>
+        <li>Gym, Sports Club</li>
+        <li>Have a place to park</li>
+        <li>Free Health Care Service</li>
+      </ul>'
+      ),
+      array(
+        'position' => 'Junior Support Specialist',
+        'salary' => '$30-$40k/yr',
+        'requirements' => 'Experience : At least 2 years</br>
+      <ul>
+        <li>Pro-actively looks to build cross discipline experience and increase knowledge through working with other engineers and technicians.</li>
+        <li>Facilitate and Lead in all system upgrades, fixes and enhancements</li>
+        <li>Work with IT Director to implement special projects</li>
+        <li>Interacts with vendors to support personnel and other IT staff to resolve users issues and requests</li>
+      </ul>',
+        'benefits' => '<ul>
+        <li>Paid Holidays - Selected paid holiday, based on accrued hour requirements</li>
+        <li>Highly trained and professional staff - Our team cares about you and your career!</li>
+        <li>Free Health Care Service</li>
+      </ul>'
+      ),
+      array(
+        'position' => 'Senior IT Security Specialist',
+        'salary' => '$110-$130k/yr',
+        'requirements' => 'Experience : At least 8 years</br>
+      <ul>
+        <li>At least 8 years of IT security experience in large, highly-regulated organizations and/or a leading consulting organization with a significant security practice.</li>
+        <li>Attention to detail around metrics, accountability, and operational excellence.Facilitate and Lead in all system upgrades, fixes and enhancements</li>
+        <li>Certifications in Security and Risk preferred</li>
+      </ul>',
+        'benefits' => '<ul>
+        <li>Paid Holidays - Selected paid holiday, based on accrued hour requirements</li>
+        <li>Highly trained and professional staff - Our team cares about you and your career!</li>
+        <li>Free Health Care Service</li>
+      </ul>'
+      )
+    );
+  }
+
+  private function addActivityParamByType($activityType, &$activityParams) {
+    switch ($activityType) {
+      case 'Change Case Status':
+        $activityParams['activity_subject'] = ts('Case status changed from %1 to %2', array(
+          1 => $activityParams['last_status'],
+          2 => $activityParams['new_status']
+          )
+        );
+        unset($activityParams['last_status'], $activityParams['new_status']);
+        $activityParams['priority_id'] = CRM_Core_OptionGroup::getValue('priority', 'Normal', 'name');
+        break;
+      case 'Comment':
+      case 'Email':
+        $activityParams['activity_details'] = $this->randomItem('comment');
+        break;
+      case 'Phone Call':
+        $activityParams['activity_details'] = $this->randomItem('phonecall');
+        break;
+    }
+  }
+
+
   /**
    * Automatically manage the is_primary field by tracking which contacts have each item
    */
@@ -1205,22 +1279,28 @@ class GenerateHRData {
   function addVacancies($cid) {
     //sample data for HRRecruitment table
     $grpParams['name'] = 'vacancy_status';
-    $optionValues = $ids = array();
-    $ids = CRM_Core_OptionGroup::values('vacancy_status');
+    $optionValues  = $vacancyPermissionContactIds = array();
     $caseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
     $vacancyStatuses = CRM_Core_OptionGroup::values('vacancy_status');
+    //Filterout Rejected and Cancelled status while creating vacancy
+    foreach(array('Cancelled', 'Rejected') as $status) {
+      $key = array_search($status, $vacancyStatuses);
+      unset($vacancyStatuses[$key]);
+    }
 
     $totalcount = 6;
     $setNewVacancy = FALSE;
     $templatePosition = array();
+    $randomVacancies = $this->randomVacancy();
     for ($i = 1; $i <= $totalcount; $i++) {
-      $position = $this->randomItem('vacancyposition');
+      $jobCount = mt_rand(0, 2);
+      $position = $randomVacancies[$jobCount]['position'];
       $vacanciesValues = array(
-        'salary' => $this->randomItem('salary'),
+        'salary' => $randomVacancies[$jobCount]['salary'],
         'position' => $position,
         'description' => $this->randomItem('vacancydescription'),
-        'benefits' => $this->randomItem('benefits'),
-        'requirements' => $this->randomItem('requirements'),
+        'benefits' => $randomVacancies[$jobCount]['benefits'],
+        'requirements' => $randomVacancies[$jobCount]['requirements'],
         'location' => $this->randomItem('location'),
         'is_template' => mt_rand(0 ,1),
         'status_id' => array_rand($vacancyStatuses, 1),
@@ -1230,15 +1310,12 @@ class GenerateHRData {
         'created_date' => $this->randomDate(),
       );
       if ($vacanciesValues['is_template'] == 1) {
+          unset($vacanciesValues['status_id']);
         if (array_key_exists($position, $templatePosition)) {
           //always create distict template
           continue;
         }
-        else {
-          //template vacancies doesn't have statuses
-          $templatePosition[$position] = NULL;
-          unset($vacanciesValues['status_id']);
-        }
+        $templatePosition[$position] = NULL;
       }
       else {
         $setNewVacancy = TRUE;
@@ -1256,12 +1333,12 @@ class GenerateHRData {
       $selectedCaseStatuses = array();
       $lastSelectedCaseStatus = NULL;
       $randCaseStatus = $caseStatuses;
-      //First Vacancy status always be Apply status
-      $ignoreCaseStatus = array_search('Apply', $randCaseStatus);
+      //Igonre Apply and Hired statuses while removing random status
+      $ignoreCaseStatus = array(array_search('Apply', $randCaseStatus), array_search('Hired', $randCaseStatus));
 
       for ($i = 1; $i <= mt_rand(1, 6); $i++) {
         $randomValue = array_rand($randCaseStatus, 1);
-        if ($randomValue == $ignoreCaseStatus) {
+        if (in_array($randomValue , $ignoreCaseStatus)) {
           continue;
         }
         unset($randCaseStatus[$randomValue]);
@@ -1279,12 +1356,17 @@ class GenerateHRData {
       }
 
       //sample data for HRPermission table
+      $vacancyPermissionContactIds[$hrVacanciesObj->id][] = $hrVacanciesObj->created_id;
       for ($i = 1; $i <= mt_rand(1, 4); $i++) {
         $vacancyPermissionValues = array(
           'contact_id' => $this->randomContact(),
           'vacancy_id' => $hrVacanciesObj->id,
           'permission' => $this->randomItem('permission'),
         );
+        if ($vacancyPermissionValues['permission'] == 'manage Applicants' ||
+          $vacancyPermissionValues['permission'] == 'administer Vacancy') {
+          $vacancyPermissionContactIds[$hrVacanciesObj->id][] = $vacancyPermissionValues['contact_id'];
+        }
         $this->insertVacancyData('CRM_HRRecruitment_DAO_HRVacancyPermission', $vacancyPermissionValues);
       }
 
@@ -1325,6 +1407,34 @@ class GenerateHRData {
               'activity_date_time' => $caseParams['start_date'],
             );
             $xmlProcessor->run('Application', $xmlProcessorParams);
+            $aTypes = $xmlProcessor->get('Application', 'ActivityTypes');
+            $aTypes = array_rand(array_flip($aTypes), mt_rand(2, 5));
+
+            foreach ($aTypes as $aType) {
+              if (in_array($aType, array('Open Case', 'Assign Case Role', 'Link Cases'))) {
+                continue;
+              }
+
+              $index = array_rand($vacancyPermissionContactIds[$hrVacanciesObj->id], 1);
+              $aParam = array(
+                'source_contact_id' => $vacancyPermissionContactIds[$hrVacanciesObj->id][$index],
+                'activity_date_time' => $this->randomDate($hrVacanciesObj->start_date, $hrVacanciesObj->end_date, 'YmdHis'),
+                'activity_type_id' => $aType,
+                'status_id' => CRM_Core_OptionGroup::getValue('activity_status', 'Completed', 'name'),
+              );
+
+              if ($aType == 'Change Case Status') {
+                $aParam['last_status'] = $caseStatuses[$caseObj->status_id];
+                $caseObj->status_id = array_rand($caseStatuses, 1);
+                $caseObj->save();
+                $aParam['new_status'] = $caseStatuses[$caseObj->status_id];
+              }
+
+              $this->addActivityParamByType($aType, $aParam);
+              $result = civicrm_api3('Activity', 'create', $aParam);
+              $caseActivityParams = array('case_id' => $caseObj->id, 'activity_id' => $result['id']);
+              CRM_Case_BAO_Case::processCaseActivity($caseActivityParams);
+            }
 
             $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
             $result = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cgID, 'name' => 'vacancy_id'));
