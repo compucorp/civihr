@@ -124,6 +124,11 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
 
   function browse($action = NULL, $searchParams = array()){
     $template = CRM_Utils_Request::retrieve('template', 'Positive', $this, FALSE, 0);
+    $status = CRM_Utils_Request::retrieve('status', 'Positive', $this, FALSE, 0);
+
+    if (empty($searchParams['status_id']) && $status) {
+      $searchParams['status'] = $status;
+    }
 
     if ($template) {
       $searchParams['is_template'] = 1;
@@ -199,6 +204,9 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
           break;
         case 'status_id':
           $clauses[] = "$column IN (" . implode(',', array_keys($value)) . ")";
+          break;
+        case 'status':
+          $clauses[] = "status_id = $value";
           break;
       }
     }

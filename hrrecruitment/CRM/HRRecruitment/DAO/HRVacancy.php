@@ -224,24 +224,18 @@ class CRM_HRRecruitment_DAO_HRVacancy extends CRM_Core_DAO
         ) ,
         'description' => array(
           'name' => 'description',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_LONGTEXT,
           'title' => ts('Description') ,
-          'maxlength' => 254,
-          'size' => CRM_Utils_Type::HUGE,
         ) ,
         'benefits' => array(
           'name' => 'benefits',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_LONGTEXT,
           'title' => ts('Benefits') ,
-          'maxlength' => 254,
-          'size' => CRM_Utils_Type::HUGE,
         ) ,
         'requirements' => array(
           'name' => 'requirements',
-          'type' => CRM_Utils_Type::T_STRING,
+          'type' => CRM_Utils_Type::T_LONGTEXT,
           'title' => ts('Requirements') ,
-          'maxlength' => 254,
-          'size' => CRM_Utils_Type::HUGE,
         ) ,
         'location' => array(
           'name' => 'location',

@@ -79,10 +79,10 @@
         <h3>{$rows.position}</h3>
          <table class="vacancy-popup">
            <tr><td>Salary:</td><td>{$rows.salary}</td></tr>
-           <tr><td>location:</td><td>{$rows.location}</td></tr>
-           <tr><td>description:</td><td>{$rows.description}</td></tr>
-           <tr><td>benefits:</td><td>{$rows.benefits}</td></tr>
-           <tr><td>requirements:</td><td>{$rows.requirements}</td></tr>
+           <tr><td>Location:</td><td>{$rows.location}</td></tr>
+           <tr><td>Description:</td><td>{$rows.description}</td></tr>
+           <tr><td>Benefits:</td><td>{$rows.benefits}</td></tr>
+           <tr><td>Requirements:</td><td>{$rows.requirements}</td></tr>
          </table>
          <a href="{crmURL p="civicrm/vacancy/apply" q="reset=1&id=`$rows.id`"}" class="button"><span>{ts}Apply Now{/ts}</a>
          <a href="" class="button hr-job-info-close"><span>{ts}Close{/ts}</a>
