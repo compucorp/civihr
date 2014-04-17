@@ -1,3 +1,4 @@
+(function ($, _) {
 module('CRM.HRAbsenceApp.Calendar.CalendarView', {
   setUp: function() {
     CRM.HRAbsenceApp.contentRegion.destroy();
@@ -13,9 +14,9 @@ test("Check Legend", function() {
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-0-debit')), 'Vacation');
-  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-1-debit')), 'TOIL');
-  assertLike(cj($el.find('.hrabsence-legend .hrabsence-bg-1-credit')), 'TOIL (Credit)');
+  assertLike($($el.find('.hrabsence-legend .hrabsence-bg-0-debit')), 'Vacation');
+  assertLike($($el.find('.hrabsence-legend .hrabsence-bg-1-debit')), 'TOIL');
+  assertLike($($el.find('.hrabsence-legend .hrabsence-bg-1-credit')), 'TOIL (Credit)');
 });
 
 test("Check Rows - Single Period", function() {
@@ -27,12 +28,12 @@ test("Check Rows - Single Period", function() {
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  equal(cj('table.hrabsence-calendar tr').length, 1 + 12); // header + FY2013
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');
+  equal($('table.hrabsence-calendar tr').length, 1 + 12); // header + FY2013
+  assertLike($('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
+  assertLike($('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
+  assertLike($('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');
 
-  var feb2013 = cj('table.hrabsence-calendar tr:nth-child(11)');
+  var feb2013 = $('table.hrabsence-calendar tr:nth-child(11)');
   assertLike(feb2013.find('[data-caldate=2013-02-09]').text(), ''); // irrelevant day
   assertLike(feb2013.find('[data-caldate=2013-02-10]').text(), ''); // date a request was filed - don't care
   assertLike(feb2013.find('[data-caldate=2013-02-15]').text(), 'Fr'); // date of actual absence
@@ -58,15 +59,15 @@ test("Check Rows - Two Periods", function() {
   }));
   var $el = CRM.HRAbsenceApp.contentRegion.$el;
 
-  equal(cj('table.hrabsence-calendar tr').length, 1 + 12 + 12); // header + FY2012 + FY2013
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(13) td:first').text(), 'Apr 2013');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(14) td:first').text(), 'May 2013');
-  assertLike(cj('table.hrabsence-calendar tr:nth-child(24) td:first').text(), 'Mar 2014');
+  equal($('table.hrabsence-calendar tr').length, 1 + 12 + 12); // header + FY2012 + FY2013
+  assertLike($('table.hrabsence-calendar tr:nth-child(1) td:first').text(), 'Apr 2012');
+  assertLike($('table.hrabsence-calendar tr:nth-child(2) td:first').text(), 'May 2012');
+  assertLike($('table.hrabsence-calendar tr:nth-child(12) td:first').text(), 'Mar 2013');
+  assertLike($('table.hrabsence-calendar tr:nth-child(13) td:first').text(), 'Apr 2013');
+  assertLike($('table.hrabsence-calendar tr:nth-child(14) td:first').text(), 'May 2013');
+  assertLike($('table.hrabsence-calendar tr:nth-child(24) td:first').text(), 'Mar 2014');
 
-  var feb2013 = cj('table.hrabsence-calendar tr:nth-child(11)');
+  var feb2013 = $('table.hrabsence-calendar tr:nth-child(11)');
   assertLike(feb2013.find('[data-caldate=2013-02-09]').text(), ''); // irrelevant day
   assertLike(feb2013.find('[data-caldate=2013-02-10]').text(), ''); // date a request was filed - don't care
   assertLike(feb2013.find('[data-caldate=2013-02-15]').text(), 'Fr'); // date of actual absence
@@ -81,3 +82,4 @@ test("Check Rows - Two Periods", function() {
   ok(feb2013.find('[data-caldate=2013-02-16]').hasClass('hrabsence-bg-0-debit')); // vacation
   ok(feb2013.find('[data-caldate=2013-02-17]').hasClass('hrabsence-bg-empty')); // irrelevant day
 });
+}(CRM.$, CRM._));

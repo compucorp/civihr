@@ -76,19 +76,19 @@
 </div>
 
 {literal}
-  <script type="text/javascript">
-    cj(function () {
-      cj().crmAccordions();
-      var roleId = cj('input[name=activity_role]:checked', '#Search').val();
-      if (roleId) {
-        cj('.description .option-' + roleId).show();
-      }
-    });
-    cj('[name=activity_role]:input').change(function () {
-      cj('.description .contact-name-option').hide();
-      if (cj(this).is(':checked')) {
-        cj('.description .option-' + cj(this).val()).show();
+<script type="text/javascript">
+  CRM.$(function ($) {
+    $().crmAccordions();
+    var roleId = $('input[name=activity_role]:checked', '#Search').val();
+    if (roleId) {
+      $('.description .option-' + roleId).show();
+    }
+    $('[name=activity_role]:input').change(function () {
+      $('.description .contact-name-option').hide();
+      if ($(this).is(':checked')) {
+        $('.description .option-' + $(this).val()).show();
       }
     }).change();
-  </script>
+  });
+</script>
 {/literal}

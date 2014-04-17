@@ -91,9 +91,9 @@
       </div>
       <script type="text/javascript">
              {if $mappingDetailsError }
-                cj('#saveDetails').show();
+                CRM.$('#saveDetails').show();
              {else}
-              cj('#saveDetails').hide();
+              CRM.$('#saveDetails').hide();
              {/if}
 
            {literal}

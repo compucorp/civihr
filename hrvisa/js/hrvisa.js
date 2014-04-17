@@ -1,5 +1,5 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
-cj(function($) {
+CRM.$(function($) {
   $(document).on("click", "#is_visa_required", function() {
     var fieldName = $(this).parent().attr('id').replace('_is_visa_required', '');
 
@@ -25,7 +25,7 @@ cj(function($) {
   });
 
   // add helpicon for conitions
-  cj('body').on('crmFormLoad', function(event) {
+  $('body').on('crmFormLoad', function(event) {
     if (event.profileName == 'hrvisa_tab') {
       var accessName = $('[data-crm-custom="Immigration:Conditions"]').attr('name');
       if($('div#editrow-' + accessName + ' a.helpicon').length == 0) {

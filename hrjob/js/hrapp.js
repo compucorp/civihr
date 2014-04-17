@@ -22,15 +22,15 @@ CRM.HRApp.on("navigate", function(route, options) {
 });
 
 CRM.HRApp.on("ui:block", function(message) {
-  // cj('.hrjob-container').block({
+  // $('.hrjob-container').block({
   //   message: message
   // });
-  cj.blockUI({
+  CRM.$.blockUI({
     css: { top: '50px', left: '', right: '50px' },
     message: null // disregard: message
   });
 });
 CRM.HRApp.on("ui:unblock", function() {
-  // cj('.hrjob-container').unblock();
-  cj.unblockUI();
+  // $('.hrjob-container').unblock();
+  CRM.$.unblockUI();
 });

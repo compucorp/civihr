@@ -1,5 +1,5 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
-(function($) {
+(function ($, _) {
   $(document).on('crmLoad', function(e) {
     // Rename "Summary" tab to "Personal Details"
     // Hack to check contact type - This field only appears for individuals
@@ -14,4 +14,4 @@
     // Inline edit form
     $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title', e.target).closest('div.crm-summary-row').hide();
   });
-}(cj));
+}(CRM.$, CRM._));

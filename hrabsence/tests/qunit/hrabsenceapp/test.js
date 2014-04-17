@@ -1,1 +1,1 @@
-CRM.HRAbsenceApp.absenceTypeCollection = new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(_.values(CRM.absenceApp.absenceTypes));
+CRM.HRAbsenceApp.absenceTypeCollection = new CRM.HRAbsenceApp.Models.AbsenceTypeCollection(CRM._.values(CRM.absenceApp.absenceTypes));
