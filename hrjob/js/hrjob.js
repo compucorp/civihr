@@ -1,6 +1,5 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 //js to make job tab as default and move job tab to the beginning
-//CRM.$(document).ready(function($) {
 (function ($, _) {
   $(document).on('crmLoad', function() {
     //make "job" tab as default in case selectedChild is not set
