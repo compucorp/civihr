@@ -1381,11 +1381,11 @@ class GenerateHRData {
         );
         $this->insertVacancyData('CRM_Core_DAO_UFJoin', $vacancyUFJoinValues);
 
-        $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name'));
+        $caseTypes = CRM_Case_PseudoConstant::caseType('name', 1, 'AND filter = 1');
         if (!$hrVacanciesObj->is_template) {
           for ($i = 1; $i <= mt_rand(1, 4); $i++) {
             $applicantID = $this->randomContact();
-            $caseParams['case_type_id'] = $caseTypes['Application'];
+            $caseParams['case_type_id'] = CRM_Utils_Array::key('Application', $caseTypes);
             $caseParams['start_date'] = $this->randomDate($hrVacanciesObj->start_date, $hrVacanciesObj->end_date);
             $caseParams['status_id'] = array_rand($randCaseStatus, 1);
 
