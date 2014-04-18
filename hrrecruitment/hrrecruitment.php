@@ -435,3 +435,20 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
   }
 }
 
+function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_Activity') {
+    $caseType = CRM_Case_BAO_Case::getCaseType(CRM_Utils_Request::retrieve('caseid', 'Positive', $form), 'value');
+    $appValue = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
+    if ($caseType == $appValue) {
+      $form->removeElement('case_status_id');
+      $form->_caseStatus = CRM_Case_PseudoConstant::caseStatus('label', TRUE, 'AND filter = 1', TRUE);
+      $form->add('select', 'case_status_id', ts('Case Status'),
+        $form->_caseStatus, TRUE
+      );
+      if ($caseStatusId = CRM_Utils_Request::retrieve('case_status_id', 'Positive', $form)) {
+        $form->freeze('case_status_id');
+        $form->setDefaults(array('case_status_id'=>$caseStatusId));
+      }
+    }
+  }
+}
