@@ -98,7 +98,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     $instance = new self();
     $fields = $instance->fields();
     foreach ($fields as $name => $dontCare) {
-      if (strpos($name, '_date') !== FALSE && strpos($name, 'created_') === FALSE) {
+      if (strpos($name, '_date') !== FALSE && strpos($name, '_time') !== FALSE && strpos($name, 'created_') === FALSE) {
         $formattedParams[$name] = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
       }
       elseif (isset($params[$name])) {

@@ -11,6 +11,7 @@ hrmed \
 hrqual \
 hrstaffdir \
 hrvisa \
+hrrecruitment \
 )
 
 CONF=`dirname $0`/setup.conf
