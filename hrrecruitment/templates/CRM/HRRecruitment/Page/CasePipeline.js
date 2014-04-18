@@ -24,7 +24,8 @@
       params = {
         reset: 1,
         action: 'add',
-        caseid: $checked.map(function() {return this.value;}).get().join()
+        caseid: $checked.map(function() {return this.value;}).get().join(),
+        cid: $checked.map(function() {return $(this).closest('tr').attr('data-cid');}).get().join(),
       };
       return CRM.loadForm(CRM.url(url, $.extend(params, args)))
         .on('crmFormSuccess', function() {
