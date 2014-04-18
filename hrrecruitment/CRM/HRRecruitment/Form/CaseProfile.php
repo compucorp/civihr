@@ -61,6 +61,12 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
    */
   public $_fields;
 
+  /**
+   * Function to set variables up before form is built
+   *
+   * @return void
+   * @access public
+   */
   public function preProcess() {
     // process url params
     if ($this->_contactID = CRM_Utils_Request::retrieve('cid', 'Positive')) {
@@ -68,11 +74,9 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     }
     if ($this->_caseID = CRM_Utils_Request::retrieve('case_id', 'Positive')) {
       $this->assign('case_id', $this->_caseID);
-      $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
-      $gid = array_search('application_case', $groups);
-      $cgID = array('custom_group_id'=>$gid);
-      CRM_Core_BAO_CustomField::retrieve($cgID, $cfID);
+      // get Vacancy ID
       $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($this->_caseID);
+      //Get application and evaluaiton profile IDs
       foreach (array('application_profile', 'evaluation_profile') as $profileName) {
         $dao = new CRM_Core_DAO_UFJoin;
         $dao->module = 'Vacancy';
@@ -81,37 +85,48 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         $dao->find(TRUE);
         $profile[$profileName] = $dao->uf_group_id;
       }
-      //Evaluation ID
+
+      // get Evaluation ID
       $evaluationID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
       $this->assign('evaluationID', $evaluationID);
-
-
-      $params = array(
-        'activity_type_id' => $evaluationID,
-      );
-
+      //build URL for new Evaluaiton activity
       $url = CRM_Utils_System::url('civicrm/case/activity',
         "action=add&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}",
         FALSE, NULL, FALSE
       );
 
+      //Check for existing Evaluation activity type
+      $params = array(
+        'activity_type_id' => $evaluationID,
+      );
       $caseActivity = CRM_Case_BAO_Case::getCaseActivity($this->_caseID, $params, $this->_contactID);
       foreach ($caseActivity as $caseActivity) {
         $evalID = $caseActivity['id'];
+        //build URL for editing Evaluaiton activity
         $url = CRM_Utils_System::url('civicrm/case/activity',
           "action=update&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}&id={$evalID}",
           FALSE, NULL, FALSE
         );
       }
+      //Assign parameter to tpl - Evaluation Activity edit/cretae URL, appl
       $this->assign('evalURL', $url);
+
       $this->_profileID = $profile['application_profile'];
       $this->_evalProfileID = $profile['evaluation_profile'];
-      $this->assign('evalProfileID', $this->_evalProfileID);
     }
   }
 
+  /**
+   * This function sets the default values for the form. Note that in edit/view mode
+   * the default values are retrieved from the database
+   *
+   * @access public
+   *
+   * @return None
+   */
   function setDefaultValues() {
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
+    //set default values for applicaiton profile fields
     $contactID = $this->_contactID;
     if ($contactID) {
       $options = array();
@@ -145,7 +160,14 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     return $this->_defaults;
   }
 
+  /**
+   * Function to actually build the components of the form
+   *
+   * @return void
+   * @access public
+   */
   public function buildQuickForm() {
+    //Get application profile fields
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
     foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
       CRM_Core_BAO_UFGroup::buildProfile($this, $profileFields[$profileFieldKey], CRM_Profile_Form::MODE_EDIT, $this->_contactID, TRUE);
@@ -158,6 +180,7 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
     }
     $this->assign('profileFields', $profileFields);
 
+    //show Case activities tab on pipeline page
     $controller = new CRM_Core_Controller_Simple(
       'CRM_Case_Form_CaseView',
       'View Case',
