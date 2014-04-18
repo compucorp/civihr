@@ -1,4 +1,5 @@
-{*
+<?php
+/*
  +--------------------------------------------------------------------+
  | CiviHR version 1.3                                                 |
  +--------------------------------------------------------------------+
@@ -22,38 +23,37 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
-*}
-{include file="CRM/HRRecruitment/Form/Search.tpl"}
+*/
 
-{if $rows}
-  <table>
-    <tr>
-      <th>{ts}Job Position{/ts}</th>
-      <th>{ts}Location{/ts}</th>
-      <th>{ts}Salary{/ts}</th>
-      <th>{ts}Application Dates{/ts}</th>
-      {if !$isTemplate}
-      <th>{ts}Status{/ts}</th>
-      {/if}
-      <th>{ts}{/ts}</th>
-    </tr>
-    {foreach from=$rows item=row key=id}
-      <tr id="{$id}" class="{cycle values="odd-row,even-row"} {$row.class}">
-        <td><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$id"}">{$row.position}</a></td>
-        <td>{$row.location}</td>
-        <td>{$row.salary}</td>
-        <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
-        {if !$isTemplate}
-        <td>{$row.status}</td>
-        {/if}
-        <td>{$row.action|replace:'xx':$id}</td>
-      </tr>
-    {/foreach}
-  </table>
-{else}
-  <div class="status messages">
-    {ts}No Such Vacancy List Found{/ts}
-  </div>
-  {include file="CRM/HRRecruitment/Form/Search/EmptyResults.tpl"}
-{/if}
+/**
+ *  Include parent class definition
+ */
+require_once 'CiviTest/CiviTestSuite.php';
+
+/**
+ *  Class containing all CRM test suites
+ *
+ *  @package   CiviCRM
+ */
+class WebTest_AllTests extends CiviTestSuite {
+  private static $instance = NULL;
+
+  /**
+   *
+   */
+  private static function getInstance() {
+    if (is_null(self::$instance)) {
+      self::$instance = new self;
+    }
+    return self::$instance;
+  }
+
+  /**
+   *  Build test suite dynamically
+   */
+  public static function suite() {
+    $inst = self::getInstance();
+    return $inst->implSuite(__FILE__);
+  }
+}
 

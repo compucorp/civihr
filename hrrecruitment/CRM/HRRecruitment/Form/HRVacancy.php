@@ -256,7 +256,6 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
    */
   public function postProcess() {
     $params = $this->exportValues();
-    $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
 
     if ($this->_id) {
       $params['id'] = $this->_id;
@@ -269,7 +268,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     CRM_HRRecruitment_BAO_HRVacancy::create($params);
 
     if ($this->controller->getButtonName('submit') == "_qf_HRVacancy_next") {
-      CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', 'reset=1'));
+      $urlParams = "reset=1";
+      if ($this->_isTemplate) {
+        $urlParams .= "&template=$this->_isTemplate";
+      }
+      CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', $urlParams));
     }
   }
 }
