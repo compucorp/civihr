@@ -76,7 +76,7 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
   function setDefaultValues() {
     $defaults = array();
     if (!empty($this->_statusID)) {
-      $defaults["status_type_id[$this->_statusID]"] = 1;
+      $defaults["status_id[$this->_statusID]"] = 1;
     }
 
     return $defaults;

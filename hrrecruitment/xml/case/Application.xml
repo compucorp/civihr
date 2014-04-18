@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1" ?><CaseType>
   <name>Application</name>
   <description>Application</description>
+  <grouping>Vacancy</grouping>
+  <filter>1</filter>
 
   <ActivityTypes>
 
