@@ -1,3 +1,4 @@
+(function ($, _) {
 module('CRM.HRAbsenceApp.Statistics.StatisticsView', {
   setUp: function() {
     CRM.HRAbsenceApp.contentRegion.destroy();
@@ -96,27 +97,28 @@ test("With vacation records in FY2012 + FY2013", function() {
   equal($el.find('.hrabsence-list-item[data-statistics-id=3-11]').length, 1);
   equal($el.find('.hrabsence-list-item[data-statistics-id=3-12]').length, 1);
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-leave-type')), 'Vacation');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-bal')), '+4.50');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-leave-type')), 'Vacation');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-bal')), '+4.50');
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-10]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-leave-type')), 'Vacation');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-10]').find('.hrabsence-statistics-bal')), '-1.00');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-10]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-10]').find('.hrabsence-statistics-leave-type')), 'Vacation');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-10]').find('.hrabsence-statistics-bal')), '-1.00');
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-leave-type')), 'TOIL');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-bal')), '+5.00');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-leave-type')), 'TOIL');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-11]').find('.hrabsence-statistics-bal')), '+5.00');
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-bal')), '0.00');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-period-desc')), 'FY 2012');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=2-12]').find('.hrabsence-statistics-bal')), '0.00');
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-leave-type')), 'TOIL');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-bal')), '+5.00');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-leave-type')), 'TOIL');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-11]').find('.hrabsence-statistics-bal')), '+5.00');
 
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
-  assertLike(cj($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-bal')), '0.00');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-period-desc')), 'FY 2013');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-leave-type')), 'TOIL (Credit)');
+  assertLike($($el.find('.hrabsence-list-item[data-statistics-id=3-12]').find('.hrabsence-statistics-bal')), '0.00');
 });
+}(CRM.$, CRM._));

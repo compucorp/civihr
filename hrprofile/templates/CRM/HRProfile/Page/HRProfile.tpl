@@ -36,9 +36,9 @@ widths. The second time uses the same widths -- but sets them statically.
 *}
 {literal}
 <script type="text/javascript">
-var result = {/literal}{$aaData}{literal};
-var columns = {/literal}{$aaColumn}{literal};
-cj(function($){
+CRM.$(function($){
+  var result = {/literal}{$aaData}{literal};
+  var columns = {/literal}{$aaColumn}{literal};
   $('table').dataTable( {
     "aoColumns": columns,
     "aaData": result,

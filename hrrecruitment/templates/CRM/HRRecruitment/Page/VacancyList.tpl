@@ -58,7 +58,7 @@
   </div>
   {literal}
   <script type="text/javascript">
-    cj(function($) {
+    CRM.$(function($) {
       $('.hr-job-position-link').live('click', function(e) {
         var url = $(this).attr('href');
         CRM.loadPage(url);
