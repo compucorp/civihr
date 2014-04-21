@@ -446,9 +446,9 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     $caseType = CRM_Case_BAO_Case::getCaseType(CRM_Utils_Request::retrieve('caseid', 'Positive', $form), 'value');
     $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : $form->_defaultValues['activity_type_id'];
     $appValue = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
+    /* TO set vacancy stages as case status for 'Change Case Status' activity */
     if (($caseType == $appValue) &&
       ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status'))) {
-      $p = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status');
       $form->removeElement('case_status_id');
       $form->_caseStatus = CRM_Case_PseudoConstant::caseStatus('label', TRUE, 'AND filter = 1', TRUE);
       $form->add('select', 'case_status_id', ts('Case Status'),
@@ -459,7 +459,7 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
         $form->setDefaults(array('case_status_id'=>$caseStatusId));
       }
     }
-    // build the evaluation profile on the evaluation activity
+    /* build the evaluation profile on the evaluation activity */
     //check for evaluation activity type
     if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation')) {
       //retriev Case ID, Activity ID, Contact ID
@@ -493,7 +493,7 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
         $form->setDefaults($defVal);
       }
 
-      CRM_Core_Region::instance('activity-form')->add(array(
+      CRM_Core_Region::instance('case-activity-form')->add(array(
         'template' => 'CRM/UF/Form/Block.tpl',
       ));
     }
@@ -509,8 +509,8 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
  */
 function hrrecruitment_civicrm_postProcess( $formName, &$form ) {
   if ($formName == 'CRM_Case_Form_Activity') {
-    if (!empty($form->_submitValues['evaluationProfile'])) {
-      //Save evaluaiton profile fields
+    if (!empty($form->_submitValues['evaluationProfile']) && isset($_POST['new_activity_id'])) {
+      //Save evaluation profile fields
       $pID = $form->_submitValues['evaluationProfile'];
       $profileContactType = CRM_Core_BAO_UFGroup::getContactType($pID);
       $dedupeParams = CRM_Dedupe_Finder::formatParams($params, $profileContactType);
@@ -530,7 +530,7 @@ function hrrecruitment_civicrm_postProcess( $formName, &$form ) {
       $profileFields = CRM_Core_BAO_UFGroup::getFields($form->_submitValues['evaluationProfile']);
       foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
         $params = array(
-          "entityID" => $_POST['new_activity_id'], //ID of updated activity type
+          "entityID" => $_POST['new_activity_id'], //ID of updated activity type passed from post hook
           $profileFieldKey => $form->_submitValues[$profileFieldKey],
         );
         CRM_Core_BAO_CustomValueTable::setValues($params);
@@ -545,8 +545,10 @@ function hrrecruitment_civicrm_postProcess( $formName, &$form ) {
  * @return void
  */
 function hrrecruitment_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && ($op == 'create' || $op == 'edit')) {
-    //save newly created activity ID in post variable to use in postprocess
+  if ($objectName == 'Activity' && ($op == 'create' || $op == 'edit') &&
+    ($objectRef->activity_type_id == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'))) {
+    // Save newly created activity ID in post variable to use in postprocess
+    // to be used as entity ID for creating / editing evaluation profile custom fields
     $_POST['new_activity_id'] = $objectId;
   }
 }
