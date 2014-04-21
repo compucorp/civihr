@@ -177,7 +177,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       ),
     );
 
-    $caseTypes = CRM_Case_PseudoConstant::caseType();
+    $caseTypes = CRM_Case_PseudoConstant::caseType('label', TRUE, 'AND filter = 1');
     $caseTypes = array_keys($caseTypes);
     $this->addProfileSelector('application_profile', '', array('Individual', 'Contact', 'Case'), array('CaseType' => $caseTypes), $entities['Individual']);
     $this->addProfileSelector('evaluation_profile', '', array('Activity'), array(), $entities['Activity']);
