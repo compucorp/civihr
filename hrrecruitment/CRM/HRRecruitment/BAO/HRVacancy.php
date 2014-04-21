@@ -376,4 +376,22 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     return $vacancyID;
   }
 
+  public static function getJobPosition($status = 'Open' ) {
+    $sql = "
+SELECT      hrv.id, hrv.position
+FROM        civicrm_hrvacancy hrv
+INNER JOIN  civicrm_option_group og ON og.name='vacancy_status'
+INNER JOIN  civicrm_option_value ov ON ( hrv.status_id=ov.value AND ov.option_group_id=og.id )
+WHERE       ov.name = '{$status}'
+    ";
+
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      $position[$dao->id] = $dao->position;
+    }
+    return $position;
+  }
+
+
+
 }
