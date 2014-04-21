@@ -137,7 +137,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     }
 
     //Create case of type Application against creator applicant and assignee as Vacancy creator
-    $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name'));
+    $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
     $params['case_type_id'] = $caseTypes['Application'];
     $caseObj = CRM_Case_BAO_Case::create($params);
 
