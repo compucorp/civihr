@@ -36,14 +36,22 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     }
 
     $vacancyParams = CRM_HRRecruitment_BAO_HRVacancy::formatParams($params);
-    $vacancyParams['created_date'] = date('YmdHis');
-    $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
 
     $entityName = 'HRVacancy';
     $hook = empty($params['id']) ? 'create' : 'edit';
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
+    if (!empty($params['id'])) {
+      $vacancy->find($params['id']);
+      $vacancy->created_date = $vacancy->created_date ? CRM_Utils_Date::processDate($vacancy->created_date) : date('YmdHis');
+      $vacancy->created_id = $vacancy->created_id ? $vacancy->created_id : CRM_Core_Session::singleton()->get('userID');
+    }
+    else {
+      $vacancyParams['created_date'] = date('YmdHis');
+      $vacancyParams['created_id'] = CRM_Core_Session::singleton()->get('userID');
+    }
 
     $vacancy->copyValues($vacancyParams);
+
     $vacancy->save();
 
     if (isset($params['stages']) && count($params['stages'])) {
@@ -98,8 +106,9 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     $instance = new self();
     $fields = $instance->fields();
     foreach ($fields as $name => $dontCare) {
-      if (strpos($name, '_date') !== FALSE && strpos($name, '_time') !== FALSE && strpos($name, 'created_') === FALSE) {
-        $formattedParams[$name] = CRM_Utils_Date::processDate($params[$name], $params[$name . '_time']);
+      if (strpos($name, '_date') !== FALSE && strpos($name, 'created_') === FALSE) {
+        $time = empty($params[$name . '_time']) ? NULL : $params[$name . '_time'];
+        $formattedParams[$name] = CRM_Utils_Date::processDate($params[$name], $time);
       }
       elseif (isset($params[$name])) {
         $formattedParams[$name] = $params[$name];

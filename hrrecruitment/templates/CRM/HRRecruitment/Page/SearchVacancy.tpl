@@ -23,7 +23,9 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{include file="CRM/HRRecruitment/Form/Search.tpl"}
+{if !$isTemplate}
+  {include file="CRM/HRRecruitment/Form/Search.tpl"}
+{/if}
 
 {if $rows}
   <table>
@@ -39,7 +41,7 @@
     </tr>
     {foreach from=$rows item=row key=id}
       <tr id="{$id}" class="{cycle values="odd-row,even-row"} {$row.class}">
-        <td><a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$id"}">{$row.position}</a></td>
+        <td>{if !$isTemplate}<a href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$id"}">{$row.position}</a>{else}{$row.position}{/if}</td>
         <td>{$row.location}</td>
         <td>{$row.salary}</td>
         <td>{$row.start_date|crmDate:"%e %b %Y"}{ts} - {/ts}{$row.end_date|crmDate:"%e %b %Y"}</td>
