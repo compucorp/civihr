@@ -28,7 +28,7 @@
 /**
  * This class is to build the form for Deleting Particular Vacancy
  */
-class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form { 
+class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
 
   /**
    * page jobPosition
@@ -66,8 +66,13 @@ class CRM_HRRecruitment_Form_Search_Delete extends CRM_Core_Form {
    * @access public
    */
   public function buildQuickForm() {
+    $this->_isTemplate = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_id, 'is_template');
+    $this->assign('isTemplate', $this->_isTemplate);
+
+    CRM_Utils_System::setTitle(ts('Delete Vacancy'));
     $btnName = ts('Delete Vacancy');
     if ($this->_isTemplate) {
+      CRM_Utils_System::setTitle(ts('Delete Vacancy Template'));
       $btnName = ts('Delete Vacancy Template');
     }
     $buttons = array(

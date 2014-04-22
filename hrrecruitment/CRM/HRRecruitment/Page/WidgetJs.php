@@ -111,7 +111,7 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
 
   public static function vacancyListDisplay() {
     global $base_url;
-    $vacancies = civicrm_api3('HRVacancy','get', array('is_template'=>0));
+    $vacancies = civicrm_api3('HRVacancy','get', array('is_template'=> 0, 'status_id'=> 'Open'));
     foreach ($vacancies['values'] as $vacancyKey => $vacancyVal) {
       $row[$vacancyVal['id']]['id'] = $vacancyVal['id'];
       $row[$vacancyVal['id']]['position'] = ts($vacancyVal['position']);

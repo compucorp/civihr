@@ -48,7 +48,6 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
-    $this->assign('isTemplate', $this->_isTemplate);
     $this->_id = CRM_Utils_Request::retrieve('id', 'Integer', $this);
     if ($this->_isTemplate) {
       CRM_Utils_System::setTitle(ts('New Vacancy Template'));
@@ -61,6 +60,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
         CRM_Utils_System::setTitle(ts('Edit Vacancy'));
       }
     }
+    $this->assign('isTemplate', $this->_isTemplate);
+
     $session = CRM_Core_Session::singleton();
     if ($this->_id) {
       $permission = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_id,array("administer Vacancy","administer CiviCRM"));
@@ -182,7 +183,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->addProfileSelector('application_profile', '', array('Individual', 'Contact', 'Case'), array('CaseType' => $caseTypes), $entities['Individual']);
     $this->addProfileSelector('evaluation_profile', '', array('Activity'), array(), $entities['Activity']);
 
-    $permissions = CRM_Core_Permission_Base::getAllModulePermissions();
+    $permissionClass = new CRM_Core_Permission_Base;
+    $permissions = $permissionClass->getAllModulePermissions();
     foreach (array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Vacancy') as $permission) {
       $explodedPerms = explode(':', $permissions[$permission]);
       $vacancyPermissions[$permission] = array_pop($explodedPerms);
@@ -261,10 +263,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       $params['id'] = $this->_id;
     }
 
-    if ($this->_isTemplate) {
-      $params['is_template'] = $this->_isTemplate;
-    }
-
+    $params['is_template'] = $this->_isTemplate;
     CRM_HRRecruitment_BAO_HRVacancy::create($params);
 
     if ($this->controller->getButtonName('submit') == "_qf_HRVacancy_next") {
