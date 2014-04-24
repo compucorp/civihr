@@ -1,6 +1,6 @@
 ## Pre-requisites
 
-CiviCRM 4.4.3 or higher
+CiviCRM 4.4.5 or higher
 
 > NOTE: CiviHR includes some significant changes to the nomal CiviCRM
 > user-experience.  As with any significant change or addition, CiviHR
