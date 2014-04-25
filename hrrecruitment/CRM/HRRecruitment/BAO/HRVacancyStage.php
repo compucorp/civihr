@@ -55,6 +55,7 @@ GROUP BY cc.status_id
 
     foreach ($result['values'] as $id => $status) {
       $caseStatus[$status['case_status_id']] = array(
+        'id' => $status['case_status_id'],
         'title' => $case_status[$status['case_status_id']],
         'weight' => $status['weight'],
         'count' => CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0),
