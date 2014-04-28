@@ -24,6 +24,8 @@
  +--------------------------------------------------------------------+
 *}
 {include file="CRM/UF/Form/Block.tpl"}
- <div class="crm-submit-buttons">
-        {include file="CRM/common/formButtons.tpl"}
- </div>
+<div class="crm-section file_displayURL-section file_displayURL{$customname}-section"><div class="content">{$customFiles.$customname.displayURL}</div></div>
+<div class="crm-section file_deleteURL-section file_deleteURL{$customname}-section"><div class="content">{$customFiles.$customname.deleteURL}</div></div>
+<div class="crm-submit-buttons">
+  {include file="CRM/common/formButtons.tpl"}
+</div>

@@ -48,6 +48,10 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_id = CRM_Utils_Request::retrieve('id', 'Integer', $this);
+    $this->_contactID = CRM_Utils_Request::retrieve('cid', 'Integer', $this);
+    if (!isset($this->_contactID)) {
+      $this->_contactID = 0;
+    }
 
     if (!$this->_id) {
       CRM_Core_Error::fatal(ts('There is no related Vacancy to apply'));
@@ -62,6 +66,60 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     $ufJoin->copyValues($ufJoinParams);
     $ufJoin->find(TRUE);
     $this->_profileID = $ufJoin->uf_group_id;
+  }
+
+  function setDefaultValues() {
+
+    $defaults = array();
+    $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
+    $contactID = $this->_contactID;
+    $entityCaseID = NULL;
+
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID);
+    foreach ($cases as $case) {
+      $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
+      if (CRM_Case_BAO_Case::getCaseType($case) != $caseTypes['Application']) {
+        unset($cases[$case]);
+      }
+    }
+    $entityCaseID = end($cases);
+
+    if ($contactID) {
+      $options = array();
+      $fields = array();
+      foreach ($profileFields as $name => $field) {
+        if (substr($name, 0, 7) == 'custom_') {
+          $id = substr($name, 7);
+          if ($customFieldID = CRM_Core_BAO_CustomField::getKeyID($name)) {
+            $this->assign('customname',$name);
+            $htmlType = $field['html_type'];
+            if ($htmlType == 'File') {
+              $entityId = $entityCaseID;
+              $url = CRM_Core_BAO_CustomField::getFileURL($entityId, $customFieldID);
+              if ($url) {
+                $customFiles[$field['name']]['displayURL'] = ts("Attached File") . ": {$url['file_url']}";
+                $deleteExtra = ts("Are you sure you want to delete attached file?");
+                $fileId      = $url['file_id'];
+                $session = CRM_Core_Session::singleton();
+                $session->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/apply', "reset=1&id={$this->_id}&cid={$contactID}"));
+
+                $deleteURL   = CRM_Utils_System::url('civicrm/file',
+                               "reset=1&id={$fileId}&eid=$entityId&fid={$customFieldID}&action=delete"
+                );
+                $text = ts("Delete Attached File");
+                $customFiles[$field['name']]['deleteURL'] = "<a href=\"{$deleteURL}\" onclick = \"if (confirm( ' $deleteExtra ' )) this.href+='&amp;confirmed=1'; else return false;\">$text</a>";
+                $this->assign('customFiles',$customFiles);
+              }
+            }
+          }
+        }
+        else {
+          $fields[$name] = 1;
+        }
+      }
+      CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $fields, $defaults);
+    }
+    return $defaults;
   }
 
 
@@ -83,6 +141,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
         TRUE, NULL,
         CRM_Core_Permission::CREATE
     );
+
     $this->assign('fields', $applicationProfileFields);
     foreach ($applicationProfileFields as $name => $field) {
       CRM_Core_BAO_UFGroup::buildProfile($this, $field, CRM_Profile_Form::MODE_CREATE, NULL, FALSE, FALSE, NULL);
@@ -116,56 +175,58 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     $dedupeParams = CRM_Dedupe_Finder::formatParams($params, $profileContactType);
     $dedupeParams['check_permission'] = FALSE;
     $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, $profileContactType);
-    $applicantID = NULL;
+    $applicantID = $this->_contactID;
 
-    if(count($ids)) {
-        $applicantID = CRM_Utils_Array::value(0, $ids);
+    if(count($ids) && !$applicantID) {
+      $applicantID = CRM_Utils_Array::value(0, $ids);
     }
+
     $applicantID = CRM_Contact_BAO_Contact::createProfileContact(
-        $params, CRM_Core_DAO::$_nullArray,
-        $applicantID, NULL,
-        $this->_profileID
-      );
+      $params, CRM_Core_DAO::$_nullArray,
+      $applicantID, NULL,
+      $this->_profileID
+    );
 
-    $params['start_date'] = date("Ymd");
-    $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
-    $dao->vacancy_id = $this->_id;
-    $dao->find();
-    while($dao->fetch()) {
-      $params['case_status_id'] = $dao->case_status_id;
-      break;
-    }
+    if ($applicantID) {
+      $params['start_date'] = date("Ymd");
+      $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
+      $dao->vacancy_id = $this->_id;
+      $dao->find();
+      while($dao->fetch()) {
+        $params['case_status_id'] = $dao->case_status_id;
+        break;
+      }
 
-    //Create case of type Application against creator applicant and assignee as Vacancy creator
-    $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
-    $params['case_type_id'] = $caseTypes['Application'];
-    $caseObj = CRM_Case_BAO_Case::create($params);
+      //Create case of type Application against creator applicant and assignee as Vacancy creator
+      $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
+      $params['case_type_id'] = $caseTypes['Application'];
+      $caseObj = CRM_Case_BAO_Case::create($params);
 
-    $contactParams = array(
+      $contactParams = array(
         'case_id' => $caseObj->id,
         'contact_id' => $applicantID,
       );
-    CRM_Case_BAO_Case::addCaseToContact($contactParams);
+      CRM_Case_BAO_Case::addCaseToContact($contactParams);
 
-    $xmlProcessor = new CRM_Case_XMLProcessor_Process();
-    $xmlProcessorParams = array(
-      'clientID' => $applicantID,
-      'creatorID' => $this->_creatorID,
-      'standardTimeline' => 1,
-      'activityTypeName' => 'Open Case',
-      'caseID' => $caseObj->id,
-      'activity_date_time' => $params['start_date'],
-    );
-    $xmlProcessor->run('Application', $xmlProcessorParams);
+      $xmlProcessor = new CRM_Case_XMLProcessor_Process();
+      $xmlProcessorParams = array(
+        'clientID' => $applicantID,
+        'creatorID' => $this->_creatorID,
+        'standardTimeline' => 1,
+        'activityTypeName' => 'Open Case',
+        'caseID' => $caseObj->id,
+        'activity_date_time' => $params['start_date'],
+      );
+      $xmlProcessor->run('Application', $xmlProcessorParams);
 
-    //process Custom data
-    CRM_Core_BAO_CustomValueTable::postprocess($params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
+      //process Custom data
+      CRM_Core_BAO_CustomValueTable::postprocess($params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
 
-    //Process case to vacancy one-to-one mapping in custom table 'application_case'
-    $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
-    $result = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cgID, 'name' => 'vacancy_id'));
-    civicrm_api3('custom_value' , 'create', array("custom_{$result['id']}" => $this->_id, 'entity_id' => $caseObj->id));
-
+      //Process case to vacancy one-to-one mapping in custom table 'application_case'
+      $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'id', 'name');
+      $result = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cgID, 'name' => 'vacancy_id'));
+      civicrm_api3('custom_value' , 'create', array("custom_{$result['id']}" => $this->_id, 'entity_id' => $caseObj->id));
+    }
     if ($this->controller->getButtonName('submit') == "_qf_Application_upload") {
       CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy', 'reset=1'));
     }
