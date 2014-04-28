@@ -50,7 +50,7 @@
                           {math assign=red equation="150-(100*x)" x=$fraction format="%.00f"}
                           {math assign=green equation="100*x" x=$fraction format="%.00f"}
                           <li class="hr-stage" style="border-left: 70px solid rgb({$red},{$green}, 50);">
-                            <a class="hr-stage-link" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID"}" title="{ts 1=$stage.count 2=$stage.title}%1 application(s) with status '%2'{/ts}">{$stage.count}</a>
+                            <a class="hr-stage-link" href="{crmURL p='civicrm/case/pipeline' q="reset=1&vid=$vacancyID&default_status_id=`$stage.id`"}" title="{ts 1=$stage.count 2=$stage.title}%1 application(s) with status '%2'{/ts}">{$stage.count}</a>
                           </li>
                         {/foreach}
                       </ul>
