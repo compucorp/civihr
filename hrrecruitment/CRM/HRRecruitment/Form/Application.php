@@ -70,15 +70,21 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
 
   function setDefaultValues() {
 
+    $defaults = array();
     $profileFields = CRM_Core_BAO_UFGroup::getFields($this->_profileID);
     $contactID = $this->_contactID;
-    $case = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID);
+    $entityCaseID = NULL;
 
-    if ($case) {
-      $this->_caseID = end($case);
-      $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($this->_caseID);
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID);
+    foreach ($cases as $case) {
+      $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
+      if (CRM_Case_BAO_Case::getCaseType($case) != $caseTypes['Application']) {
+        unset($cases[$case]);
+      }
     }
-    if ($contactID && $vacancyID == $this->_id) {
+    $entityCaseID = end($cases);
+
+    if ($contactID) {
       $options = array();
       $fields = array();
       foreach ($profileFields as $name => $field) {
@@ -88,7 +94,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
             $this->assign('customname',$name);
             $htmlType = $field['html_type'];
             if ($htmlType == 'File') {
-              $entityId = $this->_caseID;
+              $entityId = $entityCaseID;
               $url = CRM_Core_BAO_CustomField::getFileURL($entityId, $customFieldID);
               if ($url) {
                 $customFiles[$field['name']]['displayURL'] = ts("Attached File") . ": {$url['file_url']}";
@@ -112,8 +118,8 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
         }
       }
       CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $fields, $defaults);
-      return $defaults;
     }
+    return $defaults;
   }
 
 
@@ -169,10 +175,9 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     $dedupeParams = CRM_Dedupe_Finder::formatParams($params, $profileContactType);
     $dedupeParams['check_permission'] = FALSE;
     $ids = CRM_Dedupe_Finder::dupesByParams($dedupeParams, $profileContactType);
-    //$applicantID = NULL;
     $applicantID = $this->_contactID;
 
-    if(count($ids)) {
+    if(count($ids) && !$applicantID) {
       $applicantID = CRM_Utils_Array::value(0, $ids);
     }
 
@@ -182,11 +187,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
       $this->_profileID
     );
 
-    if (isset($this->_caseID)) {
-      CRM_Core_BAO_CustomValueTable::postprocess($params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $this->_caseID, 'Case');
-    }
-
-    if (!$this->_contactID) {
+    if ($applicantID) {
       $params['start_date'] = date("Ymd");
       $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
       $dao->vacancy_id = $this->_id;
