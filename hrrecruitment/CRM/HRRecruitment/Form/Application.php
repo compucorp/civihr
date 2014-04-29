@@ -75,13 +75,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     $contactID = $this->_contactID;
     $entityCaseID = NULL;
 
-    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID);
-    foreach ($cases as $case) {
-      $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
-      if (CRM_Case_BAO_Case::getCaseType($case) != $caseTypes['Application']) {
-        unset($cases[$case]);
-      }
-    }
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID, FALSE, 'Application');
     $entityCaseID = end($cases);
 
     if ($contactID) {

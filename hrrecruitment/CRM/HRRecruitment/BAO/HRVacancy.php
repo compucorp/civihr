@@ -202,7 +202,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           $stages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($id);
           foreach ($stages as $stage) {
             $vacancyEntry[$vacancy['status_id']]['vacancies'][$id]['stages'][$stage['weight']] = array(
-              'id' => $stage['id'],
+              'stage_id' => $stage['id'],
               'title' => $stage['title'],
               'count' => $stage['count'],
             );
