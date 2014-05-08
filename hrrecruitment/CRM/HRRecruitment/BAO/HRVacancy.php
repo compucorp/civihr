@@ -192,10 +192,13 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('administer Vacancy')) {
             $position .= "<a class='crm-hover-button action-item' title='" . ts('Edit this vacancy') . "' href='" . CRM_Utils_System::url('civicrm/vacancy/add', "reset=1&id={$id}") . "'><span class='icon edit-icon'></span></a>";
           }
+          $vacancy['start_date'] = $vacancy['start_date'] ? CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') : NULL;
+          $vacancy['end_date'] = $vacancy['end_date'] ? CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y') : NULL;
           $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
-            'position' => $position,
-            'location' => $vacancy['location'],
             'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
+            'position' => $position ? $position : NULL,
+            'location' => $vacancy['location'] ? $vacancy['location'] : NULL,
+            'date' => "{$vacancy['start_date']} - {$vacancy['end_date']}",
           );
 
           //assign stages by weight
@@ -232,7 +235,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
     $customTableName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'application_case', 'table_name', 'name');
 
     //Retrieve top $limit(as total activity count) recent activities
-    $query = CRM_Case_BAO_Case::getCaseActivityQuery($type = 'any', NULL, $condition = "AND cov_type.name = 'Application' AND t_act.desired_date <= CURRENT_TIMESTAMP ");
+    $query = CRM_Case_BAO_Case::getCaseActivityQuery($type = 'any', NULL, $condition = "AND c_type.name = 'Application' AND t_act.desired_date <= CURRENT_TIMESTAMP ");
     $query .= "LIMIT 0, {$limit}";
     $query = str_replace('ORDER BY case_activity_date ASC', 'ORDER BY case_activity_date DESC', $query);
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -294,6 +297,20 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           $subject = str_replace('Assignment status changed', '', $subject);
           $recentActivities[] = array(
             'activity' => "{$source} changed the status of {$position} {$subject}",
+            'time' => $dao->case_activity_date
+          );
+          break;
+        case 'Evaluation':
+          $subject = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $dao->case_activity_id, 'subject');
+          $recentActivities[] = array(
+            'activity' => "{$source} evaluated {$applicant} for {$position}",
+            'time' => $dao->case_activity_date
+          );
+          break;
+        default:
+          $subject = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $dao->case_activity_id, 'subject');
+          $recentActivities[] = array(
+            'activity' => "{$position}: {$dao->case_activity_type_name} for {$applicant}",
             'time' => $dao->case_activity_date
           );
           break;

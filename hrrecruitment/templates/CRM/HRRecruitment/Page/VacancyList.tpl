@@ -59,11 +59,11 @@
   {literal}
   <script type="text/javascript">
     CRM.$(function($) {
-      $('.hr-job-position-link').live('click', function(e) {
+      $('.hr-job-position-link').bind('click', function(e) {
         var url = $(this).attr('href');
         CRM.loadPage(url);
         e.preventDefault();
-        $('.hr-job-info-close').live('click', function(e) {
+        $('.hr-job-info-close').bind('click', function(e) {
           e.preventDefault();
           $(this).closest('div[role=dialog]').remove();
         });
