@@ -236,6 +236,10 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       $errors['stages'] = ts('Please select at least one Vacancy stage');
     }
 
+    if ((strtotime($fields['start_date_display'])) > (strtotime($fields['end_date_display']))) {
+      $errors['end_date'] = ts('End date should be greater than start date.');
+    }
+
     return $errors;
   }
 

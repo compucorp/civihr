@@ -182,7 +182,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
     );
 
     if ($applicantID) {
-      $params['start_date'] = date("Ymd");
+      $params['start_date'] = date("YmdHis");
       $dao = new CRM_HRRecruitment_DAO_HRVacancyStage();
       $dao->vacancy_id = $this->_id;
       $dao->find();

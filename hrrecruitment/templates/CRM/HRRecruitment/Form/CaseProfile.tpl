@@ -31,4 +31,5 @@
   {include file="CRM/UF/Form/Block.tpl" fields=$profileFields}
   {include file="CRM/Case/Page/CustomDataView.tpl"}
   {include file="CRM/Case/Form/ActivityTab.tpl"}
+  {include file="CRM/Case/Form/ActivityToCase.tpl"}
 </div>

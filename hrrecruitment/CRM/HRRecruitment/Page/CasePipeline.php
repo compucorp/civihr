@@ -91,13 +91,11 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
 
     $vacancyStages = CRM_HRRecruitment_BAO_HRVacancyStage::caseStage($this->_vid);
     foreach ($vacancyStages as $key => &$stage) {
-      if ($stage['count']) {
-        $stage['valid'] = TRUE;
-      }
-      $stage['active'] = TRUE;
+      $stage['active'] = $stage['valid'] = TRUE;
       $stage['link'] = CRM_Utils_System::url('civicrm/case/pipeline', array('reset' => 1, 'status_id' => $key, 'vid' => $this->_vid));
       $stage['extra'] = "data-status_id='$key'";
-      $stage['class'] = 'livePage';
+      $stage['class'] = "livePage crm-count-{$stage['count']}";
+
       if (CRM_Utils_Request::retrieve('default_status_id', 'Positive') == $key) {
       CRM_Core_Resources::singleton()
         ->addSetting(array('tabSettings' => array(

@@ -176,7 +176,8 @@ function hrrecruitment_civicrm_install() {
  * Note: This hook only runs in CiviCRM 4.4+.
  */
 function hrrecruitment_civicrm_postInstall() {
-  $value = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $value = array_search('Application', $caseTypes);
   $value = CRM_Core_DAO::VALUE_SEPARATOR . $value . CRM_Core_DAO::VALUE_SEPARATOR;
   $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$value}' WHERE extends_entity_column_value = 'Application'";
   CRM_Core_DAO::executeQuery($sql);
@@ -206,11 +207,13 @@ function hrrecruitment_civicrm_uninstall() {
     }
   }
 
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $value = array_search('Application', $caseTypes);
   //Delete cases and related contact of type Application on uninstall
-  if ($caseTypeID = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => 'case_type', 'name' => 'Application', 'return' => 'value'))
-  ) {
+  if ($value)
+  {
     $caseDAO = new CRM_Case_DAO_Case();
-    $caseDAO->case_type_id = $caseTypeID;
+    $caseDAO->case_type_id = $value;
     $caseDAO->find();
     while ($caseDAO->fetch()) {
       CRM_Case_BAO_Case::deleteCase($caseDAO->id);
@@ -474,11 +477,13 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     $caseId = CRM_Utils_Request::retrieve('caseid', 'String', $form);
     $caseId = explode(',', $caseId);
     $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : $form->_defaultValues['activity_type_id'];
-    $appValue = civicrm_api3('OptionValue', 'getvalue', array('name' => 'Application', 'return' => 'value'));
+    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+    $appValue = array_search('Application', $caseTypes);
+
     /* TO set vacancy stages as case status for 'Change Case Status' activity */
     if (($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status'))) {
       foreach($caseId as $key => $val) {
-        $caseType = CRM_Case_BAO_Case::getCaseType($val, 'value');
+        $caseType = CRM_Case_BAO_Case::getCaseType($val, 'id');
         if ($caseType != $appValue) {
           CRM_Core_Error::fatal('Case Id is not of type application');
         }

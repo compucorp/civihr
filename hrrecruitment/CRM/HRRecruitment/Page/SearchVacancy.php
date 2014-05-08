@@ -56,7 +56,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
         CRM_Core_Action::DELETE => array(
           'name' => ts('Delete'),
           'url' => CRM_Utils_System::currentPath(),
-          'qs' => 'action=delete&id=%%id%%&template='.$this->_isTemplate,
+          'qs' => 'action=delete&id=%%id%%',
           'extra' => 'onclick = "return confirm(\'' . $deleteExtra . '\');"',
           'title' => ts('Delete Vacancy'),
         ),
@@ -87,10 +87,17 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $this->assign('action', $action);
     $id = CRM_Utils_Request::retrieve('id', 'Positive', $this, FALSE, 0, 'REQUEST');
 
+    $this->_isTemplate = (boolean) CRM_Utils_Request::retrieve('template', 'Integer', $this);
+    if (isset($this->_isTemplate)) {
+      $this->assign('isTemplate', $this->_isTemplate);
+    }
+
     // what action to take ?
     if ($action & CRM_Core_Action::DELETE) {
       $session = CRM_Core_Session::singleton();
-      $session->pushUserContext(CRM_Utils_System::url(CRM_Utils_System::currentPath(), "reset=1&action=browse&template={$this->_isTemplate}"));
+      $pathCancel = $this->_isTemplate ? "reset=1&action=browse&template={$this->_isTemplate}" : "reset=1&action=browse";
+      $session->pushUserContext(CRM_Utils_System::url(CRM_Utils_System::currentPath(), $pathCancel));
+
       $controller = new CRM_Core_Controller_Simple('CRM_HRRecruitment_Form_Search_Delete',
         'Delete Vacancy',
         $action

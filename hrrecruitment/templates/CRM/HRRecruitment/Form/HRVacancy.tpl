@@ -147,6 +147,7 @@
     });
 
     $('.permission-delete-link').click(function(){
+      $(this).closest('tr').find('input').val('');
       $(this).closest('tr').addClass('hiddenElement').removeAttr('style');
       $('#addMorePermission').show();
       return false;
