@@ -24,7 +24,7 @@
  +--------------------------------------------------------------------+
 *}
 <div class="crm-clearfix hr-case-application-evaluation">
-  <a class="crm-popup button" href="{$evalURL}" class="ui-tabs-anchor"><div class="icon ui-icon-note"></div>{ts}Evaluation{/ts}</a>
+  <a class="button hr-activity-button hr-case-application-evaluation-url" data-id="{$id}" data-action="{$actions}" style="display:none">{ts}Evaluation{/ts}</a>
 </div>
 
 <div class="crm-clearfix hr-case-application-profile">

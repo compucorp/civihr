@@ -3,18 +3,22 @@
   function loadDetails(context) {
     var url,
       $checked = $('.select-row:checked', context),
-      $detail = $('.hr-pipeline-case-details', context);
+      $detail = $('.hr-pipeline-case-details', context),
+      $eval = '';
     if ($checked.length === 1) {
       url = CRM.url('civicrm/case/hrapplicantprofile', $.extend({reset: 1}, $checked.closest('tr').data()));
       CRM.loadPage(url, {target: $detail});
+      $eval = 1;
     }
     else {
       $detail.data('civiCrmSnippet') && $detail.crmSnippet('destroy');
       // Todo: comparison view
       $detail.html('<p class="hr-applicant-selection-msg">' + ts('%1 applicants selected', {1: $checked.length}) + '</p>');
     }
+
     // Enable/disable actions
     $('.hr-pipeline-case-actions', context).css('opacity', $checked.length ? '' : '.5');
+    $('.hr-pipeline-case-actions .hr-eval-button', context).css('opacity', $eval ? '' : '.5');
   }
 
   function createActivity(url, args, context) {
@@ -52,6 +56,20 @@
         // Ignore the extra events triggered by master checkbox
         if (data !== 'master-selected') {
           loadDetails($(this).closest('.hr-pipeline-tab'));
+        }
+      })
+      // For Evaluation action
+      .on('click', '.hr-eval-button', function(e) {
+        e.preventDefault();
+        var $context = $(this).closest('.hr-pipeline-tab'),
+          $checked = $('.select-row:checked', $context);
+        if ($checked.length == 1) {
+	  var jsonObj = '{"atype" : "'+$(this).data('atype')+'"',
+            data;
+	  jsonObj += ',"id" : "'+$('.hr-case-application-evaluation-url', $context).attr('data-id')+'"';
+          jsonObj += ',"action" : "'+$('.hr-case-application-evaluation-url', $context).attr('data-action')+'"}';
+          data = $.parseJSON(jsonObj);
+          createActivity($(this).attr('href').split('#')[1], data, $(this).closest('.hr-pipeline-tab'));
         }
       })
       .on('click', '.hr-activity-button', function(e) {

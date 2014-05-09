@@ -48,6 +48,7 @@
         {if $administerper}
           <a class="button hr-activity-button" href="#civicrm/activity/email/add" data-atype="{$emailActivity}" data-context="activity"><div class="icon ui-icon-mail-closed"></div>{ts}Email{/ts}</a>
           <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$commentActivity}"><div class="icon ui-icon-comment"></div>{ts}Comment{/ts}</a>
+          <a class="button hr-eval-button" href="#civicrm/case/activity" data-atype="{$evaluationActivity}"><div class="icon ui-icon-note"></div>{ts}Evaluation{/ts}</a>
         {/if}
         {if !$evaluateper}
           <select class="crm-select2 crm-form-select crm-action-menu hr-activity-menu action-icon-plus">

@@ -86,30 +86,18 @@ class CRM_HRRecruitment_Form_CaseProfile extends CRM_Case_Form_CaseView {
         $profile[$profileName] = $dao->uf_group_id;
       }
 
-      // get Evaluation ID
-      $evaluationID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
-      $this->assign('evaluationID', $evaluationID);
-      //build URL for new Evaluaiton activity
-      $url = CRM_Utils_System::url('civicrm/case/activity',
-        "action=add&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}",
-        FALSE, NULL, FALSE
-      );
+      //Check for existing Evaluation activity type and assign variables to tpl
+      $this->assign('actions', 'add');
 
-     //Check for existing Evaluation activity type
       $params = array(
-        'activity_type_id' => $evaluationID,
+        'activity_type_id' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
       );
       $caseActivity = CRM_Case_BAO_Case::getCaseActivity($this->_caseID, $params, $this->_contactID);
       foreach ($caseActivity as $caseActivity) {
         $evalID = $caseActivity['id'];
-        //build URL for editing Evaluaiton activity
-        $url = CRM_Utils_System::url('civicrm/case/activity',
-          "action=update&reset=1&cid={$this->_contactID}&caseid={$this->_caseID}&atype={$evaluationID}&id={$evalID}",
-          FALSE, NULL, FALSE
-        );
+        $this->assign('id', $evalID);
+        $this->assign('actions', 'update');
       }
-      //Assign parameter to tpl - Evaluation Activity edit/cretae URL, appl
-      $this->assign('evalURL', $url);
 
       $this->_profileID = $profile['application_profile'];
       $this->_evalProfileID = $profile['evaluation_profile'];
