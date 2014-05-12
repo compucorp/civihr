@@ -77,6 +77,79 @@
       <custom_group_name>Application</custom_group_name>
     </CustomField>
     <CustomField>
+      <name>Work_experience</name>
+      <label>Work experience</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>work_experience_74</column_name>
+      <in_selector>0</in_selector>
+      <option_group_name>work_experience_20140512203541</option_group_name>
+      <custom_group_name>Application</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Educational_qualification</name>
+      <label>Educational qualification</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>3</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>educational_qualification_75</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Application</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Previous_Pay_per_month</name>
+      <label>Previous Pay per month</label>
+      <data_type>Money</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>4</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>previous_pay_per_month_76</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Application</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Expected_Pay_per_month</name>
+      <label>Expected Pay per month</label>
+      <data_type>Money</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>expected_pay_per_month_77</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Application</custom_group_name>
+    </CustomField>
+    <CustomField>
       <name>vacancy_id</name>
       <label>Vacancy</label>
       <data_type>Int</data_type>
@@ -228,6 +301,118 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
+      <field_name>custom.civicrm_value_application.work_experience_74</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>5</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Work experience</label>
+      <field_type>Case</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_application.educational_qualification_75</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>6</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Educational qualification</label>
+      <field_type>Case</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_application.previous_pay_per_month_76</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>7</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Previous Pay per month</label>
+      <field_type>Case</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_application.expected_pay_per_month_77</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>8</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Expected Pay per month</label>
+      <field_type>Case</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>preferred_language</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>9</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Languages known</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>phone</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>10</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Contact number</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
+      <field_name>city</field_name>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <is_required>0</is_required>
+      <weight>11</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>User and User Admin Only</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>City of residence</label>
+      <field_type>Contact</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Application Form</profile_group_name>
+    </ProfileField>
+    <ProfileField>
       <field_name>custom.civicrm_value_evaluation_fields.rate_the_applicant_s_communicati</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
@@ -276,6 +461,12 @@
   </ProfileJoins>
   <OptionGroups>
     <OptionGroup>
+      <name>work_experience_20140512203541</name>
+      <title>Work experience</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
       <name>rate_the_applicant_s_communicati</name>
       <title>Rate the applicant's communication skills</title>
       <is_reserved>1</is_reserved>
@@ -289,6 +480,39 @@
     </OptionGroup>
   </OptionGroups>
   <OptionValues>
+    <OptionValue>
+      <label>0-1 yrs</label>
+      <value>0-1</value>
+      <name>0_1_yrs</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>work_experience_20140512203541</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>1-2 yrs</label>
+      <value>1-2</value>
+      <name>1_2_yrs</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>work_experience_20140512203541</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>2-3 yrs</label>
+      <value>2-3</value>
+      <name>2_3_yrs</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>work_experience_20140512203541</option_group_name>
+    </OptionValue>
     <OptionValue>
       <label>1 - Poor</label>
       <value>1</value>
