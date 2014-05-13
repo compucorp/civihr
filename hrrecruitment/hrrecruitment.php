@@ -591,3 +591,71 @@ function hrrecruitment_civicrm_post( $op, $objectName, $objectId, &$objectRef ) 
     $_POST['new_activity_id'] = $objectId;
   }
 }
+
+/**
+ * Implementation of hook_civicrm_alterContent
+ *
+ * @return void
+ */
+function hrrecruitment_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  /* HR-372, HR-373 -- To hide unwanted fields from view/edit screen for Evaluation and Comment activity */
+  $requiredAct = FALSE;
+  $activityTypes = array(CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
+    CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment'));
+  $smarty  =  CRM_Core_Smarty::singleton();
+
+  //Get activity Type
+  if ($tplName == "CRM/Case/Form/ActivityView.tpl") {
+    $activityID = $smarty->_tpl_vars['activityID'];
+    $aType = CRM_Core_DAO::getFieldValue('CRM_Activity_DAO_Activity', $activityID, 'activity_type_id');
+    $requiredAct = TRUE;
+  } elseif ($tplName == "CRM/Case/Form/Activity.tpl") {
+    $aType = $object->_activityTypeId;
+    $requiredAct = TRUE;
+  }
+
+  if ($requiredAct && $context == "form" && in_array($aType, $activityTypes)) {
+    $completeStatus = CRM_Core_OptionGroup::getValue('activity_status','Completed');
+    $formname = $smarty->_tpl_vars['form']['formName'];
+
+    $hideFields = '';
+    //Array for the unwanted fields
+    $hide = array(
+      'client_name' => 'Client',
+      'activityTypeName' => 'Activity Type',
+      'source_contact_id' => 'Reported By',
+      'duration' => 'Location',
+      'priority_id' => 'Priority',
+      'subject' => 'Subject',
+      'medium_id' => 'Medium');
+    foreach ($hide as $hideForm => $hideView) {
+      $hideFields .= "$('.crm-case-activity-form-block-{$hideForm}', context).hide();";
+      $hideFields .= "$('.crm-case-activity-view-{$hideView}', context).hide();";
+    }
+
+    //Add script to the content to hide the above fields and show Evaluation profile for Completed status
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        var context = $('form#{$formname}');
+        toggleEvaluation($('#status_id', context).val());
+        $('#customData', context).hide();
+        $('#sendcopy', context).hide();
+        $('#follow-up', context).hide();
+        $('.crm-accordion-wrapper', context).hide();
+        {$hideFields}
+        $('#status_id', context).bind('change', function(){
+          toggleEvaluation(this.value);
+        });
+        function toggleEvaluation(val) {
+          if(val == {$completeStatus}) {
+            $('.crm-profile-name-evaluation_profile', context).show();
+          }
+          else {
+            $('.crm-profile-name-evaluation_profile', context).hide();
+          }
+        }
+      });
+    </script>";
+  }
+}
+
