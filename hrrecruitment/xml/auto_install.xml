@@ -90,9 +90,9 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>work_experience_74</column_name>
+      <column_name>work_experience</column_name>
       <in_selector>0</in_selector>
-      <option_group_name>work_experience_20140512203541</option_group_name>
+      <option_group_name>work_experience</option_group_name>
       <custom_group_name>Application</custom_group_name>
     </CustomField>
     <CustomField>
@@ -109,7 +109,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>educational_qualification_75</column_name>
+      <column_name>educational_qualification</column_name>
       <in_selector>0</in_selector>
       <custom_group_name>Application</custom_group_name>
     </CustomField>
@@ -127,7 +127,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>previous_pay_per_month_76</column_name>
+      <column_name>previous_pay_per_month</column_name>
       <in_selector>0</in_selector>
       <custom_group_name>Application</custom_group_name>
     </CustomField>
@@ -145,7 +145,7 @@
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
-      <column_name>expected_pay_per_month_77</column_name>
+      <column_name>expected_pay_per_month</column_name>
       <in_selector>0</in_selector>
       <custom_group_name>Application</custom_group_name>
     </CustomField>
@@ -301,7 +301,7 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_application.work_experience_74</field_name>
+      <field_name>custom.civicrm_value_application.work_experience</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -317,7 +317,7 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_application.educational_qualification_75</field_name>
+      <field_name>custom.civicrm_value_application.educational_qualification</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -333,7 +333,7 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_application.previous_pay_per_month_76</field_name>
+      <field_name>custom.civicrm_value_application.previous_pay_per_month</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -349,7 +349,7 @@
       <profile_group_name>Application Form</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>custom.civicrm_value_application.expected_pay_per_month_77</field_name>
+      <field_name>custom.civicrm_value_application.expected_pay_per_month</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -461,7 +461,7 @@
   </ProfileJoins>
   <OptionGroups>
     <OptionGroup>
-      <name>work_experience_20140512203541</name>
+      <name>work_experience</name>
       <title>Work experience</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
@@ -489,7 +489,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>work_experience_20140512203541</option_group_name>
+      <option_group_name>work_experience</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>1-2 yrs</label>
@@ -500,7 +500,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>work_experience_20140512203541</option_group_name>
+      <option_group_name>work_experience</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>2-3 yrs</label>
@@ -511,7 +511,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>work_experience_20140512203541</option_group_name>
+      <option_group_name>work_experience</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>1 - Poor</label>
