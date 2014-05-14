@@ -85,9 +85,19 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
         if (substr($name, 0, 7) == 'custom_') {
           $id = substr($name, 7);
           if ($customFieldID = CRM_Core_BAO_CustomField::getKeyID($name)) {
-            $this->assign('customname',$name);
+            if ($entityCaseID) {
+              CRM_Core_BAO_CustomField::setProfileDefaults($customFieldID, $name, $defaults,
+                $entityCaseID, CRM_Profile_Form::MODE_REGISTER
+              );
+            }
+            if (!isset($defaults[$name])) {
+              CRM_Core_BAO_CustomField::setProfileDefaults($customFieldID, $name, $defaults,
+                $contactID, CRM_Profile_Form::MODE_REGISTER
+              );
+            }
             $htmlType = $field['html_type'];
             if ($htmlType == 'File') {
+              $this->assign('customname',$name);
               $entityId = $entityCaseID;
               $url = CRM_Core_BAO_CustomField::getFileURL($entityId, $customFieldID);
               if ($url) {
@@ -193,25 +203,35 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
 
       //Create case of type Application against creator applicant and assignee as Vacancy creator
       $caseTypes = array_flip(CRM_Case_PseudoConstant::caseType('name', TRUE, 'AND filter = 1'));
+      $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($applicantID, FALSE, 'Application');
+      foreach ($cases as $case) {
+        $oldAppl = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($case);
+        if($oldAppl == $this->_id) {
+          $params['id'] = $case;
+          break;
+        }
+      }
+
       $params['case_type_id'] = $caseTypes['Application'];
       $caseObj = CRM_Case_BAO_Case::create($params);
+      if (empty($params['id'])) {
+        $contactParams = array(
+          'case_id' => $caseObj->id,
+          'contact_id' => $applicantID,
+        );
+        CRM_Case_BAO_Case::addCaseToContact($contactParams);
 
-      $contactParams = array(
-        'case_id' => $caseObj->id,
-        'contact_id' => $applicantID,
-      );
-      CRM_Case_BAO_Case::addCaseToContact($contactParams);
-
-      $xmlProcessor = new CRM_Case_XMLProcessor_Process();
-      $xmlProcessorParams = array(
-        'clientID' => $applicantID,
-        'creatorID' => $this->_creatorID,
-        'standardTimeline' => 1,
-        'activityTypeName' => 'Open Case',
-        'caseID' => $caseObj->id,
-        'activity_date_time' => $params['start_date'],
-      );
-      $xmlProcessor->run('Application', $xmlProcessorParams);
+        $xmlProcessor = new CRM_Case_XMLProcessor_Process();
+        $xmlProcessorParams = array(
+          'clientID' => $applicantID,
+          'creatorID' => $this->_creatorID,
+          'standardTimeline' => 1,
+          'activityTypeName' => 'Open Case',
+          'caseID' => $caseObj->id,
+          'activity_date_time' => $params['start_date'],
+        );
+        $xmlProcessor->run('Application', $xmlProcessorParams);
+      }
 
       //process Custom data
       CRM_Core_BAO_CustomValueTable::postprocess($params,CRM_Core_DAO::$_nullArray, 'civicrm_case', $caseObj->id, 'Case');
