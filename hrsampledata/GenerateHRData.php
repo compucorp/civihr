@@ -304,6 +304,8 @@ class GenerateHRData {
     }
     $contact->save();
 
+    $email = $this->_individualEmail($contact);
+    $this->_addEmail($contact->id, $email, self::WORK);
     return $contact->id;
   }
 
@@ -574,7 +576,7 @@ class GenerateHRData {
       }
 
     // Add 0, 1 or 2 email address
-    $count = mt_rand(0, 2);
+    $count = mt_rand(1, 2);
     for ($i = 0; $i < $count; ++$i) {
       $email = $this->_individualEmail($contact);
       $this->_addEmail($cid, $email, self::WORK);
