@@ -41,7 +41,7 @@ class CRM_HRRecruitment_BAO_HRVacancyPermission extends CRM_HRRecruitment_DAO_HR
    * @static
    */
 
-  public static function checkVacancyPermission($vacancyID, $checkPermissions = array()) {
+  public static function checkVacancyPermission($vacancyID, $checkPermissions = array(), $defaultPermissions = array()) {
     $session = CRM_Core_Session::singleton();
     $userID = $session->get('userID');
     $vacancyPermissions = array();
@@ -58,6 +58,13 @@ class CRM_HRRecruitment_BAO_HRVacancyPermission extends CRM_HRRecruitment_DAO_HR
       else {
         $vacancyPermissions[] = 'administer CiviCRM';
       }
+    }
+
+    if (empty($defaultPermissions)) {
+      $defaultPermissions[] = $checkPermissions;
+    }
+    if (count($defaultPermissions) && CRM_Core_Permission::check($defaultPermissions)) {
+      return TRUE;
     }
 
     while ($dao->fetch()) {

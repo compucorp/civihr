@@ -73,6 +73,13 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
   }
 
   function run() {
+    $session = CRM_Core_Session::singleton();
+
+    if (!CRM_Core_Permission::check(array(array('view Applicants', 'manage Applicants', 'evaluate Applicants', 'administer Vacancy', 'administer CiviCRM')))) {
+      $session->pushUserContext(CRM_Utils_System::url('civicrm'));
+      CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to perform this action.'));
+    }
+
     // get the requested action
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, FALSE, 'browse');
     $searchParams = array();

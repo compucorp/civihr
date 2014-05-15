@@ -44,27 +44,26 @@
   </div>
   <div class="hr-pipeline-case-view-panel">
     <div class="hr-pipeline-case-actions" style="opacity: .5">
-      {if $allper}
-        {if $administerper}
-          <a class="button hr-activity-button" href="#civicrm/activity/email/add" data-atype="{$emailActivity}" data-context="activity"><div class="icon ui-icon-mail-closed"></div>{ts}Email{/ts}</a>
-          <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$commentActivity}"><div class="icon ui-icon-comment"></div>{ts}Comment{/ts}</a>
+      {if $administerper}
+        <a class="button hr-activity-button" href="#civicrm/activity/email/add" data-atype="{$emailActivity}" data-context="activity"><div class="icon ui-icon-mail-closed"></div>{ts}Email{/ts}</a>
+        <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$commentActivity}"><div class="icon ui-icon-comment"></div>{ts}Comment{/ts}</a>
+        {if $evaluateper}
           <a class="button hr-eval-button" href="#civicrm/case/activity" data-atype="{$evaluationActivity}"><div class="icon ui-icon-note"></div>{ts}Evaluation{/ts}</a>
         {/if}
-        {if !$evaluateper}
-          <select class="crm-select2 crm-form-select crm-action-menu hr-activity-menu action-icon-plus">
-          <option value="">{ts}Add activity{/ts}</option>
-          {foreach from=$activities key="id" item="title"}
-            <option value="{$id}">{$title}</option>
-          {/foreach}
-          </select>
-          <select class="crm-select2 crm-form-select crm-action-menu hr-case-status-menu action-icon-play" data-atype="{$changeCaseStatusActivity}">
-          <option value="">{ts}Status{/ts}</option>
-          {foreach from=$caseStatus item="status"}
-            <option value="{$status.id}" {if $statusId eq $status.id}class="bold" disabled="disabled"{/if}>{$status.title}</option>
-          {/foreach}
-          </select>
-        {/if}
-     {/if}
+
+        <select class="crm-select2 crm-form-select crm-action-menu hr-activity-menu action-icon-plus">
+        <option value="">{ts}Add activity{/ts}</option>
+        {foreach from=$activities key="id" item="title"}
+          <option value="{$id}">{$title}</option>
+        {/foreach}
+        </select>
+        <select class="crm-select2 crm-form-select crm-action-menu hr-case-status-menu action-icon-play" data-atype="{$changeCaseStatusActivity}">
+        <option value="">{ts}Status{/ts}</option>
+        {foreach from=$caseStatus item="status"}
+          <option value="{$status.id}" {if $statusId eq $status.id}class="bold" disabled="disabled"{/if}>{$status.title}</option>
+        {/foreach}
+        </select>
+      {/if}
     </div>
     <div class="hr-pipeline-case-details">
       <p class="hr-applicant-selection-msg">{ts}0 applicants selected{/ts}</p>
