@@ -64,7 +64,7 @@
       <data_type>File</data_type>
       <html_type>File</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>1</weight>
       <is_active>1</is_active>
@@ -82,7 +82,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>2</weight>
       <is_active>1</is_active>
@@ -101,7 +101,7 @@
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>3</weight>
       <is_active>1</is_active>
@@ -119,7 +119,7 @@
       <data_type>Money</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>4</weight>
       <is_active>1</is_active>
@@ -137,7 +137,7 @@
       <data_type>Money</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>5</weight>
       <is_active>1</is_active>
@@ -155,7 +155,7 @@
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>6</weight>
       <is_active>1</is_active>
@@ -191,7 +191,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>1</weight>
       <is_active>1</is_active>
@@ -210,7 +210,7 @@
       <data_type>String</data_type>
       <html_type>Select</html_type>
       <is_required>0</is_required>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>2</weight>
       <is_active>1</is_active>
@@ -264,7 +264,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>First Name</label>
       <field_type>Individual</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -280,7 +280,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Last Name</label>
       <field_type>Individual</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -296,7 +296,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Email (Primary)</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -312,7 +312,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Resume</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -328,7 +328,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Work experience</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -344,7 +344,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Educational qualification</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -360,7 +360,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Previous Pay per month</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -376,7 +376,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Expected Pay per month</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -392,7 +392,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Contact number</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -408,7 +408,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>City of residence</label>
       <field_type>Contact</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -424,7 +424,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Languages known</label>
       <field_type>Case</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -440,7 +440,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Rate the applicant's communication skills</label>
       <field_type>Activity</field_type>
       <is_multi_summary>0</is_multi_summary>
@@ -456,7 +456,7 @@
       <help_pre></help_pre>
       <visibility>User and User Admin Only</visibility>
       <in_selector>0</in_selector>
-      <is_searchable>0</is_searchable>
+      <is_searchable>1</is_searchable>
       <label>Rate the applicant's technical skills</label>
       <field_type>Activity</field_type>
       <is_multi_summary>0</is_multi_summary>
