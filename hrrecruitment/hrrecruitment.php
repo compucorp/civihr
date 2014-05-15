@@ -536,6 +536,12 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
         'template' => 'CRM/UF/Form/Block.tpl',
       ));
     }
+
+    //HR-373 -- set Completed status for Comment activity by default
+    if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment')) {
+      $defaults['status_id'] = CRM_Core_OptionGroup::getValue('activity_status','Completed');
+      $form->setDefaults($defaults);
+    }
   }
 }
 
@@ -602,7 +608,7 @@ function hrrecruitment_civicrm_alterContent( &$content, $context, $tplName, &$ob
   $requiredAct = FALSE;
   $activityTypes = array(CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
     CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment'));
-  $smarty  =  CRM_Core_Smarty::singleton();
+  $smarty = CRM_Core_Smarty::singleton();
 
   //Get activity Type
   if ($tplName == "CRM/Case/Form/ActivityView.tpl") {
@@ -622,12 +628,17 @@ function hrrecruitment_civicrm_alterContent( &$content, $context, $tplName, &$ob
     //Array for the unwanted fields
     $hide = array(
       'client_name' => 'Client',
-      'activityTypeName' => 'Activity Type',
-      'source_contact_id' => 'Reported By',
+      'activityTypeName' => 'Activity.Type',
+      'source_contact_id' => 'Created.By',
       'duration' => 'Location',
       'priority_id' => 'Priority',
-      'subject' => 'Subject',
       'medium_id' => 'Medium');
+    if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment')) {
+      $hide['assignee_contact_id'] = 'Assigned.To';
+      $hide['status_id'] = 'Status';
+      $hide['activity_date_time'] = 'Date.and.Time';
+    }
+
     foreach ($hide as $hideForm => $hideView) {
       $hideFields .= "$('.crm-case-activity-form-block-{$hideForm}', context).hide();";
       $hideFields .= "$('.crm-case-activity-view-{$hideView}', context).hide();";
