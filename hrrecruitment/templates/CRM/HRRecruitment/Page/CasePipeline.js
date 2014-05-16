@@ -23,7 +23,9 @@
 
   function createActivity(url, args, context) {
     var params,
-      $checked = $('.select-row:checked', context);
+      $checked = $('.select-row:checked', context),
+      $checkBox = $checked.map(function() {return $(this).closest('tr').attr('data-cid');});
+
     if ($checked.length) {
       params = {
         reset: 1,
@@ -33,7 +35,10 @@
       };
       return CRM.loadForm(CRM.url(url, $.extend(params, args)))
         .on('crmFormSuccess', function() {
-          CRM.tabHeader.resetTab(CRM.tabHeader.getActiveTab());
+          $.each($checkBox, function(i, val){
+            $('tr[data-cid='+val+']').closest('a.hr-pipeline-contact-link').trigger('click');
+            loadDetails($('tr[data-cid='+val+'] input:checkbox').closest('.hr-pipeline-tab'));
+          });
         });
     }
   }
@@ -89,6 +94,7 @@
           var $checked = $('.select-row:checked', context);
           form.on('crmFormSuccess', function () {
             var tab = 'li.crm-tab-button[data-status_id=' + statusId + ']';
+            CRM.tabHeader.resetTab(CRM.tabHeader.getActiveTab());
             CRM.tabHeader.updateCount(tab, CRM.tabHeader.getCount(tab) + $checked.length);
             CRM.tabHeader.resetTab(tab);
           });
