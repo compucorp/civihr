@@ -40,7 +40,7 @@
           </tr>
           {foreach from=$rows item=row}
             <tr id='rowid{$row.id}' class=" crm-hrvacancy-id_{$row.id} {cycle values="odd-row,even-row"}">
-              <td class="crm-job_position"><a class="hr-job-position-link" href="{crmURL p="civicrm/vacancy" q="reset=1&id=`$row.id`"}">{$row.position}</a></td>
+              <td class="crm-job_position"><a class="hr-job-position-link" href="{crmURL p="civicrm/vacancy/publiclisting" q="reset=1&id=`$row.id`"}">{$row.position}</a></td>
               <td class="crm-location">{$row.location}</td>
               <td class="crm-salary">{$row.salary}</td>
               <td class="crm-application_dates">{$row.startDate} - {$row.endDate}</td>

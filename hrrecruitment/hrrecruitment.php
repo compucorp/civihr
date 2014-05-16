@@ -120,7 +120,7 @@ function hrrecruitment_civicrm_install() {
     array(
       'label' => ts('Public Vacancy List'),
       'name' => 'public_list',
-      'url' => 'civicrm/vacancy?reset=1',
+      'url' => 'civicrm/vacancy/publiclisting?reset=1',
       'permission' => NULL,
       'has_separator' => 1,
     ),
@@ -631,6 +631,16 @@ function hrrecruitment_civicrm_alterContent( &$content, $context, $tplName, &$ob
   } elseif ($tplName == "CRM/Case/Form/Activity.tpl") {
     $aType = $object->_activityTypeId;
     $requiredAct = TRUE;
+  }
+
+  if ($context == "form" && $tplName == "CRM/HRRecruitment/Form/CaseProfile.tpl" ) {
+    $formName = $smarty->_tpl_vars['form']['formName'];
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        var $context = $('form#{$formName} .hr-case-application-profile');
+        $('div#application_case',$context).remove();
+      });
+    </script>";
   }
 
   if ($requiredAct && $context == "form" && in_array($aType, $activityTypes)) {
