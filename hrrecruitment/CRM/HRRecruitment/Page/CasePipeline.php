@@ -54,8 +54,15 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
     $this->_statusId = CRM_Utils_Request::retrieve('status_id', 'Positive');
     $administerper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("administer Vacancy","administer CiviCRM","manage Applicants"));
     $evaluateper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("administer Vacancy","administer CiviCRM","evaluate Applicants"));
+    $viewper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($this->_vid,array("view Applicants"));
+
     $this->assign('administerper',$administerper);
     $this->assign('evaluateper',$evaluateper);
+    if (!($administerper || $evaluateper || $viewper)) {
+      CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm'));
+      CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to perform this action.'));
+      return;
+    }
   }
 
   function run() {
