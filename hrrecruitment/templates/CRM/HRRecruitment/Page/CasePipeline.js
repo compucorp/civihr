@@ -35,10 +35,9 @@
       };
       return CRM.loadForm(CRM.url(url, $.extend(params, args)))
         .on('crmFormSuccess', function() {
-          $.each($checkBox, function(val, i){
-            var ele = $('tr[data-cid='+i+']');
-            $('tr[data-cid='+i+']').closest('a.hr-pipeline-contact-link').trigger('click');
-            loadDetails($('tr[data-cid='+i+'] input:checkbox').closest('.hr-pipeline-tab'));
+          $.each($checkBox, function(i, val){
+            $('tr[data-cid='+val+']').closest('a.hr-pipeline-contact-link').trigger('click');
+            loadDetails($('tr[data-cid='+val+'] input:checkbox').closest('.hr-pipeline-tab'));
           });
         });
     }
