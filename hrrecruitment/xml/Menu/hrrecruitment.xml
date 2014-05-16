@@ -38,7 +38,7 @@
     <is_public>true</is_public>
   </item>
   <item>
-    <path>civicrm/vacancy</path>
+    <path>civicrm/vacancy/publiclisting</path>
     <page_callback>CRM_HRRecruitment_Page_VacancyList</page_callback>
     <title>Public Vacancy List</title>
     <is_public>true</is_public>
