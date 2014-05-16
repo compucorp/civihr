@@ -473,23 +473,24 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
-  $session = CRM_Core_Session::singleton();
-  if ($formName == 'CRM_Case_Form_Activity') {
+  if ($formName == 'CRM_Case_Form_Activity' || $formName == 'CRM_Contact_Form_Task_Email') {
     $caseId = CRM_Utils_Request::retrieve('caseid', 'String', $form);
     $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($caseId);
     $caseId = explode(',', $caseId);
     $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : $form->_defaultValues['activity_type_id'];
     $evalID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
+    /* Check for proper permissions */
     if ($vacancyID && $aType) {
       $administerper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($vacancyID,array("administer Vacancy","administer CiviCRM","manage Applicants"));
       $evaluateper = CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($vacancyID,array("administer Vacancy","administer CiviCRM","evaluate Applicants"));
 
       if ((($aType != $evalID) && !($administerper)) || (($aType == $evalID) && !($evaluateper))) {
-        $session->pushUserContext(CRM_Utils_System::url('civicrm'));
+        CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm'));
         CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to perform this action.'));
         return;
       }
     }
+
     $caseTypes = CRM_Case_PseudoConstant::caseType('name');
     $appValue = array_search('Application', $caseTypes);
     /* TO set vacancy stages as case status for 'Change Case Status' activity */

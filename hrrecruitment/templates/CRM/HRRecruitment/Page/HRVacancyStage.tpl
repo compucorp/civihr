@@ -42,8 +42,8 @@
       </tbody>
     </table>
   </div>
-  <div class="hr-pipeline-case-view-panel">
-    <div class="hr-pipeline-case-actions" style="opacity: .5">
+  <div class="crm-clearfix hr-pipeline-case-view-panel">
+    <div class="crm-clearfix hr-pipeline-case-actions" style="opacity: .5">
       {if $administerper}
         <a class="button hr-activity-button" href="#civicrm/activity/email/add" data-atype="{$emailActivity}" data-context="activity"><div class="icon ui-icon-mail-closed"></div>{ts}Email{/ts}</a>
         <a class="button hr-activity-button" href="#civicrm/case/activity" data-atype="{$commentActivity}"><div class="icon ui-icon-comment"></div>{ts}Comment{/ts}</a>
