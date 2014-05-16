@@ -113,6 +113,7 @@
           <td>{$form.permission.$rowNumber.html}
             &nbsp;<a class="crm-hover-button permission-delete-link" href="#"><span class="icon delete-icon"></span></a>
           </td>
+          <td>{help id="id-set_permissions"}</td>
         </tr>
       {/section}
       <tr>
