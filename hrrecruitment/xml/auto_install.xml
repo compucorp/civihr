@@ -153,7 +153,7 @@
       <name>Languages_known</name>
       <label>Languages known</label>
       <data_type>String</data_type>
-      <html_type>Text</html_type>
+      <html_type>CheckBox</html_type>
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
@@ -165,6 +165,7 @@
       <note_rows>4</note_rows>
       <column_name>languages_known</column_name>
       <in_selector>0</in_selector>
+      <option_group_name>languages_known</option_group_name>
       <custom_group_name>Application</custom_group_name>
     </CustomField>
     <CustomField>
@@ -496,6 +497,12 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>languages_known</name>
+      <title>Languages known</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -640,6 +647,50 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>rate_the_applicant_s_technical_s</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>English</label>
+      <value>english</value>
+      <name>English</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>languages_known</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Spanish</label>
+      <value>spanish</value>
+      <name>Spanish</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>languages_known</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>French</label>
+      <value>french</value>
+      <name>French</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>languages_known</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Dutch</label>
+      <value>dutch</value>
+      <name>Dutch</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>languages_known</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>
