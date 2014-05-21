@@ -123,7 +123,10 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     }));
     HRAbsenceApp.tabsRegion.show(new HRAbsenceApp.Tabs.TabsView());
 
-    jobLeavesCollection.fetch({reset: true});
+    if (CRM.Permissions.getJobInfo ||
+      CRM.Permissions.getOwnJobInfo) {
+      jobLeavesCollection.fetch({reset: true});
+    }
     absenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
   });

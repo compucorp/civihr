@@ -264,7 +264,7 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
  */
 function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
-  if ($contactType != 'Individual' || !(CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
+  if (!($contactType == 'Individual' && CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
     return;
   }
   $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));
@@ -312,15 +312,15 @@ function hrabsence_civicrm_permission(&$permissions) {
 function hrabsence_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $session = CRM_Core_Session::singleton();
   $cid = $session->get('userID');
-  if ($entity == 'h_r_absence_entitlement' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM');
-  } else {
-    $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM', 'view HRAbsences');
+  if (substr($entity, 0, 11) == 'h_r_absence') {
+    $permissions['h_r_absence']['get'] = array('access CiviCRM', 'view HRAbsences');
+    $permissions['h_r_absence']['create'] = array('access CiviCRM', 'edit HRAbsences');
+    $permissions['h_r_absence']['update'] = array('access CiviCRM', 'edit HRAbsences');
+    $permissions['h_r_absence']['delete'] = array('administer CiviCRM');
   }
-  $permissions['h_r_absence']['get'] = array('access CiviCRM', 'view HRAbsences');
-  $permissions['h_r_absence']['create'] = array('access CiviCRM', 'edit HRAbsences');
-  $permissions['h_r_absence']['update'] = array('access CiviCRM', 'edit HRAbsences');
-  $permissions['h_r_absence']['delete'] = array('administer CiviCRM');
+  if ($entity == 'h_r_absence_entitlement' && $action == 'get') {
+    $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM', array('administer CiviCRM', 'view HRAbsences', 'edit HRAbsences', 'manage own HRAbsences'));
+  }
   $permissions['CiviHRAbsence'] = $permissions['h_r_absence'];
 }
 

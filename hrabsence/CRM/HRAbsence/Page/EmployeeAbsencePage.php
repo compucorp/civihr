@@ -8,7 +8,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
 
     if (!empty($contactID)) {
       if (!(self::checkPermissions($contactID, 'viewWidget'))) {
-        CRM_Core_Error::fatal(ts('You do not have permission to access this page'));
+        CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm'));
+        CRM_Core_Error::statusBounce(ts('You do not have permission to access this page'));
       }
       CRM_Utils_System::setTitle(ts('Absences for %1', array(
         1 => CRM_Contact_BAO_Contact::displayName($contactID)
@@ -18,6 +19,10 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     else {
       $session = CRM_Core_Session::singleton();
       if (is_numeric($session->get('userID'))) {
+        if (!(self::checkPermissions($session->get('userID'), 'viewWidget'))) {
+          CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm'));
+          CRM_Core_Error::statusBounce(ts('You do not have permission to access this page'));
+        }
         CRM_Utils_System::setTitle(ts('My Absences'));
         self::registerResources($session->get('userID'));
       }
@@ -61,6 +66,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
            'viewWidget' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'),
            'newAbsences' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'enableNewAbsence'),
            'enableEntitlement' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'enableEntitlements'),
+           'getJobInfo' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'getJobInfo'),
+           'getOwnJobInfo' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'getOwnJobInfo'),
           ),
         'FieldOptions' => CRM_HRAbsence_Page_EmployeeAbsencePage::getFieldOptions(),
         'absenceApp' => array(
@@ -163,8 +170,8 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     switch ($case) {
     case 'viewWidget'://view widget
       if (CRM_Core_Permission::check('administer CiviCRM') ||
-        CRM_Core_Permission::check('view HRAbsences') || $aclPerm ||
-        CRM_Core_Permission::check('edit HRAbsences') ||
+        (CRM_Core_Permission::check('view HRAbsences') && $aclPerm ) ||
+        (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm ) ||
         (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) {
         return TRUE;
       }
@@ -172,13 +179,25 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
     case 'enableNewAbsence': //enable new absence
       if (CRM_Core_Permission::check('administer CiviCRM') ||
         (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm == CRM_Core_Permission::EDIT) ||
-        (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) { 
+        (CRM_Core_Permission::check('manage own HRAbsences') && $cid == $contactID)) {
         return TRUE;
       }
       break;
     case 'enableEntitlements': //enable entitlements
       if (CRM_Core_Permission::check('administer CiviCRM') ||
-        (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm == CRM_Core_Permission::EDIT) ) { 
+        (CRM_Core_Permission::check('edit HRAbsences') && $aclPerm == CRM_Core_Permission::EDIT)) {
+        return TRUE;
+      }
+      break;
+    case 'getJobInfo': //Job related api get info
+      if (CRM_Core_Permission::check('administer CiviCRM') ||
+        CRM_Core_Permission::check('access HRJobs')) {
+        return TRUE;
+      }
+      break;
+    case 'getOwnJobInfo': //Own job related api get info
+      if (CRM_Core_Permission::check('administer CiviCRM') ||
+        (CRM_Core_Permission::check('access HRJobs') || CRM_Core_Permission::check('access own HRJobs') && $aclPerm)) {
         return TRUE;
       }
       break;
