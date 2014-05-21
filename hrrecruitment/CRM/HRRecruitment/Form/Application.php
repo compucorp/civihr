@@ -242,7 +242,7 @@ class CRM_HRRecruitment_Form_Application extends CRM_Core_Form {
       civicrm_api3('custom_value' , 'create', array("custom_{$result['id']}" => $this->_id, 'entity_id' => $caseObj->id));
     }
     if ($this->controller->getButtonName('submit') == "_qf_Application_upload") {
-      CRM_Core_Session::setStatus(ts("Vacancy has been Successfully applied."));
+      CRM_Core_Session::setStatus(ts("Application has been successfully applied."));
       CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/publiclisting', 'reset=1'));
     }
   }
