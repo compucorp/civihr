@@ -189,7 +189,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           }
           $position = "<a class='hr-vacancy-title' href='" . CRM_Utils_System::url('civicrm/case/pipeline', "reset=1&vid={$id}") . "'>{$vacancy['position']}</a>";
           //show the pencil icon to edit vacancy only if the user has appropriate permission
-          if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('administer Vacancy')) {
+          if (CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($id, array('administer CiviCRM', 'administer Vacancy')))  {
             $position .= "<a class='crm-hover-button action-item' title='" . ts('Edit this vacancy') . "' href='" . CRM_Utils_System::url('civicrm/vacancy/add', "reset=1&id={$id}") . "'><span class='icon edit-icon'></span></a>";
           }
           $vacancy['start_date'] = $vacancy['start_date'] ? CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') : NULL;

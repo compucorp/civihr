@@ -321,23 +321,19 @@ function hrjob_civicrm_permission(&$permissions) {
 function hrjob_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $session = CRM_Core_Session::singleton();
   $cid = $session->get('userID');
-  if($entity == 'h_r_job_leave' &&
-    ( $cid == $params['contact_id'] || $params['api.has_parent'] == 1 ) &&
-    $action == 'get') {
-    $permissions['h_r_job_leave']['get'] = array('access own HRJobs');
-  } else {
-    $permissions['h_r_job_leave']['get'] = array('access HRJobs');
-  }
 
-  if ($entity == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions['h_r_job']['get'] = array('access own HRJobs');
-   } else {
-    $permissions['h_r_job']['get'] = array('access CiviCRM', 'access HRJobs');
+  if (substr($entity, 0, 7) == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
+    $permissions[$entity]['get'] = array('access CiviCRM', array('access own HRJobs', 'access HRJobs'));
+   } elseif (substr($entity, 0, 7) == 'h_r_job' && $action == 'get') {
+    $permissions[$entity]['get'] = array('access CiviCRM', 'access HRJobs');
   }
-  $permissions['h_r_job']['create'] = array('access CiviCRM', 'edit HRJobs');
-  $permissions['h_r_job']['update'] = array('access CiviCRM', 'edit HRJobs');
-  $permissions['h_r_job']['duplicate'] = array('access CiviCRM', 'edit HRJobs');
-  $permissions['h_r_job']['delete'] = array('access CiviCRM', 'delete HRJobs');
+  if (substr($entity, 0, 7) == 'h_r_job') {
+    $permissions[$entity]['create'] = array('access CiviCRM', 'edit HRJobs');
+    $permissions[$entity]['update'] = array('access CiviCRM', 'edit HRJobs');
+    $permissions[$entity]['replace'] = array('access CiviCRM', 'edit HRJobs');
+    $permissions[$entity]['duplicate'] = array('access CiviCRM', 'edit HRJobs');
+    $permissions[$entity]['delete'] = array('access CiviCRM', 'delete HRJobs');
+  }
   $permissions['CiviHRJob'] = $permissions['h_r_job'];
 }
 

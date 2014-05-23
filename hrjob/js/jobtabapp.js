@@ -9,7 +9,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
     jobCollection.fetch({
       success: function() {
         HRApp.JobTabApp.Tree.Controller.show(CRM.jobTabApp.contact_id, jobCollection);
-        if (CRM.HRApp.Common.Navigation.getCurrentRoute() === "") {  /* HR-244 -- commented to show job tab in presence of "Absence" tab */
+        //if (CRM.HRApp.Common.Navigation.getCurrentRoute() === "") {  /* HR-244 -- commented to show job tab in presence of "Absence" tab */
           if (jobCollection.isEmpty()) {
             // Stay on the default unrouted page (no #cid/hrjob in URL) but display an error.
             JobTabApp.Intro.Controller.showIntro(CRM.jobTabApp.contact_id);
@@ -18,7 +18,7 @@ CRM.HRApp.module('JobTabApp', function(JobTabApp, HRApp, Backbone, Marionette, $
             var job = jobCollection.first();
             HRApp.trigger('hrjob:summary:show', job.get('contact_id'), job.get('id'));
           }
-          }
+          //}
       },
       error: function(collection, errorData) {
         var errorView = new HRApp.Common.Views.Failed();
