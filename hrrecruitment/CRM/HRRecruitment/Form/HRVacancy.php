@@ -96,8 +96,12 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     if (!empty($params['id'])) {
       CRM_HRRecruitment_BAO_HRVacancy::retrieve($params, $defaults);
       //format vacancy start/end date
-      list($defaults['start_date'], $defaults['start_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['start_date'], 'activityDateTime');
-      list($defaults['end_date'], $defaults['end_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['end_date'], 'activityDateTime');
+      if (!empty($defaults['start_date'])) {
+        list($defaults['start_date'], $defaults['start_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['start_date'], 'activityDateTime');
+      }
+      if (!empty($defaults['end_date'])) {
+        list($defaults['end_date'], $defaults['end_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['end_date'], 'activityDateTime');
+      }
 
       //show that only number of permission row(s) which have defaults if any
       if (!empty($defaults['permission']) && count($defaults['permission'])) {
