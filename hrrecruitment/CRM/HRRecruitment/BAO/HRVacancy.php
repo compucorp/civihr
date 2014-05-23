@@ -192,12 +192,12 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           if (CRM_HRRecruitment_BAO_HRVacancyPermission::checkVacancyPermission($id, array('administer CiviCRM', 'administer Vacancy')))  {
             $position .= "<a class='crm-hover-button action-item' title='" . ts('Edit this vacancy') . "' href='" . CRM_Utils_System::url('civicrm/vacancy/add', "reset=1&id={$id}") . "'><span class='icon edit-icon'></span></a>";
           }
-          $vacancy['start_date'] = $vacancy['start_date'] ? CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') : NULL;
-          $vacancy['end_date'] = $vacancy['end_date'] ? CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y') : NULL;
+          $vacancy['start_date'] = !empty($vacancy['start_date']) ? CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') : NULL;
+          $vacancy['end_date'] = !empty($vacancy['end_date']) ? CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y') : NULL;
           $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
             'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
-            'position' => $position ? $position : NULL,
-            'location' => $vacancy['location'] ? $vacancy['location'] : NULL,
+            'position' => $position,
+            'location' => CRM_Utils_Array::value('location', $vacancy),
             'date' => "{$vacancy['start_date']} - {$vacancy['end_date']}",
           );
 

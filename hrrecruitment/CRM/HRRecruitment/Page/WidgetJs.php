@@ -114,12 +114,12 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     $vacancies = civicrm_api3('HRVacancy','get', array('is_template'=> 0, 'status_id'=> 'Open'));
     foreach ($vacancies['values'] as $vacancyKey => $vacancyVal) {
       $row[$vacancyVal['id']]['id'] = $vacancyVal['id'];
-      $row[$vacancyVal['id']]['position'] = ts($vacancyVal['position']);
+      $row[$vacancyVal['id']]['position'] = CRM_Utils_Array::value('position', $vacancyVal);
       $row[$vacancyVal['id']]['positionLink'] = "{$base_url}/civicrm/vacancy/info?id={$vacancyVal['id']}";
-      $row[$vacancyVal['id']]['location'] = ts($vacancyVal['location']);
-      $row[$vacancyVal['id']]['salary'] = $vacancyVal['salary'];
-      $row[$vacancyVal['id']]['startDate'] = CRM_Utils_Date::customFormat($vacancyVal['start_date']);
-      $row[$vacancyVal['id']]['endDate'] = CRM_Utils_Date::customFormat($vacancyVal['end_date']);
+      $row[$vacancyVal['id']]['location'] = CRM_Utils_Array::value('location', $vacancyVal);
+      $row[$vacancyVal['id']]['salary'] = CRM_Utils_Array::value('salary', $vacancyVal);
+      $row[$vacancyVal['id']]['startDate'] = CRM_Utils_Date::customFormat(CRM_Utils_Array::value('start_date', $vacancyVal));
+      $row[$vacancyVal['id']]['endDate'] = CRM_Utils_Date::customFormat(CRM_Utils_Array::value('end_date', $vacancyVal));
       $row[$vacancyVal['id']]['apply'] = "{$base_url}/civicrm/vacancy/apply?id={$vacancyVal['id']}";
     }
     if (!empty($_GET['callback'])) {
@@ -139,14 +139,14 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     $vacancyId = $_GET['id'] ? $_GET['id'] : $vacancyId;
     $vacancy = civicrm_api3('HRVacancy','get', array('id'=>$vacancyId));
     foreach ($vacancy['values'] as $vacancyKey => $vacancyVal) {
-      CRM_Utils_System::setTitle(ts("{$vacancyVal['position']}"));
-      $row['position'] = ts($vacancyVal['position']);
+      CRM_Utils_System::setTitle($vacancyVal['position']);
+      $row['position'] = $vacancyVal['position'];
       $row['id'] = $vacancyVal['id'];
       $row['salary'] = $vacancyVal['salary'];
-      $row['location'] = ts($vacancyVal['location']);
-      $row['description'] = ts($vacancyVal['description']);
-      $row['benefits'] = ts($vacancyVal['benefits']);
-      $row['requirements'] = ts($vacancyVal['requirements']);
+      $row['location'] = $vacancyVal['location'];
+      $row['description'] = $vacancyVal['description'];
+      $row['benefits'] = $vacancyVal['benefits'];
+      $row['requirements'] = $vacancyVal['requirements'];
       $row['apply'] = "{$base_url}/civicrm/vacancy/apply?id={$vacancyVal['id']}";
     }
     $row['applyButton'] = ts("Apply Now");

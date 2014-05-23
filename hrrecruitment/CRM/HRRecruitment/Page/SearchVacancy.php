@@ -172,7 +172,7 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
     while ($dao->fetch()) {
       $rows[$dao->id]['position'] = $dao->position;
-      $rows[$dao->id]['location'] = $location[$dao->location];
+      $rows[$dao->id]['location'] = $dao->location;
       $rows[$dao->id]['salary'] = $dao->salary;
       $rows[$dao->id]['start_date'] = $dao->start_date;
       $rows[$dao->id]['end_date'] = $dao->end_date;
