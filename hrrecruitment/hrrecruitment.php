@@ -473,6 +473,14 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_CaseView') {
+    $params = array('id' => $form->_caseID);
+    CRM_Core_DAO::commonRetrieve('CRM_Case_BAO_Case', $params, $values, array('status_id'));
+    $statuses = CRM_Case_PseudoConstant::caseStatus('label', FALSE, 'AND filter = 1', TRUE);
+    $form->_caseDetails['case_status'] = $statuses[$values['case_status_id']];
+    $form->assign('caseDetails', $form->_caseDetails);
+  }
+
   if ($formName == 'CRM_Case_Form_Activity' || $formName == 'CRM_Contact_Form_Task_Email') {
     $caseId = CRM_Utils_Request::retrieve('caseid', 'String', $form);
     $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($caseId);
