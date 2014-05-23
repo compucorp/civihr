@@ -54,6 +54,12 @@ function hrdemog_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrdemog_civicrm_uninstall() {
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    civicrm_api3('CustomField', 'delete', array('id' => $key['id']));
+  }
+  civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   return _hrdemog_civix_civicrm_uninstall();
 }
 
@@ -61,6 +67,22 @@ function hrdemog_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrdemog_civicrm_enable() {
+  //enable optiongroup and optionvalue
+  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
+    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
+    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
+    foreach ($optionVaId['values'] as $key) {
+      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 1);
+    }
+    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 1);
+  }
+  //enable customgroup and customvalue
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 1);
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    CRM_Core_BAO_CustomField::setIsActive($key['id'],1);
+  }
   return _hrdemog_civix_civicrm_enable();
 }
 
@@ -68,6 +90,22 @@ function hrdemog_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrdemog_civicrm_disable() {
+  //disable optiongroup and optionvalue
+  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
+    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
+    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
+    foreach ($optionVaId['values'] as $key) {
+      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 0);
+    }
+    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 0);
+  }
+  //disable customgroup and customvalue
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 0);
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    CRM_Core_BAO_CustomField::setIsActive($key['id'],0);
+  }
   return _hrdemog_civix_civicrm_disable();
 }
 

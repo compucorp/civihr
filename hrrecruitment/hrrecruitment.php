@@ -220,9 +220,9 @@ function hrrecruitment_civicrm_uninstall() {
     }
   }
 
-  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id');
-  foreach ($CaseStatuses as $id => $dontCare) {
-    civicrm_api3('OptionValue', 'delete', array('id' => $id));
+  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id', FALSE);
+  foreach ($CaseStatuses as $id => $value) {
+    civicrm_api3('OptionValue', 'delete', array('id' => $value));
   }
 
   foreach (array('application_profile', 'evaluation_profile') as $name) {
@@ -419,49 +419,51 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
   $vacancyStatus = CRM_Core_OptionGroup::values('vacancy_status');
   $vacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
   $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'find_vacancies', 'id', 'name');
-  $count = 0;
-  foreach ($vacancyStatus as $value => $status) {
-    $vacancyMenuItems[$count] = array(
-      'attributes' => array(
-        'label' => "{$status}",
-        'name' => "{$status}",
-        'url' => "civicrm/vacancy/find?force=1&status={$value}&reset=1",
-        'permission' => NULL,
-        'operator' => 'OR',
-        'separator' => NULL,
-        'parentID' => $parentID,
-        'navID' => 1,
-        'active' => 1
-      )
-    );
-    $count++;
-  }
-  if (!empty($vacancyMenuItems)) {
-    $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
-  }
+  if ($positions = CRM_HRRecruitment_BAO_HRVacancy::getJobPosition()) {
+    $count = 0;
+    foreach ($vacancyStatus as $value => $status) {
+      $vacancyMenuItems[$count] = array(
+        'attributes' => array(
+          'label' => "{$status}",
+          'name' => "{$status}",
+          'url' => "civicrm/vacancy/find?force=1&status={$value}&reset=1",
+          'permission' => NULL,
+          'operator' => 'OR',
+          'separator' => NULL,
+          'parentID' => $parentID,
+          'navID' => 1,
+          'active' => 1
+        )
+      );
+      $count++;
+    }
+    if (!empty($vacancyMenuItems)) {
+      $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
+    }
 
-  $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_applicant', 'id', 'name');
-  $positions = CRM_HRRecruitment_BAO_HRVacancy::getJobPosition();
-  $count = 0;
-  foreach ($positions as $vid => $position) {
-    $menuItems[$count] = array(
-      'attributes' => array(
-        'label' => 'New '. "{$position}",
-        'name' => 'New '. "{$position}",
-        'url' => "civicrm/vacancy/apply?reset=1&id={$vid}&cid=0",
-        'permission' => NULL,
-        'operator' => 'OR',
-        'separator' => NULL,
-        'parentID' => $parentID,
-        'navID' => 1,
-        'active' => 1
-      )
-    );
-    $count++;
-  }
+    $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'new_applicant', 'id', 'name');
+    $positions = CRM_HRRecruitment_BAO_HRVacancy::getJobPosition();
+    $count = 0;
+    foreach ($positions as $vid => $position) {
+      $menuItems[$count] = array(
+        'attributes' => array(
+          'label' => 'New '. "{$position}",
+          'name' => 'New '. "{$position}",
+          'url' => "civicrm/vacancy/apply?reset=1&id={$vid}&cid=0",
+          'permission' => NULL,
+          'operator' => 'OR',
+          'separator' => NULL,
+          'parentID' => $parentID,
+          'navID' => 1,
+          'active' => 1
+        )
+      );
+      $count++;
+    }
 
-  if (!empty($menuItems)) {
-    $params[$vacancyID]['child'][$parentID]['child'] = $menuItems;
+    if (!empty($menuItems)) {
+      $params[$vacancyID]['child'][$parentID]['child'] = $menuItems;
+    }
   }
 }
 

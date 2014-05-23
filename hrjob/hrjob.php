@@ -99,7 +99,6 @@ function hrjob_civicrm_install() {
   );
   CRM_Core_BAO_Navigation::add($importJobMenuTree);
   CRM_Core_BAO_Navigation::resetNavigation();
-
   return _hrjob_civix_civicrm_install();
 }
 
@@ -123,6 +122,16 @@ function hrjob_civicrm_uninstall() {
   CRM_Core_BAO_Navigation::processDelete($importJobId);
   CRM_Core_BAO_Navigation::resetNavigation();
 
+  //delete custom groups and field
+  $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name');
+  civicrm_api3('CustomGroup', 'delete', array('id' => $cgID));
+
+  //delete all option group and values
+  foreach (array('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type') as $jobOptionType) {
+    if ($jobGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $jobOptionType, 'id', 'name')) {
+      CRM_Core_BAO_OptionGroup::del($jobGroupID);
+    }
+  }
   return _hrjob_civix_civicrm_uninstall();
 }
 
@@ -132,7 +141,24 @@ function hrjob_civicrm_uninstall() {
 function hrjob_civicrm_enable() {
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 1));
   CRM_Core_BAO_Navigation::resetNavigation();
-
+  //enable all custom group and fields
+  if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
+    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
+    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+    foreach ($cusFieldResult['values'] as $key => $val) {
+      CRM_Core_BAO_CustomField::setIsActive($key, 1);
+    }
+  }
+  //enable all option group and values
+  foreach (array('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type') as $jobOptionType) {
+    if ($jobGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $jobOptionType, 'id', 'name')) {
+      CRM_Core_BAO_OptionGroup::setIsActive($jobGroupID, 1);
+      $jobFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $jobGroupID, 'return' => "id"));
+      foreach ($jobFieldID['values'] as $key => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($key, 1);
+      }
+    }
+  }
   return _hrjob_civix_civicrm_enable();
 }
 
@@ -142,7 +168,24 @@ function hrjob_civicrm_enable() {
 function hrjob_civicrm_disable() {
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 0));
   CRM_Core_BAO_Navigation::resetNavigation();
-
+  //disable all custom group and custom field
+  if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
+    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+    foreach ($cusFieldResult['values'] as $key => $val) {
+      CRM_Core_BAO_CustomField::setIsActive($key, 0);
+    }
+    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
+  }
+  //disable all option group and values
+  foreach (array('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type') as $jobOptionType) {
+    if ($jobGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $jobOptionType, 'id', 'name')) {
+      $jobFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $jobGroupID, 'return' => "id"));
+      foreach ($jobFieldID['values'] as $key => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($key, 0);
+      }
+      CRM_Core_BAO_OptionGroup::setIsActive($jobGroupID, 0);
+    }
+  }
   return _hrjob_civix_civicrm_disable();
 }
 

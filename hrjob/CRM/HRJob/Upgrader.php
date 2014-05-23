@@ -137,7 +137,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   } // */
-  
+
   public function upgrade_1100() {
     $this->ctx->log->info('Applying update 1100');
   	if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_currency')) {
@@ -177,7 +177,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       $this->executeCustomDataFile('xml/1103_life_provider.xml');
     }
     return TRUE;
-  } 
+  }
   public function upgrade_1105() {
     $this->ctx->log->info('Applying update 1105');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'pension_type')) {
@@ -193,7 +193,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     $this->ctx->log->info('Applying update 1106');
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pension', 'ee_evidence_note')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pension ADD COLUMN ee_evidence_note VARCHAR(127) COMMENT "Employee evidence note"');
-    } 
+    }
     return TRUE;
   }
 
@@ -203,7 +203,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_pension ADD COLUMN ee_contrib_abs decimal(20,2) unsigned DEFAULT NULL COMMENT 'Employee Contribution Absolute Amount'");
     }
     return TRUE;
-  }  
+  }
 
   public function upgrade_1108() {
     $this->ctx->log->info('Applying update 1108');
@@ -251,7 +251,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
         }
         CRM_Core_OptionGroup::deleteAssoc($oKey);
       }
-      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjob_health` 
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjob_health`
         MODIFY COLUMN `provider` int(10) unsigned DEFAULT NULL,
         MODIFY COLUMN `provider_life_insurance` int(10) unsigned DEFAULT NULL,
         ADD CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
@@ -259,7 +259,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
   public function upgrade_1200() {
     $this->ctx->log->info('Applying update 1200');
     if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_leave") && CRM_Core_DAO::checkTableExists("civicrm_hrabsence_type")) {
@@ -324,6 +324,20 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       );
     }
 
+    return TRUE;
+  }
+
+  public function upgrade_1301() {
+    $this->ctx->log->info('Applying update 1301');
+    CRM_Core_DAO::executeQuery(
+      "
+ALTER TABLE  civicrm_hrjob CHANGE period_type period_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+ALTER TABLE  civicrm_hrjob CHANGE notice_unit notice_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+ALTER TABLE civicrm_hrjob_pay CHANGE pay_unit pay_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+ALTER TABLE civicrm_hrjob_health CHANGE plan_type plan_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+ALTER TABLE civicrm_hrjob_health CHANGE plan_type_life_insurance plan_type_life_insurance VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+ALTER TABLE civicrm_hrjob_hour CHANGE hours_unit hours_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
+");
     return TRUE;
   }
 }
