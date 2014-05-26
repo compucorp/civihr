@@ -91,6 +91,7 @@ function hrqual_civicrm_uninstall() {
   foreach (array('Language', 'Computing', 'Finance', 'Management', 'Legal') as $qualGroupType) {
     if($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')){
       CRM_Core_BAO_OptionGroup::del($qualGroupID);
+    }
   }
   //Uninstall CustomGroup and CustomField
   if($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')){
