@@ -91,17 +91,14 @@ function hrqual_civicrm_uninstall() {
   foreach (array('Language', 'Computing', 'Finance', 'Management', 'Legal') as $qualGroupType) {
     if($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')){
       CRM_Core_BAO_OptionGroup::del($qualGroupID);
-      CRM_Core_Error::debug( '$qualGroupID', $qualGroupID );}
   }
   //Uninstall CustomGroup and CustomField
   if($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')){
     civicrm_api3('CustomGroup', 'delete', array('id' => $customGroupID));
-    CRM_Core_Error::debug( '$customGroupID', $customGroupID );
   }
   //Uninstall UFGroup and UFField
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
     CRM_Core_BAO_UFGroup::del($ufID);
-    CRM_Core_Error::debug( '$ufID', $ufID );
   }
   return _hrqual_civix_civicrm_uninstall();
 }

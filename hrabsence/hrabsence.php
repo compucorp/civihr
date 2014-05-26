@@ -128,7 +128,6 @@ function hrabsence_civicrm_uninstall() {
     civicrm_api3('OptionValue', 'delete', $params);
   }
   $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
-  CRM_Core_Error::debug_var( '$absenceTypes', $absenceTypes );
   foreach ($absenceTypes as $id => $absenceValueID) {
     civicrm_api3('OptionValue', 'delete', array('id' => $absenceValueID));
   }
@@ -187,7 +186,6 @@ function hrabsence_civicrm_disable() {
       'id' => $id,
       'is_active' => 0,
     );
-    CRM_Core_Error::debug_var( '$params', $params );
 
     $result = civicrm_api3('OptionValue', 'create', $params);
   }
