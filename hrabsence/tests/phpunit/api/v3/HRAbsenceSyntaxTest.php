@@ -37,6 +37,9 @@ class api_v3_HRAbsenceSyntaxTest extends api_v3_SyntaxConformanceTest {
 
   function setUp() {
     parent::setUp();
+    CRM_Core_BAO_ConfigSetting::enableComponent('CiviContribute');
+    CRM_Core_BAO_ConfigSetting::enableComponent('CiviEvent');
+    CRM_Core_BAO_ConfigSetting::enableComponent('CiviPledge');
   }
 
   function tearDown() {

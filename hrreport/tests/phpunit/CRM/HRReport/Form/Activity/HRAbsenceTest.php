@@ -32,7 +32,7 @@ require_once 'CiviTest/CiviReportTestCase.php';
  * @package CiviCRM
  */
 class CRM_HRReport_Form_Activity_HRAbsenceTest extends CiviReportTestCase {
-  static $_tablesToTruncate = array(
+  protected $_tablesToTruncate = array(
     'civicrm_contact',
     'civicrm_email',
     'civicrm_hrabsence_type',
