@@ -329,15 +329,21 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
 
   public function upgrade_1301() {
     $this->ctx->log->info('Applying update 1301');
-    CRM_Core_DAO::executeQuery(
-      "
-ALTER TABLE  civicrm_hrjob CHANGE period_type period_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-ALTER TABLE  civicrm_hrjob CHANGE notice_unit notice_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-ALTER TABLE civicrm_hrjob_pay CHANGE pay_unit pay_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-ALTER TABLE civicrm_hrjob_health CHANGE plan_type plan_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-ALTER TABLE civicrm_hrjob_health CHANGE plan_type_life_insurance plan_type_life_insurance VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-ALTER TABLE civicrm_hrjob_hour CHANGE hours_unit hours_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;
-");
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob")) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob CHANGE period_type period_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob CHANGE notice_unit notice_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+    }
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_pay")) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_pay CHANGE pay_unit pay_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+    }
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_health")) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health CHANGE plan_type plan_type VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_health CHANGE plan_type_life_insurance plan_type_life_insurance VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+    }
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_hour")) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_hrjob_hour CHANGE hours_unit hours_unit VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL;");
+    }
+
     return TRUE;
   }
 }
