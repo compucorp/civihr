@@ -51,7 +51,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceTest extends CiviReportTestCase {
   function setUp() {
     parent::setUp();
     $this->foreignKeyChecksOff();
-    $this->quickCleanup(self::$_tablesToTruncate);
+    $this->quickCleanup($this->_tablesToTruncate);
   }
 
   function tearDown() {

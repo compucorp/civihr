@@ -58,7 +58,7 @@ class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
   function setUp() {
     parent::setUp();
     $this->foreignKeyChecksOff();
-    $this->quickCleanup(self::$_tablesToTruncate);
+    $this->quickCleanup($this->_tablesToTruncate);
   }
 
   function tearDown() {
