@@ -57,7 +57,7 @@ GROUP BY cc.status_id
       $caseStatus[$status['case_status_id']] = array(
         'id' => $status['case_status_id'],
         'title' => $case_status[$status['case_status_id']],
-        'weight' => $status['weight'],
+        'weight' => CRM_Utils_Array::value('case_status_id', $status),
         'count' => CRM_Utils_Array::value($status['case_status_id'], $stagesCount, 0),
       );
     }

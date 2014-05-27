@@ -71,7 +71,7 @@ function hrcase_civicrm_uninstall() {
  * Enable/Disable example case type
  */
 function hrcase_example_caseType($is_active) {
-  $exampleCaseType = array('adult_day_care_referral', 'housing_support');
+  $exampleCaseType = array('AdultDayCareReferral', 'HousingSupport');
   $caseTypes = CRM_Case_PseudoConstant::caseType('name');
   foreach($exampleCaseType as $exampleCaseType) {
     $caseTypesGroupId = array_search($exampleCaseType, $caseTypes);
