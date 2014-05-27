@@ -127,6 +127,11 @@ function hrabsence_civicrm_uninstall() {
     );
     civicrm_api3('OptionValue', 'delete', $params);
   }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
+  foreach ($absenceTypes as $id => $absenceValueID) {
+    civicrm_api3('OptionValue', 'delete', array('id' => $absenceValueID));
+  }
+
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -153,6 +158,10 @@ function hrabsence_civicrm_enable() {
     );
     civicrm_api3('OptionValue', 'create', $params);
   }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id',false);
+  foreach ($absenceTypes as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
+  }
   return _hrabsence_civix_civicrm_enable();
 }
 
@@ -177,7 +186,12 @@ function hrabsence_civicrm_disable() {
       'id' => $id,
       'is_active' => 0,
     );
+
     $result = civicrm_api3('OptionValue', 'create', $params);
+  }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
+  foreach ($absenceTypes as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
   }
   return _hrabsence_civix_civicrm_disable();
 }
