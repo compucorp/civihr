@@ -31,7 +31,7 @@ require_once 'CiviTest/CiviUnitTestCase.php';
  *  Include dataProvider for tests
  */
 class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
-  static $_tablesToTruncate = array(
+  protected $_tablesToTruncate = array(
     'civicrm_hrjob',
     'civicrm_hrjob_health',
     'civicrm_hrjob_hour',
@@ -58,7 +58,7 @@ class CRM_HRJob_BAO_QueryTest extends CiviUnitTestCase {
   function setUp() {
     parent::setUp();
     $this->foreignKeyChecksOff();
-    $this->quickCleanup(self::$_tablesToTruncate);
+    $this->quickCleanup($this->_tablesToTruncate);
   }
 
   function tearDown() {

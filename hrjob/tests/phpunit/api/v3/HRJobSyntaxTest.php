@@ -40,7 +40,7 @@ class api_v3_HRJobSyntaxTest extends api_v3_SyntaxConformanceTest {
   }
 
   function tearDown() {
-    parent::tearDown(); 
+    parent::tearDown();
     $this->quickCleanup(array(
       'civicrm_hrjob',
       'civicrm_hrjob_health',
