@@ -157,6 +157,20 @@ function hrrecruitment_civicrm_install() {
       'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
       'permission_operator' => 'OR',
     ),
+    array(
+      'label' => ts('Search by Application Form Fields'),
+      'name' => 'find_application',
+      'url' => 'civicrm/case/search?reset=1',
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
+      'permission_operator' => 'OR',
+    ),
+    array(
+      'label' => ts('Search by Evaluation Criteria'),
+      'name' => 'find_evaluation',
+      'url' => 'civicrm/activity/search?reset=1',
+      'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
+      'permission_operator' => 'OR',
+    ),
   );
 
   foreach ($vacancyMenuTree as $key => $menuItems) {
