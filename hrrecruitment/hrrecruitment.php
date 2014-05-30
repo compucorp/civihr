@@ -539,6 +539,11 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
       CRM_Core_BAO_UFGroup::setProfileDefaults($contactID, $profileFields, $def);
       $form->setDefaults($def);
 
+      //auto populate assignee contact name with vacancy related permission
+      $evaluateContactID = CRM_HRRecruitment_BAO_HRVacancyPermission::getPermissionContact($vacancyID, 'evaluate Applicants');
+      $defaults['assignee_contact_id'] = $evaluateContactID;
+      $form->setDefaults($defaults);
+
       //build evaluaiton profile fields
       foreach ($profileFields as $profileFieldKey => $profileFieldVal) {
         CRM_Core_BAO_UFGroup::buildProfile($form, $profileFieldVal, CRM_Profile_Form::MODE_EDIT, $contactID, TRUE, FALSE, NULL);

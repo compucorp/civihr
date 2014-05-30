@@ -85,4 +85,26 @@ class CRM_HRRecruitment_BAO_HRVacancyPermission extends CRM_HRRecruitment_DAO_HR
     return $vacancyPermissions;
   }
 
+  /**
+   * Retreive contact ID having specific permission from particular vacancy ID
+   *
+   * @param int $vacancyID vacancy ID
+   * @param String $permissionName
+   *
+   * @return array found contact IDs for specified permission name
+   * @access public
+   */
+  public static function getPermissionContact($vacancyID, $permissionName) {
+    $permissionContactId = array();
+    if ($permissionName) {
+      $permissiondao = new CRM_HRRecruitment_DAO_HRVacancyPermission;
+      $permissiondao->vacancy_id = $vacancyID;
+      $permissiondao->permission = $permissionName;
+      $permissiondao->find();
+      while ($permissiondao->fetch()) {
+        $permissionContactId[] = $permissiondao->contact_id;
+      }
+    }
+    return $permissionContactId;
+  }
 }
