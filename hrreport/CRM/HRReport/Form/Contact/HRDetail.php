@@ -40,7 +40,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
 
   function __construct() {
     $this->_exposeContactID = $this->_emailField = FALSE;
-    $this->_customGroupJoin = 'INNER JOIN';
+    $this->_customGroupJoin = 'LEFT JOIN';
 
     $this->_columns = array(
       'civicrm_contact' =>
@@ -201,8 +201,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           'hrjob_department'    => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
-
-          'hrjob_period_start_date' => array(),
+          'hrjob_period_start_date' => array(
+            'statistics' =>
+              array('max' => ts('Job Start Date'),
+            ),
+           ),
           'hrjob_period_end_date'   => array(),
         ),
         'filters' =>
@@ -429,6 +432,43 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
                                {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
     }
+  }
+
+  function groupBy() {
+    parent::groupBy();
+    $groupBys[] = "{$this->_aliases['civicrm_contact']}.id";
+    if (!empty($groupBys)) {
+      $this->_groupBy = "GROUP BY " . implode(', ', $groupBys);
+    }
+  }
+
+  function customDataFrom() {
+    parent::customDataFrom();
+    $params = array('name'=>'HRJob_Summary');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
+    if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
+      $mapper = CRM_Core_BAO_CustomQuery::$extendsMap;
+      $extendsTable = $mapper[$cGrp['extends']];
+      $baseJoin = CRM_Utils_Array::value($cGrp['extends'], $this->_customGroupExtendsJoin, "{$this->_aliases[$extendsTable]}.id");
+      $this->_from .= "LEFT JOIN {$cGrp['table_name']} {$this->_aliases[$cGrp['table_name']]} ON {$this->_aliases[$cGrp['table_name']]}.entity_id = {$baseJoin}";
+    }
+  }
+
+  function where() {
+    $params = array('name'=>'Final_Termination_Date');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
+    $params = array('name'=>'HRJob_Summary');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
+    $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
+    if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
+      $this->_whereClauses[] = "{$dbAlias} > now() OR {$dbAlias} IS NULL";
+    }
+    if (empty($this->_params["hrjob_period_end_date_value"]) &&
+      empty($this->_params["hrjob_period_end_date_relative"])) {
+      $this->_whereClauses[] = "{$this->_aliases['civicrm_hrjob']}.period_end_date > now()";
+    }
+    $this->_havingClauses[] = "MAX({$this->_aliases['civicrm_hrjob']}.period_start_date)";
+    parent::where();
   }
 
   function alterDisplay(&$rows) {
