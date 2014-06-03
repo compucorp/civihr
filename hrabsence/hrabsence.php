@@ -127,6 +127,15 @@ function hrabsence_civicrm_uninstall() {
     );
     civicrm_api3('OptionValue', 'delete', $params);
   }
+  foreach (array('Absence_Comment', 'Type_of_Sickness') as $abType) {
+    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $abType, 'id', 'name')) {
+      civicrm_api3('CustomGroup', 'delete', array('id' => $cusGroupID));
+    }
+  }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
+  foreach ($absenceTypes as $id => $absenceValueID) {
+    civicrm_api3('OptionValue', 'delete', array('id' => $absenceValueID));
+  }
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -134,7 +143,12 @@ function hrabsence_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrabsence_civicrm_enable() {
+  //Enable the Navigation menu and submenus
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 1));
+  foreach (array('my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report') as $menuNames){
+    $menuIds = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuNames, 'id', 'name');
+    CRM_Core_BAO_Navigation::setIsActive($menuIds, 1);
+  }
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $params = array(
@@ -153,6 +167,19 @@ function hrabsence_civicrm_enable() {
     );
     civicrm_api3('OptionValue', 'create', $params);
   }
+  foreach (array('Absence_Comment', 'Type_of_Sickness') as $abType) {
+    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $abType, 'id', 'name')) {
+      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
+      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+      foreach ($cusFieldResult['values'] as $key => $val) {
+        CRM_Core_BAO_CustomField::setIsActive($key, 1);
+      }
+    }
+  }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id',False);
+  foreach ($absenceTypes as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
+  }
   return _hrabsence_civix_civicrm_enable();
 }
 
@@ -160,7 +187,12 @@ function hrabsence_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrabsence_civicrm_disable() {
+  //Disable the Navigation menu and submenus
   CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Absences'), array('is_active' => 0));
+  foreach (array('my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report') as $menuNames){
+    $menuIds = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuNames, 'id', 'name');
+    CRM_Core_BAO_Navigation::setIsActive($menuIds, 0);
+  }
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $params = array(
@@ -178,6 +210,19 @@ function hrabsence_civicrm_disable() {
       'is_active' => 0,
     );
     $result = civicrm_api3('OptionValue', 'create', $params);
+  }
+  foreach (array('Absence_Comment', 'Type_of_Sickness') as $abType) {
+    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $abType, 'id', 'name')) {
+      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
+      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+      foreach ($cusFieldResult['values'] as $key => $val) {
+        CRM_Core_BAO_CustomField::setIsActive($key, 0);
+      }
+    }
+  }
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
+  foreach ($absenceTypes as $value => $id) {
+    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
   }
   return _hrabsence_civix_civicrm_disable();
 }
