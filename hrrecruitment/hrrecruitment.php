@@ -536,6 +536,15 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     /* build the evaluation profile on the evaluation activity */
     //check for evaluation activity type
     if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation')) {
+      //rename label and status name for Activity Status
+      $activityStatus = $form->getElement('status_id');
+      $activityStatus->_options = array();
+      $scheduleStatus = CRM_Core_OptionGroup::getValue('activity_status','Scheduled');
+      $completeStatus = CRM_Core_OptionGroup::getValue('activity_status','Completed');
+      $activityStatus->addOption('Scheduled', $scheduleStatus);
+      $activityStatus->addOption('Complete Evaluation', $completeStatus);
+      $activityStatus->_label = 'Evaluation Status';
+
       //retriev Case ID, Activity ID, Contact ID
       $caseID = CRM_Utils_Request::retrieve('caseid', 'Positive', $form);
       $activityID = CRM_Utils_Request::retrieve('id', 'Positive', $form);
