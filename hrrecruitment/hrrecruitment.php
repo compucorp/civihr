@@ -273,11 +273,8 @@ function hrrecruitment_civicrm_uninstall() {
  */
 function hrrecruitment_civicrm_enable() {
   //Enable the Navigation menu and submenus
-  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Vacancies'), array('is_active' => 1));
-  foreach (array('public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates') as $menuNames){
-    $menuIds = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuNames, 'id', 'name');
-    CRM_Core_BAO_Navigation::setIsActive($menuIds, 1);
-  }
+  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates')";
+  CRM_Core_DAO::executeQuery($sql);
   $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'civicrm/vacancy/dashboard?reset=1', 'id', 'url');
   CRM_Core_BAO_Navigation::setIsActive($menuId, 1);
   CRM_Core_BAO_Navigation::resetNavigation();
@@ -329,11 +326,8 @@ function hrrecruitment_civicrm_enable() {
  */
 function hrrecruitment_civicrm_disable() {
   //Disable the Navigation menu and submenus
-  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'Vacancies'), array('is_active' => 0));
-  foreach (array('public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates') as $menuNames){
-    $menuIds = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuNames, 'id', 'name');
-    CRM_Core_BAO_Navigation::setIsActive($menuIds, 0);
-  }
+  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates')";
+  CRM_Core_DAO::executeQuery($sql);
   $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'civicrm/vacancy/dashboard?reset=1', 'id', 'url');
   CRM_Core_BAO_Navigation::setIsActive($menuId, 0);
   CRM_Core_BAO_Navigation::resetNavigation();
