@@ -101,11 +101,9 @@ function hrcase_civicrm_enable() {
     }
   }
   // enable activity type
-  foreach (array('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter') as $activityType) {
-    if ($id = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $activityType, 'id', 'name')) {
-      CRM_Core_BAO_OptionValue::setIsActive($id, 1);
-    }
-  }
+  $sql = "UPDATE civicrm_option_value SET is_active=1 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+  CRM_Core_DAO::executeQuery($sql);
+
   // enable custom group
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
@@ -131,11 +129,9 @@ function hrcase_civicrm_disable() {
   	}
   }
   //disable activity type
-  foreach (array('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter') as $activityType) {
-    if ($id = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $activityType, 'id', 'name')) {
-      CRM_Core_BAO_OptionValue::setIsActive($id, 0);
-    }
-  }
+  $sql = "UPDATE civicrm_option_value SET is_active=0 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+  CRM_Core_DAO::executeQuery($sql);
+
   //disable custom group
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
