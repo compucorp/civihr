@@ -201,11 +201,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           'hrjob_department'    => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
-          'hrjob_period_start_date' => array(
-            'statistics' =>
-              array('max' => ts('Job Start Date'),
-            ),
-           ),
+          'hrjob_period_start_date' => array(),
           'hrjob_period_end_date'   => array(),
         ),
         'filters' =>
@@ -385,7 +381,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
              ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_phone']}.contact_id AND
                  {$this->_aliases['civicrm_phone']}.is_primary = 1)
       INNER JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
-             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
+             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1)
       LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
              ON ({$this->_aliases['civicrm_hrjob_health']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_hrjob_hour {$this->_aliases['civicrm_hrjob_hour']}
@@ -434,14 +430,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     }
   }
 
-  function groupBy() {
-    parent::groupBy();
-    $groupBys[] = "{$this->_aliases['civicrm_contact']}.id";
-    if (!empty($groupBys)) {
-      $this->_groupBy = "GROUP BY " . implode(', ', $groupBys);
-    }
-  }
-
   function customDataFrom() {
     parent::customDataFrom();
     $params = array('name'=>'HRJob_Summary');
@@ -467,7 +455,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       empty($this->_params["hrjob_period_end_date_relative"])) {
       $this->_whereClauses[] = "{$this->_aliases['civicrm_hrjob']}.period_end_date > now()";
     }
-    $this->_havingClauses[] = "MAX({$this->_aliases['civicrm_hrjob']}.period_start_date)";
+    $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
+
     parent::where();
   }
 
