@@ -137,7 +137,8 @@ function hrjob_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrjob_civicrm_enable() {
-  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 1));
+  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('jobs','jobImport')";
+  CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
   //enable all custom group and fields
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
@@ -164,7 +165,8 @@ function hrjob_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrjob_civicrm_disable() {
-  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'jobImport'), array('is_active' => 0));
+  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('jobs','jobImport')";
+  CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 
   //disable all custom group and custom field
