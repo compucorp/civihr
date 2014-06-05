@@ -108,7 +108,7 @@ function hrrecruitment_civicrm_install() {
   );
   $vacancyNavigation->copyValues($params);
   $vacancyNavigation->save();
-
+  $evalID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
   $vacancyMenuTree = array(
     array(
       'label' => ts('Dashboard'),
@@ -167,7 +167,7 @@ function hrrecruitment_civicrm_install() {
     array(
       'label' => ts('Search by Evaluation Criteria'),
       'name' => 'find_evaluation',
-      'url' => 'civicrm/activity/search?reset=1',
+      'url' => "civicrm/activity/search?force=1&type={$evalID}&reset=1",
       'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
       'permission_operator' => 'OR',
     ),
@@ -192,6 +192,11 @@ function hrrecruitment_civicrm_install() {
 function hrrecruitment_civicrm_postInstall() {
   $caseTypes = CRM_Case_PseudoConstant::caseType('name');
   $value = array_search('Application', $caseTypes);
+
+  //update url of Find Application
+  CRM_Core_BAO_Navigation::processUpdate(array('name' => 'find_application'), array('url' => "civicrm/case/search?force=1&type={$value}&reset=1"));
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   $value = CRM_Core_DAO::VALUE_SEPARATOR . $value . CRM_Core_DAO::VALUE_SEPARATOR;
   $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$value}' WHERE extends_entity_column_value = 'Application'";
   CRM_Core_DAO::executeQuery($sql);
@@ -487,6 +492,14 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Activity_Form_Search') {
+    $actId = CRM_Utils_Request::retrieve('type', 'Positive', $form);
+    $form->_formValues['activity_type_id'][$actId] = $defaults['activity_type_id'][$actId] = 1;
+    $form->setDefaults($defaults);
+    $form->set('formValues', $form->_formValues);
+    $form->preProcess();
+  }
+
   if ($formName == 'CRM_Case_Form_CaseView') {
     $params = array('id' => $form->_caseID);
     CRM_Core_DAO::commonRetrieve('CRM_Case_BAO_Case', $params, $values, array('status_id'));
