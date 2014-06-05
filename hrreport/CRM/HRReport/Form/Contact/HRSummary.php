@@ -418,7 +418,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       INNER JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
-             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
+             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1 )
       LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
              ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
