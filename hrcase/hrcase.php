@@ -22,6 +22,24 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  $sql = "INSERT INTO `civicrm_relationship_type`
+(`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
+VALUES
+('HR Manager is','HR Manager is','HR Manager','HR Manager','HR Manager','Individual','Individual',NULL,NULL,0,1),
+('Line Manager is','Line Manager is','Line Manager','Line Manager','Line Manager','Individual','Individual',NULL,NULL,0,1)";
+  CRM_Core_DAO::executeQuery($sql);
+
+  $sql = "SELECT count(id) as count FROM `civicrm_relationship_type` WHERE `name_b_a` LIKE 'Recruiting Manager'";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  while($dao->fetch()) {
+    if ($dao->count == 0) {
+      $sql = "INSERT INTO `civicrm_relationship_type`
+    (`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
+    VALUES
+    ('Recruiting Manager is','Recruiting Manager is','Recruiting Manager','Recruiting Manager','Recruiting Manager','Individual','Individual',NULL,NULL,0,1)";
+      CRM_Core_DAO::executeQuery($sql);
+    }
+  }
   hrcase_example_caseType(FALSE);
   return _hrcase_civix_civicrm_install();
 }

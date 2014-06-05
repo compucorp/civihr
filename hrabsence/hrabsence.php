@@ -91,6 +91,21 @@ function hrabsence_civicrm_install() {
     $menuItems['weight'] = $key;
     CRM_Core_BAO_Navigation::add($menuItems);
   }
+
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
+  if ($isEnabled) {
+    $reportParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
+    $params = array(
+      'domain_id' => CRM_Core_Config::domainID(),
+      'label'     => 'Absence Report',
+      'name'      => 'absenceReport',
+      'url'       => 'civicrm/report/list?grp=absence&reset=1',
+      'permission'=> 'access HRReport',
+      'parent_id' => $reportParentId,
+      'is_active' => 1,
+    );
+    CRM_Core_BAO_Navigation::add($params);
+  }
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $params = array(
@@ -108,8 +123,8 @@ function hrabsence_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrabsence_civicrm_uninstall() {
-  $absencesId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
-  CRM_Core_BAO_Navigation::processDelete($absencesId);
+  $query = "DELETE FROM civicrm_navigation WHERE name in ('Absences','absenceReport')";
+  CRM_Core_DAO::executeQuery($query);
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $params = array(
@@ -144,8 +159,13 @@ function hrabsence_civicrm_uninstall() {
  */
 function hrabsence_civicrm_enable() {
   //Enable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('Absences','my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report')";
+  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('Absences','my_absences', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report')";
   CRM_Core_DAO::executeQuery($sql);
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
+  if ($isEnabled) {
+    $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('absenceReport','calendar')";
+    CRM_Core_DAO::executeQuery($sql);
+  }
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $params = array(
@@ -185,7 +205,7 @@ function hrabsence_civicrm_enable() {
  */
 function hrabsence_civicrm_disable() {
   //Disable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Absences','my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report')";
+  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Absences','my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report','absenceReport')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 
