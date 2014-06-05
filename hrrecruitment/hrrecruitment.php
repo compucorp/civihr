@@ -492,6 +492,12 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  //report change
+  if ($formName == 'CRM_Report_Form_Case_Summary' || $formName == 'CRM_Report_Form_Case_Detail') {
+    $statuses = CRM_Case_PseudoConstant::caseStatus('label', FALSE, 'AND filter = 1', TRUE);
+    $form->case_statuses = $form->case_statuses + $statuses ;
+  }
+
   if ($formName == 'CRM_Activity_Form_Search') {
     $actId = CRM_Utils_Request::retrieve('type', 'Positive', $form);
     $form->_formValues['activity_type_id'][$actId] = $defaults['activity_type_id'][$actId] = 1;
@@ -503,7 +509,7 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Case_Form_CaseView') {
     $params = array('id' => $form->_caseID);
     CRM_Core_DAO::commonRetrieve('CRM_Case_BAO_Case', $params, $values, array('status_id'));
-    $statuses = CRM_Case_PseudoConstant::caseStatus('label', FALSE, 'AND filter = 1', TRUE);
+    $statuses = CRM_Case_PseudoConstant::caseStatus('label', FALSE, 'AND (filter IN (0,1) OR filter IS NULL)', TRUE);
     $form->_caseDetails['case_status'] = $statuses[$values['case_status_id']];
     $form->assign('caseDetails', $form->_caseDetails);
   }
@@ -512,7 +518,7 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     $caseId = CRM_Utils_Request::retrieve('caseid', 'String', $form);
     $vacancyID = CRM_HRRecruitment_BAO_HRVacancy::getVacancyIDByCase($caseId);
     $caseId = explode(',', $caseId);
-    $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : $form->_defaultValues['activity_type_id'];
+    $aType = CRM_Utils_Request::retrieve('atype', 'Positive') ? CRM_Utils_Request::retrieve('atype', 'Positive') : CRM_Utils_Array::value('activity_type_id', $form->_defaultValues);
     $evalID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
     /* Check for proper permissions */
     if ($vacancyID && $aType) {
@@ -530,20 +536,23 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     $appValue = array_search('Application', $caseTypes);
     /* TO set vacancy stages as case status for 'Change Case Status' activity */
     if (($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status'))) {
+      $allcase = TRUE;
       foreach($caseId as $key => $val) {
         $caseType = CRM_Case_BAO_Case::getCaseType($val, 'id');
         if ($caseType != $appValue) {
-          CRM_Core_Error::fatal('Case Id is not of type application');
+          $allcase = FALSE;
         }
       }
-      $form->removeElement('case_status_id');
-      $form->_caseStatus = CRM_Case_PseudoConstant::caseStatus('label', TRUE, 'AND filter = 1', TRUE);
-      $form->add('select', 'case_status_id', ts('Case Status'),
-        $form->_caseStatus, TRUE
-      );
-      if ($caseStatusId = CRM_Utils_Request::retrieve('case_status_id', 'Positive', $form)) {
-        $form->freeze('case_status_id');
-        $form->setDefaults(array('case_status_id'=>$caseStatusId));
+      if ($allcase) {
+        $form->removeElement('case_status_id');
+        $form->_caseStatus = CRM_Case_PseudoConstant::caseStatus('label', TRUE, 'AND filter = 1', TRUE);
+        $form->add('select', 'case_status_id', ts('Case Status'),
+          $form->_caseStatus, TRUE
+        );
+        if ($caseStatusId = CRM_Utils_Request::retrieve('case_status_id', 'Positive', $form)) {
+          $form->freeze('case_status_id');
+          $form->setDefaults(array('case_status_id'=>$caseStatusId));
+        }
       }
     }
     /* build the evaluation profile on the evaluation activity */
