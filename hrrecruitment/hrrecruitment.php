@@ -167,7 +167,7 @@ function hrrecruitment_civicrm_install() {
     array(
       'label' => ts('Search by Evaluation Criteria'),
       'name' => 'find_evaluation',
-      'url' => "civicrm/activity/search?force=1&activityID={$evalID}&reset=1",
+      'url' => "civicrm/activity/search?force=1&type={$evalID}&reset=1",
       'permission' => 'view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM',
       'permission_operator' => 'OR',
     ),
@@ -493,7 +493,7 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_Activity_Form_Search') {
-    $actId = CRM_Utils_Request::retrieve('activityID', 'Positive', $form);
+    $actId = CRM_Utils_Request::retrieve('type', 'Positive', $form);
     $form->_formValues['activity_type_id'][$actId] = $defaults['activity_type_id'][$actId] = 1;
     $form->setDefaults($defaults);
     $form->set('formValues', $form->_formValues);
