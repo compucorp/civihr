@@ -1,9 +1,9 @@
 "Job Level","Job Normal Place of Work","Monthly Cost Equivalents","Annual Cost Equivalents"
-"Junior Manager","Headquarters","36668.333333","440020.00"
+"Junior Manager","Headquarters", , 
 "Junior Manager","Home", , 
-"Junior Staff","Headquarters","850.00","10200.00"
-"Junior Staff","Home","4187.083333","50245.00"
-"Senior Manager","Headquarters","25631.666667","307580.00"
-"Senior Manager","Home","39666.666667","476000.00"
-"Senior Staff","Headquarters","7.333333","88.00"
-"Senior Staff","Home","2062.500000","24750.00"
+"Junior Staff","Headquarters","16.666667","200.00"
+"Junior Staff","Home", , 
+"Senior Manager","Headquarters","625.000000","7500.00"
+"Senior Manager","Home", , 
+"Senior Staff","Headquarters", , 
+"Senior Staff","Home", , 

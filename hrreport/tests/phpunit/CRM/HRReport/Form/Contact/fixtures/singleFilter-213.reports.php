@@ -16,8 +16,8 @@ $filters = array(
     'hrjob_period_start_date_to'    => '20101015',
   ),
   array(
-    'hrjob_period_end_date_from'    => '20120120', 
-    'hrjob_period_end_date_to'      => '20120127',
+    'hrjob_period_end_date_from'    => '20190120',
+    'hrjob_period_end_date_to'      => '20210127',
   ),
   array('is_tied_to_funding_op'   => 'eq',  'is_tied_to_funding_value' => '0'),
 
