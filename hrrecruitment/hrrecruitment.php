@@ -273,7 +273,7 @@ function hrrecruitment_civicrm_uninstall() {
  */
 function hrrecruitment_civicrm_enable() {
   //Enable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates')";
+  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates','find_application','find_evaluation')";
   CRM_Core_DAO::executeQuery($sql);
   $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'civicrm/vacancy/dashboard?reset=1', 'id', 'url');
   CRM_Core_BAO_Navigation::setIsActive($menuId, 1);
@@ -326,7 +326,7 @@ function hrrecruitment_civicrm_enable() {
  */
 function hrrecruitment_civicrm_disable() {
   //Disable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates')";
+  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Vacancies','public_list', 'new_vacancy', 'new_template', 'new_applicant', 'find_vacancies', 'find_templates','find_application','find_evaluation')";
   CRM_Core_DAO::executeQuery($sql);
   $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'civicrm/vacancy/dashboard?reset=1', 'id', 'url');
   CRM_Core_BAO_Navigation::setIsActive($menuId, 0);

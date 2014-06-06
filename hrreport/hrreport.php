@@ -49,17 +49,6 @@ function hrreport_civicrm_xmlMenu(&$files) {
 function hrreport_civicrm_install() {
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    $reportParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-    $params = array(
-      'domain_id' => CRM_Core_Config::domainID(),
-      'label'     => 'Absence Report',
-      'name'      => 'absenceReport',
-      'url'       => 'civicrm/report/list?grp=absence&reset=1',
-      'permission'=> 'access HRReport',
-      'parent_id' => $reportParentId,
-      'is_active' => 1,
-    );
-    CRM_Core_BAO_Navigation::add($params);
     $absenceParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
     $calendarId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
     if (empty($calendarId)) {

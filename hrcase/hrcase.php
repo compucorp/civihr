@@ -29,7 +29,7 @@ VALUES
 ('Line Manager is','Line Manager is','Line Manager','Line Manager','Line Manager','Individual','Individual',NULL,NULL,0,1)";
   CRM_Core_DAO::executeQuery($sql);
 
-  $sql = "SELECT count(id) as count FROM `civicrm_relationship_type` WHERE `name_b_a` LIKE 'Recruiting Manager'";
+  $sql = "SELECT count(id) as count FROM `civicrm_relationship_type` WHERE `name_b_a`='Recruiting Manager'";
   $dao = CRM_Core_DAO::executeQuery($sql);
   while($dao->fetch()) {
     if ($dao->count == 0) {
