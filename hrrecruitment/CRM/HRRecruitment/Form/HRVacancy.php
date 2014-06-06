@@ -168,14 +168,15 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
     $caseTypes = CRM_Case_PseudoConstant::caseType('name');
     $application = array_search('Application', $caseTypes);
+    $evalID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation');
 
-    $evalEntity[] = array('entity_name' => 'activity_1', 'entity_type' => 'ActivityModel');
+    $evalEntity[] = array('entity_name' => 'activity_1', 'entity_type' => 'ActivityModel', 'entity_sub_type' => "{$evalID}");
     $appEntities = array();
     $appEntities[] = array('entity_name' => 'contact_1', 'entity_type' => 'IndividualModel');
     $appEntities[] = array('entity_name' => 'case_1', 'entity_type' => 'CaseModel', 'entity_sub_type' => "{$application}");
 
     $this->addProfileSelector('application_profile', '', array('Individual', 'Contact', 'Case'), array('CaseType' => array($application)), $appEntities);
-    $this->addProfileSelector('evaluation_profile', '', array('Activity'), array(), $evalEntity);
+    $this->addProfileSelector('evaluation_profile', '', array('Activity'), array('ActivityType' => array($evalID)), $evalEntity);
 
     $permissionClass = new CRM_Core_Permission_Base;
     $permissions = $permissionClass->getAllModulePermissions();
