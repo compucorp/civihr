@@ -40,7 +40,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
   function __construct() {
     $this->_emailField = FALSE;
-    $this->_customGroupJoin = 'INNER JOIN';
+    $this->_customGroupJoin = 'LEFT JOIN';
     $this->_customGroupGroupBy = TRUE;
     $this->_exposeContactID = FALSE;
 
@@ -392,7 +392,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     unset($this->_columns[$customGroupName]);
 
     // keep relevant group by fields in custom sets
-    $customFieldsToRetain = 
+    $customFieldsToRetain =
       array(
         'Career'         => array('Occupation Type', 'Full-time / Part-time', 'Paid / Unpaid'),
         'Immigration'    => array('Visa Type'),
@@ -402,7 +402,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       );
     foreach ($customFieldsToRetain as $tableTitle => $fieldLabel) {
       $customGroupName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $tableTitle, 'table_name', 'title');
-      if ($customGroupName) { 
+      if ($customGroupName) {
         foreach (array('fields', 'group_bys') as $flds) {
           foreach ($this->_columns[$customGroupName][$flds] as $fieldKey => $fieldVal) {
             if (!in_array($fieldVal['title'], $fieldLabel)) {
@@ -418,7 +418,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       INNER JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
-             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
+             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1 )
       LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
              ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
@@ -437,11 +437,11 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         foreach ($table['fields'] as $fieldName => $field) {
           if (!empty($field['required']) || !empty($this->_params['fields'][$fieldName])) {
             if ($tableName == 'civicrm_hrjob_role') {
-              $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+              $this->_from .= " LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
                   ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
             }
             elseif ($tableName == 'civicrm_hrjob_leave') {
-              $this->_from .= "LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
+              $this->_from .= " LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
                   ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
             }
           }
@@ -457,6 +457,35 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
                            ON ({$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id) AND
                                {$this->_aliases['civicrm_address']}.location_type_id = {$workLocTypeId}\n";
     }
+  }
+
+  function customDataFrom() {
+    parent::customDataFrom();
+    $params = array('name'=>'HRJob_Summary');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
+    if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
+      $mapper = CRM_Core_BAO_CustomQuery::$extendsMap;
+      $extendsTable = $mapper[$cGrp['extends']];
+      $baseJoin = CRM_Utils_Array::value($cGrp['extends'], $this->_customGroupExtendsJoin, "{$this->_aliases[$extendsTable]}.id");
+      $this->_from .= "LEFT JOIN {$cGrp['table_name']} {$this->_aliases[$cGrp['table_name']]} ON {$this->_aliases[$cGrp['table_name']]}.entity_id = {$baseJoin}";
+    }
+  }
+
+  function where() {
+    $params = array('name'=>'Final_Termination_Date');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
+    $params = array('name'=>'HRJob_Summary');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
+    $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
+    if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
+      $this->_whereClauses[] = "{$dbAlias} > now() OR {$dbAlias} IS NULL";
+    }
+    if (empty($this->_params["hrjob_period_end_date_value"]) &&
+      empty($this->_params["hrjob_period_end_date_relative"])) {
+      $this->_whereClauses[] = "{$this->_aliases['civicrm_hrjob']}.period_end_date > now()";
+    }
+    $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
+    parent::where();
   }
 
   function statistics(&$rows) {
@@ -478,8 +507,8 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
               );
             }
       	  }
-        }	
-      } 
+        }
+      }
       else {
       	// after removing group-by we have
       	$sql = "{$this->_select} {$this->_from} {$this->_where} {$this->_having} {$this->_orderBy} {$this->_limit}";
@@ -492,7 +521,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
               'type' => CRM_Utils_Type::T_STRING,
             );
           }
-      	}	
+      	}
       }
     }
     return $statistics;
