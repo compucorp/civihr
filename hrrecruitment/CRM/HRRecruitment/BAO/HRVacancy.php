@@ -390,6 +390,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
    * @access public
    */
   public static function getVacancyIDByCase($caseID) {
+    $vacancyID = NULL;
     $applCaseID = CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_CustomField', 'custom_group_id', 'application_case');
     $cgID = array('custom_group_id' => $applCaseID);
     CRM_Core_BAO_CustomField::retrieve($cgID, $cfID);
@@ -399,7 +400,9 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
       "custom_{$cfID['id']}" => 1,
     );
     $result = CRM_Core_BAO_CustomValueTable::getValues($params);
-    $vacancyID = $result["custom_{$cfID['id']}"];
+    if (array_key_exists("custom_{$cfID['id']}", $result)) {
+      $vacancyID = $result["custom_{$cfID['id']}"];
+    }
     return $vacancyID;
   }
 
