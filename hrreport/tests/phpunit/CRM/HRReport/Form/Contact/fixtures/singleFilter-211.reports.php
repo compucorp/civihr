@@ -15,8 +15,8 @@ $filters = array(
     'hrjob_period_start_date_from'  => '20120127',
     'hrjob_period_start_date_to'    => '20120302'),
   array(
-    'hrjob_period_end_date_from' => '20121215', 
-    'hrjob_period_end_date_to'   => '20130130'),
+    'hrjob_period_end_date_from' => '20121215',
+    'hrjob_period_end_date_to'   => '20160130'),
   array('is_tied_to_funding_op'  => 'eq', 'is_tied_to_funding_value' => '1'),
 
   // HRJobHealth

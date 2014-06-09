@@ -10,11 +10,11 @@ return array(
         'hrjob_position',
       ),
       'filters' => array(
-        'is_enrolled_op' => 'eq',
-        'is_enrolled_value' => 1,
+        'hrjob_is_enrolled_op' => 'in',
+        'hrjob_is_enrolled_value' => 1,
       ),
     ),
     'fixtures/dataset-detail.sql',
     'fixtures/detail-pension.csv',
-  ),
+  )
 );

@@ -60,9 +60,9 @@ INSERT INTO `civicrm_email` (`id`, `contact_id`, `location_type_id`, `email`, `i
 --
 
 INSERT INTO `civicrm_hrjob` (`id`, `contact_id`, `position`, `title`, `is_tied_to_funding`, `funding_notes`, `contract_type`, `level_type`, `period_type`, `period_start_date`, `period_end_date`, `manager_contact_id`, `location`, `is_primary`, `department`) VALUES
-(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2012-03-01', '2013-01-26', 211, 'Headquarters', 1, 'Dept-211'),
+(1, 211, 'Position-211-1', 'Title-211-1', 1, NULL, 'Contractor', 'Senior Staff', 'Permanent', '2012-03-01', '2015-01-26', 211, 'Headquarters', 1, 'Dept-211'),
 (4, 219, 'Position-219-4', 'Title-219-4', NULL, NULL, 'Apprentice', 'Junior Staff', NULL,        '2011-11-23', '2013-04-17', 206, NULL, 1, 'Dept-219'),
-(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Temporary', '2010-10-10', '2012-01-25', 213, 'Home', 1, 'Dept-213');
+(6, 213, 'Position-213-6', 'Title-213-6', 0, NULL, 'Employee', 'Junior Manager', 'Temporary', '2010-10-10', '2020-01-25', 213, 'Home', 1, 'Dept-213');
 
 --
 -- Dumping data for table `civicrm_hrjob_health`

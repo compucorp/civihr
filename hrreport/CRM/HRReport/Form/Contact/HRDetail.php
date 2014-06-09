@@ -90,6 +90,13 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'default_weight' => '0',
             'default_order' => 'ASC'
           ),
+          'id' =>
+          array(
+            'title' => ts('Contact ID'),
+            'default' => '1',
+            'default_weight' => '1',
+            'default_order' => 'ASC'
+          ),
         ),
         'grouping' => array('contact-fields' => ts('Personal Details')),
       ),
