@@ -92,7 +92,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
           'id' =>
           array(
-            'title' => ts('Conact ID'),
+            'title' => ts('Contact ID'),
             'default' => '1',
             'default_weight' => '1',
             'default_order' => 'ASC'
