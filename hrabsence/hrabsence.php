@@ -194,7 +194,7 @@ function hrabsence_civicrm_enable() {
   }
 
   //disable optionGroup and optionValue
-  if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'sick_type_20140606162350', 'id', 'name')) {
+  if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'Sick Type', 'id', 'title')) {
     $sickTypeIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGroupID));
     foreach ($sickTypeIDs['values'] as $sickTypeID) {
       CRM_Core_BAO_OptionValue::setIsActive($sickTypeID['id'], 1);
@@ -244,7 +244,7 @@ function hrabsence_civicrm_disable() {
     }
   }
   //disable optionGroup and optionValue
-  if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'sick_type_20140606162350', 'id', 'name')) {
+  if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'Sick Type', 'id', 'title')) {
     $sickTypeIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGroupID));
     foreach ($sickTypeIDs['values'] as $sickTypeID) {
       CRM_Core_BAO_OptionValue::setIsActive($sickTypeID['id'], 0);

@@ -132,6 +132,8 @@ function hrcase_civicrm_enable() {
       }
     }
   }
+  $sql = "UPDATE `civicrm_relationship_type` SET is_active=1 WHERE name_b_a IN ('HR Manager','Line Manager')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcase_civix_civicrm_enable();
 }
 
@@ -160,6 +162,8 @@ function hrcase_civicrm_disable() {
       }
     }
   }
+  $sql = "UPDATE `civicrm_relationship_type` SET is_active=0 WHERE name_b_a IN ('HR Manager','Line Manager')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcase_civix_civicrm_disable();
 }
 
