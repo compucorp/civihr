@@ -147,6 +147,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           'hrjob_period_type'   => array(),
           'hrjob_department'    => array(),
           'hrjob_location'      => array(),
+          'hrjob_is_primary' => array(),
         ),
 
         'group_bys' =>
@@ -170,6 +171,13 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           //date fields
           'hrjob_period_start_date' => array(),
           'hrjob_period_end_date'   => array(),
+          'hrjob_is_primary' => array(
+            'title' => ts('Job Is Primary?'),
+            'default' => 1,
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
+          ),
 
           // custom field
           'is_tied_to_funding' =>
@@ -418,7 +426,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       INNER JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
-             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1 )
+             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
       LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
              ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
@@ -478,11 +486,13 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
-      $this->_whereClauses[] = "{$dbAlias} > now() OR {$dbAlias} IS NULL";
+      $this->_whereClauses[] = "({$dbAlias} > now() OR {$dbAlias} IS NULL)";
     }
     if (empty($this->_params["hrjob_period_end_date_value"]) &&
-      empty($this->_params["hrjob_period_end_date_relative"])) {
-      $this->_whereClauses[] = "{$this->_aliases['civicrm_hrjob']}.period_end_date > now()";
+      empty($this->_params["hrjob_period_end_date_relative"]) &&
+      $this->_params["hrjob_is_primary_value"] == 1) {
+      $this->_whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.period_end_date > now() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL) AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1)";
+
     }
     $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
     parent::where();
@@ -549,6 +559,13 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       if (array_key_exists('civicrm_contact_gender_id', $row)) {
       	if (!empty($row['civicrm_contact_gender_id'])) {
           $rows[$rowNum]['civicrm_contact_gender_id'] = CRM_Utils_Array::value($row['civicrm_contact_gender_id'], $gender);
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_hrjob_is_primary', $row)) {
+      	if (!empty($row['civicrm_hrjob_hrjob_is_primary'])) {
+          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? 'Yes' : 'No';
         }
         $entryFound = TRUE;
       }
