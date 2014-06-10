@@ -486,7 +486,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
-      $this->_whereClauses[] = "{$dbAlias} > now() OR {$dbAlias} IS NULL";
+      $this->_whereClauses[] = "({$dbAlias} > now() OR {$dbAlias} IS NULL)";
     }
     if (empty($this->_params["hrjob_period_end_date_value"]) &&
       empty($this->_params["hrjob_period_end_date_relative"]) &&
