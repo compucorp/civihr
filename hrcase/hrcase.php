@@ -22,6 +22,24 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  $sql = "INSERT INTO `civicrm_relationship_type`
+(`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
+VALUES
+('HR Manager is','HR Manager is','HR Manager','HR Manager','HR Manager','Individual','Individual',NULL,NULL,0,1),
+('Line Manager is','Line Manager is','Line Manager','Line Manager','Line Manager','Individual','Individual',NULL,NULL,0,1)";
+  CRM_Core_DAO::executeQuery($sql);
+
+  $sql = "SELECT count(id) as count FROM `civicrm_relationship_type` WHERE `name_b_a`='Recruiting Manager'";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  while($dao->fetch()) {
+    if ($dao->count == 0) {
+      $sql = "INSERT INTO `civicrm_relationship_type`
+    (`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
+    VALUES
+    ('Recruiting Manager is','Recruiting Manager is','Recruiting Manager','Recruiting Manager','Recruiting Manager','Individual','Individual',NULL,NULL,0,1)";
+      CRM_Core_DAO::executeQuery($sql);
+    }
+  }
   hrcase_example_caseType(FALSE);
   return _hrcase_civix_civicrm_install();
 }
@@ -64,6 +82,11 @@ function hrcase_civicrm_uninstall() {
     }
   }
   hrcase_example_caseType(TRUE);
+  //delete custom group and custom field
+  foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
+    $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name');
+    civicrm_api3('CustomGroup', 'delete', array('id' => $cgID));
+  }
   return _hrcase_civix_civicrm_uninstall();
 }
 
@@ -72,7 +95,7 @@ function hrcase_civicrm_uninstall() {
  */
 function hrcase_example_caseType($is_active) {
   $exampleCaseType = array('AdultDayCareReferral', 'HousingSupport');
-  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name',FALSE);
   foreach($exampleCaseType as $exampleCaseType) {
     $caseTypesGroupId = array_search($exampleCaseType, $caseTypes);
     $params = array(
@@ -92,9 +115,25 @@ function hrcase_civicrm_enable() {
   foreach($scheduleActions as $actionName) {
     $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
     if (!empty($result['id'])) {
-	  $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
+      $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
     }
   }
+  // enable activity type
+  $sql = "UPDATE civicrm_option_value SET is_active=1 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+  CRM_Core_DAO::executeQuery($sql);
+
+  // enable custom group
+  foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
+    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
+      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
+      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+      foreach ($cusFieldResult['values'] as $key => $val) {
+        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
+      }
+    }
+  }
+  $sql = "UPDATE `civicrm_relationship_type` SET is_active=1 WHERE name_b_a IN ('HR Manager','Line Manager')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcase_civix_civicrm_enable();
 }
 
@@ -109,6 +148,22 @@ function hrcase_civicrm_disable() {
   	  $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
   	}
   }
+  //disable activity type
+  $sql = "UPDATE civicrm_option_value SET is_active=0 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+  CRM_Core_DAO::executeQuery($sql);
+
+  //disable custom group
+  foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
+    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
+      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
+      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
+      foreach ($cusFieldResult['values'] as $key => $val) {
+        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 0);
+      }
+    }
+  }
+  $sql = "UPDATE `civicrm_relationship_type` SET is_active=0 WHERE name_b_a IN ('HR Manager','Line Manager')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcase_civix_civicrm_disable();
 }
 

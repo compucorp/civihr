@@ -54,6 +54,23 @@ function hrcareer_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrcareer_civicrm_uninstall() {
+  //delete custom groups and field
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Career",));
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    civicrm_api3('CustomField', 'delete', array('id' => $key['id']));
+  }
+  civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
+
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrcareer_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::del($ufID);
+  }
+  //delete all option group and values
+  foreach (array('occupation_type_20130617111138', 'full_time_part_time_20130617111405', 'paid_unpaid_20130617111520') as $careerOptionType) {
+    if ($careerGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $careerOptionType, 'id', 'name')) {
+      CRM_Core_BAO_OptionGroup::del($careerGroupID);
+    }
+  }
   return _hrcareer_civix_civicrm_uninstall();
 }
 
@@ -61,6 +78,33 @@ function hrcareer_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrcareer_civicrm_enable() {
+  //enable all option groups
+  foreach (array('occupation_type_20130617111138', 'full_time_part_time_20130617111405', 'paid_unpaid_20130617111520') as $careerOptionType) {
+    if ($careerGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $careerOptionType, 'id', 'name')) {
+      CRM_Core_BAO_OptionGroup::setIsActive($careerGroupID, 1);
+      $careerValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $careerGroupID,));
+      foreach ($careerValueIDs['values'] as $careerValueID => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($careerValueID, 1);
+      }
+    }
+  }
+  //enable all custom group and fields
+  if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'id', 'name')) {
+    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
+    foreach ($customFields['values'] as $key => $val) {
+      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
+      CRM_Core_BAO_UFField::setUFField($key, 1);
+    }
+    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 1);
+  }
+  //enable all ufgroup
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrcareer_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+    $ufField = civicrm_api3('UFField', 'get', array('uf_group_id' => $ufID,));
+    foreach ($ufField['values'] as $key) {
+      CRM_Core_BAO_UFField::setIsActive($key['id'], 1);
+    }
+  }
   return _hrcareer_civix_civicrm_enable();
 }
 
@@ -68,6 +112,30 @@ function hrcareer_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrcareer_civicrm_disable() {
+  //disable all custom group and fields
+  if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'id', 'name')) {
+    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
+    foreach ($customFields['values'] as $key => $val) {
+      CRM_Core_BAO_CustomField::setIsActive($key, 0);
+    }
+    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 0);
+  }
+
+  //disable all ufgroup
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrcareer_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+  }
+
+  //disable all option groups
+  foreach (array('occupation_type_20130617111138', 'full_time_part_time_20130617111405', 'paid_unpaid_20130617111520') as $careerOptionType) {
+    if ($careerGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $careerOptionType, 'id', 'name')) {
+      $careerValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $careerGroupID,));
+      foreach ($careerValueIDs['values'] as $careerValueID => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($careerValueID, 0);
+      }
+      CRM_Core_BAO_OptionGroup::setIsActive($careerGroupID, 0);
+    }
+  }
   return _hrcareer_civix_civicrm_disable();
 }
 
@@ -166,7 +234,7 @@ function hrcareer_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
-    
+
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrcareer', 'js/hrcareer.js');
 

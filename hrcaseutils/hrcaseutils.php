@@ -29,6 +29,12 @@ function hrcaseutils_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrcaseutils_civicrm_uninstall() {
+  //delete all activity type
+  foreach (array('Interview Prospect', 'Background Check', 'ID badge') as $opValName) {
+    if ($id = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $opValName, 'id', 'name')) {
+      CRM_Core_BAO_OptionValue::del($id);
+    }
+  }
   return _hrcaseutils_civix_civicrm_uninstall();
 }
 
@@ -36,6 +42,9 @@ function hrcaseutils_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrcaseutils_civicrm_enable() {
+  // enable activity type
+  $sql = "UPDATE civicrm_option_value SET is_active=1 WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcaseutils_civix_civicrm_enable();
 }
 
@@ -43,6 +52,9 @@ function hrcaseutils_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrcaseutils_civicrm_disable() {
+  // disable activity type
+  $sql = "UPDATE civicrm_option_value SET is_active=0 WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')";
+  CRM_Core_DAO::executeQuery($sql);
   return _hrcaseutils_civix_civicrm_disable();
 }
 

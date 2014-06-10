@@ -87,6 +87,20 @@ function hrqual_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrqual_civicrm_uninstall() {
+  //Uninstall OptionGroup and OptionValue
+  foreach (array('Language', 'Computing', 'Finance', 'Management', 'Legal') as $qualGroupType) {
+    if($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')){
+      CRM_Core_BAO_OptionGroup::del($qualGroupID);
+    }
+  }
+  //Uninstall CustomGroup and CustomField
+  if($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')){
+    civicrm_api3('CustomGroup', 'delete', array('id' => $customGroupID));
+  }
+  //Uninstall UFGroup and UFField
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::del($ufID);
+  }
   return _hrqual_civix_civicrm_uninstall();
 }
 
@@ -94,6 +108,29 @@ function hrqual_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrqual_civicrm_enable() {
+  //Enable CustomGroup, CustomFields and UFFields
+  if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
+    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 1);
+    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
+    foreach ($customFields['values'] as $key => $val) {
+      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
+      CRM_Core_BAO_UFField::setUFField($key, 1);
+    }
+  }
+  //Enable UFGroup
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+  }
+  //Enable OptionGroup and OptionValues
+  foreach (array('category_of_skill_20130510015438', 'level_of_skill_20130510015934', 'Language', 'Computing', 'Finance', 'Management', 'Legal'  ) as $qualGroupType) {
+    if ($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')) {
+      CRM_Core_BAO_OptionGroup::setIsActive($qualGroupID, 1);
+      $qualValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $qualGroupID,));
+      foreach ($qualValueIDs['values'] as $qualValueID => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($qualValueID, 1);
+      }
+    }
+  }
   return _hrqual_civix_civicrm_enable();
 }
 
@@ -101,6 +138,28 @@ function hrqual_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrqual_civicrm_disable() {
+  //Disable CustomGroup, CustomFields and UFFields
+  if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
+    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
+    foreach ($customFields['values'] as $key => $val) {
+      CRM_Core_BAO_CustomField::setIsActive($key, 0);
+    }
+    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 0);
+  }
+  //Disable UFGroup
+  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
+    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+  }
+  //Disable OptionGroup and OptionValue
+  foreach (array('category_of_skill_20130510015438', 'level_of_skill_20130510015934', 'Language', 'Computing', 'Finance', 'Management', 'Legal'  ) as $qualGroupType) {
+    if ($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')) {
+      $qualValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $qualGroupID,));
+      foreach ($qualValueIDs['values'] as $qualValueID => $val) {
+        CRM_Core_BAO_OptionValue::setIsActive($qualValueID, 0);
+      }
+      CRM_Core_BAO_OptionGroup::setIsActive($qualGroupID, 0);
+    }
+  }
   return _hrqual_civix_civicrm_disable();
 }
 

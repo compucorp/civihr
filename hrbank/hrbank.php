@@ -54,6 +54,12 @@ function hrbank_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrbank_civicrm_uninstall() {
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Bank_Details",));
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    civicrm_api3('CustomField', 'delete', array('id' => $key['id']));
+  }
+  civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   return _hrbank_civix_civicrm_uninstall();
 }
 
@@ -61,6 +67,12 @@ function hrbank_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrbank_civicrm_enable() {
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Bank_Details",));
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 1);
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    CRM_Core_BAO_CustomField::setIsActive($key['id'],1);
+  }
   return _hrbank_civix_civicrm_enable();
 }
 
@@ -68,6 +80,12 @@ function hrbank_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrbank_civicrm_disable() {
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Bank_Details",));
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 0);
+  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
+  foreach ($customField['values'] as $key) {
+    CRM_Core_BAO_CustomField::setIsActive($key['id'],0);
+  }
   return _hrbank_civix_civicrm_disable();
 }
 

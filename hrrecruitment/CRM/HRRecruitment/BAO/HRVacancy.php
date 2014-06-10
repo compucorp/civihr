@@ -407,6 +407,7 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
   }
 
   public static function getJobPosition($status = 'Open' ) {
+    $position = array();
     $sql = "
 SELECT      hrv.id, hrv.position
 FROM        civicrm_hrvacancy hrv
