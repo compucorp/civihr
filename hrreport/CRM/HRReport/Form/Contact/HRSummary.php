@@ -490,8 +490,8 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
     if (empty($this->_params["hrjob_period_end_date_value"]) &&
       empty($this->_params["hrjob_period_end_date_relative"]) &&
-      $this->_params["hrjob_is_primary_value"] == 1)) {
-      $this->_whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.period_end_date > now() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL)";
+      $this->_params["hrjob_is_primary_value"] == 1) {
+      $this->_whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.period_end_date > now() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL) AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1)";
 
     }
     $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
