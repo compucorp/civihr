@@ -69,19 +69,15 @@ function hrdemog_civicrm_uninstall() {
 function hrdemog_civicrm_enable() {
   //enable optiongroup and optionvalue
   foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
-    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
-    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
-    foreach ($optionVaId['values'] as $key) {
-      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 1);
+    if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $optionName, 'id', 'name')) {
+      $optionGroups[] = $optionGroupID;
     }
-    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 1);
   }
+  _hrdemog_setActiveOptionFields($optionGroups, 1);
+
   //enable customgroup and customvalue
-  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
-  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 1);
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],1);
+ if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', "Extended_Demographics", 'id', 'name')) {
+    _hrdemog_setActiveCustomFields($customGroupID,1);
   }
   return _hrdemog_civix_civicrm_enable();
 }
@@ -92,22 +88,30 @@ function hrdemog_civicrm_enable() {
 function hrdemog_civicrm_disable() {
   //disable optiongroup and optionvalue
   foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
-    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
-    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
-    foreach ($optionVaId['values'] as $key) {
-      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 0);
+    if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $optionName, 'id', 'name')) {
+      $optionGroups[] = $optionGroupID;
     }
-    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 0);
   }
+  _hrdemog_setActiveOptionFields($optionGroups, 0);
+
   //disable customgroup and customvalue
-  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
-  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 0);
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],0);
+  if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', "Extended_Demographics", 'id', 'name')) {
+    _hrdemog_setActiveCustomFields($customGroupID,0);
   }
   return _hrdemog_civix_civicrm_disable();
 }
+
+function _hrdemog_setActiveOptionFields($optionGroup, $setActive) {
+  $optionGroupIDs = implode(',',$optionGroup );
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroupIDs})");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroupIDs})");
+}
+
+function _hrdemog_setActiveCustomFields($customGroupID, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id = {$customGroupID}");
+}
+
 
 /**
  * Implementation of hook_civicrm_upgrade

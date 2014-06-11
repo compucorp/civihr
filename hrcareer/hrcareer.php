@@ -55,12 +55,10 @@ function hrcareer_civicrm_install() {
  */
 function hrcareer_civicrm_uninstall() {
   //delete custom groups and field
-  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Career",));
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    civicrm_api3('CustomField', 'delete', array('id' => $key['id']));
-  }
-  civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
+  $customGroup = new CRM_Core_DAO_CustomGroup();
+  $customGroup->name = "Career";
+  $customGroup->find(TRUE);
+  CRM_Core_BAO_CustomGroup::deleteGroup($customGroup, TRUE);
 
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrcareer_tab', 'id', 'name')) {
     CRM_Core_BAO_UFGroup::del($ufID);
@@ -79,23 +77,17 @@ function hrcareer_civicrm_uninstall() {
  */
 function hrcareer_civicrm_enable() {
   //enable all option groups
+  $oprionGroups = array();
   foreach (array('occupation_type_20130617111138', 'full_time_part_time_20130617111405', 'paid_unpaid_20130617111520') as $careerOptionType) {
     if ($careerGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $careerOptionType, 'id', 'name')) {
-      CRM_Core_BAO_OptionGroup::setIsActive($careerGroupID, 1);
-      $careerValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $careerGroupID,));
-      foreach ($careerValueIDs['values'] as $careerValueID => $val) {
-        CRM_Core_BAO_OptionValue::setIsActive($careerValueID, 1);
-      }
+      $oprionGroups[] = $careerGroupID;
     }
   }
+  _hrcareer_setActiveOptionFields($oprionGroups, 1);
+
   //enable all custom group and fields
   if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'id', 'name')) {
-    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
-    foreach ($customFields['values'] as $key => $val) {
-      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      CRM_Core_BAO_UFField::setUFField($key, 1);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 1);
+    _hrcareer_setActiveCustomFields($customGroupID, 1);
   }
   //enable all ufgroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrcareer_tab', 'id', 'name')) {
@@ -137,6 +129,20 @@ function hrcareer_civicrm_disable() {
     }
   }
   return _hrcareer_civix_civicrm_disable();
+}
+
+function _hrcareer_setActiveOptionFields($optionGroup, $setActive) {
+  if (!empty($optionGroup)) {
+  $optionGroups = implode(',', $optionGroup);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = '%1' WHERE option_group_id IN (%2)",array(1=>$setActive, 2=>$optionGroups));
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = '%1' WHERE id IN (%2)",array(1=>$setActive, 2=>$optionGroups));
+  }
+}
+
+function _hrcareer_setActiveCustomFields($customGroupID, $setActive) {
+  $sql = "UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, $setActive);
 }
 
 /**

@@ -74,22 +74,11 @@ function hremerg_civicrm_uninstall() {
 function hremerg_civicrm_enable() {
   //enable optionGroup
   if ($emergGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'priority_20130514082429', 'id', 'name')) {
-    CRM_Core_BAO_OptionGroup::setIsActive($emergGroupID, 1);
+    _hremerg_setActiveOptionFields($emergGroupID, 1);
   }
   //enable customgroup
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Emergency_Contact', 'id', 'name')) {
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-  }
-  //enable customfield
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],1);
-  }
-  //enable optionvalue
-  foreach (array('Primary', 'Secondary') as $emergGroupval ) {
-    if ($emergGroupvalID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $emergGroupval, 'id', 'name')) {
-      CRM_Core_BAO_OptionValue::setIsActive($emergGroupvalID, 1);
-    }
+    _hremerg_setActiveCustomFields($cusGroupID, 1);
   }
   return _hremerg_civix_civicrm_enable();
 }
@@ -100,25 +89,26 @@ function hremerg_civicrm_enable() {
 function hremerg_civicrm_disable() {
   //disable optionGroup
   if ($emergGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'priority_20130514082429', 'id', 'name')) {
-    CRM_Core_BAO_OptionGroup::setIsActive($emergGroupID, 0);
+    _hremerg_setActiveOptionFields($emergGroupID, 0);
   }
   //disable customgroup
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Emergency_Contact', 'id', 'name')) {
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
-  }
-  //disable customfield
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],0);
-  }
-  //disable optionvalue
-  foreach (array('Primary', 'Secondary') as $emergGroupval ) {
-    if ($emergGroupvalID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $emergGroupval, 'id', 'name')) {
-      CRM_Core_BAO_OptionValue::setIsActive($emergGroupvalID, 0);
-    }
+    _hremerg_setActiveCustomFields($cusGroupID, 0);
   }
   return _hremerg_civix_civicrm_disable();
 }
+
+function _hremerg_setActiveOptionFields($optionGroup, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id = {$optionGroup}");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id = {$optionGroup}");
+}
+
+function _hremerg_setActiveCustomFields($customGroupID, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id = {$customGroupID}");
+}
+
+
 
 /**
  * Implementation of hook_civicrm_upgrade

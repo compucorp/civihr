@@ -125,15 +125,11 @@ function hrcase_civicrm_enable() {
   // enable custom group
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      }
+      $customGroups[] = $cusGroupID;
     }
   }
-  $sql = "UPDATE `civicrm_relationship_type` SET is_active=1 WHERE name_b_a IN ('HR Manager','Line Manager')";
-  CRM_Core_DAO::executeQuery($sql);
+  _hrcase_setActiveCustomFields($customGroups, 1);
+
   return _hrcase_civix_civicrm_enable();
 }
 
@@ -155,17 +151,23 @@ function hrcase_civicrm_disable() {
   //disable custom group
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 0);
-      }
+      $customGroups[] = $cusGroupID;
     }
   }
-  $sql = "UPDATE `civicrm_relationship_type` SET is_active=0 WHERE name_b_a IN ('HR Manager','Line Manager')";
-  CRM_Core_DAO::executeQuery($sql);
+  _hrcase_setActiveCustomFields($customGroups, 0);
+
   return _hrcase_civix_civicrm_disable();
 }
+
+function _hrcase_setActiveCustomFields($customGroupID, $setActive) {
+  if (!empty($customGroupID)) {
+    $customGroupIDs = implode(',',$customGroupID);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id IN ({$customGroupIDs})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id IN ({$customGroupIDs})");
+  }
+  CRM_Core_DAO::executeQuery("UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ('HR Manager','Line Manager')");
+}
+
 
 /**
  * Implementation of hook_civicrm_upgrade
