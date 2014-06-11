@@ -94,16 +94,9 @@ function hrcase_civicrm_uninstall() {
  * Enable/Disable example case type
  */
 function hrcase_example_caseType($is_active) {
-  $exampleCaseType = array('AdultDayCareReferral', 'HousingSupport');
-  $caseTypes = CRM_Case_PseudoConstant::caseType('name',FALSE);
-  foreach($exampleCaseType as $exampleCaseType) {
-    $caseTypesGroupId = array_search($exampleCaseType, $caseTypes);
-    $params = array(
-      'id'=> $caseTypesGroupId,
-      'is_active'=> $is_active ? 1 : 0
-    );
-    civicrm_api3('CaseType', 'create', $params);
-  }
+  $isActive = $is_active ? 1 : 0;
+  $sql = "Update civicrm_case_type SET is_active = {$isActive} where name IN ('AdultDayCareReferral', 'HousingSupport', 'adult_day_care_referral', 'housing_support')";
+  CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 }
 
