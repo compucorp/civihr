@@ -138,21 +138,29 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
   } // */
 
   public function upgrade_1100() {
-	$this->ctx->log->info('Planning update 1100'); // PEAR Log interface
-	$params = array(
-	  1 => array("CiviHR Annual and Monthly Cost Equivalents Report", 'String'),
-	);
-	$formValues = CRM_Core_DAO::singleValueQuery('SELECT form_values FROM civicrm_report_instance where title = %1',$params);
-	$arrayFormValues = unserialize($formValues);
-	$arrayFormValues["fields"]["hrjob_pay_currency"] = 1;
-	$arrayFormValues["group_bys"]["hrjob_pay_currency"] = 1;
-	
-	$formValues = serialize($arrayFormValues);
-	$params[2] = array($formValues, 'String');
-	$sql = 'UPDATE civicrm_report_instance SET form_values = %2 WHERE title = %1';
-	CRM_Core_DAO::executeQuery($sql, $params);
-	
-	return TRUE;
-  }	
+    $this->ctx->log->info('Planning update 1100'); // PEAR Log interface
+    $params = array(
+      1 => array("CiviHR Annual and Monthly Cost Equivalents Report", 'String'),
+    );
+    $formValues = CRM_Core_DAO::singleValueQuery('SELECT form_values FROM civicrm_report_instance where title = %1',$params);
+    $arrayFormValues = unserialize($formValues);
+    $arrayFormValues["fields"]["hrjob_pay_currency"] = 1;
+    $arrayFormValues["group_bys"]["hrjob_pay_currency"] = 1;
 
+    $formValues = serialize($arrayFormValues);
+    $params[2] = array($formValues, 'String');
+    $sql = 'UPDATE civicrm_report_instance SET form_values = %2 WHERE title = %1';
+    CRM_Core_DAO::executeQuery($sql, $params);
+
+    return TRUE;
+  }
+
+  public function upgrade_1300() {
+    $this->ctx->log->info('Planning update 1300'); // PEAR Log interface
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_report_instance SET title = 'Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE report_id = 'civihr/detail'");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET label = 'Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE value = 'civihr/detail' AND name = 'CRM_HRReport_Form_Contact_HRDetail'");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET name = 'CiviHR Job Detail Report Template' WHERE entity_type = 'ReportTemplate' AND module = 'org.civicrm.hrreport' AND name= 'CiviHR Contact Detail Report Template'");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET name = 'CiviHR Job Detail Report' WHERE entity_type = 'ReportInstance' AND module = 'org.civicrm.hrreport' AND name= 'CiviHR Contact Detail Report'");
+    return TRUE;
+  }
 }
