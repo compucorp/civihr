@@ -163,9 +163,18 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $this->ctx->log->info('Applying update 1300');
     $sql = "Update civicrm_case_type SET is_active = 0 where name IN ('AdultDayCareReferral', 'HousingSupport', 'adult_day_care_referral', 'housing_support')";
     CRM_Core_DAO::executeQuery($sql);
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation', 'Hrdata')");
+
+    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+    foreach (('Exiting', 'Joining', 'Probation') as $caseName) {
+      $caseID = array_search($caseName, $caseTypes);
+      $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
+    }
+    $query = "UPDATE civicrm_managed
+      SET entity_id = CASE name
+      {$values}
+      END, entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation');";
+    CRM_Core_DAO::executeQuery($query);
     CRM_Core_BAO_Navigation::resetNavigation();
-    CRM_Core_DAO::executeQuery($sql);
     return TRUE;
   }
 }
