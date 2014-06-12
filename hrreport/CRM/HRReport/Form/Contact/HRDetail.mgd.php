@@ -5,26 +5,26 @@
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
 return array (
   array (
-    'name' => 'CiviHR Contact Detail Report Template',
+    'name' => 'CiviHR Job Detail Report Template',
     'entity' => 'ReportTemplate',
     'params' =>
     array (
       'version' => 3,
-      'label' => 'CiviHR Contact Detail Report',
-      'description' => 'HR Report showing drilled down details at individual level. ',
+      'label' => 'CiviHR Job Detail Report',
+      'description' => 'HR Report showing drilled down job details at individual level. ',
       'class_name' => 'CRM_HRReport_Form_Contact_HRDetail',
       'report_url' => 'civihr/detail',
       'component' => '',
     ),
   ),
   array (
-    'name'   => 'CiviHR Contact Detail Report',
+    'name'   => 'CiviHR Job Detail Report',
     'entity' => 'ReportInstance',
     'params' =>
     array (
       'version' => 3,
-      'title'   => 'CiviHR Contact Detail Report',
-      'description' => 'HR Report showing drilled down details at individual level. ',
+      'title'   => 'CiviHR Job Detail Report',
+      'description' => 'HR Report showing drilled down job details at individual level. ',
       'report_id'   => 'civihr/detail',
       'form_values' => serialize(
         array(
