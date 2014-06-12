@@ -842,3 +842,43 @@ function _hrrecruitment_phpunit_populateDB() {
   );
 }
 
+/**
+ * Implementation of hook_civicrm_searchColumns
+ *
+ * @return void
+ */
+function hrrecruitment_civicrm_searchColumns( $objectName, &$headers, &$rows, &$selector ) {
+  $cid = CRM_Utils_Request::retrieve('cid', 'Integer');
+  if ($objectName == 'case' && !empty($cid)) {
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($cid, FALSE, 'Application');
+    foreach ($cases as $key) {
+      unset($rows[$key]);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ *
+ * @return void
+ */
+function hrrecruitment_civicrm_pageRun( &$page ) {
+  if (!empty($page->ajaxResponse['tabCount']) && $page->urlPath['3'] == 'case') {
+    $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($page->_contactId, FALSE, 'Application');
+    $page->ajaxResponse['tabCount'] =  $page->ajaxResponse['tabCount']-count($cases);
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_tabs
+ *
+ * @return void
+ */
+function hrrecruitment_civicrm_tabs( &$tabs, $contactID ) {
+  $cases = CRM_Case_BAO_Case::retrieveCaseIdsByContactId($contactID, FALSE, 'Application');
+  foreach ($tabs as $key=>$val) {
+    if ($val['title'] == 'Assignments') {
+      $tabs[$key]['count'] = $tabs[$key]['count']-count($cases);
+    }
+  }
+}
