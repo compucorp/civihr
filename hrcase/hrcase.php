@@ -40,7 +40,6 @@ VALUES
       CRM_Core_DAO::executeQuery($sql);
     }
   }
-  hrcase_example_caseType(FALSE);
   return _hrcase_civix_civicrm_install();
 }
 
@@ -51,6 +50,9 @@ VALUES
  */
 
 function hrcase_civicrm_postInstall() {
+  //disable example case types
+  hrcase_example_caseType(FALSE);
+
   // Import custom group
   require_once 'CRM/Utils/Migrate/Import.php';
   $import = new CRM_Utils_Migrate_Import();
