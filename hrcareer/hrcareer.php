@@ -133,9 +133,9 @@ function hrcareer_civicrm_disable() {
 
 function _hrcareer_setActiveOptionFields($optionGroup, $setActive) {
   if (!empty($optionGroup)) {
-  $optionGroups = implode(',', $optionGroup);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = '%1' WHERE option_group_id IN (%2)",array(1=>$setActive, 2=>$optionGroups));
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = '%1' WHERE id IN (%2)",array(1=>$setActive, 2=>$optionGroups));
+    $optionGroups = implode(',', $optionGroup);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroups})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroups})");
   }
 }
 
