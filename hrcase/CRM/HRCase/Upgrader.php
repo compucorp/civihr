@@ -165,7 +165,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     CRM_Core_DAO::executeQuery($sql);
 
     $caseTypes = CRM_Case_PseudoConstant::caseType('name');
-    foreach (('Exiting', 'Joining', 'Probation') as $caseName) {
+    foreach (array('Exiting', 'Joining', 'Probation') as $caseName) {
       $caseID = array_search($caseName, $caseTypes);
       $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
     }
