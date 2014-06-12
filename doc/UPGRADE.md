@@ -1,4 +1,4 @@
-## Upgrade: CiviHR (1.1 => 1.3-beta1)
+## Upgrade: CiviHR (1.2 => 1.3-beta1)
 
 > CiviHR 1.3-beta1 requires CiviCRM 4.5.
 >
