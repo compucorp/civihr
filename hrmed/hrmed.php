@@ -79,7 +79,7 @@ function hrmed_civicrm_enable() {
   _hrmed_setActiveOptionFields($optionGroups, 1);
   //enable UFGroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrmed_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+    _hrmed_setUFFields($ufID, 1);
   }
   //enable CustomGroup,CustomFields,UFField
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'id', 'name')) {
@@ -102,7 +102,7 @@ function hrmed_civicrm_disable() {
   _hrmed_setActiveOptionFields($optionGroups, 0);
   //disable UFProfile
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrmed_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+    _hrmed_setUFFields($ufID, 0);
   }
   //disable customGroups,UFFields,customFields
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'id', 'name')) {
@@ -206,6 +206,11 @@ function _hrmed_setActiveOptionFields($optionGroup, $setActive) {
     CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroups})");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroups})");
   }
+}
+
+function _hrmed_setUFFields($ufGroups, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id IN ({$ufGroups})");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE id IN ($ufGroups)");
 }
 
 function _hrmed_setActiveCustomFields($customGroupID, $setActive) {

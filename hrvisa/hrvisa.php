@@ -134,10 +134,7 @@ function hrvisa_civicrm_uninstall() {
   if (!empty($result['id'])) {
     $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
   }
-  //delete optionGroup
-  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
-    CRM_Core_BAO_OptionGroup::del($visaGroupID);
-  }
+
   //delete ufgroup AND uffield
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrvisa_tab', 'id', 'name')) {
     CRM_Core_BAO_UFGroup::del($ufID);
@@ -183,11 +180,6 @@ function _hrvisa_setActiveFields($setActive) {
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id IN ({$customGroupIDs})");
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id IN ({$customGroupIDs})");
 
-  //disable option group and option values
-  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id = {$visaGroupID}");
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id = {$visaGroupID}");
-  }
   //disable UFProfile
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrvisa_tab', 'id', 'name')) {
     CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id = {$ufID}");

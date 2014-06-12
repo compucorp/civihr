@@ -68,7 +68,7 @@ function hrdemog_civicrm_uninstall() {
  */
 function hrdemog_civicrm_enable() {
   //enable optiongroup and optionvalue
-  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
+  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916', 'is_visa_required_20130702051150') as $optionName) {
     if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $optionName, 'id', 'name')) {
       $optionGroups[] = $optionGroupID;
     }
@@ -87,7 +87,7 @@ function hrdemog_civicrm_enable() {
  */
 function hrdemog_civicrm_disable() {
   //disable optiongroup and optionvalue
-  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
+  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916', 'is_visa_required_20130702051150') as $optionName) {
     if ($optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $optionName, 'id', 'name')) {
       $optionGroups[] = $optionGroupID;
     }

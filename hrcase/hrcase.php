@@ -121,7 +121,7 @@ function hrcase_civicrm_enable() {
   // enable activity type
   $sql = "UPDATE civicrm_option_value SET is_active=1 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
   CRM_Core_DAO::executeQuery($sql);
-
+  $customGroups = array();
   // enable custom group
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {

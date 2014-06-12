@@ -114,7 +114,7 @@ function hrqual_civicrm_enable() {
   }
   //Enable UFGroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+    _hrqual_setUFFields($ufID, 1);
   }
   //Enable OptionGroup and OptionValues
   $optionGroups = array();
@@ -137,7 +137,7 @@ function hrqual_civicrm_disable() {
   }
   //Disable UFGroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+    _hrqual_setUFFields($ufID, 0);
   }
   //Disable OptionGroup and OptionValue
   $optionGroups = array();
@@ -242,4 +242,9 @@ function _hrqual_setActiveCustomFields($customGroupID, $setActive) {
   $sql = "UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, $setActive);
+}
+
+function _hrqual_setUFFields($ufGroups, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id IN ({$ufGroups})");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE id IN ($ufGroups)");
 }
