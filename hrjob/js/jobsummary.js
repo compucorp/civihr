@@ -6,6 +6,7 @@
     var finalDate =$('#custom-set-content-'+gid+' .crm-inline-block-content div:nth-child(3) .crm-custom-data').html();
     if (joinDate) {
       var duration = lengthEmployment(joinDate,finalDate);
+      $('#initial_join_date').remove();
       var length = "<div class='crm-summary-row' id='initial_join_date'><div class='crm-label'>Length Of Employment</div><div class='crm-content crm-custom-data lengthEmployment'></div></div>";
       $('#custom-set-content-'+gid+' .crm-inline-block-content').append(length);
       $('.lengthEmployment').html(duration);
