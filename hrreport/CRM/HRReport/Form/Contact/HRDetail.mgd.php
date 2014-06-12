@@ -10,7 +10,7 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'label' => 'Job Detail Report',
+      'label' => 'CiviHR Job Detail Report',
       'description' => 'HR Report showing drilled down job details at individual level. ',
       'class_name' => 'CRM_HRReport_Form_Contact_HRDetail',
       'report_url' => 'civihr/detail',
@@ -23,7 +23,7 @@ return array (
     'params' =>
     array (
       'version' => 3,
-      'title'   => 'Job Detail Report',
+      'title'   => 'CiviHR Job Detail Report',
       'description' => 'HR Report showing drilled down job details at individual level. ',
       'report_id'   => 'civihr/detail',
       'form_values' => serialize(

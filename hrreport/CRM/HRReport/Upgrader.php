@@ -157,8 +157,8 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
 
   public function upgrade_1300() {
     $this->ctx->log->info('Planning update 1300'); // PEAR Log interface
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_report_instance SET title = 'Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE report_id = 'civihr/detail'");
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET label = 'Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE value = 'civihr/detail' AND name = 'CRM_HRReport_Form_Contact_HRDetail'");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_report_instance SET title = 'CiviHR Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE report_id = 'civihr/detail'");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET label = 'CiviHR Job Detail Report', description = 'HR Report showing drilled down job details at individual level. ' WHERE value = 'civihr/detail' AND name = 'CRM_HRReport_Form_Contact_HRDetail'");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET name = 'CiviHR Job Detail Report Template' WHERE entity_type = 'ReportTemplate' AND module = 'org.civicrm.hrreport' AND name= 'CiviHR Contact Detail Report Template'");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET name = 'CiviHR Job Detail Report' WHERE entity_type = 'ReportInstance' AND module = 'org.civicrm.hrreport' AND name= 'CiviHR Contact Detail Report'");
     return TRUE;
