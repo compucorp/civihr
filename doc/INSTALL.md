@@ -6,6 +6,7 @@ CiviCRM 4.4.5+
 > user-experience.  As with any significant change or addition, CiviHR
 > should be evaluated on a test/staging site before installing on a
 > live/production site.
+> CiviHR 1.2.0 is not compatible with CiviCRM 4.5 verion, you can upgrade CiviHR 1.2 to CiviHR 1.3 for CiviCRM 4.5.
 
 ## Download
 

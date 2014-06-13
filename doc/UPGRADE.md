@@ -1,10 +1,12 @@
 ## Upgrade: CiviHR (1.1 => 1.2.0)
 
-> CiviHR 1.2.0 requires CiviCRM 4.4.3+.
+> CiviHR 1.2.0 requires CiviCRM 4.4.5+.
 >
-> If you have an older version of CiviCRM, first upgrade CiviCRM to 4.4.3 or above.
+> If you have an older version of CiviCRM, first upgrade CiviCRM to 4.4.5 or above.
 > (Please follow steps mentioned at:
 > http://wiki.civicrm.org/confluence/display/CRMDOC/Upgrade+Drupal+Sites+to+4.4+-+Drupal+7 )
+> Note that CiviHR 1.2.0 is not compatible with CiviCRM 4.5 verion, you can upgrade CiviHR 1.2 to CiviHR 1.3 for CiviCRM 4.5.
+
 
 Make a backup of the CiviCRM database.
 
