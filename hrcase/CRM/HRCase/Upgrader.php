@@ -151,7 +151,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   public function upgrade_1200() {
     $this->ctx->log->info('Applying update 1200');
     $groupSql = CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_option_group WHERE name = 'case_type'");
-    while ($groupSql->fetch()) {
+    if ($groupSql->fetch()) {
       $sql = "UPDATE civicrm_option_value SET is_active = 0 WHERE option_group_id = {$groupSql->id} AND name IN ('adult_day_care_referral', 'housing_support')";
       CRM_Core_DAO::executeQuery($sql);
       CRM_Core_BAO_Navigation::resetNavigation();
