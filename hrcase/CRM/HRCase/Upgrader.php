@@ -144,21 +144,36 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     civicrm_api3('setting', 'create', array(
       'domain_id' => CRM_Core_Config::domainID(),
       'enable_components' => $enableComponents,
-    )); 
+    ));
     CRM_Core_Component::flushEnabledComponents();
   }
 
   public function upgrade_1200() {
     $this->ctx->log->info('Applying update 1200');
-    $caseTypesGroupId = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'case_type', 'return' => 'id'));
-    $oarray = array('adult_day_care_referral', 'housing_support');
-    foreach($oarray as $oarray) {
-      $params = array('name' => $oarray, 'option_group_id' => $caseTypesGroupId);
-      CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
-      if($defaults['id']) {
-        CRM_Core_BAO_OptionValue::setIsActive($defaults['id'], 0);
-      }
+    $groupSql = CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_option_group WHERE name = 'case_type'");
+    if ($groupSql->fetch()) {
+      $sql = "UPDATE civicrm_option_value SET is_active = 0 WHERE option_group_id = {$groupSql->id} AND name IN ('adult_day_care_referral', 'housing_support')";
+      CRM_Core_DAO::executeQuery($sql);
+      CRM_Core_BAO_Navigation::resetNavigation();
     }
+    return TRUE;
+  }
+
+  public function upgrade_1300() {
+    $this->ctx->log->info('Applying update 1300');
+    $sql = "Update civicrm_case_type SET is_active = 0 where name IN ('AdultDayCareReferral', 'HousingSupport', 'adult_day_care_referral', 'housing_support')";
+    CRM_Core_DAO::executeQuery($sql);
+
+    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+    foreach (array('Exiting', 'Joining', 'Probation') as $caseName) {
+      $caseID = array_search($caseName, $caseTypes);
+      $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
+    }
+    $query = "UPDATE civicrm_managed
+      SET entity_id = CASE name
+      {$values}
+      END, entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation');";
+    CRM_Core_DAO::executeQuery($query);
     CRM_Core_BAO_Navigation::resetNavigation();
     return TRUE;
   }

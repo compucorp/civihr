@@ -144,7 +144,20 @@ class CRM_HRCaseUtils_Upgrader extends CRM_HRCaseUtils_Upgrader_Base {
     civicrm_api3('setting', 'create', array(
       'domain_id' => CRM_Core_Config::domainID(),
       'enable_components' => $enableComponents,
-    )); 
+    ));
     CRM_Core_Component::flushEnabledComponents();
+  }
+
+  public function upgrade_1300() {
+    $this->ctx->log->info('Applying update 1300');
+    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+    if ($caseID = array_search('Hrdata', $caseTypes)) {
+      $query = "UPDATE civicrm_managed
+      SET entity_id = {$caseID},
+      entity_type = 'caseType' WHERE name = 'Hrdata';";
+      CRM_Core_DAO::executeQuery($query);
+    }
+    CRM_Core_BAO_Navigation::resetNavigation();
+    return TRUE;
   }
 }
