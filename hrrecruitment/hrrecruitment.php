@@ -282,41 +282,26 @@ function hrrecruitment_civicrm_enable() {
   //Enable OptionGroup and OptionValues
   foreach (array('vacancy_status', 'work_experience', 'rate_the_applicant_s_communicati', 'rate_the_applicant_s_technical_s', 'languages_known') as $vacancyOptionType){
     if ($vacancyStatusID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $vacancyOptionType, 'id', 'name')) {
-      civicrm_api3('OptionGroup', 'create', array('id' => $vacancyStatusID, 'is_active' => 1));
-      $statusIDs = CRM_Core_OptionGroup::valuesByID($vacancyStatusID, FALSE, FALSE, FALSE, 'id', FALSE);
-      foreach ($statusIDs as $statusID) {
-        civicrm_api3('OptionValue', 'create', array('id' => $statusID, 'is_active' => 1));
-      }
+      $optionGroups[] = $vacancyStatusID;
     }
   }
+  _hrrecuitment_setActiveOptionFields($optionGroups, 1);
 
-  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id', FALSE);
-  foreach ($CaseStatuses as $value => $id) {
-    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
-  }
-
-  foreach (array('Evaluation', 'Comment') as $activityType) {
-    if ($id = civicrm_api3('OptionValue', 'getvalue', array('name' => $activityType, 'return' => 'id'))) {
-      civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 1));
-    }
-  }
-
+  //Enable ufGroup and ufValues
   foreach (array('application_profile', 'evaluation_profile') as $name) {
     if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $name, 'id', 'name')) {
-      CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+      $ufGroup[] = $ufID;
     }
   }
+  _hrrecuitment_setActiveUFFields($ufGroup, 1);
 
+  //Enable customGroup and customValues
   foreach (array('Application', 'application_case','Evaluation_fields') as $cgName) {
     if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
-      foreach ($customFields['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-        CRM_Core_BAO_UFField::setUFField($key, 1);
-      }
-      CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 1);
+      $customGroups[] = $customGroupID;
     }
   }
+  _hrrecuitment_setActiveCustomFields($customGroups,1);
 
   return _hrrecruitment_civix_civicrm_enable();
 }
@@ -332,45 +317,56 @@ function hrrecruitment_civicrm_disable() {
   CRM_Core_BAO_Navigation::setIsActive($menuId, 0);
   CRM_Core_BAO_Navigation::resetNavigation();
 
+  //Disable optionGroup, optionFields
   foreach (array('vacancy_status', 'work_experience', 'rate_the_applicant_s_communicati', 'rate_the_applicant_s_technical_s', 'languages_known') as $vacancyOptionType) {
     if ($vacancyStatusID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $vacancyOptionType, 'id', 'name')) {
-      $statusIDs = CRM_Core_OptionGroup::valuesByID($vacancyStatusID, FALSE, FALSE, FALSE, 'id');
-      foreach ($statusIDs as $statusID) {
-        civicrm_api3('OptionValue', 'create', array('id' => $statusID, 'is_active' => 0));
-      }
-      civicrm_api3('OptionGroup', 'create', array('id' => $vacancyStatusID, 'is_active' => 0));
+      $optionGroups[] = $vacancyStatusID;
     }
   }
+  _hrrecuitment_setActiveOptionFields($optionGroups, 0);
 
-  foreach (array('Evaluation', 'Comment') as $activityType) {
-    if ($id = civicrm_api3('OptionValue', 'getvalue', array('name' => $activityType, 'return' => 'id'))) {
-      civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
-    }
-  }
-
-  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id');
-  foreach ($CaseStatuses as $value => $id) {
-    civicrm_api3('OptionValue', 'create', array('id' => $id, 'is_active' => 0));
-  }
-
+  //Disable ufGroup, ufFields
   foreach (array('application_profile', 'evaluation_profile') as $name) {
     if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', $name, 'id', 'name')) {
-      CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+      $ufGroup[] = $ufID;
     }
   }
+  _hrrecuitment_setActiveUFFields($ufGroup, 0);
 
-  //Disable CustomGroup, CustomFields and UFFields
+  //Disable CustomGroup, CustomFields
   foreach (array('Application', 'application_case','Evaluation_fields') as $cgName) {
     if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
-      foreach ($customFields['values'] as $key => $val) {
-        CRM_Core_BAO_CustomField::setIsActive($key, 0);
-      }
-      CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 0);
+      $customGroups[] = $customGroupID;
     }
   }
-
+  _hrrecuitment_setActiveCustomFields($customGroups,0);
   return _hrrecruitment_civix_civicrm_disable();
+}
+
+function _hrrecuitment_setActiveOptionFields($optionGroup, $setActive) {
+  if (!empty($optionGroup)) {
+    $optionGroupIDs = implode(',',$optionGroup );
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroupIDs})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroupIDs})");
+  }
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE name IN ('Evaluation', 'Comment')");
+  $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id',FALSE);
+  $CaseStatus = implode(',', $CaseStatuses);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE id IN ({$CaseStatus})");
+}
+
+function _hrrecuitment_setActiveUFFields($ufGroup, $setActive) {
+  $ufGroups = implode(',',$ufGroup );
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id IN ({$ufGroups})");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE id IN ($ufGroups)");
+}
+
+function _hrrecuitment_setActiveCustomFields($customGroupID, $setActive) {
+  if (!empty($customGroupID)) {
+    $customGroupIDs = implode(',',$customGroupID);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id IN ({$customGroupIDs})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id IN ({$customGroupIDs})");
+  }
 }
 
 function hrrecruitment_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = FALSE, $selectAttributes = array()) {

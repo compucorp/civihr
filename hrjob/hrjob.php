@@ -142,22 +142,16 @@ function hrjob_civicrm_enable() {
   CRM_Core_BAO_Navigation::resetNavigation();
   //enable all custom group and fields
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_BAO_CustomField::setIsActive($key, 1);
-    }
+    _hrjob_setActiveCustomFields($cusGroupID, 1);
   }
+
   //enable all option group and values
   foreach (array('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type') as $jobOptionType) {
     if ($jobGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $jobOptionType, 'id', 'name')) {
-      CRM_Core_BAO_OptionGroup::setIsActive($jobGroupID, 1);
-      $jobFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $jobGroupID, 'return' => "id"));
-      foreach ($jobFieldID['values'] as $key => $val) {
-        CRM_Core_BAO_OptionValue::setIsActive($key, 1);
-      }
+      $optionGroup[] = $jobGroupID;
     }
   }
+  _hrjob_setActiveOptionFields($optionGroup, 1);
   return _hrjob_civix_civicrm_enable();
 }
 
@@ -171,23 +165,30 @@ function hrjob_civicrm_disable() {
 
   //disable all custom group and custom field
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_BAO_CustomField::setIsActive($key, 0);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
+    _hrjob_setActiveCustomFields($cusGroupID, 0);
   }
+
   //disable all option group and values
   foreach (array('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type') as $jobOptionType) {
     if ($jobGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $jobOptionType, 'id', 'name')) {
-      $jobFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $jobGroupID, 'return' => "id"));
-      foreach ($jobFieldID['values'] as $key => $val) {
-        CRM_Core_BAO_OptionValue::setIsActive($key, 0);
-      }
-      CRM_Core_BAO_OptionGroup::setIsActive($jobGroupID, 0);
+      $optionGroup[] = $jobGroupID;
     }
   }
+  _hrjob_setActiveOptionFields($optionGroup, 0);
   return _hrjob_civix_civicrm_disable();
+}
+
+function _hrjob_setActiveCustomFields($customGroupID, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id = {$customGroupID}");
+}
+
+function _hrjob_setActiveOptionFields($optionGroup, $setActive) {
+  if (!empty($optionGroup)) {
+    $optionGroupIDs = implode(',', $optionGroup);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroupIDs})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroupIDs})");
+  }
 }
 
 /**

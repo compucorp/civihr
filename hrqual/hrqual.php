@@ -110,27 +110,20 @@ function hrqual_civicrm_uninstall() {
 function hrqual_civicrm_enable() {
   //Enable CustomGroup, CustomFields and UFFields
   if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
-    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 1);
-    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
-    foreach ($customFields['values'] as $key => $val) {
-      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      CRM_Core_BAO_UFField::setUFField($key, 1);
-    }
+    _hrqual_setActiveCustomFields($customGroupID, 1);
   }
   //Enable UFGroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
+    _hrqual_setUFFields($ufID, 1);
   }
   //Enable OptionGroup and OptionValues
+  $optionGroups = array();
   foreach (array('category_of_skill_20130510015438', 'level_of_skill_20130510015934', 'Language', 'Computing', 'Finance', 'Management', 'Legal'  ) as $qualGroupType) {
     if ($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')) {
-      CRM_Core_BAO_OptionGroup::setIsActive($qualGroupID, 1);
-      $qualValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $qualGroupID,));
-      foreach ($qualValueIDs['values'] as $qualValueID => $val) {
-        CRM_Core_BAO_OptionValue::setIsActive($qualValueID, 1);
-      }
+      $optionGroups[] = $qualGroupID;
     }
   }
+  _hrqual_setActiveOptionFields($optionGroups, 1);
   return _hrqual_civix_civicrm_enable();
 }
 
@@ -140,26 +133,20 @@ function hrqual_civicrm_enable() {
 function hrqual_civicrm_disable() {
   //Disable CustomGroup, CustomFields and UFFields
   if ($customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name')) {
-    $customFields = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroupID));
-    foreach ($customFields['values'] as $key => $val) {
-      CRM_Core_BAO_CustomField::setIsActive($key, 0);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, 0);
+    _hrqual_setActiveCustomFields($customGroupID, 0);
   }
   //Disable UFGroup
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrqual_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+    _hrqual_setUFFields($ufID, 0);
   }
   //Disable OptionGroup and OptionValue
+  $optionGroups = array();
   foreach (array('category_of_skill_20130510015438', 'level_of_skill_20130510015934', 'Language', 'Computing', 'Finance', 'Management', 'Legal'  ) as $qualGroupType) {
     if ($qualGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', $qualGroupType, 'id', 'name')) {
-      $qualValueIDs = civicrm_api3('OptionValue', 'get', array('option_group_id' => $qualGroupID,));
-      foreach ($qualValueIDs['values'] as $qualValueID => $val) {
-        CRM_Core_BAO_OptionValue::setIsActive($qualValueID, 0);
-      }
-      CRM_Core_BAO_OptionGroup::setIsActive($qualGroupID, 0);
+      $optionGroups[] = $qualGroupID;
     }
   }
+  _hrqual_setActiveOptionFields($optionGroups, 0);
   return _hrqual_civix_civicrm_disable();
 }
 
@@ -241,4 +228,23 @@ function hrqual_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
   }
+}
+
+function _hrqual_setActiveOptionFields($optionGroup, $setActive) {
+  if (!empty($optionGroup)) {
+    $optionGroups = implode(',', $optionGroup);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id IN ({$optionGroups})");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id IN ({$optionGroups})");
+  }
+}
+
+function _hrqual_setActiveCustomFields($customGroupID, $setActive) {
+  $sql = "UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$customGroupID}";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_BAO_CustomGroup::setIsActive($customGroupID, $setActive);
+}
+
+function _hrqual_setUFFields($ufGroups, $setActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id IN ({$ufGroups})");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE id IN ($ufGroups)");
 }

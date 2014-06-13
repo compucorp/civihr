@@ -68,27 +68,7 @@ function hrident_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrident_civicrm_enable() {
-  //enable customGroups,customFields
-  if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      CRM_Core_BAO_UFField::setUFField($key, 1);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-  }
-  //enable option group and option values
-  if ($hridentGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name')) {
-    $hridentTypeIDs = civicrm_api3('OptionValue', 'get', array(  'option_group_id' => $hridentGroupID,));
-    foreach ($hridentTypeIDs['values'] as $hridentTypeID) {
-      civicrm_api3('OptionValue', 'create', array('id' => $hridentTypeID['id'], 'is_active' => 1));
-    }
-    civicrm_api3('OptionGroup', 'create', array('id' => $hridentGroupID, 'is_active' => 1));
-  }
-  //enable UFProfile
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
-  }
+  _hrident_setActiveFields(1);
   return _hrident_civix_civicrm_enable();
 }
 
@@ -96,27 +76,27 @@ function hrident_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrident_civicrm_disable() {
+  _hrident_setActiveFields(0);
+  return _hrident_civix_civicrm_disable();
+}
+
+
+function _hrident_setActiveFields($setActive) {
   //disable customGroups,customFields
   if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_BAO_CustomField::setIsActive($key, 0);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id = {$cusGroupID}");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id = {$cusGroupID}");
   }
   //disable option group and option values
   if ($hridentGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name')) {
-    $hridentTypeIDs = CRM_Core_OptionGroup::valuesByID($hridentGroupID, FALSE, FALSE, FALSE, 'id');
-    foreach ($hridentTypeIDs as $hridentTypeID) {
-      civicrm_api3('OptionValue', 'create', array('id' => $hridentTypeID, 'is_active' => 0));
-    }
-    civicrm_api3('OptionGroup', 'create', array('id' => $hridentGroupID, 'is_active' => 0));
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id = {$hridentGroupID}");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id = {$hridentGroupID}");
   }
   //disable UFProfile
   if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id = {$ufID}");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE id = {$ufID}");
   }
-  return _hrident_civix_civicrm_disable();
 }
 
 /**
