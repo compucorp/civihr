@@ -73,10 +73,7 @@ function hrreport_civicrm_install() {
 function hrreport_civicrm_uninstall() {
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    $absenceMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'absenceReport', 'id', 'name');
-    $calendarMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
-    CRM_Core_BAO_Navigation::processDelete($absenceMenuId);
-    CRM_Core_BAO_Navigation::processDelete($calendarMenuId);
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
   return _hrreport_civix_civicrm_uninstall();
@@ -86,12 +83,7 @@ function hrreport_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrreport_civicrm_enable() {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
-  if ($isEnabled) {
-    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'absenceReport'), array('is_active' => 1));
-    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'calendar'), array('is_active' => 1));
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }
+  _hrreport_setActiveFields(1);
   return _hrreport_civix_civicrm_enable();
 }
 
@@ -99,13 +91,16 @@ function hrreport_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrreport_civicrm_disable() {
+  _hrreport_setActiveFields(0);
+  return _hrreport_civix_civicrm_disable();
+}
+
+function _hrreport_setActiveFields($setActive) {
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'absenceReport'), array('is_active' => 0));
-    CRM_Core_BAO_Navigation::processUpdate(array('name' => 'calendar'), array('is_active' => 0));
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
-  return _hrreport_civix_civicrm_disable();
 }
 
 /**

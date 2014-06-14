@@ -126,30 +126,20 @@ function hrabsence_civicrm_uninstall() {
   CRM_Core_DAO::executeQuery($query);
   CRM_Core_BAO_Navigation::resetNavigation();
 
-  $params = array(
-    'sequential' => 1,
-    'option_group_id' => 'activity_status',
-    'is_reserved' => 1,
-    'name' => 'Rejected',
-    'return' => 'id',
-  );
+  $sql = "DELETE civicrm_option_value FROM civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id WHERE civicrm_option_group.name = 'activity_status' and civicrm_option_value.name = 'Rejected'";
+  CRM_Core_DAO::executeQuery($sql);
 
-  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
-    $params = array(
-      'sequential' => 1,
-      'id' => $id,
-    );
-    civicrm_api3('OptionValue', 'delete', $params);
-  }
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE title = 'Sick Type'");
+
   foreach (array('Absence_Comment', 'Type_of_Sickness') as $abType) {
-    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $abType, 'id', 'name')) {
-      civicrm_api3('CustomGroup', 'delete', array('id' => $cusGroupID));
-    }
+    $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => $abType));
+    civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   }
+
   $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
-  foreach ($absenceTypes as $id => $absenceValueID) {
-    civicrm_api3('OptionValue', 'delete', array('id' => $absenceValueID));
-  }
+  $absenceType = implode(',', $absenceTypes);
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE civicrm_option_value.id IN ({$absenceType})");
+
   return _hrabsence_civix_civicrm_uninstall();
 }
 
@@ -167,24 +157,7 @@ function hrabsence_civicrm_enable() {
   }
   CRM_Core_BAO_Navigation::resetNavigation();
 
-  $params = array(
-    'sequential' => 1,
-    'option_group_id' => 'activity_status',
-    'is_reserved' => 1,
-    'name' => 'Rejected',
-    'return' => 'id',
-  );
-
-  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
-    $params = array(
-      'sequential' => 1,
-      'id' => $id,
-      'is_active' => 1,
-    );
-    civicrm_api3('OptionValue', 'create', $params);
-  }
   _hrabsence_setActiveFields(1);
-
   return _hrabsence_civix_civicrm_enable();
 }
 
@@ -197,37 +170,28 @@ function hrabsence_civicrm_disable() {
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 
-  $params = array(
-    'sequential' => 1,
-    'option_group_id' => 'activity_status',
-    'is_reserved' => 1,
-    'name' => 'Rejected',
-    'return' => 'id',
-  );
-
-  if ($id = civicrm_api3('OptionValue', 'getvalue', $params)) {
-    $params = array(
-      'sequential' => 1,
-      'id' => $id,
-      'is_active' => 0,
-    );
-    $result = civicrm_api3('OptionValue', 'create', $params);
-  }
   _hrabsence_setActiveFields(0);
   return _hrabsence_civix_civicrm_disable();
 }
 
 function _hrabsence_setActiveFields($setActive) {
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET is_active = {$setActive} WHERE custom_group_id IN (SELECT id from civicrm_custom_group where name IN ('Absence_Comment', 'Type_of_Sickness'))");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE id IN ('Absence_Comment', 'Type_of_Sickness')");
+  //disable/enable customGroup and customValue
+  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group on civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name IN ('Absence_Comment', 'Type_of_Sickness')";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name IN ('Absence_Comment', 'Type_of_Sickness')");
 
-//disable optionGroup and optionValue
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE option_group_id = (SELECT id from civicrm_option_value where title = Sick Type)");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE id = {$optionGroup}");
+  //disable/enable optionGroup and optionValue
+  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.title = ('Sick Type')";
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE title = 'Sick Type'");
 
-  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id');
+  $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
   $customfieldIDs = implode(',', $absenceTypes);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE id IN ({$customfieldIDs}");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE id IN ({$customfieldIDs})");
+
+  $sql = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name = 'activity_status' and civicrm_option_value.name = 'Rejected'";
+  CRM_Core_DAO::executeQuery($sql);
+
 }
 
 

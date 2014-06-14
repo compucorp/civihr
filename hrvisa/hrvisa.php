@@ -130,22 +130,19 @@ function hrvisa_civicrm_install() {
  */
 function hrvisa_civicrm_uninstall() {
   // delete weekly reminder for Visa Expiration activities
-  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
-  if (!empty($result['id'])) {
-    $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
-  }
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_action_schedule WHERE name = 'Visa Expiration Reminder'");
+
   //delete optionGroup
-  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
-    CRM_Core_BAO_OptionGroup::del($visaGroupID);
-  }
-  //delete ufgroup AND uffield
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrvisa_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::del($ufID);
-  }
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name = 'is_visa_required_20130702051150'");
+
+  //delete ufgroup
+  $ufID = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "hrvisa_tab"));
+  civicrm_api3('UFGroup', 'delete', array('id' => $ufID['id']));
+
   //delete customgroup and customfield
   foreach (array('Immigration', 'Immigration_Summary') as $cgName) {
-    $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name');
-    civicrm_api3('CustomGroup', 'delete', array('id' => $cgID));
+    $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => $cgName));
+    civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   }
   return _hrvisa_civix_civicrm_uninstall();
 }
@@ -154,32 +151,7 @@ function hrvisa_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrvisa_civicrm_enable() {
-  // enable weekly reminder for Visa Expiration activities
-  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
-  if (!empty($result['id'])) {
-    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
-  }
-  //enable optionGroup and optionValue
-  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
-    CRM_Core_BAO_OptionGroup::setIsActive($visaGroupID, 1);
-    $visaFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $visaGroupID, 'return' => 'id'));
-    CRM_Core_BAO_OptionValue::setIsActive($visaFieldID['id'], 1);
-  }
-  //enable UFGroup
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrvisa_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
-  }
-  //enable CustomGroup,CustomFields,UFField
-  foreach (array('Immigration', 'Immigration_Summary') as $cgName) {
-    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-        CRM_Core_BAO_UFField::setUFField($key, 1);
-      }
-    }
-  }
+  _hrvisa_setActiveFields(1);
   return _hrvisa_civix_civicrm_enable();
 }
 
@@ -187,32 +159,40 @@ function hrvisa_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrvisa_civicrm_disable() {
-  // disable weekly reminder for Visa Expiration activities
-  $result = civicrm_api3('action_schedule', 'get', array('name' => 'Visa Expiration Reminder'));
-  if (!empty($result['id'])) {
-    $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
-  }
-  //disable optionGroup and optionValue
-  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
-    $visaFieldID = civicrm_api3('OptionValue', 'get', array('option_group_id' => $visaGroupID, 'return' => "id"));
-    CRM_Core_BAO_OptionValue::setIsActive($visaFieldID['id'], 0);
-    CRM_Core_BAO_OptionGroup::setIsActive($visaGroupID, 0);
-  }
-  //disable UFGroup
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrvisa_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
-  }
-  //disable customGroups,UFFields,customFields
-  foreach (array('Immigration', 'Immigration_Summary') as $cgName) {
-    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_BAO_CustomField::setIsActive($key, 0);
-      }
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
-    }
-  }
+  _hrvisa_setActiveFields(0);
   return _hrvisa_civix_civicrm_disable();
+}
+
+function _hrvisa_setActiveFields($setActive) {
+  // disable/enable weekly reminder for Visa Expiration activities
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_action_schedule SET is_active = {$setActive} WHERE name = 'Visa Expiration Reminder'");
+
+  //disable/enable customgroup and customvalue
+  $sql = "UPDATE civicrm_custom_field
+JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id
+SET civicrm_custom_field.is_active = {$setActive}
+WHERE civicrm_custom_group.name IN ('Immigration', 'Immigration_Summary')";
+
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name IN ('Immigration', 'Immigration_Summary')");
+
+  //disable/enable optionGroup and optionValue
+  $query = "UPDATE civicrm_option_value
+JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id
+SET civicrm_option_value.is_active = {$setActive}
+WHERE civicrm_option_group.name = 'is_visa_required_20130702051150'";
+
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name = 'is_visa_required_20130702051150'");
+
+  //disable/enable ufgroup and uffield
+  $sql = "UPDATE civicrm_uf_field
+JOIN civicrm_uf_group ON civicrm_uf_group.id = civicrm_uf_field.uf_group_id
+SET civicrm_uf_field.is_active = {$setActive}
+WHERE civicrm_uf_group.name = 'hrvisa_tab'";
+
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE name = 'hrvisa_tab'");
 }
 
 /**

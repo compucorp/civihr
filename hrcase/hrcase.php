@@ -77,17 +77,14 @@ function hrcase_civicrm_postInstall() {
  */
 function hrcase_civicrm_uninstall() {
   $scheduleActions = hrcase_getActionsSchedule(TRUE);
-  foreach($scheduleActions as $actionName) {
-  $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
-    if (!empty($result['id'])) {
-      $result = civicrm_api3('action_schedule', 'delete', array('id' => $result['id']));
-    }
-  }
+  $scheduleAction = implode("','",$scheduleActions );
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_action_schedule WHERE name IN ('{$scheduleAction}')");
+
   hrcase_example_caseType(TRUE);
   //delete custom group and custom field
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
-    $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name');
-    civicrm_api3('CustomGroup', 'delete', array('id' => $cgID));
+    $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => $cgName));
+    civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   }
   return _hrcase_civix_civicrm_uninstall();
 }
@@ -106,29 +103,7 @@ function hrcase_example_caseType($is_active) {
  * Implementation of hook_civicrm_enable
  */
 function hrcase_civicrm_enable() {
-  $scheduleActions = hrcase_getActionsSchedule(TRUE);
-  foreach($scheduleActions as $actionName) {
-    $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
-    if (!empty($result['id'])) {
-      $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 1));
-    }
-  }
-  // enable activity type
-  $sql = "UPDATE civicrm_option_value SET is_active=1 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
-  CRM_Core_DAO::executeQuery($sql);
-
-  // enable custom group
-  foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
-    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      }
-    }
-  }
-  $sql = "UPDATE `civicrm_relationship_type` SET is_active=1 WHERE name_b_a IN ('HR Manager','Line Manager')";
-  CRM_Core_DAO::executeQuery($sql);
+  _hrcase_setActiveFields(1);
   return _hrcase_civix_civicrm_enable();
 }
 
@@ -136,30 +111,35 @@ function hrcase_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrcase_civicrm_disable() {
-  $scheduleActions = hrcase_getActionsSchedule(TRUE);
-  foreach($scheduleActions as $actionName) {
-  	$result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
-  	if (!empty($result['id'])) {
-  	  $result = civicrm_api3('action_schedule', 'create', array('id' => $result['id'], 'is_active' => 0));
-  	}
-  }
-  //disable activity type
-  $sql = "UPDATE civicrm_option_value SET is_active=0 WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
-  CRM_Core_DAO::executeQuery($sql);
-
-  //disable custom group
-  foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
-    if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', $cgName, 'id', 'name')) {
-      CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
-      $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-      foreach ($cusFieldResult['values'] as $key => $val) {
-        CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 0);
-      }
-    }
-  }
-  $sql = "UPDATE `civicrm_relationship_type` SET is_active=0 WHERE name_b_a IN ('HR Manager','Line Manager')";
-  CRM_Core_DAO::executeQuery($sql);
+  _hrcase_setActiveFields(0);
   return _hrcase_civix_civicrm_disable();
+}
+
+function _hrcase_setActiveFields($setActive) {
+  //disable/enable all custom group and fields
+  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group
+ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id
+SET civicrm_custom_field.is_active = {$setActive}
+WHERE civicrm_custom_group.name IN ('Joining_Data', 'Exiting_Data')";
+
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name IN ('Joining_Data', 'Exiting_Data')");
+
+  //disable/enable activity type
+  $query = "UPDATE civicrm_option_value
+SET is_active = {$setActive}
+WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+
+  CRM_Core_DAO::executeQuery($query);
+
+  //disable/enable action schedule
+  $scheduleActions = hrcase_getActionsSchedule(TRUE);
+  $scheduleAction = implode("','",$scheduleActions );
+  $query = "UPDATE civicrm_action_schedule SET is_active = {$setActive} WHERE name IN ('{$scheduleAction}')";
+  CRM_Core_DAO::executeQuery($query);
+
+  $sqlrel = "UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ('HR Manager','Line Manager')";
+  CRM_Core_DAO::executeQuery($sqlrel);
 }
 
 /**

@@ -137,52 +137,28 @@ function hrstaffdir_civicrm_uninstall() {
     CRM_Core_BAO_Navigation::processDelete($navigation->id);
     CRM_Core_BAO_Navigation::resetNavigation();
   }
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name')) {
-    $uffield = civicrm_api3('UFField', 'get', array('uf_group_id' => $ufID));
-    foreach ($uffield['values'] as $key) {
-      CRM_Core_BAO_UFField::del($key['id']);
-    }
-    CRM_Core_BAO_UFGroup::del($ufID);
-  }
+  //delete ufgroup
+  $ufID = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "hrstaffdir_listing"));
+  civicrm_api3('UFGroup', 'delete', array('id' => $ufID['id']));
 }
 
 /**
  * Implementation of hook_civicrm_enable
  */
 function hrstaffdir_civicrm_enable() {
+  _hrstaffdir_setActiveFields(0,1);
   _hrstaffdir_civix_civicrm_enable();
-  $profileId = hrstaffdir_getUFGroupID();
-  $path = array(
-    'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
-  );
-  $navigationPath = CRM_Core_BAO_Navigation::retrieve($path,$defaultpath);
-  if ($navigationPath) {
-    $params = array(
-      'label' => 'Directory',
-      'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
-      'is_active' => 0,
-    );
-    $newParams = array(
-      'is_active' => 1,
-    );
-    $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }
-//enable UFGroup
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name')) {
-    $uffield = civicrm_api3('UFField', 'get', array('uf_group_id' => $ufID));
-    foreach ($uffield['values'] as $key) {
-      CRM_Core_BAO_UFField::setIsActive($key['id'], 1);
-    }
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
-  }
 }
 
 /**
  * Implementation of hook_civicrm_disable
  */
 function hrstaffdir_civicrm_disable() {
+  _hrstaffdir_setActiveFields(1,0);
   _hrstaffdir_civix_civicrm_disable();
+}
+
+function _hrstaffdir_setActiveFields($oParams,$nParams) {
   $profileId = hrstaffdir_getUFGroupID();
   $path = array(
     'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
@@ -192,21 +168,19 @@ function hrstaffdir_civicrm_disable() {
     $params = array(
       'label' => 'Directory',
       'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
-      'is_active' => 1,
+      'is_active' => $oParams,
     );
     $newParams = array(
-      'is_active' => 0,
+      'is_active' => $nParams,
     );
     $navigation = CRM_Core_BAO_Navigation::processUpdate($params,$newParams);
     CRM_Core_BAO_Navigation::resetNavigation();
   }
- //Disable UFGroup
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name')) {
-    $uffield = civicrm_api3('UFField', 'get', array('uf_group_id' => $ufID));
-    foreach ($uffield['values'] as $key) {
-      CRM_Core_BAO_UFField::setIsActive($key['id'], 0);
-    }    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
-  }
+
+  //disable/enable ufgroup and uffield
+  $sql = "UPDATE civicrm_uf_field JOIN civicrm_uf_group ON civicrm_uf_group.id = civicrm_uf_field.uf_group_id SET civicrm_uf_field.is_active = {$nParams} WHERE civicrm_uf_group.name = 'hrstaffdir_listing'";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$nParams} WHERE name = 'hrstaffdir_listing'");
 }
 
 /**
