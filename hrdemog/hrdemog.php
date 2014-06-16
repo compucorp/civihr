@@ -56,6 +56,10 @@ function hrdemog_civicrm_install() {
 function hrdemog_civicrm_uninstall() {
   $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
   civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
+  //delete optionGroup
+  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
+    CRM_Core_BAO_OptionGroup::del($visaGroupID);
+  }
   return _hrdemog_civix_civicrm_uninstall();
 }
 
@@ -82,9 +86,9 @@ function _hrdemog_setActiveFields($setActive) {
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'Extended_Demographics'");
 
   //disable/enable optionGroup and optionValue
-  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916')";
+  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916','is_visa_required_20130702051150')";
   CRM_Core_DAO::executeQuery($query);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916')");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916','is_visa_required_20130702051150')");
 }
 
 
