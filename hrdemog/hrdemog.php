@@ -55,11 +55,11 @@ function hrdemog_civicrm_install() {
  */
 function hrdemog_civicrm_uninstall() {
   $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    civicrm_api3('CustomField', 'delete', array('id' => $key['id']));
-  }
   civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
+  //delete optionGroup
+  if ($visaGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'is_visa_required_20130702051150', 'id', 'name')) {
+    CRM_Core_BAO_OptionGroup::del($visaGroupID);
+  }
   return _hrdemog_civix_civicrm_uninstall();
 }
 
@@ -67,22 +67,7 @@ function hrdemog_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrdemog_civicrm_enable() {
-  //enable optiongroup and optionvalue
-  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
-    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
-    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
-    foreach ($optionVaId['values'] as $key) {
-      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 1);
-    }
-    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 1);
-  }
-  //enable customgroup and customvalue
-  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
-  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 1);
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],1);
-  }
+  _hrdemog_setActiveFields(1);
   return _hrdemog_civix_civicrm_enable();
 }
 
@@ -90,24 +75,22 @@ function hrdemog_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrdemog_civicrm_disable() {
-  //disable optiongroup and optionvalue
-  foreach (array('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916') as $optionName) {
-    $optionGrId = civicrm_api3('OptionGroup', 'getsingle', array('return' => "id",'name' => $optionName));
-    $optionVaId = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGrId['id']));
-    foreach ($optionVaId['values'] as $key) {
-      CRM_Core_BAO_OptionValue::setIsActive($key['id'], 0);
-    }
-    CRM_Core_BAO_OptionGroup::setIsActive($optionGrId['id'], 0);
-  }
-  //disable customgroup and customvalue
-  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Extended_Demographics",));
-  CRM_Core_BAO_CustomGroup::setIsActive($customGroup['id'], 0);
-  $customField = civicrm_api3('CustomField', 'get', array('custom_group_id' => $customGroup['id']));
-  foreach ($customField['values'] as $key) {
-    CRM_Core_BAO_CustomField::setIsActive($key['id'],0);
-  }
+  _hrdemog_setActiveFields(0);
   return _hrdemog_civix_civicrm_disable();
 }
+
+function _hrdemog_setActiveFields($setActive) {
+  //disable/enable customgroup and customvalue
+  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group on civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'Extended_Demographics'";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'Extended_Demographics'");
+
+  //disable/enable optionGroup and optionValue
+  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916','is_visa_required_20130702051150')";
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('ethnicity_20130725123943','religion_20130725124132','sexual_orientation_20130725124348','marital_status_20130913084916','is_visa_required_20130702051150')");
+}
+
 
 /**
  * Implementation of hook_civicrm_upgrade

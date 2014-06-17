@@ -153,6 +153,12 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>is_visa_required_20130702051150</name>
+      <title>Is Visa Required</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -374,6 +380,17 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label></label>
+      <value>1</value>
+      <name>is_visa_required</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>is_visa_required_20130702051150</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

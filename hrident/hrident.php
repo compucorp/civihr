@@ -55,12 +55,12 @@ function hrident_civicrm_install() {
  */
 function hrident_civicrm_uninstall() {
   //delete ufgroup
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::del($ufID);
-  }
+  $ufID = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "hrident_tab"));
+  civicrm_api3('UFGroup', 'delete', array('id' => $ufID['id']));
+
   //delete customgroup
-  $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name');
-  civicrm_api3('CustomGroup', 'delete', array('id' => $cgID));
+  $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Identify",));
+  civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   return _hrident_civix_civicrm_uninstall();
 }
 
@@ -68,27 +68,7 @@ function hrident_civicrm_uninstall() {
  * Implementation of hook_civicrm_enable
  */
 function hrident_civicrm_enable() {
-  //enable customGroups,customFields
-  if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomField', $key, 'is_active', 1);
-      CRM_Core_BAO_UFField::setUFField($key, 1);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 1);
-  }
-  //enable option group and option values
-  if ($hridentGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name')) {
-    $hridentTypeIDs = civicrm_api3('OptionValue', 'get', array(  'option_group_id' => $hridentGroupID,));
-    foreach ($hridentTypeIDs['values'] as $hridentTypeID) {
-      civicrm_api3('OptionValue', 'create', array('id' => $hridentTypeID['id'], 'is_active' => 1));
-    }
-    civicrm_api3('OptionGroup', 'create', array('id' => $hridentGroupID, 'is_active' => 1));
-  }
-  //enable UFProfile
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 1);
-  }
+  _hrident_setActiveFields(1);
   return _hrident_civix_civicrm_enable();
 }
 
@@ -96,27 +76,25 @@ function hrident_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrident_civicrm_disable() {
-  //disable customGroups,customFields
-  if ($cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name')) {
-    $cusFieldResult = civicrm_api3('CustomField', 'get', array('custom_group_id' => $cusGroupID));
-    foreach ($cusFieldResult['values'] as $key => $val) {
-      CRM_Core_BAO_CustomField::setIsActive($key, 0);
-    }
-    CRM_Core_BAO_CustomGroup::setIsActive($cusGroupID, 0);
-  }
-  //disable option group and option values
-  if ($hridentGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name')) {
-    $hridentTypeIDs = CRM_Core_OptionGroup::valuesByID($hridentGroupID, FALSE, FALSE, FALSE, 'id');
-    foreach ($hridentTypeIDs as $hridentTypeID) {
-      civicrm_api3('OptionValue', 'create', array('id' => $hridentTypeID, 'is_active' => 0));
-    }
-    civicrm_api3('OptionGroup', 'create', array('id' => $hridentGroupID, 'is_active' => 0));
-  }
-  //disable UFProfile
-  if ($ufID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name')) {
-    CRM_Core_BAO_UFGroup::setIsActive($ufID, 0);
-  }
+  _hrident_setActiveFields(0);
   return _hrident_civix_civicrm_disable();
+}
+
+function _hrident_setActiveFields($setActive) {
+  //disable/enable customgroup and customvalue
+  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'Identify'";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'Identify'");
+
+  //disable/enable optionGroup and optionValue
+  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name = 'type_20130502144049'";
+  CRM_Core_DAO::executeQuery($query);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name = 'type_20130502144049'");
+
+  //disable/enable ufgroup and uffield
+  $sql = "UPDATE civicrm_uf_field JOIN civicrm_uf_group ON civicrm_uf_group.id = civicrm_uf_field.uf_group_id SET civicrm_uf_field.is_active = {$setActive} WHERE civicrm_uf_group.name = 'hrident_tab'";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_group SET is_active = {$setActive} WHERE name = 'hrident_tab'");
 }
 
 /**
