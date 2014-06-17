@@ -14,7 +14,7 @@ cd </path/to/extension/dir>
 #  (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
 wget https://github.com/civicrm/civihr/archive/1.3-beta1.zip
-unzip civihr-1.3-beta1.zip
+unzip 1.3-beta1.zip
 mv civihr-1.3-beta1 civihr
 ```
 
@@ -52,6 +52,7 @@ CiviHR includes over a dozen extensions. These can be activated piecemeal.
 The following extensions provide the major features and may be activated
 individually:
 
+ * org.civicrm.hrbank: Bank Details
  * org.civicrm.hrcareer: Career History
  * org.civicrm.hrdemog: Extended Demographics
  * org.civicrm.hremerg: Emergency Contacts
@@ -63,6 +64,11 @@ individually:
  * org.civicrm.hrreport: Reporting
  * org.civicrm.hrstaffdir: Staff Directory
  * org.civicrm.hrvisa: Immigration
+ * org.civicrm.hrcase: Case
+ * org.civicrm.hrcaseutils: Case Utils
+ * org.civicrm.hrim: Instant messanger link
+ * org.civicrm.hrrecruitment: Recruitment
+ * org.civicrm.hrprofile: Profile
 
 Finally, these two extensions build on top of the others:
 
