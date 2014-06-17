@@ -75,6 +75,18 @@ function hrui_civicrm_install() {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
+  //Disable Individual sub types
+  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
+  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
+  foreach ($subContactId['values'] as $key) {
+    $paramsSubType = array(
+      'version' => 3,
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => FALSE,
+    );
+    civicrm_api('ContactType', 'create', $paramsSubType);
+  }
 
   // Disable Household contact type
   $contactTypeId = CRM_Core_DAO::getFieldValue(
