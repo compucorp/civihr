@@ -21,10 +21,10 @@ mv civihr-1.3-beta1 civihr
 ```
 Goto 'Administer => System Settings => Manage Extension' and click the "Refresh" button.
 
-Install the new CiviHR extensions: hrabsence.
+Install the new CiviHR extensions: hrrecruitment.
 
 > If you use drush, you can install the new extensions on the command-line:
 >
-> drush cvapi extension.install keys=org.civicrm.hrabsence
+> drush cvapi extension.install keys=org.civicrm.hrrecruitment
 
 Notice the CiviCRM popup alert. Click on "Execute the updates".
