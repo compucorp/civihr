@@ -195,6 +195,20 @@ function hrui_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrui_civicrm_uninstall() {
+  //Enable Individual sub types
+  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
+  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
+  foreach ($subContactId['values'] as $key) {
+    $paramsSubType = array(
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => TRUE,
+    );
+    civicrm_api3('ContactType', 'create', $paramsSubType);
+  }
+  // Reset Navigation
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToSet = array($options['Activities'], $options['Tags']);
