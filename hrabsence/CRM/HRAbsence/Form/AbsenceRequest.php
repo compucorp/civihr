@@ -79,7 +79,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'return.target_contact_id' => 1,
         'return.assignee_contact_id' => 1,
         'return.source_contact_id' => 1,
-        'option.limit' => 31,
+        'option.limit' => 400,
       ));
       $this->_activityTypeID = $resultAct['values'][0]['activity_type_id'];
       $this->_targetContactID = $resultAct['values'][0]['target_contact_id'][0];
@@ -274,7 +274,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $resultAbsences = civicrm_api3('Activity', 'get', array(
         'source_record_id' => $this->_activityId,
         'option_sort' => "activity_date_time ASC",
-        'option.limit' => 31,
+        'option.limit' => 400,
       ));
       $countDays = 0;
       $absenceDateDuration = array();
@@ -349,7 +349,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'sequential' => 1,
           'source_record_id' => $this->_aid,
           'option_sort' => "activity_date_time ASC",
-          'option.limit' => 31,
+          'option.limit' => 400,
         ));
         $start_date = date_create($result['values'][0]['activity_date_time']);
         $end_date = date_create($result['values'][$result['count'] - 1]['activity_date_time']);
@@ -429,9 +429,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     if (strtotime(isset($fields['start_date_display'])) && strtotime(isset($fields['end_date_display'])) && strtotime(isset($fields['start_date_display'])) > strtotime(isset($fields['end_date_display']))) {
       $errors['end_date'] = ts('From date cannot be greater than to date.');
-    }
-    if (isset($days) && $days > 31) {
-      $errors['end_date'] = ts('End date should be within a month.');
     }
     return $errors;
   }
@@ -553,7 +550,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       else {
         $result = civicrm_api3('Activity', 'get', array(
           'source_record_id' => $submitValues['source_record_id'],
-          'option.limit' => 31,
+          'option.limit' => 400,
         ));
         foreach ($result['values'] as $row_result) {
           civicrm_api3('Activity', 'delete', array(
