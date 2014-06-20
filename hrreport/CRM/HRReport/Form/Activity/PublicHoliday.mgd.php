@@ -29,6 +29,7 @@ return array (
       'report_id'   => 'civihr/public',
       'form_values' => serialize(
         array(
+          'addToDashboard' => 1,
           'fields' => array(
             'id'  => 1,
             'activity_date_time' => 1,

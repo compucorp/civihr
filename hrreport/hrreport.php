@@ -80,10 +80,29 @@ function hrreport_civicrm_install() {
   return _hrreport_civix_civicrm_install();
 }
 
+function hrreport_civicrm_postInstall() {
+  foreach (array("CiviHR Full Time Equivalents Report", "CiviHR Annual and Monthly Cost Equivalents Report", "CiviHR Public Holiday Report" ,"CiviHR Absence Report") as $title ) {
+    $result = civicrm_api3('ReportInstance', 'getsingle', array('return' => "id",  'title' => $title));
+    $url = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashlet";
+    $fullscreen_url = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+    $name = "report/{$result['id']}";
+    $label = $title;
+    $domain_id = CRM_Core_Config::domainID();
+    $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label,permission ) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}','access CiviReport ' )";
+    $dao = CRM_Core_DAO::executeQuery($query);
+  }
+}
+
 /**
  * Implementation of hook_civicrm_uninstall
  */
 function hrreport_civicrm_uninstall() {
+  foreach (array("CiviHR Full Time Equivalents Report", "CiviHR Annual and Monthly Cost Equivalents Report", "CiviHR Public Holiday Report" ,"CiviHR Absence Report") as $title ) {
+    //to get the report id
+    $result = civicrm_api3('ReportInstance', 'getsingle', array('return' => "id",  'title' => $title));
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_dashboard WHERE name = 'report/{$result['id']}'");
+  }
+
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absenceReport','calendar')");
@@ -150,4 +169,34 @@ function hrreport_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrreport_civicrm_managed(&$entities) {
   return _hrreport_civix_civicrm_managed($entities);
+}
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ *
+ * @return void
+ */
+function hrreport_civicrm_pageRun( &$page ) {
+  $pageName = $page->getVar( '_name' );
+  if ($pageName == 'CRM_Contact_Page_DashBoard') {
+    $session = CRM_Core_Session::singleton();
+    $contact_id = $session->get('userID');
+    //to do entry of default casedashboard report
+    $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id", "url"), 'name' => 'casedashboard',));
+    $dashboardContactId = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $caseDashlet['id'],'contact_id' => $contact_id));
+    if (empty($dashboardContactId['id'])) {
+      $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
+      civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' => $url));
+    }
+    foreach (array("CiviHR Full Time Equivalents Report", "CiviHR Annual and Monthly Cost Equivalents Report", "CiviHR Public Holiday Report" ,"CiviHR Absence Report") as $title ) {
+      //to get the report id
+      $result = civicrm_api3('ReportInstance', 'getsingle', array('return' => "id",  'title' => $title));
+      $dashletParams['url'] = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashlet";
+      $dashlet = civicrm_api3('Dashboard', 'get', array('label' => $title,));
+      $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
+      if (!$dashboardContact['id']) {
+        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+      }
+    }
+  }
 }

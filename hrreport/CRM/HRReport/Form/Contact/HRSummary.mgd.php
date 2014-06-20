@@ -51,6 +51,7 @@ return array (
       'report_id'   => 'civihr/summary',
       'form_values' => serialize(
         array(
+          'addToDashboard' => 1,
           'fields' => array(
             'hrjob_level_type'  => 1,
             'hrjob_location'    => 1,
@@ -76,6 +77,7 @@ return array (
       'report_id'   => 'civihr/summary',
       'form_values' => serialize(
         array(
+          'addToDashboard' => 1,
           'fields' => array(
             'hrjob_level_type' => 1,
             'full_time_eq'     => 1,
