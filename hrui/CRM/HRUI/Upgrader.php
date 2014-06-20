@@ -68,13 +68,13 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
    * @return TRUE on success
    * @throws Exception
    */
-  /* public function upgrade_4400() { */
-  /*   civicrm_api3('setting', 'create', array( */
-  /*     'version' => 3, */
-  /*     'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed', */
-  /*   )); */
-  /*   return TRUE; */
-  /* } */
+  public function upgrade_4400() {
+    civicrm_api3('setting', 'create', array(
+      'version' => 3,
+      'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed',
+    ));
+    return TRUE;
+  }
 
   /**
    * Example: Run a couple simple queries
