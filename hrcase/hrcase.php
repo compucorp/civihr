@@ -232,6 +232,26 @@ function hrcase_civicrm_navigationMenu(&$params) {
 }
 
 /**
+ * Implementation of hook_civicrm_alterContent
+ *
+ * @return void
+ */
+function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  if ($context == "form" && $tplName == "CRM/Case/Form/Case.tpl" ) {
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        if ($('#activity_subject').val().length < 1)
+          $('#activity_subject').val($( '#case_type_id option:selected').html());
+
+        $('#case_type_id').on('change', function() {
+          $('#activity_subject').val($('#case_type_id option:selected').html());
+        });
+      });
+    </script>";
+  }
+}
+
+/**
  * Implementation of hook_civicrm_caseTypes
  *
  * Generate a list of case-types
