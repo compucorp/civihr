@@ -366,3 +366,22 @@ function hrui_civicrm_navigationMenu( &$params ) {
     );
   }
 }
+
+/**
+ * Implementation of hook_civicrm_alterContent
+ *
+ * @return void
+ */
+function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  if ($context == "form" && $tplName == "CRM/Contact/Form/Contact.tpl" ) {
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('#first_name').keyup(function() {
+          var value = $( this ).val();
+          $('#nick_name').val(value);
+          })
+          .keyup();
+      });
+    </script>";
+  }
+}
