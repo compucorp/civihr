@@ -115,7 +115,7 @@
         start_date = $('#start_date_display', $form).datepicker( "getDate" );
         difDate = Math.floor((end_date - start_date) / 86400000);
         pubHoliday = {/literal}{$publicHolidays}{literal};
-        CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC', 'option.limit': 31},
+        CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC', 'option.limit': 365},
           {success: function(data) {
             $.each(data.values, function(key, value) {
             var val = value.activity_date_time;
