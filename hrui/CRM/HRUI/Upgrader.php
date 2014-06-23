@@ -151,8 +151,10 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     }
     return TRUE;
   } // */
-  public function upgrade_4500() {
-    $this->ctx->log->info('Planning update 4500');
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400');
+    //disable individual contact sub types
     $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
     $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
     foreach ($subContactId['values'] as $key) {
@@ -163,6 +165,7 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
       );
       civicrm_api3('ContactType', 'create', $paramsSubType);
     }
+    CRM_Core_BAO_Navigation::resetNavigation();
     return TRUE;
   }
 }

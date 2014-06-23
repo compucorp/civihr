@@ -74,17 +74,9 @@ function hrui_civicrm_install() {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
   }
+
   //Disable Individual sub types
-  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
-  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
-  foreach ($subContactId['values'] as $key) {
-    $paramsSubType = array(
-      'name' => $key['name'],
-      'id' => $key['id'],
-      'is_active' => FALSE,
-    );
-    civicrm_api3('ContactType', 'create', $paramsSubType);
-  }
+  _hrui_toggleContactSubType(FALSE);
 
   // Disable Household contact type
   $contactTypeId = CRM_Core_DAO::getFieldValue(
@@ -196,18 +188,7 @@ function hrui_civicrm_install() {
  */
 function hrui_civicrm_uninstall() {
   //Enable Individual sub types
-  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
-  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
-  foreach ($subContactId['values'] as $key) {
-    $paramsSubType = array(
-      'name' => $key['name'],
-      'id' => $key['id'],
-      'is_active' => TRUE,
-    );
-    civicrm_api3('ContactType', 'create', $paramsSubType);
-  }
-  // Reset Navigation
-  CRM_Core_BAO_Navigation::resetNavigation();
+  _hrui_toggleContactSubType(TRUE);
 
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
@@ -283,6 +264,7 @@ function hrui_setViewOptionsSetting($options = array()) {
  * Implementation of hook_civicrm_enable
  */
 function hrui_civicrm_enable() {
+  _hrui_toggleContactSubType(FALSE);
   return _hrui_civix_civicrm_enable();
 }
 
@@ -290,7 +272,26 @@ function hrui_civicrm_enable() {
  * Implementation of hook_civicrm_disable
  */
 function hrui_civicrm_disable() {
+  _hrui_toggleContactSubType(TRUE);
   return _hrui_civix_civicrm_disable();
+}
+
+/**
+ * Enable/disable individual contact sub types
+ */
+function _hrui_toggleContactSubType($isActive) {
+  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
+  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
+  foreach ($subContactId['values'] as $key) {
+    $paramsSubType = array(
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => $isActive,
+    );
+    civicrm_api3('ContactType', 'create', $paramsSubType);
+  }
+  // Reset Navigation
+  CRM_Core_BAO_Navigation::resetNavigation();
 }
 
 /**
