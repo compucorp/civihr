@@ -66,14 +66,24 @@ function hrui_civicrm_xmlMenu(&$files) {
 function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
-    'version' => 3,
     'domain_id' => CRM_Core_Config::domainID(),
     'enable_components' => array('CiviReport','CiviCase'),
   );
-  $result = civicrm_api('setting', 'create', $params);
+  $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
+  }
+  //Disable Individual sub types
+  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
+  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
+  foreach ($subContactId['values'] as $key) {
+    $paramsSubType = array(
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => FALSE,
+    );
+    civicrm_api3('ContactType', 'create', $paramsSubType);
   }
 
   // Disable Household contact type
@@ -85,12 +95,11 @@ function hrui_civicrm_install() {
   );
   if ($contactTypeId) {
     $paramsContactType = array(
-      'version' => 3,
       'name' => "Household",
       'id' => $contactTypeId,
       'is_active' => FALSE,
     );
-    $resultContactType = civicrm_api('contact_type', 'create', $paramsContactType);
+    $resultContactType = civicrm_api3('contact_type', 'create', $paramsContactType);
     if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
       CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
       throw new CRM_Core_Exception('Failed to disable contact type');
@@ -109,10 +118,9 @@ function hrui_civicrm_install() {
       );
       if ($reportID) {
         $paramsReport = array(
-          'version' => 3,
           'id' => $reportID,
         );
-        $resultContactType = civicrm_api('report_instance', 'delete', $paramsReport);
+        $resultContactType = civicrm_api3('report_instance', 'delete', $paramsReport);
         if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
           CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
           throw new CRM_Core_Exception('Failed to disable contact type');
@@ -187,6 +195,20 @@ function hrui_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrui_civicrm_uninstall() {
+  //Enable Individual sub types
+  $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
+  $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
+  foreach ($subContactId['values'] as $key) {
+    $paramsSubType = array(
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => TRUE,
+    );
+    civicrm_api3('ContactType', 'create', $paramsSubType);
+  }
+  // Reset Navigation
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
   $tabsToSet = array($options['Activities'], $options['Tags']);
@@ -229,11 +251,10 @@ function hrui_civicrm_uninstall() {
 function hrui_getViewOptionsSetting() {
   $domainID = CRM_Core_Config::domainID();
   $params = array(
-    'version' => 3,
     'domain_id' => $domainID,
     'return' => 'contact_view_options',
   );
-  $result = civicrm_api('setting', 'get', $params);
+  $result = civicrm_api3('setting', 'get', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-get result for contact_view_options', $result);
     throw new CRM_Core_Exception('Failed to retrieve settings for contact_view_options');
@@ -247,11 +268,10 @@ function hrui_getViewOptionsSetting() {
 function hrui_setViewOptionsSetting($options = array()) {
   $domainID = CRM_Core_Config::domainID();
   $params = array(
-    'version' => 3,
     'domain_id' => $domainID,
     'contact_view_options' => $options,
   );
-  $result = civicrm_api('setting', 'create', $params);
+  $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for contact_view_options', $result);
     throw new CRM_Core_Exception('Failed to create settings for contact_view_options');
