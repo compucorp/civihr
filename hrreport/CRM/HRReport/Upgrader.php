@@ -173,7 +173,7 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
       $name = "report/{$result['id']}";
       $label = $title;
       $domain_id = CRM_Core_Config::domainID();
-      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label,permission ) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}','access CiviReport ' )";
+      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
       $dao = CRM_Core_DAO::executeQuery($query);
     }
     return TRUE;
