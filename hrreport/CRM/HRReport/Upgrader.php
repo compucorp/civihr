@@ -163,4 +163,27 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     CRM_Core_DAO::executeQuery("UPDATE civicrm_managed SET name = 'CiviHR Job Detail Report' WHERE entity_type = 'ReportInstance' AND module = 'org.civicrm.hrreport' AND name= 'CiviHR Contact Detail Report'");
     return TRUE;
   }
+
+  public function upgrade_1401() {
+    $this->ctx->log->info('Planning update 1401'); // PEAR Log interface
+    $params = array(
+      'version' => 3,
+      'title'   => 'CiviHR Current Employees Report',
+      'description' => 'HR Report showing drilled down current employee details . ',
+      'report_id'   => 'civihr/detail',
+      'form_values' => serialize(
+        array(
+          'fields' => array(
+            'id'  => 1,
+            'sort_name' => 1,
+            'email'     => 1,
+            'manager' => 1,
+            'title' => 1,
+          ),
+        )
+      ),
+    );
+    civicrm_api3('ReportInstance', 'create', $params);
+    return TRUE;
+  }
 }
