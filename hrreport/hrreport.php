@@ -86,15 +86,16 @@ function hrreport_civicrm_install() {
  * Note: This hook only runs in CiviCRM 4.4+.
  */
 function hrreport_civicrm_postInstall() {
-  foreach (array("CiviHR Full Time Equivalents Report", "CiviHR Annual and Monthly Cost Equivalents Report", "CiviHR Public Holiday Report" ,"CiviHR Absence Report") as $title ) {
-    $result = civicrm_api3('ReportInstance', 'getsingle', array('return' => "id",  'title' => $title));
-    $url = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashlet";
-    $fullscreen_url = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashletFullscreen";
-    $name = "report/{$result['id']}";
-    $label = $title;
+  $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  while ($dao->fetch()) {
+    $url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashlet";
+    $fullscreen_url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+    $name = "report/{$dao->entity_id}";
+    $label = $dao->name;
     $domain_id = CRM_Core_Config::domainID();
-    $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label ) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
-    $dao = CRM_Core_DAO::executeQuery($query);
+    $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+    CRM_Core_DAO::executeQuery($query);
   }
 }
 
@@ -102,7 +103,7 @@ function hrreport_civicrm_postInstall() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrreport_civicrm_uninstall() {
-  $sql = "DELETE FROM civicrm_dashboard WHERE label IN ('CiviHR Full Time Equivalents Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+  $sql = "DELETE FROM civicrm_dashboard WHERE label IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
   CRM_Core_DAO::executeQuery($sql);
   $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id"), 'name' => 'casedashboard',));
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_dashboard_contact WHERE dashboard_id = {$caseDashlet['id']}");
@@ -132,9 +133,9 @@ function hrreport_civicrm_disable() {
 }
 
 function _hrreport_setActiveFields($setActive) {
-  $sql = "UPDATE civicrm_dashboard_contact JOIN civicrm_dashboard on civicrm_dashboard.id =  civicrm_dashboard_contact.dashboard_id  SET civicrm_dashboard_contact.is_active = {$setActive} WHERE civicrm_dashboard.label IN ('CiviHR Full Time Equivalents Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report' ,'CiviHR Absence Report') OR civicrm_dashboard.name = 'casedashboard'";
+  $sql = "UPDATE civicrm_dashboard_contact JOIN civicrm_dashboard on civicrm_dashboard.id =  civicrm_dashboard_contact.dashboard_id  SET civicrm_dashboard_contact.is_active = {$setActive} WHERE civicrm_dashboard.label IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report' ,'CiviHR Absence Report') OR civicrm_dashboard.name = 'casedashboard'";
   CRM_Core_DAO::executeQuery($sql);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET is_active = {$setActive} WHERE label IN ('CiviHR Full Time Equivalents Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') OR name = 'casedashboard'");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET is_active = {$setActive} WHERE label IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') OR name = 'casedashboard'");
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
@@ -196,11 +197,11 @@ function hrreport_civicrm_pageRun( &$page ) {
       $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
       civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' => $url));
     }
-    foreach (array("CiviHR Full Time Equivalents Report", "CiviHR Annual and Monthly Cost Equivalents Report", "CiviHR Public Holiday Report" ,"CiviHR Absence Report") as $title ) {
-      //to get the report id
-      $result = civicrm_api3('ReportInstance', 'getsingle', array('return' => "id",  'title' => $title));
-      $dashletParams['url'] = "civicrm/report/instance/{$result['id']}?reset=1&section=2&snippet=5&context=dashlet";
-      $dashlet = civicrm_api3('Dashboard', 'get', array('label' => $title,));
+    $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      $dashletParams['url'] = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashlet";
+      $dashlet = civicrm_api3('Dashboard', 'get', array('label' => $dao->name,));
       $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
       if (empty($dashboardContact['id'])) {
         civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
