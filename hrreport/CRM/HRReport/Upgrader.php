@@ -167,7 +167,6 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
   public function upgrade_1401() {
     $this->ctx->log->info('Planning update 1401'); // PEAR Log interface
     $params = array(
-      'version' => 3,
       'title'   => 'CiviHR Current Employees Report',
       'description' => 'HR Report showing drilled down current employee details . ',
       'report_id'   => 'civihr/detail',
@@ -183,7 +182,8 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
         )
       ),
     );
-    civicrm_api3('ReportInstance', 'create', $params);
+    $result = civicrm_api3('ReportInstance', 'create', $params);
+    CRM_Core_DAO::executeQuery("INSERT INTO civicrm_managed (module, name, entity_type, entity_id) VALUES ('org.civicrm.hrreport', 'CiviHR Current Employees Report', 'ReportInstance', {$result['id']})");
     return TRUE;
   }
 }
