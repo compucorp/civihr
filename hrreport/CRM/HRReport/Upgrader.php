@@ -164,6 +164,22 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
+    $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+    $dao = CRM_Core_DAO::executeQuery($sql);
+    while ($dao->fetch()) {
+      $url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashlet";
+      $fullscreen_url = "civicrm/report/instance/{$dao->entity_id}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+      $name = "report/{$dao->entity_id}";
+      $label = $dao->name;
+      $domain_id = CRM_Core_Config::domainID();
+      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+      CRM_Core_DAO::executeQuery($query);
+    }
+    return TRUE;
+  }
+
   public function upgrade_1401() {
     $this->ctx->log->info('Planning update 1401'); // PEAR Log interface
     $params = array(

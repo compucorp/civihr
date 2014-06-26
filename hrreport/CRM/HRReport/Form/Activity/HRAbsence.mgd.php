@@ -29,6 +29,7 @@ return array (
       'report_id'   => 'civihr/absence',
       'form_values' => serialize(
         array(
+          'addToDashboard' => 1,
           'fields' => array(
             'id'  => 1,
             'contact_target' => 1,
