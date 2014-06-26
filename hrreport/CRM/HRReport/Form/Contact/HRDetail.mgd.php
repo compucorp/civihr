@@ -59,7 +59,7 @@ return array (
             'sort_name' => 1,
             'email'     => 1,
             'manager' => 1,
-            'title' => 1,
+            'hrjob_title' => 1,
           ),
         )
       ),
