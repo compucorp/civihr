@@ -40,6 +40,32 @@ function hrui_civicrm_buildForm($formName, &$form) {
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   }
+  //HR-358 - Set default values
+  if ($formName == 'CRM_Contact_Form_Contact') {
+    //set default value to phone location and type
+    if (($form->elementExists('phone[1][phone_type_id]')) && ($form->elementExists('phone[1][phone_type_id]'))) {
+      $phoneType = $form->getElement('phone[1][phone_type_id]');
+      $phoneValue = CRM_Core_OptionGroup::values('phone_type');
+      $phoneKey = CRM_Utils_Array::key('Mobile', $phoneValue);
+      $phoneType->setSelected($phoneKey);
+
+      $phoneLocation = $form->getElement('phone[1][location_type_id]');
+      $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Work', 'id', 'name');
+      $phoneLocation->setSelected($locationId);
+    }
+
+    //set tag checked
+    if ($form->elementExists('tag')) {
+      $tagList = $form->getElement('tag');
+      foreach (array('Part-time Employee', 'Full-time Employee', 'Volunteer', 'Service Provider', 'Consultant') as $key => $value) {
+        $result = civicrm_api3('Tag', 'getsingle', array('name' => $value,'return' => "id"));
+        foreach ($tagList->_elements as $key => $val) {
+          if (($tagList->_elements[$key]->_attributes['name']) == $result['id'])
+            $tagList->_elements[$key]->setChecked(TRUE);
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -64,6 +90,15 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
+  //creation of tags - HR-358
+  $tag_name = array('Part-time Employee', 'Full-time Employee', 'Volunteer', 'Service Provider', 'Consultant');
+  foreach ($tag_name as $key => $value) {
+    $tagId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Tag', $value, 'id', 'name');
+    if (empty($tagId)) {
+      $result = civicrm_api3('Tag', 'create', array('name' => $value));
+    }
+  }
+
   // make sure only relevant components are enabled
   $params = array(
     'domain_id' => CRM_Core_Config::domainID(),
@@ -187,6 +222,9 @@ function hrui_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrui_civicrm_uninstall() {
+  //delete tag. -- HR-358
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Part-time Employee', 'Full-time Employee', 'Volunteer', 'Service Provider', 'Consultant')");
+
   //Enable Individual sub types
   _hrui_toggleContactSubType(TRUE);
 
