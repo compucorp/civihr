@@ -152,8 +152,17 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     return TRUE;
   } // */
 
-  public function upgrade_1400() {
-    $this->ctx->log->info('Planning update 1400');
+  public function upgrade_4500() {
+    $this->ctx->log->info('Planning update 4500');
+    //creation of tags - HR-358
+    $tag_name = array('Part-time Employee', 'Full-time Employee', 'Volunteer', 'Service Provider', 'Consultant');
+    foreach ($tag_name as $key => $value) {
+      $tagId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Tag', $value, 'id', 'name');
+      if (empty($tagId)) {
+        $result = civicrm_api3('Tag', 'create', array('name' => $value,));
+      }
+    }
+
     //disable individual contact sub types
     $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
     $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
@@ -166,6 +175,9 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
       civicrm_api3('ContactType', 'create', $paramsSubType);
     }
     CRM_Core_BAO_Navigation::resetNavigation();
+
+    $cusId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Extended_Demographics', 'id' ,'name');
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET weight = (case WHEN civicrm_custom_field.name = 'Marital_Status' then 3 else civicrm_custom_field.weight+1  End ) WHERE name IN ('Sexual_Orientation','Marital_Status','Ethnicity','Religion') and custom_group_id = {$cusId}");
     return TRUE;
   }
 }
