@@ -43,4 +43,26 @@ return array (
       ),
     ),
   ),
+  array (
+    'name'   => 'CiviHR Current Employees Report',
+    'entity' => 'ReportInstance',
+    'params' =>
+    array (
+      'version' => 3,
+      'title'   => 'CiviHR Current Employees Report',
+      'description' => 'HR Report showing drilled down current employee details . ',
+      'report_id'   => 'civihr/detail',
+      'form_values' => serialize(
+        array(
+          'fields' => array(
+            'id'  => 1,
+            'sort_name' => 1,
+            'email'     => 1,
+            'manager' => 1,
+            'hrjob_title' => 1,
+          ),
+        )
+      ),
+    ),
+  ),
 );
