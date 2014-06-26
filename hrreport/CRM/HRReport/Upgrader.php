@@ -177,7 +177,7 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
             'sort_name' => 1,
             'email'     => 1,
             'manager' => 1,
-            'title' => 1,
+            'hrjob_title' => 1,
           ),
         )
       ),
