@@ -45,7 +45,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       ->addSettingsFactory(function () use ($contactID, $absenceTypes, $activityTypes, $periods) {
 
       if ($periods === NULL) {
-        $res = civicrm_api3('HRAbsencePeriod', 'get', array());
+        $res = civicrm_api3('HRAbsencePeriod', 'get', array('options' => array('sort' => "start_date DESC")));
         $periods = $res['values'];
       }
       if ($absenceTypes === NULL) {
@@ -57,6 +57,12 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       }
 
       $legend = new CRM_HRAbsence_TypeLegend(9, $absenceTypes, $activityTypes);
+      $i = 1;
+      foreach($periods as $key=>$val){
+        $sortPeriods[$i] = $val;
+        $i++;
+      }
+
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
@@ -76,6 +82,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
           'absenceTypes' => $absenceTypes,
           'legend' => $legend->getMap(),
           'periods' => $periods,
+          'sortPeriods' => $sortPeriods,
           'standardDay' => 8 * 60,
           'apiTsFmt' => 'YYYY-MM-DD HH:mm:ss',
         ),

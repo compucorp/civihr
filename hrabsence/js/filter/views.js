@@ -3,10 +3,12 @@ CRM.HRAbsenceApp.module('Filter', function(Filter, HRAbsenceApp, Backbone, Mario
   Filter.FilterView = Marionette.ItemView.extend({
     template: '#hrabsence-filters-template',
     templateHelpers: function() {
+	i=1;
       return {
         // 'RenderUtil': CRM.HRAbsenceApp.RenderUtil,
         'FieldOptions': {
           'activity_type_id': CRM.absenceApp.activityTypes,
+	  'sort_periods': _.reduce(CRM.absenceApp.sortPeriods, function(r,m){r[i]= m.id; i++; return r;}, {}),
           'period_id': _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.title; return r;}, {})
         }
       };
