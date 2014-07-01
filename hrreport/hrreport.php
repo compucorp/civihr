@@ -194,20 +194,24 @@ function hrreport_civicrm_pageRun( &$page ) {
     $report_id = _hrreport_getId();
     $session = CRM_Core_Session::singleton();
     $contact_id = $session->get('userID');
-    //to do entry of default casedashboard report
-    $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id", "url"), 'name' => 'casedashboard',));
-    $dashboardContactId = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $caseDashlet['id'],'contact_id' => $contact_id));
-    if (empty($dashboardContactId['id'])) {
-      $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
-      civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' => $url));
+    //to do entry of default casedashboard report and civicrm news report
+    foreach (array('blog','casedashboard') as $name) {
+      $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id", "url"), 'name' => $name,));
+      $dashboardContactId = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $caseDashlet['id'],'contact_id' => $contact_id));
+      if (empty($dashboardContactId['id'])) {
+        $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
+        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'column_no' => '1','content' => $url));
+      }
     }
+    $i = 1;
     foreach ($report_id as $key=>$val) {
       $dashletParams['url'] = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
       $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
       if (empty($dashboardContact['id'])) {
-        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
       }
+      $i = 0;
     }
   }
 }

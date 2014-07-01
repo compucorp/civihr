@@ -671,6 +671,11 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
       $onHoverAct = ts('View Absence Record');
     }
 
+    if (!isset($this->_params['absence_date_from']) && !isset($this->_params['absence_date_to'])) {
+      $this->_params['absence_date_from'] = date('m/d/Y');
+      $this->_params['absence_date_to'] = date("m/d/Y",strtotime("+2 months"));
+    }
+
     if (!empty($rows)) {
       $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name');
       list($durationFromDate, $durationToDate) = $this->getFromTo(
