@@ -16,13 +16,13 @@
         <%
         var month = CRM.HRAbsenceApp.moment(periods[periodId].start_date).date(1);
         var end = CRM.HRAbsenceApp.moment(periods[periodId].end_date);
-        for (; !month.isAfter(end); month.add(1, 'months')) {
+        for (; !month.isAfter(end); end.add(-1, 'months')) {
         %>
         <tr>
-          <td><%- month.format('MMM YYYY') %></td>
+          <td><%- end.format('MMM YYYY') %></td>
           <% for (var i = 1; i<= 31; i++) { %>
-            <% var date = month.clone().date(i), dateFmt = date.format('YYYY-MM-DD'); %>
-            <% if (date.month() != month.month() || !activity_by_date[dateFmt]) { %>
+            <% var date = end.clone().date(i), dateFmt = date.format('YYYY-MM-DD'); %>
+            <% if (date.month() != end.month() || !activity_by_date[dateFmt]) { %>
               <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item hrabsence-bg-empty"></td>
             <% } else if (activity_by_date[dateFmt].length == 1) { %>
               <% var actId = activity_by_date[dateFmt][0].get('activity_type_id'); %>
@@ -38,7 +38,7 @@
             <% } %>
           <% } // for i %>
           <td class="hrabsence-cal-total">
-            <% var stats = month_stats[month.format('YYYY-MM')]; %>
+            <% var stats = month_stats[end.format('YYYY-MM')]; %>
             <% if (stats) { %>
               <% if (stats.creditTotal) { %><div class="credit"><%= CRM.HRAbsenceApp.formatDuration(stats.creditTotal) %></div><% } %>
               <% if (stats.debitTotal) { %><div class="debit"><%= CRM.HRAbsenceApp.formatDuration(-1 * stats.debitTotal) %></div><% } %>

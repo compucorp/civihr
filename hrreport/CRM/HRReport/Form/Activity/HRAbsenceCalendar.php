@@ -408,6 +408,12 @@ activity_type_id = {$activityTypeID}
     $absenceCalendar[date('Y', strtotime($durationFromDate))][(int)date('m', strtotime($durationFromDate))]['actual_start_day'] = (int)date('d', strtotime($durationFromDate));
     $absenceCalendar[date('Y', strtotime($durationToDate))][(int)date('m', strtotime($durationToDate))]['actual_end_day'] = (int)date('d', strtotime($durationToDate));
 
+    foreach ($absenceCalendar as $key=>$val ) {
+      krsort($val);
+      $absenceCalendar[$key] = $val;
+    }
+    krsort($absenceCalendar);
+
     if (count($validSourceRecordIds) == 0 || !$validSourceRecordIds) {
       CRM_Core_Session::setStatus(ts("There is no absence record for chosen Absence Date range"), ts('No Result Found'));
       return;

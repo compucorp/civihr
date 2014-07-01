@@ -13,8 +13,7 @@
   {ts}Period{/ts}:
   {literal}
     <select class="crm-form-select crm-select2" name="period_id" multiple="multiple">
-      <% var keys = _.keys(FieldOptions.period_id); %>
-      <% keys.reverse(); %>
+      <% var keys = _.values(FieldOptions.sort_periods); %>
       <% _.each(keys, function(value){ %>
       <option value="<%= value %>"><%- FieldOptions.period_id[value] %></option>
       <% }) %>
