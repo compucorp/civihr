@@ -188,7 +188,7 @@ function hrreport_civicrm_managed(&$entities) {
  *
  * @return void
  */
-function hrreport_civicrm_pageRun( $page ) {
+function hrreport_civicrm_pageRun( &$page ) {
   $pageName = $page->getVar( '_name' );
   if ($pageName == 'CRM_Contact_Page_DashBoard') {
     $report_id = _hrreport_getId();
