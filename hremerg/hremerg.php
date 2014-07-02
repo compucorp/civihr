@@ -50,8 +50,8 @@ function hremerg_civicrm_install() {
   $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
   $i = 4;
   $phone =  array(
-    '1' => 'Phone No',
-    '2' => 'Mobile No',
+    CRM_Core_OptionGroup::getValue('phone_type','Phone') => 'Phone No',
+    CRM_Core_OptionGroup::getValue('phone_type','Mobile') => 'Mobile No',
   );
   foreach ( $phone as $name=>$label) {
     $params = array(
