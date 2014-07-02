@@ -47,6 +47,48 @@ function hremerg_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hremerg_civicrm_install() {
+  $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
+  $i = 4;
+  $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
+  $phone =  array(
+    array_search('Phone',$phoneTypes) => 'Phone No',
+    array_search('Mobile',$phoneTypes) => 'Mobile No',
+  );
+  foreach ( $phone as $name=>$label) {
+    $params = array(
+      'uf_group_id' => $profileId['id'],
+      'is_active' => '1',
+      'label' => $label,
+      'field_type' => 'Contact',
+      'weight' => $i,
+      'field_name' => 'phone',
+      'phone_type_id' => $name,
+    );
+    $i++;
+    civicrm_api3('UFField', 'create', $params);
+  }
+  $fields = array(
+    'supplemental_address_1' => 'Supplemental Address 1',
+    'supplemental_address_2' => 'Supplemental Address 2',
+    'street_address' => 'Street Address',
+    'city' => 'City',
+    'postal_code' => 'Postal Code',
+    'state_province' => 'State',
+    'country' => 'Country',
+  );
+  foreach ( $fields as $name=>$label) {
+    $params = array(
+      'uf_group_id' => $profileId['id'],
+      'is_active' => '1',
+      'label' => $label,
+      'field_type' => 'Contact',
+      'weight' => $i,
+      'field_name' => $name,
+    );
+    $i++;
+    civicrm_api3('UFField', 'create', $params);
+  }
+
   return _hremerg_civix_civicrm_install();
 }
 
@@ -54,6 +96,10 @@ function hremerg_civicrm_install() {
  * Implementation of hook_civicrm_uninstall
  */
 function hremerg_civicrm_uninstall() {
+  //delete uffields
+  $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
+  CRM_Core_DAO::executeQuery("DELETE FROM  civicrm_uf_field WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','supplemental_address_1','supplemental_address_2','street_address','city','postal_code','state_province','country')");
+
   //delete customgroup
   $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Emergency_Contact",));
   civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
@@ -79,6 +125,10 @@ function hremerg_civicrm_disable() {
 }
 
 function _hremerg_setActiveFields($setActive) {
+  //disable/enable uffields
+  $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','supplemental_address_1','supplemental_address_2','street_address','city','postal_code','state_province','country')");
+
   //disable/enable customgroup and customvalue
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group on civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'Emergency_Contact'";
   CRM_Core_DAO::executeQuery($sql);
@@ -130,5 +180,24 @@ function hremerg_civicrm_buildForm($formName, &$form) {
         $form->setDefaults(array('relationship_type_id' => $relationshipType['id'] . '_a_b'));
       }
     }
+  }
+}
+
+function hremerg_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  $smarty = CRM_Core_Smarty::singleton();
+  if (!empty($smarty->_tpl_vars['form']['formName']) &&
+    ($formname = $smarty->_tpl_vars['form']['formName']) &&
+    $tplName == 'CRM/Contact/Page/View/Relationship.tpl') {
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        var context = $('form#{$formname}');
+        $('.crm-relationship-form-block-description', context).remove();
+        $('.crm-relationship-form-block-note',context).remove();
+        $('.crm-relationship-form-block-is_permission_a_b',context).remove();
+        $('.crm-relationship-form-block-is_permission_b_a',context).remove();
+        $('.crm-relationship-form-block-is_active',context).hide();
+        $('.crm-relationship-form-block-start_date',context).remove();
+      });
+    </script>";
   }
 }

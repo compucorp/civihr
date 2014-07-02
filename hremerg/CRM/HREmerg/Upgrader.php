@@ -186,4 +186,49 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
     return TRUE;
   }
 
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
+    $profileId = civicrm_api3('UFGroup', 'getsingle', array( 'return' => "id",  'name' => "new_individual",));
+    $i = 4;
+    $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
+    $phone =  array(
+      array_search('Phone',$phoneTypes) => 'Phone No',
+      array_search('Mobile',$phoneTypes) => 'Mobile No',
+    );
+    foreach ( $phone as $name=>$label) {
+      $params = array(
+        'uf_group_id' => $profileId['id'],
+        'is_active' => '1',
+        'label' => $label,
+        'field_type' => 'Contact',
+        'weight' => $i,
+        'field_name' => 'phone',
+        'phone_type_id' => $name,
+      );
+      $i++;
+      civicrm_api3('UFField', 'create', $params);
+    }
+    $fields = array(
+      'supplemental_address_1' => 'Supplemental Address 1',
+      'supplemental_address_2' => 'Supplemental Address 2',
+      'street_address' => 'Street Address',
+      'city' => 'City',
+      'postal_code' => 'Postal Code',
+      'state_province' => 'State',
+      'country' => 'Country',
+    );
+    foreach ( $fields as $name=>$label) {
+      $params = array(
+        'uf_group_id' => $profileId['id'],
+        'is_active' => '1',
+        'label' => $label,
+        'field_type' => 'Contact',
+        'weight' => $i,
+        'field_name' => $name,
+      );
+      $i++;
+      civicrm_api3('UFField', 'create', $params);
+    }
+    return TRUE;
+  }
 }
