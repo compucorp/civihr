@@ -190,9 +190,10 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
     $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
     $profileId = civicrm_api3('UFGroup', 'getsingle', array( 'return' => "id",  'name' => "new_individual",));
     $i = 4;
+    $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
     $phone =  array(
-      '1' => 'Phone No',
-      '2' => 'Mobile No',
+      array_search('Phone',$phoneTypes) => 'Phone No',
+      array_search('Mobile',$phoneTypes) => 'Mobile No',
     );
     foreach ( $phone as $name=>$label) {
       $params = array(

@@ -49,9 +49,10 @@ function hremerg_civicrm_xmlMenu(&$files) {
 function hremerg_civicrm_install() {
   $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
   $i = 4;
+  $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
   $phone =  array(
-    CRM_Core_OptionGroup::getValue('phone_type','Phone') => 'Phone No',
-    CRM_Core_OptionGroup::getValue('phone_type','Mobile') => 'Mobile No',
+    array_search('Phone',$phoneTypes) => 'Phone No',
+    array_search('Mobile',$phoneTypes) => 'Mobile No',
   );
   foreach ( $phone as $name=>$label) {
     $params = array(
