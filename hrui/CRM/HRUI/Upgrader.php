@@ -154,15 +154,6 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
 
   public function upgrade_4500() {
     $this->ctx->log->info('Planning update 4500');
-    //creation of tags - HR-358
-    $tag_name = array('Part-time Employee', 'Full-time Employee', 'Volunteer', 'Service Provider', 'Consultant');
-    foreach ($tag_name as $key => $value) {
-      $tagId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Tag', $value, 'id', 'name');
-      if (empty($tagId)) {
-        $result = civicrm_api3('Tag', 'create', array('name' => $value,));
-      }
-    }
-
     //disable individual contact sub types
     $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
     $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
@@ -176,8 +167,15 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     }
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    $cusId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Extended_Demographics', 'id' ,'name');
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET weight = (case WHEN civicrm_custom_field.name = 'Marital_Status' then 3 else civicrm_custom_field.weight+1  End ) WHERE name IN ('Sexual_Orientation','Marital_Status','Ethnicity','Religion') and custom_group_id = {$cusId}");
+    //hide/disable constitution information block
+    $query = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = 0 WHERE civicrm_custom_group.name = 'constituent_information'";
+    CRM_Core_DAO::executeQuery($query);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = 0 WHERE name = 'constituent_information'");
+
+    //disable optionGroup and optionValue
+    $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = 0 WHERE civicrm_option_group.name IN ('custom_most_important_issue', 'custom_marital_status')";
+    CRM_Core_DAO::executeQuery($query);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = 0 WHERE name IN ('custom_most_important_issue', 'custom_marital_status')");
     return TRUE;
   }
 }
