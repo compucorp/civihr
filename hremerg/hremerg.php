@@ -201,3 +201,12 @@ function hremerg_civicrm_alterContent( &$content, $context, $tplName, &$object )
     </script>";
   }
 }
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hremerg_civicrm_pageRun( &$page ) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hremerg', 'css/hremerg.css');
+  }
+}
