@@ -279,27 +279,28 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       ));
       $countDays = $approvedDays = 0;
       $absenceDateDuration = array();
+      $actStatus = CRM_Core_OptionGroup::values('activity_status');
       foreach ($resultAbsences['values'] as $key => $val) {
         $convertedDate = date("M d, Y (D)", strtotime($val['activity_date_time']));
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
           $countDays = $countDays + 1;
-          if ($val['status_id'] == "2") {
+          if ($val['status_id'] == array_search('Completed',$actStatus)) {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 1;
           }
-          elseif ($val['status_id'] == "9") {
+          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
             $absenceStatus = "Unapproved";
           }
         }
         elseif ($val['duration'] == "240") {
           $converteddays = "Half Day";
           $countDays = $countDays + 0.5;
-          if ($val['status_id'] == "2") {
+          if ($val['status_id'] == array_search('Completed',$actStatus)) {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 0.5;
           }
-          elseif ($val['status_id'] == "9") {
+          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
             $absenceStatus = "Unapproved";
           }
         }
