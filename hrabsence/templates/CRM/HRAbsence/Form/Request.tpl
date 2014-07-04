@@ -35,8 +35,8 @@
       <td colspan="2">{$emp_position}</td>
     </tr>
     <tr>
-      <td>{ts}Absence Type{/ts}</td> 
-      <td colspan="2">{$absenceType}</td> 
+      <td>{ts}Absence Type{/ts}</td>
+      <td colspan="2">{$absenceType}</td>
     </tr>
     <tr class="crm-event-manage-eventinfo-form-block-start_date">
       <td class="label">{ts}Dates{/ts}</td>
@@ -166,7 +166,7 @@
               selectopt = $('#options_'+x+' :selected').val();
               totalDays = new Number(totalDays) + new Number(selectopt);
 	      if (value.sid==2) {
-	      	$("#approved_"+x).attr('checked','checked');
+                $("#approved_"+x).attr('checked','checked');
                 totalAppDays = totalAppDays + 0.5;
 	      }
 	    }
@@ -317,7 +317,7 @@
           if (selectopt == 1) {
             totalDays = totalDays + 1;
           }
-          else {
+          else if(selectopt == '0.5') {
             totalDays = totalDays + 0.5;
           }
         }
@@ -378,11 +378,17 @@
         startDate = absenceDate.substring(4,7)+' '+earlierdate.getDate()+','+' '+earlierdate.getFullYear()+' ('+absenceDate.substring(0,3)+')';
       }
       abday = absenceDate.substring(0,3);
-      if ((abday == 'Sat' || abday == 'Sun') || (sDate in pubHoliday)) {
-        createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="crm-form-select crm-select2"><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td></tr>';
+      if (daysApp == 1) {
+        approveColumn = '<td><input type="checkbox" name="approvalCheck"  class="approvedCheck"  id="approved_'+x+'"></td>';
       }
       else {
-      	createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="crm-form-select crm-select2"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td></tr>';
+        approveColumn = '';
+      }
+      if ((abday == 'Sat' || abday == 'Sun') || (sDate in pubHoliday)) {
+        createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="crm-form-select crm-select2"><option value=""></option><option value="1">Full Day</option><option value="0.5">Half Day</option></select></td>'+approveColumn+'</tr>';
+      }
+      else {
+      	createSelectBox = '<tr class="trabsence" ><td><label id="label_'+x+'" >'+startDate+'</label></td><td><select id="options_'+x+'" class="crm-form-select crm-select2"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td>'+approveColumn+'</tr>';
       }
       $('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
       numberOfDaysToAdd = 1;
