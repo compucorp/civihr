@@ -45,7 +45,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>4</weight>
+      <weight>3</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -63,7 +63,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>5</weight>
+      <weight>4</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -81,7 +81,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>6</weight>
+      <weight>5</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -99,7 +99,7 @@
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>3</weight>
+      <weight>6</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -217,6 +217,17 @@
       <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Buddhist</label>
       <value>Buddhist</value>
       <name>Buddhist</name>
@@ -294,6 +305,17 @@
       <option_group_name>religion_20130725124132</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Asexual</label>
       <value>Asexual</value>
       <name>Asexual</name>
@@ -338,6 +360,17 @@
       <option_group_name>sexual_orientation_20130725124348</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Single</label>
       <value>Single</value>
       <name>Single</name>
@@ -376,6 +409,17 @@
       <name>Widowed</name>
       <is_default>0</is_default>
       <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>

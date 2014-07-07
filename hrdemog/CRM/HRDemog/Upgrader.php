@@ -137,4 +137,17 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
     return TRUE;
   } // */
 
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
+    foreach (array('ethnicity_20130725123943', 'religion_20130725124132', 'sexual_orientation_20130725124348', 'marital_status_20130913084916') as $key => $value) {
+      $optParams = array(
+        'option_group_id' => $value,
+        'label' => 'Prefer Not to Say',
+        'value' => 'Prefer Not to Say',
+        'name' => 'Prefer_Not_to_Say',
+      );
+      civicrm_api3('OptionValue', 'create', $optParams);
+    }
+    return TRUE;
+  }
 }
