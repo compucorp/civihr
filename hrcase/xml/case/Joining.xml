@@ -2,7 +2,7 @@
 
 <CaseType>
   <name>Joining</name>
-  
+  <weight>3</weight>
   <ActivityTypes>
     <ActivityType>
       <name>Open Case</name>

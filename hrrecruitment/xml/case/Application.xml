@@ -4,6 +4,7 @@
   <description>Application</description>
   <grouping>Vacancy</grouping>
   <filter>1</filter>
+  <weight>6</weight>
 
   <ActivityTypes>
 

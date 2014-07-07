@@ -2,7 +2,7 @@
 
 <CaseType>
   <name>Probation</name>
-  
+  <weight>4</weight>
   <ActivityTypes>
     <ActivityType>
       <name>Open Case</name>

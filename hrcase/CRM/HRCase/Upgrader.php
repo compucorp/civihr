@@ -177,4 +177,14 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     CRM_Core_BAO_Navigation::resetNavigation();
     return TRUE;
   }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Applying update 1400');
+    $i = 3;
+    foreach (array('Joining','Probation','Exiting') as $caseName) {
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_case_type SET weight = {$i} WHERE name = '{$caseName}'");
+      $i++;
+    }
+    return TRUE;
+  }
 }

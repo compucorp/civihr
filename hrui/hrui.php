@@ -196,7 +196,7 @@ function hrui_civicrm_install() {
   civicrm_api3('setting', 'create', array(
     'blogUrl' => 'https://civicrm.org/taxonomy/term/198/feed',
   ));
-
+  _hrui_wordReplacement(FALSE);
   return _hrui_civix_civicrm_install();
 }
 
@@ -239,7 +239,7 @@ function hrui_civicrm_uninstall() {
   CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
   $defaults['is_active'] = 1;
   CRM_Core_BAO_OptionValue::create($defaults);
-
+  _hrui_wordReplacement(TRUE);
   return _hrui_civix_civicrm_uninstall();
 }
 
@@ -283,6 +283,7 @@ function hrui_setViewOptionsSetting($options = array()) {
 function hrui_civicrm_enable() {
   _hrui_setActiveFields(FALSE);
   _hrui_toggleContactSubType(FALSE);
+  _hrui_wordReplacement(FALSE);
   return _hrui_civix_civicrm_enable();
 }
 
@@ -292,7 +293,20 @@ function hrui_civicrm_enable() {
 function hrui_civicrm_disable() {
   _hrui_setActiveFields(TRUE);
   _hrui_toggleContactSubType(TRUE);
+  _hrui_wordReplacement(TRUE);
   return _hrui_civix_civicrm_disable();
+}
+
+
+function _hrui_wordReplacement($isActive) {
+  if( $isActive) {
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviCRM News' WHERE name = 'blog' ");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Case Dashboard Dashlet' WHERE name = 'casedashboard' ");
+  }
+  else {
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviHR News' WHERE name = 'blog' ");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Assignments Dashlet' WHERE name = 'casedashboard' ");
+  }
 }
 
 /**
@@ -324,6 +338,7 @@ function _hrui_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
+
 }
 /**
  * Implementation of hook_civicrm_upgrade

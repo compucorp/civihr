@@ -364,7 +364,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       ),
     );
     parent::__construct();
-
+    $config = CRM_Core_Config::singleton();
     // stats fields
     $this->_columns['civicrm_hrjob']['fields']['job_positions'] =
       array(
@@ -383,7 +383,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
       'name' => 'pay_annualized_est',
-      'title' => ts('Monthly Cost Equivalents'),
+      'title' => ts('Monthly Cost Equivalents').' ('.$config->defaultCurrencySymbol.')',
       'type' => CRM_Utils_Type::T_INT,
       'dbAlias'  => '(SUM(hrjob_pay_civireport.pay_annualized_est)/12)',
       'grouping' => 'stats-fields',
@@ -392,7 +392,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       'name' => 'pay_annualized_est',
       'title' => ts('Annual Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
-      'statistics' => array('sum' => ts('Annual Cost Equivalents'),),
+      'statistics' => array('sum' => ts('Annual Cost Equivalents').' ('.$config->defaultCurrencySymbol.')',),
       'grouping' => 'stats-fields',
     );
 
