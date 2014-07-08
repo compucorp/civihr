@@ -52,25 +52,28 @@
       <tr>
         <td>{ts}Date{/ts}</td>
         <td>{ts}Absence{/ts}</td>
+        <td>{ts}Status{/ts}</td>
       </tr>
       {foreach from=$absenceDateDuration item=val key=key}
       {if $val != 'Holiday' }
         <tr class="{cycle values="odd-row,even-row"} {$row.class}" >
           <td>{$key}</td>
-          <td>{$val}</td>
+          <td>{$val.duration}</td>
+	  <td>{$val.status}</td>
         </tr>
       {/if}
       {/foreach}
       <tr>
 	<td>{ts}Total{/ts}</td>
 	<td>{$totalDays} {if $totalDays <= 1 } {ts}day{/ts} {else} {ts}days{/ts} {/if}</td>
+	<td>{$approvedDays} {if $approvedDays <= 1 } {ts}day approved{/ts} {else} {ts}days approved{/ts} {/if}</td>
       </tr>
     </tbody>
   </table>
 </div>
 
 
-{include file="CRM/Custom/Page/CustomDataView.tpl"} 
+{include file="CRM/Custom/Page/CustomDataView.tpl"}
 
 <div class="crm-submit-buttons">
   {include file="CRM/common/formButtons.tpl" location="bottom"}

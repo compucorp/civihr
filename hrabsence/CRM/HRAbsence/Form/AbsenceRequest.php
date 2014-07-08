@@ -36,6 +36,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $_loginUserID;
   public $_targetContactID;
   public $_managerContactID;
+  public $_daysApproval;
   public $count;
   public $_actStatusId;
   public $_mode;
@@ -276,22 +277,40 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'option_sort' => "activity_date_time ASC",
         'option.limit' => 365,
       ));
-      $countDays = 0;
+      $countDays = $approvedDays = 0;
       $absenceDateDuration = array();
+      $actStatus = CRM_Core_OptionGroup::values('activity_status');
       foreach ($resultAbsences['values'] as $key => $val) {
         $convertedDate = date("M d, Y (D)", strtotime($val['activity_date_time']));
         if ($val['duration'] == "480") {
           $converteddays = "Full Day";
           $countDays = $countDays + 1;
+          if ($val['status_id'] == array_search('Completed',$actStatus)) {
+            $absenceStatus = "Approved";
+            $approvedDays = $approvedDays + 1;
+          }
+          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+            $absenceStatus = "Unapproved";
+          }
         }
         elseif ($val['duration'] == "240") {
           $converteddays = "Half Day";
           $countDays = $countDays + 0.5;
+          if ($val['status_id'] == array_search('Completed',$actStatus)) {
+            $absenceStatus = "Approved";
+            $approvedDays = $approvedDays + 0.5;
+          }
+          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+            $absenceStatus = "Unapproved";
+          }
         }
         else {
-          $converteddays = "Holiday";
+          $converteddays = $absenceStatus = "Holiday";
         }
-        $absenceDateDuration[$convertedDate] = $converteddays;
+        $absenceDateDuration[$convertedDate] = array(
+          'duration' => $converteddays,
+          'status' => $absenceStatus
+        );
       }
       $keys = array_keys($absenceDateDuration);
       $count = count($keys) - 1;
@@ -303,6 +322,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_fromDate = $fromdateVal[0];
       $this->_toDate = $todateVal[0];
       $this->assign('totalDays', $countDays);
+      $this->assign('approvedDays', $approvedDays);
     }
 
     if (($this->_action && (CRM_Core_Action::ADD || CRM_Core_Action::UPDATE)) && $this->_mode == 'edit') {
@@ -396,6 +416,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if ( $this->_action == CRM_Core_Action::UPDATE || $this->_action == CRM_Core_Action::ADD ) {
       $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
     }
+    if ($this->_managerContactID == $this->_loginUserID) {
+      $this->_daysApproval = 1;
+    } elseif ($this->_targetContactID == $this->_loginUserID) {
+      $this->_daysApproval = 2;
+    } else {
+      $this->_daysApproval = 0;
+    }
+    $this->assign('daysApproval', $this->_daysApproval);
   }
 
   /**
@@ -447,6 +475,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_targetContactID = $submitValues['contacts_id'];
     }
     $absentDateDurations = array();
+    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
+    $activityStatusId['status_id'] = CRM_Utils_Array::key('Completed', $activityStatus);
 
     if (!empty($submitValues['date_values'])) {
       foreach (explode('|', $submitValues['date_values']) as $key => $dateString) {
@@ -454,12 +484,17 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $values = explode('(', $dateString);
           $date = CRM_Utils_Date::processDate($values[0]);
           $valuesDate = explode(':', $dateString);
-          $absentDateDurations[$date] = (int) $valuesDate[1];
+          $absentDateDurations[$date]['duration'] = (int) $valuesDate[1];
+          if (isset($valuesDate[2]) && $valuesDate[2] == 1) {
+            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Completed', $activityStatus);
+          }
+          elseif (isset($valuesDate[2]) && $valuesDate[2] == 0) {
+            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Rejected', $activityStatus);
+          }
         }
       }
     }
 
-    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
     if ($this->_action & (CRM_Core_Action::ADD)) {
       $activityParam = array(
         'sequential' => 1,
@@ -495,7 +530,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $activityLeavesParam['status_id'] = $activityParam['status_id'];
       foreach ($absentDateDurations as $date => $duration) {
         $activityLeavesParam['activity_date_time'] = $date;
-        $activityLeavesParam['duration'] = $duration;
+        $activityLeavesParam['duration'] = $duration['duration'];
         civicrm_api3('Activity', 'create', $activityLeavesParam);
       }
 
@@ -529,6 +564,25 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'activity_type_id' => $this->_activityTypeID,
           'status_id' => $statusId
         );
+
+        $result = civicrm_api3('Activity', 'get', array(
+          'source_record_id' => $submitValues['source_record_id'],
+          'option.limit' => 365,
+        ));
+        foreach ($result['values'] as $row_result) {
+          civicrm_api3('Activity', 'delete', array(
+            'id' => $row_result['id'],
+          ));
+        }
+        foreach ($absentDateDurations as $date => $duration) {
+          $resultAct = civicrm_api3('Activity', 'create', array(
+            'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
+            'source_record_id' => $submitValues['source_record_id'],
+            'activity_date_time' => $date,
+            'duration' => $duration['duration'],
+            'status_id' => $duration['approval'],
+          ));
+        }
         $result = civicrm_api3('Activity', 'create', $activityParam);
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
@@ -562,7 +616,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
             'source_record_id' => $submitValues['source_record_id'],
             'activity_date_time' => $date,
-            'duration' => $duration,
+            'duration' => $duration['duration'],
+            'status_id' => $duration['approval'],
           ));
         }
         $buttonName = $this->controller->getButtonName();
