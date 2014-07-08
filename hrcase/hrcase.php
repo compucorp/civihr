@@ -200,8 +200,8 @@ function hrcase_civicrm_navigationMenu(&$params) {
   if (!empty($values)) {
     // fetch all the case types
     $caseTypes = CRM_Case_PseudoConstant::caseType();
-    $appValue = array_search('Application', $caseTypes);
-    unset($caseTypes[$appValue]);
+    $appValue = civicrm_api3('CaseType', 'getsingle', array('return' => "id", 'name' => "Application"));
+    unset($caseTypes[$appValue['id']]);
 
     $parentId = $values['id'];
     $maxKey = (max(array_keys($params)));
