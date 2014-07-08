@@ -176,6 +176,8 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = 0 WHERE civicrm_option_group.name IN ('custom_most_important_issue', 'custom_marital_status')";
     CRM_Core_DAO::executeQuery($query);
     CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = 0 WHERE name IN ('custom_most_important_issue', 'custom_marital_status')");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviHR News' WHERE name = 'blog' ");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Assignments Dashlet' WHERE name = 'casedashboard' ");
     return TRUE;
   }
 }

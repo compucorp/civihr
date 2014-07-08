@@ -2,7 +2,7 @@
 
 <CaseType>
   <name>Exiting</name>
-  
+  <weight>5</weight>
   <ActivityTypes>
     <ActivityType>
       <name>Open Case</name>
