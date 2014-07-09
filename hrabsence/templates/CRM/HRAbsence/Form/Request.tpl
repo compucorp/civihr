@@ -49,7 +49,7 @@
       <tr class="tblabsencetitle">
         <td>{ts}Date{/ts}</td>
         <td>{ts}Absence{/ts}</td>
-        {if ($action eq 2 OR $action eq 4) AND $daysApproval eq 1 }
+        {if ($action eq 2 OR $action eq 4) AND $showhide eq 1 }
           <td>{ts}Approve{/ts}</td>
         {/if}
       </tr>
@@ -118,7 +118,7 @@
         start_date = $('#start_date_display', $form).datepicker( "getDate" );
         difDate = Math.floor((end_date - start_date) / 86400000);
         pubHoliday = {/literal}{$publicHolidays}{literal};
-        daysApp = {/literal}{$daysApproval}{literal};
+        daysApp = {/literal}{$showhide}{literal};
         CRM.api('Activity', 'get', {'sequential': 1, 'source_record_id': upActivityId, 'option_sort': 'activity_date_time ASC', 'option.limit': 365},
           {success: function(data) {
             $.each(data.values, function(key, value) {
@@ -165,18 +165,24 @@
               $("#options_"+x).val('0.5');
               selectopt = $('#options_'+x+' :selected').val();
               totalDays = new Number(totalDays) + new Number(selectopt);
-	      if (value.sid==2) {
+	      if (value.sid==2|| value.sid==1) {
                 $("#approved_"+x).attr('checked','checked');
                 totalAppDays = totalAppDays + 0.5;
 	      }
+              else {
+                $("#approved_"+x).attr('checked', false);
+              }
 	    }
 	    else if (value.dur==480) {
 	      $("#options_"+x, $form).val('1');
 	      selectopt = $('#options_'+x+' :selected', $form).val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
-	      if (value.sid==2) {
+	      if (value.sid==2 || value.sid==1) {
                 $("#approved_"+x).attr('checked','checked');
                 totalAppDays = totalAppDays + 1;
+              }
+              else {
+                $("#approved_"+x).attr('checked', false);
               }
 	    }
             else {
@@ -234,6 +240,7 @@
           }
         }
     	$("#date_values", $form).val(dateValues.join('|'));
+        $("#tot_app_days", $form).val($('#countD').text()+'|'+ $('#appD').text());
       }
 
 {/literal}{/if}{literal}
@@ -272,7 +279,7 @@
   }
 {/literal}{/if}{literal}
 
-  if ( {/literal}{$daysApproval}{literal} == 1) {
+  if ( {/literal}{$showhide}{literal} == 1) {
     approvedDays = '<td id="appD"></td>';
   }
   else{

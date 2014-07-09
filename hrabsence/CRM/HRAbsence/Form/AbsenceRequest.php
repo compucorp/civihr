@@ -36,7 +36,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $_loginUserID;
   public $_targetContactID;
   public $_managerContactID;
-  public $_daysApproval;
+  public $_showhide;
+  public $_empPosition;
+  public $_absenceType;
   public $count;
   public $_actStatusId;
   public $_mode;
@@ -260,14 +262,16 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     $activityTypes = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
 
-    $this->assign('absenceType', $activityTypes[$this->_activityTypeID]);
+    $this->_absenceType = $activityTypes[$this->_activityTypeID];
+    $this->assign('absenceType', $this->_absenceType);
     $resultHRJob = civicrm_api3('HRJob', 'get', array(
       'sequential' => 1,
       'contact_id' => $this->_targetContactID,
       'is_primary' => 1,
     ));
     if (!empty($resultHRJob['values'])) {
-      $this->assign('emp_position', $resultHRJob['values'][0]['position']);
+      $this->_empPosition = $resultHRJob['values'][0]['position'];
+      $this->assign('emp_position', $this->_empPosition);
     }
     $this->assign('emp_name', CRM_Contact_BAO_Contact::displayName($this->_targetContactID));
 
@@ -336,6 +340,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_managerContactID = NULL;
       }
       $this->add('hidden', 'date_values', '', array('id' => 'date_values'));
+      $this->add('hidden', 'tot_app_days', '', array('id' => 'tot_app_days'));
     }
     $this->addDate('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDate'));
     $this->addDate('end_date', ts('End Date / Time'), FALSE, array('formatType' => 'activityDate'));
@@ -417,13 +422,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
     }
     if ($this->_managerContactID == $this->_loginUserID) {
-      $this->_daysApproval = 1;
+      $this->_showhide = 1;
     } elseif ($this->_targetContactID == $this->_loginUserID) {
-      $this->_daysApproval = 2;
+      $this->_showhide = 2;
     } else {
-      $this->_daysApproval = 0;
+      $this->_showhide = 0;
     }
-    $this->assign('daysApproval', $this->_daysApproval);
+    $this->assign('showhide', $this->_showhide);
   }
 
   /**
@@ -495,6 +500,49 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
     }
 
+    // set email template values
+    $taDays = explode('|', $submitValues['tot_app_days']);
+    $totDays = $taDays[0];
+    $appDays = $taDays[1];
+
+    $msgTempResult = civicrm_api3('MessageTemplate', 'get', array(
+      'msg_title' => "Absence EMail",
+    ));
+    $targetContactResult = civicrm_api3('contact', 'get', array(
+      'id' => $this->_targetContactID,
+    ));
+    $managerContactResult = civicrm_api3('contact', 'get', array(
+      'id' => $this->_managerContactID,
+    ));
+
+    $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
+    $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
+
+    $mailprm[$this->_managerContactID]['display_name'] = $managerContactResult['values'][$this->_managerContactID]['display_name'];
+    $mailprm[$this->_managerContactID]['email'] = $managerContactResult['values'][$this->_managerContactID]['email'];
+    $absenceFromEmail = $mailprm[$this->_targetContactID]['email'];
+
+    $tplParams = array(
+      'messageTemplateID' => $msgTempResult['values'][$msgTempResult['id']]['id'],
+      'absenceFromEmail' => $absenceFromEmail,
+      'contactID' => $this->_targetContactID,
+      'absenceType' => $this->_absenceType,
+      'absentDateDurations' => $absentDateDurations,
+      'startDate' => $submitValues['start_date'],
+      'endDate' => $submitValues['end_date'],
+      'absenceComment' => $submitValues['custom_29_-1'],
+      'empPosition' => $this->_empPosition,
+      'totDays' => $totDays,
+      'appDays' => $appDays,
+    );
+
+    $sendTemplateParams = array(
+      'messageTemplateID' => $tplParams['messageTemplateID'],
+      'contactId' => $this->_targetContactID,
+      'tplParams' => $tplParams,
+      'from' => $absenceFromEmail,
+    );
+
     if ($this->_action & (CRM_Core_Action::ADD)) {
       $activityParam = array(
         'sequential' => 1,
@@ -535,6 +583,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
 
       if (array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) {
+        foreach ($mailprm as $k => $v) {
+          $sendTemplateParams['tplParams']['displayName'] = $v['display_name'];
+          $sendTemplateParams['toName'] =$v['display_name'];
+          $sendTemplateParams['toEmail'] =$v['email'];
+
+          list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
+        }
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
@@ -584,6 +639,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           ));
         }
         $result = civicrm_api3('Activity', 'create', $activityParam);
+
+        $sendTemplateParams['tplParams']['absentDateDurations'] = $absentDateDurations;
+        $sendTemplateParams['tplParams']['approval'] = True;
+        foreach ($mailprm as $k => $v) {
+          $sendTemplateParams['tplParams']['displayName'] = $v['display_name'];
+          $sendTemplateParams['toName'] =$v['display_name'];
+          $sendTemplateParams['toEmail'] =$v['email'];
+          list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
+        }
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }

@@ -115,6 +115,87 @@ function hrabsence_civicrm_install() {
     'is_active' => 1,
   );
   civicrm_api3('OptionValue', 'create', $params);
+
+  /* Create message template for absence leave application */
+  $msg_text = 'Text';
+  $msg_html = '<p>Dear {$displayName},</p>
+<table>
+	<tbody>
+		<tr>
+			<td>Employee:</td>
+			<td>{$displayName}</td>
+		</tr>
+		<tr>
+			<td>Position:</td>
+			<td>{$empPosition}</td>
+		</tr>
+		<tr>
+			<td>Absence Type:</td>
+			<td>{$absenceType}</td>
+		</tr>
+		<tr>
+			<td>Dates:</td>
+			<td>{$startDate} - {$endDate}</td>
+		</tr>
+	</tbody>
+</table>
+<table border="1" border-spacing="0">
+	<tbody>
+		<tr>
+			<th>Date</th>
+			<th>Absence</th>
+{if $approval}
+			<th>Approve</th>
+{/if}
+		</tr>
+{foreach from=$absentDateDurations item=value key=label}
+		<tr>
+			<td>{$label|date_format}</td>
+			<td>{if $value.duration == 480}Full Day{elseif $value.duration == 240}Half Day{else}
+{/if}</td>
+{if $approval}
+			<td>{if $value.approval == 2}Approved{elseif $value.approval == 9}Unapproved{else}
+{/if}</td>
+{/if}
+		</tr>
+{/foreach}
+		<tr>
+			<td>Total</td>
+			<td>{$totDays}</td>
+{if $approval}
+			<td>{$appDays}</td>
+{/if}
+		</tr>
+	</tbody>
+</table>
+<br/>
+<table>
+	<tbody>
+		<tr>
+			<td>Type of Sickness:</td>
+			<td>{$sickType}</td>
+		</tr>
+		<tr>
+			<td>Absence Comment:</td>
+			<td>{$absenceComment}</td>
+		</tr>
+	</tbody>
+</table>
+<br/>
+<p>Thanks<br />
+CiviHR</p>';
+
+  $msg_params = array(
+    'msg_title' => 'Absence EMail',
+    'msg_subject' => 'Absences Application',
+    'msg_text' => $msg_text,
+    'msg_html' => $msg_html,
+    'workflow_id' => NULL,
+    'is_default' => '1',
+    'is_reserved' => '0',
+  );
+  civicrm_api3('message_template', 'create', $msg_params);
+  /* end MT */
   return _hrabsence_civix_civicrm_install();
 }
 
