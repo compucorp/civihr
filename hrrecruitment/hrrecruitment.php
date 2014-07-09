@@ -453,7 +453,7 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
 
   //To hide application case type from add assignment form
   if ($formName == 'CRM_Case_Form_Case') {
-    $form->_caseType = $caseTypes;
+    $form->_caseType = CRM_Case_PseudoConstant::caseType();
     unset($form->_caseType[$appValue]);
     $form->add('select', 'case_type_id', ts('Assignment Type'), $form->_caseType, TRUE );
   }
