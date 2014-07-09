@@ -73,6 +73,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       $session->pushUserContext(CRM_Utils_System::url('civicrm'));
       CRM_Core_Error::statusBounce(ts('You do not have the necessary permission to perform this action.'));
     }
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Form/HRVacancy.js');
   }
 
  /**

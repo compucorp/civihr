@@ -448,10 +448,12 @@ function hrrecruitment_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrrecruitment_civicrm_buildForm($formName, &$form) {
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $appValue = array_search('Application', $caseTypes);
+
   //To hide application case type from add assignment form
   if ($formName == 'CRM_Case_Form_Case') {
     $form->_caseType = CRM_Case_PseudoConstant::caseType();
-    $appValue = array_search('Application', $form->_caseType);
     unset($form->_caseType[$appValue]);
     $form->add('select', 'case_type_id', ts('Assignment Type'), $form->_caseType, TRUE );
   }
@@ -496,8 +498,6 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
       }
     }
 
-    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
-    $appValue = array_search('Application', $caseTypes);
     /* TO set vacancy stages as case status for 'Change Case Status' activity */
     if (($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Change Case Status'))) {
       $allcase = TRUE;
@@ -578,6 +578,37 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
     if ($aType == CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Comment')) {
       $defaults['status_id'] = CRM_Core_OptionGroup::getValue('activity_status','Completed');
       $form->setDefaults($defaults);
+    }
+  }
+
+  /* HR-401 Changes to Edit Evaluation and Application popups */
+  if ($formName == 'CRM_Custom_Form_Field' || $formName == 'CRM_HRRecruitment_Form_HRVacancy') {
+    $applicationCG = civicrm_api3('CustomGroup', 'get', array(
+                       'extends' => "Case",
+                       'extends_entity_column_value' => $appValue,
+                     ));
+    foreach ($applicationCG['values'] as $k => $v) {
+      $uncolapseAppl[] = $v['id'];
+    }
+    $evalCG = civicrm_api3('CustomGroup', 'get', array(
+                'extends' => "Activity",
+                'extends_entity_column_value' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
+              ));
+    foreach ($evalCG['values'] as $k => $v) {
+      $uncolapseEval[$k] = $v['id'];
+    }
+    CRM_Core_Resources::singleton()
+      ->addSetting(array('profileSelectorSet' => array(
+            'application' => $uncolapseAppl,
+            'evaluation' => $uncolapseEval,)
+        ));
+    $gID = CRM_Utils_Array::value('gid', $_GET);
+
+    /* HR-401 set default for 'Is field searchable' */
+    if (!empty($gID) && (in_array($gID, $uncolapseEval) || in_array($gID,  $uncolapseAppl))
+      && $formName == 'CRM_Custom_Form_Field') {
+      $default['is_searchable'] = 1;
+      $form->setDefaults($default);
     }
   }
 }
