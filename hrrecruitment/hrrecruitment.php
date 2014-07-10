@@ -583,25 +583,27 @@ function hrrecruitment_civicrm_buildForm($formName, &$form) {
 
   /* HR-401 Changes to Edit Evaluation and Application popups */
   if ($formName == 'CRM_Custom_Form_Field' || $formName == 'CRM_HRRecruitment_Form_HRVacancy') {
+    $uncolapseAppl = $uncolapseEval = array();
     $applicationCG = civicrm_api3('CustomGroup', 'get', array(
-                       'extends' => "Case",
-                       'extends_entity_column_value' => $appValue,
-                     ));
+      'extends' => "Case",
+      'extends_entity_column_value' => $appValue,
+      'name' => 'Application',
+    ));
     foreach ($applicationCG['values'] as $k => $v) {
       $uncolapseAppl[] = $v['id'];
     }
     $evalCG = civicrm_api3('CustomGroup', 'get', array(
-                'extends' => "Activity",
-                'extends_entity_column_value' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
-              ));
+      'extends' => "Activity",
+      'extends_entity_column_value' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Evaluation'),
+    ));
     foreach ($evalCG['values'] as $k => $v) {
       $uncolapseEval[$k] = $v['id'];
     }
     CRM_Core_Resources::singleton()
       ->addSetting(array('profileSelectorSet' => array(
-            'application' => $uncolapseAppl,
-            'evaluation' => $uncolapseEval,)
-        ));
+        'application' => $uncolapseAppl,
+        'evaluation' => $uncolapseEval,)
+      ));
     $gID = CRM_Utils_Array::value('gid', $_GET);
 
     /* HR-401 set default for 'Is field searchable' */
