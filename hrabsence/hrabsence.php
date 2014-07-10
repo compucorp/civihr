@@ -117,50 +117,85 @@ function hrabsence_civicrm_install() {
   civicrm_api3('OptionValue', 'create', $params);
 
   /* Create message template for absence leave application */
-  $msg_text = 'Text';
-  $msg_html = '<p>Dear {$displayName},</p>
+  $msg_text = 'Dear {$displayName},
+
+{ts}Employee:{/ts} {$empName}
+{ts}Position:{/ts} {$empPosition}
+{ts}Absence Type:{/ts} {$absenceType}
+{ts}Dates:{/ts} {$startDate} - {$endDate}
+
+{if $cancel}
+{ts}Leave has been cancelled.{/ts}
+{elseif $reject}
+{ts}Leave has been rejected.{/ts}
+{else}
+
+{ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
+
+{foreach from=$absentDateDurations item=value key=label}
+{$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+{/foreach}
+
+{ts}Total{/ts} | {$totDays} | {if $approval} {$appDays} {/if}
+
+{/if}
+
+{ts}Type of Sickness:{/ts} {$sickType}
+{ts}Absence Comment:{/ts} {$absenceComment}
+
+{ts}Thanks{/ts}
+CiviHR';
+
+  $msg_html = '<p>{ts}Dear{/ts} {$displayName},</p>
 <table>
 	<tbody>
 		<tr>
-			<td>Employee:</td>
-			<td>{$displayName}</td>
+			<td>{ts}Employee:{/ts}</td>
+			<td>{$empName}</td>
 		</tr>
 		<tr>
-			<td>Position:</td>
+			<td>{ts}Position:{/ts}</td>
 			<td>{$empPosition}</td>
 		</tr>
 		<tr>
-			<td>Absence Type:</td>
+			<td>{ts}Absence Type:{/ts}</td>
 			<td>{$absenceType}</td>
 		</tr>
 		<tr>
-			<td>Dates:</td>
+			<td>{ts}Dates:{/ts}</td>
 			<td>{$startDate} - {$endDate}</td>
 		</tr>
 	</tbody>
 </table>
+
+{if $cancel}
+  <p> {ts}Leave has been cancelled.{/ts} </p>
+{elseif $reject}
+  <p> {ts}Leave has been rejected.{/ts} </p>
+{else}
+
 <table border="1" border-spacing="0">
 	<tbody>
 		<tr>
-			<th>Date</th>
-			<th>Absence</th>
+			<th> {ts}Date{/ts} </th>
+			<th> {ts}Absence{/ts} </th>
 {if $approval}
-			<th>Approve</th>
+			<th> {ts}Approve{/ts} </th>
 {/if}
 		</tr>
 {foreach from=$absentDateDurations item=value key=label}
 		<tr>
 			<td>{$label|date_format}</td>
-			<td>{if $value.duration == 480}Full Day{elseif $value.duration == 240}Half Day{else}
+			<td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else}
 {/if}</td>
 {if $approval}
-			<td>{if $value.approval == 2}Approved{elseif $value.approval == 9}Unapproved{else}
+			<td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}
 {/if}</td>
 {/if}
 		</tr>
 {/foreach}
 		<tr>
-			<td>Total</td>
+			<td>{ts}Total{/ts}</td>
 			<td>{$totDays}</td>
 {if $approval}
 			<td>{$appDays}</td>
@@ -168,21 +203,22 @@ function hrabsence_civicrm_install() {
 		</tr>
 	</tbody>
 </table>
+{/if}
 <br/>
 <table>
 	<tbody>
 		<tr>
-			<td>Type of Sickness:</td>
+			<td>{ts}Type of Sickness:{/ts}</td>
 			<td>{$sickType}</td>
 		</tr>
 		<tr>
-			<td>Absence Comment:</td>
+			<td>{ts}Absence Comment:{/ts}</td>
 			<td>{$absenceComment}</td>
 		</tr>
 	</tbody>
 </table>
 <br/>
-<p>Thanks<br />
+<p> {ts}Thanks{/ts} <br/>
 CiviHR</p>';
 
   $msg_params = array(
@@ -220,6 +256,7 @@ function hrabsence_civicrm_uninstall() {
   $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
   $absenceType = implode(',', $absenceTypes);
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE civicrm_option_value.id IN ({$absenceType})");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_msg_template WHERE msg_title = 'Absence EMail'");
 
   return _hrabsence_civix_civicrm_uninstall();
 }
@@ -237,6 +274,7 @@ function hrabsence_civicrm_enable() {
     CRM_Core_DAO::executeQuery($sql);
   }
   CRM_Core_BAO_Navigation::resetNavigation();
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=1 WHERE msg_title = 'Absence EMail'");
 
   _hrabsence_setActiveFields(1);
   return _hrabsence_civix_civicrm_enable();
@@ -250,6 +288,7 @@ function hrabsence_civicrm_disable() {
   $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Absences','my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report','absenceReport')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=0 WHERE msg_title = 'Absence EMail'");
 
   _hrabsence_setActiveFields(0);
   return _hrabsence_civix_civicrm_disable();
