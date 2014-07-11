@@ -102,3 +102,10 @@ div.hrjob-tree-items {
     font-size: 0.8em;
     font-style: italic;
 }
+
+.hrjob-container .hrjob-tree-region .hrjob-tree-items dt .hrjob-nav {
+    font-size: 15px !important;
+}
+.hrjob-container .hrjob-tree-region .hrjob-tree-items dt {
+    padding-bottom: 10px;
+}
