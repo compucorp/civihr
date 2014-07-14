@@ -24,15 +24,21 @@
       <name>Link Cases</name>
     </ActivityType>
 
-    <ActivityType>
-      <name>Attach Objectives Document</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Attach Appraisal Document</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Attach Probation Notification</name>
-    </ActivityType>
+     <ActivityType>
+      <name>Conduct appraisal</name>
+     </ActivityType>
+     <ActivityType>
+       <name>Collection of appraisal paperwork</name>
+     </ActivityType>
+     <ActivityType>
+       <name>Issue confirmation/warning letter</name>
+     </ActivityType>
+     <ActivityType>
+       <name>Background Check</name>
+     </ActivityType>
+     <ActivityType>
+       <name>References Check</name>
+     </ActivityType>
   </ActivityTypes>
 
   <ActivitySets>
@@ -42,27 +48,18 @@
       <timeline>true</timeline>
       <ActivityTypes>
         <ActivityType>
-          <name>Open Case</name>
-          <status>Completed</status>
-        </ActivityType>
-        <ActivityType>
-          <name>Attach Objectives Document</name>
-          <reference_offset>7</reference_offset>
+          <name>Conduct appraisal</name>
+          <reference_offset>1</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
         <ActivityType>
-          <name>Attach Appraisal Document</name>
-          <reference_offset>90</reference_offset>
+          <name>Collection of appraisal paperwork</name>
+          <reference_offset>21</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
         <ActivityType>
-          <name>Attach Appraisal Document</name>
-          <reference_offset>180</reference_offset>
-          <reference_select>newest</reference_select>
-        </ActivityType>
-        <ActivityType>
-          <name>Attach Probation Notification</name>
-          <reference_offset>187</reference_offset>
+          <name>Issue confirmation/warning letter</name>
+          <reference_offset>24</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
       </ActivityTypes>
