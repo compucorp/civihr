@@ -506,7 +506,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     // set email template values
     $taDays = explode('|', $submitValues['tot_app_days']);
     $totDays = $taDays[0];
-    $appDays = $taDays[1];
+    if (!empty($taDays[1])) {
+      $appDays = $taDays[1];
+    }
 
     $CFId1 = civicrm_api3('CustomField', 'getsingle', array(
       'custom_group_id' => 'Type_of_Sickness',
@@ -534,7 +536,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
     $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
 
-    if (!empty($managerContactResult['values'])) {
+    if (!empty($this->_managerContactID) && !empty($managerContactResult['values'])) {
       $mailprm[$this->_managerContactID]['display_name'] = $managerContactResult['values'][$this->_managerContactID]['display_name'];
       $mailprm[$this->_managerContactID]['email'] = $managerContactResult['values'][$this->_managerContactID]['email'];
     }
