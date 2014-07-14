@@ -8,9 +8,7 @@
       <a href="#<%= cid %>/hrjob/<%= id %>" class="hrjob-nav <%= (is_primary == '1') ? 'primary' : '' %>" data-hrjob-event="hrjob:summary:show">
         <span name="position"></span>
         {literal}
-          <% if (contract_type) { %>
-          [<span name="contract_type"></span>]
-          <% } %>
+          [<span>Summary</span>]
         {/literal}
     </a></dt>
     <dd><a href="#<%= cid %>/hrjob/<%= id %>/general" class="hrjob-nav" data-hrjob-event="hrjob:general:edit">{ts}General{/ts}</a></dd>
