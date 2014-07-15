@@ -231,7 +231,7 @@ CiviHR</p>';
     'is_reserved' => '0',
   );
   civicrm_api3('message_template', 'create', $msg_params);
-  /* end MT */
+
   return _hrabsence_civix_civicrm_install();
 }
 
