@@ -552,9 +552,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       'absenceComment' => $absenceComment,
       'empPosition' => $this->_empPosition,
       'totDays' => $totDays,
-      'appDays' => $appDays,
     );
-
+    if (!empty($appDays)) {
+      $tplParams['appDays'] = $appDays;
+    }
     $sendTemplateParams = array(
       'messageTemplateID' => $tplParams['messageTemplateID'],
       'contactId' => $this->_targetContactID,
