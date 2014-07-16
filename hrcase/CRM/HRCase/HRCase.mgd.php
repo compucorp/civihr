@@ -25,7 +25,7 @@
                 'replace_word'=>'Assignment',
                 'is_active' => 1,
               ),
-          ),      
+          ),
           array (
             'name' => 'WordReplacement Assignments',
             'entity' => 'WordReplacement',
@@ -36,6 +36,16 @@
                 'replace_word'=>'Assignments',
                 'is_active' => 1,
               ),
+          ),
+          array (
+            'name' => 'WordReplacement Client',
+            'entity' => 'WordReplacement',
+            'params' =>
+            array (
+              'version' => 3,
+              'find_word' => 'Client',
+              'replace_word'=>'Contact',
+              'is_active' => 1,
+            ),
           )
         );
- 

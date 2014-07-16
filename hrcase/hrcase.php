@@ -22,6 +22,14 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  //update query to replace Case with Assignment
+  $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+  $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
+  CRM_Core_DAO::executeQuery($sql);
+
+  $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','New Created Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
+  CRM_Core_DAO::executeQuery($sql);
+
   $sql = "INSERT INTO `civicrm_relationship_type`
 (`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
 VALUES
@@ -76,6 +84,14 @@ function hrcase_civicrm_postInstall() {
  * Implementation of hook_civicrm_uninstall
  */
 function hrcase_civicrm_uninstall() {
+  //update query to replace Assignment with Case
+  $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
+  $sql = "UPDATE civicrm_option_value SET label= replace(label, 'Assignment', 'Case') WHERE label like '%Assignment%' and option_group_id=$optionGroupID and label <> 'New Assignment Created'";
+  CRM_Core_DAO::executeQuery($sql);
+
+  $sql = "UPDATE civicrm_option_value SET label= replace(label, 'New Created Assignment', 'Open Case') WHERE option_group_id=$optionGroupID";
+  CRM_Core_DAO::executeQuery($sql);
+
   $scheduleActions = hrcase_getActionsSchedule(TRUE);
   $scheduleAction = implode("','",$scheduleActions );
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_action_schedule WHERE name IN ('{$scheduleAction}')");
@@ -128,7 +144,7 @@ WHERE civicrm_custom_group.name IN ('Joining_Data', 'Exiting_Data')";
   //disable/enable activity type
   $query = "UPDATE civicrm_option_value
 SET is_active = {$setActive}
-WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter')";
+WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter', 'Open Case', 'Change Case Type', 'Change Case Status', 'Change Case Start Date', 'Assign Case Role', 'Remove Case Role', 'Merge Case', 'Reassigned Case', 'Link Cases', 'Change Case Tags', 'Add Client To Case')";
 
   CRM_Core_DAO::executeQuery($query);
 
@@ -166,6 +182,37 @@ function hrcase_civicrm_managed(&$entities) {
 }
 
 function hrcase_civicrm_buildForm($formName, &$form) {
+  //change pageTitle for adding Case/Assignment Activity
+  $contactDisplayName = CRM_Contact_BAO_Contact::displayName($form->getVar('_targetContactId'));
+  if ($formName == 'CRM_Case_Form_Activity'){
+    if ($form->_activityTypeName == 'Change Assignment Type') {
+      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Type'));
+    }
+    elseif ($form->_activityTypeName == 'Change Assignment Status') {
+      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Status'));
+    }
+    elseif ($form->_activityTypeName == 'Change Assignment Start Date') {
+      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Start Date'));
+    }
+    elseif ($form->_activityTypeName == 'Link Assignments') {
+      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Link Assignments'));
+    }
+  }
+
+  //change label and page title
+  if ($formName == 'CRM_Case_Form_Case') {
+    CRM_Utils_System::setTitle(ts('Create New Assignment'));
+
+  }
+  //remove Run QA Audit/Redact dropdown,
+  if ($formName == 'CRM_Case_Form_CaseView') {
+    if ($form->elementExists('report_id') || $form->elementExists('activity_type_filter_id')){
+      $check = $form->getElement('report_id');
+      $check->_attributes = array();
+      array_push($check->_attributes, 'display:none');
+    }
+  }
+
   if ($form instanceof CRM_Case_Form_Activity OR $form instanceof CRM_Case_Form_Case OR $form instanceof CRM_Case_Form_CaseView) {
     $optionID = CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('activity_status');
     $completed = array_search( 'Completed', $optionID );
