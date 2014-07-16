@@ -202,7 +202,6 @@ function hrcase_civicrm_buildForm($formName, &$form) {
   //change label and page title
   if ($formName == 'CRM_Case_Form_Case') {
     CRM_Utils_System::setTitle(ts('Create New Assignment'));
-
   }
   //remove Run QA Audit/Redact dropdown,
   if ($formName == 'CRM_Case_Form_CaseView') {
