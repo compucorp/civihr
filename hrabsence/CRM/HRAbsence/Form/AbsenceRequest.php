@@ -490,11 +490,14 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $date = CRM_Utils_Date::processDate($values[0]);
           $valuesDate = explode(':', $dateString);
           $absentDateDurations[$date]['duration'] = (int) $valuesDate[1];
-          if (isset($valuesDate[2]) && $valuesDate[2] == 1) {
+          if (isset($valuesDate[2]) && $valuesDate[2] == 1 && $this->_showhide == 1) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Completed', $activityStatus);
           }
-          elseif (isset($valuesDate[2]) && $valuesDate[2] == 0) {
+          elseif (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 1) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Rejected', $activityStatus);
+          }
+          else {
+            $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
           }
         }
       }
@@ -503,8 +506,24 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     // set email template values
     $taDays = explode('|', $submitValues['tot_app_days']);
     $totDays = $taDays[0];
-    $appDays = $taDays[1];
+    if (!empty($taDays[1])) {
+      $appDays = $taDays[1];
+    }
 
+    $CFId1 = civicrm_api3('CustomField', 'getsingle', array(
+      'custom_group_id' => 'Type_of_Sickness',
+      'return' => "id",
+    ));
+    if (!empty($CFId1)) {
+      $sickType = $submitValues[current(preg_grep('/^custom_'.$CFId1['id'].'_/', array_keys($submitValues)))];
+    }
+    $CFId2 = civicrm_api3('CustomField', 'getsingle', array(
+      'custom_group_id' => 'Absence_Comment',
+      'return' => "id",
+    ));
+    if (!empty($CFId2)) {
+      $absenceComment = $submitValues[current(preg_grep('/^custom_'.$CFId2['id'].'_/', array_keys($submitValues)))];
+    }
     $msgTempResult = civicrm_api3('MessageTemplate', 'get', array(
       'msg_title' => "Absence EMail",
     ));
@@ -514,23 +533,23 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $managerContactResult = civicrm_api3('contact', 'get', array(
       'id' => $this->_managerContactID,
     ));
-
     $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
     $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
 
-    $mailprm[$this->_managerContactID]['display_name'] = $managerContactResult['values'][$this->_managerContactID]['display_name'];
-    $mailprm[$this->_managerContactID]['email'] = $managerContactResult['values'][$this->_managerContactID]['email'];
-    $absenceFromEmail = $mailprm[$this->_targetContactID]['email'];
+    if (!empty($this->_managerContactID) && !empty($managerContactResult['values'])) {
+      $mailprm[$this->_managerContactID]['display_name'] = $managerContactResult['values'][$this->_managerContactID]['display_name'];
+      $mailprm[$this->_managerContactID]['email'] = $managerContactResult['values'][$this->_managerContactID]['email'];
+    }
 
     $tplParams = array(
       'messageTemplateID' => $msgTempResult['values'][$msgTempResult['id']]['id'],
-      'absenceFromEmail' => $absenceFromEmail,
-      'contactID' => $this->_targetContactID,
+      'empName' => $mailprm[$this->_targetContactID]['display_name'],
       'absenceType' => $this->_absenceType,
       'absentDateDurations' => $absentDateDurations,
       'startDate' => $submitValues['start_date'],
       'endDate' => $submitValues['end_date'],
-      'absenceComment' => $submitValues['custom_29_-1'],
+      'sickType' => $sickType,
+      'absenceComment' => $absenceComment,
       'empPosition' => $this->_empPosition,
       'totDays' => $totDays,
       'appDays' => $appDays,
@@ -540,7 +559,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       'messageTemplateID' => $tplParams['messageTemplateID'],
       'contactId' => $this->_targetContactID,
       'tplParams' => $tplParams,
-      'from' => $absenceFromEmail,
     );
 
     if ($this->_action & (CRM_Core_Action::ADD)) {
@@ -575,25 +593,23 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'source_record_id' => $result['id'],
         'activity_type_id' => CRM_Core_OptionGroup::getValue('activity_type', 'Absence', 'name'),
       );
-      $activityLeavesParam['status_id'] = $activityParam['status_id'];
       foreach ($absentDateDurations as $date => $duration) {
         $activityLeavesParam['activity_date_time'] = $date;
         $activityLeavesParam['duration'] = $duration['duration'];
+        $activityLeavesParam['status_id'] = $duration['approval'];
         civicrm_api3('Activity', 'create', $activityLeavesParam);
       }
 
       if (array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) {
-        foreach ($mailprm as $k => $v) {
-          $sendTemplateParams['tplParams']['displayName'] = $v['display_name'];
-          $sendTemplateParams['toName'] =$v['display_name'];
-          $sendTemplateParams['toEmail'] =$v['email'];
-
-          list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
-        }
+        $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
       elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
+        $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+        $sendTemplateParams['tplParams']['approval'] = TRUE;
+        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
@@ -608,6 +624,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'status_id' => $statusId
         );
         $result = civicrm_api3('Activity', 'create', $activityParam);
+
+        $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+        $sendTemplateParams['tplParams']['cancel'] = TRUE;
+        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been Cancelled.'), ts('Cancelled'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
@@ -640,14 +660,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         }
         $result = civicrm_api3('Activity', 'create', $activityParam);
 
-        $sendTemplateParams['tplParams']['absentDateDurations'] = $absentDateDurations;
-        $sendTemplateParams['tplParams']['approval'] = True;
-        foreach ($mailprm as $k => $v) {
-          $sendTemplateParams['tplParams']['displayName'] = $v['display_name'];
-          $sendTemplateParams['toName'] =$v['display_name'];
-          $sendTemplateParams['toEmail'] =$v['email'];
-          list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
-        }
+        $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+        $sendTemplateParams['tplParams']['approval'] = TRUE;
+        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
@@ -659,6 +674,10 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'status_id' => $statusId
         );
         $result = civicrm_api3('Activity', 'create', $activityParam);
+
+        $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+        $sendTemplateParams['tplParams']['reject'] = TRUE;
+        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been Rejected.'), ts('Rejected'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
       }
@@ -737,6 +756,21 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     }
     else {
       return FALSE;
+    }
+  }
+
+  /**
+   * Function to send absence email
+   *
+   * @access public
+   * @static
+   */
+  public static function sendAbsenceMail($mailprm, $sendTemplateParams) {
+    foreach ($mailprm as $k => $v) {
+      $sendTemplateParams['tplParams']['displayName'] = $v['display_name'];
+      $sendTemplateParams['toName'] =$v['display_name'];
+      $sendTemplateParams['toEmail'] =$v['email'];
+      list($sent, $subject, $message, $html) = CRM_Core_BAO_MessageTemplate::sendTemplate($sendTemplateParams);
     }
   }
 }

@@ -374,4 +374,124 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
+    /* Create message template for absence leave application */
+    $msg_text = 'Dear {$displayName},
+{ts}Employee:{/ts} {$empName}
+{ts}Position:{/ts} {$empPosition}
+{ts}Absence Type:{/ts} {$absenceType}
+{ts}Dates:{/ts} {$startDate} - {$endDate}
+
+{if $cancel}
+{ts}Leave has been cancelled.{/ts}
+{elseif $reject}
+{ts}Leave has been rejected.{/ts}
+{else}
+
+{ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
+
+{foreach from=$absentDateDurations item=value key=label}
+{$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+{/foreach}
+
+{ts}Total{/ts} | {$totDays} | {if $approval} {$appDays} {/if}
+
+{/if}
+
+{ts}Type of Sickness:{/ts} {$sickType}
+{ts}Absence Comment:{/ts} {$absenceComment}
+
+{ts}Thanks{/ts}
+CiviHR';
+
+    $msg_html = '<p>{ts}Dear{/ts} {$displayName},</p>
+<table>
+	<tbody>
+		<tr>
+			<td>{ts}Employee:{/ts}</td>
+			<td>{$empName}</td>
+		</tr>
+		<tr>
+			<td>{ts}Position:{/ts}</td>
+			<td>{$empPosition}</td>
+		</tr>
+		<tr>
+			<td>{ts}Absence Type:{/ts}</td>
+			<td>{$absenceType}</td>
+		</tr>
+		<tr>
+			<td>{ts}Dates:{/ts}</td>
+			<td>{$startDate} - {$endDate}</td>
+		</tr>
+	</tbody>
+</table>
+
+{if $cancel}
+  <p> {ts}Leave has been cancelled.{/ts} </p>
+{elseif $reject}
+  <p> {ts}Leave has been rejected.{/ts} </p>
+{else}
+
+<table border="1" border-spacing="0">
+	<tbody>
+		<tr>
+			<th> {ts}Date{/ts} </th>
+			<th> {ts}Absence{/ts} </th>
+{if $approval}
+			<th> {ts}Approve{/ts} </th>
+{/if}
+		</tr>
+{foreach from=$absentDateDurations item=value key=label}
+		<tr>
+			<td>{$label|date_format}</td>
+			<td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else}
+{/if}</td>
+{if $approval}
+			<td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}
+{/if}</td>
+{/if}
+		</tr>
+{/foreach}
+		<tr>
+			<td>{ts}Total{/ts}</td>
+			<td>{$totDays}</td>
+{if $approval}
+			<td>{$appDays}</td>
+{/if}
+		</tr>
+	</tbody>
+</table>
+{/if}
+<br/>
+<table>
+	<tbody>
+		<tr>
+			<td>{ts}Type of Sickness:{/ts}</td>
+			<td>{$sickType}</td>
+		</tr>
+		<tr>
+			<td>{ts}Absence Comment:{/ts}</td>
+			<td>{$absenceComment}</td>
+		</tr>
+	</tbody>
+</table>
+<br/>
+<p> {ts}Thanks{/ts} <br/>
+CiviHR</p>';
+
+    $msg_params = array(
+      'msg_title' => 'Absence EMail',
+      'msg_subject' => 'Absences Application',
+      'msg_text' => $msg_text,
+      'msg_html' => $msg_html,
+      'workflow_id' => NULL,
+      'is_default' => '1',
+      'is_reserved' => '0',
+    );
+    civicrm_api3('message_template', 'create', $msg_params);
+
+    return TRUE;
+  }
 }

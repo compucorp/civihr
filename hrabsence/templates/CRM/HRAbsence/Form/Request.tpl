@@ -49,7 +49,7 @@
       <tr class="tblabsencetitle">
         <td>{ts}Date{/ts}</td>
         <td>{ts}Absence{/ts}</td>
-        {if ($action eq 2 OR $action eq 4) AND $showhide eq 1 }
+        {if ($action eq 2 OR $action eq 4 OR $action eq 1) AND $showhide eq 1 }
           <td>{ts}Approve{/ts}</td>
         {/if}
       </tr>
@@ -198,7 +198,7 @@
             totalDays += ' {/literal}{ts}days{/ts}{literal}';
 	  }
 	  $('#countD', $form).html(totalDays);
-	  $('#appD', $form).html(totalAppDays);
+	  $('#appD', $form).html(totalAppDays +' days approved');
         }
       });
 
@@ -259,20 +259,27 @@
     start_date = $('#start_date_display', $form).datepicker( "getDate" ),
     diDate = Math.floor((end_date - start_date) / 86400000),
     selDate,
+    dateV,
     selectopt = 0;
     for (var x = 0; x <= diDate; x++) {
       selDate = $('#label_'+x, $form).text();
       selectopt = $('#options_'+x+' :selected', $form).text();
       if (selectopt == "Full Day") {
-        dateValues[x] = selDate +":" + "480";
+        dateV = selDate +":" + "480";
       }
       else {
         if (selectopt == "Half Day") {
-          dateValues[x] = selDate +":" + "240";
+          dateV = selDate +":" + "240";
         }
         else{
-          dateValues[x] = selDate +":" + "0";
+          dateV = selDate +":" + "0";
 	}
+      }
+      if ($('#approved_'+x).is(':checked')) {
+        dateValues[x] = dateV +":1";
+      }
+      else {
+        dateValues[x] = dateV +":0";
       }
     }
     $("#date_values", $form).val(dateValues.join('|'));
@@ -386,7 +393,7 @@
       }
       abday = absenceDate.substring(0,3);
       if (daysApp == 1) {
-        approveColumn = '<td><input type="checkbox" name="approvalCheck"  class="approvedCheck"  id="approved_'+x+'"></td>';
+        approveColumn = '<td><input type="checkbox" name="approvalCheck"  class="approvedCheck"  id="approved_'+x+'" checked></td>';
       }
       else {
         approveColumn = '';
@@ -422,6 +429,7 @@
       totalDays += ' {/literal}{ts}days{/ts}{literal}';
     }
     $('#countD', $form).html(totalDays);
+    $('#appD', $form).html(totalDays);
   }
 
 });
