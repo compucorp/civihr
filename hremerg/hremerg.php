@@ -68,13 +68,13 @@ function hremerg_civicrm_install() {
     civicrm_api3('UFField', 'create', $params);
   }
   $fields = array(
+    'street_address' => 'Street Address',
     'supplemental_address_1' => 'Supplemental Address 1',
     'supplemental_address_2' => 'Supplemental Address 2',
-    'street_address' => 'Street Address',
     'city' => 'City',
     'postal_code' => 'Postal Code',
-    'state_province' => 'State',
     'country' => 'Country',
+    'state_province' => 'State',
   );
   foreach ( $fields as $name=>$label) {
     $params = array(
