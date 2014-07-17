@@ -72,7 +72,7 @@ function hremerg_civicrm_install() {
     'supplemental_address_1' => 'Supplemental Address 1',
     'supplemental_address_2' => 'Supplemental Address 2',
     'city' => 'City',
-    'postal_code' => 'Postal Code',
+    'postal_code_suffix' => 'Postal Code Suffix',
     'country' => 'Country',
     'state_province' => 'State',
   );

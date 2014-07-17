@@ -456,7 +456,7 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
        $('.page-civicrm-case table.report tr:nth-child(2)').remove();
-       $('.page-civicrm-dashboard #case_dashboard_dashlet table.report tr:nth-child(2)').remove();
+       $('#case_dashboard_dashlet table.report tr:nth-child(2)').remove();
       });
     </script>";
   }
