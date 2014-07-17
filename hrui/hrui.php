@@ -451,4 +451,13 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
       });
     </script>";
   }
+
+  if($context == 'page' && ($tplName == "CRM/Case/Page/DashBoard.tpl" || $tplName == "CRM/Dashlet/Page/CaseDashboard.tpl")) {
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('.page-civicrm-case table.report tr:nth-child(2)').remove();
+        $('#case_dashboard_dashlet table.report tr:nth-child(2)').remove();
+      });
+    </script>";
+  }
 }
