@@ -451,4 +451,23 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
       });
     </script>";
   }
+
+  if($context == 'page' && ($tplName == "CRM/Case/Page/DashBoard.tpl" || $tplName == "CRM/Dashlet/Page/CaseDashboard.tpl")) {
+    if($tplName == "CRM/Case/Page/DashBoard.tpl") {
+       $id = '.page-civicrm-case';
+    }
+    else {
+      $id = '#case_dashboard_dashlet';
+    }
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('{$id} table.report tr th strong').each(function () {
+          var app = $(this).text();
+          if (app == 'Application') {
+            $(this).parent('th').parent('tr').remove();
+          }
+        });
+      });
+    </script>";
+  }
 }
