@@ -482,7 +482,7 @@ CiviHR';
 CiviHR</p>';
 
     $msg_params = array(
-      'msg_title' => 'Absence EMail',
+      'msg_title' => 'Absence Email',
       'msg_subject' => 'Absences Application',
       'msg_text' => $msg_text,
       'msg_html' => $msg_html,

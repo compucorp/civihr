@@ -222,7 +222,7 @@ CiviHR';
 CiviHR</p>';
 
   $msg_params = array(
-    'msg_title' => 'Absence EMail',
+    'msg_title' => 'Absence Email',
     'msg_subject' => 'Absences Application',
     'msg_text' => $msg_text,
     'msg_html' => $msg_html,
@@ -256,7 +256,7 @@ function hrabsence_civicrm_uninstall() {
   $absenceTypes = CRM_Core_OptionGroup::values('activity_type', FALSE, FALSE, FALSE, " AND grouping = 'Timesheet'", 'id', FALSE);
   $absenceType = implode(',', $absenceTypes);
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE civicrm_option_value.id IN ({$absenceType})");
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_msg_template WHERE msg_title = 'Absence EMail'");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_msg_template WHERE msg_title = 'Absence Email'");
 
   return _hrabsence_civix_civicrm_uninstall();
 }
@@ -274,7 +274,7 @@ function hrabsence_civicrm_enable() {
     CRM_Core_DAO::executeQuery($sql);
   }
   CRM_Core_BAO_Navigation::resetNavigation();
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=1 WHERE msg_title = 'Absence EMail'");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=1 WHERE msg_title = 'Absence Email'");
 
   _hrabsence_setActiveFields(1);
   return _hrabsence_civix_civicrm_enable();
@@ -288,7 +288,7 @@ function hrabsence_civicrm_disable() {
   $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('Absences','my_absences', 'calendar', 'new_absence', 'publicHolidays', 'absencePeriods', 'absenceTypes', 'absence_report','absenceReport')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=0 WHERE msg_title = 'Absence EMail'");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_msg_template SET is_active=0 WHERE msg_title = 'Absence Email'");
 
   _hrabsence_setActiveFields(0);
   return _hrabsence_civix_civicrm_disable();
