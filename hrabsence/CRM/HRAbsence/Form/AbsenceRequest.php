@@ -525,7 +525,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $absenceComment = $submitValues[current(preg_grep('/^custom_'.$CFId2['id'].'_/', array_keys($submitValues)))];
     }
     $msgTempResult = civicrm_api3('MessageTemplate', 'get', array(
-      'msg_title' => "Absence EMail",
+      'msg_title' => "Absence Email",
     ));
     $targetContactResult = civicrm_api3('contact', 'get', array(
       'id' => $this->_targetContactID,
