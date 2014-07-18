@@ -139,8 +139,9 @@ function hrabsence_civicrm_install() {
 {ts}Total{/ts} | {$totDays} | {if $approval} {$appDays} {/if}
 
 {/if}
-
+{if $absenceType == "Sick"}
 {ts}Type of Sickness:{/ts} {$sickType}
+{/if}
 {ts}Absence Comment:{/ts} {$absenceComment}
 
 {ts}Thanks{/ts}
@@ -208,8 +209,10 @@ CiviHR';
 <table>
 	<tbody>
 		<tr>
+      {if $absenceType == "Sick"}
 			<td>{ts}Type of Sickness:{/ts}</td>
 			<td>{$sickType}</td>
+      {/if}
 		</tr>
 		<tr>
 			<td>{ts}Absence Comment:{/ts}</td>

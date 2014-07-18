@@ -512,10 +512,12 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     $CFId1 = civicrm_api3('CustomField', 'getsingle', array(
       'custom_group_id' => 'Type_of_Sickness',
-      'return' => "id",
+      'return' => "option_group_id, id",
     ));
-    if (!empty($CFId1)) {
+    if (!empty($CFId1) && (preg_grep('/^custom_'.$CFId1['id'].'_/', array_keys($submitValues)))) {
       $sickType = $submitValues[current(preg_grep('/^custom_'.$CFId1['id'].'_/', array_keys($submitValues)))];
+      $sickName = CRM_Core_BAO_OptionValue::getOptionValuesAssocArray($CFId1['option_group_id']);
+      $sickType = CRM_Utils_Array::value($sickType, $sickName);
     }
     $CFId2 = civicrm_api3('CustomField', 'getsingle', array(
       'custom_group_id' => 'Absence_Comment',
@@ -548,13 +550,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       'absentDateDurations' => $absentDateDurations,
       'startDate' => $submitValues['start_date'],
       'endDate' => $submitValues['end_date'],
-      'sickType' => $sickType,
       'absenceComment' => $absenceComment,
       'empPosition' => $this->_empPosition,
       'totDays' => $totDays,
     );
     if (!empty($appDays)) {
       $tplParams['appDays'] = $appDays;
+    }
+    if ($this->_absenceType == 'Sick') {
+      $tplParams['sickType'] = $sickType;
     }
     $sendTemplateParams = array(
       'messageTemplateID' => $tplParams['messageTemplateID'],
