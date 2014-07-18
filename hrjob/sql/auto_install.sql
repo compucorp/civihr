@@ -74,6 +74,7 @@ CREATE TABLE `civicrm_hrjob_pay` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPay ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
+     `pay_scale` varchar(63)    COMMENT 'NJC pay scale, JNC pay scale, Soulbury Pay Agreement',
      `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
      `pay_unit` varchar(63)    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
@@ -85,6 +86,9 @@ CREATE TABLE `civicrm_hrjob_pay` (
  
     ,     UNIQUE INDEX `UI_job_id`(
         job_id
+  )
+  ,     INDEX `index_pay_scale`(
+        pay_scale
   )
   ,     INDEX `index_pay_grade`(
         pay_grade

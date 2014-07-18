@@ -37,6 +37,24 @@
   </index>
 
   <field>
+    <name>pay_scale</name>
+    <title>Job Pay Scale</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>NJC pay scale, JNC pay scale, Soulbury Pay Agreement</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_pay_scale</optionGroupName>
+    </pseudoconstant>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_pay_scale</uniqueName>
+  </field>
+  <index>
+    <name>index_pay_scale</name>
+    <fieldName>pay_scale</fieldName>
+  </index>
+
+  <field>
     <name>pay_grade</name>
     <title>Job Pay Grade</title>
     <type>varchar</type>
