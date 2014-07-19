@@ -9,17 +9,27 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-pay_grade">{ts}Pay Grade{/ts}</label>
+      <label for="hrjob-pay_scale">{ts}Pay Scale{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
       <%= RenderUtil.select({
-      id: 'hrjob-pay_grade',
-      name: 'pay_grade',
+      id: 'hrjob-pay_scale',
+      name: 'pay_scale',
       entity: 'HRJobPay'
       }) %>
     {/literal}
-    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pay_grade'}
+    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_pay_scale'}
+    </div>
+  </div>
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-pay_grade">{ts}Pay Grade{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input name="pay_grade" type="radio" value="paid">{ts}Paid{/ts}
+      <input name="pay_grade" type="radio" value="unpaid">{ts}Unpaid{/ts}
     </div>
   </div>
 

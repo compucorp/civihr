@@ -27,6 +27,12 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
+      <name>hrjob_pay_scale</name>
+      <title>Pay Scale</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
       <name>hrjob_pay_grade</name>
       <title>Pay Grade</title>
       <is_reserved>1</is_reserved>
@@ -200,6 +206,39 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_hours_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>NJC pay scale</label>
+      <value>NJC pay scale</value>
+      <name>NJC pay scale</name>
+      <is_default>1</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pay_scale</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>JNC pay scale</label>
+      <value>JNC pay scale</value>
+      <name>JNC pay scale</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pay_scale</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Soulbury Pay Agreement</label>
+      <value>Soulbury Pay Agreement</value>
+      <name>Soulbury Pay Agreement</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_pay_scale</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Unpaid</label>
