@@ -4,6 +4,12 @@
   // js to hide medium and location on case activity and case screen
   $(document).on('crmLoad', function() {
     $('.crm-case-activity-form-block-medium_id, .crm-case-form-block-medium_id').hide();
+    $('.crm-case-activities-type').html('Activity');
+    $('.crm-case-other-relationships-block').hide();
+    $('.crm-case_activities-accordion').insertAfter($('.case-control-panel'));
+    $('.crm-case-roles-block').click(function(){
+      $(".crm-case-roles-block .crm-accordion-body .dataTables_wrapper .report-layout tbody tr td:contains('Client')").html('Contact');
+    });         
   });
 
   // js to update date-time while completing case activity status on edit screen
