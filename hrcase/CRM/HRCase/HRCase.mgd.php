@@ -47,5 +47,28 @@
               'replace_word'=>'Contact',
               'is_active' => 1,
             ),
+          ),
+          array (
+            'name' => 'WordReplacement assignment',
+            'entity' => 'WordReplacement',
+            'params' =>
+            array (
+              'version' => 3,
+              'find_word' => 'case',
+              'replace_word'=>'assignment',
+              'is_active' => 1,
+            ),
+          ),
+          array (
+            'name' => 'WordReplacement Open Case',
+            'entity' => 'WordReplacement',
+            'params' =>
+            array (
+              'version' => 3,
+              'find_word' => 'Open Case',
+              'replace_word'=>'Created New Assignment',
+              'is_active' => 1,
+              'match_type' => 'exactMatch',
+            ),
           )
         );

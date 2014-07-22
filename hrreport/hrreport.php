@@ -184,25 +184,6 @@ function hrreport_civicrm_managed(&$entities) {
 }
 
 /**
- * Implementation of hook_civicrm_buildForm
- *
- * @params string $formName - the name of the form
- *         object $form - reference to the form object
- * @return void
- */
-function hrreport_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Report_Form_Case_Detail') {
-    CRM_Utils_System::setTitle(ts('Assignment Detail Report - Template'));
-  }
-  if ($formName == 'CRM_Report_Form_Case_TimeSpent') {
-    CRM_Utils_System::setTitle(ts('Assignment Time Spent Report - Template'));
-  }
-  if ($formName == 'CRM_Report_Form_Case_Summary') {
-    CRM_Utils_System::setTitle(ts('Assignment Summary Report - Template'));
-  }
-}
-
-/**
  * Implementation of hook_civicrm_pageRun
  *
  * @return void
@@ -213,9 +194,6 @@ function hrreport_civicrm_pageRun( &$page ) {
   //change page title from 'Case Report' to  'Assignment Report'
   if ($pageName == 'CRM_Report_Page_InstanceList' && $componentName == 'Case') {
     CRM_Utils_System::setTitle(ts('Assignment Reports'));
-  }
-  if ($pageName == 'CRM_Report_Page_InstanceList' || $pageName == 'CRM_Report_Page_TemplateList' ){
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrreport', 'js/hrreport.js');
   }
 
   if ($pageName == 'CRM_Contact_Page_DashBoard') {
