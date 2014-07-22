@@ -400,8 +400,13 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
 {/if}
 
-{ts}Type of Sickness:{/ts} {$sickType}
-{ts}Absence Comment:{/ts} {$absenceComment}
+{if $customGroup}
+  {foreach from=$customGroup item=value key=customName}
+    {foreach from=$value item=v key=n}
+      {$customName} : {$v}
+    {/foreach}
+  {/foreach}
+{/if}
 
 {ts}Thanks{/ts}
 CiviHR';
@@ -465,18 +470,26 @@ CiviHR';
 </table>
 {/if}
 <br/>
+
+{if $customGroup}
 <table>
-	<tbody>
-		<tr>
-			<td>{ts}Type of Sickness:{/ts}</td>
-			<td>{$sickType}</td>
-		</tr>
-		<tr>
-			<td>{ts}Absence Comment:{/ts}</td>
-			<td>{$absenceComment}</td>
-		</tr>
-	</tbody>
+  <tbody>
+    {foreach from=$customGroup item=value key=customName}
+      {foreach from=$value item=v key=n}
+        <tr>
+          <td>
+            {$customName} :
+          </td>
+          <td>
+            {$v}
+          </td>
+        </tr>
+      {/foreach}
+    {/foreach}
+  </tbody>
 </table>
+{/if}
+
 <br/>
 <p> {ts}Thanks{/ts} <br/>
 CiviHR</p>';
