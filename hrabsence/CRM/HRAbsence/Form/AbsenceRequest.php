@@ -573,17 +573,18 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         CRM_Core_BAO_CustomValueTable::store($customValues, 'civicrm_activity', $result['id']);
       }
 
-      $customGroup = array();
-      foreach ($customValues as $fieldID => $values) {
-        foreach ($values as $fieldValue) {
-          $customValue = array('data' => $fieldValue['value']);
-          $customFields[$fieldID]['id'] = $fieldID;
-          $formattedValue = CRM_Core_BAO_CustomGroup::formatCustomValues($customValue, $customFields[$fieldID], TRUE);
-          $customGroup[$customFields[$fieldID]['groupTitle']][$customFields[$fieldID]['label']] = str_replace('&nbsp;', '', $formattedValue);
+      if (!empty($customValues)) {
+        $customGroup = array();
+        foreach ($customValues as $fieldID => $values) {
+          foreach ($values as $fieldValue) {
+            $customValue = array('data' => $fieldValue['value']);
+            $customFields[$fieldID]['id'] = $fieldID;
+            $formattedValue = CRM_Core_BAO_CustomGroup::formatCustomValues($customValue, $customFields[$fieldID], TRUE);
+            $customGroup[$customFields[$fieldID]['groupTitle']][$customFields[$fieldID]['label']] = str_replace('&nbsp;', '', $formattedValue);
+          }
         }
+        $sendTemplateParams['tplParams']['customGroup'] = $customGroup;
       }
-      $sendTemplateParams['tplParams']['customGroup'] = $customGroup;
-
       $activityLeavesParam = array(
         'sequential' => 1,
         'source_record_id' => $result['id'],
@@ -703,6 +704,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $buttonName = $this->controller->getButtonName();
         if ($buttonName == "_qf_AbsenceRequest_done_save") {
           $this->_aid = $submitValues['source_record_id'];
+          $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+          $sendTemplateParams['tplParams']['save'] = $sendMail = TRUE;
           $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
         }
       }
@@ -712,20 +715,22 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, NULL, NULL, TRUE)
         );
         $customValues = CRM_Core_BAO_CustomField::postProcess($submitValues, $customFields, $result['id'], 'Activity');
+        CRM_Core_Error::debug( '$customValues', $customValues );
         CRM_Core_BAO_CustomValueTable::store($customValues, 'civicrm_activity', $result['id']);
       }
-      $customGroup = array();
-      foreach ($customValues as $fieldID => $values) {
-        foreach ($values as $fieldValue) {
-          $customValue = array('data' => $fieldValue['value']);
-          $customFields[$fieldID]['id'] = $fieldID;
-          $formattedValue = CRM_Core_BAO_CustomGroup::formatCustomValues($customValue, $customFields[$fieldID], TRUE);
-          $customGroup[$customFields[$fieldID]['groupTitle']][$customFields[$fieldID]['label']] = str_replace('&nbsp;', '', $formattedValue);
-        }
-      }
-      $sendTemplateParams['tplParams']['customGroup'] = $customGroup;
 
-      $statusId = CRM_Utils_Array::key('Cancelled', $activityStatus);
+      if (!empty($customValues)) {
+        $customGroup = array();
+        foreach ($customValues as $fieldID => $values) {
+          foreach ($values as $fieldValue) {
+            $customValue = array('data' => $fieldValue['value']);
+            $customFields[$fieldID]['id'] = $fieldID;
+            $formattedValue = CRM_Core_BAO_CustomGroup::formatCustomValues($customValue, $customFields[$fieldID], TRUE);
+            $customGroup[$customFields[$fieldID]['groupTitle']][$customFields[$fieldID]['label']] = str_replace('&nbsp;', '', $formattedValue);
+          }
+        }
+        $sendTemplateParams['tplParams']['customGroup'] = $customGroup;
+      }
       if ($sendMail) {
         self::sendAbsenceMail($mailprm, $sendTemplateParams);
       }
