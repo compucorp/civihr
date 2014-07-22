@@ -715,7 +715,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           CRM_Core_BAO_CustomField::getFields('Activity', FALSE, FALSE, NULL, NULL, TRUE)
         );
         $customValues = CRM_Core_BAO_CustomField::postProcess($submitValues, $customFields, $result['id'], 'Activity');
-        CRM_Core_Error::debug( '$customValues', $customValues );
         CRM_Core_BAO_CustomValueTable::store($customValues, 'civicrm_activity', $result['id']);
       }
 
