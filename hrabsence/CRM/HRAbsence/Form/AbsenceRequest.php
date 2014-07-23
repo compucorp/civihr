@@ -421,12 +421,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if ( $this->_action == CRM_Core_Action::UPDATE || $this->_action == CRM_Core_Action::ADD ) {
       $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
     }
-    if ($this->_managerContactID == $this->_loginUserID) {
+    if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
+      ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID)) {
       $this->_showhide = 1;
-    } elseif ($this->_targetContactID == $this->_loginUserID) {
-      $this->_showhide = 2;
-    } else {
-      $this->_showhide = 0;
     }
     $this->assign('showhide', $this->_showhide);
   }
