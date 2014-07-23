@@ -48,12 +48,41 @@ function hremerg_civicrm_xmlMenu(&$files) {
  */
 function hremerg_civicrm_install() {
   $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
-  $i = 4;
+  $summaryId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "summary_overlay"));
+  $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => "Main"));
   $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
   $phone =  array(
     array_search('Phone',$phoneTypes) => 'Phone No',
     array_search('Mobile',$phoneTypes) => 'Mobile No',
   );
+
+  //add postal code suffix and 2 phone nos in summary overlay profile
+  $postal_weight = civicrm_api3('UFField', 'getsingle', array('return' => "weight", 'uf_group_id' => $summaryId['id'], 'field_name' => "postal_code"));
+  $postalParams = array(
+    'uf_group_id' => $summaryId['id'],
+    'is_active' => '1',
+    'label' => 'Postal Code Suffix',
+    'field_type' => 'Contact',
+    'weight' => ++$postal_weight['weight'],
+    'field_name' => 'postal_code_suffix',
+  );
+  civicrm_api3('UFField', 'create', $postalParams);
+
+  foreach ( $phone as $name=>$label) {
+    $params = array(
+      'uf_group_id' => $summaryId['id'],
+      'is_active' => '1',
+      'label' => $label,
+      'field_type' => 'Contact',
+      'location_type_id' => $location['id'],
+      'field_name' => 'phone',
+      'phone_type_id' => $name,
+    );
+    civicrm_api3('UFField', 'create', $params);
+  }
+
+  //add fields in new individual profile
+  $i = 4;
   foreach ( $phone as $name=>$label) {
     $params = array(
       'uf_group_id' => $profileId['id'],
@@ -61,6 +90,7 @@ function hremerg_civicrm_install() {
       'label' => $label,
       'field_type' => 'Contact',
       'weight' => $i,
+      'location_type_id' => $location['id'],
       'field_name' => 'phone',
       'phone_type_id' => $name,
     );
@@ -69,8 +99,6 @@ function hremerg_civicrm_install() {
   }
   $fields = array(
     'street_address' => 'Street Address',
-    'supplemental_address_1' => 'Supplemental Address 1',
-    'supplemental_address_2' => 'Supplemental Address 2',
     'city' => 'City',
     'postal_code' => 'Postal Code',
     'postal_code_suffix' => 'Postal Code Suffix',
@@ -93,13 +121,19 @@ function hremerg_civicrm_install() {
   return _hremerg_civix_civicrm_install();
 }
 
+
 /**
  * Implementation of hook_civicrm_uninstall
  */
 function hremerg_civicrm_uninstall() {
+  $summaryId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "summary_overlay"));
+  $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => "Main"));
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_uf_field WHERE uf_group_id = {$summaryId['id']} and field_name = 'phone' and location_type_id = {$location['id']}");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_uf_field WHERE uf_group_id = {$summaryId['id']} and field_name = 'postal_code_suffix'");
+
   //delete uffields
   $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
-  CRM_Core_DAO::executeQuery("DELETE FROM  civicrm_uf_field WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','supplemental_address_1','supplemental_address_2','street_address','city','postal_code','state_province','country')");
+  CRM_Core_DAO::executeQuery("DELETE FROM  civicrm_uf_field WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','street_address','city','postal_code','postal_code_suffix','state_province','country')");
 
   //delete customgroup
   $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Emergency_Contact",));
@@ -128,7 +162,12 @@ function hremerg_civicrm_disable() {
 function _hremerg_setActiveFields($setActive) {
   //disable/enable uffields
   $profileId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "new_individual"));
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','supplemental_address_1','supplemental_address_2','street_address','city','postal_code','state_province','country')");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} WHERE uf_group_id = {$profileId['id']} AND field_name IN ('phone','street_address','city','postal_code','postal_code_suffix','state_province','country')");
+
+  $summaryId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "summary_overlay"));
+  $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => 'Main'));
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive} where uf_group_id = {$summaryId['id']} AND field_name = 'postal_code_suffix'");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET is_active = {$setActive}  where uf_group_id = {$summaryId['id']} AND field_name = 'phone' and location_type_id = {$location['id']}");
 
   //disable/enable customgroup and customvalue
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group on civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'Emergency_Contact'";

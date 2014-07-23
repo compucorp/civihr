@@ -189,12 +189,37 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
   public function upgrade_1400() {
     $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
     $profileId = civicrm_api3('UFGroup', 'getsingle', array( 'return' => "id",  'name' => "new_individual",));
-    $i = 4;
+    $summaryId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "summary_overlay"));
+    $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => "Main"));
     $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
     $phone =  array(
       array_search('Phone',$phoneTypes) => 'Phone No',
       array_search('Mobile',$phoneTypes) => 'Mobile No',
     );
+    $postal_weight = civicrm_api3('UFField', 'getsingle', array('return' => "weight", 'uf_group_id' => $summaryId['id'], 'field_name' => "postal_code"));
+    $postalParams = array(
+      'uf_group_id' => $summaryId['id'],
+      'is_active' => '1',
+      'label' => 'Postal Code Suffix',
+      'field_type' => 'Contact',
+      'weight' => ++$postal_weight['weight'],
+      'field_name' => 'postal_code_suffix',
+    );
+    civicrm_api3('UFField', 'create', $postalParams);
+
+    foreach ( $phone as $name=>$label) {
+      $params = array(
+        'uf_group_id' => $summaryId['id'],
+        'is_active' => '1',
+        'label' => $label,
+        'field_type' => 'Contact',
+        'location_type_id' => $location['id'],
+        'field_name' => 'phone',
+        'phone_type_id' => $name,
+      );
+      civicrm_api3('UFField', 'create', $params);
+    }
+    $i = 4;
     foreach ( $phone as $name=>$label) {
       $params = array(
         'uf_group_id' => $profileId['id'],
@@ -202,6 +227,7 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
         'label' => $label,
         'field_type' => 'Contact',
         'weight' => $i,
+        'location_type_id' => $location['id'],
         'field_name' => 'phone',
         'phone_type_id' => $name,
       );
@@ -210,8 +236,6 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
     }
     $fields = array(
       'street_address' => 'Street Address',
-      'supplemental_address_1' => 'Supplemental Address 1',
-      'supplemental_address_2' => 'Supplemental Address 2',
       'city' => 'City',
       'postal_code' => 'Postal Code',
       'postal_code_suffix' => 'Postal Code Suffix',
