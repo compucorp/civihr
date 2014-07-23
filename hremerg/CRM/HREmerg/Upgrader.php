@@ -189,6 +189,19 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
   public function upgrade_1400() {
     $this->ctx->log->info('Planning update 1400'); // PEAR Log interface
     $profileId = civicrm_api3('UFGroup', 'getsingle', array( 'return' => "id",  'name' => "new_individual",));
+    $summaryId = civicrm_api3('UFGroup', 'getsingle', array('return' => "id",  'name' => "summary_overlay"));
+    $phoneId = civicrm_api3('UFField', 'get', array( 'uf_group_id' => $summaryId['id'],'field_name' => "phone"));
+    $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => "Main"));
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_uf_field SET location_type_id = {$location['id']} where uf_group_id = {$summaryId['id']} AND field_name = 'phone'");
+    $postalParams = array(
+      'uf_group_id' => $summaryId['id'],
+      'is_active' => '1',
+      'label' => 'Postal Code Suffix',
+      'field_type' => 'Contact',
+      'weight' => '7',
+      'field_name' => 'postal_code_suffix',
+    );
+    civicrm_api3('UFField', 'create', $postalParams);
     $i = 4;
     $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
     $phone =  array(
@@ -202,6 +215,7 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
         'label' => $label,
         'field_type' => 'Contact',
         'weight' => $i,
+        'location_type_id' => $location['id'],
         'field_name' => 'phone',
         'phone_type_id' => $name,
       );
@@ -210,8 +224,6 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
     }
     $fields = array(
       'street_address' => 'Street Address',
-      'supplemental_address_1' => 'Supplemental Address 1',
-      'supplemental_address_2' => 'Supplemental Address 2',
       'city' => 'City',
       'postal_code' => 'Postal Code',
       'postal_code_suffix' => 'Postal Code Suffix',
