@@ -178,6 +178,9 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
     CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = 0 WHERE name IN ('custom_most_important_issue', 'custom_marital_status')");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviHR News' WHERE name = 'blog' ");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Assignments Dashlet' WHERE name = 'casedashboard' ");
+
+    //delete default tag of civicrm
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
     return TRUE;
   }
 }
