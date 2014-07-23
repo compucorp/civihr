@@ -80,6 +80,9 @@ function hrui_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrui_civicrm_install() {
+  //delete default tag of civicrm
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
+
   // make sure only relevant components are enabled
   $params = array(
     'domain_id' => CRM_Core_Config::domainID(),
