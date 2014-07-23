@@ -96,6 +96,9 @@ function hrcase_civicrm_uninstall() {
   $scheduleAction = implode("','",$scheduleActions );
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_action_schedule WHERE name IN ('{$scheduleAction}')");
 
+  $sql = "DELETE FROM civicrm_option_value WHERE name IN ('Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','Background_Check','References Check','Prepare and email schedule')";
+  CRM_Core_DAO::executeQuery($sql);
+
   hrcase_example_caseType(TRUE);
   //delete custom group and custom field
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
@@ -144,7 +147,7 @@ WHERE civicrm_custom_group.name IN ('Joining_Data', 'Exiting_Data')";
   //disable/enable activity type
   $query = "UPDATE civicrm_option_value
 SET is_active = {$setActive}
-WHERE name IN ('Attach Probation Notification', 'Attach Appraisal Document', 'Attach Objectives Document', 'Attach Signed Job Contract', 'Attach Draft Job Contract', 'Attach Reference', 'Attach Offer Letter', 'Attach Application Documents', 'Exit Interview', 'Send Termination Letter', 'Open Case', 'Change Case Type', 'Change Case Status', 'Change Case Start Date', 'Assign Case Role', 'Remove Case Role', 'Merge Case', 'Reassigned Case', 'Link Cases', 'Change Case Tags', 'Add Client To Case')";
+WHERE name IN ('Open Case', 'Change Case Type', 'Change Case Status', 'Change Case Start Date', 'Assign Case Role', 'Remove Case Role', 'Merge Case', 'Reassigned Case', 'Link Cases', 'Change Case Tags', 'Add Client To Case','Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','Background_Check','References Check','Prepare and email schedule')";
 
   CRM_Core_DAO::executeQuery($query);
 
@@ -310,16 +313,23 @@ function hrcase_civicrm_caseTypes(&$caseTypes) {
 
 function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
   $actionsForActivities = array(
-    'Send_Termination_Letter' => 'Send Termination Letter',
-    'Exit_Interview' => 'Exit Interview',
-    'Attach_Offer_Letter' => 'Attach Offer Letter',
-    'Attach_Reference' => 'Attach Reference',
-    'Attach_Draft_Job_Contract' => 'Attach Draft Job Contract',
-    'Attach_Objects_Document' => 'Attach Objectives Document',
-    'Attach_Appraisal_Document' => 'Attach Appraisal Document',
-    'Attach_Probation_Notification' => 'Attach Probation Notification',
-  	'Attach_Objects_Document_For_Client' => 'Attach Objectives Document',
-    'Attach_Appraisal_Document_For_Client' => 'Attach Appraisal Document'
+    'Issue_appointment_letter' => 'Issue appointment letter',
+    'Fill_Employee_Details_Form' => 'Fill Employee Details Form',
+    'Submission_of_ID/Residence_proofs_and_photos' => 'Submission of ID/Residence proofs and photos',
+    'Program_and_work_induction_by_program_supervisor' => 'Program and work induction by program supervisor',
+    'Enter_employee_data_in_CiviHR' => 'Enter employee data in CiviHR',
+    'Group_Orientation_to_organization_values_policies' => 'Group Orientation to organization, values, policies',
+    'Probation_appraisal' => 'Probation appraisal (start probation workflow)',
+    'Conduct_appraisal' => 'Conduct appraisal',
+    'Collection_of_appraisal_paperwork' => 'Collection of appraisal paperwork',
+    'Issue_confirmation/warning_letter' => 'Issue confirmation/warning letter',
+    'Get_"No Dues"_certification' => 'Get "No Dues" certification',
+    'Conduct_Exit_interview' => 'Conduct Exit interview',
+    'Revoke_access_to_databases' => 'Revoke access to databases',
+    'Block_work_email_ID' => 'Block work email ID',
+    'Follow_up_on_progress' => 'Follow up on progress',
+    'Collection_of_Appraisal_forms' => 'Collection of Appraisal forms',
+    'Issue_extension_letter' => 'Issue extension letter',
   );
   if ($getNamesOnly) {
     return array_keys($actionsForActivities);
@@ -346,162 +356,277 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
         'record_activity' => 1,
         'mapping_id' => $mappingId,
       );
-      if ($reminderName == 'Send_Termination_Letter') {
-        $schedules[$reminderName]['start_action_offset'] = 3;
-        $schedules[$reminderName]['start_action_unit'] = 'day';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 3;
-        $schedules[$reminderName]['end_frequency_unit'] = 'hour';
-        $schedules[$reminderName]['end_frequency_interval'] = 0;
-        $schedules[$reminderName]['end_action'] = 'before';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['body_html'] = "<p>Your need to send termination letter on {activity.activity_date_time}</p>";
-        $schedules[$reminderName]['subject'] = 'Reminder to Send Termination Letter';
-      }
-      elseif ($reminderName == 'Exit_Interview') {
-        $schedules[$reminderName]['start_action_offset'] = 3;
-        $schedules[$reminderName]['start_action_unit'] = 'day';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 3;
-        $schedules[$reminderName]['end_frequency_unit'] = 'hour';
-        $schedules[$reminderName]['end_frequency_interval'] = 0;
-        $schedules[$reminderName]['end_action'] = 'before';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['body_html'] = '<p>Your Exit Interview on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder for Exit Interview';
-      }
-      elseif ($reminderName == 'Attach_Offer_Letter') {
-        $schedules[$reminderName]['start_action_offset'] = 0;
-        $schedules[$reminderName]['start_action_unit'] = 'hour';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_action'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_active'] = 1;
-        $schedules[$reminderName]['body_html'] = '<p>Attach Offer Letter on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Offer Letter';
-      }
-      elseif ($reminderName == 'Attach_Reference') {
-        $schedules[$reminderName]['start_action_offset'] = 0;
-        $schedules[$reminderName]['start_action_unit'] = 'hour';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_actiorn'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_active'] = 1;
-        $schedules[$reminderName]['body_html'] = '<p>Attach Reference on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Reference';
-      }
-      elseif ($reminderName == 'Attach_Draft_Job_Contract') {
-        $schedules[$reminderName]['start_action_offset'] = 0;
-        $schedules[$reminderName]['start_action_unit'] = 'hour';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_action'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_active'] = 1;
-        $schedules[$reminderName]['body_html'] = '<p>Attach Draft Job Contract on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Draft Job Contract';
-      }
-      elseif ($reminderName == 'Attach_Objects_Document') {
-        $schedules[$reminderName]['start_action_offset'] = 2;
-        $schedules[$reminderName]['start_action_unit'] = 'week';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_action'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_active'] = 1;
-        $schedules[$reminderName]['body_html'] = '<p>Attach Objects Document on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Objects Document';
-      }
-      elseif ($reminderName == 'Attach_Appraisal_Document') {
-        $schedules[$reminderName]['start_action_offset'] = 2;
-        $schedules[$reminderName]['start_action_unit'] = 'week';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_action'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['body_html'] = '<p>Attach Appraisal Document on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Appraisal Document';
-      }
-      elseif ($reminderName == 'Attach_Probation_Notification') {
-        $schedules[$reminderName]['start_action_offset'] = 0;
-        $schedules[$reminderName]['start_action_unit'] = 'hour';
-        $schedules[$reminderName]['start_action_condition'] = 'before';
-        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-        $schedules[$reminderName]['is_repeat'] = 1;
-        $schedules[$reminderName]['repetition_frequency_unit'] = 'day';
-        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
-        $schedules[$reminderName]['end_frequency_unit'] = 'month';
-        $schedules[$reminderName]['end_frequency_interval'] = 2;
-        $schedules[$reminderName]['end_action'] = 'after';
-        $schedules[$reminderName]['end_date'] = 'activity_date_time';
-        $schedules[$reminderName]['body_html'] = '<p>Attach Probation Notification on {activity.activity_date_time}</p>';
-        $schedules[$reminderName]['subject'] = 'Reminder to Attach Probation Notification';
-      }
-      elseif ($reminderName == 'Attach_Objects_Document_For_Client') {
+      if ($reminderName == 'Issue_appointment_letter') {
         $schedules[$reminderName]['recipient'] = $targetID;
         $schedules[$reminderName]['start_action_offset'] = 2;
         $schedules[$reminderName]['start_action_unit'] = 'week';
-      	$schedules[$reminderName]['start_action_condition'] = 'before';
-      	$schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-      	$schedules[$reminderName]['is_repeat'] = 1;
-      	$schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-      	$schedules[$reminderName]['repetition_frequency_interval'] = 1;
-      	$schedules[$reminderName]['end_frequency_unit'] = 'month';
-      	$schedules[$reminderName]['end_frequency_interval'] = 2;
-      	$schedules[$reminderName]['end_action'] = 'after';
-      	$schedules[$reminderName]['end_date'] = 'activity_date_time';
-      	$schedules[$reminderName]['is_active'] = 1;
-      	$schedules[$reminderName]['body_html'] = '<p>Attach Objects Document on {activity.activity_date_time}</p>';
-      	$schedules[$reminderName]['subject'] = 'Reminder to Attach Objects Document';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Issue appointment letter on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Issue appointment letter';
       }
-      elseif ($reminderName == 'Attach_Appraisal_Document_For_Client') {
-      	$schedules[$reminderName]['recipient'] = $targetID;
-      	$schedules[$reminderName]['start_action_offset'] = 2;
-      	$schedules[$reminderName]['start_action_unit'] = 'week';
-      	$schedules[$reminderName]['start_action_condition'] = 'before';
-      	$schedules[$reminderName]['start_action_date'] = 'activity_date_time';
-      	$schedules[$reminderName]['is_repeat'] = 1;
-      	$schedules[$reminderName]['repetition_frequency_unit'] = 'week';
-      	$schedules[$reminderName]['repetition_frequency_interval'] = 1;
-      	$schedules[$reminderName]['end_frequency_unit'] = 'month';
-      	$schedules[$reminderName]['end_frequency_interval'] = 2;
-      	$schedules[$reminderName]['end_action'] = 'after';
-      	$schedules[$reminderName]['end_date'] = 'activity_date_time';
-      	$schedules[$reminderName]['body_html'] = '<p>Attach Appraisal Document on {activity.activity_date_time}</p>';
-      	$schedules[$reminderName]['subject'] = 'Reminder to Attach Appraisal Document';
+      elseif ($reminderName == 'Fill_Employee_Details_Form') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Fill Employee Details Form on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Fill Employee Details Form';
+      }
+      elseif ($reminderName == 'Submission_of_ID/Residence_proofs_and_photos') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Submission of ID/Residence proofs and photos on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Submit ID/Residence proofs and photos';
+      }
+      elseif ($reminderName == 'Program_and_work_induction_by_program_supervisor') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Program and work induction by program supervisor on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder for Program and work induction by program supervisor';
+      }
+      elseif ($reminderName == 'Enter_employee_data_in_CiviHR') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Enter employee data in CiviHR on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Enter employee data in CiviHR';
+      }
+      elseif ($reminderName == 'Group_Orientation_to_organization_values_policies') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Group Orientation to organization values policies on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder for Group Orientation to organization values policies';
+      }
+      elseif ($reminderName == 'Probation_appraisal') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Probation appraisal on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder for Probation appraisal';
+      }
+      elseif ($reminderName == 'Conduct_appraisal') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Conduct appraisal on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Conduct appraisal';
+      }
+      elseif ($reminderName == 'Collection_of_appraisal_paperwork') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Collection of appraisal paperwork on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder for Collection of appraisal paperwork';
+      }
+      elseif ($reminderName == 'Issue_confirmation/warning_letter') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Issue confirmation/warning letter on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Issue confirmation/warning letter';
+      }
+      elseif ($reminderName == 'Get_"No Dues"_certification') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Get "No Dues" certification on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Get "No Dues" certification';
+      }
+      elseif ($reminderName == 'Conduct_Exit_interview') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Conduct Exit interview on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Conduct Exit interview';
+      }
+      elseif ($reminderName == 'Revoke_access_to_databases') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Revoke access to databases on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Revoke access to databases';
+      }
+      elseif ($reminderName == 'Block_work_email_ID') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Block work email ID on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Block work email ID';
+      }
+      elseif ($reminderName == 'Follow_up_on_progress') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Follow up on progress on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Follow up on progress';
+      }
+      elseif ($reminderName == 'Collection_of_Appraisal_forms') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Collection of Appraisal forms on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Collect the Appraisal forms';
+      }
+      elseif ($reminderName == 'Issue_extension_letter') {
+        $schedules[$reminderName]['recipient'] = $targetID;
+        $schedules[$reminderName]['start_action_offset'] = 2;
+        $schedules[$reminderName]['start_action_unit'] = 'week';
+        $schedules[$reminderName]['start_action_condition'] = 'before';
+        $schedules[$reminderName]['start_action_date'] = 'activity_date_time';
+        $schedules[$reminderName]['is_repeat'] = 1;
+        $schedules[$reminderName]['repetition_frequency_unit'] = 'week';
+        $schedules[$reminderName]['repetition_frequency_interval'] = 1;
+        $schedules[$reminderName]['end_frequency_unit'] = 'month';
+        $schedules[$reminderName]['end_frequency_interval'] = 2;
+        $schedules[$reminderName]['end_action'] = 'after';
+        $schedules[$reminderName]['end_date'] = 'activity_date_time';
+        $schedules[$reminderName]['body_html'] = '<p>Issue extension letter on {activity.activity_date_time}</p>';
+        $schedules[$reminderName]['subject'] = 'Reminder to Issue extension letter';
       }
     }
   }
