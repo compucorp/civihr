@@ -147,6 +147,13 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
         'name' => 'Prefer_Not_to_Say',
       );
       civicrm_api3('OptionValue', 'create', $optParams);
+      $optParam = array(
+        'option_group_id' => $value,
+        'label' => 'Not Applicable',
+        'value' => 'Not Applicable',
+        'name' => 'Not_Applicable',
+      );
+      civicrm_api3('OptionValue', 'create', $optParam);
     }
     return TRUE;
   }

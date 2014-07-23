@@ -55,6 +55,15 @@ function hrui_civicrm_buildForm($formName, &$form) {
       $phoneLocation = $form->getElement('phone[2][location_type_id]');
       $phoneLocation->setSelected($locationId);
     }
+
+    $extendedDemographics = array('Sexual_Orientation', 'marital_status', 'religion', 'ethnicity');
+    foreach ($extendedDemographics as $key => $val) {
+      $result = civicrm_api3('CustomField', 'getsingle', array('custom_group_id' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Extended_Demographics', 'id', 'name'),'name' => $val,'return' => "id",));
+      if ($form->elementExists("custom_".$result['id']."_-1")) {
+        $demogField = $form->getElement("custom_".$result['id']."_-1");
+        $demogField->setSelected("Not Applicable");
+      }
+    }
   }
 }
 

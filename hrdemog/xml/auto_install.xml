@@ -228,6 +228,17 @@
       <option_group_name>ethnicity_20130725123943</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Buddhist</label>
       <value>Buddhist</value>
       <name>Buddhist</name>
@@ -316,6 +327,17 @@
       <option_group_name>religion_20130725124132</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>9</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Asexual</label>
       <value>Asexual</value>
       <name>Asexual</name>
@@ -371,6 +393,17 @@
       <option_group_name>sexual_orientation_20130725124348</option_group_name>
     </OptionValue>
     <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
       <label>Single</label>
       <value>Single</value>
       <name>Single</name>
@@ -420,6 +453,17 @@
       <name>Prefer_Not_to_Say</name>
       <is_default>0</is_default>
       <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>marital_status_20130913084916</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
