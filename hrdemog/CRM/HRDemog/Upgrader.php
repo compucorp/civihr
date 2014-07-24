@@ -147,7 +147,18 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
         'name' => 'Prefer_Not_to_Say',
       );
       civicrm_api3('OptionValue', 'create', $optParams);
+      $optParam = array(
+        'option_group_id' => $value,
+        'label' => 'Not Applicable',
+        'value' => 'Not Applicable',
+        'name' => 'Not_Applicable',
+      );
+      civicrm_api3('OptionValue', 'create', $optParam);
     }
+
+    $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.default_value = CASE WHEN civicrm_custom_field.name = 'Ethnicity' THEN ' Not Applicable ' ELSE  'Not Applicable' END WHERE civicrm_custom_field.name IN ('Ethnicity','Religion', 'Sexual_Orientation', 'Marital_Status') AND civicrm_custom_group.name = 'Extended_Demographics'";
+    CRM_Core_DAO::executeQuery($sql);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET collapse_display = 1 where name = 'Extended_Demographics'");
     return TRUE;
   }
 }
