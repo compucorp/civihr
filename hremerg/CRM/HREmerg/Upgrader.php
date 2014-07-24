@@ -219,6 +219,17 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
       );
       civicrm_api3('UFField', 'create', $params);
     }
+    $state_weight = civicrm_api3('UFField', 'getsingle', array('return' => "weight", 'uf_group_id' => $summaryId['id'], 'field_name' => "state_province"));
+    $country = array(
+      'uf_group_id' => $summaryId['id'],
+      'is_active' => '1',
+      'label' => 'Country',
+      'field_type' => 'Contact',
+      'weight' => $state_weight['weight'],
+      'field_name' => 'country',
+    );
+    civicrm_api3('UFField', 'create', $country);
+
     $i = 4;
     foreach ( $phone as $name=>$label) {
       $params = array(
