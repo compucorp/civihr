@@ -7,7 +7,7 @@
       if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
-
+      $("#Extended_Demographics, .Extended_Demographics").addClass("collapsed");
       // Hide current employer and job title
       // Contact summary screen:
       $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
