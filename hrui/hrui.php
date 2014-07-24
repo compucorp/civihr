@@ -326,6 +326,19 @@ function _hrui_toggleContactSubType($isActive) {
     );
     civicrm_api3('ContactType', 'create', $paramsSubType);
   }
+
+  $orgTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Organization"));
+  $subOrgId = civicrm_api3('ContactType', 'get', array('parent_id' => $orgTypeId['id']));
+  foreach ($subOrgId['values'] as $key) {
+   if ($key['name'] == 'Team' || $key['name'] == 'Sponsor') {
+    $paramsSubType = array(
+      'name' => $key['name'],
+      'id' => $key['id'],
+      'is_active' => $isActive,
+    );
+    civicrm_api3('ContactType', 'create', $paramsSubType);
+   }
+  }
   // Reset Navigation
   CRM_Core_BAO_Navigation::resetNavigation();
 }
