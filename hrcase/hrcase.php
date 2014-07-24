@@ -186,16 +186,16 @@ function hrcase_civicrm_buildForm($formName, &$form) {
   $contactDisplayName = CRM_Contact_BAO_Contact::displayName($form->getVar('_targetContactId'));
   if ($formName == 'CRM_Case_Form_Activity'){
     if ($form->_activityTypeName == 'Change Assignment Type') {
-      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Type'));
+      CRM_Utils_System::setTitle($contactDisplayName . ' - ' . ts('Change Assignment Type'));
     }
     elseif ($form->_activityTypeName == 'Change Assignment Status') {
-      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Status'));
+      CRM_Utils_System::setTitle($contactDisplayName . ' - ' . ts('Change Assignment Status'));
     }
     elseif ($form->_activityTypeName == 'Change Assignment Start Date') {
-      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Change Assignment Start Date'));
+      CRM_Utils_System::setTitle($contactDisplayName . ' - ' . ts('Change Assignment Start Date'));
     }
     elseif ($form->_activityTypeName == 'Link Assignments') {
-      CRM_Utils_System::setTitle(ts($contactDisplayName.' - Link Assignments'));
+      CRM_Utils_System::setTitle($contactDisplayName . ' - ' . ts('Link Assignments'));
     }
   }
 

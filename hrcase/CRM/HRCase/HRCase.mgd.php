@@ -47,5 +47,16 @@
               'replace_word'=>'Contact',
               'is_active' => 1,
             ),
+          ),
+          array (
+            'name' => 'WordReplacement case',
+            'entity' => 'WordReplacement',
+            'params' =>
+            array (
+              'version' => 3,
+              'find_word' => 'case',
+              'replace_word'=>'assignement',
+              'is_active' => 1,
+            ),
           )
         );
