@@ -129,6 +129,12 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
    */
   public $department;
   /**
+   * Junior manager, senior manager, etc.
+   *
+   * @var string
+   */
+  public $level_type;
+  /**
    * FK to Contact ID
    *
    * @var int unsigned
@@ -242,6 +248,21 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_department',
           )
         ) ,
+        'hrjob_role_level_type' => array(
+          'name' => 'level_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Role Level') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'import' => true,
+          'where' => 'civicrm_hrjob_role.level_type',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_level_type',
+          )
+        ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
           'type' => CRM_Utils_Type::T_INT,
@@ -300,6 +321,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'hours' => 'hours',
         'region' => 'region',
         'department' => 'hrjob_role_department',
+        'level_type' => 'hrjob_role_level_type',
         'manager_contact_id' => 'manager_contact_id',
         'functional_area' => 'functional_area',
         'organization' => 'organization',

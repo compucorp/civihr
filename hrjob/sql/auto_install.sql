@@ -243,6 +243,7 @@ CREATE TABLE `civicrm_hrjob_role` (
      `hours` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in a given week)',
      `region` varchar(127)    ,
      `department` varchar(127)    ,
+     `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `functional_area` varchar(127)    ,
      `organization` varchar(127)    ,
@@ -259,6 +260,9 @@ CREATE TABLE `civicrm_hrjob_role` (
   )
   ,     INDEX `index_department`(
         department
+  )
+  ,     INDEX `index_level_type`(
+        level_type
   )
   ,     INDEX `index_functional_area`(
         functional_area
