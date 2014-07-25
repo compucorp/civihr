@@ -190,7 +190,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
     CRM_Core_DAO::executeQuery($sql);
 
-    $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','New Created Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
+    $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','Created New Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
     CRM_Core_DAO::executeQuery($sql);
     return TRUE;
   }

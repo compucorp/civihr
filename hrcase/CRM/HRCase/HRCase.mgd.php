@@ -55,7 +55,7 @@
             array (
               'version' => 3,
               'find_word' => 'case',
-              'replace_word'=>'assignement',
+              'replace_word'=>'assignment',
               'is_active' => 1,
             ),
           )

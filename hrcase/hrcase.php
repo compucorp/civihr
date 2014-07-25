@@ -27,7 +27,7 @@ function hrcase_civicrm_install() {
   $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
   CRM_Core_DAO::executeQuery($sql);
 
-  $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','New Created Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
+  $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','Created New Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
   CRM_Core_DAO::executeQuery($sql);
 
   $sql = "INSERT INTO `civicrm_relationship_type`
@@ -89,7 +89,7 @@ function hrcase_civicrm_uninstall() {
   $sql = "UPDATE civicrm_option_value SET label= replace(label, 'Assignment', 'Case') WHERE label like '%Assignment%' and option_group_id=$optionGroupID and label <> 'New Assignment Created'";
   CRM_Core_DAO::executeQuery($sql);
 
-  $sql = "UPDATE civicrm_option_value SET label= replace(label, 'New Created Assignment', 'Open Case') WHERE option_group_id=$optionGroupID";
+  $sql = "UPDATE civicrm_option_value SET label= replace(label, 'Created New Assignment', 'Open Case') WHERE option_group_id=$optionGroupID";
   CRM_Core_DAO::executeQuery($sql);
 
   $scheduleActions = hrcase_getActionsSchedule(TRUE);
