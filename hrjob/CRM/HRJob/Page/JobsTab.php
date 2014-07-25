@@ -147,7 +147,8 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobRole' => array(
         'location',
-        'department'
+        'department',
+        'level_type'
       ),
     );
     $fieldOptions = array();

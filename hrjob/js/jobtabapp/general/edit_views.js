@@ -42,17 +42,17 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
               $start.datepicker("option", "maxDate", selectedDate);
           }
         }));
-
+	//display contract file
 	var entityID = this.model.get('id');
 	var fileurl = CRM.url('civicrm/hrjob/file/display');
         $.ajax({ type: "POST",
           url: fileurl,
-          data: { entityID: entityID, entityTable: "civicrm_hrjob" }
+		 data: { entityID: entityID, entityTable: "civicrm_hrjob_general"}
         }).done(function( msg ) {
         $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
         });
-
-	var $duration = this.$('[name=duration]');	
+	//contract duration autocalculate
+	var $duration = this.$('[name=duration]');
 	var $starts = null;
 	var $ends = null;
 	var day = null;
@@ -86,6 +86,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 	    }
 
 	}
+	//automatically update notice period and unit
 	var $notice_amount = this.$('[name=notice_amount]');
 	var $notice_amount_employee = this.$('[name=notice_amount_employee]');
 	if($notice_amount.val() === $notice_amount_employee.val()) {
@@ -99,7 +100,6 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 		}
             });
 	}
-
 	var $notice_unit = this.$("select#hrjob-notice_unit");
 	var $notice_unit_employee = this.$("select#hrjob-notice_unit_employee");
 	$notice_unit.change(function() {
@@ -126,13 +126,15 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       }
     },
       events: {
+	  //save,delete contract file
 	  'click .standard-save': 'doSave',
 	  'click .standard-reset': 'doReset',
-	  'click .contract-file-delete > a': 'doDelete',
+	  'click .file-delete > a': 'doDelete',
       },
     doSave: function(){
 	var view = this;
 	var entityID = this.model.get('id');
+	//save notice unit
 	var $notice_unit = $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text();
 	if($notice_unit != '- select -') {
 	    for(k in this.model.attributes) {
@@ -140,7 +142,6 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 		    this.model.attributes[k] = $notice_unit;
 	    }
 	}
-
       if (!this.$('form').valid() || !view.model.isValid()) {
         return false;
       }
@@ -150,8 +151,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         var filedata = new FormData(formfile[0]);
         var fileurl = CRM.url('civicrm/hrjob/file/upload');
         filedata.append("entityID", entityID);
-        filedata.append("entityTable", "civicrm_hrjob");
-	filedata.append("tabName", "general");  
+        filedata.append("entityTable", "civicrm_hrjob_general"); 
         $.ajax({ type: "POST",
           url: fileurl,
           data: filedata,
@@ -173,17 +173,15 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         }
       });
       return false;
-    },
-    
+    },    
     doDelete: function() {
       var view = this;
       var entityID = this.model.get('id');
-      var fileID = $('.contract-file-delete a').attr('id').split('_');
+      var fileID = $('.file-delete a').attr('id').split('_');
       var fileurl = CRM.url('civicrm/hrjob/file/delete');
-
       $.ajax({ type: "POST",
         url: fileurl,
-        data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob" },
+        data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob_general" },
         success: function(html) {
           $('#del_'+fileID[1]).remove();
             var successMsg = ts('The selected attachment has been deleted.');
