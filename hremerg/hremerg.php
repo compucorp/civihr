@@ -87,7 +87,7 @@ function hremerg_civicrm_install() {
     'is_active' => '1',
     'label' => 'Country',
     'field_type' => 'Contact',
-    'weight' => $state_weight['weight'],
+    'weight' => $state_weight['weight']+1,
     'field_name' => 'country',
   );
   civicrm_api3('UFField', 'create', $country);
