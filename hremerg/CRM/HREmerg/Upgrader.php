@@ -225,7 +225,7 @@ class CRM_HREmerg_Upgrader extends CRM_HREmerg_Upgrader_Base {
       'is_active' => '1',
       'label' => 'Country',
       'field_type' => 'Contact',
-      'weight' => $state_weight['weight'],
+      'weight' => $state_weight['weight']+1,
       'field_name' => 'country',
     );
     civicrm_api3('UFField', 'create', $country);
