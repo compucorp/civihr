@@ -425,6 +425,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID)) {
       $this->_showhide = 1;
     }
+    else {
+      $this->_showhide = 0;
+    }
     $this->assign('showhide', $this->_showhide);
   }
 
