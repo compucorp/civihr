@@ -293,7 +293,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 1;
           }
-          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+          elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
           }
         }
@@ -304,7 +304,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 0.5;
           }
-          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+          elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
           }
         }
@@ -424,6 +424,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
       ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID)) {
       $this->_showhide = 1;
+    }
+    else {
+      $this->_showhide = 0;
     }
     $this->assign('showhide', $this->_showhide);
   }
