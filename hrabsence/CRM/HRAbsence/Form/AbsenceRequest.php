@@ -293,7 +293,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 1;
           }
-          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+          elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
           }
         }
@@ -304,7 +304,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             $absenceStatus = "Approved";
             $approvedDays = $approvedDays + 0.5;
           }
-          elseif ($val['status_id'] == array_search('Rejected',$actStatus)) {
+          elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
           }
         }
