@@ -31,6 +31,8 @@ CREATE TABLE `civicrm_hrjob` (
      `period_end_date` date    COMMENT 'Last day of the job',
      `notice_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
      `notice_unit` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
+     `notice_amount_employee` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
+     `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',     
      `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `location` varchar(127)    COMMENT 'Normal place of work',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 

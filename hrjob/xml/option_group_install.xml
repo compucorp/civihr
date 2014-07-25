@@ -71,11 +71,22 @@
   </OptionGroups>
   <OptionValues>
     <OptionValue>
-      <label>Employee</label>
-      <value>Employee</value>
-      <name>Employee</name>
+      <label>Employee - Temporary</label>
+      <value>Employee - Temporary</value>
+      <name>Employee - Temporary</name>
       <is_default>0</is_default>
-      <weight>3</weight>
+     <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrjob_contract_type</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Employee - Permanent</label>
+      <value>Employee - Permanent</value>
+      <name>Employee - Permanent</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -97,7 +108,7 @@
       <value>Volunteer</value>
       <name>Volunteer</name>
       <is_default>0</is_default>
-      <weight>6</weight>
+      <weight>7</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -108,7 +119,7 @@
       <value>Trustee</value>
       <name>Trustee</name>
       <is_default>0</is_default>
-      <weight>5</weight>
+      <weight>6</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
@@ -119,7 +130,7 @@
       <value>Intern</value>
       <name>Intern</name>
       <is_default>0</is_default>
-      <weight>4</weight>
+      <weight>5</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>

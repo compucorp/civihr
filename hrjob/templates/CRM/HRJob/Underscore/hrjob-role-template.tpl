@@ -78,6 +78,22 @@
     </div>
 
     <div class="crm-summary-row">
+       <div class="crm-label">
+        <label for="hrjob-level_type">{ts}Level{/ts}</label>
+      </div>
+      <div class="crm-content">
+      {literal}
+        <%= RenderUtil.select({
+        id: 'hrjob-level_type',
+       name: 'level_type',
+        entity: 'HRJob'
+        }) %>
+      {/literal}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
       <div class="crm-label">
         <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
       </div>

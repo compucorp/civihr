@@ -120,6 +120,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         "period_type",
         "location",
         'notice_unit',
+        'notice_unit_employee',
         'department'
       ),
       'HRJobHour' => array(

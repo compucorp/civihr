@@ -176,6 +176,18 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $notice_unit;
   /**
+   * Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.
+   *
+   * @var float
+   */
+  public $notice_amount_employee;
+  /**
+   * Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.
+   *
+   * @var string
+   */
+  public $notice_unit_employee;
+  /**
    * FK to Contact ID
    *
    * @var int unsigned
@@ -397,6 +409,31 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'callback' => 'CRM_HRJob_SelectValues::commonUnit',
           )
         ) ,
+        'hrjob_notice_amount_employee' => array(
+          'name' => 'notice_amount_employee',
+          'type' => CRM_Utils_Type::T_FLOAT,
+          'title' => ts('Job Notice Period Amount From Employee') ,
+          'import' => true,
+          'where' => 'civicrm_hrjob.notice_amount_employee',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+        ) ,
+        'hrjob_notice_unit_employee' => array(
+          'name' => 'notice_unit_employee',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Notice Period Unit From Employee') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'import' => true,
+          'where' => 'civicrm_hrjob.notice_unit_employee',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'pseudoconstant' => array(
+            'callback' => 'CRM_HRJob_SelectValues::commonUnit',
+          )
+        ) ,
         'hrjob_manager_contact_id' => array(
           'name' => 'manager_contact_id',
           'type' => CRM_Utils_Type::T_INT,
@@ -463,6 +500,8 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'period_end_date' => 'hrjob_period_end_date',
         'notice_amount' => 'hrjob_notice_amount',
         'notice_unit' => 'hrjob_notice_unit',
+        'notice_amount_employee' => 'hrjob_notice_amount_employee',
+        'notice_unit_employee' => 'hrjob_notice_unit_employee',
         'manager_contact_id' => 'hrjob_manager_contact_id',
         'location' => 'hrjob_location',
         'is_primary' => 'hrjob_is_primary',

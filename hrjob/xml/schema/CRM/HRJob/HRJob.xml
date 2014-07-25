@@ -205,6 +205,30 @@
      <uniqueName>hrjob_notice_unit</uniqueName>
    </field>
 
+   <field>
+     <name>notice_amount_employee</name>
+     <title>Job Notice Period Amount From Employee</title>
+     <type>float</type>
+     <default>0</default>
+     <import>true</import>
+     <comment>Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.</comment>
+     <uniqueName>hrjob_notice_amount_employee</uniqueName>
+   </field>
+
+   <field>
+     <name>notice_unit_employee</name>
+     <title>Job Notice Period Unit From Employee</title>
+     <type>varchar</type>
+     <length>63</length>
+     <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
+     <pseudoconstant>
+       <callback>CRM_HRJob_SelectValues::commonUnit</callback>
+     </pseudoconstant>
+     <export>true</export>
+     <import>true</import> 
+     <uniqueName>hrjob_notice_unit_employee</uniqueName>
+   </field>
+
   <field>
     <name>manager_contact_id</name>
     <title>Job Manager ID</title>

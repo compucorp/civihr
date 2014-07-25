@@ -43,47 +43,6 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-department">{ts}Department{/ts}</label>
-    </div>
-    <div class="crm-content">
-      {literal}
-        <%= RenderUtil.select({
-        id: 'hrjob-department',
-        name: 'department',
-        entity: 'HRJob'
-        }) %>
-      {/literal}
-      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
-    </div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">
-      <label for="hrjob-level_type">{ts}Level{/ts}</label>
-    </div>
-    <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-level_type',
-        name: 'level_type',
-        entity: 'HRJob'
-      }) %>
-    {/literal}
-    {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}
-    </div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">
-      <label for="hrjob-manager_contact_id">{ts}Manager{/ts}</label>
-    </div>
-    <div class="crm-content">
-      <input id="hrjob-manager_contact_id" name="manager_contact_id" class="crm-form-entityref" data-api-params='{literal}{"params":{"contact_type":"Individual"}}{/literal}' placeholder="{ts}- select -{/ts}" />
-    </div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">
       <label for="hrjob-level_type">{ts}Normal Place of Work{/ts}</label>
     </div>
     <div class="crm-content">
@@ -109,22 +68,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-period_type">{ts}Contract Duration{/ts}</label>
-    </div>
-    <div class="crm-content">
-    {literal}
-      <%= RenderUtil.select({
-        id: 'hrjob-period_type',
-        name: 'period_type',
-        entity: 'HRJob'
-      }) %>
-    {/literal}
-    </div>
-  </div>
-
-  <div class="crm-summary-row">
-    <div class="crm-label">
-      <label for="hrjob-period_start_date">{ts}Start Date{/ts}</label>
+      <label for="hrjob-period_start_date">{ts}Contract Start Date{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-period_start_date" name="period_start_date" type="text" />
@@ -133,7 +77,7 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-period_end_date">{ts}End Date{/ts}</label>
+      <label for="hrjob-period_end_date">{ts}Contract End Date{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-period_end_date" name="period_end_date" type="text" />
@@ -142,7 +86,14 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-notice_amount">{ts}Notice Period{/ts}</label>
+      <label>{ts}Contract Duration{/ts}</label>
+    </div>
+    <div class="crm-content"><span name="duration"></span></div>
+  </div>
+
+  <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-notice_amount">{ts}Notice Period from Employer{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-notice_amount" name="notice_amount" type="text" />
@@ -153,6 +104,31 @@
         entity: 'HRJob'
       }) %>
       {/literal}
+    </div>
+  </div>
+
+   <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-notice_amount_employee">{ts}Notice Period from Employee{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="hrjob-notice_amount_employee" name="notice_amount_employee" type="text" />
+      {literal}
+      <%= RenderUtil.select({
+        id: 'hrjob-notice_unit_employee',
+        name: 'notice_unit_employee',
+        entity: 'HRJob'
+      }) %>
+      {/literal}
+    </div>
+  </div>
+
+ <div class="crm-summary-row">
+    <div class="crm-label">
+      <label for="hrjob-contract_file">{ts}Contract File{/ts}</label>
+    </div>
+    <div class="crm-content">
+      <input id="contract_file" type='file' name='contract_file'/>
     </div>
   </div>
 

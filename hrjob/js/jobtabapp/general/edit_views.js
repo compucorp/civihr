@@ -31,7 +31,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         .datepicker(_.extend({}, dateOptions, {
           maxDate: $end.val() ? $end.val() : null,
           onClose: function(selectedDate) {
-            $end.datepicker("option", "minDate", selectedDate);
+              $end.datepicker("option", "minDate", selectedDate);
           }
         }));
       $end
@@ -39,15 +39,80 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         .datepicker(_.extend({}, dateOptions, {
           minDate: $start.val() ? $start.val() : null,
           onClose: function(selectedDate) {
-            $start.datepicker("option", "maxDate", selectedDate);
+              $start.datepicker("option", "maxDate", selectedDate);
           }
         }));
-      /*
+
+	var entityID = this.model.get('id');
+	var fileurl = CRM.url('civicrm/hrjob/file/display');
+        $.ajax({ type: "POST",
+          url: fileurl,
+          data: { entityID: entityID, entityTable: "civicrm_hrjob" }
+        }).done(function( msg ) {
+        $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
+        });
+
+	var $duration = this.$('[name=duration]');	
+	var $starts = null;
+	var $ends = null;
+	var day = null;
+
+	if($start.val() && $end.val()) {
+	    $starts = $start.val();
+	    $ends = $end.val();
+	    select();
+	}
+	else {	    
+	    $duration.html('No Contract End Date');
+	}
+        $start.change(function() {
+	    $starts = $start.val();
+	    select();
+        });
+	$end.change(function() {
+	    $ends = $end.val();
+	    select();
+
+	});  
+	function select() {
+	    if($starts && $ends) {
+		diff  = (new Date($ends) - new Date($starts)),
+		day  = moment.preciseDiff($starts,$ends);
+		$duration.html(day);
+	    }
+	    if($starts == $ends) {	
+		day = '0';
+		$duration.html(day);
+	    }
+
+	}
+	var $notice_amount = this.$('[name=notice_amount]');
+	var $notice_amount_employee = this.$('[name=notice_amount_employee]');
+	if($notice_amount.val() === $notice_amount_employee.val()) {
+            $notice_amount.bind("keyup", function() {
+		$notice_amount_employee.val($notice_amount.val());
+		$notice_amount_employee.change();
+            });
+            $notice_amount_employee.bind("change", function() {
+		if($notice_amount.val() !== $notice_amount_employee.val()) {
+		    $notice_amount.unbind("keyup");
+		}
+            });
+	}
+
+	var $notice_unit = this.$("select#hrjob-notice_unit");
+	var $notice_unit_employee = this.$("select#hrjob-notice_unit_employee");
+	$notice_unit.change(function() {
+	    $notice_units = $notice_unit.val();
+	    $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text($notice_units);	    
+	});  
+
+	/*
        .addClass('dateplugin')
        });*/
       //hrjob: automatically update the "Job Title"
-      var $position = this.$('[name=position]');
-      var $title = this.$('[name=title]');
+	var $position = this.$('[name=position]');
+	var $title = this.$('[name=title]');
       if($position.val() === $title.val()) {
         $position.bind("keyup", function() {
           $title.val($position.val());
@@ -60,6 +125,75 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         });
       }
     },
+      events: {
+	  'click .standard-save': 'doSave',
+	  'click .standard-reset': 'doReset',
+	  'click .contract-file-delete > a': 'doDelete',
+      },
+    doSave: function(){
+	var view = this;
+	var entityID = this.model.get('id');
+	var $notice_unit = $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text();
+	if($notice_unit != '- select -') {
+	    for(k in this.model.attributes) {
+		if(k === 'notice_unit_employee')
+		    this.model.attributes[k] = $notice_unit;
+	    }
+	}
+
+      if (!this.$('form').valid() || !view.model.isValid()) {
+        return false;
+      }
+      HRApp.trigger('ui:block', ts('Saving'));
+      if (this.$('form input[type=file]') ) {
+        var formfile = this.$('form');
+        var filedata = new FormData(formfile[0]);
+        var fileurl = CRM.url('civicrm/hrjob/file/upload');
+        filedata.append("entityID", entityID);
+        filedata.append("entityTable", "civicrm_hrjob");
+	filedata.append("tabName", "general");  
+        $.ajax({ type: "POST",
+          url: fileurl,
+          data: filedata,
+          processData:false,
+          contentType: false,
+          success: function() {}
+        });
+      }
+      this.model.save({}, {
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert(ts('Saved'), null, 'success');
+          view.modelBackup = view.model.toJSON();
+          view.render();
+          view.triggerMethod('standard:save', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
+        }
+      });
+      return false;
+    },
+    
+    doDelete: function() {
+      var view = this;
+      var entityID = this.model.get('id');
+      var fileID = $('.contract-file-delete a').attr('id').split('_');
+      var fileurl = CRM.url('civicrm/hrjob/file/delete');
+
+      $.ajax({ type: "POST",
+        url: fileurl,
+        data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob" },
+        success: function(html) {
+          $('#del_'+fileID[1]).remove();
+            var successMsg = ts('The selected attachment has been deleted.');
+            CRM.alert(successMsg, ts('Removed'), 'success');
+        }
+      });
+    },
+
+
+
     onBindingCreate: function(bindings) {
       bindings.is_primary = {
         selector: 'input[name=is_primary]',
@@ -86,6 +220,9 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         notice_amount: {
           number: true
         },
+	notice_amount_employee: {
+          number: true
+        },  
         period_start_date: {
           dateISO: true
         },
