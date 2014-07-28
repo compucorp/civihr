@@ -462,10 +462,15 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $params = array('name'=>'HRJob_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
-    if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
-      $this->_whereClauses[] = "({$dbAlias} > now() OR {$dbAlias} IS NULL)";
+    $final_date = 1;
+    if (isset($this->_defaults['fields']["custom_{$cField['id']}"])) {
+      $final_date = $this->_defaults['fields']["custom_{$cField['id']}"];
     }
-    if (empty($this->_params["hrjob_period_end_date_value"]) &&
+    if (empty($this->_params["custom_{$cField['id']}_relative"]) && empty($this->_params["custom_{$cField['id']}_from"]) &&
+      empty($this->_params["custom_{$cField['id']}_to"]) && $final_date == '0') {
+      $this->_whereClauses[] = "({$dbAlias} >= CURDATE() OR {$dbAlias} IS NULL)";
+    }
+    elseif (empty($this->_params["hrjob_period_end_date_value"]) &&
       empty($this->_params["hrjob_period_end_date_relative"]) &&
       $this->_params["hrjob_is_primary_value"] == 1) {
       $this->_whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.period_end_date > now() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL) AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1)";

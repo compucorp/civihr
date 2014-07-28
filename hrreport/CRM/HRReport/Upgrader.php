@@ -182,6 +182,8 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
 
   public function upgrade_1401() {
     $this->ctx->log->info('Planning update 1401'); // PEAR Log interface
+    $param = array('name'=>'Final_Termination_Date');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $param, $cField);
     $params = array(
       'title'   => 'CiviHR Current Employees Report',
       'description' => 'HR Report showing drilled down current employee details . ',
@@ -194,6 +196,7 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
             'email'     => 1,
             'manager' => 1,
             'hrjob_title' => 1,
+            "custom_{$cField['id']}" => 0,
           ),
         )
       ),
