@@ -117,120 +117,116 @@ function hrabsence_civicrm_install() {
   civicrm_api3('OptionValue', 'create', $params);
 
   /* Create message template for absence leave application */
-  $msg_text = 'Dear {$displayName},
+  $msg_text = '{ts}Dear{/ts} {$displayName},
+    {ts}Employee:{/ts} {$empName}
+    {ts}Position:{/ts} {$empPosition}
+    {ts}Absence Type:{/ts} {$absenceType}
+    {ts}Dates:{/ts} {$startDate} - {$endDate}
 
-{ts}Employee:{/ts} {$empName}
-{ts}Position:{/ts} {$empPosition}
-{ts}Absence Type:{/ts} {$absenceType}
-{ts}Dates:{/ts} {$startDate} - {$endDate}
+    {if $approval and $totDays eq $appDays }
+      Your leave has been approved for {$appDays}.
+    {else}
+      {if $cancel}
+        {ts}Your leave has been cancelled.{/ts}
+      {elseif $reject}
+        {ts}Your leave has been rejected.{/ts}
+      {elseif $approval}
+        Your leave has been approved for {$appDays}.
+      {/if}
 
-{if $cancel}
-{ts}Leave has been cancelled.{/ts}
-{elseif $reject}
-{ts}Leave has been rejected.{/ts}
-{else}
-
-{ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
-
-{foreach from=$absentDateDurations item=value key=label}
-{$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
-{/foreach}
-
-{ts}Total{/ts} | {$totDays} | {if $approval} {$appDays} {/if}
-
-{/if}
-
-{if $customGroup}
-  {foreach from=$customGroup item=value key=customName}
-    {foreach from=$value item=v key=n}
-      {$customName} : {$v}
-    {/foreach}
-  {/foreach}
-{/if}
-
-{ts}Thanks{/ts}
-CiviHR';
+      {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
+      {foreach from=$absentDateDurations item=value key=label}
+        {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+      {/foreach}
+      {ts}Total{/ts} | {$totDays}
+    {/if}
+    {if $customGroup}
+      {foreach from=$customGroup item=value key=customName}
+        {foreach from=$value item=v key=n}
+          {$customName} : {$v}
+        {/foreach}
+      {/foreach}
+    {/if}';
 
   $msg_html = '<p>{ts}Dear{/ts} {$displayName},</p>
-<table>
-	<tbody>
-		<tr>
-			<td>{ts}Employee:{/ts}</td>
-			<td>{$empName}</td>
-		</tr>
-		<tr>
-			<td>{ts}Position:{/ts}</td>
-			<td>{$empPosition}</td>
-		</tr>
-		<tr>
-			<td>{ts}Absence Type:{/ts}</td>
-			<td>{$absenceType}</td>
-		</tr>
-		<tr>
-			<td>{ts}Dates:{/ts}</td>
-			<td>{$startDate} - {$endDate}</td>
-		</tr>
-	</tbody>
-</table>
-
-{if $cancel}
-  <p> {ts}Leave has been cancelled.{/ts} </p>
-{elseif $reject}
-  <p> {ts}Leave has been rejected.{/ts} </p>
-{else}
-
-<table border="1" border-spacing="0">
-	<tbody>
-		<tr>
-			<th> {ts}Date{/ts} </th>
-			<th> {ts}Absence{/ts} </th>
-{if $approval}
-			<th> {ts}Approve{/ts} </th>
-{/if}
-		</tr>
-{foreach from=$absentDateDurations item=value key=label}
-		<tr>
-			<td>{$label|date_format}</td>
-			<td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else}
-{/if}</td>
-{if $approval}
-			<td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}
-{/if}</td>
-{/if}
-		</tr>
-{/foreach}
-		<tr>
-			<td>{ts}Total{/ts}</td>
-			<td>{$totDays}</td>
-{if $approval}
-			<td>{$appDays}</td>
-{/if}
-		</tr>
-	</tbody>
-</table>
-{/if}
-<br/>
-{if $customGroup}
-<table>
-  <tbody>
-    {foreach from=$customGroup item=value key=customName}
-      {foreach from=$value item=v key=n}
+    <table>
+      <tbody>
         <tr>
-          <td>
-            {$customName} :
-          </td>
-          <td>
-            {$v}
-          </td>
+          <td>{ts}Employee:{/ts}</td>
+          <td>{$empName}</td>
         </tr>
-      {/foreach}
-    {/foreach}
-  </tbody>
-</table>
-{/if}
-<br/>
-<p> {ts}Thanks{/ts} <br/>
-CiviHR</p>';
+		    <tr>
+          <td>{ts}Position:{/ts}</td>
+          <td>{$empPosition}</td>
+        </tr>
+        <tr>
+          <td>{ts}Absence Type:{/ts}</td>
+          <td>{$absenceType}</td>
+        </tr>
+        <tr>
+          <td>{ts}Dates:{/ts}</td>
+          <td>{$startDate} - {$endDate}</td>
+        </tr>
+      </tbody>
+    </table>
+    {if $approval and $totDays eq $appDays }
+    <br/>
+      Your leave has been approved for {$appDays}.
+    <br/>
+    {else}
+      {if $cancel}
+        <p> {ts}Your leave has been cancelled.{/ts} </p>
+      {elseif $reject}
+        <p> {ts}Your leave has been rejected.{/ts} </p>
+      {elseif $approval}
+        <p> Your leave has been approved for {$appDays}.</p>
+      {/if}
+      <br/>
+      <table border="1" border-spacing="0">
+        <tbody>
+          <tr>
+            <th> {ts}Date{/ts} </th>
+            <th> {ts}Absence{/ts} </th>
+            {if $approval}
+              <th> {ts}Status{/ts} </th>
+            {/if}
+          </tr>
+          {foreach from=$absentDateDurations item=value key=label}
+          <tr>
+            <td>{$label|date_format}</td>
+            <td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
+            {if $approval}
+              <td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}{/if}</td>
+            {/if}
+          </tr>
+          {/foreach}
+          <tr>
+            <td>{ts}Total{/ts}</td>
+            <td>{$totDays}</td>
+            <td> &nbsp; </td>
+          </tr>
+        </tbody>
+      </table>
+    {/if}
+    <br/>
+    {if $customGroup}
+      <table>
+        <tbody>
+          {foreach from=$customGroup item=value key=customName}
+            {foreach from=$value item=v key=n}
+              <tr>
+                <td>
+                  {$customName} :
+                </td>
+                <td>
+                  {$v}
+                </td>
+              </tr>
+            {/foreach}
+          {/foreach}
+        </tbody>
+      </table>
+    {/if}';
 
   $msg_params = array(
     'msg_title' => 'Absence Email',

@@ -198,7 +198,7 @@
             totalDays += ' {/literal}{ts}days{/ts}{literal}';
 	  }
 	  $('#countD', $form).html(totalDays);
-	  $('#appD', $form).html(totalAppDays +' days approved');
+	  $('#appD', $form).html(totalAppDays +' days');
         }
       });
 
@@ -207,6 +207,14 @@
       });
 
       $("#_qf_AbsenceRequest_done_approve-bottom", $form).click(function(event){
+        mapDateValues();
+      });
+
+      $("#_qf_AbsenceRequest_done_reject-bottom", $form).click(function(event){
+        mapDateValues();
+      });
+
+      $("#_qf_AbsenceRequest_done_cancelabsence-bottom", $form).click(function(event){
         mapDateValues();
       });
 
@@ -337,10 +345,10 @@
         }
       }
       if (totalDays <= 1) {
-        totalDays += ' {/literal}{ts}day approved{/ts}{literal}';
+        totalDays += ' {/literal}{ts}day{/ts}{literal}';
       }
       else {
-        totalDays += ' {/literal}{ts}days approved{/ts}{literal}';
+        totalDays += ' {/literal}{ts}days{/ts}{literal}';
       }
       $('#appD', $form).html(totalDays);
   });
