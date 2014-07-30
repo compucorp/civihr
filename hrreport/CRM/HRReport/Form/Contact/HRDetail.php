@@ -465,6 +465,9 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
       $this->_whereClauses[] = "({$dbAlias} >= CURDATE() OR {$dbAlias} IS NULL)";
     }
+    if ($this->_params["hrjob_is_primary_value"] == 1) {
+      $this->_whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1)";
+    }
     $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
 
     parent::where();
