@@ -3,8 +3,6 @@
 // The record will be automatically inserted, updated, or deleted from the
 // database as appropriate. For more details, see "hook_civicrm_managed" at:
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
-$params = array('name'=>'Final_Termination_Date');
-CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
 return array (
   array (
     'name' => 'CiviHR Job Detail Report Template',
@@ -62,7 +60,6 @@ return array (
             'email'     => 1,
             'manager' => 1,
             'hrjob_title' => 1,
-            "custom_{$cField['id']}" => 0,
           ),
         )
       ),
