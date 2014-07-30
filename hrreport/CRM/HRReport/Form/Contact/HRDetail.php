@@ -463,12 +463,10 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
-      $this->_whereClauses[] = "({$dbAlias} > now() OR {$dbAlias} IS NULL)";
+      $this->_whereClauses[] = "({$dbAlias} >= CURDATE() OR {$dbAlias} IS NULL)";
     }
-    if (empty($this->_params["hrjob_period_end_date_value"]) &&
-      empty($this->_params["hrjob_period_end_date_relative"]) &&
-      $this->_params["hrjob_is_primary_value"] == 1) {
-      $this->_whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.period_end_date > now() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL) AND {$this->_aliases['civicrm_hrjob']}.is_primary = 1)";
+    if ($this->_params["hrjob_is_primary_value"] == 1) {
+      $this->_whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1)";
     }
     $this->_whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
 
