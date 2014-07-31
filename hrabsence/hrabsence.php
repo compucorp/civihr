@@ -136,7 +136,9 @@ function hrabsence_civicrm_install() {
 
       {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
       {foreach from=$absentDateDurations item=value key=label}
-        {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+        {if $value.duration != 0}
+          {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+        {/if}
       {/foreach}
       {ts}Total{/ts} | {$totDays}
     {/if}
@@ -192,18 +194,22 @@ function hrabsence_civicrm_install() {
             {/if}
           </tr>
           {foreach from=$absentDateDurations item=value key=label}
-          <tr>
-            <td>{$label|date_format}</td>
-            <td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
-            {if $approval}
-              <td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}{/if}</td>
-            {/if}
-          </tr>
+          {if $value.duration != 0}
+            <tr>
+              <td>{$label|date_format}</td>
+              <td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
+              {if $approval}
+                <td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}{/if}</td>
+              {/if}
+            </tr>
+          {/if}
           {/foreach}
           <tr>
             <td>{ts}Total{/ts}</td>
             <td>{$totDays}</td>
-            <td> &nbsp; </td>
+            {if $approval}
+              <td> &nbsp; </td>
+            {/if}
           </tr>
         </tbody>
       </table>
