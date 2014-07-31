@@ -218,6 +218,10 @@
         mapDateValues();
       });
 
+      $("#_qf_AbsenceRequest_done_saveandapprove-bottom", $form).click(function(event){
+        mapDateValues();
+      });
+
       function mapDateValues() {
         var dateValues = [],
           end_date = $('#end_date_display', $form).datepicker( "getDate" ),
