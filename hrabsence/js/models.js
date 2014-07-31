@@ -30,7 +30,13 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     },
     getFormattedDuration: function() {
       if (this.get('absence_range') && CRM.HRAbsenceApp.absenceTypeCollection) {
-        var val = parseInt(this.get('absence_range').duration);
+        var val = 0;
+        if (this.get('absence_range').approved_duration) {
+          var val = parseInt(this.get('absence_range').approved_duration);
+        }
+        else {
+          var val = parseInt(this.get('absence_range').duration);
+        }
         return CRM.HRAbsenceApp.formatDuration(val * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(this.get('activity_type_id')));
       } else {
         return '';

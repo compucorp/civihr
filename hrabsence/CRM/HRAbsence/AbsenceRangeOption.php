@@ -84,7 +84,7 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
         }
 
         $sql = "
-          SELECT id, source_record_id, activity_date_time, duration as duration
+          SELECT id, source_record_id, activity_date_time, status_id, duration as duration
           FROM civicrm_activity
           WHERE activity_type_id = %1 AND source_record_id in (" . implode(',', $ids) . ")
           ";
@@ -93,6 +93,7 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
         );
 
         $dao = CRM_Core_DAO::executeQuery($sql, $params);
+        $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
         while ($dao->fetch()) {
           $ar = &$result['values'][$dao->source_record_id]['absence_range'];
           if ($ar['low'] === NULL || $ar['low'] > $dao->activity_date_time) {
@@ -100,6 +101,9 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
           }
           if ($ar['high'] === NULL || $ar['high'] < $dao->activity_date_time) {
             $ar['high'] = $dao->activity_date_time;
+          }
+          if ($dao->status_id == CRM_Utils_Array::key('Completed', $activityStatus)) {
+            $ar['approved_duration'] += $dao->duration;
           }
           $ar['duration'] += $dao->duration;
           $ar['count']++;

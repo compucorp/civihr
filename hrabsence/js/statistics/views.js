@@ -79,7 +79,7 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
           };
         }
         if (model.get('status_id') == 2) {
-          stats[statsKey].approved = parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').duration);
+          stats[statsKey].approved = parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').approved_duration);
         } else if (model.get('status_id') == 1) {
           stats[statsKey].requested = parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration);
         }
