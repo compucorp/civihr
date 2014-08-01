@@ -25,19 +25,34 @@
     </ActivityType>
 
     <ActivityType>
-      <name>Attach Application Documents</name>
+      <name>Schedule joining date</name>
     </ActivityType>
     <ActivityType>
-      <name>Attach Offer Letter</name>
+      <name>Issue appointment letter</name>
     </ActivityType>
     <ActivityType>
-      <name>Attach Reference</name>
+      <name>Fill Employee Details Form</name>
     </ActivityType>
     <ActivityType>
-      <name>Attach Draft Job Contract</name>
+      <name>Submission of ID/Residence proofs and photos</name>
     </ActivityType>
     <ActivityType>
-      <name>Attach Signed Job Contract</name>
+      <name>Program and work induction by program supervisor</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Enter employee data in CiviHR</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Group Orientation to organization, values, policies</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Probation appraisal (start probation workflow)</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Background Check</name>
+    </ActivityType>
+    <ActivityType>
+      <name>References Check</name>
     </ActivityType>
   </ActivityTypes>
 
@@ -48,8 +63,43 @@
       <timeline>false</timeline>
       <ActivityTypes>
         <ActivityType>
-          <name>Open Case</name>
+          <name>Schedule joining date</name>
           <status>Completed</status>
+        </ActivityType>
+	<ActivityType>
+          <name>Issue appointment letter</name>
+          <reference_offset>1</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Fill Employee Details Form</name>
+          <reference_offset>1</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Submission of ID/Residence proofs and photos</name>
+          <reference_offset>1</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Program and work induction by program supervisor</name>
+          <reference_offset>1</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Enter employee data in CiviHR</name>
+          <reference_offset>3</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Group Orientation to organization, values, policies</name>
+          <reference_offset>30</reference_offset>
+          <reference_select>newest</reference_select>
+        </ActivityType>
+	<ActivityType>
+          <name>Probation appraisal (start probation workflow)</name>
+          <reference_offset>90</reference_offset>
+          <reference_select>newest</reference_select>
         </ActivityType>
       </ActivityTypes>
     </ActivitySet>
@@ -62,8 +112,8 @@
       <manager>1</manager>
     </RelationshipType>
     <RelationshipType>
-        <name>Recruiting Manager</name>
+      <name>Recruiting Manager</name>
     </RelationshipType>
   </CaseRoles>
 
-  </CaseType>
+</CaseType>

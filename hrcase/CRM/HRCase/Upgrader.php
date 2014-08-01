@@ -181,10 +181,22 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   public function upgrade_1400() {
     $this->ctx->log->info('Applying update 1400');
     $i = 3;
-    foreach (array('Joining','Probation','Exiting') as $caseName) {
+    foreach (array('Joining','Probation') as $caseName) {
       CRM_Core_DAO::executeQuery("UPDATE civicrm_case_type SET weight = {$i} WHERE name = '{$caseName}'");
       $i++;
     }
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_case_type SET weight = 6 WHERE name = 'Exiting'");
+    $this->executeSqlFile('sql/activities_install.sql');
+    require_once 'hrcase.php';
+    $scheduleActions = hrcase_getActionsSchedule();
+    foreach($scheduleActions as $actionName=>$scheduleAction) {
+      $result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
+      if (empty($result['id'])) {
+        $result = civicrm_api3('action_schedule', 'create', $scheduleAction);
+      }
+    }
+    CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
+
     //update query to replace Case with Assignment
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
     $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
