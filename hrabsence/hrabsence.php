@@ -123,9 +123,6 @@ function hrabsence_civicrm_install() {
     {ts}Absence Type:{/ts} {$absenceType}
     {ts}Dates:{/ts} {$startDate} - {$endDate}
 
-    {if $approval and $totDays eq $appDays }
-      Your leave has been approved for {$appDays}.
-    {else}
       {if $cancel}
         {ts}Your leave has been cancelled.{/ts}
       {elseif $reject}
@@ -134,14 +131,13 @@ function hrabsence_civicrm_install() {
         Your leave has been approved for {$appDays}.
       {/if}
 
-      {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval} {ts}Approve{/ts} {/if}
+      {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval and $totDays neq $appDays} {ts}Approve{/ts} {/if}
       {foreach from=$absentDateDurations item=value key=label}
         {if $value.duration != 0}
-          {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+          {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval and $totDays neq $appDays} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
         {/if}
       {/foreach}
       {ts}Total{/ts} | {$totDays}
-    {/if}
     {if $customGroup}
       {foreach from=$customGroup item=value key=customName}
         {foreach from=$value item=v key=n}
@@ -171,11 +167,6 @@ function hrabsence_civicrm_install() {
         </tr>
       </tbody>
     </table>
-    {if $approval and $totDays eq $appDays }
-    <br/>
-      Your leave has been approved for {$appDays}.
-    <br/>
-    {else}
       {if $cancel}
         <p> {ts}Your leave has been cancelled.{/ts} </p>
       {elseif $reject}
@@ -189,7 +180,7 @@ function hrabsence_civicrm_install() {
           <tr>
             <th> {ts}Date{/ts} </th>
             <th> {ts}Absence{/ts} </th>
-            {if $approval}
+            {if $approval and $totDays neq $appDays}
               <th> {ts}Status{/ts} </th>
             {/if}
           </tr>
@@ -198,7 +189,7 @@ function hrabsence_civicrm_install() {
             <tr>
               <td>{$label|date_format}</td>
               <td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
-              {if $approval}
+              {if $approval and $totDays neq $appDays}
                 <td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}{/if}</td>
               {/if}
             </tr>
@@ -207,13 +198,12 @@ function hrabsence_civicrm_install() {
           <tr>
             <td>{ts}Total{/ts}</td>
             <td>{$totDays}</td>
-            {if $approval}
+            {if $approval and $totDays neq $appDays}
               <td> &nbsp; </td>
             {/if}
           </tr>
         </tbody>
       </table>
-    {/if}
     <br/>
     {if $customGroup}
       <table>
