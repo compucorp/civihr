@@ -1,6 +1,8 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
   $(document).on('crmLoad', function(e) {
+    //change text from Client to Contact
+    $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
     if (CRM.formName == 'contactForm' || CRM.pageName == 'viewSummary') {
       // Rename "Summary" tab to "Personal Details"
       // Hack to check contact type - This field only appears for individuals

@@ -1,15 +1,21 @@
 // http://civicrm.org/licensing
 (function ($, _) {
-
   // js to hide medium and location on case activity and case screen
   $(document).on('crmLoad', function() {
+    $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
     $('.crm-case-activity-form-block-medium_id, .crm-case-form-block-medium_id').hide();
-    $('.crm-case-activities-type').html('Activity');
     $('.crm-case-other-relationships-block').hide();
     $('.crm-case_activities-accordion').insertAfter($('.case-control-panel'));
     $('.crm-case-roles-block').click(function(){
       $(".crm-case-roles-block .crm-accordion-body .dataTables_wrapper .report-layout tbody tr td:contains('Client')").html('Contact');
-    });         
+    });
+    if($('.DataTables_sort_wrapper').html()){
+      $('.crm-case-activities-type .DataTables_sort_wrapper').html('Activity');
+      $('.crm-case-activities-assignee .DataTables_sort_wrapper').html('Assignee');
+    }else{
+      $('.crm-case-activities-type').html('Activity');
+      $('.crm-case-activities-assignee').html('Assignee');
+    }
   });
 
   // js to update date-time while completing case activity status on edit screen
