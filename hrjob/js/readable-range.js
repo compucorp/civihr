@@ -74,9 +74,15 @@
             result.push(pluralize(yDiff, 'year'));
         }
         if (mDiff) {
+            if (yDiff) {
+		result.push(','); //HR-350
+	    }
             result.push(pluralize(mDiff, 'month'));
         }
         if (dDiff) {
+            if (mDiff) {
+		result.push('and'); //HR-350
+	    }
             result.push(pluralize(dDiff, 'day'));
         }
 //code commented to show only year,month and days on job summary
