@@ -428,7 +428,6 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         </tr>
       </tbody>
     </table>
-
       {if $cancel}
         <p> {ts}Your leave has been cancelled.{/ts} </p>
       {elseif $reject}
