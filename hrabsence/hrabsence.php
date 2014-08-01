@@ -167,7 +167,6 @@ function hrabsence_civicrm_install() {
         </tr>
       </tbody>
     </table>
-
       {if $cancel}
         <p> {ts}Your leave has been cancelled.{/ts} </p>
       {elseif $reject}
