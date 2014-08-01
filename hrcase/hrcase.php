@@ -183,8 +183,12 @@ function hrcase_civicrm_managed(&$entities) {
 
 function hrcase_civicrm_buildForm($formName, &$form) {
   //change pageTitle for adding Case/Assignment Activity
-  $contactDisplayName = CRM_Contact_BAO_Contact::displayName($form->getVar('_targetContactId'));
   if ($formName == 'CRM_Case_Form_Activity'){
+    $contactDisplayName = CRM_Contact_BAO_Contact::displayName($form->getVar('_targetContactId'));
+    $viewedContactDisplayName = CRM_Contact_BAO_Contact::displayName($form->_currentlyViewedContactId);
+    if ($form->_activityTypeName == 'Created New Assignment') {
+      CRM_Utils_System::setTitle($viewedContactDisplayName . ' - ' . ts('Created New Assignment'));
+    }
     if ($form->_activityTypeName == 'Change Assignment Type') {
       CRM_Utils_System::setTitle($contactDisplayName . ' - ' . ts('Change Assignment Type'));
     }
