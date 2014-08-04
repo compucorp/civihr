@@ -31,7 +31,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         .datepicker(_.extend({}, dateOptions, {
           maxDate: $end.val() ? $end.val() : null,
           onClose: function(selectedDate) {
-              $end.datepicker("option", "minDate", selectedDate);
+            $end.datepicker("option", "minDate", selectedDate);
           }
         }));
       $end
@@ -39,7 +39,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         .datepicker(_.extend({}, dateOptions, {
           minDate: $start.val() ? $start.val() : null,
           onClose: function(selectedDate) {
-              $start.datepicker("option", "maxDate", selectedDate);
+            $start.datepicker("option", "maxDate", selectedDate);
           }
         }));
 	//display contract file
@@ -52,67 +52,64 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
         });
 	//contract duration autocalculate
-	var $duration = this.$('[name=duration]');
-	var $starts = null;
-	var $ends = null;
-	var day = null;
+	var $duration = this.$('[name=duration]'),
+	    $starts = null,
+	    $ends = null,
+  	    day = null;
 
-	if($start.val() && $end.val()) {
-	    $starts = $start.val();
-	    $ends = $end.val();
-	    select();
+	if ($start.val() && $end.val()) {
+	  $starts = $start.val();
+	  $ends = $end.val();
+	  select();
 	}
 	else {	    
-	    $duration.html('No Contract End Date');
+	  $duration.html('No Contract End Date');
 	}
         $start.change(function() {
-	    $starts = $start.val();
-	    select();
+	  $starts = $start.val();
+	  select();
         });
 	$end.change(function() {
-	    $ends = $end.val();
-	    select();
-
+	  $ends = $end.val();
+	  select();
 	});  
 	function select() {
-	    if($starts && $ends) {
-		diff  = (new Date($ends) - new Date($starts)),
-		day  = moment.preciseDiff($starts,$ends);
-		$duration.html(day);
-	    }
-	    if($starts == $ends) {	
-		day = '0';
-		$duration.html(day);
-	    }
-
+	  if ($starts && $ends) {
+	    diff  = (new Date($ends) - new Date($starts)),
+	    day  = moment.preciseDiff($starts,$ends);
+	    $duration.html(day);
+	  }
+	  if ($starts == $ends) {	
+	    day = '0';
+	    $duration.html(day);
+	  }
 	}
 	//automatically update notice period and unit
 	var $notice_amount = this.$('[name=notice_amount]');
 	var $notice_amount_employee = this.$('[name=notice_amount_employee]');
-	if($notice_amount.val() === $notice_amount_employee.val()) {
-            $notice_amount.bind("keyup", function() {
-		$notice_amount_employee.val($notice_amount.val());
-		$notice_amount_employee.change();
-            });
-            $notice_amount_employee.bind("change", function() {
-		if($notice_amount.val() !== $notice_amount_employee.val()) {
-		    $notice_amount.unbind("keyup");
-		}
-            });
+	if ($notice_amount.val() === $notice_amount_employee.val()) {
+          $notice_amount.bind("keyup", function() {
+	    $notice_amount_employee.val($notice_amount.val());
+	    $notice_amount_employee.change();
+          });
+          $notice_amount_employee.bind("change", function() {
+	    if ($notice_amount.val() !== $notice_amount_employee.val()) {
+	      $notice_amount.unbind("keyup");
+	    }
+          });
 	}
 	var $notice_unit = this.$("select#hrjob-notice_unit");
-	var $notice_unit_employee = this.$("select#hrjob-notice_unit_employee");
 	$notice_unit.change(function() {
-	    $notice_units = $notice_unit.val();
-	    $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text($notice_units);	    
+	  $notice_units = $notice_unit.val();
+	  $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text($notice_units);	    
 	});  
 
 	/*
        .addClass('dateplugin')
        });*/
       //hrjob: automatically update the "Job Title"
-	var $position = this.$('[name=position]');
-	var $title = this.$('[name=title]');
+      var $position = this.$('[name=position]');
+      var $title = this.$('[name=title]');
       if($position.val() === $title.val()) {
         $position.bind("keyup", function() {
           $title.val($position.val());
@@ -136,10 +133,10 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 	var entityID = this.model.get('id');
 	//save notice unit
 	var $notice_unit = $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text();
-	if($notice_unit != '- select -') {
-	    for(k in this.model.attributes) {
-		if(k === 'notice_unit_employee')
-		    this.model.attributes[k] = $notice_unit;
+	if ($notice_unit != '- select -') {
+	  for (k in this.model.attributes) {
+	    if (k === 'notice_unit_employee')
+	      this.model.attributes[k] = $notice_unit;
 	    }
 	}
       if (!this.$('form').valid() || !view.model.isValid()) {
