@@ -28,6 +28,8 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
 function hrui_civicrm_pageRun($page) {
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
@@ -39,7 +41,9 @@ function hrui_civicrm_pageRun($page) {
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  CRM_Core_Resources::singleton()
+    ->addStyleFile('org.civicrm.hrui', 'css/hrui.css')
+    ->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
@@ -456,6 +460,7 @@ function hrui_civicrm_navigationMenu( &$params ) {
  * @return void
  */
 function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  $smarty = CRM_Core_Smarty::singleton();
   if ($context == "form" && $tplName == "CRM/Contact/Form/Contact.tpl" ) {
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
@@ -485,5 +490,13 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
         });
       });
     </script>";
+  }
+
+ if ($tplName == 'CRM/Profile/Form/Edit.tpl' && $smarty->_tpl_vars['context'] == 'dialog' && $smarty->_tpl_vars['ufGroupName'] == 'new_individual') {
+   $content .="<script type=\"text/javascript\">
+     CRM.$(function($) {
+       $('.ui-dialog').css({'top':'10%'});
+     });
+   </script>";
   }
 }
