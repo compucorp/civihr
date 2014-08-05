@@ -1,3 +1,4 @@
 .crm-tooltip table td {
     width: 50%;
+    word-wrap: break-word;
 }
