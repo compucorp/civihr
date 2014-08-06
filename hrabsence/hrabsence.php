@@ -134,7 +134,7 @@ function hrabsence_civicrm_install() {
       {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval and $totDays neq $appDays} {ts}Approve{/ts} {/if}
       {foreach from=$absentDateDurations item=value key=label}
         {if $value.duration != 0}
-          {$label|date_format} | {if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {/if} | {if $approval and $totDays neq $appDays} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
+          {$label|date_format} | {if $value.duration == $jobHoursTime.Full_Time*60} {ts}Full Day{/ts} {elseif $value.duration == $jobHoursTime.Part_Time*60} {ts}Half Day{/ts} {/if} | {if $approval and $totDays neq $appDays} {if $value.approval == 2}{ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {/if} {/if}
         {/if}
       {/foreach}
       {ts}Total{/ts} | {$totDays}
@@ -188,7 +188,7 @@ function hrabsence_civicrm_install() {
           {if $value.duration != 0}
             <tr>
               <td>{$label|date_format}</td>
-              <td>{if $value.duration == 480} {ts}Full Day{/ts} {elseif $value.duration == 240} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
+              <td>{if $value.duration == $jobHoursTime.Full_Time*60} {ts}Full Day{/ts} {elseif $value.duration == $jobHoursTime.Part_Time*60} {ts}Half Day{/ts} {else} &nbsp;{/if}</td>
               {if $approval and $totDays neq $appDays}
                 <td>{if $value.approval == 2} {ts}Approved{/ts} {elseif $value.approval == 9} {ts}Unapproved{/ts} {else}{/if}</td>
               {/if}

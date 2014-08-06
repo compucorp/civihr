@@ -76,6 +76,8 @@
       upActivityId = '{/literal}{$upActivityId}{literal}',
       upfromDate = '{/literal}{$fromDate}{literal}',
       uptoDate = '{/literal}{$toDate}{literal}',
+      jobHoursFullTime = '{/literal}{$jobHoursTime.Full_Time}{literal}'*60,
+      jobHoursPartTime = '{/literal}{$jobHoursTime.Part_Time}{literal}'*60,
       difDate,
       pubHoliday,
       param = {};
@@ -161,7 +163,7 @@
             }
             createSelectBox = '<tr class="trabsence"><td><label id="label_'+x+'" >'+abdate+'</label></td><td><select id="options_'+x+'" class="crm-form-select crm-select2"><option value="1">Full Day</option><option value="0.5">Half Day</option><option value=""></option></select></td>'+approveColumn+'</tr>';
             $('form#AbsenceRequest table#tblabsence tbody').append(createSelectBox);
-            if (value.dur==240) {
+            if (value.dur==jobHoursPartTime) {
               $("#options_"+x).val('0.5');
               selectopt = $('#options_'+x+' :selected').val();
               totalDays = new Number(totalDays) + new Number(selectopt);
@@ -173,7 +175,7 @@
                 $("#approved_"+x).attr('checked', false);
               }
 	    }
-	    else if (value.dur==480) {
+	    else if (value.dur==jobHoursFullTime) {
 	      $("#options_"+x, $form).val('1');
 	      selectopt = $('#options_'+x+' :selected', $form).val();
 	      totalDays = new Number(totalDays) + new Number(selectopt);
@@ -234,11 +236,11 @@
           selDate = $('#label_'+x, $form).text();
           selectopt = $('#options_'+x+' :selected', $form).text();
           if (selectopt == "Full Day"){
-            dateV = selDate +":" + "480";
+            dateV = selDate +":" + jobHoursFullTime;
           }
           else {
             if (selectopt == "Half Day"){
-              dateV = selDate +":" + "240";
+              dateV = selDate +":" + jobHoursPartTime;
             }
 	    else {
 	      dateV = selDate +":" + "0";
@@ -277,11 +279,11 @@
       selDate = $('#label_'+x, $form).text();
       selectopt = $('#options_'+x+' :selected', $form).text();
       if (selectopt == "Full Day") {
-        dateV = selDate +":" + "480";
+        dateV = selDate +":" + jobHoursFullTime;
       }
       else {
         if (selectopt == "Half Day") {
-          dateV = selDate +":" + "240";
+          dateV = selDate +":" + jobHoursPartTime;
         }
         else{
           dateV = selDate +":" + "0";
