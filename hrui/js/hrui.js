@@ -10,11 +10,26 @@
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
 
+      //add government field
+      if (CRM.identEnable) {
+        var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
+        if ($('div#government').length < 1) {
+          $(govfield).appendTo($('.crm-contact_type_label').parent('div'));
+        }
+        if (CRM.govType &&  CRM.govTypeNumber) {
+	  $('#govValID').html(CRM.govType+" - "+CRM.govTypeNumber);
+        }
+        $('#govID').insertAfter($('#nick_name').parent('td')).show();
+        $( "#govID" ).wrap( "<td id='govtfield' colspan='3'></td>");
+      }
+
       // Hide current employer and job title
       // Contact summary screen:
       $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
       // Inline edit form
       $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title', e.target).closest('div.crm-summary-row').hide();
+      $('#row-custom_'+CRM.hideGovID, e.target).hide();
+
       // Contact edit screen
       $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
 
@@ -32,6 +47,7 @@
         $('#addPhone').click();
       }
     }
+    $('span.crm-frozen-field', '.crm-profile-name-hrident_tab').closest('div').parent('div').hide();
     //changes of sorce help text
     $('INPUT#contact_source').parent('td').children('a').click(function() {
       $('#crm-notification-container .crm-help .notify-content').remove();
