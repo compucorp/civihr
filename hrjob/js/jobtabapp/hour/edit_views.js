@@ -21,9 +21,9 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       }
 
       var $hours_type = this.$("select#hrjob-hours_type"),
-        $full_time_hour = 8,
-        $half_time_hour = 4,
-        $causual_hour = 0;
+        $full_time_hour = CRM.PseudoConstant.job_hours_time.Full_Time,
+        $part_time_hour = CRM.PseudoConstant.job_hours_time.Part_Time,
+        $causual_hour = CRM.PseudoConstant.job_hours_time.Casual;
       $hours_type.change(function() {
         $hours_types = $hours_type.val();
         if ($hours_types == "full") {
@@ -32,7 +32,7 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
           $("#hrjob-hours_fte").val(1.0);
         }
         else if ($hours_types == "part") {
-          $("#hrjob-hours_amount").val($half_time_hour);
+          $("#hrjob-hours_amount").val($part_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
           $("#hrjob-hours_fte").val(0.5);
         }
@@ -69,7 +69,7 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         }
         else if (k === 'hours_fte') {
           this.model.attributes[k] = $hrs_fte;
-        } 
+        }
       }
       this.model.save({}, {
         success: function() {

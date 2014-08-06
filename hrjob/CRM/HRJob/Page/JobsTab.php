@@ -46,9 +46,17 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addSettingsFactory(function () {
       $config = CRM_Core_Config::singleton();
+      $job_hours_time = array();
+      $result = civicrm_api3('OptionValue', 'get', array(
+        'option_group_id' =>'hrjob_hours_type_value',
+      ));
+      foreach ($result['values'] as $key => $val) {
+        $job_hours_time[$val['name']] = $val['value'];
+      }
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
+          'job_hours_time' => $job_hours_time,
         ),
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
