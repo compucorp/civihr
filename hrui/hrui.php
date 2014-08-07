@@ -37,6 +37,20 @@ function hrui_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
+    //set government field value for individual page
+    $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+    $result = civicrm_api3('Contact', 'get', array('id' => CRM_Utils_Request::retrieve('cid', 'Integer')));
+    if ($isEnabled && $result['values'][$result['id']]['contact_type'] == 'Individual') {
+      $contactID = CRM_Utils_Request::retrieve('cid', 'Integer', $page);
+      $govVal = _hrui_retreiveContactFieldValue($contactID);
+      $hideGovID = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify','name' => 'is_government', 'return' => 'id'));
+      CRM_Core_Resources::singleton()
+        ->addSetting(array('govType' => CRM_Utils_Array::value('type', $govVal),
+          'govTypeNumber' => CRM_Utils_Array::value('typeNumber',$govVal),
+          'identEnable' => TRUE,
+          'hideGovID' => $hideGovID
+        ));
+    }
   }
 }
 
@@ -60,6 +74,108 @@ function hrui_civicrm_buildForm($formName, &$form) {
       $phoneLocation->setSelected($locationId);
     }
   }
+
+  //HR-355 -- Add Government ID
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+  if ($formName == 'CRM_Contact_Form_Contact' && $isEnabled && $form->_contactType == 'Individual') {
+    //add government fields
+    CRM_Core_Resources::singleton()
+      ->addSetting(array('identEnable' => TRUE));
+    $contactID = CRM_Utils_Request::retrieve('cid', 'Integer', $form);
+    $templatePath = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrui'). '/templates';
+    $form->add('text', 'GovernmentId', ts('Government ID'));
+    $form->addElement('select', "govTypeOptions", '', CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('type_20130502144049'));
+    CRM_Core_Region::instance('page-body')
+      ->add(array('template' => "{$templatePath}/CRM/HRUI/Form/contactField.tpl"));
+
+    //set default to government type option
+    $ogID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name');
+    $default = array();
+    $default['govTypeOptions'] = CRM_Core_BAO_CustomField::getOptionGroupDefault($ogID, 'select');
+    $action = CRM_Utils_Request::retrieve('action', 'String', $form);
+    $govVal = _hrui_retreiveContactFieldValue($contactID);
+    if ($action == CRM_Core_Action::UPDATE && !empty($govVal)) {
+      //set key for updating specific record of contact id in custom value table
+      $default['govTypeOptions'] = CRM_Utils_Array::value('type', $govVal);
+      $default['GovernmentId'] = CRM_Utils_Array::value('typeNumber',$govVal);
+    }
+    $form->setDefaults($default);
+  }
+}
+
+/**
+  *Retrieve Name, Type and Id of record contain government value from customvalue table
+  */
+function _hrui_retreiveContactFieldValue($contactID) {
+  $govInfo = array();
+  $govFieldId = _hrui_retreiveContactFieldId('Identify');
+  if (!empty($govFieldId) && $contactID) {
+    $govValues = CRM_Core_BAO_CustomValueTable::getEntityValues($contactID, NULL, $govFieldId, TRUE);
+    foreach ($govValues as $key => $val) {
+      if ($val[$govFieldId['is_government']] == 1){
+        $govInfo['type'] = $val[$govFieldId['Type']];
+        $govInfo['typeNumber'] = $val[$govFieldId['Number']];
+        $govInfo['key'] = $val[$govFieldId['is_government']];
+        $govInfo['id'] = ":{$key}";
+        break;
+      }
+    }
+  }
+  return $govInfo;
+}
+
+/**
+  *Return associated array name/id pair of custom field
+  */
+function _hrui_retreiveContactFieldId($customGroupID) {
+  $param =  array(
+    'custom_group_id' => $customGroupID,
+    'return' => "name",
+  );
+  $custReseult = civicrm_api3('CustomField', 'get', $param);
+  foreach ($custReseult['values'] as $k => $val) {
+    $govFieldId[$val['name']] = $val['id'];
+  }
+  return $govFieldId;
+}
+
+
+/**
+ * Implementation of hook_civicrm_postProcess
+ */
+function hrui_civicrm_postProcess( $formName, &$form ) {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+  if ($formName == 'CRM_Contact_Form_Contact' && $isEnabled && $form->_contactType == 'Individual') {
+    $govFieldId = _hrui_retreiveContactFieldId('Identify');
+    $govFieldIds = _hrui_retreiveContactFieldValue($form->_contactId);
+    if (!empty($govFieldId)) {
+      if (empty($govFieldIds)) {
+        $govFieldIds['id'] = NULL;
+      }
+      $customParams = array(
+        "custom_{$govFieldId['Type']}{$govFieldIds['id']}" => $form->_submitValues['govTypeOptions'],
+        "custom_{$govFieldId['Number']}{$govFieldIds['id']}" => $form->_submitValues['GovernmentId'],
+        "custom_{$govFieldId['is_government']}{$govFieldIds['id']}" => 1,
+        "entity_id" => $form->_contactId,
+      );
+      civicrm_api3('CustomValue', 'create', $customParams);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_validate
+ */
+function hrui_civicrm_validate( $formName, &$fields, &$files, &$form) {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
+  $errors = array();
+  // validate government field if exist
+  if ($formName == 'CRM_Contact_Form_Contact' && $form->elementExists('GovernmentId')){
+    if (!empty($fields['GovernmentId']) && !preg_match("/^[a-zA-Z0-9]+$/", $fields['GovernmentId'])) {
+      $errors['GovernmentId'] = ts('Government Id should contain only alphanumeric value ');
+    }
+  }
+  return empty( $errors ) ? true : $errors;
 }
 
 /**

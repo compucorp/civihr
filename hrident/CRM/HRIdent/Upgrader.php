@@ -155,7 +155,7 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
   public function upgrade_1200() {
     $this->ctx->log->info('Planning update 1200'); //PEAR Log interface
     $params = array(
@@ -170,5 +170,43 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
       return TRUE;
     }
     return FALSE;
+  }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); //PEAR Log interface
+    // create custom field
+    $cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name');
+    $custGroupParams = array(
+      'custom_group_id' => $cusGroupID,
+      'name' => "is_government",
+      'label' => "Is Government",
+      'data_type' => "Boolean",
+      'html_type' => "Radio",
+      'is_active' => "1",
+      'is_view' => "1",
+      'column_name' => 'is_government',
+    );
+    $result = civicrm_api3('CustomField', 'create', $custGroupParams);
+    $cusField = array(
+      'custom_group_id' => "Identify",
+      'name' => "is_government",
+      'return' => "id",
+    );
+    $govRecord_id  = 'custom_'.civicrm_api3('CustomField', 'getvalue', $cusField);
+
+    //create uffield
+    $ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrident_tab', 'id', 'name');
+    $ufFieldParam = array(
+      'uf_group_id' => $ufGroupID,
+      'field_name' => $govRecord_id,
+      'is_active' => "1",
+      'label' => "Is Government",
+      'field_type' => "Individual",
+      'is_view' => "1",
+    );
+    $result = civicrm_api3('UFField', 'create', $ufFieldParam);
+    $groupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name');
+    CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomGroup', $groupID, 'is_reserved', '0');
+    return TRUE;
   }
 }

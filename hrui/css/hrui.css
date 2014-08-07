@@ -2,3 +2,6 @@
     width: 50%;
     word-wrap: break-word;
 }
+#crm-main-content-wrapper #contactDetails #govID span {
+    margin-right: 1%;
+}
