@@ -49,6 +49,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       return array(
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
+          'job_hours_time' => CRM_HRJob_Page_JobsTab::getJobHoursTime(),
         ),
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
@@ -166,5 +167,19 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       $formats[$currency] = CRM_Utils_Money::format(1234.56, $currency);
     }
     return $formats;
+  }
+
+  /**
+   * Get a job hours duration for full time, part time and casual.
+   */
+  static function getJobHoursTime() {
+    $job_hours_time = array();
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'option_group_id' =>'hrjob_hours_type_value',
+    ));
+    foreach ($result['values'] as $key => $val) {
+      $job_hours_time[$val['name']] = $val['value'];
+    }
+    return $job_hours_time;
   }
 }

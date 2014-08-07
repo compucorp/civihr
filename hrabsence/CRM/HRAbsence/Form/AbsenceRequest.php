@@ -42,6 +42,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public $count;
   public $_actStatusId;
   public $_mode;
+  public $_jobHoursTime;
   protected $_aid;
   protected $_cancelURL = NULL;
 
@@ -53,7 +54,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
-
+    $this->_jobHoursTime = CRM_HRJob_Page_JobsTab::getJobHoursTime();
+    $this->assign('jobHoursTime', $this->_jobHoursTime);
     $this->_aid = CRM_Utils_Request::retrieve('aid', 'Int', $this);
     $session = CRM_Core_Session::singleton();
     $this->_loginUserID = $session->get('userID');
@@ -286,7 +288,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $actStatus = CRM_Core_OptionGroup::values('activity_status');
       foreach ($resultAbsences['values'] as $key => $val) {
         $convertedDate = date("M d, Y (D)", strtotime($val['activity_date_time']));
-        if ($val['duration'] == "480") {
+        if ($val['duration'] == $this->_jobHoursTime['Full_Time']*60) {
           $converteddays = "Full Day";
           $countDays = $countDays + 1;
           if ($val['status_id'] == array_search('Completed',$actStatus)) {
@@ -297,7 +299,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             $absenceStatus = "Unapproved";
           }
         }
-        elseif ($val['duration'] == "240") {
+        elseif ($val['duration'] == $this->_jobHoursTime['Part_Time']*60) {
           $converteddays = "Half Day";
           $countDays = $countDays + 0.5;
           if ($val['status_id'] == array_search('Completed',$actStatus)) {
@@ -536,6 +538,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       'endDate' => $submitValues['end_date'],
       'empPosition' => $this->_empPosition,
       'totDays' => $totDays,
+      'jobHoursTime' => $this->_jobHoursTime,
     );
     if (!empty($appDays)) {
       $tplParams['appDays'] = $appDays;

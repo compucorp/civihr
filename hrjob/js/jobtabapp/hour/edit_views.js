@@ -19,6 +19,71 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       } else {
         this.$('.hrjob-needs-type').hide();
       }
+
+      var $hours_type = this.$("select#hrjob-hours_type"),
+        $full_time_hour = CRM.PseudoConstant.job_hours_time.Full_Time,
+        $part_time_hour = CRM.PseudoConstant.job_hours_time.Part_Time,
+        $causual_hour = CRM.PseudoConstant.job_hours_time.Casual;
+      $hours_type.change(function() {
+        $hours_types = $hours_type.val();
+        if ($hours_types == "full") {
+          $("#hrjob-hours_amount").val($full_time_hour);
+          $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
+          $("#hrjob-hours_fte").val(1.0);
+        }
+        else if ($hours_types == "part") {
+          $("#hrjob-hours_amount").val($part_time_hour);
+          $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
+          $("#hrjob-hours_fte").val(0.5);
+        }
+        else if ($hours_types == "casual") {
+          $("#hrjob-hours_amount").val($causual_hour);
+          $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Week');
+          $("#hrjob-hours_fte").val(0);
+        }
+      });
+      // Auto calculate FTE
+      var $hrs_Amount = this.$('[name=hours_amount]'),
+        $hrs_fte = this.$('[name=hours_fte]');
+      $hrs_Amount.bind("keyup", function() {
+        $total_fte = $hrs_Amount.val()/$full_time_hour;
+        $hrs_fte.val($total_fte);
+        $hrs_fte.change();
+      });
+    },
+    events: {
+      'click .standard-save': 'doSave',
+      'click .standard-reset': 'doReset',
+    },
+    doSave: function(){
+      var view = this;
+      var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
+        $hrs_amt = $("#hrjob-hours_amount").val();
+        $hrs_fte = $("#hrjob-hours_fte").val();
+      for (k in this.model.attributes) {
+        if (k === 'hours_amount') {
+          this.model.attributes[k] = $hrs_amt;
+        }
+        else if (k === 'hours_unit') {
+          this.model.attributes[k] = $hrs_unit;
+        }
+        else if (k === 'hours_fte') {
+          this.model.attributes[k] = $hrs_fte;
+        }
+      }
+      this.model.save({}, {
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert(ts('Saved'), null, 'success');
+          view.modelBackup = view.model.toJSON();
+          view.render();
+          view.triggerMethod('standard:save', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
+        }
+      });
+      return false;
     },
     toggleFields: function() {
       var view = this;
