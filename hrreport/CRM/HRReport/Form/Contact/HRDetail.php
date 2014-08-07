@@ -470,17 +470,19 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $params = array('name'=>'Initial_Join_Date');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
-    $addWhereClauses = "({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
-
+    $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
+    if ($this->_force) {
+      $whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR ({$addWhereClauses}))";
+    }
 
     if ($this->_params["hrjob_is_primary_value"] == 1) {
-      $w1 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$addWhereClauses})";
-      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 1", $w1, $this->_where);
+      $where1 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR ({$addWhereClauses}))";
+      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 1", $where1, $this->_where);
+
     }
     elseif ($this->_params["hrjob_is_primary_value"] == '0') {
-      $w2 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 0 OR {$addWhereClauses})";
-      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 1", $w2, $this->_where);
-
+      $where2 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 0 OR {$addWhereClauses})";
+      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 0", $where2, $this->_where);
     }
     else {
       $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary IN (0,1) OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) OR ({$dbAlias} IS NULL OR {$addWhereClauses}))";
