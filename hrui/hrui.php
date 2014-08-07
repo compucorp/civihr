@@ -164,21 +164,6 @@ function hrui_civicrm_postProcess( $formName, &$form ) {
 }
 
 /**
- * Implementation of hook_civicrm_validate
- */
-function hrui_civicrm_validate( $formName, &$fields, &$files, &$form) {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
-  $errors = array();
-  // validate government field if exist
-  if ($formName == 'CRM_Contact_Form_Contact' && $form->elementExists('GovernmentId')){
-    if (!empty($fields['GovernmentId']) && !preg_match("/^[a-zA-Z0-9]+$/", $fields['GovernmentId'])) {
-      $errors['GovernmentId'] = ts('Government Id should contain only alphanumeric value ');
-    }
-  }
-  return empty( $errors ) ? true : $errors;
-}
-
-/**
  * Implementation of hook_civicrm_config
  */
 function hrui_civicrm_config(&$config) {
