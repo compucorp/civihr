@@ -101,6 +101,12 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
    */
   public $job_id;
   /**
+   * NJC pay scale, JNC pay scale, Soulbury Pay Agreement
+   *
+   * @var string
+   */
+  public $pay_scale;
+  /**
    * Paid, Unpaid, etc
    *
    * @var string
@@ -183,6 +189,21 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
+        ) ,
+        'hrjob_pay_scale' => array(
+          'name' => 'pay_scale',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Job Pay Scale') ,
+          'maxlength' => 63,
+          'size' => CRM_Utils_Type::BIG,
+          'import' => true,
+          'where' => 'civicrm_hrjob_pay.pay_scale',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjob_pay_scale',
+          )
         ) ,
         'hrjob_pay_grade' => array(
           'name' => 'pay_grade',
@@ -270,6 +291,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
       self::$_fieldKeys = array(
         'id' => 'id',
         'job_id' => 'job_id',
+        'pay_scale' => 'hrjob_pay_scale',
         'pay_grade' => 'hrjob_pay_grade',
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
