@@ -155,7 +155,7 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
       'is_selector' => "0"
     );
     $result = civicrm_api3('UFField', 'create', $ufFieldParam);
-    _hrstaffdir_phone_type();
+    _hrstaffdir_phone_type($ufGroupID);
     return TRUE;
   }
 }
