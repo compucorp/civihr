@@ -32,6 +32,40 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
         value: this.model.get('pay_annualized_est') // FIXME use callback to calculate automatically
       });
       this.toggleLockMessage();
+
+      //set the default currency on Pay screen
+      var $currency = this.$("select#hrjob-pay_currency").val();
+      if ($currency == "") {
+        this.$("select#hrjob-pay_currency").val(CRM.jobTabApp.defaultCurrency);
+        $("#s2id_hrjob-pay_currency .select2-choice span").first().text(CRM.jobTabApp.defaultCurrency);
+      }
+    },
+    events: {
+      'click .standard-save': 'doSave',
+      'click .standard-reset': 'doReset',
+    },
+    doSave: function(){
+      var view = this,
+        $hrs_unit = $("#s2id_hrjob-pay_currency .select2-choice span").first().text(),
+        $hrs_amt = $("#hrjob-pay_currency").val();
+      for (k in this.model.attributes) {
+        if (k === 'pay_currency') {
+          this.model.attributes[k] = $hrs_amt;
+        }
+      }
+      this.model.save({}, {
+        success: function() {
+          HRApp.trigger('ui:unblock');
+          CRM.alert(ts('Saved'), null, 'success');
+          view.modelBackup = view.model.toJSON();
+          view.render();
+          view.triggerMethod('standard:save', view, view.model);
+        },
+        error: function() {
+          HRApp.trigger('ui:block', ts('Error while saving. Please reload and retry.'));
+        }
+      });
+      return false;
     },
     toggleLockMessage: function() {
       var locked = this.$('[name=pay_is_auto_est]').lockButton('isLocked');

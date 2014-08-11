@@ -58,6 +58,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
           'isLogEnabled'    => (bool) $config->logging,
           'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
           'currencies' => CRM_HRJob_Page_JobsTab::getCurrencyFormats(),
+          'defaultCurrency' => $config->defaultCurrency,
         ),
       );
     })
