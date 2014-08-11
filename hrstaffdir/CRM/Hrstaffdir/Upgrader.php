@@ -150,11 +150,12 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
       'label' => "Final Termination Date",
       'field_type' => "Individual",
       'is_view' => "1",
-      'visibility' => 'Public Pages and Listings',
+      'visibility' => 'Public Pages',
       'is_searchable' => "0",
       'is_selector' => "0"
     );
     $result = civicrm_api3('UFField', 'create', $ufFieldParam);
+    _hrstaffdir_phone_type();
     return TRUE;
   }
 }
