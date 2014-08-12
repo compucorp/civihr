@@ -20,20 +20,17 @@ CREATE TABLE `civicrm_hrjob` (
      `contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `position` varchar(127)    COMMENT 'Internal name for the job (for HR)',
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
-     `department` varchar(127)    ,
      `is_tied_to_funding` tinyint   DEFAULT 0 ,
      `funding_org_id` int unsigned    COMMENT 'FK to Contact ID',
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
-     `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
      `period_type` varchar(63)    COMMENT '.',
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
      `notice_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
      `notice_unit` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
      `notice_amount_employee` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
-     `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',     
-     `manager_contact_id` int unsigned    COMMENT 'FK to Contact ID',
+     `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
      `location` varchar(127)    COMMENT 'Normal place of work',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
 ,
@@ -48,9 +45,6 @@ CREATE TABLE `civicrm_hrjob` (
   ,     INDEX `index_contract_type`(
         contract_type
   )
-  ,     INDEX `index_level_type`(
-        level_type
-  )
   ,     INDEX `index_period_type`(
         period_type
   )
@@ -61,7 +55,7 @@ CREATE TABLE `civicrm_hrjob` (
         is_primary
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_funding_org_id` FOREIGN KEY (`funding_org_id`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
+,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_funding_org_id FOREIGN KEY (`funding_org_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************

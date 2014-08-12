@@ -64,23 +64,6 @@
   </index>
 
   <field>
-    <name>department</name>
-    <title>Job Department</title>
-    <type>varchar</type>
-    <length>127</length>
-    <import>true</import>
-    <pseudoconstant>
-      <optionGroupName>hrjob_department</optionGroupName>
-    </pseudoconstant>
-    <export>true</export>
-    <uniqueName>hrjob_department</uniqueName>
-  </field>
-  <index>
-    <name>index_department</name>
-    <fieldName>department</fieldName>
-  </index>
-
-  <field>
     <name>is_tied_to_funding</name>
     <type>boolean</type>
     <default>0</default>
@@ -123,24 +106,6 @@
   <index>
     <name>index_contract_type</name>
     <fieldName>contract_type</fieldName>
-  </index>
-
-  <field>
-    <name>level_type</name>
-    <title>Job Level</title>
-    <type>varchar</type>
-    <length>63</length>
-    <comment>Junior manager, senior manager, etc.</comment>
-    <pseudoconstant>
-      <optionGroupName>hrjob_level_type</optionGroupName>
-    </pseudoconstant>
-    <export>true</export>
-    <import>true</import>
-    <uniqueName>hrjob_level_type</uniqueName>
-  </field>
-  <index>
-    <name>index_level_type</name>
-    <fieldName>level_type</fieldName>
   </index>
 
   <field>
@@ -228,22 +193,6 @@
      <import>true</import> 
      <uniqueName>hrjob_notice_unit_employee</uniqueName>
    </field>
-
-  <field>
-    <name>manager_contact_id</name>
-    <title>Job Manager ID</title>
-    <type>int unsigned</type>
-    <comment>FK to Contact ID</comment>
-    <export>true</export>
-    <import>true</import>
-    <uniqueName>hrjob_manager_contact_id</uniqueName>
-  </field>
-  <foreignKey>
-    <name>manager_contact_id</name>
-    <table>civicrm_contact</table>
-    <key>id</key>
-    <onDelete>SET NULL</onDelete>
-  </foreignKey>
 
   <field>
     <name>location</name>

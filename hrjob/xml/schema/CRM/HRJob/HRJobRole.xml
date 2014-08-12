@@ -73,7 +73,7 @@
     <length>127</length>
     <export>true</export>
     <pseudoconstant>
-      <optionGroupName>hrjob_department</optionGroupName>
+      <optionGroupName>hrjob_role_department</optionGroupName>
     </pseudoconstant>
     <uniqueName>hrjob_role_department</uniqueName>
   </field>
@@ -93,7 +93,7 @@
     </pseudoconstant>
     <export>true</export>
     <import>true</import>
-    <uniqueName>hrjob_role_level_type</uniqueName>
+    <uniqueName>hrjob_level_type</uniqueName>
   </field>
   <index>
     <name>index_level_type</name>

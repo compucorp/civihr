@@ -15,7 +15,7 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>hrjob_department</name>
+      <name>hrjob_role_department</name>
       <title>Department</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
@@ -73,7 +73,7 @@
     <OptionValue>
       <label>Employee - Temporary</label>
       <value>Employee - Temporary</value>
-      <name>Employee - Temporary</name>
+      <name>Employee_Temporary</name>
       <is_default>0</is_default>
      <weight>3</weight>
       <is_optgroup>0</is_optgroup>
@@ -84,7 +84,7 @@
     <OptionValue>
       <label>Employee - Permanent</label>
       <value>Employee - Permanent</value>
-      <name>Employee - Permanent</name>
+      <name>Employee_Permanent</name>
       <is_default>0</is_default>
       <weight>4</weight>
       <is_optgroup>0</is_optgroup>
@@ -332,7 +332,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_department</option_group_name>
+      <option_group_name>hrjob_role_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>HR</label>
@@ -343,7 +343,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_department</option_group_name>
+      <option_group_name>hrjob_role_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>IT</label>
@@ -354,7 +354,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_department</option_group_name>
+      <option_group_name>hrjob_role_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Fundraising</label>
@@ -365,7 +365,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_department</option_group_name>
+      <option_group_name>hrjob_role_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Marketing</label>
@@ -376,7 +376,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_department</option_group_name>
+      <option_group_name>hrjob_role_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Employer Pension</label>

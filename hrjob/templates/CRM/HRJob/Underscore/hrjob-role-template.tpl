@@ -48,7 +48,7 @@
         entity: 'HRJobRole'
         }) %>
       {/literal}
-      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_role_department'}
       </div>
     </div>
 
@@ -85,8 +85,8 @@
       {literal}
         <%= RenderUtil.select({
         id: 'hrjob-level_type',
-       name: 'level_type',
-        entity: 'HRJob'
+        name: 'level_type',
+        entity: 'HRJobRole'
         }) %>
       {/literal}
       {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_level_type'}

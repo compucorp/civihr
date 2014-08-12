@@ -114,11 +114,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
   public $title;
   /**
    *
-   * @var string
-   */
-  public $department;
-  /**
-   *
    * @var boolean
    */
   public $is_tied_to_funding;
@@ -139,12 +134,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    * @var string
    */
   public $contract_type;
-  /**
-   * Junior manager, senior manager, etc.
-   *
-   * @var string
-   */
-  public $level_type;
   /**
    * .
    *
@@ -188,12 +177,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
    */
   public $notice_unit_employee;
   /**
-   * FK to Contact ID
-   *
-   * @var int unsigned
-   */
-  public $manager_contact_id;
-  /**
    * Normal place of work
    *
    * @var string
@@ -229,7 +212,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
       self::$_links = array(
         new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
         new CRM_Core_EntityReference(self::getTableName() , 'funding_org_id', 'civicrm_contact', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'manager_contact_id', 'civicrm_contact', 'id') ,
       );
     }
     return self::$_links;
@@ -284,21 +266,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
-        'hrjob_department' => array(
-          'name' => 'department',
-          'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Department') ,
-          'maxlength' => 127,
-          'size' => CRM_Utils_Type::HUGE,
-          'export' => true,
-          'import' => true,
-          'where' => 'civicrm_hrjob.department',
-          'headerPattern' => '',
-          'dataPattern' => '',
-          'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_department',
-          )
-        ) ,
         'is_tied_to_funding' => array(
           'name' => 'is_tied_to_funding',
           'type' => CRM_Utils_Type::T_BOOLEAN,
@@ -332,21 +299,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjob_contract_type',
-          )
-        ) ,
-        'hrjob_level_type' => array(
-          'name' => 'level_type',
-          'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Level') ,
-          'maxlength' => 63,
-          'size' => CRM_Utils_Type::BIG,
-          'export' => true,
-          'import' => true,
-          'where' => 'civicrm_hrjob.level_type',
-          'headerPattern' => '',
-          'dataPattern' => '',
-          'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_level_type',
           )
         ) ,
         'hrjob_period_type' => array(
@@ -434,17 +386,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
             'callback' => 'CRM_HRJob_SelectValues::commonUnit',
           )
         ) ,
-        'hrjob_manager_contact_id' => array(
-          'name' => 'manager_contact_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Manager ID') ,
-          'export' => true,
-          'import' => true,
-          'where' => 'civicrm_hrjob.manager_contact_id',
-          'headerPattern' => '',
-          'dataPattern' => '',
-          'FKClassName' => 'CRM_Contact_DAO_Contact',
-        ) ,
         'hrjob_location' => array(
           'name' => 'location',
           'type' => CRM_Utils_Type::T_STRING,
@@ -489,12 +430,10 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'contact_id' => 'hrjob_contact_id',
         'position' => 'hrjob_position',
         'title' => 'hrjob_title',
-        'department' => 'hrjob_department',
         'is_tied_to_funding' => 'is_tied_to_funding',
         'funding_org_id' => 'hrjob_funding_org_id',
         'funding_notes' => 'funding_notes',
         'contract_type' => 'hrjob_contract_type',
-        'level_type' => 'hrjob_level_type',
         'period_type' => 'hrjob_period_type',
         'period_start_date' => 'hrjob_period_start_date',
         'period_end_date' => 'hrjob_period_end_date',
@@ -502,7 +441,6 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'notice_unit' => 'hrjob_notice_unit',
         'notice_amount_employee' => 'hrjob_notice_amount_employee',
         'notice_unit_employee' => 'hrjob_notice_unit_employee',
-        'manager_contact_id' => 'hrjob_manager_contact_id',
         'location' => 'hrjob_location',
         'is_primary' => 'hrjob_is_primary',
       );

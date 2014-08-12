@@ -203,9 +203,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'hrjob_title'         => array(),
           'hrjob_contract_type' => array(),
-          'hrjob_level_type'    => array(),
           'hrjob_period_type'   => array(),
-          'hrjob_department'    => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
           'hrjob_period_start_date' => array(),
@@ -216,9 +214,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'hrjob_title'         => array(),
           'hrjob_contract_type' => array(),
-          'hrjob_level_type'    => array(),
           'hrjob_period_type'   => array(),
-          'hrjob_department'    => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
           'hrjob_period_start_date' => array(),
@@ -376,10 +372,12 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'hrjob_role_department' => array(),
+          'hrjob_role_level_type' => array(),
         ),
         'filters' =>
         array(
           'hrjob_role_department' => array(),
+          'hrjob_role_level_type' => array(),
         ),
         'grouping' => array('job-fields' => 'Job'),
       ),
@@ -389,6 +387,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
   }
 
   function from() {
+
     $this->_from = "
       FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       LEFT JOIN  civicrm_phone {$this->_aliases['civicrm_phone']}
@@ -404,22 +403,19 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
              ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
       LEFT JOIN civicrm_hrjob_pension {$this->_aliases['civicrm_hrjob_pension']}
              ON ({$this->_aliases['civicrm_hrjob_pension']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_contact manager
-             ON manager.id = ({$this->_aliases['civicrm_hrjob']}.manager_contact_id)
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_provider']}
-          ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
+             ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
-          ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance";
-
+             ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance
+      LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+             ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+      LEFT JOIN civicrm_contact manager
+             ON manager.id = ({$this->_aliases['civicrm_hrjob_role']}.manager_contact_id)";
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (!empty($field['required']) || !empty($this->_params['fields'][$fieldName])) {
-            if ($tableName == 'civicrm_hrjob_role') {
-              $this->_from .= " LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-               ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
-            }
-            elseif ($tableName == 'civicrm_hrjob_leave') {
+            if ($tableName == 'civicrm_hrjob_leave') {
               $this->_from .= " LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
                ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
             }
@@ -496,6 +492,10 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     else {
       $this->_where .= " AND {$where}";
     }
+  }
+
+function groupBy() {
+    $this->_groupBy = "GROUP BY {$this->_aliases['civicrm_contact']}.id";
   }
 
   function alterDisplay(&$rows) {
