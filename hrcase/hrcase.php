@@ -304,6 +304,30 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
   }
 }
 
+function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
+  if ($objectName == 'Activity' && isset($objectRef->case_id)) {
+    $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
+    $hrjob = civicrm_api3('HRJob', 'get', array( 'return' => array("notice_amount", "notice_unit"),'contact_id' => $contact_id[1],'is_primary' => 1));
+    foreach($hrjob['values'] as $key=>$val) {
+      $notice_amt = $val['notice_amount'];
+      $notice_unit = $val['notice_unit'];
+    }
+    if (isset($notice_amt)) {
+      $revoke = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Revoke access to databases"));
+      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID"));
+      $date = strtotime($objectRef->activity_date_time);
+      if ($objectRef->activity_type_id == $revoke['value']) {
+        $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit}", $date));
+        civicrm_api3('Activity', 'create', array('id' => $objectRef->id ,'activity_date_time' => $date));
+      }
+      if ($objectRef->activity_type_id == $block['value']) {
+        $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit} +1 day", $date));
+        civicrm_api3('Activity', 'create', array('id' => $objectRef->id ,'activity_date_time' => $date));
+      }
+    }
+  }
+}
+
 /**
  * Implementation of hook_civicrm_caseTypes
  *

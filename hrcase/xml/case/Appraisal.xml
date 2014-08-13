@@ -61,19 +61,19 @@
       <ActivityTypes>
         <ActivityType>
           <name>Prepare formats</name>
-          <status>Completed</status>
+	  <reference_offset>0</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Print formats</name>
-          <status>Completed</status>
+          <reference_offset>0</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Collate and print goals</name>
-	  <status>Completed</status>
+          <reference_offset>0</reference_offset>
         </ActivityType>
 	<ActivityType>
-          <name>Prepare and email schedule</name>  
-	  <status>Completed</status>
+          <name>Prepare and email schedule</name>
+          <reference_offset>0</reference_offset>
         </ActivityType>
 	<ActivityType>
           <name>Follow up on progress</name>
