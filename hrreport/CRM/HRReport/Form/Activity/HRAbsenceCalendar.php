@@ -215,7 +215,7 @@ cac.record_type_id = {$targetValue} ";
             continue;
           }
           if (array_key_exists("{$fieldName}_value", $this->_params)) {
-            if (($field['name'] == 'activity_type_id' || $field['name'] == 'status_id') && count($this->_params["{$fieldName}_value"])) {
+            if ($field['name'] == 'activity_type_id' && count($this->_params["{$fieldName}_value"])) {
               $sqlOp = $this->getSQLOperator(CRM_Utils_Array::value("{$fieldName}_op", $this->_params));
               $clause = "absence.{$fieldName} {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
             }
@@ -244,6 +244,10 @@ cac.record_type_id = {$targetValue} ";
             else {
               $clause = NULL;
             }
+          }
+          if ($field['name'] == 'status_id') {
+            $status = CRM_Utils_Array::value("{$fieldName}_value", $this->_params);
+            $clause = "request.status_id IN (". implode(',',$status).")";
           }
           if (!empty($clause)) {
             $clauses[] = $clause;
@@ -425,7 +429,7 @@ MONTH(request.activity_date_time) as month,
 DAY(request.activity_date_time) as day,
 absence.id as aid,
 absence.activity_type_id as ati,
-absence.status_id status,
+request.status_id status,
 cac.contact_id as contact_id,
 request.source_record_id,
 cc.sort_name as contact_name";

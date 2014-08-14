@@ -683,16 +683,28 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
         CRM_Utils_Array::value("absence_date_from", $this->_params),
         CRM_Utils_Array::value("absence_date_to", $this->_params)
       );
+      $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
+      $activityStatusId = CRM_Utils_Array::key('Rejected', $activityStatus);
+      $status = CRM_Utils_Array::value("status_id_value", $this->_params);
+      $clause = " AND status_id IN (". implode(',',$status).")";
 
-      $sql = "
-SELECT SUM(duration) / ( 8 *60 ) as qty,
-source_record_id ,
-Min(activity_date_time) AS start_date,
-Max(activity_date_time) AS end_date
-FROM civicrm_activity
-WHERE source_record_id IS NOT NULL AND
-activity_type_id = {$activityTypeID}
-GROUP BY source_record_id";
+      $sql = "SELECT SUM(duration) / ( 8 *60 ) as qty,
+        source_record_id ,
+        Min(activity_date_time) AS start_date,
+        Max(activity_date_time) AS end_date
+        FROM civicrm_activity
+        WHERE source_record_id  IN (select id from civicrm_activity where source_record_id IS  NULL AND status_id NOT IN (2) {$clause})  AND  activity_type_id = 51
+        GROUP BY source_record_id
+
+        UNION
+
+        SELECT SUM(CASE WHEN (activity_type_id = 51 AND status_id NOT IN ({$activityStatusId})) THEN duration else NULL end) / ( 8 *60 ) as qty,
+        source_record_id ,
+        Min(activity_date_time) AS start_date,
+        Max(activity_date_time) AS end_date
+        FROM civicrm_activity
+        WHERE source_record_id  IN (select id from civicrm_activity where source_record_id IS  NULL AND status_id IN (2) {$clause}) AND  activity_type_id = 51
+        GROUP BY source_record_id";
 
       if ($durationFromDate && $durationToDate) {
         $sql.= "
