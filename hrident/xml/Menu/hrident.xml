@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/contact/government/detail</path>
+    <page_callback>CRM_HRIdent_Page_HRIdent::getGovernmentID</page_callback>
+    <path_arguments>cid=%%id%%</path_arguments>
+    <title></title>
+    <is_public>true</is_public>
+  </item>
+</menu>
