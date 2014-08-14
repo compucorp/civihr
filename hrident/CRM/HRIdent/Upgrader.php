@@ -207,6 +207,11 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     $result = civicrm_api3('UFField', 'create', $ufFieldParam);
     $groupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Identify', 'id', 'name');
     CRM_Core_DAO::setFieldValue('CRM_Core_DAO_CustomGroup', $groupID, 'is_reserved', '0');
+
+    //HR-355 Change the title of option group to identify type
+    $optgroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name');
+    CRM_Core_DAO::setFieldValue('CRM_Core_DAO_OptionGroup', $optgroupID, 'title', 'Government ID');
+
     return TRUE;
   }
 }

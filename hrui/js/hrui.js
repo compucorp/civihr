@@ -1,5 +1,18 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
+
+  function callGovern() {
+    $.ajax({
+      url: CRM.url('civicrm/contact/government/detail'),
+      data: {cid: CRM.cid},
+      type: 'GET',
+      dataType: "json",
+    }).done(function(text) {
+      if (text['govTypeNumber']) {
+        $('#govValID').html(text['govType']+" - "+text['govTypeNumber']);
+      }
+    });
+  }
   $(document).on('crmLoad', function(e) {
     //change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
@@ -11,24 +24,22 @@
       }
 
       //add government field
-      if (CRM.identEnable) {
-        var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
+      var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
+      if (CRM.cid && CRM.hideGId) {
+        $('#row-custom_'+CRM.hideGId, e.target).hide();
         if ($('div#government').length < 1) {
           $(govfield).appendTo($('.crm-contact_type_label').parent('div'));
         }
-        if (CRM.govType &&  CRM.govTypeNumber) {
-	  $('#govValID').html(CRM.govType+" - "+CRM.govTypeNumber);
-        }
-        $('#govID').insertAfter($('#nick_name').parent('td')).show();
-        $( "#govID" ).wrap( "<td id='govtfield' colspan='3'></td>");
+	callGovern();
       }
+      $('#govID').insertAfter($('#nick_name').parent('td')).show();
+      $("#govID").wrap( "<td id='govtfield' colspan='3'></td>");
 
       // Hide current employer and job title
       // Contact summary screen:
       $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
       // Inline edit form
       $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title', e.target).closest('div.crm-summary-row').hide();
-      $('#row-custom_'+CRM.hideGovID, e.target).hide();
 
       // Contact edit screen
       $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
