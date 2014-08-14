@@ -109,3 +109,8 @@ div.hrjob-tree-items {
 .hrjob-container .hrjob-tree-region .hrjob-tree-items dt {
     padding-bottom: 10px;
 }
+
+/* Radio button on job tab for pay */
+.hrjob-container .hrjob-main-region .payGrade {
+    margin: 6px 6px 6px 20px;
+}
