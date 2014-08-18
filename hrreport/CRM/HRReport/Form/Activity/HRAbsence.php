@@ -685,6 +685,11 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
       );
       $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
       $activityStatusId = CRM_Utils_Array::key('Rejected', $activityStatus);
+      $completedActivityId = CRM_Utils_Array::key('Completed', $activityStatus);
+      $result = civicrm_api3('OptionValue', 'get', array(
+        'label' => "absence",
+      ));
+      $activityId = $result['values'][$result['id']]['value'];
       $status = CRM_Utils_Array::value("status_id_value", $this->_params);
       $clause = " AND status_id IN (". implode(',',$status).")";
 
@@ -693,7 +698,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
         Min(activity_date_time) AS start_date,
         Max(activity_date_time) AS end_date
         FROM civicrm_activity
-        WHERE source_record_id  IN (select id from civicrm_activity where source_record_id IS  NULL AND status_id NOT IN (2) {$clause})  AND  activity_type_id = 51
+        WHERE source_record_id IN (select id from civicrm_activity where source_record_id IS NULL AND status_id NOT IN ({$completedActivityId}) {$clause}) AND activity_type_id = {$activityId}
         GROUP BY source_record_id
 
         UNION
@@ -703,7 +708,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
         Min(activity_date_time) AS start_date,
         Max(activity_date_time) AS end_date
         FROM civicrm_activity
-        WHERE source_record_id  IN (select id from civicrm_activity where source_record_id IS  NULL AND status_id IN (2) {$clause}) AND  activity_type_id = 51
+        WHERE source_record_id IN (select id from civicrm_activity where source_record_id IS NULL AND status_id IN ({$completedActivityId}) {$clause}) AND activity_type_id = {$activityId}
         GROUP BY source_record_id";
 
       if ($durationFromDate && $durationToDate) {

@@ -496,6 +496,19 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     );
     civicrm_api3('message_template', 'create', $msg_params);
 
+    //Update absence status
+    $absenceType = CRM_HRAbsence_BAO_HRAbsenceType::getActivityTypes();
+    $absenceTypeIds = implode(",",array_flip($absenceType));
+    $selectQuery = "SELECT id, status_id FROM civicrm_activity WHERE activity_type_id IN ({$absenceTypeIds})";
+    $dao = CRM_Core_DAO::executeQuery($selectQuery);
+    $absenceStatus = array();
+    while ($dao->fetch()) {
+      $absenceStatus[$dao->id] = $dao->status_id;
+    }
+    foreach($absenceStatus as $k => $v) {
+      $updateQuery = "UPDATE civicrm_activity SET status_id = {$v} WHERE source_record_id = {$k}";
+    }
+
     return TRUE;
   }
 }
