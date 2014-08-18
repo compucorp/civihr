@@ -703,7 +703,7 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
 
         UNION
 
-        SELECT SUM(CASE WHEN (activity_type_id = 51 AND status_id NOT IN ({$activityStatusId})) THEN duration else NULL end) / ( 8 *60 ) as qty,
+        SELECT SUM(CASE WHEN (activity_type_id = {$activityId} AND status_id NOT IN ({$activityStatusId})) THEN duration else NULL end) / ( 8 *60 ) as qty,
         source_record_id ,
         Min(activity_date_time) AS start_date,
         Max(activity_date_time) AS end_date
