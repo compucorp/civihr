@@ -53,7 +53,7 @@ class CRM_HRIdent_Page_HRIdent {
   /**
    *Retrieve Name, Type and Id of record contain government value from customvalue table
    */
-  function retreiveContactFieldValue($contactID) {
+  static function retreiveContactFieldValue($contactID) {
     $govInfo = array();
     $govFieldId = self::retreiveContactFieldId('Identify');
     if (!empty($govFieldId) && $contactID) {
@@ -74,7 +74,7 @@ class CRM_HRIdent_Page_HRIdent {
   /**
    *Return associated array name/id pair of custom field
    */
-  function retreiveContactFieldId($customGroupID) {
+  static function retreiveContactFieldId($customGroupID) {
     $param =  array(
       'custom_group_id' => $customGroupID,
       'return' => "name",
