@@ -8,14 +8,29 @@ class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
 
   function getTemplateFileName() {
     $profID = CRM_Utils_Request::retrieve('gid', 'String', $this);
-    $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $profID,
-                                                  $this->_map, FALSE, 0
-                                                  );
+
+    $this->_params['contact_type'] = 'Individual';
+
+    $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $profID, $this->_map, FALSE, 0);
+    $extraWhereClause = NULL;
+    $grpParams = array('name'=>'HRJob_Summary');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $grpParams, $cGrp);
+    $fdParams = array('name'=>'Final_Termination_Date');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $fdParams, $fdField);
+    $idParams = array('name'=>'Initial_Join_Date');
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $idParams, $idField);
+
+    $extraWhereClause = " ({$cGrp['table_name']}.{$fdField['column_name']} > now() OR {$cGrp['table_name']}.{$fdField['column_name']} IS NULL) AND
+      (civicrm_hrjob.is_primary = 1 OR
+      (civicrm_hrjob.is_primary IS NULL AND {$cGrp['table_name']}.{$idField['column_name']} IS NOT NULL AND
+      {$cGrp['table_name']}.{$idField['column_name']} <= CURDATE()))";
+
     $column = $columnHeaders = $selector->getColumnHeaders();
-    $rows = $selector->getRows(4,0,0,NULL);
+    $rows = $selector->getRows(4, 0, 0,NULL, NULL, $extraWhereClause);
+
     CRM_Utils_Hook::searchColumns('profile', $columnHeaders, $rows, $this);
     $this->assign('aaData',json_encode($rows));
-    
+
     /* to bring column names in [
 			{ "sTitle": "Engine" },
 			{ "sTitle": "Browser" },] format*/

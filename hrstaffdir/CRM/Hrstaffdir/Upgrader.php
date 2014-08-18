@@ -136,4 +136,26 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
     }
     return TRUE;
   } // */
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Applying update 1400');
+    $finalTermDate = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'HRJob_Summary','name' => 'Final_Termination_Date', 'return' => 'id'));
+
+    //create uffield
+    $ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name');
+    $ufFieldParam = array(
+      'uf_group_id' => $ufGroupID,
+      'field_name' => "custom_{$finalTermDate}",
+      'is_active' => "1",
+      'label' => "Final Termination Date",
+      'field_type' => "Individual",
+      'is_view' => "1",
+      'visibility' => 'Public Pages',
+      'is_searchable' => "0",
+      'is_selector' => "0"
+    );
+    $result = civicrm_api3('UFField', 'create', $ufFieldParam);
+    _hrstaffdir_phone_type($ufGroupID);
+    return TRUE;
+  }
 }

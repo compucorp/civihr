@@ -211,6 +211,22 @@
       <is_multi_summary>0</is_multi_summary>
       <profile_group_name>Directory</profile_group_name>
     </ProfileField>
+    <ProfileField>
+      <field_name>custom.civicrm_value_job_summary_10.final_termination_date_57</field_name>
+      <is_active>1</is_active>
+      <is_view>1</is_view>
+      <is_required>0</is_required>
+      <weight>12</weight>
+      <help_post></help_post>
+      <help_pre></help_pre>
+      <visibility>Public Pages and Listings</visibility>
+      <in_selector>0</in_selector>
+      <is_searchable>0</is_searchable>
+      <label>Final Termination Date</label>
+      <field_type>Individual</field_type>
+      <is_multi_summary>0</is_multi_summary>
+      <profile_group_name>Directory</profile_group_name>
+    </ProfileField>
   </ProfileFields>
   <ProfileJoins>
     <ProfileJoin>

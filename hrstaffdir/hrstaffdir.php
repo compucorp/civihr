@@ -119,6 +119,43 @@ function hrstaffdir_civicrm_install() {
 }
 
 /**
+ * Create Work phone and Work phone mobile profile fields for given profile ID
+ */
+function _hrstaffdir_phone_type($ufGroupID) {
+  $location = civicrm_api3('LocationType', 'getsingle', array('return' => "id", 'name' => "Work"));
+  $phoneTypes = CRM_Core_OptionGroup::values('phone_type');
+  $phone = array(
+    array_search('Phone',$phoneTypes) => 'Work phone',
+    array_search('Mobile',$phoneTypes) => 'Work mobile phone',
+  );
+  foreach ( $phone as $name => $label ) {
+    $params = array(
+      'uf_group_id' => $ufGroupID,
+      'is_active' => '1',
+      'label' => $label,
+      'field_type' => 'Contact',
+      'location_type_id' => $location['id'],
+      'field_name' => 'phone',
+      'phone_type_id' => $name,
+      'visibility' => 'Public Pages',
+      'is_searchable' => '0',
+      'is_selector' => '1'
+    );
+    civicrm_api3('UFField', 'create', $params);
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_postInstall
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ */
+function hrstaffdir_civicrm_postInstall() {
+  $ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name');
+  _hrstaffdir_phone_type($ufGroupID);
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function hrstaffdir_civicrm_uninstall() {
