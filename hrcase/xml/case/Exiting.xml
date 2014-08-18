@@ -55,7 +55,7 @@
       <ActivityTypes>
         <ActivityType>
           <name>Schedule Exit Interview</name>
-          <status>Completed</status>
+          <reference_offset>0</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Get "No Dues" certification</name>
@@ -72,8 +72,6 @@
         </ActivityType>
 	<ActivityType>
           <name>Block work email ID</name>
-	  <reference_offset>1</reference_offset>
-	  <reference_select>newest</reference_select>
         </ActivityType>	
       </ActivityTypes>
     </ActivitySet>
