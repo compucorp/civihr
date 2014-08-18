@@ -139,7 +139,7 @@ function _hrstaffdir_phone_type($ufGroupID) {
       'phone_type_id' => $name,
       'visibility' => 'Public Pages',
       'is_searchable' => '0',
-      'is_selector' => '1'
+      'in_selector' => '1'
     );
     civicrm_api3('UFField', 'create', $params);
   }
