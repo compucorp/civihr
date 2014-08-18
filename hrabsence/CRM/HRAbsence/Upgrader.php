@@ -507,6 +507,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
     }
     foreach($absenceStatus as $k => $v) {
       $updateQuery = "UPDATE civicrm_activity SET status_id = {$v} WHERE source_record_id = {$k}";
+      CRM_Core_DAO::executeQuery($updateQuery);
     }
 
     return TRUE;
