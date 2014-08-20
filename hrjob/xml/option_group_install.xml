@@ -62,12 +62,6 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
-    <OptionGroup>
-      <name>hrjob_hours_type_value</name>
-      <title>Hours Type Value</title>
-      <is_reserved>1</is_reserved>
-      <is_active>1</is_active>
-    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -182,7 +176,7 @@
     </OptionValue>
     <OptionValue>
       <label>Full Time</label>
-      <value>full</value>
+      <value>8</value>
       <name>Full_Time</name>
       <is_default>0</is_default>
       <weight>1</weight>
@@ -193,7 +187,7 @@
     </OptionValue>
     <OptionValue>
       <label>Part Time</label>
-      <value>part</value>
+      <value>4</value>
       <name>Part_Time</name>
       <is_default>0</is_default>
       <weight>2</weight>
@@ -204,7 +198,7 @@
     </OptionValue>
     <OptionValue>
       <label>Casual</label>
-      <value>casual</value>
+      <value>0</value>
       <name>Casual</name>
       <is_default>0</is_default>
       <weight>3</weight>
@@ -388,39 +382,6 @@
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrjob_pension_type</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Full Time</label>
-      <value>8</value>
-      <name>Full_Time</name>
-      <is_default>0</is_default>
-      <weight>1</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_hours_type_value</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Part Time</label>
-      <value>4</value>
-      <name>Part_Time</name>
-      <is_default>0</is_default>
-      <weight>2</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_hours_type_value</option_group_name>
-    </OptionValue>
-    <OptionValue>
-      <label>Casual</label>
-      <value>0</value>
-      <name>Casual</name>
-      <is_default>0</is_default>
-      <weight>3</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>0</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrjob_hours_type_value</option_group_name>
     </OptionValue>
   </OptionValues>
 </CustomData>

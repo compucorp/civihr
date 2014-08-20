@@ -28,8 +28,8 @@ $filters = array(
   array('display_name_op'  => 'has', 'display_name_value'  => 'LifeOrg213'),
 
   // HRJobHour
-  array('hrjob_hours_type_op'   => 'in',    'hrjob_hours_type_value'   => 'part'),
-  array('hrjob_hours_type_op'   => 'notin', 'hrjob_hours_type_value'   => 'full,casual'),
+  array('hrjob_hours_type_op'   => 'in',    'hrjob_hours_type'   => '4'),
+  array('hrjob_hours_type_op'   => 'notin', 'hrjob_hours_type'   => '8,0'),
   array('hrjob_hours_amount_op' => 'gte',   'hrjob_hours_amount_value' => '40'),
   array('hrjob_hours_unit_op'   => 'in',    'hrjob_hours_unit_value'   => 'Month'),
 

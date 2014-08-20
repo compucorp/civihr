@@ -26,17 +26,17 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         $causual_hour = CRM.PseudoConstant.job_hours_time.Casual;
       $hours_type.change(function() {
         $hours_types = $hours_type.val();
-        if ($hours_types == "full") {
+        if ($hours_types == $full_time_hour) {
           $("#hrjob-hours_amount").val($full_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
           $("#hrjob-hours_fte").val(1.0);
         }
-        else if ($hours_types == "part") {
+        else if ($hours_types == $part_time_hour) {
           $("#hrjob-hours_amount").val($part_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
           $("#hrjob-hours_fte").val(0.5);
         }
-        else if ($hours_types == "casual") {
+        else if ($hours_types == $causual_hour) {
           $("#hrjob-hours_amount").val($causual_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Week');
           $("#hrjob-hours_fte").val(0);

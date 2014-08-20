@@ -304,9 +304,9 @@
   </notice_unit>
 
   <hours_type>
-    <item>full</item>
-    <item>part</item>
-    <item>casual</item>
+    <item>8</item>
+    <item>4</item>
+    <item>0</item>
   </hours_type>
 
   <hours_amount>

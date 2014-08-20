@@ -134,7 +134,7 @@
     <civicrm_hrjob_hour
         id="1"
         job_id="1"
-        hours_type="casual"
+        hours_type="0"
         hours_amount="40"
         hours_unit="Week"
         hours_fte="2"
@@ -230,7 +230,7 @@
     <civicrm_hrjob_hour
         id="2"
         job_id="2"
-        hours_type="casual"
+        hours_type="0"
         hours_amount="80"
         hours_unit="Week"
         hours_fte="2"
@@ -311,7 +311,7 @@
     <civicrm_hrjob_hour
         id="3"
         job_id="3"
-        hours_type="full"
+        hours_type="8"
         hours_amount="120"
         hours_unit="Week"
         hours_fte="3"
@@ -405,7 +405,7 @@
     <civicrm_hrjob_hour
         id="4"
         job_id="4"
-        hours_type="part"
+        hours_type="4"
         hours_amount="40"
         hours_unit="Week"
         hours_fte="1"

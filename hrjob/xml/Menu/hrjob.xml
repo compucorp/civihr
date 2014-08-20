@@ -24,4 +24,10 @@
     <title>FileDelete</title>
     <access_arguments>edit HRJobs</access_arguments>
   </item>
+  <item>
+    <path>civicrm/hour/editoption</path>
+    <page_callback>CRM_HRJob_Form_EditHourOption</page_callback>
+    <title>Hours Type Option</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
 </menu>

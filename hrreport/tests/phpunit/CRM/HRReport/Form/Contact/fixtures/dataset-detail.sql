@@ -159,17 +159,17 @@ INSERT INTO `civicrm_hrjob_health` (`id`, `job_id`, `provider`, `plan_type`, `de
 --
 
 INSERT INTO `civicrm_hrjob_hour` (`id`, `job_id`, `hours_type`, `hours_amount`, `hours_unit`, `hours_fte`) VALUES
-(1,  1,  'casual', 32.00, 'Week', 1.10),
-(2,  2,  'casual', 16.00, 'Day',  0.50),
-(3,  9,  'full',   8.00,  'Year', 1.00),
-(4,  12, 'full',   16.00, 'Year', 0.75),
-(5,  13, 'full',   8.00,  'Year', 1.00),
-(6,  16, 'part',   32.00, 'Day',  1.00),
-(7,  20, 'casual', 40.00, 'Day',  0.66),
-(8,  24, 'part',   32.00, 'Week', 1.00),
-(9,  26, 'full',   24.00, 'Day',  1.00),
-(10, 29, 'casual', 40.00, 'Week', 0.75),
-(11, 31, 'casual', 16.00, 'Day',  1.00);
+(1,  1,  0, 32.00, 'Week', 1.10),
+(2,  2,  0, 16.00, 'Day',  0.50),
+(3,  9,  8,   8.00,  'Year', 1.00),
+(4,  12, 8,   16.00, 'Year', 0.75),
+(5,  13, 8,   8.00,  'Year', 1.00),
+(6,  16, 4,   32.00, 'Day',  1.00),
+(7,  20, 0, 40.00, 'Day',  0.66),
+(8,  24, 4,   32.00, 'Week', 1.00),
+(9,  26, 8,   24.00, 'Day',  1.00),
+(10, 29, 0, 40.00, 'Week', 0.75),
+(11, 31, 0, 16.00, 'Day',  1.00);
 
 --
 -- Dumping data for table `civicrm_hrjob_leave`
