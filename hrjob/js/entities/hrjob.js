@@ -102,7 +102,9 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       hours_type: '',
       hours_amount: '',
       hours_unit: '',
-      hours_fte: ''
+      hours_fte: '',
+      fte_num: '',
+      fte_denom: ''
     }
   });
 
