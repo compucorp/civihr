@@ -28,18 +28,21 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         if ($hours_types == $full_time_hour) {
           $("#hrjob-hours_amount").val($full_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
+          $("#hrjob-hours_unit").val('Day');
           $("#hrjob-fte_num").val('1');
           $("#hrjob-fte_denom").val('1');
         }
         else if ($hours_types == $part_time_hour) {
           $("#hrjob-hours_amount").val($part_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
+          $("#hrjob-hours_unit").val('Day');
           $("#hrjob-fte_num").val('1');
           $("#hrjob-fte_denom").val('2');
         }
         else if ($hours_types == $causual_hour) {
           $("#hrjob-hours_amount").val($causual_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Week');
+          $("#hrjob-hours_unit").val('Week');
           $("#hrjob-fte_num").val('0');
           $("#hrjob-fte_denom").val('1');
         }
@@ -48,20 +51,22 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       var $hrs_Amount = this.$('[name=hours_amount]'),
         $fte_num = this.$('[name=fte_num]'),
         $hrs_unit = this.$('[name=hours_unit]'),
-        $fte_denom = this.$('[name=fte_denom]');
+        $fte_denom = this.$('[name=fte_denom]'),
+        $hour_type = this.$('[name=hours_type]');
       function changeVal() {
         var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
+        //HR-396 - Calucation for denominator value from hour type option group
         if ($hrs_unit == 'Day') {
-          $days = 8;
+          $days = $hour_type.val();
         }
         else if ($hrs_unit == 'Week') {
-          $days = 40;
+          $days = $hour_type.val() * 5;
         }
         else if ($hrs_unit == 'Month') {
-          $days = 880;
+          $days = $hour_type.val() * 110;
         }
         else if ($hrs_unit == 'Year') {
-          $days = 10560;
+          $days = $hour_type.val() * 1320;
         }
         $fte_num.val($hrs_Amount.val());
         $fte_denom.val($days);
