@@ -88,4 +88,26 @@
     <import>true</import>
     <uniqueName>hrjob_hours_fte</uniqueName>
   </field>
+
+  <field>
+    <name>fte_num</name>
+    <title>Job Full-Time Numerator Equivalence</title>
+    <type>int unsigned</type>
+    <default>1</default>
+    <comment>.</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hours_fte_num</uniqueName>
+  </field>
+
+  <field>
+    <name>fte_denom</name>
+    <title>Job Full-Time Denominator Equivalence</title>
+    <type>int unsigned</type>
+    <default>1</default>
+    <comment>.</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_fte_denom</uniqueName>
+  </field>
 </table>

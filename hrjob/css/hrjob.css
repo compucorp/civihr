@@ -72,6 +72,11 @@ select#hrjob-hours_unit,
 input#hrjob-pay_annualized_est{
     width: 15em;
 }
+input#hrjob-fte_denom,
+input#hrjob-fte_num {
+    width: 4em;
+}
+
 .hrjob-duplicate-notice {
     text-align: center;
 }

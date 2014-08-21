@@ -19,7 +19,6 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       } else {
         this.$('.hrjob-needs-type').hide();
       }
-
       var $hours_type = this.$("select#hrjob-hours_type"),
         $full_time_hour = CRM.PseudoConstant.job_hours_time.Full_Time,
         $part_time_hour = CRM.PseudoConstant.job_hours_time.Part_Time,
@@ -29,26 +28,55 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         if ($hours_types == $full_time_hour) {
           $("#hrjob-hours_amount").val($full_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
-          $("#hrjob-hours_fte").val(1.0);
+          $("#hrjob-hours_unit").val('Day');
+          $("#hrjob-fte_num").val('1');
+          $("#hrjob-fte_denom").val('1');
         }
         else if ($hours_types == $part_time_hour) {
           $("#hrjob-hours_amount").val($part_time_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
-          $("#hrjob-hours_fte").val(0.5);
+          $("#hrjob-hours_unit").val('Day');
+          $("#hrjob-fte_num").val('1');
+          $("#hrjob-fte_denom").val('2');
         }
         else if ($hours_types == $causual_hour) {
           $("#hrjob-hours_amount").val($causual_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Week');
-          $("#hrjob-hours_fte").val(0);
+          $("#hrjob-hours_unit").val('Week');
+          $("#hrjob-fte_num").val('0');
+          $("#hrjob-fte_denom").val('1');
         }
       });
-      // Auto calculate FTE
+
       var $hrs_Amount = this.$('[name=hours_amount]'),
-        $hrs_fte = this.$('[name=hours_fte]');
+        $fte_num = this.$('[name=fte_num]'),
+        $hrs_unit = this.$('[name=hours_unit]'),
+        $fte_denom = this.$('[name=fte_denom]'),
+        $hour_type = this.$('[name=hours_type]');
+      function changeVal() {
+        var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
+        //HR-396 - Calucation for denominator value from hour type option group
+        if ($hrs_unit == 'Day') {
+          $days = $hour_type.val();
+        }
+        else if ($hrs_unit == 'Week') {
+          $days = $hour_type.val() * 5;
+        }
+        else if ($hrs_unit == 'Month') {
+          $days = $hour_type.val() * 110;
+        }
+        else if ($hrs_unit == 'Year') {
+          $days = $hour_type.val() * 1320;
+        }
+        $fte_num.val($hrs_Amount.val());
+        $fte_denom.val($days);
+      }
       $hrs_Amount.bind("keyup", function() {
-        $total_fte = $hrs_Amount.val()/$full_time_hour;
-        $hrs_fte.val($total_fte);
-        $hrs_fte.change();
+        changeVal();
+      });
+
+      $hrs_unit.bind("change", function() {
+        changeVal();
       });
     },
     events: {
@@ -57,9 +85,25 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
     },
     doSave: function(){
       var view = this;
+      //check whether form is validate
+      if (!this.$('form').valid() || !view.model.isValid()) {
+        return false;
+      }
       var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
         $hrs_amt = $("#hrjob-hours_amount").val();
-        $hrs_fte = $("#hrjob-hours_fte").val();
+        $fte_num = $("#hrjob-fte_num").val();
+        $fte_denom = $("#hrjob-fte_denom").val();
+        $total_fte = $fte_num/$fte_denom;
+
+      // Reduce a fraction by finding the Greatest Common Divisor and dividing by it.
+      function reduce(numerator,denominator) {
+        var gcd = function gcd(a,b) {
+          return b ? gcd(b, a%b) : a;
+        };
+        gcd = gcd(numerator,denominator);
+        return [numerator/gcd, denominator/gcd];
+      }
+      $lowfraction = reduce ($fte_num,$fte_denom);
       for (k in this.model.attributes) {
         if (k === 'hours_amount') {
           this.model.attributes[k] = $hrs_amt;
@@ -68,7 +112,13 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
           this.model.attributes[k] = $hrs_unit;
         }
         else if (k === 'hours_fte') {
-          this.model.attributes[k] = $hrs_fte;
+          this.model.attributes[k] = $total_fte;
+        }
+        else if (k === 'fte_num') {
+          this.model.attributes[k] = $lowfraction[0];
+        }
+        else if (k === 'fte_denom') {
+          this.model.attributes[k] = $lowfraction[1];
         }
       }
       this.model.save({}, {
@@ -112,10 +162,14 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         hours_unit: {
           required: true
         },
-        hours_fte: {
+        fte_num: {
           required: true,
-          number: true,
-          range: [0, 2]
+          digits: true
+        },
+        fte_denom: {
+          required: true,
+          digits: true,
+          min:1
         }
       });
     }

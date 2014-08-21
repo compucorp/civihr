@@ -125,6 +125,18 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
    */
   public $hours_fte;
   /**
+   * .
+   *
+   * @var int unsigned
+   */
+  public $fte_num;
+  /**
+   * .
+   *
+   * @var int unsigned
+   */
+  public $fte_denom;
+  /**
    * class constructor
    *
    * @access public
@@ -222,6 +234,28 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
         ) ,
+        'hours_fte_num' => array(
+          'name' => 'fte_num',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Full-Time Numerator Equivalence') ,
+          'import' => true,
+          'where' => 'civicrm_hrjob_hour.fte_num',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => '1',
+        ) ,
+        'hrjob_fte_denom' => array(
+          'name' => 'fte_denom',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Full-Time Denominator Equivalence') ,
+          'import' => true,
+          'where' => 'civicrm_hrjob_hour.fte_denom',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => '1',
+        ) ,
       );
     }
     return self::$_fields;
@@ -243,6 +277,8 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hours_amount' => 'hrjob_hours_amount',
         'hours_unit' => 'hrjob_hours_unit',
         'hours_fte' => 'hrjob_hours_fte',
+        'fte_num' => 'hours_fte_num',
+        'fte_denom' => 'hrjob_fte_denom',
       );
     }
     return self::$_fieldKeys;

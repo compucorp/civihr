@@ -150,7 +150,9 @@ CREATE TABLE `civicrm_hrjob_hour` (
      `hours_type` varchar(63)    COMMENT 'Full-Time, Part-Time, Casual',
      `hours_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in given period)',
      `hours_unit` varchar(63)   COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
-     `hours_fte` double    COMMENT 'Typically, employment at 40 hr/wk is 1 FTE' 
+     `hours_fte` double    COMMENT 'Typically, employment at 40 hr/wk is 1 FTE',
+     `fte_num` int unsigned  DEFAULT 1 COMMENT '.',
+     `fte_denom` int unsigned   DEFAULT 1  COMMENT '.'
 ,
     PRIMARY KEY ( `id` )
  

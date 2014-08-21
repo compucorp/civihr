@@ -25,7 +25,7 @@
 
   <div class="crm-summary-row hrjob-needs-type">
     <div class="crm-label">
-      <label for="hrjob-hours_amount">{ts}Hours{/ts}</label>
+      <label for="hrjob-hours_amount">{ts}Actual Hours{/ts}</label>
     </div>
     <div class="crm-content">
       <input id="hrjob-hours_amount" name="hours_amount" type="text" />
@@ -45,7 +45,7 @@
       <label for="hrjob-hours_fte">{ts}FTE{/ts}&nbsp;{help id='hrjob-fte' file='CRM/HRJob/Page/helptext'}</label>
     </div>
     <div class="crm-content">
-      <input id="hrjob-hours_fte" name="hours_fte" type="text" />
+      <input id="hrjob-fte_num" name="fte_num" type="text" /> / <input id="hrjob-fte_denom" name="fte_denom" type="text" />
     </div>
   </div>
 

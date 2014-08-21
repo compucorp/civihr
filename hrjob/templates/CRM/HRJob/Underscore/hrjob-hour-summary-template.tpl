@@ -4,6 +4,6 @@
     (<span name="hours_amount"/> {ts}per{/ts} <%- FieldOptions.hours_unit[hours_unit] %>)
   {literal}<% } %>{/literal}
   {literal}<% if (hours_fte) { %>{/literal}
-    (<span name="hours_fte"/> FTE)
+    (<span name="fte_num"/>/<span name="fte_denom"/> FTE)
   {literal}<% } %>{/literal}
 </script>
