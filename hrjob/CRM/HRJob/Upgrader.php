@@ -345,4 +345,53 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Applying update 1400');
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'level_type')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN level_type VARCHAR(63) COMMENT "Junior manager, senior manager, etc." AFTER department');
+    }
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'notice_amount_employee')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob ADD COLUMN notice_amount_employee double COMMENT "Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks." AFTER notice_unit');
+    }
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'notice_unit_employee')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob ADD COLUMN notice_unit_employee VARCHAR(63) COMMENT "Unit of a notice period assigned to a quantity e.g Week in 3 Weeks." AFTER notice_amount_employee');
+    }
+    $hrJob = civicrm_api3('HRJob', 'get', array('return' => array("id", "department", "level_type", "manager_contact_id")));
+    foreach($hrJob['values'] as $key => $val) {
+      if (empty($val['manager_contact_id'])) {
+        $val['manager_contact_id'] = 'null';
+      }
+      CRM_Core_DAO::executeQuery("UPDATE  civicrm_hrjob_role SET  department = '{$val['department']}', level_type = '{$val['level_type']}', manager_contact_id = '{$val['manager_contact_id']}' WHERE job_id = {$val['id']}");
+    }
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'department')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN department');
+    }
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'level_type')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN level_type');
+    }
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'manager_contact_id')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_manager_contact_id');
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP manager_contact_id');
+    }
+
+    $i = 4;
+    $params = array(
+      'option_group_id' => 'hrjob_contract_type',
+      'name' => 'Employee_Permanent',
+      'weight' => $i,
+      'label' => 'Employee - Permanent',
+      'value' => 'Employee - Permanent',
+    );
+    civicrm_api3('OptionValue', 'create',$params);
+    $empoption_id = civicrm_api3('OptionValue', 'getsingle', array('return' => "id",'option_group_id' => 'hrjob_contract_type', 'name' => "Employee"));
+    civicrm_api3('OptionValue', 'create',array('id' => $empoption_id['id'],'name' => "Employee_Temporary",'label' => 'Employee - Temporary', 'value' => 'Employee - Temporary'));
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_contract_type', 'id', 'name');
+
+    foreach (array('Intern','Trustee','Volunteer') as $opName) {
+      $i++;
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET weight = {$i} WHERE name = '{$opName}' and option_group_id = {$optionGroupID}");
+    }
+    return TRUE;
+  }
 }

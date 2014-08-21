@@ -63,6 +63,8 @@ a.hrjob-nav.selected {
 }
 input#hrjob-notice_amount,
 select#hrjob-notice_unit,
+input#hrjob-notice_amount_employee,
+select#hrjob-notice_unit_employee,
 input#hrjob-pay_amount,
 select#hrjob-pay_unit,
 input#hrjob-hours_amount,

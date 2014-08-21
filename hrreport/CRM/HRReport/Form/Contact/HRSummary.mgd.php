@@ -53,13 +53,13 @@ return array (
         array(
           'addToDashboard' => 1,
           'fields' => array(
-            'hrjob_level_type'  => 1,
+            'hrjob_role_level_type'  => 1,
             'hrjob_location'    => 1,
             'monthly_cost_eq'   => 1,
             'annual_cost_eq'    => 1,
           ),
           'group_bys' => array(
-            'hrjob_level_type' => 1,
+            'hrjob_role_level_type' => 1,
             'hrjob_location'   => 1,
           ),
         )
@@ -79,11 +79,11 @@ return array (
         array(
           'addToDashboard' => 1,
           'fields' => array(
-            'hrjob_level_type' => 1,
+            'hrjob_role_level_type' => 1,
             'full_time_eq'     => 1,
           ),
           'group_bys' => array(
-            'hrjob_level_type' => 1,
+            'hrjob_role_level_type' => 1,
           ),
         )
       ),

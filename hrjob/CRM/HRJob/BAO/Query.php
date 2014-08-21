@@ -51,21 +51,21 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   function &getFields() {
     if (!self::$_hrjobFields) {
       self::$_hrjobFields = CRM_HRJob_BAO_HRJob::export();
-      self::$_hrjobFields['hrjob_manager_contact'] = 
+      self::$_hrjobFields['hrjob_role_manager_contact'] =
         array(
-          'name'  => 'manager_contact', 
-          'title' => 'Job Manager', 
-          'type'  => CRM_Utils_Type::T_STRING, 
-          'where' => 'civicrm_hrjob_manager.display_name'
+          'name'  => 'manager_contact',
+          'title' => 'Job Manager',
+          'type'  => CRM_Utils_Type::T_STRING,
+          'where' => 'civicrm_hrjob_role_manager.display_name'
         );
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_HRJob_BAO_HRJobHour::export());
 
       // special case to check for existence of health record entry
-      self::$_hrjobFields['hrjob_is_healthcare'] = 
+      self::$_hrjobFields['hrjob_is_healthcare'] =
         array(
-          'name'  => 'is_healthcare', 
-          'title' => 'Is health care', 
-          'type'  => CRM_Utils_Type::T_BOOLEAN, 
+          'name'  => 'is_healthcare',
+          'title' => 'Is health care',
+          'type'  => CRM_Utils_Type::T_BOOLEAN,
           'where' => 'civicrm_hrjob_health.id'
         );
 
@@ -115,7 +115,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
     $strtolower = function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
     switch ($name) {
-      case 'hrjob_level_type':
+      case 'hrjob_role_level_type':
       case 'hrjob_contract_type':
       case 'hrjob_pay_grade':
       case 'hrjob_period_type':
@@ -139,7 +139,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjob_health.id", $op);
         $query->_tables['civicrm_hrjob_health'] = $query->_whereTables['civicrm_hrjob_health'] = 1;
         return;
-      
+
       case 'hrjob_is_enrolled':
         $query->_qill[$grouping][]  = $value ? ts('Is enrolled') : ts('Is not enrolled');
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjob_pension.is_enrolled", $op, $value, "Boolean");
@@ -215,8 +215,8 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       case 'civicrm_hrjob':
         $from = " $side JOIN civicrm_hrjob ON civicrm_hrjob.contact_id = contact_a.id AND civicrm_hrjob.is_primary=1";
         break;
-      case 'civicrm_hrjob_manager':
-        $from = " $side JOIN civicrm_contact civicrm_hrjob_manager ON civicrm_hrjob.manager_contact_id = civicrm_hrjob_manager.id";
+      case 'civicrm_hrjob_role_manager':
+        $from = " $side JOIN civicrm_contact civicrm_hrjob_role_manager ON civicrm_hrjob_role.manager_contact_id = civicrm_hrjob_role_manager.id";
         break;
       case 'civicrm_hrjob_hour':
         $from = " $side JOIN civicrm_hrjob_hour ON civicrm_hrjob.id = civicrm_hrjob_hour.job_id ";
@@ -267,11 +267,11 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('hidden', 'hidden_hrjob', 1);
       $form->addElement('text', 'hrjob_position', ts('Position'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'position'));
       $form->addElement('text', 'hrjob_title', ts('Title'), CRM_Core_DAO::getAttribute('CRM_HRJob_DAO_HRJob', 'title'));
-      $form->add('select', 'hrjob_level_type', ts('Level'), 
-        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'level_type'), FALSE,
+      $form->add('select', 'hrjob_role_level_type', ts('Level'),
+        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobRole', 'level_type'), FALSE,
         array('id' => 'hrjob_level_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
-      $form->add('select', 'hrjob_contract_type', ts('Contract Type'), 
+      $form->add('select', 'hrjob_contract_type', ts('Contract Type'),
         CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'contract_type'), FALSE,
         array('id' => 'hrjob_contract_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
@@ -293,7 +293,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         array('id' => 'hrjob_hours_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
 
-      $form->add('select', 'hrjob_hours_unit', ts('Hours Unit'), 
+      $form->add('select', 'hrjob_hours_unit', ts('Hours Unit'),
         array('Day' => ts('Day'), 'Week' => ts('Week'), 'Month' => ts('Month'), 'Year' => ts('Year')), FALSE,
         array('id' => 'hrjob_hours_unit', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
@@ -314,7 +314,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     }
     if ($type  == 'hrjob_pay') {
       $form->add('hidden', 'hidden_hrjob_pay', 1);
-      $form->add('select', 'hrjob_pay_grade', ts('Pay Grade'), 
+      $form->add('select', 'hrjob_pay_grade', ts('Pay Grade'),
         CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_grade'), FALSE,
         array('id' => 'hrjob_pay_grade', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );

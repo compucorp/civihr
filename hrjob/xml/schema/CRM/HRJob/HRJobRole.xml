@@ -73,7 +73,7 @@
     <length>127</length>
     <export>true</export>
     <pseudoconstant>
-      <optionGroupName>hrjob_department</optionGroupName>
+      <optionGroupName>hrjob_role_department</optionGroupName>
     </pseudoconstant>
     <uniqueName>hrjob_role_department</uniqueName>
   </field>
@@ -81,6 +81,24 @@
     <name>index_department</name>
     <fieldName>department</fieldName>
   </index>
+
+  <field>
+    <name>level_type</name>
+    <title>Job Role Level</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>Junior manager, senior manager, etc.</comment>
+    <pseudoconstant>
+      <optionGroupName>hrjob_level_type</optionGroupName>
+    </pseudoconstant>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_level_type</uniqueName>
+  </field>
+  <index>
+    <name>index_level_type</name>
+    <fieldName>level_type</fieldName>
+  </index>  
 
   <field>
     <name>manager_contact_id</name>

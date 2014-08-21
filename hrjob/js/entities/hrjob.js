@@ -16,6 +16,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       period_end_date: '',
       notice_amount: '',
       notice_unit: '',
+      notice_amount_employee: '',
+      notice_unit_employee: '',	
       manager_contact_id: null,
       is_primary: 0
     },

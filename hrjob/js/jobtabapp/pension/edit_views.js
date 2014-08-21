@@ -73,12 +73,12 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
     events: {
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset',
-      'click .evidence-file-delete > a': 'doDelete',
+      'click .file-delete > a': 'doDelete',
     },
     doDelete: function() {
       var view = this;
       var entityID = this.model.get('job_id');
-      var fileID = $('.evidence-file-delete a').attr('id').split('_');
+      var fileID = $('.file-delete a').attr('id').split('_');
       var fileurl = CRM.url('civicrm/hrjob/file/delete');
 
       $.ajax({ type: "POST",
