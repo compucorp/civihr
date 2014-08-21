@@ -69,7 +69,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ));
 
     $this->_addJobHourData(1, array(
-      'hours_type' => 'full',
+      'hours_type' => 8,
       'hours_amount' => 40.00, 
       'hours_unit' => 'Day', 
       'hours_fte' => 1,
@@ -165,7 +165,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), 'Edit');
     
     $this->_addJobHourData(2, array(
-      'hours_type' => 'part',
+      'hours_type' => 4,
       'hours_amount' => 80.00, 
       'hours_unit' => 'Day', 
       'hours_fte' => 2,
@@ -173,7 +173,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
     //edit HoursData
     $this->_addJobHourData(2, array(
-      'hours_type' => 'casual',
+      'hours_type' => 0,
       'hours_amount' => 100.00, 
       'hours_unit' => 'Week', 
       'hours_fte' => 0.5,

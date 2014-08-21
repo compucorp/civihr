@@ -18,7 +18,7 @@ return array(
       ),
       'filters' => array(
         'hrjob_hours_type_op' => 'in',
-        'hrjob_hours_type_value' => 'part,full',
+        'hrjob_hours_type' => 4,8,
         'hrjob_hours_amount_op' => 'gte',
         'hrjob_hours_amount_value' => 15,
         'hrjob_hours_unit_op' => 'notin',
@@ -47,7 +47,7 @@ return array(
       ),
       'filters' => array(
         'hrjob_hours_type_op' => 'notin',
-        'hrjob_hours_type_value' => 'casual',
+        'hrjob_hours_type' => 0,
         'hrjob_hours_amount_op' => 'gte',
         'hrjob_hours_amount_value' => 15,
         'hrjob_hours_unit_op' => 'in',

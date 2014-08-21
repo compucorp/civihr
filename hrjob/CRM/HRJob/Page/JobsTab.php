@@ -175,8 +175,8 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
    */
   static function getJobHoursTime() {
     $job_hours_time = array();
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'option_group_id' =>'hrjob_hours_type_value',
+   $result = civicrm_api3('OptionValue', 'get', array(
+      'option_group_id' =>'hrjob_hours_type',
     ));
     foreach ($result['values'] as $key => $val) {
       $job_hours_time[$val['name']] = $val['value'];

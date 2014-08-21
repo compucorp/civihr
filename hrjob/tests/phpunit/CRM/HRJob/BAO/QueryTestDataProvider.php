@@ -161,7 +161,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_hours_type' => "casual",
+        'hrjob_hours_type' => 0,
       ),
       'id' => array(
         '9', '10',
@@ -178,7 +178,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     array(
       'fv' => array(
         'hrjob_hours_unit' => "Week",
-        'hrjob_hours_type' => "part",
+        'hrjob_hours_type' => 4,
       ),
       'id' => array(
         '11',
@@ -187,7 +187,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     array(
       'fv' => array(
         'hrjob_hours_unit' => "Week",
-        'hrjob_hours_type' => "casual",
+        'hrjob_hours_type' => 0,
         'hrjob_hours_fte_low' => 2,
         'hrjob_hours_fte_high' => 20,
       ),
@@ -213,7 +213,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
       'fv' => array(
         'hrjob_level_type' => 'Junior Staff',
         'hrjob_period_type' => 'Temporary',
-        'hrjob_hours_type' => "casual",
+        'hrjob_hours_type' => 0,
         'hrjob_pay_grade' => "Paid",
       ),
       'id' => array(
