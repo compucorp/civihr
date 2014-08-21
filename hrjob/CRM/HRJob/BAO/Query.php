@@ -275,10 +275,6 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJob', 'contract_type'), FALSE,
         array('id' => 'hrjob_contract_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
-      $form->add('select', 'hrjob_period_type', ts('Contract Duration'),
-        array('Temporary' => ts('Temporary'), 'Permanent' => ts('Permanent')), FALSE,
-        array('id' => 'hrjob_period_type', 'multiple' => 'multiple', 'title' => ts('- select -'))
-      );
       CRM_Core_Form_Date::buildDateRange($form, 'hrjob_period_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
       CRM_Core_Form_Date::buildDateRange($form, 'hrjob_period_end_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
     }

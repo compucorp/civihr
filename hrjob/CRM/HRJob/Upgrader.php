@@ -362,7 +362,13 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       if (empty($val['manager_contact_id'])) {
         $val['manager_contact_id'] = 'null';
       }
-      CRM_Core_DAO::executeQuery("UPDATE  civicrm_hrjob_role SET  department = '{$val['department']}', level_type = '{$val['level_type']}', manager_contact_id = '{$val['manager_contact_id']}' WHERE job_id = {$val['id']}");
+      if (empty($val['department'])) {
+        $val['department'] = 'NULL';
+      }
+      if (empty($val['level_type'])) {
+        $val['level_type'] = 'NULL';
+      }
+      CRM_Core_DAO::executeQuery("UPDATE  civicrm_hrjob_role SET  department = IFNULL({$val['department']},NULL) , level_type = IFNULL({$val['level_type']},NULL), manager_contact_id = IFNULL({$val['manager_contact_id']},NULL) WHERE job_id = {$val['id']}");
     }
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'department')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN department');
@@ -392,6 +398,10 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       $i++;
       CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET weight = {$i} WHERE name = '{$opName}' and option_group_id = {$optionGroupID}");
     }
+
+    $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_hours_type', 'id', 'name');
+    $sql = "UPDATE civicrm_option_value SET civicrm_option_value.value = CASE civicrm_option_value.value WHEN 'full' THEN 8 WHEN 'part' THEN 4 WHEN 'casual' THEN 0 ELSE NULL END WHERE option_group_id = $optionGroupId";
+    CRM_Core_DAO::executeQuery($sql);
     return TRUE;
   }
 }

@@ -15,7 +15,7 @@
       <is_active>1</is_active>
     </OptionGroup>
     <OptionGroup>
-      <name>hrjob_role_department</name>
+      <name>hrjob_department</name>
       <title>Department</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
@@ -326,7 +326,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_role_department</option_group_name>
+      <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>HR</label>
@@ -337,7 +337,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_role_department</option_group_name>
+      <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>IT</label>
@@ -348,7 +348,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_role_department</option_group_name>
+      <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Fundraising</label>
@@ -359,7 +359,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_role_department</option_group_name>
+      <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Marketing</label>
@@ -370,7 +370,7 @@
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
-      <option_group_name>hrjob_role_department</option_group_name>
+      <option_group_name>hrjob_department</option_group_name>
     </OptionValue>
     <OptionValue>
       <label>Employer Pension</label>

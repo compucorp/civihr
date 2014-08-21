@@ -245,7 +245,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjob_role_department',
+            'optionGroupName' => 'hrjob_department',
           )
         ) ,
         'hrjob_role_level_type' => array(
