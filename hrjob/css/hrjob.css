@@ -121,3 +121,11 @@ div.hrjob-tree-items {
 .hrjob-container .hrjob-main-region .payGrade {
     margin: 6px 6px 6px 20px;
 }
+
+/* HR-398 Leave screen */
+.hrjob-container table.hrjob-leave-table tbody {
+    background-color: #F4F4ED;
+}
+.hrjob-container table.hrjob-leave-table tbody tr td:first-child {
+    background-color: #FAFAFA;
+}
