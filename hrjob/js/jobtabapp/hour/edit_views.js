@@ -52,21 +52,21 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         $fte_num = this.$('[name=fte_num]'),
         $hrs_unit = this.$('[name=hours_unit]'),
         $fte_denom = this.$('[name=fte_denom]'),
-        $hour_type = this.$('[name=hours_type]');
+        $fteNume = CRM.PseudoConstant.job_hours_time.Full_Time;
       function changeVal() {
         var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
         //HR-396 - Calucation for denominator value from hour type option group
         if ($hrs_unit == 'Day') {
-          $days = $hour_type.val();
+          $days = $fteNume;
         }
         else if ($hrs_unit == 'Week') {
-          $days = $hour_type.val() * 5;
+          $days = $fteNume * 5;
         }
         else if ($hrs_unit == 'Month') {
-          $days = $hour_type.val() * 110;
+          $days = $fteNume * 110;
         }
         else if ($hrs_unit == 'Year') {
-          $days = $hour_type.val() * 1320;
+          $days = $fteNume * 1320;
         }
         $fte_num.val($hrs_Amount.val());
         $fte_denom.val($days);
