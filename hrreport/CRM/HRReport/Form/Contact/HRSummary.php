@@ -158,7 +158,6 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'filters' =>
         array(
           'hrjob_contract_type' => array(),
-          'hrjob_period_type'   => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
 

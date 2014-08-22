@@ -73,9 +73,9 @@
     <length>127</length>
     <export>true</export>
     <pseudoconstant>
-      <optionGroupName>hrjob_role_department</optionGroupName>
+      <optionGroupName>hrjob_department</optionGroupName>
     </pseudoconstant>
-    <uniqueName>hrjob_role_department</uniqueName>
+    <uniqueName>hrjob_department</uniqueName>
   </field>
   <index>
     <name>index_department</name>
@@ -98,7 +98,7 @@
   <index>
     <name>index_level_type</name>
     <fieldName>level_type</fieldName>
-  </index>  
+  </index>
 
   <field>
     <name>manager_contact_id</name>

@@ -48,7 +48,7 @@
         entity: 'HRJobRole'
         }) %>
       {/literal}
-      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_role_department'}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
       </div>
     </div>
 

@@ -214,7 +214,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         array(
           'hrjob_title'         => array(),
           'hrjob_contract_type' => array(),
-          'hrjob_period_type'   => array(),
           'hrjob_location'      => array(),
           'hrjob_position'      => array(),
           'hrjob_period_start_date' => array(),

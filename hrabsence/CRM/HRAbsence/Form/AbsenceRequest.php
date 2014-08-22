@@ -176,7 +176,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_targetContactID = $this->_loginUserID;
       }
       if ($this->_targetContactID) {
-        $this->_managerContactID = CRM_Core_DAO::getFieldValue('CRM_HRJob_DAO_HRJob', $this->_targetContactID, 'manager_contact_id', 'contact_id');
+        $this->_managerContactID = CRM_Core_DAO::getFieldValue('CRM_HRJob_DAO_HRJobRole', $this->_targetContactID, 'manager_contact_id', 'contact_id');
       } else {
         $this->_managerContactID = NULL;
       }

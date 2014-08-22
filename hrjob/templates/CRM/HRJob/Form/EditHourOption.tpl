@@ -25,7 +25,7 @@
 *}
 <h3>{ts}Edit Hour Type Option{/ts}</h3>
   <div class="crm-block crm-form-block crm-edit-hour-option-form-block">    
-    <table class="form-layout" style="height:100px; width:350px; margin-left:50px; border:1px solid black;">
+    <table class="form-layout" style="height:100px; width:50%;">
       <tr>
         <thead class="sticky">
           <th>Label</th>
@@ -33,14 +33,14 @@
         </thead>
       </tr>
       {foreach from=$optionGroupIds item=row}
-      <tr>
-        <td style="border:1px solid black;">{$row.label}</td>
-        <td style="border:1px solid black;">{$row.value}</td>
+      <tr id="HRJob-EditOption-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"}">
+        <td >{$row.label}</td>
+        <td >{$row.value}</td>
       </tr>
       {/foreach}
     </table>
     </br><hr></br>
-    <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="top"}</div>
+    <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="top"}</div></br>
     <table class="form-layout">
       <tr>
         <td class="label">{$form.hour_type_select.label}</td>
@@ -50,7 +50,7 @@
         <td class="label">{$form.hour_value.label}</td>
         <td class="html-adjust">{$form.hour_value.html}</td>
       </tr>      
-    </table>
+    </table></br>
     <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
   </div>
 
@@ -58,7 +58,6 @@
 <script type="text/javascript" >
   CRM.$(function($) {
   $('#hour_type_select').change(function() {
-    $('#hour_type').val(this.options[this.selectedIndex].innerHTML);
     $('#hour_value').val($(this).val());
     });
   });
