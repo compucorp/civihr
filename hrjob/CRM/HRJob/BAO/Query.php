@@ -213,10 +213,10 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     $from = NULL;
     switch ($name) {
       case 'civicrm_hrjob':
-        $from = " $side JOIN civicrm_hrjob ON civicrm_hrjob.contact_id = contact_a.id AND civicrm_hrjob.is_primary=1";
+        $from = " $side JOIN civicrm_hrjob ON civicrm_hrjob.contact_id = contact_a.id AND civicrm_hrjob.is_primary = 1";
         break;
       case 'civicrm_hrjob_role_manager':
-        $from = " $side JOIN civicrm_contact civicrm_hrjob_role_manager ON civicrm_hrjob_role.manager_contact_id = civicrm_hrjob_role_manager.id";
+        $from = " $side JOIN civicrm_hrjob_role ON civicrm_hrjob.id = civicrm_hrjob_role.job_id $side JOIN civicrm_contact civicrm_hrjob_role_manager ON civicrm_hrjob_role.manager_contact_id = civicrm_hrjob_role_manager.id";
         break;
       case 'civicrm_hrjob_hour':
         $from = " $side JOIN civicrm_hrjob_hour ON civicrm_hrjob.id = civicrm_hrjob_hour.job_id ";
