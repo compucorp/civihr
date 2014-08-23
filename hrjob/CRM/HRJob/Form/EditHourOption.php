@@ -70,7 +70,7 @@ class CRM_HRJob_Form_EditHourOption extends CRM_Core_Form {
     $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_hours_type', 'id', 'name');
     $optionGroupIds = CRM_Core_BAO_OptionValue::getOptionValuesArray($optionGroupId);
     foreach($optionGroupIds as $key => $value) {
-      $this->_optionValue[$value['value']] = $value['name'];
+      $this->_optionValue[$value['value']] = $value['label'];
       $this->_id[$key] = $value['value'];
     }
     $this->assign('optionGroupIds', $optionGroupIds);
@@ -81,10 +81,10 @@ class CRM_HRJob_Form_EditHourOption extends CRM_Core_Form {
 
  static function formRule($fields, $files, $self) {
    $errors = array();
-   if (empty($fields['hour_value'])) {
+   if ($fields['hour_value'] == '') {
      $errors['hour_value'] = ts('Value is required.');
    }
-   if (empty($fields['hour_type_select'])) {
+   if ($fields['hour_type_select'] == '') {
      $errors['hour_type_select'] = ts('Hour Type is required.');
    }
    if(CRM_Utils_Array::value($fields['hour_value'], $self->_optionValue)){

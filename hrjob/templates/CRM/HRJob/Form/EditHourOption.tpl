@@ -24,7 +24,7 @@
  +--------------------------------------------------------------------+
 *}
 <h3>{ts}Edit Hour Type Option{/ts}</h3>
-  <div class="crm-block crm-form-block crm-edit-hour-option-form-block">    
+  <div class="crm-block crm-form-block crm-edit-hour-option-form-block">
     <table class="form-layout" style="height:100px; width:50%;">
       <tr>
         <thead class="sticky">
@@ -49,7 +49,7 @@
       <tr>
         <td class="label">{$form.hour_value.label}</td>
         <td class="html-adjust">{$form.hour_value.html}</td>
-      </tr>      
+      </tr>
     </table></br>
     <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
   </div>
