@@ -381,6 +381,28 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP manager_contact_id');
     }
 
+    //HR-397 -- Add Pay scale field
+    $params = array(
+      'name' => 'hrjob_pay_scale',
+      'title' => 'Pay Scale',
+      'is_active' => 1,
+      'is_reserved' => 1,
+    );
+    civicrm_api3('OptionGroup', 'create', $params);
+    $optionsValue = array('NJC pay scale', 'JNC pay scale', 'Soulbury Pay Agreement');
+    foreach ($optionsValue as $key => $value) {
+      $opValueParams = array(
+        'option_group_id' => 'hrjob_pay_scale',
+        'name' => $value,
+        'label' => $value,
+        'value' => $value,
+      );
+      civicrm_api3('OptionValue', 'create', $opValueParams);
+    }
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_scale')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN pay_scale VARCHAR(63) COMMENT "NJC pay scale, JNC pay scale, Soulbury Pay Agreement" AFTER job_id');
+    }
+
     $i = 4;
     $params = array(
       'option_group_id' => 'hrjob_contract_type',
