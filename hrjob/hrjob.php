@@ -73,6 +73,7 @@ function hrjob_civicrm_install() {
   //Add job import navigation menu
   $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
   $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
 
   $importJobNavigation = new CRM_Core_DAO_Navigation();
   $params = array (
@@ -89,15 +90,26 @@ function hrjob_civicrm_install() {
   $importJobNavigation->copyValues($params);
   $importJobNavigation->save();
   $importJobMenuTree = array(
-    'label' => ts('Jobs'),
-    'name' => 'jobs',
-    'url'  => 'civicrm/job/import',
-    'permission' => 'access HRJobs',
-    'is_active'  => 1,
-    'parent_id'  => $importJobNavigation->id,
-    'weight'     => 1,
+    array(
+      'label' => ts('Jobs'),
+      'name' => 'jobs',
+      'url'  => 'civicrm/job/import',
+      'permission' => 'access HRJobs',
+      'parent_id'  => $importJobNavigation->id,
+      'weight'     => 1,
+    ),
+    array(
+      'label'      => ts('Hours Types'),
+      'name'       => 'hoursType',
+      'url'        => 'civicrm/hour/editoption',
+      'permission' => 'administer civiCRM',
+      'parent_id'  => $administerNavId,
+    ),
   );
-  CRM_Core_BAO_Navigation::add($importJobMenuTree);
+  foreach ($importJobMenuTree as $key => $menuItems) {
+    $menuItems['is_active'] = 1;
+    CRM_Core_BAO_Navigation::add($menuItems);
+  }
   CRM_Core_BAO_Navigation::resetNavigation();
 
   return _hrjob_civix_civicrm_install();
@@ -118,7 +130,7 @@ function hrjob_civicrm_uninstall() {
     }
   }
   //delete job import navigation menu
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name = 'jobImport'");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('jobImport','hoursType')");
   CRM_Core_BAO_Navigation::resetNavigation();
 
   //delete custom groups and field
@@ -148,7 +160,7 @@ function hrjob_civicrm_disable() {
 }
 
 function _hrjob_setActiveFields($setActive) {
-  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('jobs','jobImport')";
+  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('jobs','jobImport','hoursType')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 

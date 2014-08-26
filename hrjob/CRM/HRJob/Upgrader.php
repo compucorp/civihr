@@ -404,4 +404,20 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     CRM_Core_DAO::executeQuery($sql);
     return TRUE;
   }
+
+  public function upgrade_1401() {
+    $this->ctx->log->info('Applying update 1401');
+    $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
+    $params = array(
+      'label'      => ts('Hours Types'),
+      'name'       => 'hoursType',
+      'url'        => 'civicrm/hour/editoption',
+      'permission' => 'administer CiviCRM',
+      'parent_id'  => $administerNavId,
+      'is_active' => 1,
+    );
+    CRM_Core_BAO_Navigation::add($params);
+    CRM_Core_BAO_Navigation::resetNavigation();
+    return TRUE;
+  }
 }
