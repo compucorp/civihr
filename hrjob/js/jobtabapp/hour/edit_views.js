@@ -22,25 +22,23 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
       var $hours_type = this.$("select#hrjob-hours_type"),
         $full_time_hour = CRM.PseudoConstant.job_hours_time.Full_Time,
         $part_time_hour = CRM.PseudoConstant.job_hours_time.Part_Time,
-        $causual_hour = CRM.PseudoConstant.job_hours_time.Casual;
+        $causual_hour = CRM.PseudoConstant.job_hours_time.Casual,
+        $fullTimeHour = CRM.PseudoConstant.job_hours_time.Full_Time,
+	$working_days = CRM.PseudoConstant.working_days;
       $hours_type.change(function() {
         $hours_types = $hours_type.val();
+        $("#hrjob-hours_amount").val($hours_types);
+        $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
+        $("#hrjob-hours_unit").val('Day');
         if ($hours_types == $full_time_hour) {
-          $("#hrjob-hours_amount").val($full_time_hour);
-          $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
-          $("#hrjob-hours_unit").val('Day');
           $("#hrjob-fte_num").val('1');
           $("#hrjob-fte_denom").val('1');
         }
         else if ($hours_types == $part_time_hour) {
-          $("#hrjob-hours_amount").val($part_time_hour);
-          $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Day');
-          $("#hrjob-hours_unit").val('Day');
           $("#hrjob-fte_num").val('1');
           $("#hrjob-fte_denom").val('2');
         }
         else if ($hours_types == $causual_hour) {
-          $("#hrjob-hours_amount").val($causual_hour);
           $("#s2id_hrjob-hours_unit .select2-choice span").first().text('Week');
           $("#hrjob-hours_unit").val('Week');
           $("#hrjob-fte_num").val('0');
@@ -48,34 +46,29 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         }
       });
 
-      var $hrs_Amount = this.$('[name=hours_amount]'),
-        $fte_num = this.$('[name=fte_num]'),
-        $hrs_unit = this.$('[name=hours_unit]'),
-        $fte_denom = this.$('[name=fte_denom]'),
-        $fteNume = CRM.PseudoConstant.job_hours_time.Full_Time;
       function changeVal() {
         var $hrs_unit = $("#s2id_hrjob-hours_unit .select2-choice span").first().text();
         //HR-396 - Calucation for denominator value from hour type option group
         if ($hrs_unit == 'Day') {
-          $days = $fteNume;
+          $totalHour = $fullTimeHour;
         }
         else if ($hrs_unit == 'Week') {
-          $days = $fteNume * 5;
+          $totalHour = $fullTimeHour * $working_days.perWeek;
         }
         else if ($hrs_unit == 'Month') {
-          $days = $fteNume * 22;
+          $totalHour = $fullTimeHour * $working_days.perMonth;
         }
         else if ($hrs_unit == 'Year') {
-          $days = $fteNume * 264;
+          $totalHour = $fullTimeHour * $working_days.perMonth * 12;
         }
-        $fte_num.val($hrs_Amount.val());
-        $fte_denom.val($days);
+        $('input[name=fte_num]').val($('input[name=hours_amount]').val());
+        $('input[name=fte_denom]').val($totalHour);
       }
-      $hrs_Amount.bind("keyup", function() {
+      this.$('[name=hours_amount]').bind("keyup", function() {
         changeVal();
       });
 
-      $hrs_unit.bind("change", function() {
+      this.$('[name=hours_unit]').bind("change", function() {
         changeVal();
       });
     },

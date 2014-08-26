@@ -26,6 +26,7 @@
 */
 
 require_once 'CRM/Core/Page.php';
+require_once 'JobConfig.php';
 
 class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
   function run() {
@@ -50,6 +51,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
           'job_hours_time' => CRM_HRJob_Page_JobsTab::getJobHoursTime(),
+          'working_days' => CRM_HRJob_Page_JobsTab::getDaysPerTime(),
         ),
         'FieldOptions' => CRM_HRJob_Page_JobsTab::getFieldOptions(),
         'jobTabApp' => array(
@@ -184,5 +186,14 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       $job_hours_time[$val['name']] = $val['value'];
     }
     return $job_hours_time;
+  }
+
+  /**
+   * Get a days per week/month as per configuration file
+   */
+  static function getDaysPerTime() {
+    $days['perWeek'] = DAYS_PER_WEEK;
+    $days['perMonth'] = DAYS_PER_MONTH;
+    return $days;
   }
 }
