@@ -20,8 +20,8 @@ class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
     $idParams = array('name'=>'Initial_Join_Date');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $idParams, $idField);
 
-    $extraWhereClause = " ({$cGrp['table_name']}.{$fdField['column_name']} > now() OR {$cGrp['table_name']}.{$fdField['column_name']} IS NULL) AND
-      ((civicrm_hrjob.is_primary = 1 AND (civicrm_hrjob.period_end_date > CURDATE() OR civicrm_hrjob.period_end_date IS NULL)) AND
+    $extraWhereClause = " ({$cGrp['table_name']}.{$fdField['column_name']} >= CURDATE() OR {$cGrp['table_name']}.{$fdField['column_name']} IS NULL) AND
+      ((civicrm_hrjob.is_primary = 1 AND (civicrm_hrjob.period_end_date >= CURDATE() OR civicrm_hrjob.period_end_date IS NULL)) AND
       (civicrm_hrjob.is_primary IS NOT NULL) )";
 
     $column = $columnHeaders = $selector->getColumnHeaders();
