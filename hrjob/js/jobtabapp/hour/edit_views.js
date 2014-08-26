@@ -24,7 +24,7 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
         $part_time_hour = CRM.PseudoConstant.job_hours_time.Part_Time,
         $causual_hour = CRM.PseudoConstant.job_hours_time.Casual,
         $fullTimeHour = CRM.PseudoConstant.job_hours_time.Full_Time,
-	$working_days = CRM.PseudoConstant.working_days;
+        $working_days = CRM.PseudoConstant.working_days;
       $hours_type.change(function() {
         $hours_types = $hours_type.val();
         $("#hrjob-hours_amount").val($hours_types);
