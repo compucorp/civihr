@@ -63,10 +63,10 @@ CRM.HRApp.module('JobTabApp.Hour', function(Hour, HRApp, Backbone, Marionette, $
           $days = $fteNume * 5;
         }
         else if ($hrs_unit == 'Month') {
-          $days = $fteNume * 110;
+          $days = $fteNume * 22;
         }
         else if ($hrs_unit == 'Year') {
-          $days = $fteNume * 1320;
+          $days = $fteNume * 264;
         }
         $fte_num.val($hrs_Amount.val());
         $fte_denom.val($days);
