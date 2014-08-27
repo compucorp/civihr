@@ -39,6 +39,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
 
     $this->fixtures['fullJob'] = array(
       'version' => 3,
+      'title' => 'Test Job',
       'contract_type' => 'Volunteer',
       'api.HRJobPay.create' => array(
         'pay_amount' => 20,
@@ -48,7 +49,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
         'description' => 'A test Description',
       ),
       'api.HRJobHour.create' => array(
-        'hours_type' => 'part',
+        'hours_type' => 4,
         'hours_amount' => 40.00,
         'hours_unit' => 'Week',
       ),
@@ -145,7 +146,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
       }
       $this->assertAPISuccess($hrJobResult['api.HRJobHour.create']);
       foreach ($hrJobResult['api.HRJobHour.create']['values'] as $hrJobHourResult) {
-        $this->assertEquals('part', $hrJobHourResult['hours_type']);
+        $this->assertEquals('4', $hrJobHourResult['hours_type']);
         $this->assertEquals('40.00', $hrJobHourResult['hours_amount']);
         $this->assertEquals('Week', $hrJobHourResult['hours_unit']);
       }
@@ -210,7 +211,7 @@ class api_v3_HRJobTest extends CiviUnitTestCase {
     $result2 = $this->callAPISuccess('HRJob', 'create', array(
       'contact_id' => $cid,
       'position' => 'Second',
-      'contract_type' => 'Employee',
+      'contract_type' => 'Employee - Permanent',
     ));
     $this->assertTrue(empty($result2['values'][$result2['id']]['is_primary']));
 

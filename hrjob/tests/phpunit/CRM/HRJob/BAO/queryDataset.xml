@@ -103,17 +103,14 @@
         contact_id="9"
         position="Fundraiser"
         title="Copy-editor"
-        department="Finance"
         is_tied_to_funding="1"
         funding_notes="Test Notes"
         contract_type="Volunteer"
-        level_type="Senior Manager"
         period_type="Permanent"
         period_start_date="2010-03-24"
         period_end_date="2013-08-27"
         notice_amount="3"
         notice_unit="Week"
-        manager_contact_id="10"
         location="Home"
         is_primary="1"
     />
@@ -139,14 +136,14 @@
         hours_unit="Week"
         hours_fte="2"
     />
-  
+
     <civicrm_hrjob_leave
         id="1"
         job_id="1"
         leave_type="1"
         leave_amount="15"
     />
-  
+
     <civicrm_hrjob_leave
         id="2"
         job_id="1"
@@ -181,9 +178,10 @@
         id="1"
         job_id="1"
         title="System Engineer"
+        level_type="Senior Manager"
         description="Another Test description"
         hours="40"
-        region="Europe"       
+        region="Europe"
         department="Operations"
         manager_contact_id="10"
         functional_area="Save the Panda"
@@ -198,7 +196,7 @@
         title="Chief Nomenclature Officer"
         description="Another Test description"
         hours="40"
-        region="Europe"       
+        region="Europe"
         department="Operations"
         manager_contact_id="10"
         functional_area="Save the Panda"
@@ -212,17 +210,14 @@
         contact_id="10"
         position="Fundraiser"
         title="Copy-editor"
-        department="Operations"
         is_tied_to_funding="1"
         funding_notes="Test Notes"
         contract_type="Apprentice"
-        level_type="Junior Staff"
         period_type="Temporary"
         period_start_date="2011-03-24"
         period_end_date="2013-08-27"
         notice_amount="1"
         notice_unit="Month"
-        manager_contact_id="9"
         location="Headquarters"
         is_primary="1"
     />
@@ -235,14 +230,14 @@
         hours_unit="Week"
         hours_fte="2"
     />
-  
+
     <civicrm_hrjob_leave
         id="4"
         job_id="2"
         leave_type="1"
         leave_amount="26"
     />
-  
+
     <civicrm_hrjob_leave
         id="5"
         job_id="2"
@@ -277,9 +272,10 @@
         id="3"
         job_id="2"
         title="System Engineer"
+        level_type="Junior Staff"
         description="Another Test description"
         hours="40"
-        region="Europe"       
+        region="Europe"
         department="Operations"
         manager_contact_id="10"
         functional_area="Save the Panda"
@@ -293,17 +289,14 @@
         contact_id="9"
         position="Volunteer Manager"
         title="Research Assistant"
-        department="Finance"
         is_tied_to_funding="0"
         funding_notes="Test Notes"
         contract_type="Intern"
-        level_type="Senior Staff"
         period_type="Permanent"
         period_start_date="2013-03-24"
         period_end_date="2013-08-27"
         notice_amount="2"
         notice_unit="Month"
-        manager_contact_id="10"
         location="Headquarters"
         is_primary="1"
     />
@@ -316,14 +309,14 @@
         hours_unit="Week"
         hours_fte="3"
     />
-  
+
     <civicrm_hrjob_leave
         id="7"
         job_id="3"
         leave_type="1"
         leave_amount="10"
     />
-  
+
     <civicrm_hrjob_leave
         id="8"
         job_id="3"
@@ -360,7 +353,7 @@
         title="Chief Nomenclature Officer"
         description="Another Test description"
         hours="60"
-        region="Africa"       
+        region="Africa"
         department="HR"
         manager_contact_id="10"
         functional_area="Save the Rhinos"
@@ -374,17 +367,14 @@
         contact_id="11"
         position="Fundraiser"
         title="Chief Nomenclature Officer"
-        department="Advocacy"
         is_tied_to_funding="1"
         funding_notes="Test Notes"
         contract_type="Apprentice"
-        level_type="Junior Staff"
         period_type="Permanent"
         period_start_date="2010-03-02"
         period_end_date="2013-08-02"
         notice_amount="1"
         notice_unit="Week"
-        manager_contact_id="10"
         location="Headquarters"
         is_primary="1"
     />
@@ -410,14 +400,14 @@
         hours_unit="Week"
         hours_fte="1"
     />
-  
+
     <civicrm_hrjob_leave
         id="10"
         job_id="4"
         leave_type="1"
         leave_amount="12"
     />
-  
+
     <civicrm_hrjob_leave
         id="11"
         job_id="4"
@@ -454,7 +444,7 @@
         title="System Administrator"
         description="Another Test description2"
         hours="90"
-        region="Asia"       
+        region="Asia"
         department="Finance"
         manager_contact_id="9"
         functional_area="Save the Elephant"
