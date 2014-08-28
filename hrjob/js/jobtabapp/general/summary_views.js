@@ -9,18 +9,27 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       };
     },
     modelEvents: {
-      'change:manager_contact_id': 'renderManagerContact'
+      'change:manager_contact_id': 'renderManagerContact',
+      'change:contract_file': 'renderContractFile'
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
+      this.renderContractFile();
     },
     onRender: function() {
       this.renderManagerContact();
+      this.renderContractFile();
     },
     renderManagerContact: function() {
       this.$('a.hrjob-manager_contact').hrContactLink({
         cid: this.model.get('manager_contact_id')
       });
+    },
+    renderContractFile: function() {
+      this.$('#contract_file').hrFileLink({
+          id: this.model.get('id')
+      });
+      this.$('.file-delete').remove();
     }
   });
 
