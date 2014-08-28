@@ -14,7 +14,6 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
-      this.renderContractFile();
     },
     onRender: function() {
       this.renderManagerContact();
@@ -27,7 +26,8 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
     },
     renderContractFile: function() {
       this.$('#contract_file').hrFileLink({
-          id: this.model.get('id')
+          id: this.model.get('id'),
+          entityTable: "civicrm_hrjob_general"
       });
       this.$('.file-delete').remove();
     }
