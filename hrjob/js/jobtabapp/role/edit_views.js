@@ -44,11 +44,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     toggleRole: function() {
       var open = this.$('.hrjob-role-toggle').hasClass('closed');
+      if (open) {
+        this.render();
+      }
       this.$('.hrjob-role-toggle').toggleClass('open', open).toggleClass('closed', !open);
       this.$('.toggle-role-form').toggle(open);
-      if (open) {
-        this.$('input,select,textarea').first().focus();
-      }
     }
   });
 
