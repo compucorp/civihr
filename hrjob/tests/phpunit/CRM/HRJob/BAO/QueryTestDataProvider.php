@@ -55,7 +55,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_level_type' => 'Senior Manager',
+        'hrjob_role_level_type' => 'Senior Manager',
         'hrjob_period_type' => 'Permanent',
       ),
       'id' => array(
@@ -211,7 +211,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_level_type' => 'Junior Staff',
+        'hrjob_role_level_type' => 'Junior Staff',
         'hrjob_period_type' => 'Temporary',
         'hrjob_hours_type' => 0,
         'hrjob_pay_grade' => "Paid",
