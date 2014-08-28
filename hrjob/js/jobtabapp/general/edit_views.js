@@ -87,23 +87,29 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 	//automatically update notice period and unit
 	var $notice_amount = this.$('[name=notice_amount]');
 	var $notice_amount_employee = this.$('[name=notice_amount_employee]');
-	if ($notice_amount.val() === $notice_amount_employee.val()) {
-          $notice_amount.bind("keyup", function() {
-	    $notice_amount_employee.val($notice_amount.val());
-	    $notice_amount_employee.change();
-          });
-          $notice_amount_employee.bind("change", function() {
-	    if ($notice_amount.val() !== $notice_amount_employee.val()) {
-	      $notice_amount.unbind("keyup");
-	    }
-          });
+	if (!$notice_amount.val()) {
+	  if ($notice_amount.val() === $notice_amount_employee.val()) {
+            $notice_amount.bind("keyup", function() {
+	      $notice_amount_employee.val($notice_amount.val());
+	      $notice_amount_employee.change();
+            });
+            $notice_amount_employee.bind("change", function() {
+	      if ($notice_amount.val() !== $notice_amount_employee.val()) {
+	        $notice_amount.unbind("keyup");
+	      }
+            });
+	  }
 	}
 	var $notice_unit = this.$("select#hrjob-notice_unit");
-	$notice_unit.change(function() {
-	  $notice_units = $notice_unit.val();
-	  $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text($notice_units);	    
-	});  
-
+	var $notice_unit_employee = this.$("select#hrjob-notice_unit_employee");
+	if ($notice_unit.val() === $notice_unit_employee.val()) {
+	  $notice_unit.change(function() {
+	    $notice_units = $notice_unit.val();
+	    if (!$notice_unit_employee.val()) {
+	      $("#s2id_hrjob-notice_unit_employee .select2-choice span").first().text($notice_units);
+	    }
+	  });  
+	}
 	/*
        .addClass('dateplugin')
        });*/
