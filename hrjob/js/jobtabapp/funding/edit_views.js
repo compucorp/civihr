@@ -16,12 +16,14 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
     },
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
-    },
+    }
+    /* HR-395 -- remove is tied to funding field
     onBindingCreate: function(bindings) {
       bindings.is_tied_to_funding = {
         selector: 'input[name=is_tied_to_funding]',
         converter: HRApp.Common.convertCheckbox
       };
     }
+    */
   });
 });

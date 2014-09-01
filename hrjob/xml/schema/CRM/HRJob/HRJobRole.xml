@@ -54,12 +54,33 @@
     <type>float</type>
     <default>0</default>
     <comment>Amount of time allocated for work (in a given week)</comment>
+    <uniqueName>hrjob_role_hours</uniqueName>
+  </field>
+
+  <field>
+    <name>role_hours_unit</name>
+    <title>Hours Unit</title>
+    <type>varchar</type>
+    <length>63</length>
+    <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
+    <pseudoconstant>
+      <callback>CRM_HRJob_SelectValues::commonUnit</callback>
+    </pseudoconstant>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_role_unit</uniqueName>
   </field>
 
   <field>
     <name>region</name>
+    <title>Region</title>
     <type>varchar</type>
     <length>127</length>
+    <export>true</export>
+    <pseudoconstant>
+      <optionGroupName>hrjob_region</optionGroupName>
+    </pseudoconstant>
+    <uniqueName>hrjob_region</uniqueName>
   </field>
   <index>
     <name>index_region</name>
@@ -141,6 +162,32 @@
     <name>index_cost_center</name>
     <fieldName>cost_center</fieldName>
   </index>
+
+  <field>
+    <name>funder</name>
+    <title>Funder</title>
+    <type>varchar</type>
+    <length>127</length>
+    <comment>FK to Contact ID</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_funder</uniqueName>
+  </field>
+  <index>
+    <name>index_funder</name>
+    <fieldName>funder</fieldName>
+  </index>
+
+  <field>
+    <name>percent_pay_role</name>
+    <title>Percent of Pay Assigned to this Role</title>
+    <type>decimal</type>
+    <default>0</default>
+    <comment>Percentage of Pay Assigned to this Role</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_role_percent_pay_role</uniqueName>
+  </field>
 
   <field>
     <name>location</name>

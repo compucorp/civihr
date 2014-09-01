@@ -32,10 +32,10 @@ CREATE TABLE `civicrm_hrjob` (
      `notice_amount_employee` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
      `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
      `location` varchar(127)    COMMENT 'Normal place of work',
-     `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?' 
+     `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     INDEX `index_position`(
         position
   )
@@ -79,7 +79,7 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `pay_is_auto_est` tinyint   DEFAULT 1 COMMENT 'Is the estimate automatically calculated'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     UNIQUE INDEX `UI_job_id`(
         job_id
   )
@@ -89,8 +89,8 @@ CREATE TABLE `civicrm_hrjob_pay` (
   ,     INDEX `index_pay_grade`(
         pay_grade
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_pay_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+
+,          CONSTRAINT FK_civicrm_hrjob_pay_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -112,10 +112,10 @@ CREATE TABLE `civicrm_hrjob_health` (
      `provider_life_insurance` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages life insurance service',
      `plan_type_life_insurance` varchar(63)    COMMENT '.',
      `description_life_insurance` text,
-     `dependents_life_insurance` text 
+     `dependents_life_insurance` text
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     UNIQUE INDEX `UI_job_id`(
         job_id
   )
@@ -124,15 +124,15 @@ CREATE TABLE `civicrm_hrjob_health` (
   )
   ,     INDEX `index_plan_type`(
         plan_type
-  ) 
+  )
   ,     INDEX `index_provider_life_insurance`(
         provider_life_insurance
   )
   ,     INDEX `index_plan_type_life_insurance`(
         plan_type_life_insurance
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE, CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
+
+,          CONSTRAINT FK_civicrm_hrjob_health_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE, CONSTRAINT `FK_civicrm_hrjob_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL, CONSTRAINT `FK_civicrm_hrjob_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -155,15 +155,15 @@ CREATE TABLE `civicrm_hrjob_hour` (
      `fte_denom` int unsigned   DEFAULT 1  COMMENT '.'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     UNIQUE INDEX `UI_job_id`(
         job_id
   )
   ,     INDEX `index_hours_type`(
         hours_type
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_hour_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+
+,          CONSTRAINT FK_civicrm_hrjob_hour_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -179,16 +179,16 @@ CREATE TABLE `civicrm_hrjob_leave` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobLeave ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `leave_type` int unsigned    COMMENT 'The purpose for which leave may be taken (sickness, vacation, etc)',
-     `leave_amount` int unsigned    COMMENT 'The number of leave days' 
+     `leave_amount` int unsigned    COMMENT 'The number of leave days'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     UNIQUE INDEX `UI_leave_type`(
         job_id
       , leave_type
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_leave_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+
+,          CONSTRAINT FK_civicrm_hrjob_leave_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -204,23 +204,25 @@ CREATE TABLE `civicrm_hrjob_pension` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPension ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `is_enrolled` tinyint   DEFAULT 0 ,
-     `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage', 
+     `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage',
      `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage',
      `pension_type` varchar(63) COMMENT 'Pension Type',
      `ee_contrib_abs` decimal(20,2)   DEFAULT 0 COMMENT 'Employee Contribution Absolute Amount',
      `ee_evidence_note` varchar(127)   COMMENT 'Employee evidence note'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     UNIQUE INDEX `UI_job_id`(
         job_id
   )
   ,     INDEX `index_is_enrolled`(
         is_enrolled
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_pension_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE  
+
+,          CONSTRAINT FK_civicrm_hrjob_pension_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+
 
 -- /*******************************************************
 -- *
@@ -237,6 +239,7 @@ CREATE TABLE `civicrm_hrjob_role` (
      `title` varchar(127)    COMMENT 'Negotiated name for the role',
      `description` text    COMMENT 'Negotiated name for the role',
      `hours` double   DEFAULT 0 COMMENT 'Amount of time allocated for work (in a given week)',
+     `role_hours_unit` varchar(63)    COMMENT 'Period during which hours are allocated (eg 5 hours per day; 5 hours per week)',
      `region` varchar(127)    ,
      `department` varchar(127)    ,
      `level_type` varchar(63)    COMMENT 'Junior manager, senior manager, etc.',
@@ -244,6 +247,8 @@ CREATE TABLE `civicrm_hrjob_role` (
      `functional_area` varchar(127)    ,
      `organization` varchar(127)    ,
      `cost_center` varchar(127)    ,
+     `funder` varchar(127)    COMMENT 'FK to Contact ID',
+     `percent_pay_role` decimal(20,2)   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
      `location` varchar(127)    COMMENT 'Main work location' 
 ,
     PRIMARY KEY ( `id` )
@@ -268,6 +273,9 @@ CREATE TABLE `civicrm_hrjob_role` (
   )
   ,     INDEX `index_cost_center`(
         cost_center
+  )
+  ,     INDEX `index_funder`(
+        funder
   )
   ,     INDEX `index_location`(
         location

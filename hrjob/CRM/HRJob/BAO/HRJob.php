@@ -46,6 +46,9 @@ class CRM_HRJob_BAO_HRJob extends CRM_HRJob_DAO_HRJob {
     $instance = new self();
     $instance->copyValues($params);
     $instance->save();
+    if ($hook == 'create') {
+      civicrm_api3('HRJobRole', 'create', array('job_id' => $instance->id,'title' => $instance->title));
+    }
 
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 

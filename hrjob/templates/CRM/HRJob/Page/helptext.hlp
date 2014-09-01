@@ -90,5 +90,5 @@ would be 15.
   {ts}Cost Center{/ts}
 {/htxt}
 {htxt id="hrjob-cost-center"}
-{ts}If applicable, please enter the cost center that is assigned to the individual by the finance department.{/ts}
+{ts}If applicable, please enter the cost center/accounting code that is assigned to the individual or project by the finance department.{/ts}
 {/htxt}

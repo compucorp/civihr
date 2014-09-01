@@ -79,6 +79,8 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       functional_area: '',
       organization: '',
       cost_center: '',
+      percent_pay_role: '100',
+      funder: null,
       location: ''
     }
   });

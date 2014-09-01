@@ -8,6 +8,15 @@
     </div>
   </td>
   <td>
+    {literal}<% if (funder) { %>{/literal}
+      <div><a href="#" class="hrjob-funder" /></div>
+    {literal}<% } %>{/literal}
+  </td>
+  <td>
+    <strong data-hrjobrole-row="percent_pay_role"></strong>
+  </td>
+  <td>
     <strong data-hrjobrole-row="hours"></strong>
   </td>
+
 </script>

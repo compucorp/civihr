@@ -946,6 +946,7 @@ class GenerateHRData {
           'functional_area' => $this->randomItem('functional_area'),
           'organization' => $this->randomItem('name_of_organisation'),
           'cost_center' => $this->randomItem('cost_center'),
+          'funder' => $this->randomIndex(array_flip($this->Organization))
         );
         $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
       }

@@ -17,12 +17,16 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-role-toggle': 'toggleRole'
     },
+    modelEvents: {
+      'change:funder': 'renderFunder'
+    },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
+      this.renderFunder();
 
       this.toggledRegion.show(new Role.SummaryView({
         model: this.model
@@ -32,6 +36,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var open = this.$('.hrjob-role-toggle').hasClass('closed');
       this.$('.hrjob-role-toggle').toggleClass('open', open).toggleClass('closed', !open);
       this.$('.toggle-role-form').toggle(open);
+    },
+    renderFunder: function() {
+      this.$('a.hrjob-funder').hrContactLink({
+        cid: this.model.get('funder')
+      });
     }
   });
 
@@ -44,17 +53,24 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       };
     },
     modelEvents: {
-      'change:manager_contact_id': 'renderManagerContact'
+      'change:manager_contact_id': 'renderManagerContact',
+      'change:funder': 'renderFunder'
     },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
       this.renderManagerContact();
+      this.renderFunder();
     },
     renderManagerContact: function() {
       this.$('a.hrjob-manager_contact').hrContactLink({
         cid: this.model.get('manager_contact_id')
+      });
+    },
+    renderFunder: function() {
+      this.$('a.hrjob-funder').hrContactLink({
+        cid: this.model.get('funder')
       });
     }
   });

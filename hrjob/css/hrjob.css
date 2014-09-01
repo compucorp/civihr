@@ -69,6 +69,8 @@ input#hrjob-pay_amount,
 select#hrjob-pay_unit,
 input#hrjob-hours_amount,
 select#hrjob-hours_unit,
+input#hrjob-hours,
+select#hrjob-role_hours_unit,
 input#hrjob-pay_annualized_est{
     width: 15em;
 }

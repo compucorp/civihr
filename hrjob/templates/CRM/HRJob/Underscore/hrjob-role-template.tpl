@@ -23,7 +23,15 @@
         <label for="hrjob-hours">{ts}Hours{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-hours" name="hours"/>
+        <input id="hrjob-hours" name="hours" type="text" />
+        <label for="hrjob-role_hours_unit">{ts}per{/ts}</label>
+        {literal}
+        <%= RenderUtil.select({
+          id: 'hrjob-role_hours_unit',
+          name: 'role_hours_unit',
+          entity: 'HRJobRole'
+        }) %>
+        {/literal}
       </div>
     </div>
 
@@ -33,6 +41,43 @@
       </div>
       <div class="crm-content">
         <input id="hrjob-cost_center" name="cost_center"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-total_pay">{ts}Total Pay{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-total_pay" name="total_pay" size="15" type="text" disabled="true"/>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-percent_pay_role">{ts}Percent of Pay Assigned to this Role{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <input id="hrjob-percent_pay_role" name="percent_pay_role" size="15" type="float" /> %
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-Actual_amount">{ts}Pay assigned to this role{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <span id="hrjob-actual_amount" name="actual_amount" size="15" type="float" >  </span>
+      </div>
+    </div>
+
+    <div class="crm-summary-row">
+      <div class="crm-label">
+        <label for="hrjob-funder">{ts}Funder{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <input id="funder" name="funder" class="crm-form-entityref" data-create-links="true" data-select-params='{literal}{"multiple":true}{/literal}' data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+        <a href="#" class="hrjob-funder-add">{ts}Add Funder{/ts}</a>
       </div>
     </div>
 
@@ -51,7 +96,7 @@
       {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_department'}
       </div>
     </div>
-
+    {* // HR-394
     <div class="crm-summary-row">
       <div class="crm-label">
         <label for="hrjob-functional_area">{ts}Functional Area{/ts}</label>
@@ -60,6 +105,7 @@
         <input id="hrjob-functional_area" name="functional_area"/>
       </div>
     </div>
+    *}
 
     <div class="crm-summary-row">
       <div class="crm-label">
@@ -102,21 +148,30 @@
       </div>
     </div>
 
-    <div class="crm-summary-row">
+    {* //HR-394
+    <div class="crm-summary-row per">
       <div class="crm-label">
         <label for="hrjob-organization">{ts}Organization{/ts}</label>
       </div>
-      <div class="crm-content">
-        <input id="hrjob-organization" name="organization"/>
+      <div class="crm-content test">
+        <input id="hrjob-organization" name="organization" class="crm-form-entityref"  data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
+    *}
 
     <div class="crm-summary-row">
       <div class="crm-label">
         <label for="hrjob-region">{ts}Region{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-region" name="region"/>
+      {literal}
+        <%= RenderUtil.select({
+        id: 'hrjob-region',
+        name: 'region',
+        entity: 'HRJobRole'
+        }) %>
+      {/literal}
+      {include file="CRM/HRJob/Page/EditOptions.tpl" group='hrjob_region'}
       </div>
     </div>
 
