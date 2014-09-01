@@ -448,6 +448,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     //Upgrade for HR-394 and HR-395
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'role_hours_unit')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN role_hours_unit VARCHAR(63) COMMENT "Period during which hours are allocated (eg 5 hours per day; 5 hours per week)" AFTER hours');
+    }
 
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'funder')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN funder VARCHAR(127) COMMENT "FK to Contact ID" AFTER cost_center');
