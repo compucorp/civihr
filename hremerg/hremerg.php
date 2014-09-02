@@ -261,7 +261,7 @@ function hremerg_civicrm_alterContent( &$content, $context, $tplName, &$object )
         $(document).ajaxSuccess(function() {
           var tab = 'li#tab_rel';
           $('tr.crm-entity').hide();
-          $('.crm-datatable-pager-bottom').hide();
+          $('.dataTables_info').hide();
           {$relation['hideStr']};
           CRM.tabHeader.updateCount(tab, {$relation['count']});
         });
