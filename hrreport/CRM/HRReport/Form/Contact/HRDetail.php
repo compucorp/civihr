@@ -467,7 +467,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
     if ($this->_force) {
-      $whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR ({$addWhereClauses}))";
+      $whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()) AND ({$this->_aliases['civicrm_hrjob']}.period_end_date >= CURDATE() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL))";
     }
 
     if ($this->_params["hrjob_is_primary_value"] == 1) {
