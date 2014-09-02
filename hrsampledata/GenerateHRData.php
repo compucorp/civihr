@@ -110,6 +110,7 @@ class GenerateHRData {
               case 'org.civicrm.hrjob':
                 //if Job(CiviHR) extension is enabled, add the sample data
                 $this->addJobData($cid);
+                $this->addJobSummaryData($cid);
                 break;
               case 'org.civicrm.hrident':
                 //if Identification (CiviHR) extension is enabled, add the sample data
@@ -959,6 +960,23 @@ class GenerateHRData {
     }
     $dao->save();
     return $dao;
+  }
+
+  /**
+   * This method populates the Initial join date and final termination date
+   */
+  function addJobSummaryData($cid) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
+      return;
+    }
+
+    $values = array(
+      'entity_id' => $cid,
+      'initial_join_date' => $this->randomDate('20090101', '20111231'),
+      'final_termination_date' => $this->randomDate('20120101', '20151231'),
+    );
+
+    $this->insertCustomData($gid, $values);
   }
 
   /**
