@@ -251,6 +251,63 @@ function hremerg_civicrm_alterContent( &$content, $context, $tplName, &$object )
       });
     </script>";
   }
+
+  if ($context == 'page' && $tplName == 'CRM/Contact/Page/View/Relationship.tpl'){
+  $cid = CRM_Utils_Request::retrieve('cid', 'Integer');
+  $relation = _getEmergencyContacts($cid);
+
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $(document).ajaxSuccess(function() {
+          var tab = 'li#tab_rel';
+          $('tr.crm-entity').hide();
+          $('.dataTables_info').hide();
+          {$relation['hideStr']};
+          CRM.tabHeader.updateCount(tab, {$relation['count']});
+        });
+      });
+    </script>";
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_tabs
+ */
+function hremerg_civicrm_tabs(&$tabs, $contactID) {
+  $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
+  $relation = _getEmergencyContacts($contactID);
+  foreach ($tabs as $i => $tab) {
+    if ($tab['id'] == 'rel') {
+      $tabs[$i]['count'] = $relation['count'];
+      break;
+    }
+  }
+}
+
+/**
+ * function to get information of emergency conatct id and count
+ */
+function _getEmergencyContacts($contactID) {
+  $relationshipTypeId = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_RelationshipType', 'Emergency Contact', 'id', 'name_a_b');
+  // get contact relationships
+  $relationships = CRM_Contact_BAO_Relationship::getRelationship($contactID,
+    0, 0, 0, 0, NULL, NULL,
+    FALSE, array('relationship_type_id' => $relationshipTypeId)
+  );
+  $hideStr = '';
+  $count = 0;
+  $rid = array();
+  foreach ($relationships as $relationshipK => $relationshipV) {
+    $hideStr .= "$('#relationship-{$relationshipK}').show();";
+    if ($relationshipV['is_active'] == 1) {
+      $count++;
+    }
+    $rid[] = $relationshipK;
+  }
+  $relation['rid'] = $rid;
+  $relation['hideStr'] = $hideStr;
+  $relation['count'] = $count;
+  return $relation;
 }
 
 /**
