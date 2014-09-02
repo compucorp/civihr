@@ -296,6 +296,7 @@ function _getEmergencyContacts($contactID) {
   );
   $hideStr = '';
   $count = 0;
+  $rid = array();
   foreach ($relationships as $relationshipK => $relationshipV) {
     $hideStr .= "$('#relationship-{$relationshipK}').show();";
     if ($relationshipV['is_active'] == 1) {
