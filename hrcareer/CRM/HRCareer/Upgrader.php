@@ -136,7 +136,7 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     }
     return TRUE;
   } // */
-  
+
   public function upgrade_1102() {
     $this->ctx->log->info('Planning update 1102'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
@@ -145,7 +145,7 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
       'custom_group_id' => $cgid,
       'name' => 'Reference_Supplied',
     );
-    $cfid = $customFields['id']; 
+    $cfid = $customFields['id'];
     if ( $cgid ) {
       CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET label = 'Reference Supplied By' WHERE civicrm_custom_field.name = 'Reference_Supplied' AND civicrm_custom_field.custom_group_id = {$cgid}");
     }
@@ -156,7 +156,7 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
     }
     return TRUE;
     }
-  
+
   public function upgrade_1112() {
     $this->ctx->log->info('Planning update 1112'); // PEAR Log interface
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
@@ -173,6 +173,14 @@ class CRM_HRCareer_Upgrader extends CRM_HRCareer_Upgrader_Base {
         }
       }
     }
+    return TRUE;
+  }
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); //PEAR Log interface
+    $cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Career', 'id', 'name');
+    $sql = "UPDATE civicrm_custom_field SET in_selector = '1' WHERE custom_group_id = {$cusGroupID} AND name IN ('Start_Date','End_Date','Name_of_Organisation','Occupation_Type','Job_Title_Course_Name','Full_time_Part_time','Paid_Unpaid','Reference_Supplied','Evidence_File')";
+    CRM_Core_DAO::executeQuery($sql);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET style = 'Tab with table' WHERE id = {$cusGroupID}");
     return TRUE;
   }
 }

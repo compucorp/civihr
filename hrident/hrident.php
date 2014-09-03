@@ -124,18 +124,6 @@ function hrident_civicrm_managed(&$entities) {
  * Implementation of hook_civicrm_tabs
  */
 function hrident_civicrm_tabs(&$tabs, $contactID) {
-  $cgid = hrident_getCustomGroupId();
-  foreach ($tabs as $k => $v) {
-    if ($v['id'] == "custom_{$cgid}") {
-      $tabs[$k]['url'] = CRM_Utils_System::url('civicrm/profile/edit', array(
-        'reset' => 1,
-        'gid' => hrident_getUFGroupID(),
-        'id' => $contactID,
-        'snippet' => 1,
-        'onPopupClose' => 'redirectToTab',
-      ));
-    }
-  }
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrident', 'css/hrident.css');
 }
 

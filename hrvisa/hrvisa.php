@@ -212,17 +212,6 @@ function hrvisa_civicrm_managed(&$entities) {
  */
 function hrvisa_civicrm_tabs(&$tabs, $contactID) {
   $cgid = hrvisa_getCustomGroupId();
-  foreach ($tabs as $k => $v) {
-    if ($v['id'] == "custom_{$cgid}") {
-      $tabs[$k]['url'] = CRM_Utils_System::url('civicrm/profile/edit', array(
-        'reset' => 1,
-        'gid' => hrvisa_getUFGroupID(),
-        'id' => $contactID,
-        'snippet' => 1,
-        'onPopupClose' => 'redirectToTab',
-      ));
-    }
-  }
   CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrvisa', 'js/hrvisa.js');
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrvisa', 'css/hrvisa.css');
   CRM_Core_Resources::singleton()->addSetting(array(

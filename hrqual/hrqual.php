@@ -169,17 +169,6 @@ function hrqual_civicrm_managed(&$entities) {
  */
 function hrqual_civicrm_tabs(&$tabs, $contactID) {
   $cgid = hrqual_getCustomGroupId();
-  foreach ($tabs as $k => $v) {
-    if ($v['id'] == "custom_{$cgid}") {
-      $tabs[$k]['url'] = CRM_Utils_System::url('civicrm/profile/edit', array(
-        'reset' => 1,
-        'gid' => hrqual_getUFGroupID(),
-        'id' => $contactID,
-        'snippet' => 1,
-        'onPopupClose' => 'redirectToTab',
-      ));
-    }
-  }
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrqual', 'css/hrqual.css');
   CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/hrqual.js');
 
