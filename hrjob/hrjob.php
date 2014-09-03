@@ -102,7 +102,7 @@ function hrjob_civicrm_install() {
       'label'      => ts('Hours Types'),
       'name'       => 'hoursType',
       'url'        => 'civicrm/hour/editoption',
-      'permission' => 'administer civiCRM',
+      'permission' => 'administer CiviCRM',
       'parent_id'  => $administerNavId,
     ),
   );
