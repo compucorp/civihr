@@ -92,9 +92,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
       //condition to check if it has any manager against this absence
       if (array_key_exists(0, $resultAct['values'][0]['assignee_contact_id'])) {
-        $this->_managerContactID = $resultAct['values'][0]['assignee_contact_id'][0];
+        $this->_managerContactID[] = $resultAct['values'][0]['assignee_contact_id'];
       }
-
       //Mode is edit if user has edit or admisniter permission or is manager to this absence or
       //(target/requested user and action is update and has manage own Absence permission)
       //(else mode is view if the action is view or already reviewed) and has (view permission
@@ -176,12 +175,25 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $this->_targetContactID = $this->_loginUserID;
       }
       if ($this->_targetContactID) {
-        $this->_managerContactID = CRM_Core_DAO::getFieldValue('CRM_HRJob_DAO_HRJobRole', $this->_targetContactID, 'manager_contact_id', 'contact_id');
+        $jobID  = civicrm_api3('HRJob', 'get', array(
+          'is_primary' => 1,
+          'contact_id' => $this->_targetContactID,
+          'return' => "id",
+        ));
+        if ($jobID['values']) {
+          $result = civicrm_api3('HRJobRole', 'get', array(
+            'sequential' => 1,
+            'return' => "manager_contact_id",
+            'job_id' => $jobID['id'],
+          ));
+          foreach($result['values'] as $key => $val) {
+            $this->_managerContactID[] = $val['manager_contact_id'];
+          }
+        }
       } else {
         $this->_managerContactID = NULL;
       }
     }
-
     $this->assign('mode', $this->_mode);
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css');
     parent::preProcess();
@@ -518,16 +530,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $targetContactResult = civicrm_api3('contact', 'get', array(
       'id' => $this->_targetContactID,
     ));
-    $managerContactResult = civicrm_api3('contact', 'get', array(
-      'id' => $this->_managerContactID,
-    ));
     $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
     $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
-
-    if (!empty($this->_managerContactID) && !empty($managerContactResult['values'])) {
-      $mailprm[$this->_managerContactID]['display_name'] = $managerContactResult['values'][$this->_managerContactID]['display_name'];
-      $mailprm[$this->_managerContactID]['email'] = $managerContactResult['values'][$this->_managerContactID]['email'];
-    }
 
     $tplParams = array(
       'messageTemplateID' => $msgTempResult['values'][$msgTempResult['id']]['id'],
@@ -602,19 +606,32 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
       if (array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) {
         $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
-        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
-        $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
       elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
         if ($this->_managerContactID) {
-          $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+          $emailID = civicrm_api3('contact', 'get', array(
+            'id' => $this->_loginUserID,
+          ));
+          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
         }
         $sendTemplateParams['tplParams']['approval'] = TRUE;
-        self::sendAbsenceMail($mailprm, $sendTemplateParams);
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
-        $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
       }
+      $managerContactResult = array();
+      if ($this->_managerContactID) {
+        foreach ($this->_managerContactID as $key => $val) {
+          $managerContactResult = civicrm_api3('contact', 'get', array(
+            'id' => $val,
+          ));
+          if (!empty($val) && !empty($managerContactResult['values'])) {
+            $mailprm[$val]['display_name'] = $managerContactResult['values'][$val]['display_name'];
+            $mailprm[$val]['email'] = $managerContactResult['values'][$val]['email'];
+          }
+        }
+      }
+      self::sendAbsenceMail($mailprm, $sendTemplateParams);
+      $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}#hrabsence/list"));
     }
     elseif ($this->_mode == 'edit') {
       if (array_key_exists('_qf_AbsenceRequest_done_cancelabsence', $submitValues)) {
@@ -663,8 +680,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           ));
         }
         $result = civicrm_api3('Activity', 'create', $activityParam);
-        if ($this->_managerContactID) {
-          $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+        if ($this->_managerContactID[0]) {
+          $emailID = civicrm_api3('contact', 'get', array(
+            'id' => $this->_loginUserID,
+          ));
+          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
         }
         $sendTemplateParams['tplParams']['approval'] = $sendMail = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
@@ -682,8 +702,11 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         foreach($subact['values'] as $key=>$val) {
           civicrm_api3('Activity', 'create', array('id' =>$val['id'] ,'status_id' => $statusId,));
         }
-        if ($this->_managerContactID) {
-          $sendTemplateParams['from'] = $mailprm[$this->_managerContactID]['email'];
+        if ($this->_managerContactID[0]) {
+          $emailID = civicrm_api3('contact', 'get', array(
+            'id' => $this->_loginUserID,
+          ));
+          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
         }
         $sendTemplateParams['tplParams']['reject'] = $sendMail = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been Rejected.'), ts('Rejected'), 'success');
@@ -741,6 +764,17 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $sendTemplateParams['tplParams']['customGroup'] = $customGroup;
       }
       if ($sendMail) {
+        //send mail to multiple manager
+        $managerContactResult = array();
+        foreach ($this->_managerContactID[0] as $key => $val) {
+          $managerContactResult = civicrm_api3('contact', 'get', array(
+            'id' => $val,
+          ));
+          if (!empty($val) && !empty($managerContactResult['values'])) {
+            $mailprm[$val]['display_name'] = $managerContactResult['values'][$val]['display_name'];
+            $mailprm[$val]['email'] = $managerContactResult['values'][$val]['email'];
+          }
+        }
         self::sendAbsenceMail($mailprm, $sendTemplateParams);
       }
     }

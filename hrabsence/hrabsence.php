@@ -124,11 +124,11 @@ function hrabsence_civicrm_install() {
     {ts}Dates:{/ts} {$startDate} - {$endDate}
 
       {if $cancel}
-        {ts}Your leave has been cancelled.{/ts}
+        {ts}Leave has been cancelled.{/ts}
       {elseif $reject}
-        {ts}Your leave has been rejected.{/ts}
+        {ts}Leave has been rejected.{/ts}
       {elseif $approval}
-        Your leave has been approved for {$appDays}.
+        Leave has been approved for {$appDays}.
       {/if}
 
       {ts}Date{/ts} | {ts}Absence{/ts} | {if $approval and $totDays neq $appDays} {ts}Approve{/ts} {/if}
@@ -168,11 +168,11 @@ function hrabsence_civicrm_install() {
       </tbody>
     </table>
       {if $cancel}
-        <p> {ts}Your leave has been cancelled.{/ts} </p>
+        <p> {ts}Leave has been cancelled.{/ts} </p>
       {elseif $reject}
-        <p> {ts}Your leave has been rejected.{/ts} </p>
+        <p> {ts}Leave has been rejected.{/ts} </p>
       {elseif $approval}
-        <p> Your leave has been approved for {$appDays}.</p>
+        <p> Leave has been approved for {$appDays}.</p>
       {/if}
       <br/>
       <table border="1" border-spacing="0">
@@ -223,10 +223,10 @@ function hrabsence_civicrm_install() {
         </tbody>
       </table>
     {/if}';
-
+  $subject = '{if $approval}Absences Approved{elseif $cancel}Absences Cancelled{elseif $reject}Absences Rejected{else}Absences Application{/if}';
   $msg_params = array(
     'msg_title' => 'Absence Email',
-    'msg_subject' => 'Absences Application',
+    'msg_subject' => $subject,
     'msg_text' => $msg_text,
     'msg_html' => $msg_html,
     'workflow_id' => NULL,
