@@ -90,11 +90,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
             $('input[name="total_pay_amount"]').val(pay.get("pay_amount"));
             $('input[name="total_pay"]').val(totalPay);
             totalPercent =  view.actualPayToRole();
-            totalAmnt = pay.get("pay_currency")+' '+parseFloat(per)+' per '+pay.get("pay_unit");
+            totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per '+pay.get("pay_unit");
             $('input[name="actual_amount"]').val(totalAmnt);
             view.$('[name="percent_pay_role'+suffix+'"]').on("keyup", function() {
               totalPercent =  view.actualPayToRole();
-              totalAmnt = pay.get("pay_currency")+' '+parseFloat(per)+' per '+pay.get("pay_unit");
+              totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per '+pay.get("pay_unit");
               $('input[name="actual_amount"]').val(totalAmnt);
             });
           }
@@ -166,7 +166,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     payStat: function() {
       var payTotal = 0;
       _.forEach(this.collection.models, function (model) {
-        var suffix = '_' + model.cid,
+        var suffix = '_' + model.cid;
 	payTotal += parseInt(payTemp);
       });
       payTotal = parseInt(payTotal);
