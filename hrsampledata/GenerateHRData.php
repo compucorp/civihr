@@ -842,6 +842,8 @@ class GenerateHRData {
       return;
     }
 
+    $startDate = date('Y-m-d', strtotime(date('Y-m')." -1 month"));
+    $endDate = date('Y-m-d', strtotime(date('Y-m')." last day of +2 year"));
     for ($i = 1; $i <= mt_rand(1, 3); $i++) {
       //sample data for HRJob table
       $jobValues = array(
@@ -852,7 +854,7 @@ class GenerateHRData {
         'contract_type' => $this->randomItem('contract_type'),
         'period_type' => $this->randomItem('period_type'),
         'period_start_date' => $this->randomDate('20090101', '20121231'),
-        'period_end_date' => $this->randomDate('20130101', '20151231'),
+        'period_end_date' => $this->randomDate($startDate, $endDate),
         'notice_amount' => $this->randomItem('notice_amount'),
         'notice_unit' => $this->randomItem('notice_unit'),
         'location' => $this->randomItem('location'),
@@ -970,10 +972,12 @@ class GenerateHRData {
       return;
     }
 
+    $startDate = date('Y-m-d', strtotime(date('Y-m')." -1 month"));
+    $endDate = date('Y-m-d', strtotime(date('Y-m')." last day of +2 year"));
     $values = array(
       'entity_id' => $cid,
       'initial_join_date' => $this->randomDate('20090101', '20111231'),
-      'final_termination_date' => $this->randomDate('20120101', '20151231'),
+      'final_termination_date' => $this->randomDate($startDate, $endDate),
     );
 
     $this->insertCustomData($gid, $values);
