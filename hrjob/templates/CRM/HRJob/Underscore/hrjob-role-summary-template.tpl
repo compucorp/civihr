@@ -18,10 +18,15 @@
     <div class="crm-label">{ts}Cost Center{/ts}</div>
     <div class="crm-content"><span name="cost_center"/></div>
   </div>
-  
+
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Funder{/ts}</div>
-    <div class="crm-content"><a href="#" class="hrjob-funder" /></div>
+    <div class="crm-content">
+      {literal}<%
+      _.each(funderMulti, function(funderId){  %>{/literal}
+        <div><a href="#" class="hrjob-funder" id="hrjob-role-funder-{literal}<%- funderId %>{/literal}"/></div>
+    {literal}<% }); %>{/literal}
+    </div>
   </div>
 
   <div class="crm-summary-row">

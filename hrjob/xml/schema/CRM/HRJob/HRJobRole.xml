@@ -96,7 +96,7 @@
     <pseudoconstant>
       <optionGroupName>hrjob_department</optionGroupName>
     </pseudoconstant>
-    <uniqueName>hrjob_department</uniqueName>
+    <uniqueName>hrjob_role_department</uniqueName>
   </field>
   <index>
     <name>index_department</name>
@@ -114,7 +114,7 @@
     </pseudoconstant>
     <export>true</export>
     <import>true</import>
-    <uniqueName>hrjob_level_type</uniqueName>
+    <uniqueName>hrjob_role_level_type</uniqueName>
   </field>
   <index>
     <name>index_level_type</name>
@@ -181,7 +181,7 @@
   <field>
     <name>percent_pay_role</name>
     <title>Percent of Pay Assigned to this Role</title>
-    <type>decimal</type>
+    <type>int unsigned</type>
     <default>0</default>
     <comment>Percentage of Pay Assigned to this Role</comment>
     <export>true</export>

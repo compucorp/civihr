@@ -171,16 +171,6 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
-
-          // custom field
-          'is_tied_to_funding' =>
-          array(
-            'title' => ts('Is Tied to Funding'),
-            'default' => NULL,
-            'type' => CRM_Utils_Type::T_INT,
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
-          ),
         ),
         'grouping' => array('job-fields' => ts('Job')),
       ),

@@ -20,14 +20,17 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       roleCollection.fetch({
         success: function() {
           HRApp.trigger('ui:unblock');
-            var job = jobCollection.first(), payS = 0,
-            hourUnit = null,
+            var job = jobCollection.first(), payTotal = 0,
+            hourUnit = null,hoursType = null,
             hourAmount = null;
 	  if (hourCollection.first()) {
             hourUnit = hourCollection.first().get("hours_unit");
             hourAmount = hourCollection.first().get("hours_amount");
+            hoursType = hourCollection.first().get("hours_type");
 	  }
-
+	  _.forEach(roleCollection.models, function (model) {
+	      payTotal += parseInt(model.get('percent_pay_role'));
+	  });
           var mainView = new Role.TableView({
             newModelDefaults: {
               job_id: jobId,
@@ -35,8 +38,14 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
               location: job.get("location"),
               hours: hourAmount,
               role_hours_unit: hourUnit,
+              percent_pay_role: 100 - parseInt(payTotal)
             },
-            collection: roleCollection
+            collection: roleCollection,
+            hourInfo: {
+              hourUnit: hourUnit,
+              hourAmount: hourAmount,
+              hoursType: hoursType
+	    }
           });
           HRApp.mainRegion.show(mainView);
         },

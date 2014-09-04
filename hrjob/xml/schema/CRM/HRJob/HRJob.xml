@@ -64,28 +64,6 @@
   </index>
 
   <field>
-    <name>is_tied_to_funding</name>
-    <type>boolean</type>
-    <default>0</default>
-  </field>
-
-  <field>
-    <name>funding_org_id</name>
-    <title>Funding Organization</title>
-    <type>int unsigned</type>
-    <comment>FK to Contact ID</comment>
-    <export>true</export>
-    <import>true</import>
-    <uniqueName>hrjob_funding_org_id</uniqueName>
-  </field>
-  <foreignKey>
-    <name>funding_org_id</name>
-    <table>civicrm_contact</table>
-    <key>id</key>
-    <onDelete>SET NULL</onDelete>
-  </foreignKey>
-
-  <field>
     <name>funding_notes</name>
     <type>text</type>
   </field>

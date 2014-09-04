@@ -170,7 +170,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
   /**
    * Percentage of Pay Assigned to this Role
    *
-   * @var float
+   * @var int unsigned
    */
   public $percent_pay_role;
   /**
@@ -344,12 +344,8 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         ) ,
         'hrjob_role_percent_pay_role' => array(
           'name' => 'percent_pay_role',
-          'type' => CRM_Utils_Type::T_MONEY,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Percent of Pay Assigned to this Role') ,
-          'precision' => array(
-            20,
-            2
-          ) ,
           'import' => true,
           'where' => 'civicrm_hrjob_role.percent_pay_role',
           'headerPattern' => '',
@@ -387,7 +383,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'description' => 'description',
         'hours' => 'hrjob_role_hours',
         'role_hours_unit' => 'hrjob_role_unit',
-        'region' => 'region',
+        'region' => 'hrjob_region',
         'department' => 'hrjob_role_department',
         'level_type' => 'hrjob_role_level_type',
         'manager_contact_id' => 'manager_contact_id',

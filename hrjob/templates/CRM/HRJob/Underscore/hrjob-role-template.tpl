@@ -1,5 +1,4 @@
 <script id="hrjob-role-template" type="text/template">
-  <form>
     <div class="crm-summary-row">
       <div class="crm-label">
         <label for="hrjob-title">{ts}Title{/ts}</label>
@@ -50,6 +49,8 @@
       </div>
       <div class="crm-content">
         <input id="hrjob-total_pay" name="total_pay" size="15" type="text" disabled="true"/>
+        <input id="hrjob-total_pay_amount" name="total_pay_amount" size="15" type="hidden" disabled="true"/>
+
       </div>
     </div>
 
@@ -58,7 +59,7 @@
         <label for="hrjob-percent_pay_role">{ts}Percent of Pay Assigned to this Role{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-percent_pay_role" name="percent_pay_role" size="15" type="float" /> %
+        <input id="hrjob-percent_pay_role_<%= cid %>" name="percent_pay_role_<%= cid %>" size="15" type="int" /> %
       </div>
     </div>
 
@@ -67,7 +68,7 @@
         <label for="hrjob-Actual_amount">{ts}Pay assigned to this role{/ts}</label>
       </div>
       <div class="crm-content">
-        <span id="hrjob-actual_amount" name="actual_amount" size="15" type="float" >  </span>
+        <input id="hrjob-actual_amount" name="actual_amount" size="15" type="float" disabled="true">  </span>
       </div>
     </div>
 
@@ -175,5 +176,4 @@
       </div>
     </div>
 
-  </form>
 </script>

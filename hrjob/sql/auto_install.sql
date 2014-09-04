@@ -20,8 +20,6 @@ CREATE TABLE `civicrm_hrjob` (
      `contact_id` int unsigned    COMMENT 'FK to Contact ID',
      `position` varchar(127)    COMMENT 'Internal name for the job (for HR)',
      `title` varchar(127)    COMMENT 'Negotiated name for the job',
-     `is_tied_to_funding` tinyint   DEFAULT 0 ,
-     `funding_org_id` int unsigned    COMMENT 'FK to Contact ID',
      `funding_notes` text    ,
      `contract_type` varchar(63)    COMMENT 'Contract for employment, internship, etc.',
      `period_type` varchar(63)    COMMENT '.',
@@ -55,7 +53,7 @@ CREATE TABLE `civicrm_hrjob` (
         is_primary
   )
   
-,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_funding_org_id FOREIGN KEY (`funding_org_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
+,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -248,7 +246,7 @@ CREATE TABLE `civicrm_hrjob_role` (
      `organization` varchar(127)    ,
      `cost_center` varchar(127)    ,
      `funder` varchar(127)    COMMENT 'FK to Contact ID',
-     `percent_pay_role` decimal(20,2)   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
+     `percent_pay_role` int unsigned  DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
      `location` varchar(127)    COMMENT 'Main work location' 
 ,
     PRIMARY KEY ( `id` )

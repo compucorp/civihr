@@ -6,6 +6,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     template: '#hrjob-role-row-template',
     templateHelpers: function() {
       return {
+        'cid': this.model.cid,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -49,6 +50,13 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       }
       this.$('.hrjob-role-toggle').toggleClass('open', open).toggleClass('closed', !open);
       this.$('.toggle-role-form').toggle(open);
+    },
+    onValidateRulesCreate: function(view, r) {
+      var suffix = '_' + this.model.cid;
+      r.rules['percent_pay_role' + suffix] = {
+        required: true,
+        number: true
+      };
     }
   });
 
@@ -56,6 +64,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     template: '#hrjob-role-template',
     templateHelpers: function() {
       return {
+        'cid': this.model.cid,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -65,21 +74,47 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     onRender: function() {
       $(this.$el).trigger('crmLoad');
-      var payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
-        crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
-      });
+      var view = this,
+        suffix = '_' + this.model.cid,
+        payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
+          crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
+        });
       payCollection.fetch({
         success: function(e) {
           var pay = payCollection.first(),
-	    totalPay = 0;
+            totalAmnt = 0,
+            totalPercent = 0,
+            totalPay = 0;
           if (pay && pay.get("pay_grade") == "paid" ) {
-	    totalPay = pay.get("pay_currency")+' '+pay.get("pay_amount")+' per '+pay.get("pay_unit");
-	  $('input[name="total_pay_currency"]').val(pay.get("pay_currency"));
-	  $('input[name="total_pay_amount"]').val(pay.get("pay_amount"));
-	  $('input[name="total_pay_unit"]').val(pay.get("pay_unit"));
-	  }
-	  $('input[name="total_pay"]').val(totalPay);
+            totalPay = pay.get("pay_currency")+' '+pay.get("pay_amount")+' per '+pay.get("pay_unit");
+            $('input[name="total_pay_amount"]').val(pay.get("pay_amount"));
+            $('input[name="total_pay"]').val(totalPay);
+            totalPercent =  view.actualPayToRole();
+            totalAmnt = pay.get("pay_currency")+' '+parseFloat(per)+' per '+pay.get("pay_unit");
+            $('input[name="actual_amount"]').val(totalAmnt);
+            view.$('[name="percent_pay_role'+suffix+'"]').on("keyup", function() {
+              totalPercent =  view.actualPayToRole();
+              totalAmnt = pay.get("pay_currency")+' '+parseFloat(per)+' per '+pay.get("pay_unit");
+              $('input[name="actual_amount"]').val(totalAmnt);
+            });
+          }
         },
+      });
+    },
+    actualPayToRole: function() {
+      var suffix = '_' + this.model.cid,
+        totalPay = $('input[name="total_pay_amount"]').val(),
+        percentPay = $('input[name="percent_pay_role'+suffix+'"]').val(),
+        totalPercent = parseInt(totalPay) * parseInt(percentPay) / 100;
+      return totalPercent;
+    },
+    onBindingCreate: function(bindings) {
+      // The field names in each <TR> must be distinct, so we append the cid.
+      // However, ModelBinder doesn't know about the cid suffix, so we fix it.
+      var suffix = '_' + this.model.cid;
+	_.each(['percent_pay_role'], function(field) {
+        bindings[field] = bindings[field + suffix];
+        delete bindings[field + suffix];
       });
     },
     onShow: function() {
@@ -106,6 +141,9 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.listenTo(HRApp, 'navigate:warnings', this.onNavigateWarnings);
     },
     onRender: function() {
+      var view = this;
+      var rules = this.createValidationRules();
+      view.$('form').validate(rules);
       if (CRM.jobTabApp.isLogEnabled) {
         this.$('.hrjob-revision-link').crmRevisionLink({
           reportId: CRM.jobTabApp.loggingReportId,
@@ -115,6 +153,63 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       } else {
         this.$('.hrjob-revision-link').hide();
       }
+    },
+    createValidationRules: function() {
+      var rules = _.extend({}, CRM.validate.params);
+      rules.rules || (rules.rules = {});
+      this.triggerMethod("validateRules:create", this, rules);
+      _.each(this.children.toArray(), function(child) {
+        child.triggerMethod("validateRules:create", child, rules);
+      });
+      return rules;
+    },
+    payStat: function() {
+      var payTotal = 0;
+      _.forEach(this.collection.models, function (model) {
+        var suffix = '_' + model.cid,
+	payTotal += parseInt(payTemp);
+      });
+      payTotal = parseInt(payTotal);
+      if (payStats['total'] > 100) {
+        return false;
+      }
+      return payStat;
+    },
+    hourStat: function() {
+      var view =this,
+        hourInfo = view.options.hourInfo,
+        actualHour = view.hourCalculation(hourInfo.hourUnit, hourInfo.hoursType, hourInfo.hourAmount),
+	job_hours_time = CRM.PseudoConstant.job_hours_time,
+        addHour = 0, totalHour = 0, hourUnit = null, hourAmnt = 0;
+      _.forEach(view.collection.models, function (model) {
+        hourAmnt = model.get('hours');
+        hourUnit = model.get('role_hours_unit');
+        totalHour = view.hourCalculation(hourUnit, hourInfo.hoursType, hourAmnt);
+        addHour += parseInt(totalHour);
+      });
+      if (parseInt(addHour) > parseInt(actualHour)) {
+        return false;
+      }
+      return true;
+    },
+    hourCalculation: function($hrs_unit = null, $fullTimeHour = 0, hourAmount = 0) {
+      var $working_days = CRM.PseudoConstant.working_days,
+        $totalHour = 0,
+        $hour = 0;
+      if ($hrs_unit == 'Day') {
+        $hour = $fullTimeHour;
+      }
+      else if ($hrs_unit == 'Week') {
+        $hour = $fullTimeHour * $working_days.perWeek;
+      }
+      else if ($hrs_unit == 'Month') {
+        $hour = $fullTimeHour * $working_days.perMonth;
+      }
+      else if ($hrs_unit == 'Year') {
+        $hour = $fullTimeHour * $working_days.perMonth * 12;
+      }
+      $totalHour = parseInt(hourAmount) * parseInt($hour);
+      return parseInt($totalHour);
     },
     appendHtml: function(collectionView, itemView, index) {
       collectionView.$('tr.hrjob-role-final').before(itemView.el);
@@ -129,7 +224,21 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       return false;
     },
     doSave: function() {
-      var view = this;
+      var view = this,
+        rules = this.createValidationRules();
+      view.$('form').validate(rules);
+      if(!this.payStat()) {
+        CRM.alert(ts('The sum of the Percent of Pay Assigned for all Roles for a Job Position must never be more than 100'), ts('Invalid Percent of Pay Assigned'), 'error');
+        return false;
+      }
+      if(!this.hourStat()) {
+        CRM.alert(ts('The sum of the hours for all Roles for a Job Position must never be more than total hours defined'), ts('Invalid Hours'), 'error');
+        return false;
+      }
+      if (!this.$('form').valid()) {
+        return false;
+      }
+
       HRApp.trigger('ui:block', ts('Saving'));
       view.collection.save({
         success: function() {
@@ -143,6 +252,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
+
     },
     doReset: function() {
       var view = this;
@@ -160,6 +271,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           // Note: CRM.Backbone.sync displays API errors with CRM.alert
         }
       });
+      return false;
     },
     onNavigateWarnings: function(route, options) {
       // The "Role" table may include a mix of existing (modifiable) rows,

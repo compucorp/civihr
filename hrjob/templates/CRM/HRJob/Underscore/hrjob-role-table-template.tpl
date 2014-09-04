@@ -11,6 +11,7 @@
     <a class="css_right hrjob-revision-link" data-table-name="civicrm_hrjob_role" href="#" title="{ts}View Revisions{/ts}">(View Revisions)</a>
     {* literal}<% } %>{/literal *}
   </h3>
+  <form>
 
   <table class="hrjob-role-table">
     <thead>
@@ -32,4 +33,6 @@
   </table>
 
   <%= RenderUtil.standardButtons() %>
+  </form>
+
 </script>

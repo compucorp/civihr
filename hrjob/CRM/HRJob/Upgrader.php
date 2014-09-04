@@ -484,6 +484,8 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
         );
         civicrm_api3('HRJobRole', 'create', $params);
       }
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
+
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
     }
     return TRUE;

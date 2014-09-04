@@ -6,7 +6,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     tagName: 'tr',
     template: '#hrjob-role-summary-row-template',
     templateHelpers: function() {
+      var funderExpr = this.model.get('funder'),
+        funders = funderExpr.split(',');
       return {
+        'funderMulti' : funders,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -27,7 +30,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
       this.renderFunder();
-
       this.toggledRegion.show(new Role.SummaryView({
         model: this.model
       }));
@@ -38,8 +40,13 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.$('.toggle-role-form').toggle(open);
     },
     renderFunder: function() {
-      this.$('a.hrjob-funder').hrContactLink({
-        cid: this.model.get('funder')
+      var view = this,
+        funderExpr = this.model.get('funder'),
+        funders = funderExpr.split(',');
+      _.each(funders, function(funderId){
+        view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
+          cid: funderId
+        });
       });
     }
   });
@@ -47,7 +54,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
   Role.SummaryView = Marionette.ItemView.extend({
     template: '#hrjob-role-summary-template',
     templateHelpers: function() {
+      var funderExpr = this.model.get('funder'),
+        funders = funderExpr.split(',');
       return {
+	'funderMulti' : funders,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -69,8 +79,13 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       });
     },
     renderFunder: function() {
-      this.$('a.hrjob-funder').hrContactLink({
-        cid: this.model.get('funder')
+      var view = this,
+        funderExpr = this.model.get('funder'),
+        funders = funderExpr.split(',');
+      _.each(funders, function(funderId){
+        view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
+          cid: funderId
+        });
       });
     }
   });
