@@ -459,20 +459,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
     if ($this->_force) {
-      $whereClauses[] = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()) AND ({$this->_aliases['civicrm_hrjob']}.period_end_date >= CURDATE() OR {$this->_aliases['civicrm_hrjob']}.period_end_date IS NULL))";
-    }
-
-    if ($this->_params["hrjob_is_primary_value"] == 1) {
-      $where1 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR ({$addWhereClauses}))";
-      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 1", $where1, $this->_where);
-
-    }
-    elseif ($this->_params["hrjob_is_primary_value"] == '0') {
-      $where2 = "({$this->_aliases['civicrm_hrjob']}.is_primary = 0 OR {$addWhereClauses})";
-      $this->_where = str_replace("{$this->_aliases['civicrm_hrjob']}.is_primary = 0", $where2, $this->_where);
-    }
-    else {
-      $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary IN (0,1) OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) OR ({$dbAlias} IS NULL OR {$addWhereClauses}))";
+      $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()))";
     }
 
     $whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
