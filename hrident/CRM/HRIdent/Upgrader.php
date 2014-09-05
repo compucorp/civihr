@@ -212,6 +212,10 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     $optgroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name');
     CRM_Core_DAO::setFieldValue('CRM_Core_DAO_OptionGroup', $optgroupID, 'title', 'Government ID');
 
+    $sql = "UPDATE civicrm_custom_field SET in_selector = '1' WHERE custom_group_id = {$cusGroupID} AND name IN ('Type','Number','Issue_Date','Expire_Date','Country','State_Province','Evidence_File')";
+    CRM_Core_DAO::executeQuery($sql);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET style = 'Tab with table' WHERE id = {$cusGroupID}");
+
     return TRUE;
   }
 }

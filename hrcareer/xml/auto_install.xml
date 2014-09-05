@@ -6,7 +6,7 @@
       <name>Career</name>
       <title>Career History</title>
       <extends>Individual</extends>
-      <style>Tab</style>
+      <style>Tab with table</style>
       <collapse_display>0</collapse_display>
       <help_pre></help_pre>
       <help_post></help_post>
@@ -37,6 +37,7 @@
       <note_rows>4</note_rows>
       <column_name>start_date_7</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>End_Date</name>
@@ -55,6 +56,7 @@
       <note_rows>4</note_rows>
       <column_name>end_date_8</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Name_of_Organisation</name>
@@ -72,6 +74,7 @@
       <note_rows>4</note_rows>
       <column_name>name_of_organisation_9</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Occupation_Type</name>
@@ -90,6 +93,7 @@
       <column_name>occupation_type_10</column_name>
       <option_group_name>occupation_type_20130617111138</option_group_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Job_Title_Course_Name</name>
@@ -107,6 +111,7 @@
       <note_rows>4</note_rows>
       <column_name>job_title_course_name_11</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Full_time_Part_time</name>
@@ -125,6 +130,7 @@
       <column_name>full_time_part_time_12</column_name>
       <option_group_name>full_time_part_time_20130617111405</option_group_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Paid_Unpaid</name>
@@ -143,6 +149,7 @@
       <column_name>paid_unpaid_13</column_name>
       <option_group_name>paid_unpaid_20130617111520</option_group_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Reference_Supplied</name>
@@ -160,6 +167,7 @@
       <note_rows>4</note_rows>
       <column_name>reference_supplied_14</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Evidence_File</name>
@@ -177,6 +185,7 @@
       <note_rows>4</note_rows>
       <column_name>evidence_file_42</column_name>
       <custom_group_name>Career</custom_group_name>
+      <in_selector>1</in_selector>
     </CustomField>
     <CustomField>
       <name>Evidence_Note</name>

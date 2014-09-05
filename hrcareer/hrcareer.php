@@ -134,25 +134,6 @@ function hrcareer_civicrm_managed(&$entities) {
   return _hrcareer_civix_civicrm_managed($entities);
 }
 
-
-/**
- * Implementation of hook_civicrm_tabs
- */
-function hrcareer_civicrm_tabs(&$tabs, $contactID) {
-  $cgid = hrcareer_getCustomGroupId();
-  foreach ($tabs as $k => $v) {
-    if ($v['id'] == "custom_{$cgid}") {
-      $tabs[$k]['url'] = CRM_Utils_System::url('civicrm/profile/edit', array(
-        'reset' => 1,
-        'gid' => hrcareer_getUFGroupID(),
-        'id' => $contactID,
-        'snippet' => 1,
-        'onPopupClose' => 'redirectToTab',
-      ));
-    }
-  }
-}
-
 function hrcareer_getCustomGroupId() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
   return array_search('Career', $groups);

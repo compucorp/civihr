@@ -156,4 +156,13 @@ class CRM_HRMed_Upgrader extends CRM_HRMed_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); //PEAR Log interface
+    $cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Medical_Disability', 'id', 'name');
+    $sql = "UPDATE civicrm_custom_field SET in_selector = '1' WHERE custom_group_id = {$cusGroupID} AND name IN ('Condition','Type','Special_Requirements','Evidence_File')";
+    CRM_Core_DAO::executeQuery($sql);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET style = 'Tab with table' WHERE id = {$cusGroupID}");
+    return TRUE;
+  }
 }

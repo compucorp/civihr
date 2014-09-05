@@ -156,4 +156,13 @@ class CRM_HRQual_Upgrader extends CRM_HRQual_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1400() {
+    $this->ctx->log->info('Planning update 1400'); //PEAR Log interface
+    $cusGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Qualifications', 'id', 'name');
+    $sql = "UPDATE civicrm_custom_field SET in_selector = '1' WHERE custom_group_id = {$cusGroupID} AND name IN ('Name_of_Skill','Category_of_Skill','Level_of_Skill','Certification_Acquired_','Name_of_Certification','Certification_Authority','Grade_Achieved','Attain_Date','Expiry_Date','Evidence_File')";
+    CRM_Core_DAO::executeQuery($sql);
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET style = 'Tab with table' WHERE id = {$cusGroupID}");
+    return TRUE;
+  }
 }
