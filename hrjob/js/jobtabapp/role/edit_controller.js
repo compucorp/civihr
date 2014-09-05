@@ -36,8 +36,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
               job_id: jobId,
               title: job.get("position"),
               location: job.get("location"),
-              hours: hourAmount,
-              role_hours_unit: hourUnit,
               percent_pay_role: 100 - parseInt(payTotal)
             },
             collection: roleCollection,
