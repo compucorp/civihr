@@ -490,4 +490,59 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1403() {
+    $this->ctx->log->info('Applying update 1403');
+    if (CRM_Core_DAO::checkTableExists("civicrm_hrjob_hour")) {
+      if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_hour', 'fte_num')) {
+        CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_hour ADD COLUMN fte_num int unsigned DEFAULT 1 COMMENT "." AFTER hours_fte');
+      }
+      if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_hour', 'fte_denom')) {
+        CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_hour ADD COLUMN fte_denom int unsigned DEFAULT 1 COMMENT "." AFTER fte_num');
+      }
+    }
+    $result = civicrm_api3('HRJobHour', 'get');
+    foreach ($result['values'] as $key => $value) {
+      $fteFraction = CRM_HRJob_Upgrader::decToFraction($value['hours_fte']);
+      CRM_Core_DAO::executeQuery("update civicrm_hrjob_hour set fte_num={$fteFraction[0]} , fte_denom={$fteFraction[1]} where id = {$value['id']}");
+    }
+    return TRUE;
+  }
+
+  function decToFraction($fte) {
+    $fteDecimalPart = explode('.', $fte);
+    $array  = str_split($fteDecimalPart[1]);
+    $numerators = array(0, 1);
+    $denominators = array(1, 0);
+    $tempFte = $fte;
+    $result= '';
+    //check whether same value is repeating  in decimal like 3 is repeating in 0.33333 0.33 and have value in decimal more than 1
+    if(count(array_unique($array)) == 1 && count($array) != 1) {
+      $repeatNum = array_unique($array);
+      $num = $repeatNum[0];
+      $denom = 9;
+      $gcd = CRM_HRJob_Upgrader::commonDivisor($num,$denom);
+      $val = array($num/$gcd, $denom/$gcd);
+      return $val;
+    }
+    else {
+      for ($i = 2; $i < 1000; $i++) {
+        $floorFte = floor($tempFte);
+        $numerators[$i] = $floorFte * $numerators[$i-1] + $numerators[$i-2];
+        $denominators[$i] = $floorFte * $denominators[$i-1] + $denominators[$i-2];
+        $result = $numerators[$i] / $denominators[$i];
+        if ((string)$result == (string)$fte) {
+          $num = $numerators[$i];
+          $denom = $denominators[$i];
+          $val = array($num, $denom);
+          return $val;
+        }
+        $tempFte = 1/($tempFte-$floorFte);
+      }
+    }
+  }
+
+  function commonDivisor($a,$b) {
+    return ($a % $b) ? CRM_HRJob_Upgrader::commonDivisor($b,$a % $b) : $b;
+  }
 }

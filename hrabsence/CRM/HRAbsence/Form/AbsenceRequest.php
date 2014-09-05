@@ -187,7 +187,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
             'job_id' => $jobID['id'],
           ));
           foreach($result['values'] as $key => $val) {
-            $this->_managerContactID[] = $val['manager_contact_id'];
+            if(array_key_exists('manager_contact_id',$val)) {
+              $this->_managerContactID[] = $val['manager_contact_id'];
+            }
           }
         }
       } else {
