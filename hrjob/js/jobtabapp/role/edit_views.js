@@ -166,14 +166,15 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     payStat: function() {
       var payTotal = 0;
       _.forEach(this.collection.models, function (model) {
-        var suffix = '_' + model.cid;
+        var suffix = '_' + model.cid,
+          payTemp = 0;
+        payTemp = model.get('percent_pay_role');
 	payTotal += parseInt(payTemp);
       });
-      payTotal = parseInt(payTotal);
-      if (payStats['total'] > 100) {
+      if (parseInt(payTotal) > 100) {
         return false;
       }
-      return payStat;
+      return true;
     },
     hourStat: function() {
       var view =this,
