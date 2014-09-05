@@ -7,7 +7,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     template: '#hrjob-role-summary-row-template',
     templateHelpers: function() {
       var funderExpr = this.model.get('funder'),
+        funders = null;
+      if (funderExpr) {
         funders = funderExpr.split(',');
+      }
       return {
         'funderMulti' : funders,
         'RenderUtil': CRM.HRApp.RenderUtil,
@@ -42,7 +45,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     renderFunder: function() {
       var view = this,
         funderExpr = this.model.get('funder'),
+        funders = null;
+      if (funderExpr) {
         funders = funderExpr.split(',');
+      }
       _.each(funders, function(funderId){
         view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
           cid: funderId
@@ -55,7 +61,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     template: '#hrjob-role-summary-template',
     templateHelpers: function() {
       var funderExpr = this.model.get('funder'),
+        funders = null;
+      if (funderExpr) {
         funders = funderExpr.split(',');
+      }
       return {
 	'funderMulti' : funders,
         'RenderUtil': CRM.HRApp.RenderUtil,
@@ -81,7 +90,10 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     renderFunder: function() {
       var view = this,
         funderExpr = this.model.get('funder'),
+        funders = null;
+      if (funderExpr) {
         funders = funderExpr.split(',');
+      }
       _.each(funders, function(funderId){
         view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
           cid: funderId
