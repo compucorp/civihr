@@ -193,7 +193,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       }
       return true;
     },
-    hourCalculation: function($hrs_unit = null, $fullTimeHour = 0, hourAmount = 0) {
+    hourCalculation: function($hrs_unit, $fullTimeHour, hourAmount) {
       var $working_days = CRM.PseudoConstant.working_days,
         $totalHour = 0,
         $hour = 0;
