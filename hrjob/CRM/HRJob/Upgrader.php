@@ -456,7 +456,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery("INSERT INTO civicrm_contact (contact_type, display_name)
         SELECT 'Organization', organization FROM civicrm_hrjob_role chr
           WHERE NOT EXISTS (SELECT display_name
-            FROM civicrm_contact WHERE name=chr.organization)
+            FROM civicrm_contact WHERE display_name = chr.organization)
           LIMIT 1");
 
       CRM_Core_DAO::executeQuery('UPDATE civicrm_hrjob_role chr SET funder = (SELECT id FROM civicrm_contact cc where chr.organization = cc.display_name)');
