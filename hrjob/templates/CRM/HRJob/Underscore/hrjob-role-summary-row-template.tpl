@@ -8,6 +8,16 @@
     </div>
   </td>
   <td>
+      {literal}<%
+      _.each(funderMulti, function(funderId){  %>{/literal}
+      <div><a href="#" class="hrjob-funder" id="hrjob-role-funder-{literal}<%- funderId %>{/literal}"/></div><hr/>
+    {literal}<% }); %>{/literal}
+  </td>
+  <td>
+    <strong data-hrjobrole-row="percent_pay_role"></strong>
+  </td>
+  <td>
     <strong data-hrjobrole-row="hours"></strong>
   </td>
+
 </script>

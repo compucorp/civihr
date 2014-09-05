@@ -850,7 +850,6 @@ class GenerateHRData {
         'contact_id' => $cid,
         'position' => $this->randomItem('position'),
         'title' => $this->randomItem('title'),
-        'is_tied_to_funding' => $this->randomItem('is_tied_to_funding'),
         'contract_type' => $this->randomItem('contract_type'),
         'period_type' => $this->randomItem('period_type'),
         'period_start_date' => $this->randomDate('20090101', '20121231'),
@@ -858,7 +857,6 @@ class GenerateHRData {
         'notice_amount' => $this->randomItem('notice_amount'),
         'notice_unit' => $this->randomItem('notice_unit'),
         'location' => $this->randomItem('location'),
-        'funding_org_id' => $this->randomIndex(array_flip($this->Organization)),
         'is_primary' => 0,
       );
       if ($i == 1) {
@@ -939,13 +937,14 @@ class GenerateHRData {
           'title' => $this->randomItem('title'),
           'description' => $this->randomItem('job_role_description'),
           'hours' => $this->randomItem('hours_amount'),
-          'region' => $this->randomItem('region'),
+          'region' => null,
           'department' => $this->randomItem('department'),
           'level_type' => $this->randomItem('level_type'),
           'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
           'functional_area' => $this->randomItem('functional_area'),
           'organization' => $this->randomItem('name_of_organisation'),
           'cost_center' => $this->randomItem('cost_center'),
+          'funder' => $this->randomIndex(array_flip($this->Organization))
         );
         $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
       }

@@ -15,8 +15,6 @@ return array(
         'hrjob_location',
       ),
       'filters' => array(
-        'is_tied_to_funding_op' => 'eq',
-        'is_tied_to_funding_value' => 1,
         'hrjob_level_type_op' => 'in',
         'hrjob_level_type_value' => "Senior Manager,Junior Manager,Junior Staff",
         'hrjob_contract_type_op' => 'in',
@@ -42,8 +40,6 @@ return array(
         'hrjob_location',
       ),
       'filters' => array(
-        'is_tied_to_funding_op' => 'eq',
-        'is_tied_to_funding_value' => 1,
         'hrjob_level_type_op' => 'notin',
         'hrjob_level_type_value' => "Senior Staff",
         'hrjob_contract_type_op' => 'notin',

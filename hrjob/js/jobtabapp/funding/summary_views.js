@@ -7,21 +7,6 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJob
       };
-    },
-    modelEvents: {
-      'change:funding_org_id': 'renderFundingOrg'
-    },
-    initialize: function() {
-      CRM.HRApp.Common.mbind(this);
-    },
-    onRender: function() {
-      this.renderFundingOrg();
-    },
-    renderFundingOrg: function() {
-      this.$('a.hrjob-funding_org_id').hrContactLink({
-        cid: this.model.get('funding_org_id')
-      });
     }
   });
-
 });

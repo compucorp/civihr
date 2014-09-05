@@ -17,7 +17,6 @@ $filters = array(
   array(
     'hrjob_period_end_date_from' => '20121215',
     'hrjob_period_end_date_to'   => '20160130'),
-  array('is_tied_to_funding_op'  => 'eq', 'is_tied_to_funding_value' => '1'),
 
   // HRJobHealth
   array('hrjob_health_plan_type_op' => 'in', 'hrjob_health_plan_type_value' => 'Individual'),

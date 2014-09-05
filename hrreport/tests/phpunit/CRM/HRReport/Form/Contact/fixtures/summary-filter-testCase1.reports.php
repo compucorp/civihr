@@ -17,8 +17,6 @@ return array(
         'state_province_id',
       ),
       'filters' => array(
-        'is_tied_to_funding_op' => 'eq',
-        'is_tied_to_funding_value' => 1,
         'hrjob_contract_type_op' => 'in',
         'hrjob_contract_type_value' => 'Apprentice,Employee,Volunteer',
         'hrjob_level_type_op' => 'in',
@@ -48,8 +46,6 @@ return array(
         'state_province_id',
       ),
       'filters' => array(
-        'is_tied_to_funding_op' => 'eq',
-        'is_tied_to_funding_value' => 1,
         'hrjob_contract_type_op' => 'notin',
         'hrjob_contract_type_value' => 'Intern,Trustee,Contractor',
         'hrjob_level_type_op' => 'notin',

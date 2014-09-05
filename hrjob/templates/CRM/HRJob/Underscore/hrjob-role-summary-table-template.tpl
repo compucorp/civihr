@@ -5,7 +5,9 @@
     <thead>
     <tr>
       <th style="width: 2em;"></th>
-      <th>{ts}Role{/ts}</th>
+      <th>{ts}Role Title(s){/ts}</th>
+      <th style="width: 20em;">{ts}Name of Funder(s){/ts}</th>
+      <th style="width: 5em;">{ts}Percent of Pay Assigned{/ts}</th>
       <th style="width: 5em;">{ts}Hours{/ts}</th>
     </tr>
     </thead>

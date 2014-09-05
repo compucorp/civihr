@@ -62,6 +62,12 @@
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
+    <OptionGroup>
+      <name>hrjob_region</name>
+      <title>Region</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
   </OptionGroups>
   <OptionValues>
     <OptionValue>
@@ -69,7 +75,7 @@
       <value>Employee - Temporary</value>
       <name>Employee_Temporary</name>
       <is_default>0</is_default>
-     <weight>3</weight>
+      <weight>3</weight>
       <is_optgroup>0</is_optgroup>
       <is_reserved>0</is_reserved>
       <is_active>1</is_active>
