@@ -24,10 +24,10 @@ CRM.HRAbsenceApp.module('Entitlements', function(Entitlements, HRAbsenceApp, Bac
         'entitlements': this.options.entitlementCollection.getEntitlements(),
         'absencetype': this.options.absenceTypeCollection.getAbsenceTypes(),
         'contractEntitlements': this.options.jobLeavesCollection.getContractLeaves(),
-        'selectedAbsences': this.options.criteria.get('activity_type_id') ? 
+        'selectedAbsences': this.options.criteria.get('activity_type_id') ?
                               _.reduce(this.options.criteria.get('activity_type_id'), function(r,m){r[m]= m; return r;}, {})
                               : CRM.absenceApp.activityTypes,
-        'selectedPeriod': this.options.criteria.get('period_id') ? 
+        'selectedPeriod': this.options.criteria.get('period_id') ?
                             this.options.criteria.get('period_id')
                             : _.reduce(CRM.absenceApp.periods, function(r,m){r[m.id]= m.id; return r;}, {}),
         'FieldOptions': {

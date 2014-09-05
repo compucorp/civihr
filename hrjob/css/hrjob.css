@@ -131,3 +131,9 @@ div.hrjob-tree-items {
 .hrjob-container table.hrjob-leave-table tbody tr td:first-child {
     background-color: #FAFAFA;
 }
+
+.hrjob-container .hrjob-role-table #hrjob-total_pay,
+.hrjob-container .hrjob-role-table #hrjob-actual_amount {
+   background-color: #FAFAFA;
+   color: #000000;
+}

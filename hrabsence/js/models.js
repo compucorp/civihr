@@ -224,6 +224,19 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
      * @param int|Model period
      * @return Entitlement|undefined
      */
+    findByPeriod: function(period) {
+      if (!period) return undefined;
+      var periodId = (_.isObject(period)) ? period.get('id') : period;
+      return this.find(function(entitlement){
+        return entitlement.get('period_id') == periodId;
+      });
+    },
+    /**
+     *
+     * @param int|Model absenceType
+     * @param int|Model period
+     * @return Entitlement|undefined
+     */
     findByTypeAndPeriod: function(absenceType, period) {
       if (!absenceType) return undefined;
       var absTypeId = (_.isObject(absenceType)) ? absenceType.get('id') : absenceType;
@@ -250,11 +263,11 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
     }
   });
   CRM.Backbone.extendCollection(Models.EntitlementCollection);
- 
+
   Models.JobLeaves = Backbone.Model.extend({});
   CRM.Backbone.extendModel(Models.JobLeaves, 'HRJob');
   Models.JobLeavesCollection = Backbone.Collection.extend({
-    model: Models.JobLeaves,    
+    model: Models.JobLeaves,
     /**
      * Get list of contract position and entitlement info (indexed by job ID)
      * @return {Object} e.g. result[job_id]
@@ -276,6 +289,17 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         });
       });
       return stats;
+    },
+    getPrimaryJobID: function() {
+      var stats = null;
+      this.each(function(model) {
+        var primeID = model.get('is_primary');
+	  if (primeID == 1) {
+	   stats = model.get('id');
+	  }
+      });
+      return stats;
+
     }
   });
   CRM.Backbone.extendCollection(Models.JobLeavesCollection);
