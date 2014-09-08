@@ -6,13 +6,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     tagName: 'tr',
     template: '#hrjob-role-summary-row-template',
     templateHelpers: function() {
-      var funderExpr = this.model.get('funder'),
-        funders = null;
-      if (funderExpr) {
-        funders = funderExpr.split(',');
-      }
       return {
-        'funderMulti' : funders,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
       };
@@ -23,16 +17,12 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-role-toggle': 'toggleRole'
     },
-    modelEvents: {
-      'change:funder': 'renderFunder'
-    },
     initialize: function() {
       CRM.HRApp.Common.mbind(this);
     },
     onRender: function() {
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
-      this.renderFunder();
       this.toggledRegion.show(new Role.SummaryView({
         model: this.model
       }));
@@ -41,19 +31,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var open = this.$('.hrjob-role-toggle').hasClass('closed');
       this.$('.hrjob-role-toggle').toggleClass('open', open).toggleClass('closed', !open);
       this.$('.toggle-role-form').toggle(open);
-    },
-    renderFunder: function() {
-      var view = this,
-        funderExpr = this.model.get('funder'),
-        funders = null;
-      if (funderExpr) {
-        funders = funderExpr.split(',');
-      }
-      _.each(funders, function(funderId){
-        view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
-          cid: funderId
-        });
-      });
     }
   });
 

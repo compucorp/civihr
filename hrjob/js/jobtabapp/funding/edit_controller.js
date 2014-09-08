@@ -20,13 +20,19 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
 
     editFunding: function(cid, jobId, jobCollection) {
       HRApp.trigger('ui:block', ts('Loading'));
+      var RoleCollection = new CRM.HRApp.Entities.HRJobRoleCollection([], {
+        crmCriteria: {contact_id: cid, job_id: jobId},
+      });
+      RoleCollection.fetch({reset: true});
+
       var model = new HRApp.Entities.HRJob({id: jobId});
       model.fetch({
         success: function() {
           HRApp.trigger('ui:unblock');
           var mainView = new Funding.EditView({
             model: model,
-            collection: jobCollection
+            collection: jobCollection,
+            roleCollection: RoleCollection
           });
           HRApp.mainRegion.show(mainView);
           mainView.listenTo(mainView, "standard:save", function(view, model) {
