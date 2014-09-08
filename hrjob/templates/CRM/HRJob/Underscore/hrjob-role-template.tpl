@@ -77,7 +77,7 @@
         <label for="hrjob-funder">{ts}Funder{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="funder" name="funder" class="crm-form-entityref" data-create-links="true" data-select-params='{literal}{"multiple":true}{/literal}' data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+        <input id="funder" name="funder" class="crm-form-entityref" data-create-links="true" data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
 
