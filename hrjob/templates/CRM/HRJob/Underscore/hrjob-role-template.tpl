@@ -48,7 +48,7 @@
         <label for="hrjob-total_pay">{ts}Total Pay{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-total_pay" name="total_pay" size="15" type="text" disabled="true"/>
+        <input id="hrjob-total_pay" name="total_pay" size="30" type="text" disabled="true"/>
         <input id="hrjob-total_pay_amount" name="total_pay_amount" size="15" type="hidden" disabled="true"/>
 
       </div>
@@ -68,7 +68,7 @@
         <label for="hrjob-Actual_amount">{ts}Pay assigned to this role{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-actual_amount" name="actual_amount" size="15" type="float" disabled="true">  </span>
+        <input id="hrjob-actual_amount" name="actual_amount"  size="30" type="float" disabled="true">  </span>
       </div>
     </div>
 
@@ -77,8 +77,7 @@
         <label for="hrjob-funder">{ts}Funder{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="funder" name="funder" class="crm-form-entityref" data-create-links="true" data-select-params='{literal}{"multiple":true}{/literal}' data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
-        <a href="#" class="hrjob-funder-add">{ts}Add Funder{/ts}</a>
+        <input id="funder" name="funder" class="crm-form-entityref" data-select-params='{literal}{"multiple":true}{/literal}' data-create-links="true" data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
       </div>
     </div>
 

@@ -22,7 +22,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           HRApp.trigger('ui:unblock');
             var job = jobCollection.first(), payTotal = 0,
             hourUnit = null,hoursType = null,
-            hourAmount = null;
+            hourAmount = 0;
 	  if (hourCollection.first()) {
             hourUnit = hourCollection.first().get("hours_unit");
             hourAmount = hourCollection.first().get("hours_amount");
@@ -34,10 +34,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           var mainView = new Role.TableView({
             newModelDefaults: {
               job_id: jobId,
-              title: job.get("position"),
-              location: job.get("location"),
-              hours: hourAmount,
-              role_hours_unit: hourUnit,
+              title: ts("New Role"),
               percent_pay_role: 100 - parseInt(payTotal)
             },
             collection: roleCollection,

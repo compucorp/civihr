@@ -180,14 +180,19 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var view =this,
         hourInfo = view.options.hourInfo,
         actualHour = view.hourCalculation(hourInfo.hourUnit, hourInfo.hoursType, hourInfo.hourAmount),
+	$hoursType = hourInfo.hoursType,
 	job_hours_time = CRM.PseudoConstant.job_hours_time,
         addHour = 0, totalHour = 0, hourUnit = null, hourAmnt = 0;
+      if (!$hoursType) {
+        $hoursType = job_hours_time['Full_Time'];
+      }
       _.forEach(view.collection.models, function (model) {
         hourAmnt = model.get('hours');
         hourUnit = model.get('role_hours_unit');
-        totalHour = view.hourCalculation(hourUnit, hourInfo.hoursType, hourAmnt);
-        addHour += parseInt(totalHour);
+        totalHour = view.hourCalculation(hourUnit, $hoursType, parseInt(hourAmnt));
+        addHour = parseInt(addHour) + totalHour;
       });
+
       if (parseInt(addHour) > parseInt(actualHour)) {
         return false;
       }
@@ -196,6 +201,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     hourCalculation: function($hrs_unit, $fullTimeHour, hourAmount) {
       var $working_days = CRM.PseudoConstant.working_days,
         $totalHour = 0,
+        $hrs_unit = $hrs_unit || null,
         $hour = 0;
       if ($hrs_unit == 'Day') {
         $hour = $fullTimeHour;
@@ -208,6 +214,9 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       }
       else if ($hrs_unit == 'Year') {
         $hour = $fullTimeHour * $working_days.perMonth * 12;
+      }
+      else if (!$hrs_unit) {
+	  $hour = 0;
       }
       $totalHour = parseInt(hourAmount) * parseInt($hour);
       return parseInt($totalHour);
