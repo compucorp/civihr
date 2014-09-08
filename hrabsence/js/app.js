@@ -29,7 +29,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         criteria: absenceCriteria,
         collection: absenceCollection,
         entitlementCollection: entitlementCollection,
-        absenceTypeCollection: absenceTypeCollection,
+        absenceTypeCollection: absenceTypeCollection
       }));
     },
     showCalendar: function() {
