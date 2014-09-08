@@ -30,7 +30,6 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
         collection: absenceCollection,
         entitlementCollection: entitlementCollection,
         absenceTypeCollection: absenceTypeCollection,
-        jobLeavesCollection: jobLeavesCollection
       }));
     },
     showCalendar: function() {
