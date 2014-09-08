@@ -34,6 +34,31 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
     },
     initialize: function(options) {
       if (console.log) console.log('ListView.initialize  with ' + options.collection.models.length + ' item(s)');
+      var view = this,
+        jobLeavesCollection = new HRAbsenceApp.Models.JobLeavesCollection([], {
+          crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': 1}
+        });
+        jobLeavesCollection.fetch({
+          success: function(e) {
+          var primeJob = jobLeavesCollection.getPrimaryJobID(),
+            contractLeaves = jobLeavesCollection.getContractLeaves();
+          _.each(CRM.absenceApp.periods, function(periodVals, periodIndex) {
+            var leaveExistsForPeriod = view.options.entitlementCollection.findByPeriod(periodVals['id']);
+            if (!leaveExistsForPeriod) {
+              _.each(contractLeaves[primeJob], function(leave_amount, leave_type) {
+                if ($.isNumeric(leave_type)) {
+                  view.options.entitlementCollection.create({
+                    contact_id: CRM.absenceApp.contactId,
+                    period_id: periodVals['id'],
+                    type_id: leave_type,
+                    amount: leave_amount
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
       this.listenTo(options.collection, 'reset', this.render);
     },
     onRender: function() {
