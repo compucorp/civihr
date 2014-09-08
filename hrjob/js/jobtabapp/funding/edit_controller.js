@@ -23,20 +23,23 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
       var RoleCollection = new CRM.HRApp.Entities.HRJobRoleCollection([], {
         crmCriteria: {contact_id: cid, job_id: jobId},
       });
-      RoleCollection.fetch({reset: true});
 
       var model = new HRApp.Entities.HRJob({id: jobId});
       model.fetch({
         success: function() {
           HRApp.trigger('ui:unblock');
-          var mainView = new Funding.EditView({
-            model: model,
-            collection: jobCollection,
-            roleCollection: RoleCollection
-          });
-          HRApp.mainRegion.show(mainView);
-          mainView.listenTo(mainView, "standard:save", function(view, model) {
-            jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
+          RoleCollection.fetch({
+            success: function() {
+              var mainView = new Funding.EditView({
+                model: model,
+                collection: jobCollection,
+                roleCollection: RoleCollection
+              });
+              HRApp.mainRegion.show(mainView);
+              mainView.listenTo(mainView, "standard:save", function(view, model) {
+                jobCollection.fetch(); // e.g. changes to model.is_primary can affect the entire collection
+              });
+	    }
           });
         },
         error: function() {
