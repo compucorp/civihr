@@ -18,7 +18,6 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
       this.roleDataView();
-
     },
     modelEvents: {
       'change:funder': 'roleDataView'

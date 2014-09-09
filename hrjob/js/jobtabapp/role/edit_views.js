@@ -192,7 +192,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         totalHour = view.hourCalculation(hourUnit, $hoursType, parseInt(hourAmnt));
         addHour = parseInt(addHour) + totalHour;
       });
-
       if (parseInt(addHour) > parseInt(actualHour)) {
         return false;
       }
