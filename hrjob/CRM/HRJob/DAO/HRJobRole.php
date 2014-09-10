@@ -168,6 +168,12 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
    */
   public $funder;
   /**
+   * Percentage of Pay Assigned to this funder
+   *
+   * @var string
+   */
+  public $percent_pay_funder;
+  /**
    * Percentage of Pay Assigned to this Role
    *
    * @var int unsigned
@@ -260,7 +266,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
             'callback' => 'CRM_HRJob_SelectValues::commonUnit',
           )
         ) ,
-        'region' => array(
+        'hrjob_region' => array(
           'name' => 'region',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Region') ,
@@ -342,6 +348,18 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
           'dataPattern' => '',
           'export' => true,
         ) ,
+        'hrjob_role_percent_pay_funder' => array(
+          'name' => 'percent_pay_funder',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Percent of Pay Assigned to this funder') ,
+          'maxlength' => 127,
+          'size' => CRM_Utils_Type::HUGE,
+          'import' => true,
+          'where' => 'civicrm_hrjob_role.percent_pay_funder',
+          'headerPattern' => '',
+          'dataPattern' => '',
+          'export' => true,
+        ) ,
         'hrjob_role_percent_pay_role' => array(
           'name' => 'percent_pay_role',
           'type' => CRM_Utils_Type::T_INT,
@@ -391,6 +409,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'organization' => 'organization',
         'cost_center' => 'cost_center',
         'funder' => 'hrjob_funder',
+        'percent_pay_funder' => 'hrjob_role_percent_pay_funder',
         'percent_pay_role' => 'hrjob_role_percent_pay_role',
         'location' => 'location',
       );

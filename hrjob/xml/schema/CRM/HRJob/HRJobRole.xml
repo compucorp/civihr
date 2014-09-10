@@ -179,6 +179,18 @@
   </index>
 
   <field>
+    <name>percent_pay_funder</name>
+    <title>Percent of Pay Assigned to this funder</title>
+    <type>varchar</type>
+    <length>127</length>
+    <default>0</default>
+    <comment>Percentage of Pay Assigned to this funder</comment>
+    <export>true</export>
+    <import>true</import>
+    <uniqueName>hrjob_role_percent_pay_funder</uniqueName>
+  </field>
+
+  <field>
     <name>percent_pay_role</name>
     <title>Percent of Pay Assigned to this Role</title>
     <type>int unsigned</type>

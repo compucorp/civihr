@@ -17,7 +17,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     events: {
       'click .hrjob-role-remove': 'toggleSoftDelete',
       'click .hrjob-role-restore': 'toggleSoftDelete',
-      'click .hrjob-role-toggle': 'toggleRole'
+      'click .hrjob-role-toggle': 'toggleRole',
+      'click .hrjob-role-funder-add': 'doAddFunder'
     },
     modelEvents: {
       'softDelete': 'renderSoftDelete'
@@ -34,6 +35,60 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         model: this.model
       });
       this.toggledRegion.show(editView);
+
+      if (this.model.get('funder')) {
+        var view = this,
+          percentExpr = this.model.get('percent_pay_funder'),percentFunders = null,
+	  funderExpr = this.model.get('funder'),funders = null, $i = 0, $j = 0, percentRelFunder=[],percentRel=[],percentAndFunder = '',
+          suffix = '_' + this.model.cid;
+        if (funderExpr) {
+          funders = funderExpr.split(',');
+        }
+        if (percentExpr) {
+          percentFunders = percentExpr.split(',');
+          _.each(percentFunders, function(percentfunderExpr){
+            percentAndFunder = percentfunderExpr.split('-');
+            percentRelFunder[$j] = percentAndFunder[0];
+            percentRel[$j] =  percentAndFunder[1];
+            $j += 1;
+          });
+        }
+        _.each(funders, function(funderId){
+          view.model.set('funders-'+$i+''+suffix, funderId);
+          percentfunderId = percentRelFunder.indexOf(funderId);
+          view.model.set('percent_pay_funder-'+$i+''+suffix, percentRel[percentfunderId]);
+          $i += 1;
+        });            
+	var editfunderView = new Role.RowFunderView({
+          model: view.model
+	});
+	editfunderView.$el.insertAfter($('.hrjob-role-funder-table tr').last());
+	editfunderView.render();
+        var payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
+          crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
+        });
+        payCollection.fetch({
+          success: function(e) {
+            var pay = payCollection.first(),
+              totalAmnt = 0,
+              totalPercent = 0,
+              totalPay = 0;
+            if (pay && pay.get("pay_grade") == "paid" ) {
+              view.$('.funderPerc').each(function(i, obj) {
+                var val = $(this).val();
+                var payVal = parseInt(val) * pay.get("pay_amount") / 100;
+                totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
+                $(this).parent().next('td').find('input').val(totalPay);
+                $(this).on("keyup", function() {
+                  var val = $(this).val();
+                  var payVal = parseInt(val) * pay.get("pay_amount") / 100;
+                  $(this).parent().next('td').find('input').val(payVal);
+                });
+              });
+            }
+	  },
+        });
+      }
     },
     renderSoftDelete: function() {
       this.$el
@@ -57,6 +112,62 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         required: true,
         number: true
       };
+    },
+    doAddFunder: function(e) {
+      e.stopPropagation();
+      var editfunderView = new Role.RowFunderView({
+        model: this.model
+      });
+      editfunderView.$el.insertAfter($('.hrjob-role-funder-table tr').last());
+      editfunderView.render();
+      return false;
+    },
+    onBindingCreate: function(bindings) {
+      // The field names in each <TR> must be distinct, so we append the cid.
+      // However, ModelBinder doesn't know about the cid suffix, so we fix it.
+      var suffix = '_' + this.model.cid,
+        funderAttr = 'funders-0',
+        fundStr = null,
+        percentStr = null,
+        percentAttr = 'percent_pay_funder-0',
+        $i = 0, $j = 0, relatedFunder = null, funderAll = [], percentAll = [];
+      for(attr in this.model.attributes){
+        if (attr == funderAttr) {
+          bindings[attr] = bindings[attr + suffix];
+          delete bindings[attr + suffix];
+        }
+        else if (attr == percentAttr) {
+          bindings[attr] = bindings[attr + suffix];
+          delete bindings[attr + suffix];
+        }
+      }
+    }
+  });
+
+  Role.RowFunderView = Marionette.Layout.extend({
+    tagName: 'tr',
+    template: '#hrjob-role-funder-template',
+    templateHelpers: function() {
+      var oldFunderNo = $('.funderTableBody > tr:nth-last-child(2)').last().attr('data-funder-no'), newFunderNo = 1;
+      if(oldFunderNo) {
+        newFunderNo = parseInt(oldFunderNo) + 1;
+      }
+      $('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
+      return {
+	'fid': newFunderNo,
+        'cid': this.model.cid,
+        'RenderUtil': CRM.HRApp.RenderUtil,
+        'FieldOptions': CRM.FieldOptions.HRJobRole
+      };
+    },
+    initialize: function() {
+      CRM.HRApp.Common.mbind(this);
+    },
+    onRender: function () {
+      $(this.$el).trigger('crmLoad');
+    },
+    onShow: function() {
+      $(this.$el).trigger('crmLoad');
     }
   });
 
@@ -163,11 +274,32 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       });
       return rules;
     },
+    funderStat: function() {
+      var fundTotal = 0;
+      _.forEach(this.collection.models, function (model) {
+        var suffix = '_' + model.cid, fundTemp = 0,
+          percentAttr = 'percent_pay_funder-0'+suffix;
+          percentStr = null,fundStr = null,
+          funderAttr = 'funders-0'+suffix,
+	  $i = 0, $j = 0, relatedFunder = null;
+        for(attr in model.attributes){
+          if (attr == percentAttr) {
+            fundTemp = model.get(attr);
+            fundTotal += parseInt(fundTemp);
+            $i += 1;
+            percentAttr = 'percent_pay_funder-'+ $i+''+suffix;
+          }
+        }
+      });
+      if (parseInt(fundTotal) > 100) {
+        return false;
+      }
+      return true;
+    },
     payStat: function() {
       var payTotal = 0;
       _.forEach(this.collection.models, function (model) {
-        var suffix = '_' + model.cid,
-          payTemp = 0;
+        var payTemp = 0;
         payTemp = model.get('percent_pay_role');
 	payTotal += parseInt(payTemp);
       });
@@ -215,7 +347,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         $hour = $fullTimeHour * $working_days.perMonth * 12;
       }
       else if (!$hrs_unit) {
-	  $hour = 0;
+        $hour = 0;
       }
       $totalHour = parseInt(hourAmount) * parseInt($hour);
       return parseInt($totalHour);
@@ -236,10 +368,37 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var view = this,
         rules = this.createValidationRules();
       view.$('form').validate(rules);
+      _.forEach(view.collection.models, function (model) {
+        var suffix = '_' + model.cid,
+          funderAttr = 'funders-0'+suffix,
+          fundStr = null, percentStr = null,
+          percentAttr = 'percent_pay_funder-0'+suffix, $i = 0, $j = 0,
+          relatedFunder = null, funderAll = [], percentAll = [];
+
+        for(attr in model.attributes){
+          if (attr == funderAttr) {
+            funderAll[$i] = model.get(attr);
+            percentAll[$i] = funderAll[$i] +'-'+ model.get('percent_pay_funder-'+ $i+''+suffix);
+            $i += 1;
+            funderAttr = 'funders-'+ $i+''+suffix;
+          }
+        }
+        fundStr = funderAll.join(',');
+        percentStr = percentAll.join(',');
+        model.set('funder', fundStr);
+        model.set('percent_pay_funder', percentStr);
+      });
+
       if(!this.payStat()) {
         CRM.alert(ts('The sum of the Percent of Pay Assigned for all Roles for a Job Position must never be more than 100'), ts('Invalid Percent of Pay Assigned'), 'error');
         return false;
       }
+
+      if(!this.funderStat()) {
+        CRM.alert(ts('The sum of the Percent of Pay Assigned to these Role for all funders for a Job Position must never be more than 100.'), ts('Invalid Percent of Pay Assigned'), 'error');
+        return false;
+      }
+
       if(!this.hourStat()) {
         CRM.alert(ts('The sum of the hours for all Roles for a Job Position must never be more than total hours defined'), ts('Invalid Hours'), 'error');
         return false;

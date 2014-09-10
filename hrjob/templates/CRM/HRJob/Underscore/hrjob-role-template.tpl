@@ -54,16 +54,16 @@
       </div>
     </div>
 
-    <div class="crm-summary-row">
+    <div class="crm-summary-row" style="display: none">
       <div class="crm-label">
         <label for="hrjob-percent_pay_role">{ts}Percent of Pay Assigned to this Role{/ts}</label>
       </div>
       <div class="crm-content">
-        <input id="hrjob-percent_pay_role_<%= cid %>" name="percent_pay_role_<%= cid %>" size="15" type="int" /> %
+        <input id="hrjob-percent_pay_role_<%= cid %>" name="percent_pay_role_<%= cid %>" size="15" type="int" disabled="true" /> %
       </div>
     </div>
 
-    <div class="crm-summary-row">
+    <div class="crm-summary-row" style="display: none">
       <div class="crm-label">
         <label for="hrjob-Actual_amount">{ts}Pay assigned to this role{/ts}</label>
       </div>
@@ -72,12 +72,45 @@
       </div>
     </div>
 
-    <div class="crm-summary-row">
+    <div class="crm-summary-row" style="display: none">
       <div class="crm-label">
         <label for="hrjob-funder">{ts}Funder{/ts}</label>
       </div>
       <div class="crm-content">
         <input id="funder" name="funder" class="crm-form-entityref" data-select-params='{literal}{"multiple":true}{/literal}' data-create-links="true" data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+
+        <input id="hrjob-percent_pay_funder" name="percent_pay_funder" size="15" type="int" /> %
+      </div>
+    </div>
+
+    <div class="crm-summary-row multi-funder">
+      <div class="crm-label">
+        <label for="hrjob-funder">{ts}Funder{/ts}</label>
+      </div>
+      <div class="crm-content">
+        <table class="hrjob-role-funder-table">
+          <thead>
+            <tr>
+              <td>{ts}Funder{/ts}</td>
+              <td>{ts}Percent of pay assigned to this funder (%){/ts}</td>
+              <td>{ts}Pay amount assigned to this funder{/ts}</td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody class="funderTableBody">
+            <tr data-funder-no="0">
+              <td>
+                <input id="funders-0_<%= cid %>" name="funders-0_<%= cid %>" class="crm-form-entityref" data-create-links="true" data-api-params='{literal}{"params":{"contact_type":"Organization"}}{/literal}' placeholder="{ts}- select -{/ts}" />
+              </td>
+              <td>
+                <input id="hrjob-percent_pay_funder-0_<%= cid %>" name="percent_pay_funder-0_<%= cid %>" size="15" type="int" class="funderPerc" />
+              </td>
+              <td><input type="int" disabled="true" /></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <a href="#" class="hrjob-role-funder-add">{ts}Add funder{/ts}</a>
       </div>
     </div>
 
