@@ -64,30 +64,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
 	});
 	editfunderView.$el.insertAfter($('.hrjob-role-funder-table tr').last());
 	editfunderView.render();
-        var payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
-          crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
-        });
-        payCollection.fetch({
-          success: function(e) {
-            var pay = payCollection.first(),
-              totalAmnt = 0,
-              totalPercent = 0,
-              totalPay = 0;
-            if (pay && pay.get("pay_grade") == "paid" ) {
-              view.$('.funderPerc').each(function(i, obj) {
-                var val = $(this).val();
-                var payVal = parseInt(val) * pay.get("pay_amount") / 100;
-                totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
-                $(this).parent().next('td').find('input').val(totalPay);
-                $(this).on("keyup", function() {
-                  var val = $(this).val();
-                  var payVal = parseInt(val) * pay.get("pay_amount") / 100;
-                  $(this).parent().next('td').find('input').val(payVal);
-                });
-              });
-            }
-	  },
-        });
       }
     },
     renderSoftDelete: function() {
@@ -165,6 +141,42 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     onRender: function () {
       $(this.$el).trigger('crmLoad');
+      var view = this;
+      var payCollection = new CRM.HRApp.Entities.HRJobPayCollection([], {
+        crmCriteria: {contact_id: CRM.jobTabApp.contact_id, job_id: this.model.get('job_id')},
+      });
+      payCollection.fetch({
+        success: function(e) {
+          var pay = payCollection.first(),
+            totalAmnt = 0,
+            totalPercent = 0,
+            totalPay = 0;
+          if (pay && pay.get("pay_grade") == "paid" ) {
+            $('.funderPerc').each(function(i, obj) {
+              var val = $(this).val(),
+                payVal = 0;
+              if (!val || !$.isNumeric(val)) {
+                val  = 0;
+                $(this).val(0);
+              }
+              var payVal = parseInt(val) * pay.get("pay_amount") / 100;
+              totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
+              $(this).parent().next('td').find('input').val(totalPay);
+              $(this).on("keyup", function() {
+                var val = $(this).val(),
+                  payVal = 0;
+                if (!val || !$.isNumeric(val)) {
+                  val  = 0;
+                  $(this).val(0);
+                }
+                var payVal = parseInt(val) * pay.get("pay_amount") / 100;
+                totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
+                $(this).parent().next('td').find('input').val(totalPay);
+              });
+            });
+          }
+        },
+      });
     },
     onShow: function() {
       $(this.$el).trigger('crmLoad');
