@@ -446,6 +446,12 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   public function upgrade_1402() {
     $this->ctx->log->info('Applying update 1402');
     //Upgrade for HR-394 and HR-395
+    $params = array(
+      'name' => 'hrjob_region',
+      'title' => 'Region',
+      'is_active' => 1,
+    );
+    civicrm_api3('OptionGroup', 'create', $params);
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'role_hours_unit')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN role_hours_unit VARCHAR(63) COMMENT "Period during which hours are allocated (eg 5 hours per day; 5 hours per week)" AFTER hours');
     }
@@ -464,6 +470,10 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
 
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'percent_pay_role')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN percent_pay_role decimal(20,2)   DEFAULT 0 COMMENT "Percentage of Pay Assigned to this Role" AFTER funder');
+    }
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'percent_pay_funder')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN percent_pay_funder varchar(127)   DEFAULT 0 COMMENT "Percentage of Pay Assigned to this funder" AFTER funder');
     }
     //IMP: Previous data will not be recorded HR-394
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'region')) {
@@ -485,7 +495,6 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
         civicrm_api3('HRJobRole', 'create', $params);
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
-
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
     }
     return TRUE;

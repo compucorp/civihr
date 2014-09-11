@@ -92,8 +92,8 @@
           <thead>
             <tr>
               <td>{ts}Funder{/ts}</td>
-              <td>{ts}Percent of pay assigned to this funder (%){/ts}</td>
-              <td>{ts}Pay amount assigned to this funder{/ts}</td>
+              <td>{ts}% of pay assigned to funder{/ts}</td>
+              <td>{ts}Pay amount assigned to funder{/ts}</td>
               <td></td>
             </tr>
           </thead>
@@ -105,7 +105,7 @@
               <td>
                 <input id="hrjob-percent_pay_funder-0_<%= cid %>" name="percent_pay_funder-0_<%= cid %>" size="15" type="int" class="funderPerc" />
               </td>
-              <td><input type="int" disabled="true" /></td>
+              <td><input class="pay_amount_to_funder" type="int" disabled="true" /></td>
               <td></td>
             </tr>
           </tbody>

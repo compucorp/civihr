@@ -30,7 +30,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       this.$('.hrjob-role-toggle').addClass('closed');
       this.$('.toggle-role-form').hide();
       this.renderSoftDelete();
-
+      var suffix = '_' + this.model.cid;
       var editView = new Role.EditView({
         model: this.model
       });
@@ -40,7 +40,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
         var view = this,
           percentExpr = this.model.get('percent_pay_funder'),percentFunders = null,
 	  funderExpr = this.model.get('funder'),funders = null, $i = 0, $j = 0, percentRelFunder=[],percentRel=[],percentAndFunder = '',
-          suffix = '_' + this.model.cid;
+          oldFunderNo = view.$('.funderTableBody > tr').last().attr('data-funder-no'), newFunderNo = 1;
+        if (oldFunderNo) {
+          newFunderNo = parseInt(oldFunderNo) + 1;
+        }
+        view.model.set('fid',newFunderNo);
         if (funderExpr) {
           funders = funderExpr.split(',');
         }
@@ -62,8 +66,12 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
 	var editfunderView = new Role.RowFunderView({
           model: view.model
 	});
-	editfunderView.$el.insertAfter($('.hrjob-role-funder-table tr').last());
+	editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
 	editfunderView.render();
+        view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
+      }
+      if (!this.model.get('funder')) {
+        this.$('input[name="percent_pay_funder-0'+suffix+'"]').val(100);
       }
     },
     renderSoftDelete: function() {
@@ -91,11 +99,18 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     },
     doAddFunder: function(e) {
       e.stopPropagation();
+      var view = this;
+      var oldFunderNo = view.$('.funderTableBody > tr').last().attr('data-funder-no'), newFunderNo = 1;
+      if (oldFunderNo) {
+        newFunderNo = parseInt(oldFunderNo) + 1;
+      }
+      view.model.set('fid',newFunderNo);
       var editfunderView = new Role.RowFunderView({
-        model: this.model
+        model: view.model
       });
-      editfunderView.$el.insertAfter($('.hrjob-role-funder-table tr').last());
+      editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
       editfunderView.render();
+      view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
       return false;
     },
     onBindingCreate: function(bindings) {
@@ -124,13 +139,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     tagName: 'tr',
     template: '#hrjob-role-funder-template',
     templateHelpers: function() {
-      var oldFunderNo = $('.funderTableBody > tr:nth-last-child(2)').last().attr('data-funder-no'), newFunderNo = 1;
-      if(oldFunderNo) {
-        newFunderNo = parseInt(oldFunderNo) + 1;
-      }
-      $('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
       return {
-	'fid': newFunderNo,
+	'fid': this.model.get('fid'),
         'cid': this.model.cid,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJobRole
