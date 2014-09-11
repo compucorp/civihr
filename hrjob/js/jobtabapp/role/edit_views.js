@@ -62,13 +62,15 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           percentfunderId = percentRelFunder.indexOf(funderId);
           view.model.set('percent_pay_funder-'+$i+''+suffix, percentRel[percentfunderId]);
           $i += 1;
-        });            
-	var editfunderView = new Role.RowFunderView({
-          model: view.model
-	});
-	editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
-	editfunderView.render();
-        view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
+        });
+        if ($i > 1) {
+	  var editfunderView = new Role.RowFunderView({
+            model: view.model
+	  });
+	  editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
+	  editfunderView.render();
+          view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
+	}
       }
       if (!this.model.get('funder')) {
         this.$('input[name="percent_pay_funder-0'+suffix+'"]').val(100);
@@ -395,12 +397,16 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           funderAttr = 'funders-0'+suffix,
           fundStr = null, percentStr = null,
           percentAttr = 'percent_pay_funder-0'+suffix, $i = 0, $j = 0,
-          relatedFunder = null, funderAll = [], percentAll = [];
+          relatedFunderPer = 0, funderAll = [], percentAll = [];
 
         for(attr in model.attributes){
           if (attr == funderAttr) {
             funderAll[$i] = model.get(attr);
-            percentAll[$i] = funderAll[$i] +'-'+ model.get('percent_pay_funder-'+ $i+''+suffix);
+            relatedFunderPer = model.get('percent_pay_funder-'+ $i+''+suffix);
+            if (!relatedFunderPer) {
+              relatedFunderPer = 0;
+            }
+            percentAll[$i] = funderAll[$i] +'-'+ relatedFunderPer;
             $i += 1;
             funderAttr = 'funders-'+ $i+''+suffix;
           }

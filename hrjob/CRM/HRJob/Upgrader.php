@@ -446,12 +446,15 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   public function upgrade_1402() {
     $this->ctx->log->info('Applying update 1402');
     //Upgrade for HR-394 and HR-395
-    $params = array(
-      'name' => 'hrjob_region',
-      'title' => 'Region',
-      'is_active' => 1,
-    );
-    civicrm_api3('OptionGroup', 'create', $params);
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_region', 'id', 'name');
+    if (!$optionGroupID) {
+      $params = array(
+        'name' => 'hrjob_region',
+        'title' => 'Region',
+        'is_active' => 1,
+      );
+      civicrm_api3('OptionGroup', 'create', $params);
+    }
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'role_hours_unit')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN role_hours_unit VARCHAR(63) COMMENT "Period during which hours are allocated (eg 5 hours per day; 5 hours per week)" AFTER hours');
     }
