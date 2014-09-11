@@ -446,6 +446,15 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   public function upgrade_1402() {
     $this->ctx->log->info('Applying update 1402');
     //Upgrade for HR-394 and HR-395
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_region', 'id', 'name');
+    if (!$optionGroupID) {
+      $params = array(
+        'name' => 'hrjob_region',
+        'title' => 'Region',
+        'is_active' => 1,
+      );
+      civicrm_api3('OptionGroup', 'create', $params);
+    }
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'role_hours_unit')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN role_hours_unit VARCHAR(63) COMMENT "Period during which hours are allocated (eg 5 hours per day; 5 hours per week)" AFTER hours');
     }
@@ -453,17 +462,20 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'funder')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN funder VARCHAR(127) COMMENT "FK to Contact ID" AFTER cost_center');
 
-      CRM_Core_DAO::executeQuery("INSERT INTO civicrm_contact (contact_type, display_name)
-        SELECT 'Organization', organization FROM civicrm_hrjob_role chr
+      CRM_Core_DAO::executeQuery("INSERT INTO civicrm_contact (display_name, contact_type)
+        (SELECT distinct(organization), 'Organization'  FROM civicrm_hrjob_role chr
           WHERE NOT EXISTS (SELECT display_name
-            FROM civicrm_contact WHERE display_name = chr.organization)
-          LIMIT 1");
+            FROM civicrm_contact WHERE display_name = chr.organization))");
 
       CRM_Core_DAO::executeQuery('UPDATE civicrm_hrjob_role chr SET funder = (SELECT id FROM civicrm_contact cc where chr.organization = cc.display_name)');
     }
 
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'percent_pay_role')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN percent_pay_role decimal(20,2)   DEFAULT 0 COMMENT "Percentage of Pay Assigned to this Role" AFTER funder');
+    }
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'percent_pay_funder')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN percent_pay_funder varchar(127)   DEFAULT 0 COMMENT "Percentage of Pay Assigned to this funder" AFTER funder');
     }
     //IMP: Previous data will not be recorded HR-394
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'region')) {
@@ -475,17 +487,12 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
 
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
-      $result = civicrm_api3('HRJob', 'get', array('sequential' => 1));
-      foreach ($result["values"] as $k => $v) {
-        $params = array(
-          "job_id" => $v['id'],
-          "title" => $v['title'],
-          "funder" => $v['funding_org_id'],
-        );
-        civicrm_api3('HRJobRole', 'create', $params);
+      $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob where funding_org_id IS NOT NULL');
+      while ($dao->fetch()) {
+        CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location )
+          VALUES ({$dao->id}, '{$dao->position}', {$dao->funding_org_id}, '{$dao->location}')");
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
-
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
     }
     return TRUE;

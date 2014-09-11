@@ -133,7 +133,8 @@ div.hrjob-tree-items {
 }
 
 .hrjob-container .hrjob-role-table #hrjob-total_pay,
-.hrjob-container .hrjob-role-table #hrjob-actual_amount {
+.hrjob-container .hrjob-role-table #hrjob-actual_amount,
+.hrjob-container .pay_amount_to_funder {
    background-color: #FAFAFA;
    color: #000000;
 }

@@ -246,7 +246,8 @@ CREATE TABLE `civicrm_hrjob_role` (
      `organization` varchar(127)    ,
      `cost_center` varchar(127)    ,
      `funder` varchar(127)    COMMENT 'FK to Contact ID',
-     `percent_pay_role` int unsigned  DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
+     `percent_pay_funder` varchar(127)   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this funder',
+     `percent_pay_role` int unsigned   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
      `location` varchar(127)    COMMENT 'Main work location' 
 ,
     PRIMARY KEY ( `id` )
@@ -281,3 +282,4 @@ CREATE TABLE `civicrm_hrjob_role` (
   
 ,          CONSTRAINT FK_civicrm_hrjob_role_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_role_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
