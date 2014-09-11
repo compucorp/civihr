@@ -462,11 +462,10 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'funder')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN funder VARCHAR(127) COMMENT "FK to Contact ID" AFTER cost_center');
 
-      CRM_Core_DAO::executeQuery("INSERT INTO civicrm_contact (contact_type, display_name)
-        SELECT 'Organization', organization FROM civicrm_hrjob_role chr
+      CRM_Core_DAO::executeQuery("INSERT INTO civicrm_contact (display_name, contact_type)
+        (SELECT distinct(organization), 'Organization'  FROM civicrm_hrjob_role chr
           WHERE NOT EXISTS (SELECT display_name
-            FROM civicrm_contact WHERE display_name = chr.organization)
-          LIMIT 1");
+            FROM civicrm_contact WHERE display_name = chr.organization))");
 
       CRM_Core_DAO::executeQuery('UPDATE civicrm_hrjob_role chr SET funder = (SELECT id FROM civicrm_contact cc where chr.organization = cc.display_name)');
     }
@@ -488,14 +487,10 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
 
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
-      $result = civicrm_api3('HRJob', 'get', array('sequential' => 1));
-      foreach ($result["values"] as $k => $v) {
-        $params = array(
-          "job_id" => $v['id'],
-          "title" => $v['title'],
-          "funder" => $v['funding_org_id'],
-        );
-        civicrm_api3('HRJobRole', 'create', $params);
+      $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob where funding_org_id IS NOT NULL');
+      while ($dao->fetch()) {
+        CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location )
+          VALUES ({$dao->id}, '{$dao->position}', {$dao->funding_org_id}, '{$dao->location}')");
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
