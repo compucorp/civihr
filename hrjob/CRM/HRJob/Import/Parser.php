@@ -303,6 +303,15 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
   }
 
   /**
+   * @param $elements
+   */
+  function setActiveFieldLocationTypes($elements) {
+    for ($i = 0; $i < count($elements); $i++) {
+      $this->_activeFields[$i]->_hasLocationType = $elements[$i];
+    }
+  }
+
+  /**
    * Store parser values
    *
    * @param CRM_Core_Session $store
@@ -346,7 +355,6 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
 
   function isErrorInCoreData($params, &$errorMessage) {
     $fields = $this->_allFields;
-
     foreach ($params as $key => $value)  {
       if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
         self::addToErrorMsg(ts('Please enter valid Contact ID'), $errorMessage);
@@ -361,70 +369,79 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
             }
           }
           if (array_key_exists('pseudoconstant', $fields[$key])) {
-            $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
-            if (!array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
+            if (array_key_exists('optionGroupName', $fields[$key]['pseudoconstant'])) {
+              $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
+              if (!array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
               self::addToErrorMsg($fields[$key]['title'], $errorMessage);
+              }
             }
           }
           switch ($fields[$key]['type']) {
-          case CRM_Utils_Type::T_BOOLEAN :
-            if (CRM_Utils_String::strtoboolstr($value) === FALSE) {
-              self::addToErrorMsg($fields[$key]['title'], $errorMessage);
+            case CRM_Utils_Type::T_BOOLEAN :
+              if (CRM_Utils_String::strtoboolstr($value) === FALSE) {
+                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
+              }
+              break;
+            case CRM_Utils_Type::T_INT :
+            case CRM_Utils_Type::T_MONEY :
+            case CRM_Utils_Type::T_FLOAT :
+              if ($key == "leave_amount" && is_array($value)) {
+                foreach ($value as $values) {
+                  if (!empty($values['leave_amount']) && !is_numeric($values['leave_amount'])) {
+                    self::addToErrorMsg(ts("%1 is not numeric", $fields[$key]['title']), $errorMessage);
+                  }
+                }
+              }
+              else if (!is_numeric($value)) {
+                self::addToErrorMsg(ts("%1 is not numeric", $fields[$key]['title']), $errorMessage);
+              }
+              break;
             }
-            break;
-          case CRM_Utils_Type::T_INT :
-          case CRM_Utils_Type::T_MONEY :
-          case CRM_Utils_Type::T_FLOAT :
-            if (!is_numeric($value)) {
-              self::addToErrorMsg(ts("%1 is not numeric", $fields[$key]['title']), $errorMessage);
-            }
-            break;
-          }
           switch ($key) {
-          case 'contact_id':
-            //Contact ID
-            if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
-              self::addToErrorMsg(ts('Please enter Contact ID'), $errorMessage);
-            }
+            case 'contact_id':
+              //Contact ID
+              if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
+                self::addToErrorMsg(ts('Please enter Contact ID'), $errorMessage);
+              }
 
-          case 'hrjob_manager_contact_id':
-            //manager
-            $params = array(
-              'contact_id' => $value,
-            );
-            $result = civicrm_api3('contact', 'get', $params);
-            if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
-              self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-            }
-            break;
+            case 'hrjob_manager_contact_id':
+              //manager
+              $params = array(
+                'contact_id' => $value,
+              );
+              $result = civicrm_api3('contact', 'get', $params);
+              if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
+                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
+              }
+              break;
 
-          case 'hrjob_health_provider':
-            //health provider org
-            $params = array(
-              'contact_id' => $value,
-              'contact_type' => 'Organization',
-              'contact_sub_type' => 'health_insurance_provider',
-            );
+            case 'hrjob_health_provider':
+              //health provider org
+              $params = array(
+                'contact_id' => $value,
+                'contact_type' => 'Organization',
+                'contact_sub_type' => 'health_insurance_provider',
+              );
 
-          case 'hrjob_health_provider_life_insurance':
-            //life provider org
-            $params = array(
-              'contact_id' => $value,
-              'contact_type' => 'Organization',
-              'contact_sub_type' => 'life_insurance_provider',
-            );
+            case 'hrjob_health_provider_life_insurance':
+              //life provider org
+              $params = array(
+                'contact_id' => $value,
+                'contact_type' => 'Organization',
+                'contact_sub_type' => 'life_insurance_provider',
+              );
 
-          case 'hrjob_funding_org_id':
-            //funding organization
-            $params = array(
-              'contact_id' => $value,
-              'contact_type' => 'Organization',
-            );
-            $result = civicrm_api3('contact', 'get', $params);
-            if ($result['count'] <=0) {
-              self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-            }
-            break;
+            case 'hrjob_funding_org_id':
+              //funding organization
+              $params = array(
+                'contact_id' => $value,
+                'contact_type' => 'Organization',
+              );
+              $result = civicrm_api3('contact', 'get', $params);
+              if ($result['count'] <=0) {
+                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
+              }
+              break;
           }
         }
       }
@@ -504,5 +521,30 @@ abstract class CRM_HRJob_Import_Parser extends CRM_Import_Parser {
     }
     fwrite($fd, implode("\n", $output));
     fclose($fd);
+  }
+
+  function &getActiveFieldParams() {
+    $params = array();
+    for ($i = 0; $i < $this->_activeFieldCount; $i++) {
+      if (isset($this->_activeFields[$i]->_value)) {
+        if (isset($this->_activeFields[$i]->_hasLocationType)) {
+          if (!isset($params[$this->_activeFields[$i]->_name])) {
+            $params[$this->_activeFields[$i]->_name] = array();
+          }
+          $value = array(
+            $this->_activeFields[$i]->_name => $this->_activeFields[$i]->_value,
+            'leave_type' => $this->_activeFields[$i]->_hasLocationType,
+          );
+          $params[$this->_activeFields[$i]->_name][] = $value;
+        }
+
+        if (!isset($params[$this->_activeFields[$i]->_name])) {
+          if (!isset($this->_activeFields[$i]->_related)) {
+            $params[$this->_activeFields[$i]->_name] = $this->_activeFields[$i]->_value;
+          }
+        }
+      }
+    }
+    return $params;
   }
 }

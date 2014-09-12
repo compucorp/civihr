@@ -36,6 +36,7 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     $this->_allFields = $allFields;
 
     $this->_fields = array_merge(array('do_not_import' => array('title' => ts('- do not import -'))), $allFields);
+
   }
 
   /**
@@ -105,6 +106,7 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
     $this->_params['check_permissions'] = TRUE;
     //JOB ID
     $params = $this->getActiveFieldParams();
+
     for ($i = 0; $i < $this->_activeFieldCount; $i++) {
       if (!isset($this->_activeEntityFields['HRJob'][$this->_activeFields[$i]->_name])) {
         unset($params[$this->_activeFields[$i]->_name]);
@@ -130,8 +132,17 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
           }
           self::formatData($params);
           if (!empty($params)) {
-            $params['job_id'] = $fieldJob['id'];
-            $field = civicrm_api3($entity, 'create', $params);
+            if ($entity == 'HRJobLeave') {
+              foreach($params['leave_amount'] as $key => $val) {
+                $params = $val;
+                $params['job_id'] = $fieldJob['id'];
+                $field = civicrm_api3($entity, 'create', $params);
+              }
+            }
+            else {
+              $params['job_id'] = $fieldJob['id'];
+              $field = civicrm_api3($entity, 'create', $params);
+            }
           }
         }
       }
@@ -172,11 +183,13 @@ class CRM_HRJob_Import_Parser_Api extends CRM_HRJob_Import_Parser_BaseClass {
             }
           }
           if (array_key_exists('pseudoconstant', $fields[$key])) {
-            $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
-            if (array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
-              $flipOpt = array_change_key_case($options);
-              $params[$key] = $flipOpt[strtolower(trim($value))];
-            }
+	    if (array_key_exists('optionGroupName', $fields[$key]['pseudoconstant'])) {
+	      $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
+	      if (array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
+		$flipOpt = array_change_key_case($options);
+		$params[$key] = $flipOpt[strtolower(trim($value))];
+	      }
+	    }
           }
           if ($fields[$key]['type'] == CRM_Utils_Type::T_BOOLEAN ) {
             $params[$key] = CRM_Utils_String::strtoboolstr($value);

@@ -101,4 +101,3 @@ class CRM_HRJob_Import_Field {
     }
   }
 }
-

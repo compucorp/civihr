@@ -106,6 +106,7 @@ class CRM_HRJob_Estimator {
       $multiplier = civicrm_api3('Setting', 'getvalue', array(
         'return' => $settingName,
         'name' => $settingName, // WTF
+        'group' => NULL,
       ));
     }
 

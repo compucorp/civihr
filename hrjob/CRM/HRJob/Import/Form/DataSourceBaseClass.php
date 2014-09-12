@@ -207,4 +207,3 @@ class CRM_HRJob_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
     return ts('Upload Data');
   }
 }
-

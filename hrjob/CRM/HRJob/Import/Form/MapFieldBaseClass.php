@@ -127,9 +127,10 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
     else {
       $savedMapping = $this->get('savedMapping');
 
-      list($mappingName) = CRM_Core_BAO_Mapping::getMappingFields($savedMapping);
+      list($mappingName, $mappingContactType, $mappingLocation, $mappingPhoneType, $mappingImProvider, $mappingRelation, $mappingOperator, $mappingValue) = CRM_Core_BAO_Mapping::getMappingFields($savedMapping);
 
       $mappingName        = $mappingName[1];
+      $mappingLocation    = CRM_Utils_Array::value(1, $mappingValue);
 
       //mapping is to be loaded from database
       $params         = array('id' => $savedMapping);
@@ -161,6 +162,7 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
     $this->addFormRule(array('CRM_HRJob_Import_Form_MapFieldBaseClass', 'formRule'), $this);
     //-------- end of saved mapping stuff ---------
 
+    $this->_leaveType = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobLeave', 'leave_type');
 
     $defaults         = array();
     $mapperKeys       = array_keys($this->_mapperFields);
@@ -177,6 +179,15 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
     $sel1 = $this->_mapperFields;
 
     $sel2[''] = NULL;
+
+    //assigne option to leave amount column
+    foreach ($mapperKeys as $key) {
+      $options = NULL;
+      if ($key == 'leave_amount'){
+        $options = $this->_leaveType;
+      }
+      $sel2[$key] = $options;
+    }
     $js       = "<script type='text/javascript'>\n";
     $formName = 'document.forms.' . $this->_name;
     // this next section used to warn for mismatch column count or mismatch mapping
@@ -188,11 +199,14 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
         if (isset($mappingName[$i])) {
           if ($mappingName[$i] != ts('- do not import -')) {
             $mappingHeader = array_keys($this->_mapperFields, $mappingName[$i]);
-            $defaults["mapper[$i]"] = array(
-              $mappingHeader[0],
-            );
+            $locationId    = isset($mappingLocation[$i]) ? $mappingLocation[$i] : 0;
+            if (!$locationId) {
+              $js .= "{$formName}['mapper[$i][1]'].style.display = 'none';\n";
+            }
+            $defaults["mapper[$i]"] = array($mappingHeader[0], $locationId);
           }
           else {
+            $js .= "{$formName}['mapper[$i][1]'].style.display = 'none';\n";
             $defaults["mapper[$i]"] = array();
           }
         }
@@ -208,6 +222,7 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
         //end of load mapping
       }
       else {
+        $js .= "swapOptions($formName, 'mapper[$i]', 0, 1, 'hs_mapper_0_');\n";
         if ($hasHeaders) {
           // Infer the default from the skipped headers if we have them
           $defaults["mapper[$i]"] = array(
@@ -223,7 +238,7 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
           );
         }
       }
-      $sel->setOptions(array($sel1));
+      $sel->setOptions(array($sel1, $sel2));
     }
     $js .= "</script>\n";
     $this->assign('initHideBoxes', $js);
@@ -351,20 +366,26 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
     $mapper         = array();
     $mapperKeys     = $this->controller->exportValue($this->_name, 'mapper');
     $mapperKeysMain = array();
-
+    $subMapper = array();
+    $leaveType = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobLeave', 'leave_type');
     for ($i = 0; $i < $this->_columnCount; $i++) {
-      $mapper[$i] = $this->_mapperFields[$mapperKeys[$i][0]];
+      $selOne             = CRM_Utils_Array::value(1, $mapperKeys[$i]);
+      if ($selOne && is_numeric($selOne)) {
+        $subMapper[$i] = $locationsVal = $leaveType[$selOne];
+        $mapperLocTypeVal = $selOne;
+      }
+      $mapper[$i] =  $this->_mapperFields[$mapperKeys[$i][0]];
       $mapperKeysMain[$i] = $mapperKeys[$i][0];
     }
 
     $this->set('mapper', $mapper);
-
+    $this->set('locations', $subMapper);
     // store mapping Id to display it in the preview page
     $this->set('loadMappingId', CRM_Utils_Array::value('mappingId', $params));
 
     //Updating Mapping Records
     if (CRM_Utils_Array::value('updateMapping', $params)) {
-
+      $leaveType = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobLeave', 'leave_type');
       $mappingFields = new CRM_Core_DAO_MappingField();
       $mappingFields->mapping_id = $params['mappingId'];
       $mappingFields->find();
@@ -388,6 +409,10 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
         $second         = CRM_Utils_Array::value(2, $explodedValues);
 
         $updateMappingFields->name = $mapper[$i];
+        if (CRM_Utils_Array::value($i,$subMapper)) {
+          $location_id = array_keys($leaveType, $subMapper[$i]);
+          $updateMappingFields->value = $location_id[0];
+        }
         $updateMappingFields->save();
       }
     }
@@ -403,7 +428,7 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
         ),
       );
       $saveMapping = CRM_Core_BAO_Mapping::add($mappingParams);
-
+      $leaveType = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobLeave', 'leave_type');
       for ($i = 0; $i < $this->_columnCount; $i++) {
         $saveMappingFields = new CRM_Core_DAO_MappingField();
         $saveMappingFields->mapping_id = $saveMapping->id;
@@ -415,6 +440,10 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
         $second         = CRM_Utils_Array::value(2, $explodedValues);
 
         $saveMappingFields->name = $mapper[$i];
+        if (CRM_Utils_Array::value($i,$subMapper)) {
+          $location_id = array_keys($leaveType,  $subMapper[$i]);
+          $saveMappingFields->value = $location_id[0];
+        }
         $saveMappingFields->save();
       }
       $this->set('savedMapping', $saveMappingFields->mapping_id);

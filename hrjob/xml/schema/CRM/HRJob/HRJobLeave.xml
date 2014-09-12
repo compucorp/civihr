@@ -53,5 +53,7 @@
       <name>leave_amount</name>
       <type>int unsigned</type>
       <comment>The number of leave days</comment>
+      <export>true</export>
+      <import>true</import>
   </field>
 </table>
