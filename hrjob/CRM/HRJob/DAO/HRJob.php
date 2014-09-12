@@ -217,6 +217,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Id') ,
           'required' => true,
         ) ,
         'hrjob_contact_id' => array(

@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Job Health Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJobHealth ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>job_id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Job</comment>
@@ -38,7 +40,7 @@
 
   <field>
     <name>provider</name>
-    <title>Job Healthcare Provider</title>
+    <title>Healthcare Provider</title>
     <type>int unsigned</type>
     <comment>FK to Contact ID for the organization or company which manages healthcare service</comment>
     <export>true</export>
@@ -54,7 +56,7 @@
 
   <field>
     <name>plan_type</name>
-    <title>Job Healthcare Plan</title>
+    <title>Healthcare Plan Type</title>
     <type>varchar</type>
     <length>63</length>
     <comment>.</comment>
@@ -72,17 +74,19 @@
 
   <field>
     <name>description</name>
+    <title>Description Health Insurance</title>
     <type>text</type>
   </field>
 
   <field>
     <name>dependents</name>
+    <title>Dependents for Health Insurance</title>
     <type>text</type>
   </field>
 
   <field>
     <name>provider_life_insurance</name>
-    <title>Job life insurance Provider</title>
+    <title>Life insurance Provider</title>
     <type>int unsigned</type>
     <comment>FK to Contact ID for the organization or company which manages life insurance service</comment>
     <export>true</export>
@@ -98,7 +102,7 @@
 
   <field>
     <name>plan_type_life_insurance</name>
-    <title>Job life insurance Plan</title>
+    <title>Life insurance Plan Type</title>
     <type>varchar</type>
     <length>63</length>
     <comment>.</comment>
@@ -116,11 +120,13 @@
 
   <field>
     <name>description_life_insurance</name>
+    <title>Health Description Life Insurance</title>
     <type>text</type>
   </field>
 
   <field>
     <name>dependents_life_insurance</name>
+    <title>Dependents for Life Insurance</title>
     <type>text</type>
   </field>
 </table>

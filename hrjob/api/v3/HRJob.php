@@ -81,6 +81,7 @@ function civicrm_api3_h_r_job_get($params) {
  */
 function _civicrm_api3_h_r_job_duplicate_spec(&$spec) {
   $spec['magicword']['api.required'] = 1;
+  $spec['magicword']['title'] = 'magicword';
 }
 
 /**
@@ -137,7 +138,7 @@ function civicrm_api3_h_r_job_duplicate($params) {
       $duplicateSubCreateParams = $originalSubGetValue;
       unset($duplicateSubCreateParams['id']);
       $duplicateSubCreateParams['job_id'] = $duplicateCreateResult['id'];
-      civicrm_api3($subEntity, 'create', $duplicateSubCreateParams);
+      $v = civicrm_api3($subEntity, 'create', $duplicateSubCreateParams);
     }
   }
 

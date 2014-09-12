@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Pension Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJobPension ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>job_id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Job</comment>
@@ -40,7 +42,7 @@
     <name>is_enrolled</name>
     <type>boolean</type>
     <default>0</default>
-    <title>Job Pension Is Enrolled</title>
+    <title>Pension Is Enrolled</title>
     <export>true</export>
     <uniqueName>hrjob_is_enrolled</uniqueName>
   </field>

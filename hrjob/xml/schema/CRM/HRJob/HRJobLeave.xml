@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Leave Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJobLeave ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>job_id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Job</comment>
@@ -51,6 +53,7 @@
 
   <field>
       <name>leave_amount</name>
+      <title>Leave Amount</title>
       <type>int unsigned</type>
       <comment>The number of leave days</comment>
   </field>

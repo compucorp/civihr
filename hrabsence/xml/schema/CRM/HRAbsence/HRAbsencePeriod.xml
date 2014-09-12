@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Absence Period Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique Absence period ID</comment>
@@ -48,12 +49,14 @@
 
   <field>
     <name>start_date</name>
+    <title>Absence Period Start Date</title>
     <type>timestamp</type>
     <comment>Absence Period Start Date</comment>
   </field>
   
   <field>
     <name>end_date</name>
+    <title>Absence Period End Date</title>
     <type>timestamp</type>
     <comment>Absence Period End Date</comment>
   </field>

@@ -37,7 +37,6 @@ class CRM_HRJob_BAO_HRJob extends CRM_HRJob_DAO_HRJob {
   public static function create($params) {
     $entityName = 'HRJob';
     $hook = empty($params['id']) ? 'create' : 'edit';
-
     if (is_numeric(CRM_Utils_Array::value('is_primary', $params)) || empty($params['id'])) {
       CRM_Core_BAO_Block::handlePrimary($params, get_class());
     }
@@ -46,7 +45,8 @@ class CRM_HRJob_BAO_HRJob extends CRM_HRJob_DAO_HRJob {
     $instance = new self();
     $instance->copyValues($params);
     $instance->save();
-    if ($hook == 'create') {
+    $resultRoleGet = civicrm_api3('HRJobRole', 'get', array('job_id' => $instance->id,'title' => $instance->title));
+    if ($hook == 'create' && (!empty($resultRoleGet['count']) && $resultRoleGet['count'] == 0)) {
       civicrm_api3('HRJobRole', 'create', array('job_id' => $instance->id,'title' => $instance->title, 'location'=> $instance->location, 'percent_pay_role' => 100));
     }
 

@@ -182,18 +182,20 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Pay Id') ,
           'required' => true,
         ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Id') ,
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
         'hrjob_pay_scale' => array(
           'name' => 'pay_scale',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Pay Scale') ,
+          'title' => ts('Pay Scale') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -208,7 +210,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_grade' => array(
           'name' => 'pay_grade',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Pay Grade') ,
+          'title' => ts('Pay Grade') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -223,7 +225,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_amount' => array(
           'name' => 'pay_amount',
           'type' => CRM_Utils_Type::T_MONEY,
-          'title' => ts('Job Pay Amount') ,
+          'title' => ts('Pay Amount') ,
           'import' => true,
           'where' => 'civicrm_hrjob_pay.pay_amount',
           'headerPattern' => '',
@@ -233,7 +235,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_unit' => array(
           'name' => 'pay_unit',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Pay Unit') ,
+          'title' => ts('Pay Unit') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -248,7 +250,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_currency' => array(
           'name' => 'pay_currency',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Pay Currency') ,
+          'title' => ts('Pay Currency') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -272,6 +274,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'pay_is_auto_est' => array(
           'name' => 'pay_is_auto_est',
           'type' => CRM_Utils_Type::T_BOOLEAN,
+          'title' => ts('Estimated Auto Pay') ,
           'default' => '1',
         ) ,
       );

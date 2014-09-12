@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJob ID</comment>
@@ -65,6 +66,7 @@
 
   <field>
     <name>funding_notes</name>
+    <title>Funding Notes</title>
     <type>text</type>
   </field>
 
