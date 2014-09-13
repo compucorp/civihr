@@ -404,6 +404,26 @@ function _hrjob_phpunit_populateDB() {
     CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjob')
       . '/xml/job_summary_install.xml'
   );
+
+  //create option value for option group region
+  $result = civicrm_api3('OptionGroup', 'get', array(
+    'name' => "hrjob_region",
+  ));
+  $regionVal = array(
+    'Asia' => ts('Asia'),
+    'Europe' => ts('Europe'),
+  );
+
+  foreach ($regionVal as $name => $label) {
+    $regionParam = array(
+      'option_group_id' => $result['id'],
+      'label' => $label,
+      'name' => $name,
+      'value' => $name,
+      'is_active' => 1,
+    );
+    civicrm_api3('OptionValue', 'create', $regionParam);
+  }
 }
 
 /**

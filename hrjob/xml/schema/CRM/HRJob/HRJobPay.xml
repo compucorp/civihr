@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Job Pay Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJobPay ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>job_id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Job</comment>
@@ -38,7 +40,7 @@
 
   <field>
     <name>pay_scale</name>
-    <title>Job Pay Scale</title>
+    <title>Pay Scale</title>
     <type>varchar</type>
     <length>63</length>
     <comment>NJC pay scale, JNC pay scale, Soulbury Pay Agreement</comment>
@@ -56,7 +58,7 @@
 
   <field>
     <name>pay_grade</name>
-    <title>Job Pay Grade</title>
+    <title>Pay Grade</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Paid, Unpaid, etc</comment>
@@ -74,7 +76,7 @@
 
   <field>
     <name>pay_amount</name>
-    <title>Job Pay Amount</title>
+    <title>Pay Amount</title>
     <type>decimal</type>
     <default>0</default>
     <comment>Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)</comment>
@@ -85,7 +87,7 @@
 
   <field>
     <name>pay_unit</name>
-    <title>Job Pay Unit</title>
+    <title>Pay Unit</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Unit for expressing pay rate (e.g. amount per hour, amount per week)</comment>
@@ -99,7 +101,7 @@
 
   <field>
     <name>pay_currency</name>
-    <title>Job Pay Currency</title>
+    <title>Pay Currency</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Unit for expressing pay currency</comment>
@@ -123,6 +125,7 @@
 
   <field>
     <name>pay_is_auto_est</name>
+    <title>Estimated Auto Pay</title>
     <type>boolean</type>
     <default>1</default>
     <comment>Is the estimate automatically calculated</comment>

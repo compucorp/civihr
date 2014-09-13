@@ -186,18 +186,20 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Health Id') ,
           'required' => true,
         ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Id') ,
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
         'hrjob_health_provider' => array(
           'name' => 'provider',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Healthcare Provider') ,
+          'title' => ts('Healthcare Provider') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_health.provider',
@@ -208,7 +210,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'hrjob_health_plan_type' => array(
           'name' => 'plan_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Healthcare Plan') ,
+          'title' => ts('Healthcare Plan Type') ,
           'export' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
@@ -223,17 +225,17 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'description' => array(
           'name' => 'description',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Description') ,
+          'title' => ts('Description Health Insurance') ,
         ) ,
         'dependents' => array(
           'name' => 'dependents',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Dependents') ,
+          'title' => ts('Dependents for Health Insurance') ,
         ) ,
         'hrjob_health_provider_life_insurance' => array(
           'name' => 'provider_life_insurance',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job life insurance Provider') ,
+          'title' => ts('Life insurance Provider') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_health.provider_life_insurance',
@@ -244,7 +246,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'hrjob_life_insurance_plan_type' => array(
           'name' => 'plan_type_life_insurance',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job life insurance Plan') ,
+          'title' => ts('Life insurance Plan Type') ,
           'export' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
@@ -264,7 +266,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'dependents_life_insurance' => array(
           'name' => 'dependents_life_insurance',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Dependents Life Insurance') ,
+          'title' => ts('Dependents for Life Insurance') ,
         ) ,
       );
     }

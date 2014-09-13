@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Absence Entitlement Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique Absence entitlement ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>contact_id</name>
+    <title>Contact Id</title>
     <type>int unsigned</type>
     <comment>FK to Contact ID</comment>
   </field>
@@ -32,6 +34,7 @@
 
   <field>
     <name>period_id</name>
+    <title>Absence Entitlement Period Id</title>
     <type>int unsigned</type>
     <comment>FK to Absence Period ID</comment>
   </field>
@@ -44,6 +47,7 @@
   
   <field>
     <name>type_id</name>
+    <title>Absence Entitlement Type Id</title>
     <type>int unsigned</type>
     <comment>FK to Absence Type ID</comment>
   </field>

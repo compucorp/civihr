@@ -9,6 +9,7 @@
 
   <field>
     <name>id</name>
+    <title>Job Role Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>Unique HRJobRole ID</comment>
@@ -20,6 +21,7 @@
 
   <field>
     <name>job_id</name>
+    <title>Job Id</title>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Job</comment>
@@ -33,6 +35,7 @@
 
   <field>
     <name>title</name>
+    <title>Job Role Title</title>
     <type>varchar</type>
     <length>127</length>
     <comment>Negotiated name for the role</comment>
@@ -44,6 +47,7 @@
 
   <field>
     <name>description</name>
+    <title>Job Role Description</title>
     <type>text</type>
     <comment>Negotiated name for the role</comment>
   </field>
@@ -89,7 +93,7 @@
 
   <field>
     <name>department</name>
-    <title>Job Role Department</title>
+    <title>Department</title>
     <type>varchar</type>
     <length>127</length>
     <export>true</export>
@@ -105,7 +109,7 @@
 
   <field>
     <name>level_type</name>
-    <title>Job Role Level</title>
+    <title>Level</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Junior manager, senior manager, etc.</comment>
@@ -123,6 +127,7 @@
 
   <field>
     <name>manager_contact_id</name>
+    <title>Manager Contact Id</title>
     <type>int unsigned</type>
     <comment>FK to Contact ID</comment>
   </field>
@@ -135,6 +140,7 @@
 
   <field>
     <name>functional_area</name>
+    <title>Functional Area</title>
     <type>varchar</type>
     <length>127</length>
   </field>
@@ -145,6 +151,7 @@
 
   <field>
     <name>organization</name>
+    <title>Organization</title>
     <type>varchar</type>
     <length>127</length>
   </field>
@@ -155,6 +162,7 @@
 
   <field>
     <name>cost_center</name>
+    <title>Cost Center</title>
     <type>varchar</type>
     <length>127</length>
   </field>

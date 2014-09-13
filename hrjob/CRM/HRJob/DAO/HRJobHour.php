@@ -176,18 +176,20 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Hours Id') ,
           'required' => true,
         ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Id') ,
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
         'hrjob_hours_type' => array(
           'name' => 'hours_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Hours Type') ,
+          'title' => ts('Hours Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -202,7 +204,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_amount' => array(
           'name' => 'hours_amount',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Job Hours Amount') ,
+          'title' => ts('Hours Amount') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_amount',
@@ -212,7 +214,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_unit' => array(
           'name' => 'hours_unit',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Hours Unit') ,
+          'title' => ts('Hours Unit') ,
           'export' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
@@ -227,7 +229,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_hours_fte' => array(
           'name' => 'hours_fte',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Job Full-Time Equivalence') ,
+          'title' => ts('Full-Time Equivalence') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_hour.hours_fte',
@@ -237,7 +239,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hours_fte_num' => array(
           'name' => 'fte_num',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Full-Time Numerator Equivalence') ,
+          'title' => ts('Full-Time Numerator Equivalence') ,
           'import' => true,
           'where' => 'civicrm_hrjob_hour.fte_num',
           'headerPattern' => '',
@@ -248,7 +250,7 @@ class CRM_HRJob_DAO_HRJobHour extends CRM_Core_DAO
         'hrjob_fte_denom' => array(
           'name' => 'fte_denom',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Full-Time Denominator Equivalence') ,
+          'title' => ts('Full-Time Denominator Equivalence') ,
           'import' => true,
           'where' => 'civicrm_hrjob_hour.fte_denom',
           'headerPattern' => '',

@@ -226,11 +226,13 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Role Id') ,
           'required' => true,
         ) ,
         'job_id' => array(
           'name' => 'job_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Job Id') ,
           'required' => true,
           'FKClassName' => 'CRM_HRJob_DAO_HRJob',
         ) ,
@@ -284,7 +286,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'hrjob_role_department' => array(
           'name' => 'department',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Role Department') ,
+          'title' => ts('Department') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'export' => true,
@@ -298,7 +300,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'hrjob_role_level_type' => array(
           'name' => 'level_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Role Level') ,
+          'title' => ts('Level') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -313,6 +315,7 @@ class CRM_HRJob_DAO_HRJobRole extends CRM_Core_DAO
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
           'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Manager Contact Id') ,
           'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'functional_area' => array(

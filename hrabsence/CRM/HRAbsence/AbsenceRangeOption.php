@@ -77,6 +77,7 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
           $result['values'][$id]['absence_range'] = array(
             'low' => NULL,
             'high' => NULL,
+            'approved_duration' => 0,
             'duration' => 0,
             'count' => 0,
             'items' => array(),
