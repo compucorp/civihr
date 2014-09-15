@@ -486,7 +486,10 @@ function hrui_civicrm_navigationMenu( &$params ) {
        'name' => 'jobs',
        'url'  => 'civicrm/job/import',
        'permission' => 'access HRJobs',
-       'parent_id'  => $jobNavId,
+       'operator'   => null,
+       'separator'  => null,
+       'parentID'   => $jobNavId,
+       'navID'      => $maxKey+1,
        'weight'     => 1,
        'active'     => 1
      ));
