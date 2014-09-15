@@ -34,6 +34,9 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
             percentAndFunder = percentfunderExpr.split('-');
             percentRel[percentAndFunder[0]] =  percentAndFunder[1];
             $rowspan += 1;
+            view.$('a#hrjob-role-funder-'+percentAndFunder[0]).hrContactLink({
+              cid: percentAndFunder[0]
+            });
           });
         }
         if(!rolesInfo[id]) {
@@ -44,11 +47,6 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
             'percentPay': model.get('percent_pay_role')
           };
         }
-        _.each(funders, function(funderId){
-          view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
-            cid: funderId
-          });
-        });
       });
       return rolesInfo;
     }

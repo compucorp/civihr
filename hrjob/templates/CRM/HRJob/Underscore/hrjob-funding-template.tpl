@@ -13,7 +13,7 @@
       <tbody>
         <% _.each(rolesInfo, function(roleInfo, roleId) { %>
           <tr class="-list-item">
-            <td rowspan="<%= roleInfo.no %>" class="hrjob-funding-role-position-<%= roleId %>"><%- roleInfo.position %></td>
+            <td rowspan="<%= roleInfo.rowspan %>" class="hrjob-funding-role-position-<%= roleId %>"><%- roleInfo.position %></td>
             <% _.each(roleInfo.funderInfo, function(funderVal, funderId){  %>
               <td class="hrjob-funding-role-funders">
                 <div><a href="#" class="hrjob-funding-role-funder" id="hrjob-role-funder-<%- funderId %>"/></div><hr/>
