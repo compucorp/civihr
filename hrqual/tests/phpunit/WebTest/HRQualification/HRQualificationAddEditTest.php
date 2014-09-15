@@ -74,12 +74,12 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
   function _addQualificationData($values, $mode = NULL, $nameOfCertification = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Qualifications']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-25']/a/span/div");
-      $this->click("xpath=//*[@id='ui-id-25']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
+      $this->click("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
     }
     else {
       $this->click("xpath=//a[@title='Qualifications']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-25']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
       $this->click("xpath=//div[@id='custom-11-table-wrapper']//table/tbody/tr/td[text()='".$nameOfCertification."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Qualifications:Category_of_Skill']");

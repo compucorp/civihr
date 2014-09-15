@@ -70,12 +70,12 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
   function _addIdentificationData($values, $mode = NULL, $number = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-17']/a/span/div");
-      $this->click("xpath=//*[@id='ui-id-17']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='ui-id-17']/a");
+      $this->click("xpath=//div[@id='ui-id-17']/a");
     }
     else {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-17']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='ui-id-17']/a");
       $this->click("xpath=//div[@id='custom-6-table-wrapper']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Identify:Type']");
