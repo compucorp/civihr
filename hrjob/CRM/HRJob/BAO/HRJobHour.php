@@ -57,7 +57,7 @@ class CRM_HRJob_BAO_HRJobHour extends CRM_HRJob_DAO_HRJobHour {
         'options' => array('limit' => 1),
       ));
       if (!empty($result['values'])) {
-        $role = $result['values'][$result['id']];
+        $role = CRM_Utils_Array::first($result['values']);
         civicrm_api3('HRJobRole', 'update', array('id' => $role['id'], 'job_id' => $role['job_id'], 'hours'=> $instance->hours_amount, 'role_hours_unit' => $instance->hours_unit));
       }
     }
