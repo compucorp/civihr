@@ -88,10 +88,10 @@ class WebTest_HRVacancy_HRAddEditVacancyTest extends CiviSeleniumTestCase {
 
     $this->waitForElementPresent("xpath=//*[@id='Search']");
     $vid = $this->webtest_civicrm_api('HRVacancy', 'getvalue', array('position' => $vacancy['position'], 'return' => 'id'));
-    $this->verifyText("xpath=//*[@id='$vid']/td[1]/a", $vacancy['position']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[1]/a", $vacancy['position']);
 
     //edit just created vacancy
-    $this->clickLink("xpath=//*[@id='$vid']/td[6]/span/a");
+    $this->clickLink("xpath=//*[@id='{$vid}']/td[6]/span/a");
     $editVacancyParam = array(
       'position' => "{$vacancy['position']} Edited",
       'location' => 'Headquarters',
@@ -102,9 +102,9 @@ class WebTest_HRVacancy_HRAddEditVacancyTest extends CiviSeleniumTestCase {
     $this->select("status_id", $editVacancyParam['status']);
     $this->click("xpath=//*[@id='_qf_HRVacancy_next']");
     $this->waitForElementPresent("xpath=//*[@id='Search']");
-    $this->verifyText("xpath=//*[@id='$vid']/td[1]/a", $editVacancyParam['position']);
-    $this->verifyText("xpath=//*[@id='$vid']/td[2]", $editVacancyParam['location']);
-    $this->verifyText("xpath=//*[@id='$vid']/td[5]", $editVacancyParam['status']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[1]/a", $editVacancyParam['position']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[2]", $editVacancyParam['location']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[5]", $editVacancyParam['status']);
   }
 
   function testAddEditVacancyWithTemplate() {
@@ -134,10 +134,10 @@ class WebTest_HRVacancy_HRAddEditVacancyTest extends CiviSeleniumTestCase {
     $this->_addVacancyDetails($vacancy);
     $this->waitForElementPresent("xpath=//*[@id='Search']");
     $vid = $this->webtest_civicrm_api('HRVacancy', 'getvalue', array('position' => $vacancy['position'], 'return' => 'id'));
-    $this->verifyText("xpath=//*[@id='$vid']/td[1]/a", $vacancy['position']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[1]", $vacancy['position']);
 
     //edit just created vacancy template
-    $this->clickLink("xpath=//*[@id='$vid']/td[5]/span/a");
+    $this->clickLink("xpath=//*[@id='{$vid}']/td[5]/span/a");
     $editVacancyParam = array(
       'position' => "{$vacancy['position']} Edited Template",
       'location' => 'Headquarters',
@@ -146,8 +146,8 @@ class WebTest_HRVacancy_HRAddEditVacancyTest extends CiviSeleniumTestCase {
     $this->select("location", "value={$editVacancyParam['location']}");
     $this->click("xpath=//*[@id='_qf_HRVacancy_next']");
     $this->waitForElementPresent("xpath=//*[@id='Search']");
-    $this->verifyText("xpath=//*[@id='$vid']/td[1]/a", $editVacancyParam['position']);
-    $this->verifyText("xpath=//*[@id='$vid']/td[2]", $editVacancyParam['location']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[1]", $editVacancyParam['position']);
+    $this->verifyText("xpath=//*[@id='{$vid}']/td[2]", $editVacancyParam['location']);
   }
 }
 

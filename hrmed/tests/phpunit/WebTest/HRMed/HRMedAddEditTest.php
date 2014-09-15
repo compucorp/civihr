@@ -37,9 +37,9 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
     // Adding contacts
     $random = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
-    
+
     // Check if Medical & Disability tab exists
-    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Medical__Disability']"), 'Medical & Disability tab not appearing');
+    $this->assertTrue($this->isElementPresent("xpath=//a[@title='Medical & Disability']"), 'Medical & Disability tab not appearing');
 
     //add Medical & Disability data
     $addData = array(
@@ -48,7 +48,7 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
       'Evidence_Note' => 'NA',
     );
     $this->_addMedData($addData, "add");
-    
+
     //edit Medical & Disability data
     $randomEditMedNumber = substr(sha1(rand()), 0, 7);
     $editData = array(
@@ -57,38 +57,36 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
       'Evidence_Note' => 'NA',
     );
     $this->_addMedData($editData, "edit", $random);
- 
+
   }
 
   function _addMedData($values, $mode = NULL, $condition = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Medical & Disability']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//form[@id='Edit']/div[2]/a/span");
-    }  	
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-21']/a/span/div");
+      $this->click("xpath=//*[@id='ui-id-21']/a/span/div");
+    }
     else {
       $this->click("xpath=//a[@title='Medical & Disability']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$condition."']/following-sibling::td[4]/span/a[text()='Edit']");
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-21']/a/span/div");
+      $this->click("xpath=//div[@id='custom-10-table-wrapper']//table/tbody/tr/td[text()='".$condition."']/following-sibling::td[4]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Medical_Disability:Condition']");
     $this->type("xpath=//input[@data-crm-custom='Medical_Disability:Condition']", $values['Condition']);
     $this->select("xpath=//select[@data-crm-custom='Medical_Disability:Type']", "label=".$values["Type"]);
     $this->click("xpath=//label[text() = 'Large Screen']/preceding-sibling::input[1]");
     $this->type("xpath=//textarea[@data-crm-custom='Medical_Disability:Evidence_Note']", $values['Evidence_Note']);
-    $this->click("xpath=//input[@id='_qf_Edit_upload']");
-    $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->waitForElementPresent("xpath=//li[@aria-controls='Medical__Disability']");
+    $this->click("xpath=//input[@id='_qf_CustomData_upload']");
+    $this->waitForElementPresent("xpath=//li/a[@title='Medical & Disability']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Condition']), 'Condition not found after '.$mode.'ing Medical & Disability (_addMedData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Condition']."']/following-sibling::td[4]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='custom-10-table-wrapper']//table/tbody/tr/td[text()='".$values['Condition']."']/following-sibling::td[4]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Condition']), 'Condition not found after '.$mode.'ing Medical & Disability (_addMedData).');
 
     // WAS: xpath=//div[8]/div[1]/a
-    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $close = "xpath=//button[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
     $this->waitForElementPresent($close);
     $this->click($close);
   }
 
 }
-

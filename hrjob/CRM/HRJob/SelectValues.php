@@ -52,18 +52,18 @@ class CRM_HRJob_SelectValues {
     return $planType;
   }
 
-  /** different types of life insaurance plan
+  /** different types of life insurance plan
    * @static
    */
-  static function &planTypeLifeInsaurance() {
-    static $planTypeLifeInsaurance = NULL;
-    if (!$planTypeLifeInsaurance) {
-      $planTypeLifeInsaurance = array(
+  static function &planTypeLifeInsurance() {
+    static $planTypeLifeInsurance = NULL;
+    if (!$planTypeLifeInsurance) {
+      $planTypeLifeInsurance = array(
         'Family' => ts('Family'),
         'Individual' => ts('Individual'),
       );
     }
-    return $planTypeLifeInsaurance;
+    return $planTypeLifeInsurance;
   }
 
   /** different types of units of pay

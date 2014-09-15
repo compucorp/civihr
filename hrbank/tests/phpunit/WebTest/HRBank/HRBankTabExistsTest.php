@@ -37,8 +37,6 @@ class WebTest_HRBank_HRBankTabExistsTest extends CiviSeleniumTestCase {
     // Adding contacts
     $firstName = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($firstName, "Jameson", "$firstName@jameson.name");
-    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Bank_Details']"), 'Bank Details tab not appearing');
-  
+    $this->assertTrue($this->isElementPresent("xpath=//a[@title='Bank Details']"), 'Bank Details tab not appearing');
   }
 }
-

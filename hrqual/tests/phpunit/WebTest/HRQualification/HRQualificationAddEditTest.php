@@ -37,10 +37,10 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
     // Adding contacts
     $random = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
-    
+
     // Check if Qualifications tab exists
-    $this->assertTrue($this->isElementPresent("xpath=//li[@aria-controls='Qualifications']"), 'Qualifications tab not appearing');
-    
+    $this->assertTrue($this->isElementPresent("xpath=//a[@title='Qualifications']"), 'Qualifications tab not appearing');
+
     //add Qualification data
     $addData = array(
       'Category_of_Skill' => 'Language',
@@ -54,7 +54,7 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
       'Evidence_Note' => 'NA',
     );
     $this->_addQualificationData($addData, "add");
-    
+
     //edit Qualification data
     $randomEditVisaNumber = substr(sha1(rand()), 0, 7);
     $editData = array(
@@ -74,17 +74,17 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
   function _addQualificationData($values, $mode = NULL, $nameOfCertification = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Qualifications']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//form[@id='Edit']/div[2]/a/span");
-    }  	
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-25']/a/span/div");
+      $this->click("xpath=//*[@id='ui-id-25']/a/span/div");
+    }
     else {
       $this->click("xpath=//a[@title='Qualifications']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$nameOfCertification."']/following-sibling::td[6]/span/a[text()='Edit']");
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-25']/a/span/div");
+      $this->click("xpath=//div[@id='custom-11-table-wrapper']//table/tbody/tr/td[text()='".$nameOfCertification."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Qualifications:Category_of_Skill']");
+    $this->type("xpath=//input[@data-crm-custom='Qualifications:Name_of_Skill']", $values['Category_Name']);
     $this->select("xpath=//select[@data-crm-custom='Qualifications:Category_of_Skill']", "label=".$values["Category_of_Skill"]);
-    $this->select("xpath=//select[@id='category_name']", "label=".$values['Category_Name']);
     $this->select("xpath=//select[@data-crm-custom='Qualifications:Level_of_Skill']", "label=".$values["Level_of_Skill"]);
     $this->click("xpath=//label[text() = 'Yes']/preceding-sibling::input[1]");
     $this->type("xpath=//input[@data-crm-custom='Qualifications:Name_of_Certification']", $values['Name_of_Certification']);
@@ -93,19 +93,17 @@ class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTes
     $this->type("xpath=//input[@data-crm-custom='Qualifications:Attain_Date']", $values['Attain_Date']);
     $this->type("xpath=//input[@data-crm-custom='Qualifications:Expiry_Date']", $values['Expiry_Date']);
     $this->type("xpath=//textarea[@data-crm-custom='Qualifications:Evidence_Note']", $values['Evidence_Note']);
-    $this->click("xpath=//input[@id='_qf_Edit_upload']");
-    $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->waitForElementPresent("xpath=//li[@aria-controls='Qualifications']");
+    $this->click("xpath=//input[@id='_qf_CustomData_upload']");
+    $this->waitForElementPresent("xpath=//a[@title='Qualifications']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Name_of_Certification']), 'Name of Certification not found after '.$mode.'ing Qualification (_addQualificationData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Name_of_Certification']."']/following-sibling::td[6]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='custom-11-table-wrapper']//table/tbody/tr/td[text()='".$values['Name_of_Certification']."']/following-sibling::td[6]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Name_of_Certification']), 'Name of Certification not found after '.$mode.'ing Qualification (_addQualificationData).');
 
     // WAS: xpath=//div[8]/div[1]/a
-    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $close = "xpath=//button[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
     $this->waitForElementPresent($close);
     $this->click($close);
   }
 
 }
-

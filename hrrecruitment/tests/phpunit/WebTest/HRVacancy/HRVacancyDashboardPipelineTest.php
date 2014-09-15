@@ -72,8 +72,8 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $newApplicantName = "{$lname1}, {$fname1}";
 
     $this->openCiviPage("case/pipeline", "reset=1&vid={$vacancy['id']}");
-    $this->waitForElementPresent('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
-    $this->click('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
+    $this->waitForElementPresent('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
+    $this->click('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
     $this->clickAt('//*[@id="s2id_autogen1"]/a');
     $this->waitForElementPresent('//*[@id="select2-results-2"]/li[1]');
     $name = $this->getText('//*[@id="select2-results-2"]/li[1]');
@@ -99,31 +99,32 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->_vacancyApply($vacancy['id']);
     $this->openCiviPage("case/pipeline", "reset=1&vid={$vacancy['id']}");
 
-    $this->waitForText("xpath=//*[@id='ui-tabs-1']/div/div[2]/div[2]", "0 applicants selected");
+    $this->waitForText("xpath=//*[@id='ui-id-3']/div/div[2]/div[2]", "0 applicants selected");
 
-    $this->waitForElementPresent("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody/tr[1]/td[1]/input");
-    $this->click("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody/tr[1]/td[1]/input");
-    $name = $this->getText("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody//tr/td[2]");
-    $this->verifyText("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody//tr/td[2]", $name);
+    $this->waitForElementPresent("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[1]/td[1]/input");
+    $this->click("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[1]/td[1]/input");
+    $name = $this->getText("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody//tr/td[2]");
+    $this->verifyText("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody//tr/td[2]", $name);
 
-    $this->waitForElementPresent("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody/tr[2]/td[1]/input");
-    $this->click("xpath=//*[@id='ui-tabs-1']/div/div[1]/table/tbody/tr[2]/td[1]/input");
-    $this->waitForText("xpath=//*[@id='ui-tabs-1']/div/div[2]/div[2]", "2 applicants selected");
+    $this->waitForElementPresent("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
+    $this->click("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
+    $this->waitForText("xpath=//*[@id='ui-id-3']/div/div[2]/div[2]", "2 applicants selected");
 
-    $this->click("xpath=//*[@id='ui-id-3']");
-    $this->waitForText("xpath=//*[@id='ui-tabs-2']/div/div[2]/div[2]", "0 applicants selected");
+    $this->click("xpath=//*[@id='tab_6']/a");
+    $this->waitForText("xpath=//*[@id='ui-id-5']/div/div[2]/div[2]", "0 applicants selected");
 
-    $this->click("xpath=//*[@id='ui-id-2']");
-    $aftername = $this->getText('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[2]');
+    $this->click("xpath=//*[@id='tab_4']/a");
+    $aftername = $this->getText('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[2]');
 
     $this->_changeCaseStatus();
-    $this->click("xpath=//*[@id='ui-id-3']");
-    $this->waitForElementPresent("xpath=//*[@id='ui-tabs-2']/div/div[1]/table/tbody/tr[1]/td[1]/input");
-    $this->click("xpath=//*[@id='ui-tabs-2']/div/div[1]/table/tbody/tr[1]/td[1]/input");
-    $this->verifyText("xpath=//*[@id='ui-tabs-2']/div/div[1]/table/tbody/tr[1]/td[2]", $aftername);
-    $this->click("xpath=//*[@id='ui-id-4']");
-    $this->waitForText("xpath=//*[@id='ui-tabs-3']/div/div[2]/div[2]", "0 applicants selected");
-    $this->click("xpath=//*[@id='ui-id-2']");
+    $this->click("xpath=//*[@id='tab_6']/a");
+    $this->waitForElementPresent("xpath=//*[@id='ui-id-5']/div/div[1]/table/tbody/tr[1]/td[1]/input");
+    $this->click("xpath=//*[@id='ui-id-5']/div/div[1]/table/tbody/tr[1]/td[1]/input");
+    $this->verifyText("xpath=//*[@id='ui-id-5']/div/div[1]/table/tbody/tr[1]/td[2]", $aftername);
+    $this->click("xpath=//*[@id='tab_7']/a");
+    $this->waitForText("xpath=//*[@id='ui-id-7']/div/div[2]/div[2]", "0 applicants selected");
+    //$this->click("xpath=//*[@id='ui-id-2']");
+    $this->click("xpath=//*[@id='tab_4']/a");
 
     $this->_testCasePipelineComment();
     $this->openCiviPage("case/pipeline", "reset=1&vid={$vacancy['id']}");
@@ -199,8 +200,8 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   }
 
   function _testCasePipelineComment() {
-    $this->click('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
-    $this->click('//*[@id="ui-tabs-1"]/div/div[2]/div[1]/a[2]');
+    $this->click('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
+    $this->click('//*[@id="ui-id-3"]/div/div[2]/div[1]/a[2]');
     $this->waitForElementPresent('//*[@id="_qf_Activity_upload-bottom"]');
     $subject = "Test comment";
     $this->type("subject", $subject);
@@ -211,8 +212,8 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   }
 
   function _testCasePipelineAddActivity() {
-    $this->waitForElementPresent('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
-    $this->click('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
+    $this->waitForElementPresent('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
+    $this->click('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[1]/td[1]/input');
     $this->clickAt('//*[@id="s2id_autogen1"]/a');
 
     $this->waitForElementPresent('//*[@id="select2-results-2"]/li[1]');
@@ -224,7 +225,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   }
 
   function _changeCaseStatus() {
-    $this->click('//*[@id="ui-tabs-1"]/div/div[1]/table/tbody/tr[2]/td[1]/input');
+    $this->click('//*[@id="ui-id-3"]/div/div[1]/table/tbody/tr[2]/td[1]/input');
     $this->clickAt('//*[@id="s2id_autogen3"]/a');
     $this->waitForElementPresent('//*[@id="select2-results-4"]/li[2]');
     $name = $this->getText('//*[@id="select2-results-4"]/li[2]');
@@ -232,7 +233,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('_qf_Activity_upload-top');
     $this->assertElementContainsText('//*[@id="Activity"]/div[2]/table/tbody/tr[1]/td[2]', $name);
     $this->click('//*[@id="_qf_Activity_upload-bottom"]');
-    $this->waitForText("crm-notification-container", "Change Case Status' activity has been created.");
+    $this->waitForText("crm-notification-container", "Change Assignment Status' activity has been created.");
   }
 
   function _commonAddActivity($name) {

@@ -37,33 +37,23 @@ class WebTest_HRCase_HRCaseActivityTest extends CiviSeleniumTestCase {
   }
 
   function addCase() {
+    // Adding contact with randomized first name (so we can then select that contact when creating case)
+    $firstName = substr(sha1(rand()), 0, 7);
+    $this->webtestAddContact($firstName, "Jameson", "$firstName@jameson.name");
     $this->openCiviPage('case/add', 'reset=1&action=add&atype=13&context=standalone', '_qf_Case_upload-bottom');
 
-    // Adding contact with randomized first name (so we can then select that contact when creating case)
-    // We're using pop-up New Contact dialog
-    $firstName = substr(sha1(rand()), 0, 7);
-    $lastName = "Fraser";
-    $contactName = "{$lastName}, {$firstName}";
-    $displayName = "{$firstName} {$lastName}";
-    $email = "{$lastName}.{$firstName}@example.org";
-    $this->webtestNewDialogContact($firstName, $lastName, $email, $type = 4);
     $caseTypeLabel = "Exiting";
-    $activityTypes = array("Send Termination Letter", "Exit Interview");
-
     $caseStatusLabel = "Ongoing";
     $subject = "Employee resignaition";
-
     $details = "Employee work termination";
-    $this->fireEvent('activity_details', 'focus');
+    $this->select2('client_id', $firstName);
+    $this->waitForElementPresent('activity_details');
     $this->fillRichTextField("activity_details", $details, 'CKEditor');
     $this->type("activity_subject", $subject);
-
     $this->select("case_type_id", "label={$caseTypeLabel}");
     $this->select("status_id", "label={$caseStatusLabel}");
     // Choose Case Start Date.
     $this->webtestFillDate('start_date', 'now');
-    $today = date('F jS, Y', strtotime('now'));
-
     $this->clickLink("_qf_Case_upload-bottom", "_qf_CaseView_cancel-bottom");
     $this->waitForText('crm-notification-container', "Assignment opened successfully.");
 
@@ -71,16 +61,14 @@ class WebTest_HRCase_HRCaseActivityTest extends CiviSeleniumTestCase {
   }
 
   function completeActivity() {
-    $this->waitForElementPresent("xpath=//form[@id='CaseView']/div[2]/div[@class='crm-accordion-wrapper crm-case_activities-accordion  crm-case-activities-block']/div[@id='activities']/div[@class='dataTables_wrapper']/table[@id='activities-selector']/tbody/tr[1]/td[7]/a[text()='Edit']");
-    $this->click("xpath=//form[@id='CaseView']/div[2]/div[@class='crm-accordion-wrapper crm-case_activities-accordion  crm-case-activities-block']/div[@id='activities']/div[@class='dataTables_wrapper']/table[@id='activities-selector']/tbody/tr[1]/td[7]/a[text()='Edit']");
-    $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->verifyActivityDateChange();
+   $this->waitForElementPresent("xpath=//div[@id='activities']/div[2]/table/tbody/tr/td[7]/a[text()='Edit']");
+   $this->click("xpath=//div[@id='activities']/div[2]/table/tbody/tr/td[7]/a[text()='Edit']");
+   $this->verifyActivityDateChange();
   }
 
   function verifyActivityDateChange() {
-    $prevactivityDate = date('F jS, Y', strtotime($this->getValue("activity_date_time")));
-
     sleep(2);
+    $this->waitForElementPresent('status_id');
     $this->select("status_id", "label=Completed");
     $this->waitForText('crm-notification-container', "Updated Completion Time");
     $today = date('F jS, Y', strtotime('now'));
@@ -94,7 +82,6 @@ class WebTest_HRCase_HRCaseActivityTest extends CiviSeleniumTestCase {
     $this->click("xpath=//span[@id='revert-link']/a");
     sleep(2);
 
-    $this->assertEquals($prevactivityDate, date('F jS, Y', strtotime($this->getValue("activity_date_time"))));
+    $this->assertEquals($activityDate, date('F jS, Y', strtotime($this->getValue("activity_date_time"))));
   }
 }
-
