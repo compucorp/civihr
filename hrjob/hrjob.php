@@ -91,14 +91,6 @@ function hrjob_civicrm_install() {
   $importJobNavigation->save();
   $importJobMenuTree = array(
     array(
-      'label' => ts('Jobs'),
-      'name' => 'jobs',
-      'url'  => 'civicrm/job/import',
-      'permission' => 'access HRJobs',
-      'parent_id'  => $importJobNavigation->id,
-      'weight'     => 1,
-    ),
-    array(
       'label'      => ts('Hours Types'),
       'name'       => 'hoursType',
       'url'        => 'civicrm/hour/editoption',

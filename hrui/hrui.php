@@ -471,12 +471,25 @@ function hrui_civicrm_managed(&$entities) {
 
 function hrui_civicrm_navigationMenu( &$params ) {
   $maxKey = ( max( array_keys($params) ) );
+  $jobNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
   $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+
   $i = 1;
   // Degrade gracefully on 4.4
   if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
     //  Get the maximum key of $params
     $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+
+    $multiValuedData[$maxKey+1] = array(
+     'attributes' => array (
+       'label' => ts('Jobs'),
+       'name' => 'jobs',
+       'url'  => 'civicrm/job/import',
+       'permission' => 'access HRJobs',
+       'parent_id'  => $jobNavId,
+       'weight'     => 1,
+       'active'     => 1
+     ));
     foreach ($multipleCustomData as $key => $value) {
       $i++;
       $i = $maxKey + $i;
@@ -488,27 +501,14 @@ function hrui_civicrm_navigationMenu( &$params ) {
           'permission' => 'access HRJobs',
           'operator'   => null,
           'separator'  => null,
-          'parentID'   => $maxKey+1,
+          'parentID'   => $jobNavId,
           'navID'      => $i,
           'active'     => 1
         ),
         'child' => null
       );
     }
-    $params[$contactNavId]['child'][$maxKey+1] = array (
-      'attributes' => array (
-        'label'      => 'Import Multi-value Custom Data' ,
-        'name'       => 'multiValueCustomDataImport',
-        'url'        => 'civicrm/import/custom',
-        'permission' => 'access HRJobs',
-        'operator'   => null,
-        'separator'  => null,
-        'parentID'   => $contactNavId,
-        'navID'      => $maxKey+1,
-        'active'     => 1
-      ),
-      'child' => $multiValuedData,
-    );
+    $params[$contactNavId]['child'][$jobNavId]['child'] = $multiValuedData;
   }
 }
 
