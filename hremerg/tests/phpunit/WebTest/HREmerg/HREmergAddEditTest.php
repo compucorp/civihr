@@ -34,7 +34,6 @@ class WebTest_HREmerg_HREmergAddEditTest extends CiviSeleniumTestCase {
   function testEmergCreateEdit() {
     $this->webtestLogin();
     $config = CRM_Core_Config::singleton();
-    
     // Adding contacts
     $contactName = substr(sha1(rand()), 0, 7);
     $this->webtestAddContact($contactName, "Anderson", "$contactName@anderson.name");
@@ -49,15 +48,12 @@ class WebTest_HREmerg_HREmergAddEditTest extends CiviSeleniumTestCase {
   function _addEmergData($values, $new = FALSE, $mode = NULL) {
     if ($new) {
       $this->click("xpath=//a[@title='Emergency Contacts']");
-      $this->waitForElementPresent("xpath=//div[@id='Emergency_Contacts']/div/div/div/div/a/span");
-      $this->click("xpath=//div[@id='Emergency_Contacts']/div/div/div/div/a/span");
-      $this->waitForElementPresent("xpath=//form[@id='Relationship']/div[2]/div/table/tbody/tr[2]/td[2]/input[@class='form-text ac_input']");
-      $this->type("xpath=//form[@id='Relationship']/div[2]/div/table/tbody/tr[2]/td[2]/input[@class='form-text ac_input']",$values['contact_1'] );
-      $this->click("xpath=//form[@id='Relationship']/div[2]/div/table/tbody/tr[2]/td[2]/input[@class='form-text ac_input']");
-      $this->waitForElementPresent("css=div.ac_results-inner li");
-      $this->click("css=div.ac_results-inner li");
-      $this->waitForElementPresent("xpath=//div[@id='saveDetails']/span[1]/input");
-      $this->click("xpath=//div[@id='saveDetails']/span[1]/input");
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-13']/div/div[1]/a/span/div");
+      $this->click("xpath=//*[@id='ui-id-13']/div/div[1]/a/span/div");
+      $this->waitForElementPresent('related_contact_id');
+      $this->select2('related_contact_id', $values['contact_1'], TRUE);
+      $this->waitForElementPresent("_qf_Relationship_upload-bottom");
+      $this->click("_qf_Relationship_upload-bottom");
       sleep(3);
       $this->waitForText('crm-notification-container', "Saved");
     }

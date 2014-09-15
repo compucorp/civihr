@@ -58,21 +58,19 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->_addJobData(array(
       'position' => 'Chief Executive',
       'title' => 'Jr Manager',
-      'contract_type' => 'Employee',
-      'level_type' => 'Junior Manager',
-      'period_type' => 'Permanent'
+      'contract_type' => 'Employee - Temporary',
+      'location' => 'Headquarters',
+      'notice_amount' => 5,
+      'notice_unit' => 'Week'
     ), TRUE);
 
     $this->_addFundingData(1, array(
-      'funding_org_id' => $orgName3,
       'funding_notes' => 'Test Notes'
     ));
 
     $this->_addJobHourData(1, array(
       'hours_type' => 8,
-      'hours_amount' => 40.00,
       'hours_unit' => 'Day',
-      'hours_fte' => 1,
     ));
 
     $this->_addHealthCareData(1, array(
@@ -84,7 +82,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'plan_type_life_insurance' => 'Individual',
       'description_life_insurance' => 'This is a life insurance description',
       'dependents_life_insurance' => 'Own',
-    ));
+      ));
     $this->_addJobLeaveData(1, array(
       '1' => 8,
       '2' => 9,
@@ -92,10 +90,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ));
 
     $this->_addJobPayData(1, array(
-      'pay_grade' => 'paid',
+      'pay_scale' => 'NJC pay scale',
       'pay_amount' => 40,
       'pay_unit' => 'Day',
-      'pay_currency' => $config->defaultCurrency,
     ));
 
     $this->_addJobPensionData(1, array(
@@ -111,25 +108,25 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       array(
         'title' => 'Manager',
         'description' => 'A test Description',
-        'hours' => 40.00,
+        'hours' => 2,
+        'role_hours_unit' => 'Day',
         'cost_center' => 001,
+        //'funder' => $orgName2,
         'department' => 'Finance',
-        'functional_area' => 'Save the Whales',
+        'level_type' => 'Senior Staff',
         'location' => 'Headquarters',
-        'ac_input' => $firstName,
-        'organization' => 'ZING',
-        'region' => 'Europe',
+        'manager_contact_id' => $firstName,
       ),
       array(
         'title' => 'Jr Manager',
         'description' => 'A test Description',
-        'hours' => 60.00,
+        'hours' => 2,
+        'role_hours_unit' => 'Day',
         'cost_center' => 002,
         'department' => 'Finance',
-        'functional_area' => 'Save the Whales',
+        'level_type' => 'Senior Manager',
         'location' => 'Headquarters',
-        'organization' => 'ZING',
-        'region' => 'Europe',
+        'manager_contact_id' => $firstName,
       ),
     );
     //add multiple roles
@@ -141,8 +138,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'position' => 'Administrator',
       'title' => 'Sr Admin',
       'contract_type' => 'Contractor',
-      'level_type' => 'Senior Manager',
-      'period_type' => 'Temporary'
+      'location' => 'Headquarters',
+      'notice_amount' => 1,
+      'notice_unit' => 'Month'
     ));
 
     //edit Job Data
@@ -150,33 +148,28 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'position' => 'Volunteer',
       'title' => 'Sr Volunteer',
       'contract_type' => 'Volunteer',
-      'level_type' => 'Senior Staff',
-      'period_type' => 'Permanent'
+      'location' => 'Headquarters',
+      'notice_amount' => 1,
+      'notice_unit' => 'Month'
     ), FALSE, 'Edit');
 
     $this->_addFundingData(2, array(
-      'funding_org_id' => $orgName3,
       'funding_notes' => 'Test Funding Notes'
     ));
 
     $this->_addFundingData(2, array(
-     'funding_org_id' => $orgName2,
      'funding_notes' => 'Test Funding Notes'
     ), 'Edit');
 
     $this->_addJobHourData(2, array(
-      'hours_type' => 4,
-      'hours_amount' => 80.00,
+      'hours_type' => 8,
       'hours_unit' => 'Day',
-      'hours_fte' => 2,
-    ));
+      ));
 
     //edit HoursData
     $this->_addJobHourData(2, array(
-      'hours_type' => 0,
-      'hours_amount' => 100.00,
+      'hours_type' => '4',
       'hours_unit' => 'Week',
-      'hours_fte' => 0.5,
     ), 'Edit');
 
     $this->_addHealthCareData(2, array(
@@ -200,7 +193,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'plan_type_life_insurance'=> 'Family',
       'description_life_insurance'=> 'This is a life insurance description',
       'dependents_life_insurance'=> 'Spouse, children',
-    ), 'Edit');
+      ), 'Edit');
 
     $this->_addJobLeaveData(2, array(
       '1' => 7,
@@ -216,18 +209,16 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     ), 'Edit');
 
     $this->_addJobPayData(2, array(
-      'pay_grade' => 'unpaid',
+      'pay_scale' => 'JNC pay scale',
       'pay_amount' => 60,
       'pay_unit' => 'Day',
-      'pay_currency' => $config->defaultCurrency,
     ));
 
     //edit PayData
     $this->_addJobPayData(2, array(
-      'pay_grade' => 'paid',
+      'pay_scale' => 'Soulbury Pay Agreement',
       'pay_amount' => 120,
       'pay_unit' => 'Week',
-      'pay_currency' => $config->defaultCurrency,
     ), 'Edit');
 
     $this->_addJobPensionData(2, array(
@@ -252,13 +243,13 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $roleValues = array(
       'title' => 'Sr Manager',
       'description' => 'Again a test Description',
-      'hours' => 80.00,
+      'hours' => 3,
+      'role_hours_unit' => 'Day',
       'cost_center' => 003,
       'department' => 'HR',
-      'functional_area' => 'Save the Tigers',
-      'location' => 'Home',
-      'organization' => 'ZINGIT',
-      'region' => 'Asia',
+      'level_type' => 'Senior Staff',
+      'location' => 'Headquarters',
+      'manager_contact_id' => $firstName,
     );
     $this->_addJobRoleData($roleValues, 2, 1);
 
@@ -266,18 +257,20 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $roleValues = array(
       'title' => 'Project Manager',
       'description' => 'test Description',
-      'hours' => 120.00,
+      'hours' => 4,
+      'role_hours_unit' => 'Day',
       'cost_center' => 005,
       'department' => 'Finance',
-      'functional_area' => 'Save the Panda',
+      'level_type' => 'Senior Staff',
       'location' => 'Headquarters',
-      'organization' => 'ZING',
-      'region' => 'Europe',
+      'manager_contact_id' => $firstName,
     );
     $this->_addJobRoleData($roleValues, 2, 2);
   }
 
   function _addJobData($values, $new = FALSE, $mode = NULL) {
+    $this->click("xpath=//a[@title='Jobs']");
+
     if ($mode != 'Edit') {
       if ($new) {
         $this->waitForElementPresent("xpath=//a[@class='hrjob-add']");
@@ -292,13 +285,14 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->type('hrjob-position', $values['position']);
     $this->type('hrjob-title', $values['title']);
     $this->select('hrjob-contract_type', "value={$values['contract_type']}");
-    $this->select('hrjob-level_type', "value={$values['level_type']}");
-    $this->select('hrjob-period_type', "value={$values['period_type']}");
+    $this->select('hrjob-location', "value={$values['location']}");
+    $this->type('hrjob-notice_amount', $values['notice_amount']);
+    $this->select('hrjob-notice_unit', "value={$values['notice_unit']}");
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
 
     //assert the saved values
-    $this->assertSavedValues($values, array('contract_type', 'level_type', 'period_type'));
+    $this->assertSavedValues($values, array('contract_type', 'location', 'notice_unit'));
   }
 
   function _addFundingData($jobIndex, $values, $mode = NULL) {
@@ -306,6 +300,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
   	  $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[2]/a");
   	  $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[2]/a");
   	}
+    $this->waitForElementPresent('hrjob-funding_notes');
     $this->type('hrjob-funding_notes', $values['funding_notes']);
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
@@ -313,18 +308,16 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
 
   	//assert the saved values
   	$this->assertEquals($values['funding_notes'], $this->getValue("hrjob-funding_notes"));
-  }
+    }
 
   function _addJobHourData($jobIndex, $values, $mode = NULL) {
     if ($mode != 'Edit') {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[3]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[3]/a");
     }
-    $this->waitForElementPresent("hrjob-hours_fte");
+    $this->waitForElementPresent("hrjob-hours_type");
     $this->select('hrjob-hours_type', "value={$values['hours_type']}");
-    $this->type('hrjob-hours_amount', $values['hours_amount']);
     $this->select('hrjob-hours_unit', "value={$values['hours_unit']}");
-    $this->type('hrjob-hours_fte', $values['hours_fte']);
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
@@ -338,25 +331,13 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[4]/a");
     }
-    foreach ($values as $key => $value) {
-      if ($key == 'provider') {
-        $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']");
-        $this->type("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']", $value);
-        $this->click("xpath=//div[@class='hrjob-main-region']/div/form//div[1]/div[2][@class='crm-content']/input[2][@class='ac_input']");
-        $this->waitForElementPresent("css=div.ac_results-inner li");
-        $this->click("css=div.ac_results-inner li");
-      }
-      if ($key == 'provider_life_insurance') {
-        $this->waitForElementPresent("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']");
-        $this->type("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']", $value);
-        $this->click("xpath=//div[@class='hrjob-main-region']/div/form//div[5]/div[2][@class='crm-content']/input[2][@class='ac_input']");
-        $this->waitForElementPresent("css=div.ac_results-inner li");
-        $this->click("css=div.ac_results-inner li");
-      }
-    }
+    $this->waitForElementPresent('hrjob-provider');
+    $this->select2('hrjob-provider', $values['provider']);
     $this->select('hrjob-plan_type', "value={$values['plan_type']}");
     $this->type('hrjob-description', $values['description']);
     $this->type('hrjob-dependents', $values['dependents']);
+    $this->waitForElementPresent('hrjob-provider_life_insurance');
+    $this->select2('hrjob-provider_life_insurance', $values['provider_life_insurance']);
     $this->select('hrjob-plan_type_life_insurance', "value={$values['plan_type_life_insurance']}");
     $this->type('hrjob-description_life_insurance', $values['description_life_insurance']);
     $this->type('hrjob-dependents_life_insurance', $values['dependents_life_insurance']);
@@ -367,9 +348,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     unset($values['provider_life_insurance']);
 
     //assert the saved values
-    $this->assertSavedValues($values, array('provider', 'plan_type','provider_life_insurance', 'plan_type_life_insurance'));
+    $this->assertSavedValues($values, array('provider', 'plan_type','provider_life_insurance'));
   }
-
 
   function _addJobLeaveData($jobIndex, $values, $mode = NULL) {
     if ($mode != 'Edit') {
@@ -384,7 +364,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
-
+    sleep(1);
     $i = 1;
     foreach ($values as $key => $value) {
       $this->assertEquals($value, $this->getValue("$tbodyXPath/tr[$i]/td[2]/input"));
@@ -397,17 +377,19 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[6]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[6]/a");
     }
-    $this->waitForElementPresent("hrjob-pay_unit");
-    $this->select('hrjob-pay_grade', "value={$values['pay_grade']}");
+    $this->waitForElementPresent("xpath=//input[@value='paid']");
+    $this->check("xpath=//input[@value='paid']");
+    sleep(1);
+    $this->waitForElementPresent("hrjob-pay_scale");
+    $this->select('hrjob-pay_scale', "value={$values['pay_scale']}");
     $this->type('hrjob-pay_amount', $values['pay_amount']);
     $this->select('hrjob-pay_unit', "value={$values['pay_unit']}");
-    $this->select('hrjob-pay_currency', "value={$values['pay_currency']}");
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
 
     //assert the saved values
-    $this->assertSavedValues($values, array('pay_grade', 'pay_unit'));
+    $this->assertSavedValues($values, array('pay_scale', 'pay_unit'));
   }
 
   function _addJobPensionData($jobIndex, $values, $mode = NULL) {
@@ -449,26 +431,26 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[8]/a");
       $this->waitForElementPresent("xpath=//a[@class='hrjob-role-add']");
     }
-
+    $this->waitForElementPresent("xpath=//a[@class='hrjob-role-add']");
     $this->click("xpath=//a[@class='hrjob-role-add']");
-    $this->waitForElementPresent("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div[10]/div[2]/input[@id='hrjob-region']");
+    $this->waitForElementPresent("xpath=//select[@id='hrjob-region']");
+
     foreach ($values as $key => $value) {
       if ($key == 'description') {
-        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/textarea[@id='hrjob-{$key}']", $value);
+        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/textarea[@id='hrjob-{$key}']", $value);
+
       }
-      elseif ($key == 'location' || $key == 'department') {
-        $this->select("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/select[@id='hrjob-{$key}']","value={$value}");
+      elseif ($key == 'location' || $key == 'department' || $key == 'level_type' || $key == 'role_hours_unit') {
+        $this->select("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/select[@id='hrjob-{$key}']","value={$value}");
       }
-      elseif ($key == 'ac_input') {
-        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']", $value);
-        $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@class='$key']");
-        $this->waitForElementPresent("css=div.ac_results-inner li");
-        $this->click("css=div.ac_results-inner li");
+      elseif ($key == 'manager_contact_id') {
+        $this->select2("hrjob-manager_contact_id", $value);
       }
       else {
-        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@id='hrjob-{$key}']", $value);
+        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/input[@id='hrjob-{$key}']", $value);sleep(2);
       }
     }
+
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
@@ -476,16 +458,19 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/strong[contains(text(),'{$values['title']}')]");
 
     //assert the saved values for multiple roles
-    unset($values['ac_input']);
     foreach ($values as $key => $value) {
       if ($key == 'description') {
-        $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/textarea[@id='hrjob-{$key}']"));
+        $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/textarea[@id='hrjob-{$key}']"));
+
       }
-      elseif ($key == 'location' || $key == 'department') {
-        $this->assertEquals($value, $this->getSelectedValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/select[@id='hrjob-{$key}']"));
+      elseif ($key == 'location' || $key == 'department' || $key == 'level_type' || $key == 'role_hours_unit') {
+        $this->assertEquals($value, $this->getSelectedValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/select[@id='hrjob-{$key}']"));
+      }
+      elseif ($key == 'manager_contact_id') {
+        $this->assertElementContainsText("xpath=//*[@id='ui-id-2']/div[2]/div[1]/div/form/table/tbody/tr[2]/td[2]/div/div/div[13]/div[1]/label", 'Manager');
       }
       else {
-        $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/form/div//div[2]/input[@id='hrjob-{$key}']"));
+        $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/input[@id='hrjob-{$key}']"));
       }
     }
   }
@@ -501,4 +486,3 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     }
   }
 }
-

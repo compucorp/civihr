@@ -39,7 +39,7 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
     $this->webtestAddContact($random, "Jameson", "$random@jameson.name");
 
     // Check if Identification tab exists
-    $this->waitForElementPresent("xpath=//li[@aria-controls='Identification']");
+    $this->waitForElementPresent("xpath=//a[@title='Identification']");
 
     //add Visa data
     $addData = array(
@@ -52,7 +52,7 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
       'Evidence_Note' => 'NA',
     );
     $this->_addIdentificationData($addData, "add");
-    
+
     //edit Visa data
     $randomEditVisaNumber = substr(sha1(rand()), 0, 7);
     $editData = array(
@@ -70,35 +70,33 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
   function _addIdentificationData($values, $mode = NULL, $number = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//form[@id='Edit']/div[2]/a/span");
-    }  	
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-17']/a/span/div");
+      $this->click("xpath=//*[@id='ui-id-17']/a/span/div");
+    }
     else {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//form[@id='Edit']/div[2]/a/span");
-      $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[6]/span/a[text()='Edit']");
+      $this->waitForElementPresent("xpath=//*[@id='ui-id-17']/a/span/div");
+      $this->click("xpath=//div[@id='custom-6-table-wrapper']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Identify:Type']");
     $this->select("xpath=//select[@data-crm-custom='Identify:Type']", "label=".$values["Type"]);
     $this->type("xpath=//input[@data-crm-custom='Identify:Number']", $values['Number']);
     $this->type("xpath=//input[@data-crm-custom='Identify:Issue_Date']", $values['Issue_Date']);
     $this->type("xpath=//input[@data-crm-custom='Identify:Expire_Date']", $values['Expire_Date']);
-    $this->select("xpath=//div[@class='crm-profile-name-hrident_tab']/div/div[5]/div[2]/select", "label=".$values["State_Province"]);
+    $this->select("xpath=//select[@title='State/Province']", "label=".$values["State_Province"]);
     $this->select("xpath=//select[@data-crm-custom='Identify:Country']", "label=".$values["Country"]);
     $this->type("xpath=//textarea[@data-crm-custom='Identify:Evidence_Note']", $values['Evidence_Note']);
-    $this->click("xpath=//input[@id='_qf_Edit_upload']");
-    $this->waitForPageToLoad($this->getTimeoutMsec());
-    $this->waitForElementPresent("xpath=//li[@aria-controls='Identification']");
+    $this->click("xpath=//input[@id='_qf_CustomData_upload']");
+    $this->waitForElementPresent("xpath=//li/a[@title='Identification']");
     sleep(2);
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
-    $this->click("xpath=//div[@id='browseValues']//table/tbody/tr/td[text()='".$values['Number']."']/following-sibling::td[6]/span/a[text()='View']");
+    $this->click("xpath=//div[@id='custom-6-table-wrapper']//table/tbody/tr/td[text()='".$values['Number']."']/following-sibling::td[6]/span/a[text()='View']");
     $this->assertTrue($this->isTextPresent($values['Number']), 'Number not found after '.$mode.'ing Identification (_addIdentificationData).');
 
     // WAS: xpath=//div[8]/div[1]/a
-    $close = "xpath=//a[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+    $close = "xpath=//button[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
+
     $this->waitForElementPresent($close);
     $this->click($close);
   }
-
 }
-

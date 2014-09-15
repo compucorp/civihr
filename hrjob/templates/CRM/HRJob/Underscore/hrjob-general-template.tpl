@@ -43,12 +43,12 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">
-      <label for="hrjob-level_type">{ts}Normal Place of Work{/ts}</label>
+      <label for="hrjob-location">{ts}Normal Place of Work{/ts}</label>
     </div>
     <div class="crm-content">
     {literal}
       <%= RenderUtil.select({
-      id: 'hrjob-level_type',
+      id: 'hrjob-location',
       name: 'location',
       entity: 'HRJob'
       }) %>
