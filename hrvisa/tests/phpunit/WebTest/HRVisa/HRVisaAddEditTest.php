@@ -70,12 +70,12 @@ class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
   function _addVisaData($values, $mode = NULL, $visaNumber = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Immigration']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-19']/a/span/div");
-      $this->click("xpath=//*[@id='ui-id-19']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[10]/a/span/div");
+      $this->click("xpath=//div[@id='mainTabContainer']/div[10]/a/span/div");
     }
     else {
       $this->click("xpath=//a[@title='Immigration']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-19']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[10]/a/span/div");
       if ($this->isElementPresent("xpath=//div[@id='custom-12-table-wrapper']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[6]/span/a[text()='Edit']")) {
         $this->click("xpath=//div[@id='custom-12-table-wrapper']//table/tbody/tr/td[text()='".$visaNumber."']/following-sibling::td[6]/span/a[text()='Edit']");
       }

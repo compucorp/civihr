@@ -63,12 +63,12 @@ class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
   function _addMedData($values, $mode = NULL, $condition = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Medical & Disability']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-21']/a/span/div");
-      $this->click("xpath=//*[@id='ui-id-21']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
+      $this->click("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
     }
     else {
       $this->click("xpath=//a[@title='Medical & Disability']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-21']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
       $this->click("xpath=//div[@id='custom-10-table-wrapper']//table/tbody/tr/td[text()='".$condition."']/following-sibling::td[4]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Medical_Disability:Condition']");

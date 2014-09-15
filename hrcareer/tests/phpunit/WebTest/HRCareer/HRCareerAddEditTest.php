@@ -31,7 +31,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     parent::setUp();
   }
 
-  function testMedCreateEdit() {
+  function testCareerCreateEdit() {
     $this->webtestLogin();
 
     // Adding contacts
@@ -52,7 +52,7 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
       'Reference_Supplied' => "ABC",
       'Evidence_Note' => 'NA',
     );
-    $this->_addMedData($addData, "add");
+    $this->_addCareerData($addData, "add");
 
     //edit Carrer data
     $randomEditCarrerNumber = substr(sha1(rand()), 0, 7);
@@ -67,19 +67,19 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
       'Reference_Supplied' => "ABC",
       'Evidence_Note' => 'NA',
     );
-    $this->_addMedData($editData, "edit", $random);
+    $this->_addCareerData($editData, "edit", $random);
 
   }
 
-  function _addMedData($values, $mode = NULL, $nameOfOrganisation = NULL) {
+  function _addCareerData($values, $mode = NULL, $nameOfOrganisation = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Career History']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-11']/a/span/div");
-      $this->click("xpath=//*[@id='ui-id-11']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
+      $this->click("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
     }
     else {
       $this->click("xpath=//a[@title='Career History']");
-      $this->waitForElementPresent("xpath=//*[@id='ui-id-11']/a/span/div");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
       $this->click("xpath=//div[@id='option11_wrapper']//table/tbody/tr/td[text()='".$nameOfOrganisation."']/following-sibling::td[7]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//input[@data-crm-custom='Career:Start_Date']");
@@ -96,9 +96,9 @@ class WebTest_HRCareer_HRCareerAddEditTest extends CiviSeleniumTestCase {
     $this->waitForElementPresent("xpath=//li/a[@title='Career History']");
 
     sleep(2);
-    $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
+    $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addCareerData).');
     $this->click("xpath=//div[@id='option11_wrapper']//table/tbody/tr/td[text()='".$values['Name_of_Organisation']."']/following-sibling::td[7]/span/a[text()='View']");
-    $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addMedData).');
+    $this->assertTrue($this->isTextPresent($values['Name_of_Organisation']), 'Name of Organisation not found after '.$mode.'ing Career (_addCareerData).');
 
     // WAS: xpath=//div[8]/div[1]/a
     $close = "xpath=//button[contains(concat(' ',normalize-space(@class),' '),' ui-dialog-titlebar-close ')]";
