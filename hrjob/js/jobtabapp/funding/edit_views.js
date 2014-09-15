@@ -23,26 +23,30 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
       'change:funder': 'roleDataView'
     },
     roleDataView: function() {
-      var view = this, rolesInfo = {};
+      var view = this, rolesInfo = {}, $rowspan=1;
       _.forEach(view.options.roleCollection.models, function (model) {
         var id = model.get('id'),
-          funderExpr = model.get('funder'),
-          funders = null;
-        if (funderExpr) {
-          funders = funderExpr.split(',');
+          percentRel = {},
+          funderPercExpr = model.get('percent_pay_funder'), fundersPer = 0;
+        if (funderPercExpr) {
+          percentFunders = funderPercExpr.split(',');
+          _.each(percentFunders, function(percentfunderExpr){
+            percentAndFunder = percentfunderExpr.split('-');
+            percentRel[percentAndFunder[0]] =  percentAndFunder[1];
+            $rowspan += 1;
+            view.$('a#hrjob-role-funder-'+percentAndFunder[0]).hrContactLink({
+              cid: percentAndFunder[0]
+            });
+          });
         }
         if(!rolesInfo[id]) {
           rolesInfo[id]={
             'position': model.get('title'),
-            'funder': funders,
+            'funderInfo': percentRel,
+            'rowspan': $rowspan,
             'percentPay': model.get('percent_pay_role')
           };
         }
-        _.each(funders, function(funderId){
-          view.$('a#hrjob-role-funder-'+funderId).hrContactLink({
-            cid: funderId
-          });
-        });
       });
       return rolesInfo;
     }

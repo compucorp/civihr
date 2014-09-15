@@ -46,7 +46,8 @@ class CRM_HRJob_BAO_HRJob extends CRM_HRJob_DAO_HRJob {
     $instance->copyValues($params);
     $instance->save();
     $resultRoleGet = civicrm_api3('HRJobRole', 'get', array('job_id' => $instance->id,'title' => $instance->title));
-    if ($hook == 'create' && $resultRoleGet['count'] == 0) {
+    $duplicate = CRM_Utils_Array::value('action', $params, $hook);
+    if ($hook == 'create' && $resultRoleGet['count'] == 0 && $duplicate != 'duplicate') {
       civicrm_api3('HRJobRole', 'create', array('job_id' => $instance->id,'title' => $instance->title, 'location'=> $instance->location, 'percent_pay_role' => 100));
     }
 
