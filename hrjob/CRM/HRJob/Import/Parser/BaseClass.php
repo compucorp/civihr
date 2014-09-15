@@ -54,6 +54,7 @@ class CRM_HRJob_Import_Parser_BaseClass extends CRM_HRJob_Import_Parser {
   function __construct(&$mapperKeys, $mapperLocType = NULL, $mapperPhoneType = NULL) {
     parent::__construct();
     $this->_mapperKeys = &$mapperKeys;
+    $this->_mapperLocType = &$mapperLocType;
   }
 
   /**
@@ -73,6 +74,7 @@ class CRM_HRJob_Import_Parser_BaseClass extends CRM_HRJob_Import_Parser {
       $this->addField($name, CRM_Utils_Array::value('title', $field, $name), $field['type'], $field['headerPattern'], $field['dataPattern']);
     }
     $this->setActiveFields($this->_mapperKeys);
+    $this->setActiveFieldLocationTypes($this->_mapperLocType);
   }
   /**
    * Set fields to an array of importable fields

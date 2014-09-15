@@ -96,7 +96,7 @@ class CRM_HRJob_Import_Form_Previewbaseclass extends CRM_Import_Form_Preview {
     }
 
     $properties = array(
-      'mapper',
+      'mapper','locations',
       'dataValues', 'columnCount',
       'totalRowCount', 'validRowCount',
       'invalidRowCount', 'conflictRowCount',
@@ -129,13 +129,20 @@ class CRM_HRJob_Import_Form_Previewbaseclass extends CRM_Import_Form_Preview {
     $separator = $config->fieldSeparator;
 
     $mapper = $this->controller->exportValue('MapField', 'mapper');
+
     $mapperKeys = array();
 
     foreach ($mapper as $key => $value) {
       $mapperKeys[$key] = $mapper[$key][0];
+      if (isset($mapper[$key][1]) && is_numeric($mapper[$key][1])) {
+        $mapperLocTypes[$key] = $mapper[$key][1];
+      }
+      else {
+        $mapperLocTypes[$key] = NULL;
+      }
     }
-
-    $parser = new $this->_parser($mapperKeys);
+    $leaveType = CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobLeave', 'leave_type');
+    $parser = new $this->_parser($mapperKeys,$mapperLocTypes);
     $parser->setEntity($entity);
 
     $mapFields = $this->get('fields');
@@ -144,6 +151,9 @@ class CRM_HRJob_Import_Form_Previewbaseclass extends CRM_Import_Form_Preview {
       $header = array();
       if (isset($mapFields[$mapper[$key][0]])) {
         $header[] = $mapFields[$mapper[$key][0]];
+      }
+      if (isset($mapper[$key][1])) {
+        $header[] = $leaveType[$mapper[$key][1]];
       }
       $mapperFields[] = implode(' - ', $header);
     }
