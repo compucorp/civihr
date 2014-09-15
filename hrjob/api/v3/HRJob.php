@@ -118,6 +118,7 @@ function civicrm_api3_h_r_job_duplicate($params) {
       $duplicateCreateParams[$fieldKey] = $originalGetResult['values'][0][$fieldKey];
     }
   }
+  $duplicateCreateParams['action'] = 'duplicate';
   $duplicateCreateResult = civicrm_api3('HRJob', 'create', $duplicateCreateParams);
 
   // Duplicate each of the sub-entities

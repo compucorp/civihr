@@ -391,12 +391,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
     doSave: function() {
       var view = this,
         rules = this.createValidationRules();
-      view.$('form').validate(rules);
       _.forEach(view.collection.models, function (model) {
         var suffix = '_' + model.cid,
           funderAttr = 'funders-0'+suffix,
           fundStr = null, percentStr = null,
-          percentAttr = 'percent_pay_funder-0'+suffix, $i = 0, $j = 0,
+          percentAttr = 'percent_pay_funder-0'+suffix, $i = 0, $j = 0, percentPay = 0,
           relatedFunderPer = 0, funderAll = [], percentAll = [];
 
         for(attr in model.attributes){
@@ -406,16 +405,23 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
             if (!relatedFunderPer) {
               relatedFunderPer = 0;
             }
+            if (!funderAll[$i]) {
+              relatedFunderPer = 0;
+              model.set('percent_pay_funder-'+ $i+''+suffix, 0);
+            }
             percentAll[$i] = funderAll[$i] +'-'+ relatedFunderPer;
             $i += 1;
             funderAttr = 'funders-'+ $i+''+suffix;
+            percentPay += parseInt(relatedFunderPer);
           }
         }
         fundStr = funderAll.join(',');
         percentStr = percentAll.join(',');
         model.set('funder', fundStr);
         model.set('percent_pay_funder', percentStr);
+        model.set('percent_pay_role', percentPay);
       });
+      view.$('form').validate(rules);
 
       if(!this.payStat()) {
         CRM.alert(ts('The sum of the Percent of Pay Assigned for all Roles for a Job Position must never be more than 100'), ts('Invalid Percent of Pay Assigned'), 'error');
