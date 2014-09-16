@@ -856,6 +856,8 @@ class GenerateHRData {
         'period_end_date' => $this->randomDate($startDate, $endDate),
         'notice_amount' => $this->randomItem('notice_amount'),
         'notice_unit' => $this->randomItem('notice_unit'),
+        'notice_amount_employee' => $this->randomItem('notice_amount'),
+        'notice_unit_employee' => $this->randomItem('notice_unit'),
         'location' => $this->randomItem('location'),
         'is_primary' => 0,
       );
@@ -888,10 +890,21 @@ class GenerateHRData {
         $hoursValues = array(
           'job_id' => $hrJobObj->id,
           'hours_type' => $this->randomItem('hours_type'),
-          'hours_amount' => $this->randomItem('hours_amount'),
-          'hours_unit' => $this->randomItem('hours_unit'),
-          'hours_fte' => $this->randomItem('hours_fte'),
+          'hours_unit' => 'Day',
         );
+
+        if ($hoursValues['hours_type'] == 8) {
+          $hoursValues['hours_amount'] = 8;
+        }
+        else if ($hoursValues['hours_type'] == 4) {
+          $hoursValues['hours_amount'] = 4;
+          $hoursValues['fte_denom'] = 2;
+        }
+        else {
+          $hoursValues['hours_amount'] = 0;
+          $hoursValues['fte_num'] = 0;
+          $hoursValues['hours_unit'] = 'Week';
+        }
         $this->insertJobData('CRM_HRJob_DAO_HRJobHour', $hoursValues);
       }
 
@@ -900,6 +913,7 @@ class GenerateHRData {
         $payValues = array(
           'job_id' => $hrJobObj->id,
           'pay_grade' => $this->randomItem('paid_unpaid'),
+          'pay_scale' => $this->randomItem('pay_scale'),
           'pay_amount' => $this->randomItem('pay_amount'),
           'pay_unit' => $this->randomItem('pay_unit'),
         );
@@ -910,6 +924,7 @@ class GenerateHRData {
         //sample data for HRJob Pension table
         $pensionValues = array(
           'job_id' => $hrJobObj->id,
+          'pension_type' => $this->randomItem('pension_type'),
           'is_enrolled' => $this->randomItem('is_enrolled'),
           'ee_contrib_pct' => $this->randomItem('contrib_pct'),
           'er_contrib_pct' => $this->randomItem('contrib_pct'),
@@ -928,7 +943,6 @@ class GenerateHRData {
         $this->insertJobData('CRM_HRJob_DAO_HRJobLeave', $leaveValues);
       }
 
-
       //sample data for HRJob Role table. cases with 0, 1, 2, and 3 job roles.
       $count = mt_rand(0, 3);
       for ($i = 1; $i <= $count; $i++) {
@@ -937,6 +951,7 @@ class GenerateHRData {
           'title' => $this->randomItem('title'),
           'description' => $this->randomItem('job_role_description'),
           'hours' => $this->randomItem('hours_amount'),
+          'role_hours_unit' => $this->randomItem('hours_unit'),
           'region' => null,
           'department' => $this->randomItem('department'),
           'level_type' => $this->randomItem('level_type'),
@@ -944,8 +959,10 @@ class GenerateHRData {
           'functional_area' => $this->randomItem('functional_area'),
           'organization' => $this->randomItem('name_of_organisation'),
           'cost_center' => $this->randomItem('cost_center'),
-          'funder' => $this->randomIndex(array_flip($this->Organization))
+          'funder' => $this->randomIndex(array_flip($this->Organization)),
+          'location' => $this->randomItem('location'),
         );
+        $roleValues['percent_pay_funder'] = $roleValues['funder']."-".$this->randomItem('percent_pay_funder');
         $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
       }
     }
