@@ -69,7 +69,7 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
   public function preProcess() {
     $this->_mapperFields = $this->get('fields');
     $this->_entity = $this->get('_entity');
-
+    $this->_highlightedFields = array('contact_id', 'position', 'title', 'contract_type');
     $v = $this->_mapperFields;
     asort($this->_mapperFields);
     $this->_columnCount = $this->get('columnCount');
@@ -298,14 +298,24 @@ class CRM_HRJob_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
       }
       $requiredFields = array(
         'contact_id' => ts('Contact ID'),
+        'title' => ts('Job Title'),
+        'position' => ts('Job Position'),
+        'contract_type' => ts('Job Contract Type'),
       );
+
+      $missingNames = array();
+      $errorRequired = FALSE;
       foreach ($requiredFields as $field => $title) {
         if (!in_array($field, $importKeys)) {
           if (!isset($errors['_qf_default'])) {
             $errors['_qf_default'] = '';
           }
-          $errors['_qf_default'] .= ts('Missing required field: %1', array(1 => $title));
+          $errorRequired = TRUE;
+          $missingNames[] = ts($title);
         }
+      }
+      if ($errorRequired) {
+        $errors['_qf_default'] = ts('Missing required fields:') . ' ' . implode(ts(' and '), $missingNames);
       }
     }
 
