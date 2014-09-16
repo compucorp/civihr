@@ -34,6 +34,7 @@ class CRM_HRRecruitment_BAO_HRVacancyStage extends CRM_HRRecruitment_DAO_HRVacan
    * in key(as id) => value array (contains label, weight and count) format.
    */
   public static function caseStage($id) {
+    $caseStatus = array();
     $result = civicrm_api3('HRVacancyStage', 'get', array('vacancy_id'=> $id ));
     $case_status = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'");
 
@@ -52,7 +53,6 @@ GROUP BY cc.status_id
     while($dao->fetch()) {
       $stagesCount[$dao->status] = $dao->count;
     }
-
     foreach ($result['values'] as $id => $status) {
       $caseStatus[$status['case_status_id']] = array(
         'id' => $status['case_status_id'],
