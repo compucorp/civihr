@@ -34,7 +34,6 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var editView = new Role.EditView({
         model: this.model
       });
-      this.toggledRegion.show(editView);
 
       if (this.model.get('funder')) {
         var view = this,
@@ -71,10 +70,13 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
 	  editfunderView.render();
           view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
 	}
+	view.model._modified = false;
       }
       if (!this.model.get('funder')) {
         this.$('input[name="percent_pay_funder-0'+suffix+'"]').val(100);
       }
+
+      this.toggledRegion.show(editView);
     },
     renderSoftDelete: function() {
       this.$el
