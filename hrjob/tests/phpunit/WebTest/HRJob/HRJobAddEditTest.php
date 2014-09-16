@@ -305,6 +305,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
+    sleep(1);
 
   	//assert the saved values
   	$this->assertEquals($values['funding_notes'], $this->getValue("hrjob-funding_notes"));
@@ -321,6 +322,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
+    sleep(1);
 
     //assert the saved values
     $this->assertSavedValues($values, array('hours_type', 'hours_unit'));
@@ -344,6 +346,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
+    sleep(1);
     unset($values['provider']);
     unset($values['provider_life_insurance']);
 
@@ -387,7 +390,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
-
+    sleep(1);
     //assert the saved values
     $this->assertSavedValues($values, array('pay_scale', 'pay_unit'));
   }
@@ -418,6 +421,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
     $this->click("xpath=//button[@class='crm-button standard-save']");
     sleep(1);
     $this->waitForText('crm-notification-container', "Saved");
+    sleep(1);
 
     //FIXME unsetting "is_enrolled" for now as its default value is not getting set in the screen.
     unset($values['is_enrolled']);

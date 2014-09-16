@@ -70,12 +70,12 @@ class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumT
   function _addIdentificationData($values, $mode = NULL, $number = NULL) {
     if ($mode == 'add') {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//div[@id='ui-id-17']/a");
-      $this->click("xpath=//div[@id='ui-id-17']/a");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
+      $this->click("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
     }
     else {
       $this->click("xpath=//a[@title='Identification']");
-      $this->waitForElementPresent("xpath=//div[@id='ui-id-17']/a");
+      $this->waitForElementPresent("xpath=//div[@id='mainTabContainer']/div[@class='ui-tabs-panel ui-widget-content ui-corner-bottom crm-ajax-container']/a/span/div");
       $this->click("xpath=//div[@id='custom-6-table-wrapper']//table/tbody/tr/td[text()='".$number."']/following-sibling::td[6]/span/a[text()='Edit']");
     }
     $this->waitForElementPresent("xpath=//select[@data-crm-custom='Identify:Type']");

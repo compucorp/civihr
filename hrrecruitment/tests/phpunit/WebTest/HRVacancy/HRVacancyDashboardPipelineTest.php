@@ -78,8 +78,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-2"]/li[1]');
     $name = $this->getText('//*[@id="select2-results-2"]/li[1]');
     $this->clickAt('//*[@id="select2-results-2"]/li[1]');
-    sleep(2);
-    $this->waitForElementPresent('//*[@id="_qf_Activity_upload-top"]');
+    $this->waitForElementPresent("xpath=//form[@id='Activity']/div[2]/div[@class='crm-submit-buttons']/span/input[@name='_qf_Activity_upload']");
     $this->_dashboardTestCommonDetail($name);
     $this->waitForText("crm-notification-container", "'Follow up' activity has been created.");
     $this->openCiviPage("vacancy/dashboard", "reset=1");
@@ -124,7 +123,6 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->verifyText("xpath=//*[@id='ui-id-5']/div/div[1]/table/tbody/tr[1]/td[2]", $aftername);
     $this->click("xpath=//*[@id='tab_7']/a");
     $this->waitForText("xpath=//*[@id='ui-id-7']/div/div[2]/div[2]", "0 applicants selected");
-    //$this->click("xpath=//*[@id='ui-id-2']");
     $this->click("xpath=//*[@id='tab_4']/a");
 
     $this->_testCasePipelineComment();
@@ -231,8 +229,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-4"]/li[2]');
     $name = $this->getText('//*[@id="select2-results-4"]/li[2]');
     $this->clickAt('//*[@id="select2-results-4"]/li[2]');
-    sleep(2);
-    $this->waitForElementPresent('_qf_Activity_upload-top');
+    $this->waitForElementPresent("xpath=//form[@id='Activity']/div[2]/div[@class='crm-submit-buttons']/span/input[@name='_qf_Activity_upload']");
     $this->assertElementContainsText('//*[@id="Activity"]/div[2]/table/tbody/tr[1]/td[2]', $name);
     $this->click('//*[@id="_qf_Activity_upload-bottom"]');
     $this->waitForText("crm-notification-container", "Change Assignment Status' activity has been created.");
@@ -305,4 +302,3 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->click('//*[@id="_qf_Activity_upload-top"]');
   }
 }
-
