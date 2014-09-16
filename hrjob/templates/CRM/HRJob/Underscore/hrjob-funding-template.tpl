@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <% _.each(rolesInfo, function(roleInfo, roleId) { %>
-          <tr class="-list-item">
+          <tr class="hrjob-funding-list-item">
             <td rowspan="<%= roleInfo.rowspan %>" class="hrjob-funding-role-position-<%= roleId %>"><%- roleInfo.position %></td>
             <% _.each(roleInfo.funderInfo, function(funderVal, funderId){  %>
               <td class="hrjob-funding-role-funders">

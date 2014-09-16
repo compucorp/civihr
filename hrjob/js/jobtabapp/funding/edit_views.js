@@ -23,10 +23,10 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
       'change:funder': 'roleDataView'
     },
     roleDataView: function() {
-      var view = this, rolesInfo = {}, $rowspan=1;
+      var view = this, rolesInfo = {};
       _.forEach(view.options.roleCollection.models, function (model) {
         var id = model.get('id'),
-          percentRel = {},
+          percentRel = {}, $rowspan=1,
           funderPercExpr = model.get('percent_pay_funder'), fundersPer = 0;
         if (funderPercExpr) {
           percentFunders = funderPercExpr.split(',');
