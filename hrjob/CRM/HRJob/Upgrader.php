@@ -348,37 +348,11 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
 
   public function upgrade_1400() {
     $this->ctx->log->info('Applying update 1400');
-    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'level_type')) {
-      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN level_type VARCHAR(63) COMMENT "Junior manager, senior manager, etc." AFTER department');
-    }
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'notice_amount_employee')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob ADD COLUMN notice_amount_employee double COMMENT "Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks." AFTER notice_unit');
     }
     if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'notice_unit_employee')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob ADD COLUMN notice_unit_employee VARCHAR(63) COMMENT "Unit of a notice period assigned to a quantity e.g Week in 3 Weeks." AFTER notice_amount_employee');
-    }
-    $hrJob = civicrm_api3('HRJob', 'get', array('return' => array("id", "department", "level_type", "manager_contact_id")));
-    foreach($hrJob['values'] as $key => $val) {
-      if (empty($val['manager_contact_id'])) {
-        $val['manager_contact_id'] = 'null';
-      }
-      if (empty($val['department'])) {
-        $val['department'] = 'NULL';
-      }
-      if (empty($val['level_type'])) {
-        $val['level_type'] = 'NULL';
-      }
-      CRM_Core_DAO::executeQuery("UPDATE  civicrm_hrjob_role SET  department = IFNULL({$val['department']},NULL) , level_type = IFNULL({$val['level_type']},NULL), manager_contact_id = IFNULL({$val['manager_contact_id']},NULL) WHERE job_id = {$val['id']}");
-    }
-    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'department')) {
-      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN department');
-    }
-    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'level_type')) {
-      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN level_type');
-    }
-    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'manager_contact_id')) {
-      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_manager_contact_id');
-      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP manager_contact_id');
     }
 
     //HR-397 -- Add Pay scale field
@@ -486,15 +460,31 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN is_tied_to_funding');
     }
 
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_role', 'level_type')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_role ADD COLUMN level_type VARCHAR(63) COMMENT "Junior manager, senior manager, etc." AFTER department');
+    }
+
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
-      $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob where funding_org_id IS NOT NULL');
+      $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob');
       while ($dao->fetch()) {
-        CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location )
-          VALUES ({$dao->id}, '{$dao->position}', {$dao->funding_org_id}, '{$dao->location}')");
+        CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location, department, manager_contact_id, level_type)
+          VALUES ({$dao->id}, '{$dao->position}', IFNULL('{$dao->funding_org_id}', NULL), IFNULL('{$dao->location}',NULL), '{$dao->department}', IFNULL('{$dao->manager_contact_id}', NULL), IFNULL('{$dao->level_type}', NULL))");
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
     }
+
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'department')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN department');
+    }
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'level_type')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN level_type');
+    }
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'manager_contact_id')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_manager_contact_id');
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP manager_contact_id');
+    }
+
     return TRUE;
   }
 

@@ -237,7 +237,7 @@
     <item>Finance</item>
     <item>HR</item>
     <item>IT</item>
-    <item>Fund Raising</item>
+    <item>Fundraising</item>
     <item>Marketing</item>
  </department>
 
@@ -342,10 +342,21 @@
     <item>Year</item>
   </pay_unit>
 
+  <pay_scale>
+    <item>NJC pay scale</item>
+    <item>JNC pay scale</item>
+    <item>Soulbury Pay Agreement</item>
+  </pay_scale>
+
   <is_enrolled>
     <item>1</item>
     <item>0</item>
   </is_enrolled>
+
+  <pension_type>
+    <item>Employer Pension</item>
+    <item>Personal Pension</item>
+  </pension_type>
 
   <contrib_pct>
     <item>2</item>
@@ -370,8 +381,8 @@
   </contracted_hours>
 
   <paid_unpaid>
-    <item>Paid</item>
-    <item>Unpaid</item>
+    <item>paid</item>
+    <item>unpaid</item>
   </paid_unpaid>
 
   <job_role_description>
@@ -380,6 +391,12 @@
     <item>desc3</item>
     <item>desc4</item>
   </job_role_description>
+
+  <percent_pay_funder>
+    <item>20</item>
+    <item>30</item>
+    <item>20</item>
+  </percent_pay_funder>
 
   <location>
     <item>Headquarters</item>
