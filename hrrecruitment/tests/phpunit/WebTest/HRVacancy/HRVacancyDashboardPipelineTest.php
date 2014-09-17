@@ -79,7 +79,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-2"]/li[1]');
     $name = $this->getText('//*[@id="select2-results-2"]/li[1]');
     $this->clickAt('//*[@id="select2-results-2"]/li[1]');
-    $this->waitForElementPresent("xpath=//form[@id='Activity']/div[2]/div[@class='crm-submit-buttons']");
+    $this->waitForElementPresent("_qf_Activity_cancel-bottom");
 
     $this->_dashboardTestCommonDetail($name);
     $this->waitForText("crm-notification-container", "'Follow up' activity has been created.");
@@ -231,7 +231,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-4"]/li[2]');
     $name = $this->getText('//*[@id="select2-results-4"]/li[2]');
     $this->clickAt('//*[@id="select2-results-4"]/li[2]');
-    $this->waitForElementPresent("xpath=//form[@id='Activity']/div[2]/div[@class='crm-submit-buttons']");
+    sleep(2);
     $this->assertElementContainsText('//form[@id="Activity"]/div[2]/table/tbody/tr[1]/td[2]', $name);
     $this->click('//*[@id="_qf_Activity_upload-bottom"]');
     $this->waitForText("crm-notification-container", "Change Assignment Status' activity has been created.");
@@ -275,6 +275,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   }
 
   function _dashboardTestCommonDetail($name) {
+    $this->assertElementContainsText("xpath=//tr[@id='with-clients']/td", 'Contact');
     $this->assertElementContainsText('//form[@id="Activity"]/div[2]//table[2]/tbody/tr[3]/td[2]', $name);
     $subject = "Safe daytime setting - senior female";
     $location = "Main offices";

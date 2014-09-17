@@ -111,7 +111,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         'hours' => 2,
         'role_hours_unit' => 'Day',
         'cost_center' => 001,
-        //'funder' => $orgName2,
+        'funder1' => $orgName2,
+        'funder2' => $orgName3,
+        'percent_pay' => 20,
         'department' => 'Finance',
         'level_type' => 'Senior Staff',
         'location' => 'Headquarters',
@@ -123,6 +125,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         'hours' => 2,
         'role_hours_unit' => 'Day',
         'cost_center' => 002,
+        'funder1' => $orgName1,
+        'funder2' => $orgName3,
+        'percent_pay' => 10,
         'department' => 'Finance',
         'level_type' => 'Senior Manager',
         'location' => 'Headquarters',
@@ -246,6 +251,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'hours' => 3,
       'role_hours_unit' => 'Day',
       'cost_center' => 003,
+      'funder1' => $orgName3,
+      'funder2' => $orgName2,
+      'percent_pay' => 20,
       'department' => 'HR',
       'level_type' => 'Senior Staff',
       'location' => 'Headquarters',
@@ -260,6 +268,9 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       'hours' => 4,
       'role_hours_unit' => 'Day',
       'cost_center' => 005,
+      'funder1' => $orgName2,
+      'funder2' => $orgName1,
+      'percent_pay' => 30,
       'department' => 'Finance',
       'level_type' => 'Senior Staff',
       'location' => 'Headquarters',
@@ -381,8 +392,7 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[6]/a");
     }
     $this->waitForElementPresent("xpath=//input[@value='paid']");
-    $this->check("xpath=//input[@value='paid']");
-    sleep(1);
+    $this->click("xpath=//input[@value='paid']");
     $this->waitForElementPresent("hrjob-pay_scale");
     $this->select('hrjob-pay_scale', "value={$values['pay_scale']}");
     $this->type('hrjob-pay_amount', $values['pay_amount']);
@@ -435,8 +445,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[8]/a");
       $this->waitForElementPresent("xpath=//a[@class='hrjob-role-add']");
     }
-    $this->waitForElementPresent("xpath=//a[@class='hrjob-role-add']");
-    $this->click("xpath=//a[@class='hrjob-role-add']");
+    $this->waitForElementPresent("xpath=//table[@class='hrjob-role-table']/tbody/tr/td/span/span[1]");
+    $this->click("xpath=//table[@class='hrjob-role-table']/tbody/tr/td/span/span[1]");
     $this->waitForElementPresent("xpath=//select[@id='hrjob-region']");
 
     foreach ($values as $key => $value) {
@@ -450,8 +460,20 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       elseif ($key == 'manager_contact_id') {
         $this->select2("hrjob-manager_contact_id", $value);
       }
+      elseif ($key == 'funder1'){
+        $this->waitForElementPresent("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr/td/div/a");
+        $this->select2("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr/td/div/a", $value, FALSE, TRUE);
+      }
+      elseif ($key == 'funder2'){
+        $this->click("xpath=//div[@class='crm-summary-row multi-funder']/div[2][@class='crm-content']/a");
+        $this->select2("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr[2]/td/div/a", $value, FALSE, TRUE);
+      }
+      elseif($key == 'percent_pay'){
+        $this->type("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr/td[2]/input", $value);
+        $this->type("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr[2]/td[2]/input", $value);
+      }
       else {
-        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/input[@id='hrjob-{$key}']", $value);sleep(2);
+        $this->type("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/input[@id='hrjob-{$key}']", $value);
       }
     }
 
@@ -471,12 +493,23 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
         $this->assertEquals($value, $this->getSelectedValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/select[@id='hrjob-{$key}']"));
       }
       elseif ($key == 'manager_contact_id') {
-        $this->assertElementContainsText("xpath=//*[@id='ui-id-2']/div[2]/div[1]/div/form/table/tbody/tr[2]/td[2]/div/div/div[13]/div[1]/label", 'Manager');
+        $this->assertElementContainsText("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div[13]/div[1]/label", 'Manager');
+      }
+      elseif ($key == 'funder1' || $key == 'funder2') {
+        $this->assertElementContainsText("xpath=//table[@class='hrjob-role-funder-table']/thead/tr/td", 'Funder');
+      }
+      elseif ($key == 'percent_pay') {
+        $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-funder-table']/tbody/tr/td[2]/input"));
       }
       else {
         $this->assertEquals($value, $this->getValue("xpath=//table[@class='hrjob-role-table']/tbody/tr[$row]/td[2]/div/div/div//div[2]/input[@id='hrjob-{$key}']"));
       }
     }
+    $this->click("xpath=//a[@class='hrjob-role-add']");
+    $this->click("xpath=//button[@class='crm-button standard-save']");
+    sleep(1);
+    $this->waitForText('crm-notification-container', "Saved");
+    sleep(1);
   }
 
   function assertSavedValues($values, $selectArray = NULL) {
