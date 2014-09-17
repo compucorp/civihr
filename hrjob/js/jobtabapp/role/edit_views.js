@@ -34,16 +34,11 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
       var editView = new Role.EditView({
         model: this.model
       });
-
+      this.toggledRegion.show(editView);
       if (this.model.get('funder')) {
         var view = this,
           percentExpr = this.model.get('percent_pay_funder'),percentFunders = null,
-	  funderExpr = this.model.get('funder'),funders = null, $i = 0, $j = 0, percentRelFunder=[],percentRel=[],percentAndFunder = '',
-          oldFunderNo = view.$('.funderTableBody > tr').last().attr('data-funder-no'), newFunderNo = 1;
-        if (oldFunderNo) {
-          newFunderNo = parseInt(oldFunderNo) + 1;
-        }
-        view.model.set('fid',newFunderNo);
+	  funderExpr = this.model.get('funder'),funders = null, $i = 0, $j = 0, percentRelFunder=[],percentRel=[],percentAndFunder = '';
         if (funderExpr) {
           funders = funderExpr.split(',');
         }
@@ -57,26 +52,30 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           });
         }
         _.each(funders, function(funderId){
+          var oldFunderNo = view.$('.funderTableBody > tr').last().attr('data-funder-no'), newFunderNo = 1;
+          if (oldFunderNo) {
+            newFunderNo = parseInt(oldFunderNo) + 1;
+          }
+          view.model.set('fid',newFunderNo);
           view.model.set('funders-'+$i+''+suffix, funderId);
           percentfunderId = percentRelFunder.indexOf(funderId);
           view.model.set('percent_pay_funder-'+$i+''+suffix, percentRel[percentfunderId]);
-          $i += 1;
+          $i += 1;        
+          if ($i > 1) {
+	    var editfunderView = new Role.RowFunderView({
+              model: view.model
+	    });
+	    editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
+	    editfunderView.render();
+            view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
+	  }
         });
-        if ($i > 1) {
-	  var editfunderView = new Role.RowFunderView({
-            model: view.model
-	  });
-	  editfunderView.$el.insertAfter(view.$('.hrjob-role-funder-table tr').last());
-	  editfunderView.render();
-          view.$('.funderTableBody > tr').last().attr('data-funder-no', newFunderNo);
-	}
 	view.model._modified = false;
       }
+
       if (!this.model.get('funder')) {
         this.$('input[name="percent_pay_funder-0'+suffix+'"]').val(100);
       }
-
-      this.toggledRegion.show(editView);
     },
     renderSoftDelete: function() {
       this.$el
@@ -173,8 +172,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
                 val  = 0;
                 $(this).val(0);
               }
-              var payVal = parseInt(val) * pay.get("pay_amount") / 100;
-              totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
+              var payVal = parseInt(val) * pay.get("pay_annualized_est") / 100;
+              totalPay = pay.get("pay_currency")+' '+payVal+' per Year';
               $(this).parent().next('td').find('input').val(totalPay);
               $(this).on("keyup", function() {
                 var val = $(this).val(),
@@ -183,8 +182,8 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
                   val  = 0;
                   $(this).val(0);
                 }
-                var payVal = parseInt(val) * pay.get("pay_amount") / 100;
-                totalPay = pay.get("pay_currency")+' '+payVal+' per '+pay.get("pay_unit");
+                var payVal = parseInt(val) * pay.get("pay_annualized_est") / 100;
+                totalPay = pay.get("pay_currency")+' '+payVal+' per Year';
                 $(this).parent().next('td').find('input').val(totalPay);
               });
             });
@@ -223,15 +222,15 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
             totalPercent = 0,
             totalPay = 0;
           if (pay && pay.get("pay_grade") == "paid" ) {
-            totalPay = pay.get("pay_currency")+' '+pay.get("pay_amount")+' per '+pay.get("pay_unit");
-            $('input[name="total_pay_amount"]').val(pay.get("pay_amount"));
+            totalPay = pay.get("pay_currency")+' '+pay.get("pay_annualized_est")+' per Year';
+            $('input[name="total_pay_amount"]').val(pay.get("pay_annualized_est"));
             $('input[name="total_pay"]').val(totalPay);
             totalPercent =  view.actualPayToRole();
-            totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per '+pay.get("pay_unit");
+            totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per Year';
             $('input[name="actual_amount"]').val(totalAmnt);
             view.$('[name="percent_pay_role'+suffix+'"]').on("keyup", function() {
               totalPercent =  view.actualPayToRole();
-              totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per '+pay.get("pay_unit");
+              totalAmnt = pay.get("pay_currency")+' '+parseFloat(totalPercent)+' per Year';
               $('input[name="actual_amount"]').val(totalAmnt);
             });
           }
