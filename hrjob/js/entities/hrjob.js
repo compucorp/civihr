@@ -15,7 +15,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
       notice_amount: '',
       notice_unit: '',
       notice_amount_employee: '',
-      notice_unit_employee: '',	
+      notice_unit_employee: '',
       manager_contact_id: null,
       is_primary: 0,
       contract_file: null
@@ -135,7 +135,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
 
   Entities.Setting = Backbone.Model.extend({
     // Restrict returned settings to mitigate risk that concurrent processes CRUD the same setting
-    crmReturn: ['work_months_per_year','work_weeks_per_year','work_days_per_year','work_hours_per_year'],
+    crmReturn: ['work_months_per_year','work_weeks_per_year','work_days_per_week','work_days_per_month', 'work_days_per_month'],
     defaults: {}
   });
 

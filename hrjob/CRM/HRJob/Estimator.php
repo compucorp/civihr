@@ -13,8 +13,9 @@ class CRM_HRJob_Estimator {
   protected static $unitSettingMap = array(
     'work_months_per_year' => 'Month',
     'work_weeks_per_year' => 'Week',
-    'work_days_per_year' => 'Day',
-    'work_hours_per_year' => 'Hour',
+    'work_days_per_week' => 'Day',
+    'work_hour_per_day' => 'Hour',
+    'work_days_per_month' => 'DaysPerMonth'
   );
 
   /**
@@ -46,13 +47,34 @@ class CRM_HRJob_Estimator {
       'return' => array_keys(self::$unitSettingMap),
     ));
     foreach (self::$unitSettingMap as $setting => $unit) {
-      if (!isset($settings[$setting])) {
-        throw new CRM_Core_Exception("updateEstimates: Failed to locate setting \"$setting\" for \"$unit\"");
-      }
-      self::updateEstimatesByUnit($unit, $settings[$setting]);
+      $setVal = self::getEstimateValue($unit, $settings);
+      self::updateEstimatesByUnit($unit, $setVal);
     }
     self::updateEstimatesByUnit(self::YEAR_UNIT, 1);
   }
+
+  public static function getEstimateValue($unit, $settings) {
+    $settingName = array_search($unit, self::$unitSettingMap);
+    if (empty($settingName)) {
+      throw new CRM_Core_Exception("Failed to determine setting name for unit [$unit]");
+    }
+    switch ($unit) {
+      case Day:
+        $setVal = $settings['work_days_per_month'] * 12;
+        break;
+      case Hour:
+        $setVal = $settings['work_days_per_month'];
+        break;
+      default:
+        if (!isset($settings[$settingName])) {
+          throw new CRM_Core_Exception("updateEstimates: Failed to locate setting \"$setting\" for \"$unit\"");
+        }
+        $setVal = $settings[$settingName];
+        break;
+    }
+    return $setVal;
+  }
+
 
   /**
    * Update estimates for a given pay-unit
@@ -64,15 +86,24 @@ class CRM_HRJob_Estimator {
     // See also: CRM_HRJob_Estimator::updateEstimatesByJob (singular)
     // See also: CRM_HRJob_Upgrader::upgrade_1202
     // After HR-1.2.0 ships, don't make changes to the logic of upgrade_1202.
-    CRM_Core_DAO::executeQuery('
+    $result = civicrm_api3('OptionValue', 'getsingle', array(
+      'sequential' => 1,
+      'option_group_id' => 103,
+      'name' => "Full_Time",
+    ));
+    $hour = $result['value'] ? $result['value'] : $settings['work_hour_per_day'];
+    CRM_Core_DAO::executeQuery("
       UPDATE civicrm_hrjob_pay p, civicrm_hrjob_hour h
-      SET p.pay_annualized_est = %1 * h.hours_fte * p.pay_amount
+      SET p.pay_annualized_est = CASE p.pay_unit
+      WHEN 'Hour' THEN %1 * IFNULL(h.hours_amount, %3) * h.fte_num * p.pay_amount / h.fte_denom
+      ELSE %1 * h.fte_num * p.pay_amount / h.fte_denom END
       WHERE p.job_id = h.job_id
       AND p.pay_unit = %2
       AND p.pay_is_auto_est = 1
-    ', array(
+    ", array(
         1 => array($value, 'Float'),
         2 => array($unit, 'String'),
+        3 => array($hour, 'Int'),
       )
     );
   }
@@ -99,31 +130,34 @@ class CRM_HRJob_Estimator {
       $multiplier = 1;
     }
     else {
-      $settingName = array_search($unit, self::$unitSettingMap);
-      if (empty($settingName)) {
-        throw new CRM_Core_Exception("Failed to determine setting name for unit [$unit]");
-      }
-      $multiplier = civicrm_api3('Setting', 'getvalue', array(
-        'return' => $settingName,
-        'name' => $settingName, // WTF
-        'group' => NULL,
+      $settings = civicrm_api3('Setting', 'getsingle', array(
+        'return' => array_keys(self::$unitSettingMap),
       ));
+      $multiplier = self::getEstimateValue($unit, $settings);
     }
+    $result = civicrm_api3('OptionValue', 'getsingle', array(
+      'sequential' => 1,
+      'option_group_id' => 103,
+      'name' => "Full_Time",
+    ));
+    $hour = $result['value'] ? $result['value'] : $settings['work_hour_per_day'];
 
     // See also: CRM_HRJob_Estimator::updateEstimatesByUnit (plural)
-    CRM_Core_DAO::executeQuery('
+    CRM_Core_DAO::executeQuery("
       UPDATE civicrm_hrjob_pay p, civicrm_hrjob_hour h
-      SET p.pay_annualized_est = %1 * h.hours_fte * p.pay_amount
+      SET p.pay_annualized_est = CASE p.pay_unit
+      WHEN 'Hour' THEN %1 * IFNULL(h.hours_amount, %4) * h.fte_num * p.pay_amount / h.fte_denom
+      ELSE %1 * h.fte_num * p.pay_amount / h.fte_denom END
       WHERE p.job_id = %3
       AND p.job_id = h.job_id
       AND p.pay_unit = %2
       AND p.pay_is_auto_est = 1
-    ', array(
+    ", array(
         1 => array($multiplier, 'Float'),
         2 => array($unit, 'String'),
         3 => array($job_id, 'Positive'),
+        4 => array($hour, 'Integer'),
       )
     );
-
   }
 }

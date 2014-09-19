@@ -110,6 +110,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
 
     $this->waitForElementPresent("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
     $this->click("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
+    sleep(1);
     $this->waitForText("xpath=//*[@id='ui-id-3']/div/div[2]/div[2]", "2 applicants selected");
 
     $this->click("xpath=//*[@id='tab_6']/a");
