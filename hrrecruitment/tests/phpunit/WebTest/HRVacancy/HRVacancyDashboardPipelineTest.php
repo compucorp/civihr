@@ -79,7 +79,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-2"]/li[1]');
     $name = $this->getText('//*[@id="select2-results-2"]/li[1]');
     $this->clickAt('//*[@id="select2-results-2"]/li[1]');
-    $this->waitForElementPresent("_qf_Activity_cancel-bottom");
+    $this->waitForElementPresent('//*[@id="_qf_Activity_upload-top"]');
 
     $this->_dashboardTestCommonDetail($name);
     $this->waitForText("crm-notification-container", "'Follow up' activity has been created.");
@@ -231,7 +231,7 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $this->waitForElementPresent('//*[@id="select2-results-4"]/li[2]');
     $name = $this->getText('//*[@id="select2-results-4"]/li[2]');
     $this->clickAt('//*[@id="select2-results-4"]/li[2]');
-    sleep(2);
+    $this->waitForElementPresent('_qf_Activity_upload-top');
     $this->assertElementContainsText('//form[@id="Activity"]/div[2]/table/tbody/tr[1]/td[2]', $name);
     $this->click('//*[@id="_qf_Activity_upload-bottom"]');
     $this->waitForText("crm-notification-container", "Change Assignment Status' activity has been created.");
