@@ -26,7 +26,6 @@
 */
 
 require_once 'CRM/Core/Page.php';
-require_once 'JobConfig.php';
 
 class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
   function run() {
