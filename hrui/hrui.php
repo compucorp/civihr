@@ -524,7 +524,7 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
       'openid',               //OpenID
       'postal_greeting',      //Postal Greeting
       'postal_greeting_custom',//Postal Greeting Custom
-      'preferred_communication_method'.//Preferred Communication Method
+      'preferred_communication_method',//Preferred Communication Method
       'preferred_language',    //Preferred Language
       'preferred_mail_format',//Preferred Mail Format
       'signature_html',       //Signature Html
