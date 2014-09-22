@@ -42,7 +42,7 @@
     <name>is_enrolled</name>
     <type>boolean</type>
     <default>0</default>
-    <title>Pension Is Enrolled</title>
+    <title>Pension: Is Enrolled</title>
     <export>true</export>
     <import>true</import>
     <uniqueName>hrjob_is_enrolled</uniqueName>
@@ -74,7 +74,7 @@
 
   <field>
     <name>pension_type</name>
-    <title>Pension Type</title>
+    <title>Pension Provider</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Pension Type</comment>
@@ -105,7 +105,7 @@
     <type>varchar</type>
     <length>127</length>
     <comment>Employee evidence note</comment>
-    <title>Evidence Note</title>
+    <title>Pension Evidence Note</title>
     <export>true</export>
     <import>true</import>
   </field>

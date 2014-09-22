@@ -230,7 +230,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'dependents' => array(
           'name' => 'dependents',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Dependents for Health Insurance') ,
+          'title' => ts('Healthcare Dependents') ,
           'export' => true,
           'import' => true,
         ) ,
@@ -268,7 +268,7 @@ class CRM_HRJob_DAO_HRJobHealth extends CRM_Core_DAO
         'dependents_life_insurance' => array(
           'name' => 'dependents_life_insurance',
           'type' => CRM_Utils_Type::T_TEXT,
-          'title' => ts('Dependents for Life Insurance') ,
+          'title' => ts('Life Insurance Dependents') ,
           'export' => true,
           'import' => true,
         ) ,
