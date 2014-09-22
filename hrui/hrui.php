@@ -398,7 +398,7 @@ function _hrui_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by', 'Benefits Specialist', 'Case Coordinator', 'Health Services Coordinator', 'Homeless Services Coordinator', 'Senior Services Coordinator', 'Partner of' )");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by', 'Benefits Specialist is', 'Case Coordinator is', 'Health Services Coordinator is', 'Homeless Services Coordinator is', 'Senior Services Coordinator is', 'Partner of' )");
 }
 /**
  * Implementation of hook_civicrm_upgrade
