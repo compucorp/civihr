@@ -259,11 +259,13 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
           'name' => 'funding_notes',
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Funding Notes') ,
+          'export' => true,
+          'import' => true,
         ) ,
         'hrjob_contract_type' => array(
           'name' => 'contract_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Contract Type') ,
+          'title' => ts('Contract Type') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -278,7 +280,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_period_type' => array(
           'name' => 'period_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Contract Duration') ,
+          'title' => ts('Contract Duration') ,
           'export' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
@@ -293,7 +295,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_period_start_date' => array(
           'name' => 'period_start_date',
           'type' => CRM_Utils_Type::T_DATE,
-          'title' => ts('Job Start Date') ,
+          'title' => ts('Contract Start Date') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob.period_start_date',
@@ -303,7 +305,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_period_end_date' => array(
           'name' => 'period_end_date',
           'type' => CRM_Utils_Type::T_DATE,
-          'title' => ts('Job End Date') ,
+          'title' => ts('Contract End Date') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob.period_end_date',
@@ -313,7 +315,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_notice_amount' => array(
           'name' => 'notice_amount',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Job Notice Period Amount') ,
+          'title' => ts('Notice Period from Employer (Amount)') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob.notice_amount',
@@ -323,7 +325,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_notice_unit' => array(
           'name' => 'notice_unit',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Notice Period Unit') ,
+          'title' => ts('Notice Period from Employer (Unit)') ,
           'export' => true,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
@@ -338,7 +340,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_notice_amount_employee' => array(
           'name' => 'notice_amount_employee',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Job Notice Period Amount From Employee') ,
+          'title' => ts('Notice Period from Employee (Amount)') ,
           'import' => true,
           'where' => 'civicrm_hrjob.notice_amount_employee',
           'headerPattern' => '',
@@ -348,7 +350,7 @@ class CRM_HRJob_DAO_HRJob extends CRM_Core_DAO
         'hrjob_notice_unit_employee' => array(
           'name' => 'notice_unit_employee',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Job Notice Period Unit From Employee') ,
+          'title' => ts('Notice Period from Employee (Unit)') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,

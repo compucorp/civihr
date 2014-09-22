@@ -82,6 +82,8 @@
     <name>dependents</name>
     <title>Dependents for Health Insurance</title>
     <type>text</type>
+    <export>true</export>
+    <import>true</import>
   </field>
 
   <field>
@@ -128,5 +130,7 @@
     <name>dependents_life_insurance</name>
     <title>Dependents for Life Insurance</title>
     <type>text</type>
+    <export>true</export>
+    <import>true</import>
   </field>
 </table>

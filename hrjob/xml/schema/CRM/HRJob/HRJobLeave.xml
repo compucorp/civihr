@@ -52,11 +52,11 @@
   </index>
 
   <field>
-      <name>leave_amount</name>
-      <title>Leave Amount</title>
-      <type>int unsigned</type>
-      <comment>The number of leave days</comment>
-      <export>true</export>
-      <import>true</import>
+    <name>leave_amount</name>
+    <title>Contract Leave Amount</title>
+    <type>int unsigned</type>
+    <comment>The number of leave days</comment>
+    <export>true</export>
+    <import>true</import>
   </field>
 </table>

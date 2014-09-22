@@ -25,10 +25,10 @@ CREATE TABLE `civicrm_hrjob` (
      `period_type` varchar(63)    COMMENT '.',
      `period_start_date` date    COMMENT 'First day of the job',
      `period_end_date` date    COMMENT 'Last day of the job',
-     `notice_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
-     `notice_unit` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
-     `notice_amount_employee` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.',
-     `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.',
+     `notice_amount` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period from employer. Number part without the unit e.g 3 in 3 Weeks.',
+     `notice_unit` varchar(63)    COMMENT 'Unit of a notice period from employer assigned to a quantity e.g Week in 3 Weeks.',
+     `notice_amount_employee` double   DEFAULT 0 COMMENT 'Amount of time allocated for notice period from employee. Number part without the unit e.g 3 in 3 Weeks.',
+     `notice_unit_employee` varchar(63)    COMMENT 'Unit of a notice period from employee assigned to a quantity e.g Week in 3 Weeks.',
      `location` varchar(127)    COMMENT 'Normal place of work',
      `is_primary` tinyint   DEFAULT 0 COMMENT 'Is this the primary?'
 ,
@@ -52,8 +52,8 @@ CREATE TABLE `civicrm_hrjob` (
   ,     INDEX `index_is_primary`(
         is_primary
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE  
+
+,          CONSTRAINT FK_civicrm_hrjob_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************
@@ -248,10 +248,10 @@ CREATE TABLE `civicrm_hrjob_role` (
      `funder` varchar(127)    COMMENT 'FK to Contact ID',
      `percent_pay_funder` varchar(127)   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this funder',
      `percent_pay_role` int unsigned   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this Role',
-     `location` varchar(127)    COMMENT 'Main work location' 
+     `location` varchar(127)    COMMENT 'Main work location'
 ,
     PRIMARY KEY ( `id` )
- 
+
     ,     INDEX `index_title`(
         title
   )
@@ -279,7 +279,7 @@ CREATE TABLE `civicrm_hrjob_role` (
   ,     INDEX `index_location`(
         location
   )
-  
-,          CONSTRAINT FK_civicrm_hrjob_role_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_role_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL  
+
+,          CONSTRAINT FK_civicrm_hrjob_role_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE,          CONSTRAINT FK_civicrm_hrjob_role_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
