@@ -545,6 +545,9 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
         {$str};
+        $('select[name^=\"mapper\"]').on('change', function() {
+          {$str};
+        });
       });
     </script>";
   }
