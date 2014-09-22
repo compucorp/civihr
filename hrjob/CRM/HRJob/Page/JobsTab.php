@@ -182,7 +182,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
    */
   static function getJobHoursTime() {
     $job_hours_time = array();
-   $result = civicrm_api3('OptionValue', 'get', array(
+    $result = civicrm_api3('OptionValue', 'get', array(
       'option_group_id' =>'hrjob_hours_type',
     ));
     foreach ($result['values'] as $key => $val) {
@@ -195,8 +195,16 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
    * Get a days per week/month as per configuration file
    */
   static function getDaysPerTime() {
-    $days['perWeek'] = DAYS_PER_WEEK;
-    $days['perMonth'] = DAYS_PER_MONTH;
+    $unitSettingMap = array(
+      'work_days_per_week' => 'DaysPerWeek',
+      'work_days_per_month' => 'DaysPerMonth'
+    );
+    $settings = civicrm_api3('Setting', 'getsingle', array(
+      'return' => array_keys($unitSettingMap),
+    ));
+
+    $days['perWeek'] = $settings['work_days_per_week'];//DAYS_PER_WEEK;
+    $days['perMonth'] = $settings['work_days_per_month'];//DAYS_PER_MONTH;
     return $days;
   }
 }
