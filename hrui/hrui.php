@@ -398,7 +398,7 @@ function _hrui_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by', 'Benefits Specialist is', 'Case Coordinator is', 'Health Services Coordinator is', 'Homeless Services Coordinator is', 'Senior Services Coordinator is', 'Partner of' )");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by', 'Case Coordinator is' )");
 }
 /**
  * Implementation of hook_civicrm_upgrade
@@ -531,10 +531,17 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
       'signature_text',       //Signature Text
       'user_unique_id'        //Unique ID (OpenID)
     );
+    $relations = CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, NULL, NULL, 'Individual', FALSE, 'name', TRUE );
+    $relationsToHide = array( 'Benefits Specialist', 'Benefits Specialist is','Case Coordinator','Case Coordinator is','Health Services Coordinator','Health Services Coordinator is','Homeless Services Coordinator','Homeless Services Coordinator is','Senior Services Coordinator','Senior Services Coordinator is', 'Partner of' );
+    $hideRelations = array_intersect($relations, $relationsToHide);
     $str = '';
     foreach($columnToHide as $columnToHide) {
       $str .= "$('select[name^=\"mapper\"] option[value={$columnToHide}]').remove();";
     }
+    foreach($hideRelations as $columnToHide => $columnName) {
+      $str .= "$('select[name^=\"mapper\"] option[value={$columnToHide}]').remove();";
+    }
+
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
         {$str};
