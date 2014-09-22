@@ -222,24 +222,6 @@ function hrui_civicrm_install() {
   hrui_setViewOptionsSetting($options);
   _hrui_setActiveFields(FALSE);
 
-  $relationshipTypes = CRM_Core_PseudoConstant::relationshipType();
-  $disableRelationships = array(
-    'Child of',
-    'Spouse of',
-    'Sibling of',
-    'Employee of',
-    'Volunteer for',
-    'Head of Household for',
-    'Household Member of',
-    'Supervised by'
-  );
-
-  foreach ($relationshipTypes as $id => $value) {
-    if (in_array($value['label_a_b'], $disableRelationships)) {
-      CRM_Contact_BAO_RelationshipType::setIsActive($id, FALSE);
-    }
-  }
-
   //hide communication preferences block
   $groupID = CRM_Core_DAO::getFieldValue(
     'CRM_Core_DAO_OptionGroup',
@@ -416,7 +398,7 @@ function _hrui_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
-
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Child of', 'Spouse of', 'Sibling of', 'Employee of', 'Volunteer for', 'Head of Household for', 'Household Member of', 'Supervised by', 'Benefits Specialist', 'Case Coordinator', 'Health Services Coordinator', 'Homeless Services Coordinator', 'Senior Services Coordinator', 'Partner of' )");
 }
 /**
  * Implementation of hook_civicrm_upgrade
@@ -522,6 +504,44 @@ function hrui_civicrm_navigationMenu( &$params ) {
  */
 function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   $smarty = CRM_Core_Smarty::singleton();
+  if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
+    $columnToHide = array(
+      'formal_title',
+      'job_title',
+      'legal_identifier',     //Legal Identifier
+      'addressee',            //Addressee
+      'addressee_custom',     //Addressee Custom
+      'do_not_email',         //Do Not Email
+      'do_not_mail',          //Do Not Mail
+      'do_not_phone',         //Do Not Phone
+      'do_not_sms',           //Do Not Sms
+      'do_not_trade',         //Do Not Trade
+      'email_greeting',       //Email Greeting
+      'email_greeting_custom',//Email Greeting Custom
+      'geo_code_1',           //Latitude
+      'master_id',            //Master Address Belongs To
+      'is_opt_out',           //No Bulk Emails (User Opt Out)
+      'openid',               //OpenID
+      'postal_greeting',      //Postal Greeting
+      'postal_greeting_custom',//Postal Greeting Custom
+      'preferred_communication_method'.//Preferred Communication Method
+      'preferred_language',    //Preferred Language
+      'preferred_mail_format',//Preferred Mail Format
+      'signature_html',       //Signature Html
+      'signature_text',       //Signature Text
+      'user_unique_id'        //Unique ID (OpenID)
+    );
+    $str = '';
+    foreach($columnToHide as $columnToHide) {
+      $str .= "$('select[name^=\"mapper\"] option[value={$columnToHide}]').remove();";
+    }
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        {$str};
+      });
+    </script>";
+  }
+
   if ($context == "form" && $tplName == "CRM/Contact/Form/Contact.tpl" ) {
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
