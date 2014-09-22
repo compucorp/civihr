@@ -188,8 +188,9 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'hrjob_is_enrolled' => array(
           'name' => 'is_enrolled',
           'type' => CRM_Utils_Type::T_BOOLEAN,
-          'title' => ts('Pension Is Enrolled') ,
+          'title' => ts('Pension: Is Enrolled') ,
           'export' => true,
+          'import' => true,
           'where' => 'civicrm_hrjob_pension.is_enrolled',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -217,7 +218,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'hrjob_pension_type' => array(
           'name' => 'pension_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Pension Type') ,
+          'title' => ts('Pension Provider') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'export' => true,
@@ -232,7 +233,7 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'ee_contrib_abs' => array(
           'name' => 'ee_contrib_abs',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Employer Contribution Absolute Amount') ,
+          'title' => ts('Employee Contribution Absolute Amount') ,
           'export' => true,
           'import' => true,
           'where' => 'civicrm_hrjob_pension.ee_contrib_abs',
@@ -242,8 +243,10 @@ class CRM_HRJob_DAO_HRJobPension extends CRM_Core_DAO
         'ee_evidence_note' => array(
           'name' => 'ee_evidence_note',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Evidence Note') ,
+          'title' => ts('Pension Evidence Note') ,
           'maxlength' => 127,
+          'export' => true,
+          'import' => true,
           'size' => CRM_Utils_Type::HUGE,
         ) ,
       );

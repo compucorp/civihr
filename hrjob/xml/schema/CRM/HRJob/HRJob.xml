@@ -68,11 +68,13 @@
     <name>funding_notes</name>
     <title>Funding Notes</title>
     <type>text</type>
+    <export>true</export>
+    <import>true</import>
   </field>
 
   <field>
     <name>contract_type</name>
-    <title>Job Contract Type</title>
+    <title>Contract Type</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Contract for employment, internship, etc.</comment>
@@ -90,7 +92,7 @@
 
   <field>
     <name>period_type</name>
-    <title>Job Contract Duration</title>
+    <title>Contract Duration</title>
     <type>varchar</type>
     <length>63</length>
     <comment>.</comment>
@@ -108,7 +110,7 @@
 
   <field>
     <name>period_start_date</name>
-    <title>Job Start Date</title>
+    <title>Contract Start Date</title>
     <type>date</type>
     <comment>First day of the job</comment>
     <export>true</export>
@@ -118,7 +120,7 @@
 
   <field>
     <name>period_end_date</name>
-    <title>Job End Date</title>
+    <title>Contract End Date</title>
     <type>date</type>
     <comment>Last day of the job</comment>
     <export>true</export>
@@ -128,49 +130,50 @@
 
   <field>
     <name>notice_amount</name>
-    <title>Job Notice Period Amount</title>
+    <title>Notice Period from Employer (Amount)</title>
     <type>float</type>
     <default>0</default>
+    <export>true</export>
     <import>true</import>
-    <comment>Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.</comment>
+    <comment>Amount of time allocated for notice period from employer. Number part without the unit e.g 3 in 3 Weeks.</comment>
     <uniqueName>hrjob_notice_amount</uniqueName>
   </field>
 
    <field>
      <name>notice_unit</name>
-     <title>Job Notice Period Unit</title>
+     <title>Notice Period from Employer (Unit)</title>
      <type>varchar</type>
      <length>63</length>
-     <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
+     <comment>Unit of a notice period from employer assigned to a quantity e.g Week in 3 Weeks.</comment>
      <pseudoconstant>
        <callback>CRM_HRJob_SelectValues::commonUnit</callback>
      </pseudoconstant>
      <export>true</export>
-     <import>true</import> 
+     <import>true</import>
      <uniqueName>hrjob_notice_unit</uniqueName>
    </field>
 
    <field>
      <name>notice_amount_employee</name>
-     <title>Job Notice Period Amount From Employee</title>
+     <title>Notice Period from Employee (Amount)</title>
      <type>float</type>
      <default>0</default>
      <import>true</import>
-     <comment>Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.</comment>
+     <comment>Amount of time allocated for notice period from employee. Number part without the unit e.g 3 in 3 Weeks.</comment>
      <uniqueName>hrjob_notice_amount_employee</uniqueName>
    </field>
 
    <field>
      <name>notice_unit_employee</name>
-     <title>Job Notice Period Unit From Employee</title>
+     <title>Notice Period from Employee (Unit)</title>
      <type>varchar</type>
      <length>63</length>
-     <comment>Unit of a notice period assigned to a quantity e.g Week in 3 Weeks.</comment>
+     <comment>Unit of a notice period from employee assigned to a quantity e.g Week in 3 Weeks.</comment>
      <pseudoconstant>
        <callback>CRM_HRJob_SelectValues::commonUnit</callback>
      </pseudoconstant>
      <export>true</export>
-     <import>true</import> 
+     <import>true</import>
      <uniqueName>hrjob_notice_unit_employee</uniqueName>
    </field>
 

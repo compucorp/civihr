@@ -80,8 +80,10 @@
 
   <field>
     <name>dependents</name>
-    <title>Dependents for Health Insurance</title>
+    <title>Healthcare Dependents</title>
     <type>text</type>
+    <export>true</export>
+    <import>true</import>
   </field>
 
   <field>
@@ -126,7 +128,9 @@
 
   <field>
     <name>dependents_life_insurance</name>
-    <title>Dependents for Life Insurance</title>
+    <title>Life Insurance Dependents</title>
     <type>text</type>
+    <export>true</export>
+    <import>true</import>
   </field>
 </table>

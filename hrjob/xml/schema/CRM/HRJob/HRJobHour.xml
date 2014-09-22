@@ -58,7 +58,7 @@
 
   <field>
     <name>hours_amount</name>
-    <title>Hours Amount</title>
+    <title>Actual Hours</title>
     <type>float</type>
     <default>0</default>
     <comment>Amount of time allocated for work (in given period)</comment>
@@ -97,8 +97,6 @@
     <type>int unsigned</type>
     <default>1</default>
     <comment>.</comment>
-    <export>true</export>
-    <import>true</import>
     <uniqueName>hours_fte_num</uniqueName>
   </field>
 
@@ -108,8 +106,6 @@
     <type>int unsigned</type>
     <default>1</default>
     <comment>.</comment>
-    <export>true</export>
-    <import>true</import>
     <uniqueName>hrjob_fte_denom</uniqueName>
   </field>
 </table>
