@@ -92,7 +92,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
       //condition to check if it has any manager against this absence
       if (array_key_exists(0, $resultAct['values'][0]['assignee_contact_id'])) {
-        $this->_managerContactID[] = $resultAct['values'][0]['assignee_contact_id'];
+        $this->_managerContactID = self::getManagerContacts($this->_targetContactID);
       }
       //Mode is edit if user has edit or admisniter permission or is manager to this absence or
       //(target/requested user and action is update and has manage own Absence permission)
@@ -101,7 +101,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $absenceStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus();
       if (CRM_Core_Permission::check('administer CiviCRM') ||
         CRM_Core_Permission::check('edit HRAbsences') ||
-        $this->_loginUserID == $this->_managerContactID || (
+        in_array($this->_loginUserID, $this->_managerContactID) || (
           $absenceStatuses[$this->_actStatusId] == 'Requested' &&
           $this->_action == CRM_Core_Action::UPDATE &&
           $this->_targetContactID == $this->_loginUserID &&
@@ -120,7 +120,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       ) {
        $this->_mode = 'view';
       }
-
       //check for ACL View/Edit permission
       if (empty($this->_mode)) {
         if (self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT) {
@@ -174,31 +173,36 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         //who will applying leave for himself
         $this->_targetContactID = $this->_loginUserID;
       }
-      if ($this->_targetContactID) {
-        $jobID  = civicrm_api3('HRJob', 'get', array(
-          'is_primary' => 1,
-          'contact_id' => $this->_targetContactID,
-          'return' => "id",
-        ));
-        if ($jobID['values']) {
-          $result = civicrm_api3('HRJobRole', 'get', array(
-            'sequential' => 1,
-            'return' => "manager_contact_id",
-            'job_id' => $jobID['id'],
-          ));
-          foreach($result['values'] as $key => $val) {
-            if(array_key_exists('manager_contact_id',$val)) {
-              $this->_managerContactID[] = $val['manager_contact_id'];
-            }
-          }
-        }
-      } else {
-        $this->_managerContactID = NULL;
-      }
+      $this->_managerContactID = self::getManagerContacts($this->_targetContactID);
     }
     $this->assign('mode', $this->_mode);
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css');
     parent::preProcess();
+  }
+
+  public function getManagerContacts($employeeID) {
+    if ($employeeID) {
+      $jobID  = civicrm_api3('HRJob', 'get', array(
+        'is_primary' => 1,
+        'contact_id' => $this->_targetContactID,
+        'return' => "id",
+      ));
+      if ($jobID['values']) {
+        $result = civicrm_api3('HRJobRole', 'get', array(
+          'sequential' => 1,
+          'return' => "manager_contact_id",
+          'job_id' => $jobID['id'],
+        ));
+        foreach($result['values'] as $key => $val) {
+          if(array_key_exists('manager_contact_id',$val)) {
+            $managerContactID[] = $val['manager_contact_id'];
+          }
+        }
+      }
+    } else {
+      $managerContactID = NULL;
+    }
+    return $managerContactID;
   }
 
   /**
@@ -376,7 +380,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           'isDefault' => TRUE,
         );
         if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
-          ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID))
+          (!empty($this->_managerContactID) && in_array($this->_loginUserID, $this->_managerContactID)))
           {
             $this->addButtons(array($saveButton,$approveButton));
           }
@@ -405,7 +409,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         if (CRM_Core_Permission::check('administer CiviCRM') ||
           CRM_Core_Permission::check('edit HRAbsences') ||
           ((($intervals->days >= 0) && ($intervals->invert == 0)) &&
-            (($this->_managerContactID && $this->_managerContactID == $this->_loginUserID) ||
+            ((!empty($this->_managerContactID) && in_array($this->_loginUserID, $this->_managerContactID)) ||
               self::isContactAccessible($this->_targetContactID) == CRM_Core_Permission::EDIT)
           )
         ) {
@@ -438,7 +442,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->addFormRule(array('CRM_HRAbsence_Form_AbsenceRequest', 'formRule'));
     }
     if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
-      ($this->_managerContactID && $this->_managerContactID == $this->_loginUserID)) {
+      (!empty($this->_managerContactID) && in_array($this->_loginUserID, $this->_managerContactID))) {
       $this->_showhide = 1;
     }
     else {
@@ -611,7 +615,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
-        if ($this->_managerContactID) {
+        if (!empty($this->_managerContactID)) {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
@@ -621,7 +625,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
       }
       $managerContactResult = array();
-      if ($this->_managerContactID) {
+      if (!empty($this->_managerContactID)) {
         foreach ($this->_managerContactID as $key => $val) {
           $managerContactResult = civicrm_api3('contact', 'get', array(
             'id' => $val,
@@ -682,7 +686,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           ));
         }
         $result = civicrm_api3('Activity', 'create', $activityParam);
-        if ($this->_managerContactID[0]) {
+        if (!empty($this->_managerContactID)) {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
@@ -704,7 +708,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         foreach($subact['values'] as $key=>$val) {
           civicrm_api3('Activity', 'create', array('id' =>$val['id'] ,'status_id' => $statusId,));
         }
-        if ($this->_managerContactID[0]) {
+        if (!empty($this->_managerContactID)) {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
@@ -768,7 +772,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if ($sendMail) {
         //send mail to multiple manager
         $managerContactResult = array();
-        foreach ($this->_managerContactID[0] as $key => $val) {
+        foreach ($this->_managerContactID as $key => $val) {
           $managerContactResult = civicrm_api3('contact', 'get', array(
             'id' => $val,
           ));
