@@ -522,28 +522,6 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       $fteFraction = CRM_HRJob_Upgrader::decToFraction($value['hours_fte']);
       CRM_Core_DAO::executeQuery("update civicrm_hrjob_hour set fte_num={$fteFraction[0]} , fte_denom={$fteFraction[1]} where id = {$value['id']}");
     }
-
-    $unitSettingMap = array(
-      'work_months_per_year' => 'Month',
-      'work_weeks_per_year' => 'Week',
-      'work_days_per_week' => 'Day',
-      'work_hour_per_day' => 'Hour',
-      'work_days_per_month' => 'DaysPerMonth'
-    );
-    $settingss = civicrm_api3('Setting', 'getsingle', array(
-      'return' => array_keys($unitSettingMap),
-    ));
-    $set = require_once('settings/HRJob.setting.php');
-    $mainSet = $set;
-    foreach ($set as $setKey => $unitSettingMap) {
-      if (array_key_exists($setKey, $settingss)) {
-        $param = array($setKey => $unitSettingMap['default']);
-        $settings = civicrm_api3('Setting', 'create', $param);
-        unset($mainSet[$setKey]);
-      }
-    }
-    CRM_Core_BAO_Setting::setItems($mainSet);
-    CRM_HRJob_Estimator::updateEstimates();
     return TRUE;
   }
 
