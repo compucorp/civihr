@@ -210,7 +210,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'hrjob_pay_grade' => array(
           'name' => 'pay_grade',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Paid/Unpaid') ,
+          'title' => ts('Paid / Unpaid') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
