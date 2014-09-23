@@ -561,4 +561,23 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   function commonDivisor($a,$b) {
     return ($a % $b) ? CRM_HRJob_Upgrader::commonDivisor($b,$a % $b) : $b;
   }
+
+  public function upgrade_1404() {
+    $this->ctx->log->info('Applying update 1404');
+
+    $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_pay_grade', 'id', 'name');
+    $sql = "UPDATE civicrm_option_value SET civicrm_option_value.value = CASE civicrm_option_value.value WHEN 'paid' THEN 1 WHEN 'unpaid' THEN 0 ELSE NULL END WHERE option_group_id = $optionGroupId";
+    CRM_Core_DAO::executeQuery($sql);
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'is_paid')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN is_paid int unsigned DEFAULT 0 COMMENT "Paid, Unpaid, etc." AFTER pay_scale');
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjob_pay SET is_paid = CASE pay_grade WHEN 'paid' THEN 1 WHEN 'unpaid' THEN 0 ELSE NULL END");
+    }
+
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_grade')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay DROP COLUMN pay_grade');
+    }
+    return TRUE;
+  }
+
 }
