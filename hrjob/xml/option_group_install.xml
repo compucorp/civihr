@@ -259,7 +259,7 @@
     </OptionValue>
     <OptionValue>
       <label>Unpaid</label>
-      <value>unpaid</value>
+      <value>0</value>
       <name>Unpaid</name>
       <is_default>0</is_default>
       <weight>1</weight>
@@ -270,7 +270,7 @@
     </OptionValue>
     <OptionValue>
       <label>Paid</label>
-      <value>paid</value>
+      <value>1</value>
       <name>Paid</name>
       <is_default>0</is_default>
       <weight>2</weight>

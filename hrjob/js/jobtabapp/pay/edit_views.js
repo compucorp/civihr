@@ -10,7 +10,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
       };
     },
     modelEvents: _.extend({}, HRApp.Common.Views.StandardForm.prototype.modelEvents, {
-      'change:pay_grade': 'togglePayGrade'
+      'change:is_paid': 'togglePayGrade'
     }),
     events: _.extend({}, HRApp.Common.Views.StandardForm.prototype.events,{
       'change [name=pay_is_auto_est]': 'toggleLockMessage',
@@ -18,7 +18,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     }),
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
-      if (this.model.get('pay_grade') == 'paid') {
+      if (this.model.get('pay_grade') == 1) {
         this.$('.hrjob-needs-pay_grade').show();
       } else {
         this.$('.hrjob-needs-pay_grade').hide();
@@ -73,7 +73,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     },
     togglePayGrade: function() {
       var view = this;
-      if (this.model.get('pay_grade') == 'paid') {
+      if (this.model.get('pay_grade') == 1) {
         view.$('.hrjob-needs-pay_grade:hidden').slideDown({
           complete: function() {
             view.$('[name=pay_currency]').focus();

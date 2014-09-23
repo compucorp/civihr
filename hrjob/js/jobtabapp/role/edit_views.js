@@ -60,7 +60,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
           view.model.set('funders-'+$i+''+suffix, funderId);
           percentfunderId = percentRelFunder.indexOf(funderId);
           view.model.set('percent_pay_funder-'+$i+''+suffix, percentRel[percentfunderId]);
-          $i += 1;        
+          $i += 1;
           if ($i > 1) {
 	    var editfunderView = new Role.RowFunderView({
               model: view.model
@@ -129,7 +129,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
             totalAmnt = 0,
             totalPercent = 0,
             totalPay = 0;
-          if (pay && pay.get("pay_grade") == "paid" ) {
+          if (pay && pay.get("pay_grade") == 1 ) {
             $('.funderPerc').each(function(i, obj) {
               var val = $(this).val(),
                 payVal = 0;
@@ -225,7 +225,7 @@ CRM.HRApp.module('JobTabApp.Role', function(Role, HRApp, Backbone, Marionette, $
             totalAmnt = 0,
             totalPercent = 0,
             totalPay = 0;
-          if (pay && pay.get("pay_grade") == "paid" ) {
+          if (pay && pay.get("pay_grade") == 1 ) {
             totalPay = pay.get("pay_currency")+' '+pay.get("pay_annualized_est")+' per Year';
             $('input[name="total_pay_amount"]').val(pay.get("pay_annualized_est"));
             $('input[name="total_pay"]').val(totalPay);

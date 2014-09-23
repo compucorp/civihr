@@ -912,7 +912,7 @@ class GenerateHRData {
         //sample data for HRJob Pay table
         $payValues = array(
           'job_id' => $hrJobObj->id,
-          'pay_grade' => $this->randomItem('paid_unpaid'),
+          'is_paid' => $this->randomItem('paid_unpaid'),
           'pay_scale' => $this->randomItem('pay_scale'),
           'pay_amount' => $this->randomItem('pay_amount'),
           'pay_unit' => $this->randomItem('pay_unit'),

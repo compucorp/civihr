@@ -57,21 +57,21 @@
   </index>
 
   <field>
-    <name>pay_grade</name>
+    <name>is_paid</name>
     <title>Paid / Unpaid</title>
-    <type>varchar</type>
-    <length>63</length>
+    <type>int unsigned</type>
+    <default>0</default>
     <comment>Paid, Unpaid, etc</comment>
     <pseudoconstant>
       <optionGroupName>hrjob_pay_grade</optionGroupName>
     </pseudoconstant>
     <export>true</export>
     <import>true</import>
-    <uniqueName>hrjob_pay_grade</uniqueName>
+    <uniqueName>hrjob_is_paid</uniqueName>
   </field>
   <index>
-    <name>index_pay_grade</name>
-    <fieldName>pay_grade</fieldName>
+    <name>index_is_paid</name>
+    <fieldName>is_paid</fieldName>
   </index>
 
   <field>

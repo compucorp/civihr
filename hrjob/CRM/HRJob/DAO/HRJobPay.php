@@ -109,9 +109,9 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
   /**
    * Paid, Unpaid, etc
    *
-   * @var string
+   * @var int unsigned
    */
-  public $pay_grade;
+  public $is_paid;
   /**
    * Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)
    *
@@ -207,14 +207,14 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
             'optionGroupName' => 'hrjob_pay_scale',
           )
         ) ,
-        'hrjob_pay_grade' => array(
-          'name' => 'pay_grade',
-          'type' => CRM_Utils_Type::T_STRING,
+        'hrjob_is_paid' => array(
+          'name' => 'is_paid',
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Paid / Unpaid') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
-          'where' => 'civicrm_hrjob_pay.pay_grade',
+          'where' => 'civicrm_hrjob_pay.is_paid',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
@@ -295,7 +295,7 @@ class CRM_HRJob_DAO_HRJobPay extends CRM_Core_DAO
         'id' => 'id',
         'job_id' => 'job_id',
         'pay_scale' => 'hrjob_pay_scale',
-        'pay_grade' => 'hrjob_pay_grade',
+        'is_paid' => 'hrjob_is_paid',
         'pay_amount' => 'hrjob_pay_amount',
         'pay_unit' => 'hrjob_pay_unit',
         'pay_currency' => 'hrjob_pay_currency',
