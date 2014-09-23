@@ -163,7 +163,7 @@ function hrabsence_civicrm_install() {
         </tr>
         <tr>
           <td>{ts}Dates:{/ts}</td>
-          <td>{$startDate} - {$endDate}</td>
+          <td>{$startDate|date_format} - {$endDate|date_format}</td>
         </tr>
       </tbody>
     </table>
@@ -239,12 +239,42 @@ function hrabsence_civicrm_install() {
 }
 
 /**
+ * Implementation of hook_civicrm_postInstall
+ *
+ * Note: This hook only runs in CiviCRM 4.4+.
+ */
+function hrabsence_civicrm_postInstall() {
+  $report_id = _hrabsencereport_getId();
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
+  if($isEnabled) {
+    foreach ($report_id as $key=>$val) {
+      $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
+      if (empty($dashlet['values'])) {
+        $url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
+        $fullscreen_url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+        $name = "report/{$val}";
+        $label = $key;
+        $domain_id = CRM_Core_Config::domainID();
+        $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+        CRM_Core_DAO::executeQuery($query);
+      }
+    }
+  }
+}
+
+/**
  * Implementation of hook_civicrm_uninstall
  */
 function hrabsence_civicrm_uninstall() {
   $query = "DELETE FROM civicrm_navigation WHERE name in ('Absences','absenceReport')";
   CRM_Core_DAO::executeQuery($query);
   CRM_Core_BAO_Navigation::resetNavigation();
+
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
+  if($isEnabled) {
+    $sql = "DELETE FROM civicrm_dashboard WHERE label in ('CiviHR Absence Report','CiviHR Public Holiday Report')";
+    CRM_Core_DAO::executeQuery($sql);
+  }
 
   $sql = "DELETE civicrm_option_value FROM civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id WHERE civicrm_option_group.name = 'activity_status' and civicrm_option_value.name = 'Rejected'";
   CRM_Core_DAO::executeQuery($sql);
@@ -315,6 +345,13 @@ function _hrabsence_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_option_value JOIN civicrm_option_group on civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name = 'activity_status' and civicrm_option_value.name = 'Rejected'";
   CRM_Core_DAO::executeQuery($sql);
 
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
+  if($isEnabled) {
+    $sql = "UPDATE civicrm_dashboard SET is_active = {$setActive} WHERE label in ('CiviHR Absence Report','CiviHR Public Holiday Report') ";
+    CRM_Core_DAO::executeQuery($sql);
+    $sql = "UPDATE civicrm_dashboard_contact JOIN civicrm_dashboard on civicrm_dashboard.id = civicrm_dashboard_contact.dashboard_id  SET civicrm_dashboard_contact.is_active = {$setActive} WHERE civicrm_dashboard.label IN ('CiviHR Absence Report','CiviHR Public Holiday Report')";
+    CRM_Core_DAO::executeQuery($sql);
+  }
 }
 
 
@@ -523,4 +560,14 @@ function hrabsence_civicrm_buildForm($formName, &$form) {
       }
     }
   }
+}
+
+function _hrabsencereport_getId () {
+  $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR Public Holiday Report','CiviHR Absence Report') ";
+  $dao = CRM_Core_DAO::executeQuery($sql);
+  $report_id = array();
+  while ($dao->fetch()) {
+    $report_id[$dao->name] = $dao->entity_id;
+  }
+  return $report_id;
 }

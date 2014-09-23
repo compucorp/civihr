@@ -455,45 +455,46 @@ function hrui_civicrm_navigationMenu( &$params ) {
   $maxKey = ( max( array_keys($params) ) );
   $jobNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
   $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  if ($jobNavId) {
+    $i = 1;
+    // Degrade gracefully on 4.4
+    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
+      //  Get the maximum key of $params
+      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
 
-  $i = 1;
-  // Degrade gracefully on 4.4
-  if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
-    //  Get the maximum key of $params
-    $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
-
-    $multiValuedData[$maxKey+1] = array(
-     'attributes' => array (
-       'label' => ts('Jobs'),
-       'name' => 'jobs',
-       'url'  => 'civicrm/job/import',
-       'permission' => 'access HRJobs',
-       'operator'   => null,
-       'separator'  => null,
-       'parentID'   => $jobNavId,
-       'navID'      => $maxKey+1,
-       'weight'     => 1,
-       'active'     => 1
-     ));
-    foreach ($multipleCustomData as $key => $value) {
-      $i++;
-      $i = $maxKey + $i;
-      $multiValuedData[$i] = array (
+      $multiValuedData[$maxKey+1] = array(
         'attributes' => array (
-          'label'      => $value,
-          'name'       => $value,
-          'url'        => 'civicrm/import/custom?reset=1&id='.$key,
-          'permission' => 'access HRJobs',
-          'operator'   => null,
-          'separator'  => null,
-          'parentID'   => $jobNavId,
-          'navID'      => $i,
-          'active'     => 1
-        ),
-        'child' => null
-      );
+         'label' => ts('Jobs'),
+         'name' => 'jobs',
+         'url'  => 'civicrm/job/import',
+         'permission' => 'access HRJobs',
+         'operator'   => null,
+         'separator'  => null,
+         'parentID'   => $jobNavId,
+         'navID'      => $maxKey+1,
+         'weight'     => 1,
+         'active'     => 1
+       ));
+      foreach ($multipleCustomData as $key => $value) {
+        $i++;
+        $i = $maxKey + $i;
+        $multiValuedData[$i] = array (
+          'attributes' => array (
+            'label'      => $value,
+            'name'       => $value,
+            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+            'permission' => 'access HRJobs',
+            'operator'   => null,
+            'separator'  => null,
+            'parentID'   => $jobNavId,
+            'navID'      => $i,
+            'active'     => 1
+          ),
+          'child' => null
+        );
+      }
+      $params[$contactNavId]['child'][$jobNavId]['child'] = $multiValuedData;
     }
-    $params[$contactNavId]['child'][$jobNavId]['child'] = $multiValuedData;
   }
 }
 

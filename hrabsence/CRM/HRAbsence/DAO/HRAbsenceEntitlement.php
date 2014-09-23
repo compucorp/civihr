@@ -134,15 +134,15 @@ class CRM_HRAbsence_DAO_HRAbsenceEntitlement extends CRM_Core_DAO
    *
    * @static
    * @access public
-   * @return array of CRM_Core_EntityReference
+   * @return array of CRM_Core_Reference_Interface
    */
   static function getReferenceColumns()
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'period_id', 'civicrm_hrabsence_period', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'type_id', 'civicrm_hrabsence_type', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'period_id', 'civicrm_hrabsence_period', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'type_id', 'civicrm_hrabsence_type', 'id') ,
       );
     }
     return self::$_links;

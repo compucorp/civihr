@@ -323,7 +323,23 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
         )
       );
     }
-
+    //Add job import navigation menu
+    $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
+    $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+    $importJobNavigation = new CRM_Core_DAO_Navigation();
+    $params = array (
+      'domain_id'  => CRM_Core_Config::domainID(),
+      'label'      => ts('Import Jobs'),
+      'name'       => 'jobImport',
+      'url'        => null,
+      'parent_id'  => $contactNavId,
+      'weight'     => $weight+1,
+      'permission' => 'access HRJobs',
+      'separator'  => 1,
+      'is_active'  => 1
+    );
+    $importJobNavigation->copyValues($params);
+    $importJobNavigation->save();
     return TRUE;
   }
 
@@ -396,6 +412,9 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     }
 
     $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_hours_type', 'id', 'name');
+
+    //change value of stored hours type
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjob_hour SET hours_type = CASE hours_type WHEN 'full' THEN 8 WHEN 'part' THEN 4 WHEN 'casual' THEN 0 ELSE NULL END");
     $sql = "UPDATE civicrm_option_value SET civicrm_option_value.value = CASE civicrm_option_value.value WHEN 'full' THEN 8 WHEN 'part' THEN 4 WHEN 'casual' THEN 0 ELSE NULL END WHERE option_group_id = $optionGroupId";
     CRM_Core_DAO::executeQuery($sql);
     return TRUE;
@@ -503,6 +522,28 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
       $fteFraction = CRM_HRJob_Upgrader::decToFraction($value['hours_fte']);
       CRM_Core_DAO::executeQuery("update civicrm_hrjob_hour set fte_num={$fteFraction[0]} , fte_denom={$fteFraction[1]} where id = {$value['id']}");
     }
+
+    $unitSettingMap = array(
+      'work_months_per_year' => 'Month',
+      'work_weeks_per_year' => 'Week',
+      'work_days_per_week' => 'Day',
+      'work_hour_per_day' => 'Hour',
+      'work_days_per_month' => 'DaysPerMonth'
+    );
+    $settingss = civicrm_api3('Setting', 'getsingle', array(
+      'return' => array_keys($unitSettingMap),
+    ));
+    $set = require_once('settings/HRJob.setting.php');
+    $mainSet = $set;
+    foreach ($set as $setKey => $unitSettingMap) {
+      if (array_key_exists($setKey, $settingss)) {
+        $param = array($setKey => $unitSettingMap['default']);
+        $settings = civicrm_api3('Setting', 'create', $param);
+        unset($mainSet[$setKey]);
+      }
+    }
+    CRM_Core_BAO_Setting::setItems($mainSet);
+    CRM_HRJob_Estimator::updateEstimates();
     return TRUE;
   }
 

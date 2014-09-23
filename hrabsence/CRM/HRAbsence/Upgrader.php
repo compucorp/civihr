@@ -424,7 +424,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         </tr>
         <tr>
           <td>{ts}Dates:{/ts}</td>
-          <td>{$startDate} - {$endDate}</td>
+          <td>{$startDate|date_format} - {$endDate|date_format}</td>
         </tr>
       </tbody>
     </table>

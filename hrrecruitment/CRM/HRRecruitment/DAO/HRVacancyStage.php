@@ -127,13 +127,13 @@ class CRM_HRRecruitment_DAO_HRVacancyStage extends CRM_Core_DAO
    *
    * @static
    * @access public
-   * @return array of CRM_Core_EntityReference
+   * @return array of CRM_Core_Reference_Interface
    */
   static function getReferenceColumns()
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'vacancy_id', 'civicrm_hrvacancy', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'vacancy_id', 'civicrm_hrvacancy', 'id') ,
       );
     }
     return self::$_links;

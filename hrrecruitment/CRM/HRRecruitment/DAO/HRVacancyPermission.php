@@ -134,8 +134,8 @@ class CRM_HRRecruitment_DAO_HRVacancyPermission extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_EntityReference(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
-        new CRM_Core_EntityReference(self::getTableName() , 'vacancy_id', 'civicrm_hrvacancy', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'contact_id', 'civicrm_contact', 'id') ,
+        new CRM_Core_Reference_Basic(self::getTableName() , 'vacancy_id', 'civicrm_hrvacancy', 'id') ,
       );
     }
     return self::$_links;
