@@ -58,7 +58,7 @@
 
   <field>
     <name>pay_grade</name>
-    <title>Pay Grade</title>
+    <title>Paid/Unpaid</title>
     <type>varchar</type>
     <length>63</length>
     <comment>Paid, Unpaid, etc</comment>
