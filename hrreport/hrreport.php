@@ -235,11 +235,13 @@ function hrreport_civicrm_pageRun( &$page ) {
     foreach ($report_id as $key=>$val) {
       $dashletParams['url'] = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
-      $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
-      if (empty($dashboardContact['id'])) {
-        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+      if ($dashlet['values']) {
+        $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
+        if (empty($dashboardContact['id'])) {
+          civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+        }
+        $i = 0;
       }
-      $i = 0;
     }
   }
 }
@@ -253,4 +255,3 @@ function _hrreport_getId () {
   }
   return $report_id;
 }
-

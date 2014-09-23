@@ -181,6 +181,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   }
 
   public function getManagerContacts($employeeID) {
+    $managerContactID = array();
     if ($employeeID) {
       $jobID  = civicrm_api3('HRJob', 'get', array(
         'is_primary' => 1,
@@ -199,8 +200,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           }
         }
       }
-    } else {
-      $managerContactID = NULL;
     }
     return $managerContactID;
   }

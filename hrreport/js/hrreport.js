@@ -16,6 +16,9 @@
     //change text on anchor link
     $('.icon').parent('span:contains("New Case Report")').html('<div class="icon add-icon"></div>New Assignment Report');
     //change information text
-    $("span:contains('New Assignment Report')").closest('div.action-link').next('.crm-content-block').children('.messages').html('<div class="icon inform-icon"></div>' + 'No Assignment reports have been created. You can create reports by selecting from the ' + '<a href="/webtask/civicrm/report/template/list?reset=1&compid=7">list of report templates here.</a>'); 
+    var $textChangeEle = $("span:contains('New Assignment Report')").closest('div.action-link').next('.crm-content-block').children('.messages');
+    if ($textChangeEle.length > 0) {
+      $textChangeEle.html($textChangeEle.html().replace('Case','Assignment'));
+    }
   });
 }(CRM.$, CRM._));
