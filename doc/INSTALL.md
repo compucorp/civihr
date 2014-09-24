@@ -13,9 +13,9 @@ CiviCRM 4.5
 cd </path/to/extension/dir>
 #  (ex: $drupalroot/vendor/civicrm or $civiroot/tools/extensions or a custom-configed path)
 
-wget https://github.com/civicrm/civihr/archive/1.3-beta1.zip
-unzip 1.3-beta1.zip
-mv civihr-1.3-beta1 civihr
+wget https://github.com/civicrm/civihr/archive/1.4-beta1.zip
+unzip 1.4-beta1.zip
+mv civihr-1.4-beta1 civihr
 ```
 
 > NOTE: On some misconfigured systems, the "wget" command may display a warning
