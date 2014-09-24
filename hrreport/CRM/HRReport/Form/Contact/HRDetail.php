@@ -327,7 +327,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'dao' => 'CRM_HRJob_DAO_HRJobPay',
         'fields' =>
         array(
-          'hrjob_pay_grade'    => array(),
+          'hrjob_is_paid'    => array(),
           'hrjob_pay_amount'   => array(),
           'hrjob_pay_unit'     => array(),
           'hrjob_pay_currency' => array(),
@@ -335,7 +335,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         ),
         'filters' =>
         array(
-          'hrjob_pay_grade'  => array(),
+          'hrjob_is_paid'  => array(),
           'hrjob_pay_amount' => array(),
           'hrjob_pay_unit'   => array(),
           'hrjob_pay_annualized_est' => array(),

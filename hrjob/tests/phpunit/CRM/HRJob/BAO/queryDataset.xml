@@ -160,7 +160,7 @@
     <civicrm_hrjob_pay
         id="1"
         job_id="1"
-        pay_grade="Paid"
+        is_paid="1"
         pay_amount="80.00"
         pay_unit="Day"
     />
@@ -253,7 +253,7 @@
     <civicrm_hrjob_pay
         id="2"
         job_id="2"
-        pay_grade="Paid"
+        is_paid="1"
         pay_amount="100.00"
         pay_unit="Day"
     />
@@ -331,7 +331,7 @@
     <civicrm_hrjob_pay
         id="3"
         job_id="3"
-        pay_grade="Unpaid"
+        is_paid="0"
         pay_amount="50.00"
         pay_unit="Month"
     />
@@ -421,7 +421,7 @@
     <civicrm_hrjob_pay
         id="4"
         job_id="4"
-        pay_grade="Paid"
+        is_paid="1"
         pay_amount="120.00"
         pay_unit="Day"
     />

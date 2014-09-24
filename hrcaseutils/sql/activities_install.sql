@@ -9,7 +9,7 @@ INSERT INTO
 VALUES
 (@option_group_id_activity_type, 'Interview Prospect','Interview Prospect',
   (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @caseCompId ),
-(@option_group_id_activity_type, 'Background Check','Background Check',
+(@option_group_id_activity_type, 'Background Check','Background_Check',
   (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @caseCompId ),
 (@option_group_id_activity_type, 'ID badge','ID badge',
-  (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @caseCompId );  
+  (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @caseCompId );

@@ -69,7 +69,7 @@ CREATE TABLE `civicrm_hrjob_pay` (
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobPay ID',
      `job_id` int unsigned NOT NULL   COMMENT 'FK to Job',
      `pay_scale` varchar(63)    COMMENT 'NJC pay scale, JNC pay scale, Soulbury Pay Agreement',
-     `pay_grade` varchar(63)    COMMENT 'Paid, Unpaid, etc',
+     `is_paid` int unsigned DEFAULT 0 COMMENT 'Paid, Unpaid, etc',
      `pay_amount` decimal(20,2)   DEFAULT 0 COMMENT 'Amount of currency paid for each unit of work (eg 40 per hour, 400 per day)',
      `pay_unit` varchar(63)    COMMENT 'Unit for expressing pay rate (e.g. amount per hour, amount per week)',
      `pay_currency` varchar(63)    COMMENT 'Unit for expressing pay currency',
@@ -84,9 +84,9 @@ CREATE TABLE `civicrm_hrjob_pay` (
   ,     INDEX `index_pay_scale`(
         pay_scale
   )
-  ,     INDEX `index_pay_grade`(
-        pay_grade
-  )
+  ,     INDEX `index_is_paid`(
+        is_paid
+   )
 
 ,          CONSTRAINT FK_civicrm_hrjob_pay_job_id FOREIGN KEY (`job_id`) REFERENCES `civicrm_hrjob`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

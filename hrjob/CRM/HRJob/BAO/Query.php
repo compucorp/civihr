@@ -117,7 +117,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     switch ($name) {
       case 'hrjob_role_level_type':
       case 'hrjob_contract_type':
-      case 'hrjob_pay_grade':
+      case 'hrjob_is_paid':
       case 'hrjob_period_type':
       case 'hrjob_hours_type':
       case 'hrjob_hours_unit':
@@ -310,8 +310,8 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     }
     if ($type  == 'hrjob_pay') {
       $form->add('hidden', 'hidden_hrjob_pay', 1);
-      $form->add('select', 'hrjob_pay_grade', ts('Pay Grade'),
-        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'pay_grade'), FALSE,
+      $form->add('select', 'hrjob_pay_grade', ts('Paid / Unpaid'),
+        CRM_Core_PseudoConstant::get('CRM_HRJob_DAO_HRJobPay', 'is_paid'), FALSE,
         array('id' => 'hrjob_pay_grade', 'multiple' => 'multiple', 'title' => ts('- select -'))
       );
     }

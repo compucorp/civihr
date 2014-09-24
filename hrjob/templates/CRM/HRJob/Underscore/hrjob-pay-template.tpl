@@ -9,8 +9,8 @@
 
   <div class="crm-summary-row">
     <div class="crm-content-payGrade">
-      <input name="pay_grade" type="radio" value="paid" class="payGrade"/>{ts}Paid{/ts}
-      <input name="pay_grade" type="radio" value="unpaid" class="payGrade"/>{ts}Unpaid{/ts}
+      <input name="is_paid" type="radio" value="1" class="payGrade"/>{ts}Paid{/ts}
+      <input name="is_paid" type="radio" value="0" class="payGrade"/>{ts}Unpaid{/ts}
     </div>
   </div>
 

@@ -99,7 +99,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_pay_grade' => "Paid",
+        'hrjob_is_paid' => "1",
       ),
       'id' => array(
         '9', '10', '11',
@@ -124,7 +124,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     array(
       'fv' => array(
         'hrjob_is_enrolled' => 0,
-        'hrjob_pay_grade' => "Paid",
+        'hrjob_is_paid' => "1",
       ),
       'id' => array(
         '10',
@@ -202,7 +202,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
         'hrjob_period_end_date_low' => "07/27/2013",
         'hrjob_period_end_date_high' => "09/27/2013",
         'hrjob_is_enrolled' => 1,
-        'hrjob_pay_grade' => "Paid",
+        'hrjob_is_paid' => "1",
         'hrjob_is_healthcare' => 1,
       ),
       'id' => array(
@@ -214,7 +214,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
         'hrjob_role_level_type' => 'Junior Staff',
         'hrjob_period_type' => 'Temporary',
         'hrjob_hours_type' => 0,
-        'hrjob_pay_grade' => "Paid",
+        'hrjob_is_paid' => "1",
       ),
       'id' => array(
         '10',
@@ -222,7 +222,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_pay_grade' => "Unpaid",
+        'hrjob_is_paid' => "0",
         'hrjob_contract_type' => "Intern",
       ),
       'id' => array(
@@ -231,7 +231,7 @@ class CRM_HRJob_BAO_QueryTestDataProvider implements Iterator {
     ),
     array(
       'fv' => array(
-        'hrjob_pay_grade' => "Unpaid",
+        'hrjob_is_paid' => "0",
         'hrjob_position' => "Volunteer Manager",
         'hrjob_title' => "Research Assistant",
       ),

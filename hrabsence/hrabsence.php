@@ -244,12 +244,12 @@ function hrabsence_civicrm_install() {
  * Note: This hook only runs in CiviCRM 4.4+.
  */
 function hrabsence_civicrm_postInstall() {
-  $report_id = _hrabsencereport_getId();
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
-  if($isEnabled) {
+  if ($isEnabled) {
+    $report_id = _hrabsencereport_getId();
     foreach ($report_id as $key=>$val) {
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
-      if (empty($dashlet['values'])) {
+      if (!empty($dashlet['count']) && $dashlet['count']==0) {
         $url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
         $fullscreen_url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashletFullscreen";
         $name = "report/{$val}";
@@ -271,7 +271,7 @@ function hrabsence_civicrm_uninstall() {
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
-  if($isEnabled) {
+  if ($isEnabled) {
     $sql = "DELETE FROM civicrm_dashboard WHERE label in ('CiviHR Absence Report','CiviHR Public Holiday Report')";
     CRM_Core_DAO::executeQuery($sql);
   }
@@ -346,7 +346,7 @@ function _hrabsence_setActiveFields($setActive) {
   CRM_Core_DAO::executeQuery($sql);
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrreport', 'is_active', 'full_name');
-  if($isEnabled) {
+  if ($isEnabled) {
     $sql = "UPDATE civicrm_dashboard SET is_active = {$setActive} WHERE label in ('CiviHR Absence Report','CiviHR Public Holiday Report') ";
     CRM_Core_DAO::executeQuery($sql);
     $sql = "UPDATE civicrm_dashboard_contact JOIN civicrm_dashboard on civicrm_dashboard.id = civicrm_dashboard_contact.dashboard_id  SET civicrm_dashboard_contact.is_active = {$setActive} WHERE civicrm_dashboard.label IN ('CiviHR Absence Report','CiviHR Public Holiday Report')";
@@ -528,7 +528,7 @@ function hrabsence_civicrm_navigationMenu( &$params ) {
     $params[$absenceId]['child'][$calendarId]['attributes']['url'] = "civicrm/report/instance/{$calendarReportId}?reset=1";
   }
   else
-    if($calendarId) {
+    if ($calendarId) {
       $params[$absenceId]['child'][$calendarId]['attributes']['active'] = 0;
     }
 }

@@ -113,7 +113,7 @@ CRM.HRApp.module('Entities', function(Entities, HRApp, Backbone, Marionette, $, 
   Entities.HRJobPay = Backbone.Model.extend({
     defaults: {
       job_id: null,
-      pay_grade: '',
+      is_paid: '',
       pay_amount: '',
       pay_unit: '',
       pay_currency: '',

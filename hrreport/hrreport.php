@@ -111,7 +111,7 @@ function hrreport_civicrm_uninstall() {
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absenceReport','calendar')");
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absence_report', 'absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
   return _hrreport_civix_civicrm_uninstall();
@@ -142,7 +142,7 @@ function _hrreport_setActiveFields($setActive) {
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absenceReport','calendar')");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absence_report', 'absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
 }
@@ -235,7 +235,7 @@ function hrreport_civicrm_pageRun( &$page ) {
     foreach ($report_id as $key=>$val) {
       $dashletParams['url'] = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
-      if ($dashlet['values']) {
+      if (!empty($dashlet['count']) && $dashlet['count'] > 0) {
         $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
         if (empty($dashboardContact['id'])) {
           civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));

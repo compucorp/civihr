@@ -486,8 +486,9 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
       $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob');
       while ($dao->fetch()) {
+        $manager = $dao->manager_contact_id ? $dao->manager_contact_id : 'null';
         CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location, department, manager_contact_id, level_type)
-          VALUES ({$dao->id}, '{$dao->position}', IFNULL('{$dao->funding_org_id}', NULL), IFNULL('{$dao->location}',NULL), '{$dao->department}', IFNULL('{$dao->manager_contact_id}', NULL), IFNULL('{$dao->level_type}', NULL))");
+          VALUES ({$dao->id}, '{$dao->position}', IFNULL('{$dao->funding_org_id}', NULL), IFNULL('{$dao->location}',NULL), '{$dao->department}', {$manager}, IFNULL('{$dao->level_type}', NULL))");
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
@@ -561,4 +562,24 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
   function commonDivisor($a,$b) {
     return ($a % $b) ? CRM_HRJob_Upgrader::commonDivisor($b,$a % $b) : $b;
   }
+
+  public function upgrade_1404() {
+    $this->ctx->log->info('Applying update 1404');
+
+    $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjob_pay_grade', 'id', 'name');
+    $sql = "UPDATE civicrm_option_value SET civicrm_option_value.value = CASE civicrm_option_value.value WHEN 'paid' THEN 1 WHEN 'unpaid' THEN 0 ELSE NULL END WHERE option_group_id = $optionGroupId";
+    CRM_Core_DAO::executeQuery($sql);
+
+    if (!CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'is_paid')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay ADD COLUMN is_paid int unsigned DEFAULT 0 COMMENT "Paid, Unpaid, etc." AFTER pay_scale');
+      CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjob_pay SET is_paid = CASE pay_grade WHEN 'paid' THEN 1 WHEN 'unpaid' THEN 0 ELSE NULL END");
+    }
+
+    if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_grade')) {
+      CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay DROP COLUMN pay_grade');
+    }
+    CRM_Core_DAO::triggerRebuild();
+    return TRUE;
+  }
+
 }

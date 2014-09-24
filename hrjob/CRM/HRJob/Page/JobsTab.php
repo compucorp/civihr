@@ -131,7 +131,7 @@ class CRM_HRJob_Page_JobsTab extends CRM_Core_Page {
       ),
       'HRJobPay' => array(
         'pay_scale',
-        'pay_grade',
+        'is_paid',
         'pay_unit',
         'pay_currency',
       ),
