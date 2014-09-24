@@ -218,7 +218,7 @@ function hrrecruitment_civicrm_uninstall() {
 
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name IN ('vacancy_status', 'work_experience', 'rate_the_applicant_s_communicati', 'rate_the_applicant_s_technical_s', 'languages_known')");
 
-  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
   $value = array_search('Application', $caseTypes);
   //Delete cases and related contact of type Application on uninstall
   if ($value)
