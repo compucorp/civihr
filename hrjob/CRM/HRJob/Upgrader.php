@@ -578,6 +578,7 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob_pay', 'pay_grade')) {
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob_pay DROP COLUMN pay_grade');
     }
+    CRM_Core_DAO::triggerRebuild();
     return TRUE;
   }
 

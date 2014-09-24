@@ -111,7 +111,7 @@ function hrreport_civicrm_uninstall() {
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absenceReport','calendar')");
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absence_report', 'absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
   return _hrreport_civix_civicrm_uninstall();
@@ -142,7 +142,7 @@ function _hrreport_setActiveFields($setActive) {
 
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
   if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absenceReport','calendar')");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absence_report', 'absenceReport','calendar')");
     CRM_Core_BAO_Navigation::resetNavigation();
   }
 }
