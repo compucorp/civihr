@@ -18,7 +18,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     }),
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
-      if (this.model.get('pay_grade') == 1) {
+      if (this.model.get('is_paid') == 1) {
         this.$('.hrjob-needs-pay_grade').show();
       } else {
         this.$('.hrjob-needs-pay_grade').hide();
@@ -73,7 +73,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     },
     togglePayGrade: function() {
       var view = this;
-      if (this.model.get('pay_grade') == 1) {
+      if (this.model.get('is_paid') == 1) {
         view.$('.hrjob-needs-pay_grade:hidden').slideDown({
           complete: function() {
             view.$('[name=pay_currency]').focus();

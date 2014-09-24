@@ -486,8 +486,9 @@ class CRM_HRJob_Upgrader extends CRM_HRJob_Upgrader_Base {
     if (CRM_Core_DAO::checkFieldExists('civicrm_hrjob', 'funding_org_id')) {
       $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob');
       while ($dao->fetch()) {
+        $manager = $dao->manager_contact_id ? $dao->manager_contact_id : 'null';
         CRM_Core_DAO::executeQuery("INSERT INTO civicrm_hrjob_role (job_id, title, funder, location, department, manager_contact_id, level_type)
-          VALUES ({$dao->id}, '{$dao->position}', IFNULL('{$dao->funding_org_id}', NULL), IFNULL('{$dao->location}',NULL), '{$dao->department}', IFNULL('{$dao->manager_contact_id}', NULL), IFNULL('{$dao->level_type}', NULL))");
+          VALUES ({$dao->id}, '{$dao->position}', IFNULL('{$dao->funding_org_id}', NULL), IFNULL('{$dao->location}',NULL), '{$dao->department}', {$manager}, IFNULL('{$dao->level_type}', NULL))");
       }
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP FOREIGN KEY FK_civicrm_hrjob_funding_org_id');
       CRM_Core_DAO::executeQuery('ALTER TABLE civicrm_hrjob DROP COLUMN funding_org_id');
