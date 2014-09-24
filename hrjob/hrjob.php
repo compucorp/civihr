@@ -130,7 +130,7 @@ function hrjob_civicrm_uninstall() {
   civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
 
   //delete all option group and values
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type')");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type', 'hrjob_region', 'hrjob_pay_scale')");
 
   return _hrjob_civix_civicrm_uninstall();
 }
@@ -162,9 +162,9 @@ function _hrjob_setActiveFields($setActive) {
   CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'HRJob_Summary'");
 
   //disable/enable optionGroup and optionValue
-  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type')";
+  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type', 'hrjob_region', 'hrjob_pay_scale')";
   CRM_Core_DAO::executeQuery($query);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type')");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('hrjob_contract_type', 'hrjob_level_type', 'hrjob_department', 'hrjob_hours_type', 'hrjob_pay_grade', 'hrjob_health_provider', 'hrjob_life_provider', 'hrjob_location', 'hrjob_pension_type',  'hrjob_region', 'hrjob_pay_scale')");
 }
 
 /**
