@@ -88,13 +88,16 @@ function hrreport_civicrm_install() {
 function hrreport_civicrm_postInstall() {
   $report_id = _hrreport_getId();
   foreach ($report_id as $key=>$val) {
-    $url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
-    $fullscreen_url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashletFullscreen";
-    $name = "report/{$val}";
-    $label = $key;
-    $domain_id = CRM_Core_Config::domainID();
-    $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
-    CRM_Core_DAO::executeQuery($query);
+    $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
+    if ($dashlet['count'] == 0) {
+      $url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
+      $fullscreen_url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashletFullscreen";
+      $name = "report/{$val}";
+      $label = $key;
+      $domain_id = CRM_Core_Config::domainID();
+      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+      CRM_Core_DAO::executeQuery($query);
+    }
   }
 }
 

@@ -249,7 +249,7 @@ function hrabsence_civicrm_postInstall() {
     $report_id = _hrabsencereport_getId();
     foreach ($report_id as $key=>$val) {
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
-      if (!empty($dashlet['count']) && $dashlet['count']==0) {
+      if ($dashlet['count'] == 0) {
         $url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
         $fullscreen_url = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashletFullscreen";
         $name = "report/{$val}";

@@ -42,7 +42,6 @@
       entity: 'HRJobPay'
       }) %>
     {/literal}
-    {include file="CRM/HRJob/Page/EditOptions.tpl" group='currencies_enabled'}
     </div>
   </div>
 
