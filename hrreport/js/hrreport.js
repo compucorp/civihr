@@ -1,7 +1,7 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
   $(document).on('crmLoad', function() {
-    //change heading consisting 'Case' replacing with 'Assignment' 
+    //change heading consisting 'Case' replacing with 'Assignment'
     $('.crm-report-instanceList-form-block .crm-accordion_Case-accordion .crm-accordion-header').html('Assignment Reports');
     $('.crm-report-templateList-form-block .crm-accordion_Case-accordion .crm-accordion-header').html('Assignment Report Templates');
     //change templates name consisting 'Case' replacing with 'Assignment'

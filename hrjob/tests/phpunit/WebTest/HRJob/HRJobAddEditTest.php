@@ -386,8 +386,8 @@ class WebTest_HRJob_HRJobAddEditTest extends CiviSeleniumTestCase {
       $this->waitForElementPresent("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[3]/a");
       $this->click("xpath=//div[@class='hrjob-tree-items']/div[$jobIndex]/dl/dd[3]/a");
     }
-    $this->waitForElementPresent("xpath=//input[@value='paid']");
-    $this->click("xpath=//input[@value='paid']");
+    $this->waitForElementPresent("xpath=//input[@value='1']");
+    $this->click("xpath=//input[@value='1']");
     $this->waitForElementPresent("hrjob-pay_scale");
     $this->select('hrjob-pay_scale', "value={$values['pay_scale']}");
     $this->type('hrjob-pay_amount', $values['pay_amount']);

@@ -14,7 +14,6 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     }),
     events: _.extend({}, HRApp.Common.Views.StandardForm.prototype.events,{
       'change [name=pay_is_auto_est]': 'toggleLockMessage',
-      'click .pay_annualized_est_edit': 'doAnnualizedEstEdit'
     }),
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
@@ -43,6 +42,7 @@ CRM.HRApp.module('JobTabApp.Pay', function(Pay, HRApp, Backbone, Marionette, $, 
     events: {
       'click .standard-save': 'doSave',
       'click .standard-reset': 'doReset',
+      'click .pay_annualized_est_edit': 'doAnnualizedEstEdit'
     },
     doSave: function(){
       var view = this,

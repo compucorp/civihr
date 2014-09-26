@@ -29,7 +29,7 @@
       </tr>
       <tr>
         <td>
-          <label for="hrjob-work_days_per_week">{ts}Standard work-days per year{/ts}</label>
+          <label for="hrjob-work_days_per_week">{ts}Standard work-days per week{/ts}</label>
         </td>
         <td>
           <input id="hrjob-work_days_per_week" name="work_days_per_week" type="text" />
@@ -37,10 +37,18 @@
       </tr>
       <tr>
         <td>
-          <label for="hrjob-work_days_per_month">{ts}Standard work-hours per year{/ts}</label>
+          <label for="hrjob-work_days_per_month">{ts}Standard work-days per month{/ts}</label>
         </td>
         <td>
           <input id="hrjob-work_days_per_month" name="work_days_per_month" type="text" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="hrjob-work_hour_per_day">{ts}Standard work-hours per day{/ts}</label>
+        </td>
+        <td>
+          <input id="hrjob-work_hour_per_day" name="work_hour_per_day" type="text" />
         </td>
       </tr>
     </tbody>

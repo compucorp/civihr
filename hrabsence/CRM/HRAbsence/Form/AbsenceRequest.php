@@ -315,6 +315,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
           }
+          elseif ($val['status_id'] == array_search('Cancelled',$actStatus)) {
+            $absenceStatus = "Cancelled";
+          }
         }
         elseif ($val['duration'] == $this->_jobHoursTime['Part_Time']*60) {
           $converteddays = "Half Day";
@@ -325,6 +328,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           }
           elseif (($val['status_id'] == array_search('Rejected',$actStatus)) || ($val['status_id'] == array_search('Scheduled',$actStatus))) {
             $absenceStatus = "Unapproved";
+          }
+          elseif ($val['status_id'] == array_search('Cancelled',$actStatus)) {
+            $absenceStatus = "Cancelled";
           }
         }
         else {
@@ -771,13 +777,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       if ($sendMail) {
         //send mail to multiple manager
         $managerContactResult = array();
-        foreach ($this->_managerContactID as $key => $val) {
-          $managerContactResult = civicrm_api3('contact', 'get', array(
-            'id' => $val,
-          ));
-          if (!empty($val) && !empty($managerContactResult['values'])) {
-            $mailprm[$val]['display_name'] = $managerContactResult['values'][$val]['display_name'];
-            $mailprm[$val]['email'] = $managerContactResult['values'][$val]['email'];
+        if (!empty($this->_managerContactID)) {
+          foreach ($this->_managerContactID as $key => $val) {
+            $managerContactResult = civicrm_api3('contact', 'get', array(
+              'id' => $val,
+            ));
+            if (!empty($val) && !empty($managerContactResult['values'])) {
+              $mailprm[$val]['display_name'] = $managerContactResult['values'][$val]['display_name'];
+              $mailprm[$val]['email'] = $managerContactResult['values'][$val]['email'];
+            }
           }
         }
         self::sendAbsenceMail($mailprm, $sendTemplateParams);
