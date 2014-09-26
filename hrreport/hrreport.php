@@ -95,7 +95,7 @@ function hrreport_civicrm_postInstall() {
       $name = "report/{$val}";
       $label = $key;
       $domain_id = CRM_Core_Config::domainID();
-      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+      $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label, permission) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}','access HRReport' )";
       CRM_Core_DAO::executeQuery($query);
     }
   }
@@ -227,11 +227,25 @@ function hrreport_civicrm_pageRun( &$page ) {
     $contact_id = $session->get('userID');
     //to do entry of default casedashboard report and civicrm news report
     foreach (array('blog','casedashboard') as $name) {
-      $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id", "url"), 'name' => $name,));
-      $dashboardContactId = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $caseDashlet['id'],'contact_id' => $contact_id));
+      $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id", "url", "permission"), 'name' => $name,));
+      $dashboardContactId = civicrm_api3('DashboardContact', 'get', array('return' => array("id", "is_active"),  'dashboard_id' => $caseDashlet['id'],'contact_id' => $contact_id));
+      $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
       if (empty($dashboardContactId['id'])) {
-        $url =  CRM_Utils_System::getServerResponse($caseDashlet['url'],false);
-        civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'column_no' => '1','content' => $url));
+        if ($name == 'blog') {
+          civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'column_no' => '1','content' => $url));
+        }
+        elseif (CRM_Case_BAO_Case::accessCiviCase()) {
+          civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $caseDashlet['id'],'is_active' => '1','contact_id' => $contact_id,'column_no' => '1','content' => $url));
+        }
+      }
+      if (!empty($dashboardContactId['id']) && $name == 'casedashboard') {
+        $id = $dashboardContactId['id'];
+        if (!CRM_Case_BAO_Case::accessCiviCase()) {
+          _hrreport_createDashlet($id, '0');
+        }
+        elseif($dashboardContactId['values'][$id]['is_active'] == 0) {
+          _hrreport_createDashlet($id,'1');
+        }
       }
     }
     $i = 1;
@@ -239,14 +253,31 @@ function hrreport_civicrm_pageRun( &$page ) {
       $dashletParams['url'] = "civicrm/report/instance/{$val}?reset=1&section=2&snippet=5&context=dashlet";
       $dashlet = civicrm_api3('Dashboard', 'get', array('name' => "report/{$val}",));
       if (!empty($dashlet['count']) && $dashlet['count'] > 0) {
-        $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => "id",  'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
+        $contentUrl = CRM_Utils_System::getServerResponse($dashletParams['url']);
+        $dashboardContact = civicrm_api3('DashboardContact', 'get', array('return' => array("id", "is_active"), 'dashboard_id' => $dashlet['id'],'contact_id' => $contact_id));
+        $dashId = $dashlet['id'];
         if (empty($dashboardContact['id'])) {
-          civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+          if (CRM_Core_Permission::check($dashlet['values'][$dashId]['permission'])) {
+            civicrm_api3('DashboardContact', 'create', array("dashboard_id" => $dashlet['id'],'is_active' => '1','contact_id' => $contact_id ,'column_no' => $i ,'content' =>  CRM_Utils_System::getServerResponse($dashletParams['url'])));
+          }
+        }
+        if (!empty($dashboardContact['id'])) {
+          $id = $dashboardContact['id'];
+          if (!CRM_Core_Permission::check($dashlet['values'][$dashId]['permission'])) {
+            _hrreport_createDashlet($id, '0');
+          }
+          elseif($dashboardContact['values'][$id]['is_active'] == 0) {
+            _hrreport_createDashlet($id, '1');
+          }
         }
         $i = 0;
       }
     }
   }
+}
+
+function _hrreport_createDashlet($dashboardContact, $setactive) {
+  civicrm_api3('DashboardContact', 'create', array("id" => $dashboardContact,'is_active' => $setactive));
 }
 
 function _hrreport_getId () {
