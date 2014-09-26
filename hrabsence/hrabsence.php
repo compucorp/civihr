@@ -255,7 +255,7 @@ function hrabsence_civicrm_postInstall() {
         $name = "report/{$val}";
         $label = $key;
         $domain_id = CRM_Core_Config::domainID();
-        $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}' )";
+        $query = " INSERT INTO civicrm_dashboard ( domain_id,url, fullscreen_url, is_active, name,label, permission) VALUES ($domain_id,'{$url}', '{$fullscreen_url}', 1, '{$name}', '{$label}','access HRReport')";
         CRM_Core_DAO::executeQuery($query);
       }
     }
