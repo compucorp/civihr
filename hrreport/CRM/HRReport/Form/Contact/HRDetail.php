@@ -225,6 +225,14 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
+          'current_employee' =>
+          array(
+            'default' => 0,
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array('0' => ts('No'), '1' => ts('Yes')),
+            'no_display' => TRUE,
+          ),
         ),
         'grouping' => array('job-fields' => 'Job'),
       ),
@@ -458,10 +466,9 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
-    if ($this->_force) {
+    if (!empty($this->_params['current_employee_value'])) {
       $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()))";
     }
-
     $whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
     $where = implode(' AND ', $whereClauses);
     if ($this->_where == "WHERE ( 1 )" ) {
@@ -481,7 +488,7 @@ function groupBy() {
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
 
     foreach ($rows as $rowNum => $row) {
-      if (array_key_exists('civicrm_contact_sort_name', $row) && !empty($rows[$rowNum]['civicrm_contact_sort_name'])&&
+      if (array_key_exists('civicrm_contact_sort_name', $row) && !empty($rows[$rowNum]['civicrm_contact_sort_name']) &&
         array_key_exists('civicrm_contact_id', $row)
       ) {
         $url = CRM_Utils_System::url("civicrm/contact/view",

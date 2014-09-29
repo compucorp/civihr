@@ -76,6 +76,20 @@ function hrreport_civicrm_install() {
       );
       CRM_Core_BAO_Navigation::add($params);
     }
+    $absenceReportId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'absence_report', 'id', 'name');
+    if (empty($absenceReportId)) {
+      $params = array(
+        'domain_id' => CRM_Core_Config::domainID(),
+        'label'     => 'Absence Report',
+        'name'      => 'absence_report',
+        'url'       => 'civicrm/report/list?grp=absence&reset=1',
+        'permission'=> 'access HRReport',
+        'parent_id' => $absenceParentId,
+        'is_active' => 1,
+        'weight'    => 7,
+      );
+      CRM_Core_BAO_Navigation::add($params);
+    }
   }
   return _hrreport_civix_civicrm_install();
 }
