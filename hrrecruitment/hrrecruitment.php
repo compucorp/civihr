@@ -221,15 +221,14 @@ function hrrecruitment_civicrm_uninstall() {
   $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
   $value = array_search('Application', $caseTypes);
   //Delete cases and related contact of type Application on uninstall
-  if ($value)
-    {
-      $caseDAO = new CRM_Case_DAO_Case();
-      $caseDAO->case_type_id = $value;
-      $caseDAO->find();
-      while ($caseDAO->fetch()) {
-        CRM_Case_BAO_Case::deleteCase($caseDAO->id);
-      }
+  if ($value) {
+    $caseDAO = new CRM_Case_DAO_Case();
+    $caseDAO->case_type_id = $value;
+    $caseDAO->find();
+    while ($caseDAO->fetch()) {
+      CRM_Case_BAO_Case::deleteCase($caseDAO->id);
     }
+  }
 
   $CaseStatuses = CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'", 'id', FALSE);
   $CaseStatus = implode(',', $CaseStatuses);
@@ -245,6 +244,10 @@ function hrrecruitment_civicrm_uninstall() {
     civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
   }
 
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrcase', 'is_active', 'full_name');
+  if (!$isEnabled) {
+    CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ('Recruiting Manager')");
+  }
   return _hrrecruitment_civix_civicrm_uninstall();
 }
 

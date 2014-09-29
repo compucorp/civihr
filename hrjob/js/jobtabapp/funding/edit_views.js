@@ -8,7 +8,7 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
         'isNewDuplicate': this.model._isDuplicate ? true : false,
         'RenderUtil': CRM.HRApp.RenderUtil,
         'FieldOptions': CRM.FieldOptions.HRJob,
-        'rolesInfo': this.roleDataView()
+        'rolesInfo': this.roleDataView('info')
       };
     },
     initialize: function() {
@@ -17,12 +17,12 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
     },
     onRender: function() {
       HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
-      this.roleDataView();
+      this.roleDataView('renderInfo');
     },
     modelEvents: {
       'change:funder': 'roleDataView'
     },
-    roleDataView: function() {
+    roleDataView: function(display) {
       var view = this, rolesInfo = {};
       _.forEach(view.options.roleCollection.models, function (model) {
         var id = model.get('id'),
@@ -34,9 +34,11 @@ CRM.HRApp.module('JobTabApp.Funding', function(Funding, HRApp, Backbone, Marione
             percentAndFunder = percentfunderExpr.split('-');
             percentRel[percentAndFunder[0]] =  percentAndFunder[1];
             $rowspan += 1;
-            view.$('a#hrjob-role-funder-'+percentAndFunder[0]).hrContactLink({
-              cid: percentAndFunder[0]
-            });
+            if (display == 'renderInfo') {
+              view.$('a#hrjob-role-funder-'+percentAndFunder[0]).hrContactLink({
+                cid: percentAndFunder[0]
+              });
+            }
           });
         }
         if(!rolesInfo[id]) {

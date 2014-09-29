@@ -30,7 +30,19 @@ function hrcaseutils_civicrm_install() {
  */
 function hrcaseutils_civicrm_uninstall() {
   //delete all activity type
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE name IN ('Interview Prospect', 'Background_Check', 'ID badge')");
+
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
+  $value = array_search('Hrdata', $caseTypes);
+  //Delete cases and related contact of type Hrdata on uninstall
+  if ($value) {
+    $caseDAO = new CRM_Case_DAO_Case();
+    $caseDAO->case_type_id = $value;
+    $caseDAO->find();
+    while ($caseDAO->fetch()) {
+      CRM_Case_BAO_Case::deleteCase($caseDAO->id);
+    }
+  }
   return _hrcaseutils_civix_civicrm_uninstall();
 }
 
@@ -52,7 +64,7 @@ function hrcaseutils_civicrm_disable() {
 
 function _hrcaseutils_setActiveFields($setActive) {
   // disable/enable activity type
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE name IN ('Interview Prospect', 'Background_Check', 'ID badge')");
 }
 
 /**

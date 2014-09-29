@@ -82,6 +82,12 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       foreach ($fields as $fldName => $params) {
         if (!empty($query->_returnProperties[$fldName])) {
           $query->_select[$fldName]  = "{$params['where']} as $fldName";
+          if ($fldName == 'hrjob_role_manager_contact') {
+            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjob_role_manager.sort_name) SEPARATOR ' | ') as $fldName";
+          }
+          if ($fldName == 'hrjob_role_department') {
+            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjob_role.department) SEPARATOR ' | ') as $fldName";
+          }
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);
           $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
@@ -216,7 +222,7 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $from = " $side JOIN civicrm_hrjob ON civicrm_hrjob.contact_id = contact_a.id AND civicrm_hrjob.is_primary = 1";
         break;
       case 'civicrm_hrjob_role_manager':
-        $from = " $side JOIN civicrm_hrjob_role ON civicrm_hrjob.id = civicrm_hrjob_role.job_id $side JOIN civicrm_contact civicrm_hrjob_role_manager ON civicrm_hrjob_role.manager_contact_id = civicrm_hrjob_role_manager.id";
+        $from = " $side JOIN civicrm_hrjob_role civicrm_hrjob_role_manager_contact ON civicrm_hrjob.id = civicrm_hrjob_role_manager_contact.job_id $side JOIN civicrm_contact civicrm_hrjob_role_manager ON civicrm_hrjob_role_manager_contact.manager_contact_id = civicrm_hrjob_role_manager.id";
         break;
       case 'civicrm_hrjob_hour':
         $from = " $side JOIN civicrm_hrjob_hour ON civicrm_hrjob.id = civicrm_hrjob_hour.job_id ";

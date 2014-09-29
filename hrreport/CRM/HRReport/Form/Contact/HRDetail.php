@@ -59,13 +59,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             'required' => TRUE,
           ),
           'gender' => array(),
-
-          'manager' =>
-          array(
-            'name' => 'sort_name',
-            'title' => ts('Manager'),
-            'dbAlias' => 'manager.sort_name'
-          ),
         ),
         'filters' =>
         array(
@@ -227,10 +220,10 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
           'current_employee' =>
           array(
-            'default' => 0,
+            'default' => NULL,
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array('0' => ts('No'), '1' => ts('Yes')),
+            'options' => array(''=> ts('ANY'),'0' => ts('No'), '1' => ts('Yes')),
             'no_display' => TRUE,
           ),
         ),
@@ -371,7 +364,25 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'fields' =>
         array(
           'hrjob_role_department' => array(),
-          'hrjob_role_level_type' => array(),
+          'hrjob_role_level_type' => array(
+            'name' => 'level_type',
+            'title' => ts('Role Level Types'),
+            'type' => CRM_Utils_Type::T_INT,
+            'grouping' => array('job-fields' => 'Job'),
+          ),
+          'manager' =>
+          array(
+            'name' => 'manager_sort_name',
+            'title' => ts('Role Managers'),
+            'dbAlias' => 'manager.sort_name'
+          ),
+          'hrjob_role_manager_contact_id' => array(
+            'no_display' => TRUE,
+            'name' => 'manager_contact_id',
+            'title' => ts('Role Managers'),
+            'type' => CRM_Utils_Type::T_INT,
+            'grouping' => array('job-fields' => 'Job'),
+          )
         ),
         'filters' =>
         array(
@@ -381,7 +392,6 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         'grouping' => array('job-fields' => 'Job'),
       ),
     ) + $this->addAddressFields(FALSE, TRUE);
-
     parent::__construct();
   }
 
@@ -406,10 +416,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
              ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
              ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance
-      LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-             ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_contact manager
-             ON manager.id = ({$this->_aliases['civicrm_hrjob_role']}.manager_contact_id)";
+      ";
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
@@ -417,6 +424,12 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
             if ($tableName == 'civicrm_hrjob_leave') {
               $this->_from .= " LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
                ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+            }
+            if ($tableName == 'civicrm_hrjob_role') {
+              $this->_from .= "LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+               ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
+               LEFT JOIN civicrm_contact manager
+               ON manager.id = ({$this->_aliases['civicrm_hrjob_role']}.manager_contact_id)";
             }
           }
         }
@@ -468,6 +481,8 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
     if (!empty($this->_params['current_employee_value'])) {
       $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()))";
+
+     $this->_where = str_replace("AND ( hrjob_civireport.current_employee = 1 )", '', $this->_where);
     }
     $whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
     $where = implode(' AND ', $whereClauses);
@@ -479,8 +494,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     }
   }
 
-function groupBy() {
-    $this->_groupBy = "GROUP BY {$this->_aliases['civicrm_contact']}.id";
+  function groupBy() {
+    if (!empty($this->_params['current_employee_value'])) {
+      $this->_groupBy = "GROUP BY {$this->_aliases['civicrm_hrjob']}.id";
+      $this->_select = str_replace("manager.sort_name", "GROUP_CONCAT(DISTINCT(manager.sort_name) SEPARATOR ' | ')", $this->_select);
+    }
   }
 
   function alterDisplay(&$rows) {
