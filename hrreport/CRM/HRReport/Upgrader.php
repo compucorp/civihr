@@ -236,4 +236,24 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
     }
     return TRUE;
   }
+
+  public function upgrade_1403() {
+    $this->ctx->log->info('Planning update 1403'); // PEAR Log interface
+    $reports = "('CiviHR Current Employees Report', 'CiviHR Contact Summary Report', 'CiviHR Annual and Monthly Cost Equivalents Report ', 'CiviHR FTE Report ')";
+    // $impReports = implode(',', $reports);
+    $reportQuery = CRM_Core_DAO::executeQuery("SELECT entity_id from civicrm_managed where name IN {$reports} and entity_type = 'ReportInstance'");
+    while ($reportQuery->fetch()) {
+      $formValues = CRM_Core_DAO::singleValueQuery("SELECT form_values FROM civicrm_report_instance where id = {$reportQuery->entity_id}");
+      $arrayFormValues = unserialize($formValues);
+      $arrayFormValues["fields"]["current_employee_op"] = 'in';
+      $arrayFormValues["fields"]["current_employee_value"] = 1;
+
+      $formValues = serialize($arrayFormValues);
+      $params[1] = array($reportQuery->entity_id, 'Integer');
+      $params[2] = array($formValues, 'String');
+      $sql = 'UPDATE civicrm_report_instance SET form_values = %2 WHERE id = %1';
+      CRM_Core_DAO::executeQuery($sql, $params);
+    }
+    return TRUE;
+  }
 }

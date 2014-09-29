@@ -61,6 +61,8 @@ return array (
             'manager' => 1,
             'hrjob_title' => 1,
           ),
+          'current_employee_op' => 'in',
+          'current_employee_value' => 1,
         )
       ),
     ),

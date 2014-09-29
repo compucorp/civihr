@@ -33,6 +33,8 @@ return array (
             'job_positions' => 1,
             'state_province_id' => 1,
           ),
+          'current_employee_op' => 'in',
+          'current_employee_value' => 1,
           'group_bys' => array(
             'state_province_id' => 1,
           ),
@@ -58,6 +60,8 @@ return array (
             'monthly_cost_eq'   => 1,
             'annual_cost_eq'    => 1,
           ),
+          'current_employee_op' => 'in',
+          'current_employee_value' => 1,
           'group_bys' => array(
             'hrjob_role_level_type' => 1,
             'hrjob_location'   => 1,
@@ -82,6 +86,8 @@ return array (
             'hrjob_role_level_type' => 1,
             'full_time_eq'     => 1,
           ),
+          'current_employee_op' => 'in',
+          'current_employee_value' => 1,
           'group_bys' => array(
             'hrjob_role_level_type' => 1,
           ),
