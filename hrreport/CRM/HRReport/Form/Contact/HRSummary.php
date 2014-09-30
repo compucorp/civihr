@@ -425,17 +425,15 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_provider']}
           ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
-          ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance";
+          ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance
+      LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
+                ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
 
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (!empty($field['required']) || !empty($this->_params['fields'][$fieldName])) {
-            if ($tableName == 'civicrm_hrjob_role') {
-              $this->_from .= " LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-                ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
-            }
-            elseif ($tableName == 'civicrm_hrjob_leave') {
+            if ($tableName == 'civicrm_hrjob_leave') {
               $this->_from .= " LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
                   ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
             }

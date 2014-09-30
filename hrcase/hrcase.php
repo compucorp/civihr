@@ -114,10 +114,10 @@ function hrcase_civicrm_uninstall() {
   //Delete cases and related contact on uninstall
   $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
   $cases = array('Joining', 'Exiting', 'Probation', 'Appraisal');
-  foreach ($caseTypes as $caseType) {
-    if (in_array($caseType, $cases) && !empty($caseTypes[$caseType])) {
+  foreach ($caseTypes as $caseTypeKey => $caseType) {
+    if (in_array($caseType, $cases)) {
       $caseDAO = new CRM_Case_DAO_Case();
-      $caseDAO->case_type_id = $caseTypes[$caseType];
+      $caseDAO->case_type_id = $caseTypeKey;
       $caseDAO->find();
       while ($caseDAO->fetch()) {
         CRM_Case_BAO_Case::deleteCase($caseDAO->id);
