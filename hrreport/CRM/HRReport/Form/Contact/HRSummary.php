@@ -320,7 +320,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         'fields' =>
         array(
           'hrjob_role_department' => array(),
-           'hrjob_role_level_type' => array(),
+          'hrjob_role_level_type' => array(),
         ),
         'filters' =>
         array(
@@ -363,8 +363,9 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       array(
         'name' => 'hours_fte',
         'title' => ts('Full Time Equivalents'),
-        'type' => CRM_Utils_Type::T_INT,
+        'type' => CRM_Utils_Type::T_FLOAT,
         'statistics' => array('sum' => ts('Full Time Equivalents'),),
+        'dbAlias'  => '(hrjob_hour_civireport.fte_num / hrjob_hour_civireport.fte_denom)',
         'grouping' => 'stats-fields',
       );
     $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
@@ -426,7 +427,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
           ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance
       LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-          ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+                ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
 
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
@@ -480,6 +481,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
     if (!empty($this->_params['current_employee_value'])) {
       $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()))";
+      $this->_where = str_replace("AND ( hrjob_civireport.current_employee = 1 )", '', $this->_where);
     }
 
     $whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";

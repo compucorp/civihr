@@ -42,7 +42,6 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
     $vacancy = $this->_createVacancy($position, $location, $salary);
     $newApplicantName = $this->_vacancyApply($vacancy['id']);
     $this->openCiviPage("vacancy/dashboard", "reset=1");
-    $this->waitForText("xpath=//*[@id='crm-main-content-wrapper']/div/div[2]/table/tbody/tr[1]/td/div[2]", "a few seconds ago");
     $this->waitForElementPresent("xpath=//*[@id='crm-main-content-wrapper']/div/div[2]/table/tbody/tr[1]/td/div[1]/a[1]");
     $this->verifyText("xpath=//*[@id='crm-main-content-wrapper']/div/div[2]/table/tbody/tr[1]/td/div[1]/a[2]", $position);
     $this->verifyText("//*[@id='crm-main-content-wrapper']/div/div[1]/div[1]/div[2]/div[1]/div/table/tbody/tr[4]/td/ul/li/a", '2');

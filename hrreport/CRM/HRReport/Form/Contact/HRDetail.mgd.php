@@ -39,6 +39,8 @@ return array (
             'state_province_id' => 1,
             'country_id' => 1,
           ),
+          'current_employee_op' => 'in',
+          'current_employee_value' => 1,
         )
       ),
     ),

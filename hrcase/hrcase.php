@@ -96,7 +96,7 @@ function hrcase_civicrm_uninstall() {
   $scheduleAction = implode("','",$scheduleActions );
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_action_schedule WHERE name IN ('{$scheduleAction}')");
 
-  $sql = "DELETE FROM civicrm_option_value WHERE name IN ('Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','Background_Check','References Check','Prepare and email schedule')";
+  $sql = "DELETE FROM civicrm_option_value WHERE name IN ('Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','References Check','Prepare and email schedule')";
   CRM_Core_DAO::executeQuery($sql);
 
   hrcase_example_caseType(TRUE);
@@ -104,6 +104,25 @@ function hrcase_civicrm_uninstall() {
   foreach (array('Joining_Data', 'Exiting_Data') as $cgName) {
     $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => $cgName));
     civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
+  }
+
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrrecruitment', 'is_active', 'full_name');
+  if (!$isEnabled) {
+    CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ('Recruiting Manager')");
+  }
+
+  //Delete cases and related contact on uninstall
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
+  $cases = array('Joining', 'Exiting', 'Probation', 'Appraisal');
+  foreach ($caseTypes as $caseTypeKey => $caseType) {
+    if (in_array($caseType, $cases)) {
+      $caseDAO = new CRM_Case_DAO_Case();
+      $caseDAO->case_type_id = $caseTypeKey;
+      $caseDAO->find();
+      while ($caseDAO->fetch()) {
+        CRM_Case_BAO_Case::deleteCase($caseDAO->id);
+      }
+    }
   }
   return _hrcase_civix_civicrm_uninstall();
 }
@@ -147,7 +166,7 @@ WHERE civicrm_custom_group.name IN ('Joining_Data', 'Exiting_Data')";
   //disable/enable activity type
   $query = "UPDATE civicrm_option_value
 SET is_active = {$setActive}
-WHERE name IN ('Open Case', 'Change Case Type', 'Change Case Status', 'Change Case Start Date', 'Assign Case Role', 'Remove Case Role', 'Merge Case', 'Reassigned Case', 'Link Cases', 'Change Case Tags', 'Add Client To Case','Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','Background_Check','References Check','Prepare and email schedule')";
+WHERE name IN ('Open Case', 'Change Case Type', 'Change Case Status', 'Change Case Start Date', 'Assign Case Role', 'Remove Case Role', 'Merge Case', 'Reassigned Case', 'Link Cases', 'Change Case Tags', 'Add Client To Case','Issue appointment letter','Fill Employee Details Form','Submission of ID/Residence proofs and photos','Program and work induction by program supervisor','Enter employee data in CiviHR','Group Orientation to organization values policies','Probation appraisal','Conduct appraisal','Collection of appraisal paperwork','Issue confirmation/warning letter','Get \"No Dues\" certification','Conduct Exit interview','Revoke access to databases','Block work email ID','Follow up on progress','Collection of Appraisal forms','Issue extension letter','Schedule joining date','Group Orientation to organization, values, policies','Probation appraisal (start probation workflow)','Schedule Exit Interview','Prepare formats','Print formats','Collate and print goals','References Check','Prepare and email schedule')";
 
   CRM_Core_DAO::executeQuery($query);
 
@@ -159,6 +178,11 @@ WHERE name IN ('Open Case', 'Change Case Type', 'Change Case Status', 'Change Ca
 
   $sqlrel = "UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ('HR Manager','Line Manager')";
   CRM_Core_DAO::executeQuery($sqlrel);
+
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrrecruitment', 'is_active', 'full_name');
+  if (!$isEnabled) {
+    CRM_Core_DAO::executeQuery("UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ('Recruiting Manager')");
+  }
 }
 
 /**

@@ -239,15 +239,14 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
 
   public function upgrade_1403() {
     $this->ctx->log->info('Planning update 1403'); // PEAR Log interface
-    $reports = "('CiviHR Current Employees Report', 'CiviHR Contact Summary Report', 'CiviHR Annual and Monthly Cost Equivalents Report ', 'CiviHR FTE Report ')";
+    $reports = "('CiviHR Current Employees Report', 'CiviHR Contact Summary Report', 'CiviHR Annual and Monthly Cost Equivalents Report ', 'CiviHR FTE Report ', 'CiviHR Job Detail Report')";
     // $impReports = implode(',', $reports);
-    $reportQuery = CRM_Core_DAO::executeQuery("SELECT entity_id from civicrm_managed where name IN {$reports} and entity_type = 'ReportInstance'");
+    $reportQuery = CRM_Core_DAO::executeQuery("SELECT entity_id, name from civicrm_managed where name IN {$reports} and entity_type = 'ReportInstance'");
     while ($reportQuery->fetch()) {
       $formValues = CRM_Core_DAO::singleValueQuery("SELECT form_values FROM civicrm_report_instance where id = {$reportQuery->entity_id}");
       $arrayFormValues = unserialize($formValues);
       $arrayFormValues["fields"]["current_employee_op"] = 'in';
       $arrayFormValues["fields"]["current_employee_value"] = 1;
-
       $formValues = serialize($arrayFormValues);
       $params[1] = array($reportQuery->entity_id, 'Integer');
       $params[2] = array($formValues, 'String');
