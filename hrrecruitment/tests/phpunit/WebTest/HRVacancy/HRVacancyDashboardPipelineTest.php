@@ -104,12 +104,10 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
 
     $this->waitForElementPresent("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[1]/td[1]/input");
     $this->click("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[1]/td[1]/input");
-    $name = $this->getText("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody//tr/td[2]");
-    $this->verifyText("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody//tr/td[2]", $name);
+    $this->waitForElementPresent("//form[@id='CaseProfile']");
 
     $this->waitForElementPresent("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
     $this->click("xpath=//*[@id='ui-id-3']/div/div[1]/table/tbody/tr[2]/td[1]/input");
-    sleep(1);
     $this->waitForText("xpath=//*[@id='ui-id-3']/div/div[2]/div[2]", "2 applicants selected");
 
     $this->click("xpath=//*[@id='tab_6']/a");
@@ -252,18 +250,8 @@ class WebTest_HRVacancy_HRVacancyDashboardPipelineTest extends CiviSeleniumTestC
   function  _commonFollowup() {
     $followup = "Comment";
     $this->select("followup_activity_type_id", "label={$followup}");
-    $this->webtestFillDateTime('followup_date', '+2 month 11:10PM');
+    $this->webtestFillDateTime('followup_date', '+1 week 1 day 8 hours ');
     $this->type("followup_activity_subject", "Its testing of follow up activity");
-    $this->waitForElementPresent('followup_assignee_contact_id');
-    $this->waitForElementPresent("//*[@id='followup_assignee_contact_id']/../div/ul/li/input");
-    $orgName = 'WestsideCoop2' . substr(sha1(rand()), 0, 7);
-    $this->click("//*[@id='followup_assignee_contact_id']/../div/ul/li/input");
-    $this->click("//*[@id='select2-drop']/ul/li/a[contains(text(),' New Organization')]");
-    $this->waitForElementPresent('_qf_Edit_next');
-    $this->type('organization_name', $orgName);
-    $this->type("xpath=//div[@id='editrow-email-Primary']/div[2]/input[@class='medium crm-form-text']", "info@" . $orgName . ".com");
-    $this->click('_qf_Edit_next');
-    $this->waitForText("xpath=//div[@id='s2id_followup_assignee_contact_id']","$orgName");
   }
 
   function _commonDetail() {

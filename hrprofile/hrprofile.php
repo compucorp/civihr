@@ -59,16 +59,14 @@ function hrprofile_civicrm_install() {
 function hrprofile_civicrm_uninstall() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_UFField', 'uf_group_id', array('labelColumn' => 'name'));
   $profileId = array_search('hrstaffdir_listing', $groups);
-  $path = array(
-    'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
-  );
-  $navigationPath = CRM_Core_BAO_Navigation::retrieve($path,$defaultpath);
-  if ($profileId && $navigationPath) {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrstaffdir', 'is_active', 'full_name');
+
+  if ($profileId && $isEnabled) {
     $originalUrl = "civicrm/profile/table?reset=1&gid={$profileId}&force=1";
     $updatedUrl = "civicrm/profile?reset=1&gid={$profileId}&force=1";
     hrprofile_updateNavigation($originalUrl, $updatedUrl);
   }
-  elseif ($profileId && !$navigationPath) {
+  else {
     $navigationParams = array(
       'label' => 'Directory',
       'url' => "civicrm/profile/table?reset=1&gid={$profileId}&force=1",
@@ -105,14 +103,11 @@ function hrprofile_civicrm_disable() {
 }
 
 function _hrprofile_setActiveFields($profileId, $originalUrl, $updatedUrl, $oParam, $nParam) {
-  $path = array(
-    'url' => "civicrm/profile?reset=1&gid={$profileId}&force=1",
-  );
-  $navigationPath = CRM_Core_BAO_Navigation::retrieve($path,$defaultpath);
-  if ($profileId && $navigationPath) {
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrstaffdir', 'is_active', 'full_name');
+  if ($profileId && $isEnabled) {
     hrprofile_updateNavigation($originalUrl, $updatedUrl);
   }
-  elseif ($profileId && !$navigationPath) {
+  else {
     $params = array(
       'label' => 'Directory',
       'url' => "civicrm/profile/table?reset=1&gid={$profileId}&force=1",
