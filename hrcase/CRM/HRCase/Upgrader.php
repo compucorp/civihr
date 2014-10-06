@@ -165,16 +165,19 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     CRM_Core_DAO::executeQuery($sql);
 
     $caseTypes = CRM_Case_PseudoConstant::caseType('name');
-    foreach (array('Exiting', 'Joining', 'Probation') as $caseName) {
-      $caseID = array_search($caseName, $caseTypes);
-      $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
+    foreach (array('Exiting', 'Joining', 'Probation', 'Hrdata') as $caseName) {
+      if ($caseID = array_search($caseName, $caseTypes)) {
+        $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
+      }
     }
-    $query = "UPDATE civicrm_managed
-      SET entity_id = CASE name
-      {$values}
-      END, entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation');";
-    CRM_Core_DAO::executeQuery($query);
-    CRM_Core_BAO_Navigation::resetNavigation();
+    if ($values) {
+      $query = "UPDATE civicrm_managed
+        SET entity_id = CASE name
+        {$values}
+        END, entity_type = 'caseType' WHERE name IN ('Exiting', 'Joining', 'Probation', 'Hrdata');";
+      CRM_Core_DAO::executeQuery($query);
+      CRM_Core_BAO_Navigation::resetNavigation();
+    }
     return TRUE;
   }
 
