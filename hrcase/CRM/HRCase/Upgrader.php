@@ -163,8 +163,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $this->ctx->log->info('Applying update 1300');
     $sql = "Update civicrm_case_type SET is_active = 0 where name IN ('AdultDayCareReferral', 'HousingSupport', 'adult_day_care_referral', 'housing_support')";
     CRM_Core_DAO::executeQuery($sql);
-
-    $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+    $values = NULL;
+    $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
     foreach (array('Exiting', 'Joining', 'Probation', 'Hrdata') as $caseName) {
       if ($caseID = array_search($caseName, $caseTypes)) {
         $values .= " WHEN '{$caseName}' THEN '{$caseID}'";
@@ -198,6 +198,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
         $result = civicrm_api3('action_schedule', 'create', $scheduleAction);
       }
     }
+    $existingCaseType = array('Appraisal');
+    $this->manageCaseTypes($existingCaseType);
     CRM_Core_Invoke::rebuildMenuAndCaches(TRUE);
 
     //update query to replace Case with Assignment
@@ -208,5 +210,23 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     $sql = "UPDATE civicrm_option_value SET label= replace(label,'Open Case','Created New Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID";
     CRM_Core_DAO::executeQuery($sql);
     return TRUE;
+  }
+
+  /** function to check if newly added managed entity exist
+   *  If exist then create mapping for that managed entity
+   *  @param array $caseTypes values are case type names (e.g. "Appraisal")
+   */
+  public function manageCaseTypes($caseTypes) {
+    $caseType = implode("','", $caseTypes);
+    $sql = "SELECT * from civicrm_case_type WHERE name IN ('{$caseType}')";
+    $caseFetch = CRM_Core_DAO::executeQuery($sql);
+    $values = array();
+    while ($caseFetch->fetch()) {
+      $values[] = "('org.civicrm.hrcase', '{$caseFetch->name}', 'CaseType', {$caseFetch->id}, 'never')";
+    }
+    if (!empty($values)) {
+      $manageSql = "INSERT INTO civicrm_managed (module, name, entity_type, entity_id, cleanup) VALUES " . implode(',', $values) ;
+      CRM_Core_DAO::executeQuery($manageSql);
+    }
   }
 }
