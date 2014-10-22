@@ -14,7 +14,6 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
       var fileurl = CRM.url('civicrm/hrjob/file/display');
       $.ajax({ type: "POST",
         url: fileurl,
-        async: false,
         data: { entityID: entityID, entityTable: "civicrm_hrjob" }
       }).done(function( msg ) {
         $('<div class=evidence-file-display>'+msg+'</div>').insertBefore('#evidence_file');
