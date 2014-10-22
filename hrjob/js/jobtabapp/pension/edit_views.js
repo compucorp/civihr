@@ -14,6 +14,7 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
       var fileurl = CRM.url('civicrm/hrjob/file/display');
       $.ajax({ type: "POST",
         url: fileurl,
+        async: false,
         data: { entityID: entityID, entityTable: "civicrm_hrjob" }
       }).done(function( msg ) {
         $('<div class=evidence-file-display>'+msg+'</div>').insertBefore('#evidence_file');
@@ -53,6 +54,7 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
           data: filedata,
           processData:false,
           contentType: false,
+          async: false,
           success: function() {}
         });
       }
@@ -83,6 +85,7 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
 
       $.ajax({ type: "POST",
         url: fileurl,
+        async: false,
         data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob" },
         success: function(html) {
           $('#del_'+fileID[1]).remove();
