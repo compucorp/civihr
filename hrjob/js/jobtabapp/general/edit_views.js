@@ -47,7 +47,8 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
 	var fileurl = CRM.url('civicrm/hrjob/file/display');
         $.ajax({ type: "POST",
           url: fileurl,
-		 data: { entityID: entityID, entityTable: "civicrm_hrjob_general"}
+          async : false,
+          data: { entityID: entityID, entityTable: "civicrm_hrjob_general"}
         }).done(function( msg ) {
         $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
         });
@@ -158,6 +159,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
         $.ajax({ type: "POST",
           url: fileurl,
           data: filedata,
+          async : false,
           processData:false,
           contentType: false,
           success: function() {}
@@ -184,6 +186,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
       var fileurl = CRM.url('civicrm/hrjob/file/delete');
       $.ajax({ type: "POST",
         url: fileurl,
+        async : false,
         data: { entityID : entityID, fileID : fileID[1], entityTable: "civicrm_hrjob_general" },
         success: function(html) {
           $('#del_'+fileID[1]).remove();
