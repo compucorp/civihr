@@ -225,7 +225,6 @@
   </title>
 
   <contract_type>
-    <item>Employee</item>
     <item>Contractor</item>
     <item>Volunteer</item>
     <item>Trustee</item>
