@@ -557,6 +557,27 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         $entryFound = TRUE;
       }
 
+      if (array_key_exists('civicrm_hrjob_hrjob_location', $row)) {
+        $ov = CRM_Core_OptionGroup::values('hrjob_location');
+        $rows[$rowNum]['civicrm_hrjob_hrjob_location'] = $ov[$rows[$rowNum]['civicrm_hrjob_hrjob_location']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_hrjob_contract_type', $row)) {
+        $ov = CRM_Core_OptionGroup::values('hrjob_contract_type');
+        $rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'] = $ov[$rows[$rowNum]['civicrm_hrjob_hrjob_contract_type']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_role_department', $row)) {
+        $ov = CRM_Core_OptionGroup::values('hrjob_role_department');
+        $rows[$rowNum]['civicrm_hrjob_role_department'] = $ov[$rows[$rowNum]['civicrm_hrjob_role_department']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_role_level_type', $row)) {
+        $ov = CRM_Core_OptionGroup::values('hrjob_role_department');
+        $rows[$rowNum]['civicrm_hrjob_role_level_type'] = $ov[$rows[$rowNum]['civicrm_hrjob_role_level_type']];
+        $entryFound = TRUE;
+      }
+
       // skip looking further in rows, if first row itself doesn't
       // have the column we need
       if (!$entryFound) {

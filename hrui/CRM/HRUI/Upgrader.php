@@ -153,7 +153,7 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
   } // */
 
   public function upgrade_4500() {
-    $this->ctx->log->info('Planning update 4500');
+    $this->ctx->log->info('Planning update 1400');
     //disable individual contact sub types
     $individualTypeId = civicrm_api3('ContactType', 'getsingle', array('return' => "id",'name' => "Individual"));
     $subContactId = civicrm_api3('ContactType', 'get', array('parent_id' => $individualTypeId['id']));
@@ -194,6 +194,12 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
 
     //delete default tag of civicrm
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
+    return TRUE;
+  }
+
+  public function upgrade_4501() {
+    $this->ctx->log->info('Planning update 1401');
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = 1 WHERE name_a_b IN ( 'Case Coordinator is' )");
     return TRUE;
   }
 }
