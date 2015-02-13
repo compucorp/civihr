@@ -690,8 +690,10 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
         'label' => "absence",
       ));
       $activityId = $result['values'][$result['id']]['value'];
-      $status = CRM_Utils_Array::value("status_id_value", $this->_params);
-      $clause = " AND status_id IN (". implode(',',$status).")";
+      $clause = NULL;
+      if ($status = CRM_Utils_Array::value("status_id_value", $this->_params)) {
+        $clause = " AND status_id IN (". implode(',',$status).")";
+      }
 
       $sql = "SELECT SUM(duration) / ( 8 *60 ) as qty,
         source_record_id ,
@@ -841,4 +843,3 @@ GROUP BY civicrm_activity_id {$this->_having} {$this->_orderBy}";
     }
   }
 }
-

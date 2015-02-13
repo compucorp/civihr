@@ -67,6 +67,7 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
         'PseudoConstant' => array(
           'locationType' => CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id'),
           'absenceStatus' => CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus(),
+          'checkStatus' => array_flip(CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name')),
         ),
         'Permissions' => array(
            'viewWidget' => CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'),

@@ -380,8 +380,8 @@
   </contracted_hours>
 
   <paid_unpaid>
-    <item>1</item>
-    <item>0</item>
+    <item>Paid</item>
+    <item>Unpaid</item>
   </paid_unpaid>
 
   <job_role_description>

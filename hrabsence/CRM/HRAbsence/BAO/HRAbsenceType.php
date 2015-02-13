@@ -187,6 +187,35 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     return $duration;
   }
 
+  /**
+   * Get the total duration for given 'Source Absence ID' for Approved and Requested duration
+   *
+   * @param int source Activity ID
+   * @return int
+   */
+  public static function getAbsenceActualDuration($sourceAbsenceId) {
+    $duration = 0;
+    $absences = civicrm_api3('Activity', 'get', array('source_record_id' => $sourceAbsenceId, 'options' => array('limit' => null)));
+    $activityStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+    $requested = CRM_Utils_Array::key('Scheduled', $activityStatus);
+    $approved = CRM_Utils_Array::key('Completed', $activityStatus);
+    $activityStatus = CRM_Activity_BAO_Activity::buildOptions('status_id', 'validate');
+    $periods = CRM_HRAbsence_BAO_HRAbsencePeriod::getPeriods();
+    foreach ($periods as $id => $title) {
+      $period = CRM_HRAbsence_BAO_HRAbsencePeriod::getDefaultValues($id);
+      $startDate[] = strtotime($period['start_date']);
+      $endDate[] = strtotime($period['end_date']);
+    }
+    $minDate = min($startDate);
+    $maxDate = max($endDate);
+    foreach ($absences['values'] as $absenceKey => $absenceVal) {
+      if (($absenceVal['status_id'] == $approved || $absenceVal['status_id'] == $requested) && (strtotime($absenceVal['activity_date_time']) >= $minDate && strtotime($absenceVal['activity_date_time']) <= $maxDate)) {
+        $duration += $absenceVal['duration'];
+      }
+    }
+    return $duration;
+  }
+
   static function setIsActive($id, $is_active) {
     return CRM_Core_DAO::setFieldValue('CRM_HRAbsence_DAO_HRAbsenceType', $id, 'is_active', $is_active);
   }
