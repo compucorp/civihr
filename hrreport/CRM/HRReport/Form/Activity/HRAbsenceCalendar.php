@@ -246,8 +246,10 @@ cac.record_type_id = {$targetValue} ";
             }
           }
           if ($field['name'] == 'status_id') {
-            $status = CRM_Utils_Array::value("{$fieldName}_value", $this->_params);
-            $clause = "request.status_id IN (". implode(',',$status).")";
+            $clause = NULL;
+            if ($status = CRM_Utils_Array::value("{$fieldName}_value", $this->_params)) {
+              $clause = "request.status_id IN (". implode(',',$status).")";
+            }
           }
           if (!empty($clause)) {
             $clauses[] = $clause;

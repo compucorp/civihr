@@ -106,7 +106,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
             };
           }
           var sign = CRM.HRAbsenceApp.absenceTypeCollection ? CRM.HRAbsenceApp.absenceTypeCollection.findDirection(activity.get('activity_type_id')) : 0;
-          if (sign == -1 && (absenceItem.status_id ==2 || absenceItem.status_id ==1)) {
+          if (sign == -1 && (absenceItem.status_id == CRM.PseudoConstant.checkStatus['Scheduled'] || absenceItem.status_id == CRM.PseudoConstant.checkStatus['Completed'])) {
             stats[month].debitTotal = stats[month].debitTotal + parseInt(absenceItem.duration);
             stats[month].debitCount++;
           } else if (sign == 1 && (absenceItem.status_id ==2 || absenceItem.status_id ==1)) {

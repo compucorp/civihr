@@ -114,7 +114,6 @@ class CRM_HRAbsence_AbsenceRangeOption implements API_Wrapper {
             'activity_date_time' => $dao->activity_date_time,
             'duration' => $dao->duration,
             'status_id' => $dao->status_id,
-
             // ignore source_record_id; it's implicit
           );
         }

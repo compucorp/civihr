@@ -562,8 +562,15 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       }
 
       if (array_key_exists('civicrm_hrjob_hrjob_is_primary', $row)) {
-      	if (!empty($row['civicrm_hrjob_hrjob_is_primary'])) {
-          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? 'Yes' : 'No';
+        if (isset($row['civicrm_hrjob_hrjob_is_primary'])) {
+          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? ts('Yes') : ts('No');
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_pay_hrjob_is_paid', $row)) {
+        if (isset($row['civicrm_hrjob_pay_hrjob_is_paid'])) {
+          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_is_paid'] = ($row['civicrm_hrjob_pay_hrjob_is_paid'] == 1) ? ts('Paid') : ts('Unpaid');
         }
         $entryFound = TRUE;
       }
@@ -590,23 +597,23 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_link'] = $url;
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_hrjob_location', $row) && !empty($rows[$rowNum]['civicrm_hrjob_hrjob_location'])) {
+      if (array_key_exists('civicrm_hrjob_hrjob_location', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_location'])) {
         $rows[$rowNum]['civicrm_hrjob_hrjob_location'] = $job_location[$rows[$rowNum]['civicrm_hrjob_hrjob_location']];
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_hrjob_contract_type', $row) && !empty($rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'])) {
+      if (array_key_exists('civicrm_hrjob_hrjob_contract_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'])) {
         $rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'] = $contract_type[$rows[$rowNum]['civicrm_hrjob_hrjob_contract_type']];
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_role_hrjob_role_department', $row) && !empty($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'])) {
+      if (array_key_exists('civicrm_hrjob_role_hrjob_role_department', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'])) {
         $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'] = $department[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department']];
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_type', $row) && !empty($rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'])) {
+      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'])) {
         $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'] = $hours_type[$rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type']];
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_role_hrjob_role_level_type', $row) && !empty($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'])) {
+      if (array_key_exists('civicrm_hrjob_role_hrjob_role_level_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'])) {
         $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'] = $level_typel[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type']];
         $entryFound = TRUE;
       }
