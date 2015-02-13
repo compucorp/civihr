@@ -507,6 +507,11 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     $department = CRM_Core_OptionGroup::values('hrjob_department');
     $hours_type = CRM_Core_OptionGroup::values('hrjob_hours_type');
     $level_typel = CRM_Core_OptionGroup::values('hrjob_level_type');
+    $plan_type = CRM_HRJob_SelectValues::planType();
+    $life_plan_type = CRM_HRJob_SelectValues::planTypeLifeInsurance();
+    $payUnit = CRM_HRJob_SelectValues::payUnit();
+    $periodType = CRM_HRJob_SelectValues::periodType();
+    $commonUnit = CRM_HRJob_SelectValues::commonUnit();
 
     foreach ($rows as $rowNum => $row) {
       if (array_key_exists('civicrm_contact_sort_name', $row) && !empty($rows[$rowNum]['civicrm_contact_sort_name']) &&
@@ -524,6 +529,41 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       if (array_key_exists('civicrm_hrjob_hrjob_is_primary', $row)) {
         if (isset($row['civicrm_hrjob_hrjob_is_primary'])) {
           $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? ts('Yes') : ts('No');
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_health_plan_type', $row)) {
+        if (isset($row['civicrm_hrjob_health_hrjob_health_plan_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_plan_type'] = $plan_type[$row['civicrm_hrjob_health_hrjob_health_plan_type']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_unit', $row)) {
+        if (isset($row['civicrm_hrjob_hour_hrjob_hours_unit'])) {
+          $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_unit'] = $commonUnit[$row['civicrm_hrjob_hour_hrjob_hours_unit']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_pay_hrjob_pay_unit', $row)) {
+        if (isset($row['civicrm_hrjob_pay_hrjob_pay_unit'])) {
+          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_pay_unit'] = $payUnit[$row['civicrm_hrjob_pay_hrjob_pay_unit']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_hrjob_period_type', $row)) {
+        if (isset($row['civicrm_hrjob_hrjob_period_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_hrjob_period_type'] = $periodType[$row['civicrm_hrjob_hrjob_period_type']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_life_insurance_plan_type', $row)) {
+        if (isset($row['civicrm_hrjob_health_hrjob_life_insurance_plan_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_health_hrjob_life_insurance_plan_type'] = $life_plan_type[$row['civicrm_hrjob_health_hrjob_life_insurance_plan_type']];
         }
         $entryFound = TRUE;
       }
