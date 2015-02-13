@@ -9,7 +9,8 @@ CRM.HRApp.module('JobTabApp.Pension', function(Pension, HRApp, Backbone, Marione
         'FieldOptions': CRM.FieldOptions.HRJobPension
       };
     },
-    onRender: function(){
+    onRender: function() {
+      HRApp.Common.Views.StandardForm.prototype.onRender.apply(this, arguments);
       var entityID = this.model.get('job_id');
       var fileurl = CRM.url('civicrm/hrjob/file/display');
       $.ajax({ type: "POST",

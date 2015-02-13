@@ -59,7 +59,7 @@
         <td>
           <%
           var balance = collection.calculateSubtotal(function(absence){
-            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id && (FieldOptions.status_id[absence.get('status_id')]== "Approved" || FieldOptions.status_id[absence.get('status_id')]== "Requested") ;
+            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id && (absence.get('status_id') == 2 || absence.get('status_id') == 1) ;
           });
           var entitlement = entitlementCollection.findByTypeAndPeriod(
             absenceTypeCollection.findByDebitTypeId(actId),

@@ -61,6 +61,6 @@
 
   <div class="crm-summary-row">
     <div class="crm-label">{ts}Region{/ts}</div>
-    <div class="crm-content"><span name="region"/></div>
+    <div class="crm-content"><%- FieldOptions.region[region] %></div>
   </div>
 </script>
