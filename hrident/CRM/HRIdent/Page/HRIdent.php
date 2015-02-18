@@ -42,9 +42,10 @@ class CRM_HRIdent_Page_HRIdent {
   static function getGovernmentID() {
     $contactID = CRM_Utils_Request::retrieve('cid', 'Integer');
     $govVal = self::retreiveContactFieldValue($contactID);
+    $ov = CRM_Core_OptionGroup::values('type_20130502144049');
     $hideGovID = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
     $subTypes['govTypeNumber'] = CRM_Utils_Array::value('typeNumber', $govVal);
-    $subTypes['govType'] = CRM_Utils_Array::value('type', $govVal);
+    $subTypes['govType'] = $ov[CRM_Utils_Array::value('type', $govVal)];
     echo json_encode($subTypes);
     CRM_Utils_System::civiExit();
   }
@@ -57,10 +58,9 @@ class CRM_HRIdent_Page_HRIdent {
     $govFieldId = self::retreiveContactFieldId('Identify');
     if (!empty($govFieldId) && $contactID) {
       $govValues = CRM_Core_BAO_CustomValueTable::getEntityValues($contactID, NULL, $govFieldId, TRUE);
-      $ov = CRM_Core_OptionGroup::values('type_20130502144049');
       foreach ($govValues as $key => $val) {
         if ($val[$govFieldId['is_government']] == 1) {
-          $govInfo['type'] = $ov[$val[$govFieldId['Type']]];
+          $govInfo['type'] = $val[$govFieldId['Type']];
           $govInfo['typeNumber'] = $val[$govFieldId['Number']];
           $govInfo['key'] = $val[$govFieldId['is_government']];
           $govInfo['id'] = ":{$key}";

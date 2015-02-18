@@ -517,6 +517,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $absentDateDurations[$date]['duration'] = (int) $valuesDate[1];
           if ((isset($valuesDate[2]) && $valuesDate[2] == 1 && $this->_showhide == 1 && array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) || (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 0 && array_key_exists('_qf_AbsenceRequest_done_save', $submitValues))) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
+            if ($this->_mode == 'edit') {
+              $absentDateDurations[$date]['approval'] = $this->_actStatusId;
+            }
           }
           elseif (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 1) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Rejected', $activityStatus);

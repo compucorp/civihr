@@ -32,11 +32,15 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       if (this.get('absence_range') && CRM.HRAbsenceApp.absenceTypeCollection) {
         var val = 0;
         if (this.get('absence_range').approved_duration) {
-          var val = parseInt(this.get('absence_range').approved_duration);
+          val = parseInt(val) + parseInt(this.get('absence_range').approved_duration);
         }
         else {
-          var val = parseInt(this.get('absence_range').duration);
+          val = parseInt(val) + parseInt(this.get('absence_range').duration);
         }
+        if ((parseInt(this.get('absence_range').approved_duration) == 0) &&
+          (parseInt(this.get('status_id')) == parseInt(CRM.PseudoConstant.checkStatus['Completed']))) {
+           val = 0;
+	}
         return CRM.HRAbsenceApp.formatDuration(val * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(this.get('activity_type_id')));
       } else {
         return '';
