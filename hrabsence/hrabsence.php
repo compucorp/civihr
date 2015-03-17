@@ -440,10 +440,10 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   if (!($contactType == 'Individual' && CRM_HRAbsence_Page_EmployeeAbsencePage::checkPermissions($contactID, 'viewWidget'))) {
     return;
   }
-  $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID));
+  $absence = civicrm_api3('Activity', 'getabsences', array('target_contact_id' => $contactID, 'options' => array('limit' => null)));
   $absenceDuration = 0;
   foreach ($absence['values'] as $k => $v) {
-    $absenceDuration += CRM_HRAbsence_BAO_HRAbsenceType::getAbsenceDuration($v['id']);
+    $absenceDuration += CRM_HRAbsence_BAO_HRAbsenceType::getAbsenceActualDuration($v['id']);
   }
   CRM_HRAbsence_Page_EmployeeAbsencePage::registerResources($contactID);
   $tabs[] = array(

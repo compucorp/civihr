@@ -85,8 +85,13 @@ class CRM_HRJob_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           if ($fldName == 'hrjob_role_manager_contact') {
             $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjob_role_manager.sort_name) SEPARATOR ' | ') as $fldName";
           }
+          if ($fldName == 'hrjob_location') {
+            $ogID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',$params['pseudoconstant']['optionGroupName'] , 'id', 'name');
+            $query->_select[$fldName]  = "(select ov.label from civicrm_option_value ov where option_group_id = $ogID AND value = civicrm_hrjob.location) as $fldName";
+          }
           if ($fldName == 'hrjob_role_department') {
-            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjob_role.department) SEPARATOR ' | ') as $fldName";
+            $ogID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',$params['pseudoconstant']['optionGroupName'] , 'id', 'name');
+            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(select ov.label from civicrm_option_value ov where option_group_id = $ogID AND value = civicrm_hrjob_role.department) SEPARATOR ' | ') as $fldName";
           }
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);

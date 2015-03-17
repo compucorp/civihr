@@ -460,7 +460,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       $mapper = CRM_Core_BAO_CustomQuery::$extendsMap;
       $extendsTable = $mapper[$cGrp['extends']];
       $baseJoin = CRM_Utils_Array::value($cGrp['extends'], $this->_customGroupExtendsJoin, "{$this->_aliases[$extendsTable]}.id");
-      $this->_from .= "LEFT JOIN {$cGrp['table_name']} {$this->_aliases[$cGrp['table_name']]} ON {$this->_aliases[$cGrp['table_name']]}.entity_id = {$baseJoin}";
+      $this->_from .= " LEFT JOIN {$cGrp['table_name']} {$this->_aliases[$cGrp['table_name']]} ON {$this->_aliases[$cGrp['table_name']]}.entity_id = {$baseJoin}";
     }
   }
 
@@ -548,10 +548,18 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   function alterDisplay(&$rows) {
     $entryFound = FALSE;
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
-    foreach ($rows as $rowNum => $row) {
-      $entryFound =
-        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
+    $job_location = CRM_Core_OptionGroup::values('hrjob_location');
+    $contract_type = CRM_Core_OptionGroup::values('hrjob_contract_type');
+    $department = CRM_Core_OptionGroup::values('hrjob_department');
+    $hours_type = CRM_Core_OptionGroup::values('hrjob_hours_type');
+    $level_typel = CRM_Core_OptionGroup::values('hrjob_level_type');
+    $plan_type = CRM_HRJob_SelectValues::planType();
+    $life_plan_type = CRM_HRJob_SelectValues::planTypeLifeInsurance();
+    $payUnit = CRM_HRJob_SelectValues::payUnit();
+    $periodType = CRM_HRJob_SelectValues::periodType();
+    $commonUnit = CRM_HRJob_SelectValues::commonUnit();
 
+    foreach ($rows as $rowNum => $row) {
       if (array_key_exists('civicrm_contact_gender_id', $row)) {
       	if (!empty($row['civicrm_contact_gender_id'])) {
           $rows[$rowNum]['civicrm_contact_gender_id'] = CRM_Utils_Array::value($row['civicrm_contact_gender_id'], $gender);
@@ -560,8 +568,50 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       }
 
       if (array_key_exists('civicrm_hrjob_hrjob_is_primary', $row)) {
-      	if (!empty($row['civicrm_hrjob_hrjob_is_primary'])) {
-          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? 'Yes' : 'No';
+        if (isset($row['civicrm_hrjob_hrjob_is_primary'])) {
+          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? ts('Yes') : ts('No');
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_pay_hrjob_is_paid', $row)) {
+        if (isset($row['civicrm_hrjob_pay_hrjob_is_paid'])) {
+          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_is_paid'] = ($row['civicrm_hrjob_pay_hrjob_is_paid'] == 1) ? ts('Paid') : ts('Unpaid');
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_health_plan_type', $row)) {
+        if (isset($row['civicrm_hrjob_health_hrjob_health_plan_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_plan_type'] = $plan_type[$row['civicrm_hrjob_health_hrjob_health_plan_type']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_health_hrjob_life_insurance_plan_type', $row)) {
+        if (isset($row['civicrm_hrjob_health_hrjob_life_insurance_plan_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_health_hrjob_life_insurance_plan_type'] = $life_plan_type[$row['civicrm_hrjob_health_hrjob_life_insurance_plan_type']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_unit', $row)) {
+        if (isset($row['civicrm_hrjob_hour_hrjob_hours_unit'])) {
+          $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_unit'] = $commonUnit[$row['civicrm_hrjob_hour_hrjob_hours_unit']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_pay_hrjob_pay_unit', $row)) {
+        if (isset($row['civicrm_hrjob_pay_hrjob_pay_unit'])) {
+          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_pay_unit'] = $payUnit[$row['civicrm_hrjob_pay_hrjob_pay_unit']];
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_hrjob_hrjob_period_type', $row)) {
+        if (isset($row['civicrm_hrjob_hrjob_period_type'])) {
+          $rows[$rowNum]['civicrm_hrjob_hrjob_period_type'] = $periodType[$row['civicrm_hrjob_hrjob_period_type']];
         }
         $entryFound = TRUE;
       }
@@ -577,7 +627,6 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_life_insurance_link'] = $url;
         $entryFound = TRUE;
       }
-
       if (array_key_exists('civicrm_hrjob_health_hrjob_health_provider', $row) &&
         array_key_exists('civicrm_hrjob_health_provider_id', $row) && array_key_exists('civicrm_hrjob_health_provider_organization_name', $row)
       ) {
@@ -589,13 +638,28 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_link'] = $url;
         $entryFound = TRUE;
       }
-
-      // skip looking further in rows, if first row itself doesn't
-      // have the column we need
-      if (!$entryFound) {
-        break;
+      if (array_key_exists('civicrm_hrjob_hrjob_location', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_location'])) {
+        $rows[$rowNum]['civicrm_hrjob_hrjob_location'] = $job_location[$rows[$rowNum]['civicrm_hrjob_hrjob_location']];
+        $entryFound = TRUE;
       }
+      if (array_key_exists('civicrm_hrjob_hrjob_contract_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'])) {
+        $rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'] = $contract_type[$rows[$rowNum]['civicrm_hrjob_hrjob_contract_type']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_role_hrjob_role_department', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'])) {
+        $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'] = $department[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'])) {
+        $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'] = $hours_type[$rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type']];
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_hrjob_role_hrjob_role_level_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'])) {
+        $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'] = $level_typel[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type']];
+        $entryFound = TRUE;
+      }
+      $entryFound =
+        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
     }
   }
 }
-

@@ -59,7 +59,7 @@
         <td>
           <%
           var balance = collection.calculateSubtotal(function(absence){
-            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id;
+            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id && (absence.get('status_id') == CRM.PseudoConstant.checkStatus['Scheduled'] || absence.get('status_id') == CRM.PseudoConstant.checkStatus['Completed']) ;
           });
           var entitlement = entitlementCollection.findByTypeAndPeriod(
             absenceTypeCollection.findByDebitTypeId(actId),

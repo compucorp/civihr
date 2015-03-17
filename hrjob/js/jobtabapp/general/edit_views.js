@@ -50,7 +50,7 @@ CRM.HRApp.module('JobTabApp.General', function(General, HRApp, Backbone, Marione
           async : false,
           data: { entityID: entityID, entityTable: "civicrm_hrjob_general"}
         }).done(function( msg ) {
-        $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
+          $('<div class=contract-file-display>'+msg+'</div>').insertBefore('#contract_file');
         });
 	//contract duration autocalculate
 	var $duration = this.$('[name=duration]'),
