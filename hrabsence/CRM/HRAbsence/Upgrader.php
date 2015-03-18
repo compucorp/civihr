@@ -109,8 +109,8 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       }
     }
 
-    if (CRM_Core_DAO::checkTableExists('civicrm_hrjob_leave') && $leaves) {
-      $query = "UPDATE civicrm_hrjob_leave
+    if (CRM_Core_DAO::checkTableExists('civicrm_hrjobcontract_leave') && $leaves) {
+      $query = "UPDATE civicrm_hrjobcontract_leave
         SET leave_type = CASE leave_type
         {$values}
         END;";
@@ -130,7 +130,15 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       ),
       'is_active' => 1,
     );
-    $resultCGroup = civicrm_api3('custom_group', 'create', $paramsCGroup);
+    
+    $customGroup = civicrm_api3('CustomGroup', 'get', array(
+      'sequential' => 1,
+      'title' => $paramsCGroup['title'],
+    ));
+    $resultCGroup = CRM_Utils_Array::first($customGroup['values']);
+    if (empty($resultCGroup['id'])) {
+      $resultCGroup = civicrm_api3('custom_group', 'create', $paramsCGroup);
+    }
 
     $paramsCField = array(
       'custom_group_id' => $resultCGroup['id'],
@@ -155,7 +163,15 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       ),
       'is_active' => 1,
     );
-    $resultSGroup = civicrm_api3('custom_group', 'create', $paramsSGroup);
+    
+    $sickGroup = civicrm_api3('CustomGroup', 'get', array(
+      'sequential' => 1,
+      'title' => $paramsSGroup['title'],
+    ));
+    $resultSGroup = CRM_Utils_Array::first($sickGroup['values']);
+    if (empty($resultSGroup['id'])) {
+      $resultSGroup = civicrm_api3('custom_group', 'create', $paramsSGroup);
+    }
 
     $paramsSField = array(
       'custom_group_id' => $resultSGroup['id'],
@@ -176,7 +192,14 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
         'name' => $val,
         'option_group_id' => $resultSField['values'][$resultSField['id']]['option_group_id'],
       );
-      civicrm_api3('OptionValue', 'create', $paramsOVal);
+      $optionValue = civicrm_api3('OptionValue', 'get', array(
+        'sequential' => 1,
+        'option_group_id' => $paramsOVal['option_group_id'],
+        'name' => $paramsOVal['name'],
+      ));
+      if ($optionValue['count'] == 0) {
+        civicrm_api3('OptionValue', 'create', $paramsOVal);
+      }
     }
   }
 

@@ -26,16 +26,12 @@
               <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item hrabsence-bg-empty"></td>
             <% } else if (activity_by_date[dateFmt].length == 1) { %>
               <% var actId = activity_by_date[dateFmt][0].get('activity_type_id'); %>
-              <% var statusId = activity_by_date[dateFmt][0].get('status_id'); %>
-              <% if (statusId == CRM.PseudoConstant.checkStatus['Scheduled'] || statusId == CRM.PseudoConstant.checkStatus['Completed']) { %>
-                <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item <%= CRM.absenceApp.legend[actId].cssClass %>">
-                  <a href="#" class="hrabsence-open" data-activity="<%= activity_by_date[dateFmt][0].get('id') %>"  title="<%- date.format('ll') %> -- <%- CRM.absenceApp.legend[actId].label %>">
-                    <%- date.format('dd') %>
-                  </a>
-                </td>
-              <% } else {%>
-              <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item hrabsence-bg-empty"></td>
-            <% }} else if (activity_by_date[dateFmt].length > 1) { %>
+              <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item <%= CRM.absenceApp.legend[actId].cssClass %>">
+                <a href="#" class="hrabsence-open" data-activity="<%= activity_by_date[dateFmt][0].get('id') %>"  title="<%- date.format('ll') %> -- <%- CRM.absenceApp.legend[actId].label %>">
+                  <%- date.format('dd') %>
+                </a>
+              </td>
+            <% } else if (activity_by_date[dateFmt].length > 1) { %>
           <td data-caldate="<%- dateFmt %>" class="hrabsence-cal-item <%= CRM.absenceApp.legend['mixed'].cssClass %>" title="<%- CRM.absenceApp.legend['mixed'].label %>">
             <%- date.format('dd') %>
           </td>

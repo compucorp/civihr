@@ -78,9 +78,9 @@ CRM.HRAbsenceApp.module('Statistics', function(Statistics, HRAbsenceApp, Backbon
             balance: 0
           };
         }
-        if (model.get('status_id') == CRM.PseudoConstant.checkStatus['Completed']) {
+        if (model.get('status_id') == 2) {
           stats[statsKey].approved = parseInt(stats[statsKey].approved) + parseInt(model.get('absence_range').approved_duration);
-        } else if (model.get('status_id') == CRM.PseudoConstant.checkStatus['Scheduled']) {
+        } else if (model.get('status_id') == 1) {
           stats[statsKey].requested = parseInt(stats[statsKey].requested) + parseInt(model.get('absence_range').duration);
         }
       });

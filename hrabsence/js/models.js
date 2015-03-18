@@ -32,15 +32,11 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       if (this.get('absence_range') && CRM.HRAbsenceApp.absenceTypeCollection) {
         var val = 0;
         if (this.get('absence_range').approved_duration) {
-          val = parseInt(val) + parseInt(this.get('absence_range').approved_duration);
+          var val = parseInt(this.get('absence_range').approved_duration);
         }
         else {
-          val = parseInt(val) + parseInt(this.get('absence_range').duration);
+          var val = parseInt(this.get('absence_range').duration);
         }
-        if ((parseInt(this.get('absence_range').approved_duration) == 0) &&
-          (parseInt(this.get('status_id')) == parseInt(CRM.PseudoConstant.checkStatus['Completed']))) {
-           val = 0;
-	}
         return CRM.HRAbsenceApp.formatDuration(val * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(this.get('activity_type_id')));
       } else {
         return '';
@@ -110,10 +106,10 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
             };
           }
           var sign = CRM.HRAbsenceApp.absenceTypeCollection ? CRM.HRAbsenceApp.absenceTypeCollection.findDirection(activity.get('activity_type_id')) : 0;
-          if (sign == -1 && (absenceItem.status_id == CRM.PseudoConstant.checkStatus['Scheduled'] || absenceItem.status_id == CRM.PseudoConstant.checkStatus['Completed'])) {
+          if (sign == -1) {
             stats[month].debitTotal = stats[month].debitTotal + parseInt(absenceItem.duration);
             stats[month].debitCount++;
-          } else if (sign == 1 && (absenceItem.status_id ==2 || absenceItem.status_id ==1)) {
+          } else if (sign == 1) {
             stats[month].creditTotal = stats[month].creditTotal + parseInt(absenceItem.duration);
             stats[month].creditCount++;
           } else {
@@ -269,7 +265,7 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
   CRM.Backbone.extendCollection(Models.EntitlementCollection);
 
   Models.JobLeaves = Backbone.Model.extend({});
-  CRM.Backbone.extendModel(Models.JobLeaves, 'HRJob');
+  CRM.Backbone.extendModel(Models.JobLeaves, 'HRJobContract');
   Models.JobLeavesCollection = Backbone.Collection.extend({
     model: Models.JobLeaves,
     /**

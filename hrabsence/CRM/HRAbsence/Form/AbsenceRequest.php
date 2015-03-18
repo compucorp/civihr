@@ -54,7 +54,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    */
   function preProcess() {
     $this->_action = CRM_Utils_Request::retrieve('action', 'String', $this);
-    $this->_jobHoursTime = CRM_HRJob_Page_JobsTab::getJobHoursTime();
+    $this->_jobHoursTime = CRM_Hrjobcontract_Page_JobContractTab::getJobHoursTime();
     $this->assign('jobHoursTime', $this->_jobHoursTime);
     $this->_aid = CRM_Utils_Request::retrieve('aid', 'Int', $this);
     $session = CRM_Core_Session::singleton();
@@ -154,7 +154,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       $this->_mode = 'edit';
       CRM_Utils_System::setTitle(ts('Absence Request: Add'));
       $this->_activityTypeID = CRM_Utils_Request::retrieve('atype', 'Positive', $this);
-
       if ($this->_activityTypeID) {
         //only custom data has preprocess hence directly call it
         $this->assign('activityType', $this->_activityTypeID);
@@ -183,16 +182,12 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
   public function getManagerContacts($employeeID) {
     $managerContactID = array();
     if ($employeeID) {
-      $jobID  = civicrm_api3('HRJob', 'get', array(
-        'is_primary' => 1,
-        'contact_id' => $this->_targetContactID,
-        'return' => "id",
-      ));
-      if ($jobID['values']) {
+      $primaryJobContractId = $this->getPrimaryJobContractId($employeeID);
+      if ($primaryJobContractId) {
         $result = civicrm_api3('HRJobRole', 'get', array(
           'sequential' => 1,
           'return' => "manager_contact_id",
-          'job_id' => $jobID['id'],
+          'jobcontract_id' => $primaryJobContractId,
         ));
         foreach($result['values'] as $key => $val) {
           if(array_key_exists('manager_contact_id',$val)) {
@@ -202,6 +197,22 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
     }
     return $managerContactID;
+  }
+  
+  public function getPrimaryJobContractId($employeeID)
+  {
+      $jobContracts = civicrm_api3('HRJobContract', 'get', array(
+          'contact_id' => $this->_targetContactID,
+          'is_primary' => 1,
+          'options' => array('limit' => 1),
+      ));
+      
+      if (!empty($jobContracts['values']))
+      {
+          return $jobContracts['id'];
+      }
+      
+      return null;
   }
 
   /**
@@ -283,13 +294,17 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     $this->_absenceType = $activityTypes[$this->_activityTypeID];
     $this->assign('absenceType', $this->_absenceType);
-    $resultHRJob = civicrm_api3('HRJob', 'get', array(
-      'sequential' => 1,
-      'contact_id' => $this->_targetContactID,
-      'is_primary' => 1,
-    ));
-    if (!empty($resultHRJob['values'])) {
-      $this->_empPosition = $resultHRJob['values'][0]['position'];
+    $primaryJobContractId = $this->getPrimaryJobContractId($this->_targetContactID);
+    $resultHRJobDetails = null;
+    if ($primaryJobContractId)
+    {
+        $resultHRJobDetails = civicrm_api3('HRJobDetails', 'get', array(
+            'sequential' => 1,
+            'jobcontract_id' => $primaryJobContractId,
+        ));
+    }
+    if (!empty($resultHRJobDetails['values'])) {
+      $this->_empPosition = $resultHRJobDetails['values'][0]['position'];
       $this->assign('emp_position', $this->_empPosition);
     }
     $this->assign('emp_name', CRM_Contact_BAO_Contact::displayName($this->_targetContactID));
@@ -517,9 +532,6 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $absentDateDurations[$date]['duration'] = (int) $valuesDate[1];
           if ((isset($valuesDate[2]) && $valuesDate[2] == 1 && $this->_showhide == 1 && array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) || (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 0 && array_key_exists('_qf_AbsenceRequest_done_save', $submitValues))) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Scheduled', $activityStatus);
-            if ($this->_mode == 'edit') {
-              $absentDateDurations[$date]['approval'] = $this->_actStatusId;
-            }
           }
           elseif (isset($valuesDate[2]) && $valuesDate[2] == 0 && $this->_showhide == 1) {
             $absentDateDurations[$date]['approval'] = CRM_Utils_Array::key('Rejected', $activityStatus);
