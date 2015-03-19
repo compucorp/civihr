@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/contact/view/hrjobcontract</path>
+    <page_callback>CRM_Hrjobcontract_Page_JobContractTab</page_callback>
+    <title>JobContractTab</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/hours_location</path>
+    <page_callback>CRM_Hrjobcontract_Page_HoursLocation</page_callback>
+    <title>HoursLocation</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/pay_scale</path>
+    <page_callback>CRM_Hrjobcontract_Page_PayScale</page_callback>
+    <title>PayScale</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/hrjobcontract/file/list</path>
+    <page_callback>CRM_Hrjobcontract_Page_Files::fileList</page_callback>
+    <title>FileList</title>
+    <!--<access_arguments>edit HRJobs</access_arguments>-->
+  </item>
+  <item>
+    <path>civicrm/hrjobcontract/file/upload</path>
+    <page_callback>CRM_Hrjobcontract_Page_Files::fileUpload</page_callback>
+    <title>FileSave</title>
+    <!--<access_arguments>edit HRJobs</access_arguments>-->
+  </item>
+  <item>
+    <path>civicrm/hrjobcontract/file/display</path>
+    <page_callback>CRM_Hrjobcontract_Page_Files::fileDisplay</page_callback>
+    <title>FileDisplay</title>
+    <!--<access_arguments>edit HRJobs</access_arguments>-->
+  </item>
+  <item>
+    <path>civicrm/hrjobcontract/file/delete</path>
+    <page_callback>CRM_Hrjobcontract_Page_Files::fileDelete</page_callback>
+    <title>FileDelete</title>
+    <!--<access_arguments>edit HRJobs</access_arguments>-->
+  </item>
+  <item>
+    <path>civicrm/hour/editoption</path>
+    <page_callback>CRM_Hrjobcontract_Form_EditHourOption</page_callback>
+    <title>Hours Type Option</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+</menu>

@@ -1,0 +1,1 @@
+({    mainConfigFile : "js/hrjc-main.js",    baseUrl : "js",    name: "hrjc-main",    out: "dist/hrjc-main.js",    removeCombined: true,    findNestedDependencies: true})

@@ -96,7 +96,7 @@ class CRM_HRRecruitment_Form_Search extends CRM_Core_Form {
       $this->addElement('checkbox', "status_id[$statusId]", 'Status', $statusName);
     }
 
-    $location = CRM_Core_OptionGroup::values('hrjob_location', FALSE);
+    $location = CRM_Core_OptionGroup::values('hrjc_location', FALSE);
     foreach ($location as $locationId => $locationName) {
       $this->addElement('checkbox', "location[$locationId]", 'Location', $locationName);
     }

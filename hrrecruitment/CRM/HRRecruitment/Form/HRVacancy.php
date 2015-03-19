@@ -133,7 +133,7 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $attributes = CRM_Core_DAO::getAttribute('CRM_HRRecruitment_DAO_HRVacancy');
 
     $this->add('text', 'position', ts('Job Position'), $attributes['position'], TRUE);
-    $this->addSelect('location', array('label' => ts('Location'), 'entity' => 'HRJob', 'field' => 'location'));
+    $this->addSelect('location', array('label' => ts('Location'), 'entity' => 'HRJobDetails', 'field' => 'location'));
     $this->add('text', 'salary', ts('Salary'), $attributes['salary']);
 
     $this->addWysiwyg('description', ts('Description'), array('rows' => 2, 'cols' => 40));

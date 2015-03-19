@@ -331,7 +331,12 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
   if ($objectName == 'Activity' && isset($objectRef->case_id)) {
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
-    $hrjob = civicrm_api3('HRJob', 'get', array( 'return' => array("notice_amount", "notice_unit"),'contact_id' => $contact_id[1],'is_primary' => 1));
+    $hrjob = civicrm_api3('HRJobContract', 'get', array(
+      'sequential' => 1,
+      'contact_id' => $contact_id[1],
+      'is_primary' => 1,
+      'return' => "notice_amount,notice_unit",
+    ));
     foreach($hrjob['values'] as $key=>$val) {
       $notice_amt = $val['notice_amount'];
       $notice_unit = $val['notice_unit'];

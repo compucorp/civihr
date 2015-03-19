@@ -1,0 +1,3 @@
+<?php
+
+class CRM_Hrjobcontract_Import_Controller extends CRM_Hrjobcontract_Import_ControllerBaseClass {}

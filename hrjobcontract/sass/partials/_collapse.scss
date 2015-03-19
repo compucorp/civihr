@@ -1,0 +1,17 @@
+a.btn-collapse {
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 8px;
+  line-height: 1.4;
+
+  &:active {
+    @include box-shadow(none);
+  }
+}
+
+.collapse {
+  .#{$prefix}contract-details {
+    margin-bottom: 20px;
+  }
+}

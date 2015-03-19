@@ -136,71 +136,146 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           ),
         ),
       ),
-
-      'civicrm_hrjob' =>
+        
+      'civicrm_hrjobcontract' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJob',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
         'fields' =>
         array(
-          'hrjob_contract_type' => array(),
-          'hrjob_period_type'   => array(),
-          'hrjob_location'      => array(),
-          'hrjob_is_primary' => array(),
+          'is_primary' => array(
+                        'title' => ts('Job Is Primary?'),
+                        'no_repeat' => TRUE,
+              'dbAlias' => 'hrjobcontract_civireport.is_primary',
+          ),
         ),
-
-        'group_bys' =>
-        array(
-          'hrjob_contract_type' => array(),
-          'hrjob_period_type'   => array(),
-          'hrjob_location'      => array(),
-        ),
-
         'filters' =>
         array(
-          'hrjob_contract_type' => array(),
-          'hrjob_location'      => array(),
-          'hrjob_position'      => array(),
-
-          //date fields
-          'hrjob_period_start_date' => array(),
-          'hrjob_period_end_date'   => array(),
-          'hrjob_is_primary' => array(
+          'is_primary' => array(
             'title' => ts('Job Is Primary?'),
             'default' => 1,
             'type' => CRM_Utils_Type::T_INT,
             'operatorType' => CRM_Report_Form::OP_SELECT,
             'options' => array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes')),
           ),
+          'current_employee' =>
+          array(
+            'default' => NULL,
+            'type' => CRM_Utils_Type::T_INT,
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array(''=> ts('ANY'),'0' => ts('No'), '1' => ts('Yes')),
+            'no_display' => TRUE,
+          ),
         ),
-        'grouping' => array('job-fields' => ts('Job')),
+        'grouping' => array('job-fields' => 'Job'),
       ),
+        
+    'civicrm_hrjobcontract_revision' =>
+    array(
+      'dao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+      'fields' => array(
+        'jobcontract_revision_id' => array(
+            'title' => ts('Revision ID'),
+            'no_repeat' => TRUE,
+            'name' => 'id',
+            'no_display' => TRUE,
+        ),
+        'editor_uid' => array(
+            'title' => ts('Editor UID'),
+            'no_repeat' => TRUE,
+            'name' => 'editor_uid',
+            'no_display' => TRUE,
+        ),
+        'created_date' => array(
+            'title' => ts('Created date'),
+            'no_repeat' => TRUE,
+            'name' => 'created_date',
+            'no_display' => TRUE,
+        ),
+        'modified_date' => array(
+            'title' => ts('Modified date'),
+            'no_repeat' => TRUE,
+            'name' => 'modified_date',
+            'no_display' => TRUE,
+        ),
+        'effective_date' => array(
+            'title' => ts('Effective date'),
+            'no_repeat' => TRUE,
+            'name' => 'effective_date',
+            'no_display' => TRUE,
+        ),
+        'change_reason' => array(
+            'title' => ts('Change reason'),
+            'no_repeat' => TRUE,
+            'name' => 'change_reason',
+            'no_display' => TRUE,
+        ),
+        'status' => array(
+            'title' => ts('Revision status'),
+            'no_repeat' => TRUE,
+            'name' => 'status',
+            'no_display' => TRUE,
+        ),
+      ),
+      'grouping' => 'job-fields',
+      'order_bys' => array(
+            'civicrm_hrjobcontract_revision_revision_id' => array(
+                'title' => ts('Revision Id'),
+                'dbAlias' => 'hrjobcontract_revision_civireport.id',
+            ),
+      ),
+      'group_bys' => array(
+            'civicrm_hrjobcontract_revision_revision_id' => array(
+                'title' => ts('Revision Id'),
+                'dbAlias' => 'hrjobcontract_revision_civireport.id',
+            ),
+      ),
+    ),
 
-      'civicrm_hrjob_health' =>
+      'civicrm_hrjobcontract_details' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobHealth',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
         'fields' =>
         array(
-          'hrjob_health_provider' => array(),
-          'hrjob_health_plan_type' => array(),
-          'hrjob_health_provider_life_insurance' => array(),
-          'hrjob_life_insurance_plan_type' => array(),
+          'hrjobcontract_details_title'         => array(),
+          'hrjobcontract_details_contract_type' => array(),
+          //'hrjobcontract_details_period_type'   => array(),
+          'hrjobcontract_details_location'      => array(),
+          'hrjobcontract_details_position'      => array(),
+          'hrjobcontract_details_period_start_date' => array(),
+          'hrjobcontract_details_period_end_date'   => array(),
+          //'hrjob_is_primary' => array(),
         ),
         'filters' =>
         array(
-          'hrjob_health_plan_type' => array(),
-          'hrjob_life_insurance_plan_type' => array(),
-        ),
-        'group_bys' =>
-        array(
-          'hrjob_health_provider' => array(),
-          'hrjob_health_plan_type' => array(),
-          'hrjob_health_provider_life_insurance' => array(),
-          'hrjob_life_insurance_plan_type' => array(),
+          'hrjobcontract_details_title'         => array(),
+          'hrjobcontract_details_contract_type' => array(),
+          'hrjobcontract_details_location'      => array(),
+          'hrjobcontract_details_position'      => array(),
+          'hrjobcontract_details_period_start_date' => array(),
+          'hrjobcontract_details_period_end_date'   => array(),
         ),
         'grouping' => 'job-fields',
       ),
 
-      'civicrm_hrjob_health_provider' =>
+      'civicrm_hrjobcontract_health' =>
+      array(
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobHealth',
+        'fields' =>
+        array(
+          'hrjobcontract_health_health_provider_life_insurance' => array(),
+          'hrjobcontract_health_life_insurance_plan_type' => array(),
+          'hrjobcontract_health_health_provider' => array(),
+          'hrjobcontract_health_health_plan_type' => array(),
+        ),
+        'filters' =>
+        array(
+          'hrjobcontract_health_life_insurance_plan_type' => array(),
+          'hrjobcontract_health_health_plan_type' => array(),
+        ),
+        'grouping' => 'job-fields',
+      ),
+
+      'civicrm_hrjobcontract_health_provider' =>
       array(
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' =>
@@ -228,7 +303,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         ),
       ),
 
-      'civicrm_hrjob_health_life_provider' =>
+      'civicrm_hrjobcontract_health_life_provider' =>
       array(
         'dao' => 'CRM_Contact_DAO_Contact',
         'fields' =>
@@ -255,92 +330,101 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         ),
       ),
 
-      'civicrm_hrjob_hour' =>
+      'civicrm_hrjobcontract_hour' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobHour',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
         'fields' =>
         array(
-          'hrjob_hours_type'   => array(),
-          'hrjob_hours_unit'   => array(),
+          'hrjobcontract_hour_hours_type'   => array(),
+          'hrjobcontract_hour_hours_amount' => array(),
+          'hrjobcontract_hour_hours_unit'   => array(),
+          'hrjobcontract_hour_hours_fte'    => array(),
         ),
         'filters' =>
         array(
-          'hrjob_hours_type'   => array(),
-          'hrjob_hours_unit'   => array(),
-        ),
-        'group_bys' =>
-        array(
-          'hrjob_hours_type'   => array(),
-          'hrjob_hours_unit'   => array(),
+          'hrjobcontract_hour_hours_type'   => array(),
+          'hrjobcontract_hour_hours_amount' => array(),
+          'hrjobcontract_hour_hours_unit'   => array(),
+          'hrjobcontract_hour_hours_fte'    => array(),
         ),
         'grouping' => 'job-fields',
       ),
 
-      'civicrm_hrjob_pay' =>
+      'civicrm_hrjobcontract_pay' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobPay',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobPay',
         'fields' =>
         array(
-          'hrjob_is_paid' => array(),
-          'hrjob_pay_currency' => array(),
+          'hrjobcontract_pay_is_paid'    => array(),
+          'hrjobcontract_pay_pay_amount'   => array(),
+          'hrjobcontract_pay_pay_unit'     => array(),
+          'hrjobcontract_pay_pay_currency' => array(),
+          'hrjobcontract_pay_pay_annualized_est' => array(),
         ),
         'filters' =>
         array(
-          'hrjob_pay_grade' => array(),
-        ),
-        'group_bys' =>
-        array(
-          'hrjob_is_paid' => array(),
-          'hrjob_pay_currency' => array(),
+          'hrjobcontract_pay_is_paid'  => array(),
+          'hrjobcontract_pay_pay_amount' => array(),
+          'hrjobcontract_pay_pay_unit'   => array(),
+          'hrjobcontract_pay_pay_annualized_est' => array(),
         ),
         'grouping' => 'job-fields',
       ),
 
-      'civicrm_hrjob_pension' =>
+      'civicrm_hrjobcontract_pension' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobPension',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
         'fields' =>
         array(
-          'hrjob_is_enrolled' => array(),
+          'hrjobcontract_pension_is_enrolled' => array(),
         ),
         'filters' =>
         array(
-          'hrjob_is_enrolled' => array(),
-        ),
-        'group_bys' =>
-        array(
-          'hrjob_is_enrolled' => array(),
-        ),
+          'hrjobcontract_pension_is_enrolled' => array(),
+          ),
         'grouping' => 'job-fields',
       ),
 
-      'civicrm_hrjob_role' =>
+      'civicrm_hrjobcontract_role' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobRole',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobRole',
         'fields' =>
         array(
-          'hrjob_role_department' => array(),
-          'hrjob_role_level_type' => array(),
+          'hrjobcontract_role_role_department' => array(),
+          'hrjobcontract_role_role_level_type' => array(
+            'name' => 'level_type',
+            'title' => ts('Role Level Types'),
+            'type' => CRM_Utils_Type::T_INT,
+            'grouping' => 'job-fields',
+          ),
+          /*'manager' =>
+          array(
+            'name' => 'manager_sort_name',
+            'title' => ts('Role Managers'),
+            'dbAlias' => 'manager.sort_name'
+          ),*/
+          'hrjob_role_manager_contact_id' => array(
+            'no_display' => TRUE,
+            'name' => 'manager_contact_id',
+            'title' => ts('Role Managers'),
+            'type' => CRM_Utils_Type::T_INT,
+            'grouping' => 'job-fields',
+          )
         ),
         'filters' =>
         array(
-          'hrjob_role_department' => array(),
-          'hrjob_role_level_type' => array(),
-        ),
-        'group_bys' =>
-        array(
-          'hrjob_role_department' => array(),
-          'hrjob_role_level_type' => array(),
+          'hrjobcontract_role_role_department' => array(),
+          'hrjobcontract_role_role_level_type' => array(),
         ),
         'grouping' => 'job-fields',
       ),
-
-      'civicrm_hrjob_leave' =>
+        
+      'civicrm_hrjobcontract_leave' =>
       array(
-        'dao' => 'CRM_HRJob_DAO_HRJobLeave',
+        'dao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
         'fields' =>
         array(
-          'hrjob_leave_id' =>
+          'hrjobcontract_leave_leave_type' =>
           array(
             'name' => 'id',
             'no_display' => TRUE,
@@ -348,34 +432,34 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           ),
         ),
       ),
-    );
+    ) + $this->addAddressFields(FALSE, TRUE);
     parent::__construct();
     $config = CRM_Core_Config::singleton();
     // stats fields
-    $this->_columns['civicrm_hrjob']['fields']['job_positions'] =
+    $this->_columns['civicrm_hrjobcontract']['fields']['job_positions'] =
       array(
         'name' => 'contact_id',
         'title' => ts('Job Positions'),
         'statistics' => array('count' => ts('Job Positions'),),
         'grouping' => 'stats-fields',
       );
-    $this->_columns['civicrm_hrjob_hour']['fields']['full_time_eq'] =
+    $this->_columns['civicrm_hrjobcontract_hour']['fields']['full_time_eq'] =
       array(
         'name' => 'hours_fte',
         'title' => ts('Full Time Equivalents'),
         'type' => CRM_Utils_Type::T_FLOAT,
         'statistics' => array('sum' => ts('Full Time Equivalents'),),
-        'dbAlias'  => '(hrjob_hour_civireport.fte_num / hrjob_hour_civireport.fte_denom)',
+        'dbAlias'  => '(hrjobcontract_hour_civireport.fte_num / hrjobcontract_hour_civireport.fte_denom)',
         'grouping' => 'stats-fields',
       );
-    $this->_columns['civicrm_hrjob_pay']['fields']['monthly_cost_eq'] = array(
+    $this->_columns['civicrm_hrjobcontract_pay']['fields']['monthly_cost_eq'] = array(
       'name' => 'pay_annualized_est',
       'title' => ts('Monthly Cost Equivalents').' ('.$config->defaultCurrencySymbol.')',
       'type' => CRM_Utils_Type::T_INT,
-      'dbAlias'  => '(SUM(hrjob_pay_civireport.pay_annualized_est)/12)',
+      'dbAlias'  => '(SUM(hrjobcontract_pay_civireport.pay_annualized_est)/12)',
       'grouping' => 'stats-fields',
     );
-    $this->_columns['civicrm_hrjob_pay']['fields']['annual_cost_eq'] = array(
+    $this->_columns['civicrm_hrjobcontract_pay']['fields']['annual_cost_eq'] = array(
       'name' => 'pay_annualized_est',
       'title' => ts('Annual Cost Equivalents'),
       'type' => CRM_Utils_Type::T_INT,
@@ -411,31 +495,36 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
   function from() {
     $this->_from = "
-      FROM  civicrm_contact  {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
-      LEFT JOIN civicrm_hrjob {$this->_aliases['civicrm_hrjob']}
-             ON ({$this->_aliases['civicrm_hrjob']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
-      LEFT JOIN civicrm_hrjob_pay {$this->_aliases['civicrm_hrjob_pay']}
-             ON ({$this->_aliases['civicrm_hrjob_pay']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_hrjob_health {$this->_aliases['civicrm_hrjob_health']}
-             ON ({$this->_aliases['civicrm_hrjob_health']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_hrjob_hour {$this->_aliases['civicrm_hrjob_hour']}
-             ON ({$this->_aliases['civicrm_hrjob_hour']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_hrjob_pension {$this->_aliases['civicrm_hrjob_pension']}
-             ON ({$this->_aliases['civicrm_hrjob_pension']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)
-      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_provider']}
-          ON {$this->_aliases['civicrm_hrjob_health_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider
-      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjob_health_life_provider']}
-          ON {$this->_aliases['civicrm_hrjob_health_life_provider']}.id={$this->_aliases['civicrm_hrjob_health']}.provider_life_insurance
-      LEFT JOIN civicrm_hrjob_role {$this->_aliases['civicrm_hrjob_role']}
-                ON ({$this->_aliases['civicrm_hrjob_role']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
-
+      FROM  civicrm_contact {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
+      LEFT JOIN civicrm_hrjobcontract {$this->_aliases['civicrm_hrjobcontract']}
+             ON ({$this->_aliases['civicrm_hrjobcontract']}.contact_id = {$this->_aliases['civicrm_contact']}.id)
+      LEFT JOIN civicrm_hrjobcontract_revision {$this->_aliases['civicrm_hrjobcontract_revision']}
+             ON {$this->_aliases['civicrm_hrjobcontract']}.id = {$this->_aliases['civicrm_hrjobcontract_revision']}.jobcontract_id
+      LEFT JOIN civicrm_hrjobcontract_details {$this->_aliases['civicrm_hrjobcontract_details']}
+             ON {$this->_aliases['civicrm_hrjobcontract_revision']}.details_revision_id = {$this->_aliases['civicrm_hrjobcontract_details']}.jobcontract_revision_id
+      LEFT JOIN civicrm_hrjobcontract_health {$this->_aliases['civicrm_hrjobcontract_health']}
+             ON {$this->_aliases['civicrm_hrjobcontract_revision']}.health_revision_id = {$this->_aliases['civicrm_hrjobcontract_health']}.jobcontract_revision_id
+      LEFT JOIN civicrm_hrjobcontract_hour {$this->_aliases['civicrm_hrjobcontract_hour']}
+             ON {$this->_aliases['civicrm_hrjobcontract_revision']}.hour_revision_id = {$this->_aliases['civicrm_hrjobcontract_hour']}.jobcontract_revision_id
+      LEFT JOIN civicrm_hrjobcontract_pay {$this->_aliases['civicrm_hrjobcontract_pay']}
+             ON {$this->_aliases['civicrm_hrjobcontract_revision']}.pay_revision_id = {$this->_aliases['civicrm_hrjobcontract_pay']}.jobcontract_revision_id
+      LEFT JOIN civicrm_hrjobcontract_pension {$this->_aliases['civicrm_hrjobcontract_pension']}
+             ON {$this->_aliases['civicrm_hrjobcontract_revision']}.pension_revision_id = {$this->_aliases['civicrm_hrjobcontract_pension']}.jobcontract_revision_id
+      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjobcontract_health_provider']}
+             ON {$this->_aliases['civicrm_hrjobcontract_health_provider']}.id={$this->_aliases['civicrm_hrjobcontract_health']}.provider
+      LEFT JOIN civicrm_contact {$this->_aliases['civicrm_hrjobcontract_health_life_provider']}
+             ON {$this->_aliases['civicrm_hrjobcontract_health_life_provider']}.id={$this->_aliases['civicrm_hrjobcontract_health']}.provider_life_insurance
+      LEFT JOIN civicrm_hrjobcontract_role {$this->_aliases['civicrm_hrjobcontract_role']}
+               ON {$this->_aliases['civicrm_hrjobcontract_revision']}.role_revision_id = {$this->_aliases['civicrm_hrjobcontract_role']}.jobcontract_revision_id
+      ";
+    
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (!empty($field['required']) || !empty($this->_params['fields'][$fieldName])) {
-            if ($tableName == 'civicrm_hrjob_leave') {
-              $this->_from .= " LEFT JOIN civicrm_hrjob_leave {$this->_aliases['civicrm_hrjob_leave']}
-                  ON ({$this->_aliases['civicrm_hrjob_leave']}.job_id = {$this->_aliases['civicrm_hrjob']}.id)";
+            if ($tableName == 'civicrm_hrjobcontract_leave') {
+              $this->_from .= " LEFT JOIN civicrm_hrjobcontract_leave {$this->_aliases['civicrm_hrjobcontract_leave']}
+               ON ({$this->_aliases['civicrm_hrjobcontract_revision']}.leave_revision_id = {$this->_aliases['civicrm_hrjobcontract_leave']}.jobcontract_revision_id)";
             }
           }
         }
@@ -478,10 +567,10 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     $params = array('name'=>'Initial_Join_Date');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
-    $addWhereClauses = "({$this->_aliases['civicrm_hrjob']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
+    $addWhereClauses = "({$this->_aliases['civicrm_hrjobcontract']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
     if (!empty($this->_params['current_employee_value'])) {
-      $whereClauses[] = "(({$this->_aliases['civicrm_hrjob']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjob']}.is_primary IS NULL) AND ({$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE()))";
-      $this->_where = str_replace("AND ( hrjob_civireport.current_employee = 1 )", '', $this->_where);
+      $whereClauses[] = "(({$this->_aliases['civicrm_hrjobcontract']}.is_primary = 1 OR {$this->_aliases['civicrm_hrjobcontract']}.is_primary IS NULL) AND ({$this->_aliases['civicrm_hrjobcontract_details']}.period_start_date IS NOT NULL AND {$this->_aliases['civicrm_hrjobcontract_details']}.period_start_date <= CURDATE()))";
+      $this->_where = str_replace("AND ( hrjobcontract_civireport.current_employee = 1 )", '', $this->_where);
     }
 
     $whereClauses[] = "{$this->_aliases['civicrm_contact']}.contact_type = 'Individual'";
@@ -497,15 +586,15 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   function statistics(&$rows) {
     $statistics = parent::statistics($rows);
     if (!empty($this->_statFields)) {
-      if ((array_key_exists("monthly_cost_eq",$this->_params["fields"]) || array_key_exists("annual_cost_eq",$this->_params["fields"])) && array_key_exists("hrjob_pay_currency",$this->_params["fields"])) {
-      	$this->_select .=", count({$this->_aliases["civicrm_hrjob_pay"]}.pay_annualized_est) as count";
-      	$groupByCurrency = "GROUP BY {$this->_aliases["civicrm_hrjob_pay"]}.pay_currency";
+      if ((array_key_exists("civicrm_hrjobcontract_pay_monthly_cost_eq",$this->_params["fields"]) || array_key_exists("civicrm_hrjobcontract_pay_annual_cost_eq_sum",$this->_params["fields"])) && array_key_exists("civicrm_hrjobcontract_pay_hrjobcontract_pay_pay_currency",$this->_params["fields"])) {
+      	$this->_select .=", count({$this->_aliases["civicrm_hrjobcontract_pay"]}.pay_annualized_est) as count";
+      	$groupByCurrency = "GROUP BY {$this->_aliases["civicrm_hrjobcontract_pay"]}.pay_currency";
       	$sql = "{$this->_select} {$this->_from} {$this->_where} {$groupByCurrency} {$this->_having} {$this->_orderBy} {$this->_limit}";
       	$dao = CRM_Core_DAO::executeQuery($sql);
       	while ($dao->fetch()) {
       	  foreach ($this->_statFields as $title => $alias) {
-      	    if ($alias == "civicrm_hrjob_pay_annual_cost_eq_sum") {
-              $totalAmount[] = CRM_Utils_Money::format($dao->$alias, $dao->civicrm_hrjob_pay_hrjob_pay_currency)."(".$dao->count.")";
+      	    if ($alias == "civicrm_hrjobcontract_pay_annual_cost_eq_sum") {
+              $totalAmount[] = CRM_Utils_Money::format($dao->$alias, $dao->civicrm_hrjobcontract_pay_hrjobcontract_pay_currency)."(".$dao->count.")";
               $statistics['counts'][$alias] = array(
                 'title' => $title,
                 'value' => implode(',  ', $totalAmount),
@@ -548,18 +637,10 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   function alterDisplay(&$rows) {
     $entryFound = FALSE;
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
-    $job_location = CRM_Core_OptionGroup::values('hrjob_location');
-    $contract_type = CRM_Core_OptionGroup::values('hrjob_contract_type');
-    $department = CRM_Core_OptionGroup::values('hrjob_department');
-    $hours_type = CRM_Core_OptionGroup::values('hrjob_hours_type');
-    $level_typel = CRM_Core_OptionGroup::values('hrjob_level_type');
-    $plan_type = CRM_HRJob_SelectValues::planType();
-    $life_plan_type = CRM_HRJob_SelectValues::planTypeLifeInsurance();
-    $payUnit = CRM_HRJob_SelectValues::payUnit();
-    $periodType = CRM_HRJob_SelectValues::periodType();
-    $commonUnit = CRM_HRJob_SelectValues::commonUnit();
-
     foreach ($rows as $rowNum => $row) {
+      $entryFound =
+        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
+
       if (array_key_exists('civicrm_contact_gender_id', $row)) {
       	if (!empty($row['civicrm_contact_gender_id'])) {
           $rows[$rowNum]['civicrm_contact_gender_id'] = CRM_Utils_Array::value($row['civicrm_contact_gender_id'], $gender);
@@ -567,99 +648,43 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         $entryFound = TRUE;
       }
 
-      if (array_key_exists('civicrm_hrjob_hrjob_is_primary', $row)) {
-        if (isset($row['civicrm_hrjob_hrjob_is_primary'])) {
-          $rows[$rowNum]['civicrm_hrjob_hrjob_is_primary'] = ($row['civicrm_hrjob_hrjob_is_primary'] == 1) ? ts('Yes') : ts('No');
+      if (array_key_exists('civicrm_hrjobcontract_is_primary', $row)) {
+      	if (!empty($row['civicrm_hrjobcontract_is_primary'])) {
+          $rows[$rowNum]['civicrm_hrjobcontract_is_primary'] = ($row['civicrm_hrjobcontract_is_primary'] == 1) ? 'Yes' : 'No';
         }
         $entryFound = TRUE;
       }
 
-      if (array_key_exists('civicrm_hrjob_pay_hrjob_is_paid', $row)) {
-        if (isset($row['civicrm_hrjob_pay_hrjob_is_paid'])) {
-          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_is_paid'] = ($row['civicrm_hrjob_pay_hrjob_is_paid'] == 1) ? ts('Paid') : ts('Unpaid');
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_health_hrjob_health_plan_type', $row)) {
-        if (isset($row['civicrm_hrjob_health_hrjob_health_plan_type'])) {
-          $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_plan_type'] = $plan_type[$row['civicrm_hrjob_health_hrjob_health_plan_type']];
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_health_hrjob_life_insurance_plan_type', $row)) {
-        if (isset($row['civicrm_hrjob_health_hrjob_life_insurance_plan_type'])) {
-          $rows[$rowNum]['civicrm_hrjob_health_hrjob_life_insurance_plan_type'] = $life_plan_type[$row['civicrm_hrjob_health_hrjob_life_insurance_plan_type']];
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_unit', $row)) {
-        if (isset($row['civicrm_hrjob_hour_hrjob_hours_unit'])) {
-          $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_unit'] = $commonUnit[$row['civicrm_hrjob_hour_hrjob_hours_unit']];
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_pay_hrjob_pay_unit', $row)) {
-        if (isset($row['civicrm_hrjob_pay_hrjob_pay_unit'])) {
-          $rows[$rowNum]['civicrm_hrjob_pay_hrjob_pay_unit'] = $payUnit[$row['civicrm_hrjob_pay_hrjob_pay_unit']];
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_hrjob_period_type', $row)) {
-        if (isset($row['civicrm_hrjob_hrjob_period_type'])) {
-          $rows[$rowNum]['civicrm_hrjob_hrjob_period_type'] = $periodType[$row['civicrm_hrjob_hrjob_period_type']];
-        }
-        $entryFound = TRUE;
-      }
-
-      if (array_key_exists('civicrm_hrjob_health_hrjob_health_provider_life_insurance', $row) &&
-        array_key_exists('civicrm_hrjob_health_life_provider_id', $row) && array_key_exists('civicrm_hrjob_health_life_provider_display_name', $row)
+      if (array_key_exists('civicrm_hrjobcontract_health_hrjobcontract_health_health_provider_life_insurance', $row) &&
+        array_key_exists('civicrm_hrjobcontract_health_life_provider_id', $row) && array_key_exists('civicrm_hrjobcontract_health_life_provider_display_name', $row)
       ) {
         $url =  CRM_Utils_System::url("civicrm/contact/view",
-          'reset=1&cid=' . $row['civicrm_hrjob_health_life_provider_id'],
+          'reset=1&cid=' . $row['civicrm_hrjobcontract_health_life_provider_id'],
           $this->_absoluteUrl
         );
-        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_life_insurance'] = $rows[$rowNum]['civicrm_hrjob_health_life_provider_display_name'];
-        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_life_insurance_link'] = $url;
+        $rows[$rowNum]['civicrm_hrjobcontract_health_hrjobcontract_health_health_provider_life_insurance'] = $rows[$rowNum]['civicrm_hrjobcontract_health_life_provider_display_name'];
+        $rows[$rowNum]['civicrm_hrjobcontract_health_hrjobcontract_health_health_provider_life_insurance_link'] = $url;
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_health_hrjob_health_provider', $row) &&
-        array_key_exists('civicrm_hrjob_health_provider_id', $row) && array_key_exists('civicrm_hrjob_health_provider_organization_name', $row)
+
+      if (array_key_exists('civicrm_hrjobcontract_health_hrjobcontract_health_health_provider', $row) &&
+        array_key_exists('civicrm_hrjobcontract_health_provider_id', $row) && array_key_exists('civicrm_hrjobcontract_health_provider_organization_name', $row)
       ) {
         $url = CRM_Utils_System::url("civicrm/contact/view",
-          'reset=1&cid=' . $row['civicrm_hrjob_health_provider_id'],
+          'reset=1&cid=' . $row['civicrm_hrjobcontract_health_provider_id'],
           $this->_absoluteUrl
         );
-        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider'] = $rows[$rowNum]['civicrm_hrjob_health_provider_organization_name'];
-        $rows[$rowNum]['civicrm_hrjob_health_hrjob_health_provider_link'] = $url;
+        $rows[$rowNum]['civicrm_hrjobcontract_health_hrjobcontract_health_health_provider'] = $rows[$rowNum]['civicrm_hrjobcontract_health_provider_organization_name'];
+        $rows[$rowNum]['civicrm_hrjobcontract_health_hrjobcontract_health_health_provider_link'] = $url;
         $entryFound = TRUE;
       }
-      if (array_key_exists('civicrm_hrjob_hrjob_location', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_location'])) {
-        $rows[$rowNum]['civicrm_hrjob_hrjob_location'] = $job_location[$rows[$rowNum]['civicrm_hrjob_hrjob_location']];
-        $entryFound = TRUE;
+
+      // skip looking further in rows, if first row itself doesn't
+      // have the column we need
+      if (!$entryFound) {
+        break;
       }
-      if (array_key_exists('civicrm_hrjob_hrjob_contract_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'])) {
-        $rows[$rowNum]['civicrm_hrjob_hrjob_contract_type'] = $contract_type[$rows[$rowNum]['civicrm_hrjob_hrjob_contract_type']];
-        $entryFound = TRUE;
-      }
-      if (array_key_exists('civicrm_hrjob_role_hrjob_role_department', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'])) {
-        $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department'] = $department[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_department']];
-        $entryFound = TRUE;
-      }
-      if (array_key_exists('civicrm_hrjob_hour_hrjob_hours_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'])) {
-        $rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type'] = $hours_type[$rows[$rowNum]['civicrm_hrjob_hour_hrjob_hours_type']];
-        $entryFound = TRUE;
-      }
-      if (array_key_exists('civicrm_hrjob_role_hrjob_role_level_type', $row) && isset($rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'])) {
-        $rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type'] = $level_typel[$rows[$rowNum]['civicrm_hrjob_role_hrjob_role_level_type']];
-        $entryFound = TRUE;
-      }
-      $entryFound =
-        $this->alterDisplayAddressFields($row, $rows, $rowNum, 'civihr/detail', 'List all contact(s) for this ') ? TRUE : $entryFound;
     }
   }
 }
+
