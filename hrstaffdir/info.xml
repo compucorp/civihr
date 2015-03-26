@@ -9,7 +9,7 @@
     <email>info@civicrm.org</email>
   </maintainer>
   <releaseDate>2014-10-10</releaseDate>
-  <version>1.4.0</version>
+  <version>1.5.0</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>4.5</ver>

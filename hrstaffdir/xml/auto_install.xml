@@ -115,7 +115,7 @@
       <profile_group_name>Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>hrjob_title</field_name>
+      <field_name>hrjobcontract_details_title</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -131,7 +131,7 @@
       <profile_group_name>Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>hrjob_role_manager_contact</field_name>
+      <field_name>hrjobcontract_role_manager_contact</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -147,7 +147,7 @@
       <profile_group_name>Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>hrjob_location</field_name>
+      <field_name>hrjobcontract_details_location</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
@@ -163,7 +163,7 @@
       <profile_group_name>Directory</profile_group_name>
     </ProfileField>
     <ProfileField>
-      <field_name>hrjob_role_department</field_name>
+      <field_name>hrjobcontract_role_role_department</field_name>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <is_required>0</is_required>
