@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<extension key="org.civicrm.reqangular" type="module">
+  <file>reqangular</file>
+  <name>reqangular</name>
+  <description>RequireJS + AngularJS + AngularJS modules: ngAnimate, ngRoute, ngResource, ui.bootstrap,
+      angularFileUpload. Defined as RequireJS modules: requireLib, angular, angularAnimate, angularRoute,
+      angularResource, angularBootstrap, angularFileUpload</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Mateusz Cieplinski</author>
+    <email>mateusz@coldrun.pl</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">http://FIXME</url>
+    <url desc="Documentation">http://FIXME</url>
+    <url desc="Support">http://FIXME</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2015-03-27</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Reqangular</namespace>
+  </civix>
+</extension>
