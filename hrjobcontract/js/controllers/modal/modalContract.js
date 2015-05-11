@@ -201,8 +201,6 @@ define(['controllers/controllers',
                         results.pay.annual_benefits = entityNew.pay.annual_benefits;
                         results.pay.annual_deductions = entityNew.pay.annual_deductions;
 
-                        results.requireReload = entity.details.period_end_date ? entity.details.period_end_date !== results.details.period_end_date : !!entity.details.period_end_date !== !!results.details.period_end_date;
-
                         if (promiseFilesEditUpload.length) {
                             modalInstance  = $modal.open({
                                 targetDomEl: $rootElement.find('div').eq(0),
@@ -330,7 +328,6 @@ define(['controllers/controllers',
                             results.pay.annual_benefits = entityNew.pay.annual_benefits;
                             results.pay.annual_deductions = entityNew.pay.annual_deductions;
 
-                            results.requireReload = entity.details.period_end_date ? entity.details.period_end_date !== results.details.period_end_date : !!entity.details.period_end_date !== !!results.details.period_end_date;
                             angular.extend(results.revisionCreated, {
                                 details_revision_id: results.details.jobcontract_revision_id,
                                 health_revision_id: results.health.jobcontract_revision_id,

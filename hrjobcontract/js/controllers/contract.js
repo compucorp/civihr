@@ -203,8 +203,23 @@ define(['controllers/controllers',
                         return;
                     }
 
-                    if (results.requireReload) {
-                        $route.reload();
+                    if ($scope.details.period_end_date ?
+                        new Date($scope.details.period_end_date).getTime() !== new Date(results.details.period_end_date).getTime() :
+                        !!$scope.details.period_end_date !== !!results.details.period_end_date) {
+
+                        var isCurrent = !results.details.period_end_date || new Date(results.details.period_end_date) > new Date();
+
+                        if (isCurrent != !!+$scope.$parent.contract.is_current) {
+                            if (isCurrent) {
+                                $scope.$parent.contract.is_current = '1';
+                                $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
+                                $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
+                            } else {
+                                $scope.$parent.contract.is_current = '0';
+                                $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
+                                $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
+                            }
+                        }
                     }
 
                     if (results.revisionCreated) {

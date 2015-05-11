@@ -1,4 +1,4 @@
-define(['angular'], function(angular){
+define(function(){
     'use strict'
-    return angular.module('services',[]);
+    return angular.module('hrjc.services',[]);
 })

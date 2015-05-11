@@ -1,36 +1,15 @@
-require.config({
+var module, reqHrjc = require.config({
+    context: 'hrjobcontract',
+    baseUrl: CRM.jobContractTabApp.path + 'js',
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
-        angular: 'vendor/angular/angular.min',
-        angularAnimate: 'vendor/angular/angular-animate.min',
-        angularBootstrap: 'vendor/angular/ui-bootstrap-tpls',
-        angularFileUpload: 'vendor/angular/angular-file-upload',
-        angularResource: 'vendor/angular/angular-resource.min',
-        angularRoute: 'vendor/angular/angular-route.min',
         fraction: 'vendor/fraction',
-        moment: 'vendor/moment.min'
-    },
-    shim: {
-        angular: {
-            exports: 'angular'
-        },
-        angularAnimate: {
-            deps: ['angular']
-        },
-        angularBootstrap: {
-            deps: ['angular']
-        },
-        angularResource: {
-            deps: ['angular']
-        },
-        angularRoute: {
-            deps: ['angular']
-        }
+        moment: 'vendor/moment.min.js',
+        requireLib: CRM.vars.reqAngular.requireLib
     }
 });
 
-require([
-    'angular',
+reqHrjc([
     'app',
     'services/contract',
     'controllers/contractList',
@@ -56,8 +35,9 @@ require([
     'filters/getObjById',
     'filters/formatAmount',
     'filters/formatPeriod',
-    'filters/parseInt'
-],function(angular, app){
+    'filters/parseInt',
+    'requireLib'
+],function(app){
     'use strict';
 
     app.constant('settings', {
@@ -131,4 +111,5 @@ require([
         angular.bootstrap(document.getElementById('hrjob-contract'), ['hrjc']);
     });
 
-})
+
+});

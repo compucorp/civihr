@@ -50,12 +50,12 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Time Period</label>
+                            <label class="col-sm-4 control-label">Contract Dates</label>
                             <div class="col-sm-6">
                                 <p class="form-control-static">
                                     ({{details.period_start_date | formatPeriod}} - {{details.period_end_date | formatPeriod}})
-                                    <span ng-if="details.notice_amount" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
-                                    <span ng-if="details.notice_amount_employee" class="subfield"><strong>Notice <span>(Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
+                                    <span ng-if="details.notice_amount" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
+                                    <span ng-if="details.notice_amount_employee" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
                                 </p>
                             </div>
                             <div class="col-sm-2">

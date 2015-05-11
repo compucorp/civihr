@@ -290,17 +290,7 @@ function hrjobcontract_civicrm_navigationMenu( &$params ) {
  */
 function hrjobcontract_civicrm_pageRun($page) {
     if ($page instanceof CRM_Contact_Page_View_Summary) {
-
-        CRM_Core_Region::instance('page-footer')->add(array(
-            'type' => 'markup',
-            'markup' => '<script data-main="'
-                .CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract', CRM_Core_Config::singleton()->debug ? 'js/hrjc-main' : 'dist/hrjc-main', FALSE).
-                '" src="'
-                .CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract', 'js/vendor/require.js', TRUE).
-                '"></script>',
-            'weight' => 1003
-        ));
-
+        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjobcontract', CRM_Core_Config::singleton()->debug ? 'js/hrjc-main.js' : 'dist/hrjc-main.js',1010);
         CRM_Core_Resources::singleton()
             ->addStyleFile('org.civicrm.hrjobcontract', 'css/hrjobcontract.css');
     }
