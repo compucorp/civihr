@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<extension key="com.civicrm.hrjobroles" type="module">
+  <file>hrjobroles</file>
+  <name>Job Roles (CiviHR)</name>
+  <description>Job Roles implementation for CiviHR</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>gregmeszaros</author>
+    <email>meszaros275@gmail.com</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">http://FIXME</url>
+    <url desc="Documentation">http://FIXME</url>
+    <url desc="Support">http://FIXME</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2015-03-17</releaseDate>
+  <version>1.5</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Hrjobroles</namespace>
+  </civix>
+</extension>

@@ -1,0 +1,77 @@
+.tab-content {
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.nav-pills > li.active > a:after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  margin-top: -13px;
+  border-left: 0px;
+  border-bottom: 13px solid transparent;
+  border-top: 13px solid transparent;
+  border-left: 10px solid #337AB7;;
+  z-index: 100;
+}
+
+.nav-tabs {
+  border-bottom: none;
+}
+
+.col-sm-2 {
+  padding: 0px;
+}
+
+.col-xs-12, .col-sm-8, .col-md-6, .col-lg-6 {
+  padding-left: 0px;
+  border-left: 1px solid #DDD;
+}
+
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+  border-top: 1px solid #DDD;
+}
+
+.add-new-row {
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.176);
+}
+
+.nav-tabs > li > a {
+  margin-right: 0px;
+}
+
+.main-row {
+  border: 1px solid #DDD;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.main-row-header {
+  padding-bottom: 5px;
+  margin: 10px 10px 5px;
+  border-bottom: none;
+}
+
+.btn-setup {
+  margin: 10px 10px 10px 10px;
+  clear: both;
+}
+
+.clear {
+  clear: both;
+}
+
+.page-header {
+  padding-bottom: 0px;
+  border-bottom: 0px;
+  margin: 10px 0px 15px;
+}
+
+.createrole {
+  display: inline;
+  float: inherit;
+  margin-bottom: 55px;
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/job-roles</path>
+    <page_callback>CRM_Hrjobroles_Page_JobRoles</page_callback>
+    <title>JobRoles</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
