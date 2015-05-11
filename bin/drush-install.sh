@@ -12,12 +12,14 @@ ENTITY_EXTS=\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
 org.civicrm.hrident,\
-org.civicrm.hrabsence,\
 org.civicrm.hrjob,\
+org.civicrm.hrjobcontract,\
+com.civicrm.hrjobroles,\
+org.civicrm.hrabsence,\
 org.civicrm.hrmed,\
 org.civicrm.hrqual,\
 org.civicrm.hrvisa,\
-org.civicrm.hremerg,\
+org.civicrm.hremergency,\
 org.civicrm.hrcareer
 
 ## List of extensions defining applications/UIs on top of the basic entity types
@@ -29,7 +31,8 @@ org.civicrm.hrstaffdir,\
 org.civicrm.hrim,\
 org.civicrm.hrprofile,\
 org.civicrm.hrcaseutils,\
-org.civicrm.hrrecruitment
+org.civicrm.hrrecruitment,\
+org.civicrm.reqangular
 
 ##################################
 ## Main
