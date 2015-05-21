@@ -1,4 +1,4 @@
-define(['angular'], function(angular){
+define(function(){
     'use strict'
     return angular.module('hrjc.filters',[]);
 })

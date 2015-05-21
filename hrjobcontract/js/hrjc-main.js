@@ -4,8 +4,14 @@ var module, reqHrjc = require.config({
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         fraction: 'vendor/fraction',
-        moment: 'vendor/moment.min.js',
+        moment: 'vendor/moment.min',
+        jobSummary: 'vendor/jobsummary',
         requireLib: CRM.vars.reqAngular.requireLib
+    },
+    shim: {
+        jobSummary: {
+            deps: ['moment']
+        }
     }
 });
 
@@ -36,6 +42,7 @@ reqHrjc([
     'filters/formatAmount',
     'filters/formatPeriod',
     'filters/parseInt',
+    'jobSummary',
     'requireLib'
 ],function(app){
     'use strict';

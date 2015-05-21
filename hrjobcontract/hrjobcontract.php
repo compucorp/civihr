@@ -289,17 +289,19 @@ function hrjobcontract_civicrm_navigationMenu( &$params ) {
  * Implementation of hook_civicrm_pageRun
  */
 function hrjobcontract_civicrm_pageRun($page) {
+
+    if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
+        $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+        $gid = array_search('HRJob_Summary', $groups);
+        CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid));
+    }
+
     if ($page instanceof CRM_Contact_Page_View_Summary) {
         CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjobcontract', CRM_Core_Config::singleton()->debug ? 'js/hrjc-main.js' : 'dist/hrjc-main.js',1010);
         CRM_Core_Resources::singleton()
             ->addStyleFile('org.civicrm.hrjobcontract', 'css/hrjobcontract.css');
     }
-    if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
-        $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
-        $gid = array_search('HRJob_Summary', $groups);
-        CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid,));
-        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjobcontract', 'js/vendor/jobsummary.js');
-    }
+
 }
 
 /**

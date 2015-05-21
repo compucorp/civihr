@@ -1,6 +1,6 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
-  $(document).on('crmLoad', function() {
+
     var gid = CRM.grID;
     var joinDate = $('#custom-set-content-'+gid+' .crm-inline-block-content div:nth-child(2) .crm-custom-data').html();
     var finalDate =$('#custom-set-content-'+gid+' .crm-inline-block-content div:nth-child(3) .crm-custom-data').html();
@@ -127,7 +127,6 @@
         }
       });
     });
-  });
 
   function lengthEmployment(joinDate,finalDate,gid) {
     var join_date = moment(joinDate,"MMMM DD, YYYY");
