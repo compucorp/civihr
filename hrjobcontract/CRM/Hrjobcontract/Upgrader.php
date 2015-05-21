@@ -40,6 +40,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
     
+    $tableExists = $this->checkTableExists(array(
+        'civicrm_hrjob',
+        'civicrm_hrjob_health',
+        'civicrm_hrjob_hour',
+        'civicrm_hrjob_leave',
+        'civicrm_hrjob_pay',
+        'civicrm_hrjob_pension',
+        'civicrm_hrjob_role',
+    ));
+    
+    if (!$tableExists['civicrm_hrjob'])
+    {
+        return false;
+    }
+    
     $hrJob = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob ORDER BY id ASC');
     while ($hrJob->fetch())
     {
@@ -79,135 +94,153 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         );
         
         $healthRevisionId = 0;
-        $hrJobHealth = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_health WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobHealth->fetch())
+        if ($tableExists['civicrm_hrjob_health'])
         {
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_health',
-                $hrJobHealth,
-                array(
-                    'provider' => 'Integer',
-                    'plan_type' => 'String',
-                    'description' => 'String',
-                    'dependents' => 'String',
-                    'provider_life_insurance' => 'Integer',
-                    'plan_type_life_insurance' => 'String',
-                    'description_life_insurance' => 'String',
-                    'dependents_life_insurance' => 'String',
-                ),
-                $revisionId
-            );
-            $healthRevisionId = $revisionId;
+            $hrJobHealth = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_health WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobHealth->fetch())
+            {
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_health',
+                    $hrJobHealth,
+                    array(
+                        'provider' => 'Integer',
+                        'plan_type' => 'String',
+                        'description' => 'String',
+                        'dependents' => 'String',
+                        'provider_life_insurance' => 'Integer',
+                        'plan_type_life_insurance' => 'String',
+                        'description_life_insurance' => 'String',
+                        'dependents_life_insurance' => 'String',
+                    ),
+                    $revisionId
+                );
+                $healthRevisionId = $revisionId;
+            }
         }
         
         $hourRevisionId = 0;
-        $hrJobHour = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_hour WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobHour->fetch())
+        if ($tableExists['civicrm_hrjob_hour'])
         {
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_hour',
-                $hrJobHour,
-                array(
-                    'hours_type' => 'String',
-                    'hours_amount' => 'Float',
-                    'hours_unit' => 'String',
-                    'hours_fte' => 'Float',
-                    'fte_num' => 'Integer',
-                    'fte_denom' => 'Integer',
-                ),
-                $revisionId
-            );
-            $hourRevisionId = $revisionId;
+            $hrJobHour = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_hour WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobHour->fetch())
+            {
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_hour',
+                    $hrJobHour,
+                    array(
+                        'hours_type' => 'String',
+                        'hours_amount' => 'Float',
+                        'hours_unit' => 'String',
+                        'hours_fte' => 'Float',
+                        'fte_num' => 'Integer',
+                        'fte_denom' => 'Integer',
+                    ),
+                    $revisionId
+                );
+                $hourRevisionId = $revisionId;
+            }
         }
         
         // MULTIPLE
         $leaveRevisionId = 0;
-        $hrJobLeave = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_leave WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobLeave->fetch())
+        if ($tableExists['civicrm_hrjob_leave'])
         {
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_leave',
-                $hrJobLeave,
-                array(
-                    'leave_type' => 'Integer',
-                    'leave_amount' => 'Integer',
-                ),
-                $revisionId
-            );
-            $leaveRevisionId = $revisionId;
+            $hrJobLeave = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_leave WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobLeave->fetch())
+            {
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_leave',
+                    $hrJobLeave,
+                    array(
+                        'leave_type' => 'Integer',
+                        'leave_amount' => 'Integer',
+                    ),
+                    $revisionId
+                );
+                $leaveRevisionId = $revisionId;
+            }
         }
         
         $payRevisionId = 0;
-        $hrJobPay = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pay WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobPay->fetch())
+        if ($tableExists['civicrm_hrjob_pay'])
         {
-            $payScaleId = $this->getPayScaleId($hrJobPay->pay_scale);
-            $hrJobPay->pay_scale = $payScaleId;
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_pay',
-                $hrJobPay,
-                array(
-                    'pay_scale' => 'String',
-                    'is_paid' => 'Integer',
-                    'pay_amount' => 'Float',
-                    'pay_unit' => 'String',
-                    'pay_currency' => 'String',
-                    'pay_annualized_est' => 'Float',
-                    'pay_is_auto_est' => 'Integer',
-                ),
-                $revisionId
-            );
-            $payRevisionId = $revisionId;
+            $hrJobPay = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pay WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobPay->fetch())
+            {
+                $payScaleId = $this->getPayScaleId($hrJobPay->pay_scale);
+                $hrJobPay->pay_scale = $payScaleId;
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_pay',
+                    $hrJobPay,
+                    array(
+                        'pay_scale' => 'String',
+                        'is_paid' => 'Integer',
+                        'pay_amount' => 'Float',
+                        'pay_unit' => 'String',
+                        'pay_currency' => 'String',
+                        'pay_annualized_est' => 'Float',
+                        'pay_is_auto_est' => 'Integer',
+                    ),
+                    $revisionId
+                );
+                $payRevisionId = $revisionId;
+            }
         }
         
         $pensionRevisionId = 0;
-        $hrJobPension = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pension WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobPension->fetch())
+        if ($tableExists['civicrm_hrjob_pension'])
         {
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_pension',
-                $hrJobPension,
-                array(
-                    'is_enrolled' => 'Integer',
-                    'ee_contrib_pct' => 'Float',
-                    'er_contrib_pct' => 'Float',
-                    'pension_type' => 'String',
-                    'ee_contrib_abs' => 'Float',
-                    'ee_evidence_note' => 'String',
-                ),
-                $revisionId
-            );
-            $pensionRevisionId = $revisionId;
+            $hrJobPension = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pension WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobPension->fetch())
+            {
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_pension',
+                    $hrJobPension,
+                    array(
+                        'is_enrolled' => 'Integer',
+                        'ee_contrib_pct' => 'Float',
+                        'er_contrib_pct' => 'Float',
+                        'pension_type' => 'String',
+                        'ee_contrib_abs' => 'Float',
+                        'ee_evidence_note' => 'String',
+                    ),
+                    $revisionId
+                );
+                $pensionRevisionId = $revisionId;
+            }
         }
         
         // MULTIPLE
         $roleRevisionId = 0;
-        $hrJobRole = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_role WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-        while ($hrJobRole->fetch())
+        if ($tableExists['civicrm_hrjob_role'])
         {
-            $this->populateTableWithEntity(
-                'civicrm_hrjobcontract_role',
-                $hrJobRole,
-                array(
-                    'title' => 'String',
-                    'description' => 'String',
-                    'hours' => 'Float',
-                    'role_hours_unit' => 'String',
-                    'region' => 'String',
-                    'department' => 'String',
-                    'level_type' => 'String',
-                    'manager_contact_id' => 'Integer',
-                    'functional_area' => 'String',
-                    'organization' => 'String',
-                    'cost_center' => 'String',
-                    'funder' => 'String',
-                    'percent_pay_funder' => 'String',
-                    'percent_pay_role' => 'Integer',
-                    'location' => 'String',
-                ),
-                $revisionId
-            );
-            $roleRevisionId = $revisionId;
+            $hrJobRole = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_role WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
+            while ($hrJobRole->fetch())
+            {
+                $this->populateTableWithEntity(
+                    'civicrm_hrjobcontract_role',
+                    $hrJobRole,
+                    array(
+                        'title' => 'String',
+                        'description' => 'String',
+                        'hours' => 'Float',
+                        'role_hours_unit' => 'String',
+                        'region' => 'String',
+                        'department' => 'String',
+                        'level_type' => 'String',
+                        'manager_contact_id' => 'Integer',
+                        'functional_area' => 'String',
+                        'organization' => 'String',
+                        'cost_center' => 'String',
+                        'funder' => 'String',
+                        'percent_pay_funder' => 'String',
+                        'percent_pay_role' => 'Integer',
+                        'location' => 'String',
+                    ),
+                    $revisionId
+                );
+                $roleRevisionId = $revisionId;
+            }
         }
         
         // Creating entities entries with default values for non existing entities.
@@ -285,6 +318,18 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
       
     return true;
+  }
+  
+  protected function checkTableExists(array $tables)
+  {
+      $result = array();
+      
+      foreach ($tables as $table)
+      {
+          $result[$table] = CRM_Core_DAO::checkTableExists($table);
+      }
+      
+      return $result;
   }
   
   protected function populateTableWithEntity($tableName, $entity, array $fields, $revisionId)
