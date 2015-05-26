@@ -1,0 +1,40 @@
+.panel {
+  display: block;
+  position: static;
+  background-image: none;
+  width: auto;
+  background-position: 0 0;
+  @include box-shadow($box-shadow-global);
+}
+
+.panel-heading {
+  color: $headings-color;
+  font-weight: $headings-font-weight;
+  text-transform: uppercase;
+}
+
+.panel-title {
+  font-size: $font-size-h1;
+  line-height: $line-height-base;
+}
+
+.panel-light {
+  border: 0 none;
+  @include box-shadow(0 0 0 0);
+
+  > .panel-heading {
+    border-bottom: 0 none;
+  }
+
+  > .panel-footer {
+    border-top: 1px solid $body-bg;
+  }
+}
+
+.panel-secondary {
+  > .panel-body,
+  .list-group,
+  .list-group-item {
+    background-color: $brand-secondary;
+  }
+}

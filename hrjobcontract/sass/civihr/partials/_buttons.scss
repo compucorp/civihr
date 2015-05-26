@@ -1,0 +1,64 @@
+.btn {
+  text-transform: uppercase;
+  font-size: $btn-font-size;
+  line-height: $btn-line-height;
+}
+
+.btn-lg {
+  font-size: $font-size-large;
+  line-height: $line-height-large;
+}
+.btn-sm,
+.btn-xs {
+  font-size: $font-size-small;
+  line-height: $line-height-small;
+}
+
+.btn-gray {
+  color: #767e8f;
+  background-color: #fff;
+  border-color: #767e8f;
+
+  &:hover,
+  &:focus,
+  &.btn-focus {
+    color: darken(#767e8f, 15%);
+    border-color: darken(#767e8f, 15%);
+  }
+
+  &.active {
+    background-color: #767e8f;
+    color: #fff;
+
+    &:hover,
+    &:focus,
+    &.btn-focus {
+      background-color: darken(#767e8f, 10%);
+      color: #fff;
+    }
+  }
+}
+
+.btn-collapse {
+  background: none;
+  border: 0 none;
+  color: $gray;
+  padding: 0;
+  cursor: pointer;
+  vertical-align: baseline;
+
+  &:hover {
+    color: darken($gray, 15%);
+  }
+
+  &:active {
+    @include box-shadow(none);
+  }
+
+  .fa {
+    margin-right: 3px;
+    font-size: 9px;
+    position: relative;
+    top: -1px;
+  }
+}

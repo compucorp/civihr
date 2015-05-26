@@ -1,0 +1,23 @@
+.#{$prefix}summary-container {
+  min-height: 387px;
+}
+
+.#{$prefix}summary {
+  padding: 20px 20px 10px 20px;
+
+  .form-control-static {
+    .subfield:not(:first-child) {
+      margin-top: 8px;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 10px;
+  }
+
+  strong {
+    color: $headings-color;
+    text-transform: uppercase;
+  }
+
+}

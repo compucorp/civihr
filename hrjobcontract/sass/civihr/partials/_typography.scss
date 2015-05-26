@@ -1,0 +1,45 @@
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+}
+
+@include text-emphasis-variant('.text-success-light', $brand-success);
+@include text-emphasis-variant('.text-info-light', $brand-info);
+@include text-emphasis-variant('.text-warning-light', $brand-warning);
+@include text-emphasis-variant('.text-danger-light', $brand-danger);
+
+.header-bar {
+  @include box-shadow($box-shadow-global);
+  background-color: $panel-default-heading-bg;
+  font-size: $header-bar-font-size;
+  margin: {
+    bottom: 15px;
+    top: 0;
+  };
+  padding: $header-bar-padding;
+  width: 100%;
+
+  &.header-bar-primary {
+    background-color: $brand-primary;
+    color: #fff;
+  }
+
+  &.header-bar-success {
+    background-color: $brand-success;
+    color: #fff;
+  }
+
+  &.header-bar-info {
+    background-color: $brand-info;
+    color: #fff;
+  }
+
+  &.header-bar-warning {
+    background-color: $brand-danger;
+    color: #fff;
+  }
+
+  &.header-bar-danger {
+    background-color: $brand-danger;
+    color: #fff;
+  }
+}

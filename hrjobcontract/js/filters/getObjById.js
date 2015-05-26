@@ -3,6 +3,11 @@ define(['filters/filters'], function(filters){
         $log.debug('Filter: getObjById');
 
         return function(input, id, key) {
+
+            if (!input) {
+                return null
+            }
+
             var i=0, len=input.length;
             for (; i<len; i++) {
                 if (+input[i].id == +id) {

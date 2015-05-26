@@ -106,7 +106,7 @@ define(['controllers/controllers',
                 var modalInstance,
                     options = {
                         targetDomEl: $rootElement.find('div').eq(0),
-                        templateUrl: settings.pathApp+'views/modalForm.html?v=fbwefg',
+                        templateUrl: settings.pathApp+'views/modalForm.html?v=111',
                         size: 'lg',
                         controller: 'ModalContractNewCtrl',
                         resolve: {

@@ -1,0 +1,23 @@
+.badge {
+  padding: 4px 9px;
+
+  &.badge-primary {
+    background-color: $brand-primary !important;
+  }
+
+  &.badge-success {
+    background-color: $brand-success !important;
+  }
+
+  &.badge-info {
+    background-color: $brand-info !important;
+  }
+
+  &.badge-warning {
+    background-color: $brand-warning !important;
+  }
+
+  &.badge-danger {
+    background-color: $brand-danger !important;
+  }
+}

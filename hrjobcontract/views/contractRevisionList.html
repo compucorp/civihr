@@ -1,5 +1,5 @@
-<div ng-controller="RevisionListCtrl">
-    <a ng-href="{{urlCSV}}" class="btn btn-default btn-xs pull-right">
+<div ng-controller="RevisionListCtrl" class="{{prefix}}history">
+    <a ng-href="{{urlCSV}}" class="btn btn-xs btn-export pull-right">
         <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
     </a>
     <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list">
@@ -17,13 +17,13 @@
                 <th><a href="" ng-click="sortBy('pay.pay_annualized_est');createPage();">Total Salary <i class="fa"
                                                                                                          ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                          ng-show="sortCol == 'pay.pay_annualized_est'"></i></a></th>
-                <th><a href="" ng-click="sortBy('hour.hours_type');createPage();">Hours<br>(Full time/ Part time) <i class="fa"
+                <th><a href="" ng-click="sortBy('hour.hours_type');createPage();">Hours (FT/PT) <i class="fa"
                                                                                                                       ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                                       ng-show="sortCol == 'hour.hours_type'"></i></a></th>
                 <th><a href="" ng-click="sortBy('details.location');createPage();">Location <i class="fa"
                                                                                                ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                ng-show="sortCol == 'details.location'"></i></a></th>
-                <th><a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">Change<br>Recorded By <i class="fa"
+                <th><a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">Change Recorded By <i class="fa"
                                                                                                                            ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                                            ng-show="sortCol == 'revisionEntityIdObj.editor_name'"></i></a></th>
                 <th>&nbsp;</th>
@@ -63,13 +63,6 @@
     <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
         <div class="col-xs-12 text-center">
             <pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <button class="btn btn-default btn-sm btn-danger" ng-click="delete(contract.id)">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete this job contract
-            </button>
         </div>
     </div>
 </div>

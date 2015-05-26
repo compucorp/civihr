@@ -1,0 +1,48 @@
+.modal-header {
+  .close {
+    margin-top: 0px;
+  }
+}
+
+.modal-progress {
+  .modal-body {
+    overflow: hidden;
+    padding-top: 25px;
+  }
+
+  .progress {
+    margin-bottom: 2px;
+  }
+
+  .progress-bar {
+    min-width: 2.5em;
+  }
+}
+
+.modal-title {
+  font-size: $font-size-h1;
+}
+
+.modal-content {
+  .row,
+  .form-horizontal .form-group {
+    margin: {
+      left: -$modal-inner-padding;
+      right: -$modal-inner-padding;
+    };
+  }
+
+  [class^="col-"],
+  [class*=" col-"] {
+    padding: {
+      left: $modal-inner-padding;
+      right: $modal-inner-padding;
+    }
+  }
+}
+
+@media (min-width: $screen-sm-min) {
+  .modal-dialog {
+    margin: 60px auto;
+  }
+}

@@ -1,0 +1,17 @@
+@mixin grid-condensed($gutter: $grid-gutter-width) {
+  .row,
+  .form-horizontal .form-group {
+    margin: {
+      left: -$gutter;
+      right: -$gutter;
+    };
+  }
+
+  [class^="col-"],
+  [class*=" col-"] {
+    padding: {
+      left: $gutter;
+      right: $gutter;
+    }
+  }
+}
