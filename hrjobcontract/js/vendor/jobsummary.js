@@ -129,10 +129,10 @@
     });
 
   function lengthEmployment(joinDate,finalDate,gid) {
-    var join_date = moment(joinDate,"MMMM DD, YYYY");
+    var join_date = moment(joinDate);
     var duration = '';
     if(finalDate) {
-      var final_date = moment(finalDate,"MMMM DD, YYYY");
+      var final_date = moment(finalDate);
     }
     var now = moment();
     if (finalDate) {
