@@ -13,7 +13,7 @@ class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
 
     $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $profID, $this->_map, FALSE, 0);
     $extraWhereClause = NULL;
-    $grpParams = array('name'=>'HRJob_Summary');
+    $grpParams = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $grpParams, $cGrp);
     $fdParams = array('name'=>'Final_Termination_Date');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $fdParams, $fdField);

@@ -48,6 +48,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'civicrm_hrjob_pay',
         'civicrm_hrjob_pension',
         'civicrm_hrjob_role',
+        'civicrm_value_job_summary_10',
     ));
     
     if (!$tableExists['civicrm_hrjob'])
@@ -316,6 +317,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         CRM_Core_DAO::executeQuery($updateRevisionQuery, $updateRevisionParams);
 
     }
+    
+    // Migrating Job_Summary data:
+    if ($tableExists['civicrm_value_job_summary_10'])
+    {
+        CRM_Core_DAO::executeQuery('INSERT INTO civicrm_value_jobcontract_summary_10 SELECT * FROM civicrm_value_job_summary_10');
+    }
       
     return true;
   }
@@ -409,9 +416,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     /* DEPRECATED:
     //$this->ctx->log->info('Applying update 1201');
-    //get all fields of Custom Group "HRJob_Summary"
+    //get all fields of Custom Group "HRJobContract_Summary"
     $params = array(
-      'custom_group_id' => 'HRJob_Summary',
+      'custom_group_id' => 'HRJobContract_Summary',
     );
     $results = civicrm_api3('CustomField', 'get', $params);
     foreach ($results['values'] as $result) {

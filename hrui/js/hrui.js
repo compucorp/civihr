@@ -46,7 +46,7 @@
 
       /* Changes on Add Individual pages and Personal details tab for HR-358 */
       // Move Job summary to top
-      $('.HRJob_Summary', e.target).insertBefore($('.crm-summary-contactinfo-block'));
+      $('.HRJobContract_Summary', e.target).insertBefore($('.crm-summary-contactinfo-block'));
       // changes of email block, remove bulkmail and onhold
       $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
       $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();

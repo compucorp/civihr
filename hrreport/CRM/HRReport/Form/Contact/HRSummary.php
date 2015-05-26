@@ -543,7 +543,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
   function customDataFrom() {
     parent::customDataFrom();
-    $params = array('name'=>'HRJob_Summary');
+    $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
       $mapper = CRM_Core_BAO_CustomQuery::$extendsMap;
@@ -557,7 +557,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     parent::where();
     $params = array('name'=>'Final_Termination_Date');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
-    $params = array('name'=>'HRJob_Summary');
+    $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {

@@ -139,7 +139,7 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
 
   public function upgrade_1400() {
     $this->ctx->log->info('Applying update 1400');
-    $finalTermDate = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'HRJob_Summary','name' => 'Final_Termination_Date', 'return' => 'id'));
+    $finalTermDate = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'HRJobContract_Summary','name' => 'Final_Termination_Date', 'return' => 'id'));
 
     //create uffield
     $ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name');

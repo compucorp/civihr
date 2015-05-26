@@ -984,7 +984,7 @@ class GenerateHRData {
    * This method populates the Initial join date and final termination date
    */
   function addJobSummaryData($cid) {
-    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJob_Summary', 'id', 'name')) {
+    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJobContract_Summary', 'id', 'name')) {
       return;
     }
 

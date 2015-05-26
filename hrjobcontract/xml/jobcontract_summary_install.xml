@@ -3,8 +3,8 @@
 <CustomData>
   <CustomGroups>
     <CustomGroup>
-      <name>HRJob_Summary</name>
-      <title>Job Summary</title>
+      <name>HRJobContract_Summary</name>
+      <title>Job Contract Summary</title>
       <extends>Individual</extends>
       <style>Inline</style>
       <collapse_display>0</collapse_display>
@@ -12,7 +12,7 @@
       <help_post></help_post>
       <weight>13</weight>
       <is_active>1</is_active>
-      <table_name>civicrm_value_job_summary_10</table_name>
+      <table_name>civicrm_value_jobcontract_summary_10</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <is_reserved>0</is_reserved>
@@ -35,7 +35,7 @@
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>initial_join_date_56</column_name>
-      <custom_group_name>HRJob_Summary</custom_group_name>
+      <custom_group_name>HRJobContract_Summary</custom_group_name>
     </CustomField>
     <CustomField>
       <name>Final_Termination_Date</name>
@@ -53,7 +53,7 @@
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>final_termination_date_57</column_name>
-      <custom_group_name>HRJob_Summary</custom_group_name>
+      <custom_group_name>HRJobContract_Summary</custom_group_name>
     </CustomField>
   </CustomFields>
 </CustomData>

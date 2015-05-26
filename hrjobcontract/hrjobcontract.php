@@ -52,31 +52,38 @@ function hrjobcontract_civicrm_install() {
   }
   
   // Add Job Contract top menu
-  $contactsWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'weight', 'name');
+  
   $jobContractNavigation = new CRM_Core_DAO_Navigation();
-  $params = array (
-    'domain_id' => CRM_Core_Config::domainID(),
-    'label' => ts('Job Contracts'),
-    'name' => 'job_contracts',
-    'url' => null,
-    'operator' => null,
-    'weight' => $contactsWeight + 1,
-    'is_active' => 1,
-  );
-  $jobContractNavigation->copyValues($params);
-  $jobContractNavigation->save();
-  $jobContractMenuTree = array(
-    array(
-      'label' => ts('Import / Export'),
-      'name' => 'import_export_job_contracts',
-    ),
-  );
+  $jobContractNavigation->name = 'job_contracts';
+  $jobContractNavigationResult = $jobContractNavigation->find();
+  if (!$jobContractNavigationResult)
+  {
+    $contactsWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'weight', 'name');
+    $jobContractNavigation = new CRM_Core_DAO_Navigation();
+    $params = array (
+      'domain_id' => CRM_Core_Config::domainID(),
+      'label' => ts('Job Contracts'),
+      'name' => 'job_contracts',
+      'url' => null,
+      'operator' => null,
+      'weight' => $contactsWeight + 1,
+      'is_active' => 1,
+    );
+    $jobContractNavigation->copyValues($params);
+    $jobContractNavigation->save();
+    $jobContractMenuTree = array(
+      array(
+        'label' => ts('Import / Export'),
+        'name' => 'import_export_job_contracts',
+      ),
+    );
 
-  foreach ($jobContractMenuTree as $key => $menuItems) {
-    $menuItems['is_active'] = 1;
-    $menuItems['parent_id'] = $jobContractNavigation->id;
-    $menuItems['weight'] = $key;
-    CRM_Core_BAO_Navigation::add($menuItems);
+    foreach ($jobContractMenuTree as $key => $menuItems) {
+      $menuItems['is_active'] = 1;
+      $menuItems['parent_id'] = $jobContractNavigation->id;
+      $menuItems['weight'] = $key;
+      CRM_Core_BAO_Navigation::add($menuItems);
+    }
   }
   
   return _hrjobcontract_civix_civicrm_install();
@@ -112,7 +119,7 @@ function hrjobcontract_civicrm_uninstall() {
   if (!empty($customGroupData['id'])) {
     civicrm_api3('CustomGroup', 'delete', array('id' => $customGroupData['id']));
   }
-  $customGroup = civicrm_api3('CustomGroup', 'get', array('name' => "HRJob_Summary",));
+  $customGroup = civicrm_api3('CustomGroup', 'get', array('name' => "HRJobContract_Summary",));
   $customGroupData = CRM_Utils_Array::first($customGroup['values']);
   if (!empty($customGroupData['id'])) {
     civicrm_api3('CustomGroup', 'delete', array('id' => $customGroupData['id']));
@@ -163,9 +170,9 @@ function _hrjobcontract_setActiveFields($setActive) {
   CRM_Core_BAO_Navigation::resetNavigation();
 
   //disable/enable customgroup and customvalue
-  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'HRJob_Summary'";
+  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'HRJobContract_Summary'";
   CRM_Core_DAO::executeQuery($sql);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'HRJob_Summary'");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'HRJobContract_Summary'");
 
   //disable/enable optionGroup and optionValue
   $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_type', 'hrjc_level_type', 'hrjc_department', 'hrjc_hours_type', 'hrjc_pay_grade', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_location', 'hrjc_pension_type', 'hrjc_region', 'hrjc_pay_scale')";
@@ -292,7 +299,7 @@ function hrjobcontract_civicrm_pageRun($page) {
 
     if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
         $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
-        $gid = array_search('HRJob_Summary', $groups);
+        $gid = array_search('HRJobContract_Summary', $groups);
         CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid));
     }
 
@@ -438,7 +445,7 @@ function hrjobcontract_getSummaryFields($fresh = FALSE) {
       "SELECT ccf.id, ccf.name, ccf.column_name, concat('custom_', ccf.id) as field
       FROM civicrm_custom_group ccg
       INNER JOIN civicrm_custom_field ccf ON ccf.custom_group_id = ccg.id
-      WHERE ccg.name = 'HRJob_Summary'
+      WHERE ccg.name = 'HRJobContract_Summary'
     ";
     $dao = CRM_Core_DAO::executeQuery($sql);
     $cache = array();
@@ -488,7 +495,7 @@ function _hrjobcontract_phpunit_populateDB() {
   );
   $import->run(
     CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjobcontract')
-      . '/xml/job_summary_install.xml'
+      . '/xml/jobcontract_summary_install.xml'
   );
 
   //create option value for option group region
