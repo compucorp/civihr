@@ -27,6 +27,7 @@ define(['controllers/controllers',
             $scope.entity = {};
             $scope.isDisabled = false;
             $scope.showIsPrimary = utils.contractListLen;
+
             $scope.uploader = {
                 details: {
                     contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')

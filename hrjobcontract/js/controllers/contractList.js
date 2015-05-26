@@ -22,11 +22,19 @@ define(['controllers/controllers',
                     leave: ContractLeaveService,
                     health: ContractHealthService,
                     pension: ContractPensionService
-                }, entityName, promiseFields = {}, promiseModel = {}, promiseUtils = {};
+                },
+                promiseUtils = {
+                    hoursLocation: UtilsService.getHoursLocation(),
+                    payScaleGrade: UtilsService.getPayScaleGrade()
+                },
+                entityName, promiseFields = {}, promiseModel = {};
 
             $scope.contractListLoaded = false;
             $scope.contractCurrent = [];
             $scope.contractPast = [];
+            $scope.utils = {
+                contractListLen: contractList.length
+            };
 
             for (entityName in entityServices) {
                 promiseFields[entityName] = entityServices[entityName].getFields();
@@ -68,10 +76,8 @@ define(['controllers/controllers',
                 $scope.contractListLoaded = true;
             });
 
-            $scope.utils = $q.all({
-                contractListLen: contractList.length,
-                hoursLocation: UtilsService.getHoursLocation(),
-                payScaleGrade: UtilsService.getPayScaleGrade()
+            $q.all(promiseUtils).then(function(utils){
+                angular.extend($scope.utils,utils);
             });
 
             $scope.toggleIsPrimary = function(contractId) {
@@ -114,7 +120,9 @@ define(['controllers/controllers',
                                 return $scope.model;
                             },
                             utils: function(){
-                                return $scope.utils;
+                                return $q.all(angular.extend(promiseUtils,{
+                                    contractListLen: $scope.utils.contractListLen
+                                }));
                             }
                         }
                     }
@@ -123,6 +131,7 @@ define(['controllers/controllers',
 
                 modalInstance.result.then(function(contract){
                     +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+
                     if (+contract.is_primary) {
                         $scope.toggleIsPrimary(contract.id);
                     }
