@@ -59,6 +59,11 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
             CRM_Core_BAO_File::copyEntityFile('civicrm_hrjobcontract_details', $previousDetailsRevisionId, 'civicrm_hrjobcontract_details', $revision['details_revision_id']);
         }
         
+        $contract = new CRM_Hrjobcontract_DAO_HRJobContract();
+        $contract->id = $params['jobcontract_id'];
+        $contract->find(true);
+        CRM_Hrjobcontract_JobContractDates::setDates($contract->contact_id, $params['jobcontract_id'], $instance->period_start_date, $instance->period_end_date);
+        
         return $instance;
     }
     

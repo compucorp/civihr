@@ -26,6 +26,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
         CRM_Hrjobcontract_DAO_HRJobContract::handlePrimary($instance, $params);
     }
     
+    $deleted = isset($params['deleted']) ? $params['deleted'] : 0;
+    if ($deleted)
+    {
+        CRM_Hrjobcontract_JobContractDates::removeDates($instance->id);
+    }
+    
     if (module_exists('rules')) {
         rules_invoke_event('hrjobcontract_after_create', $instance);
     }

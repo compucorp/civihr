@@ -890,6 +890,72 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     'hrjob_pension_type',
     'hrjob_region',
     'hrjob_location')");
+    
+    $this->upgrade_1001();
+    $this->upgrade_1002();
+  }
+  
+  function upgrade_1001() {
+    // Install JobContract Dates as Contact custom fields
+    $this->executeCustomDataFile('xml/jobcontract_dates.xml');
+    
+    return TRUE;
+  }
+  
+  function upgrade_1002() {
+    // Fill JobContract Dates custom fields with start and end dates of contracts
+    $jobContracts = CRM_Core_DAO::executeQuery(
+        'SELECT id, contact_id FROM civicrm_hrjobcontract ORDER BY id ASC'
+    );
+    
+    $today = date('Y-m-d');
+    while ($jobContracts->fetch())
+    {
+        $revision = CRM_Core_DAO::executeQuery(
+            'SELECT * FROM civicrm_hrjobcontract_revision '
+            . 'WHERE jobcontract_id = %1 '
+            . 'AND effective_date <= %2 '
+            . 'AND deleted = 0 '
+            . 'ORDER BY effective_date DESC LIMIT 1',
+            array(
+                1 => array($jobContracts->id, 'Integer'),
+                2 => array($today, 'String'),
+            )
+        );
+        if (!$revision->fetch())
+        {
+            $revision = CRM_Core_DAO::executeQuery(
+                'SELECT details_revision_id FROM civicrm_hrjobcontract_revision '
+                . 'WHERE jobcontract_id = %1 '
+                . 'AND deleted = 0 '
+                . 'ORDER BY effective_date ASC, id DESC LIMIT 1',
+                array(
+                    1 => array($jobContracts->id, 'Integer'),
+                )
+            );
+            $revision->fetch();
+        }
+        
+        if (!$revision->details_revision_id)
+        {
+            continue;
+        }
+        
+        $details = CRM_Core_DAO::executeQuery(
+            'SELECT period_start_date, period_end_date FROM civicrm_hrjobcontract_details '
+            . 'WHERE jobcontract_revision_id = %1 '
+            . 'LIMIT 1',
+            array(
+                1 => array($revision->details_revision_id, 'Integer'),
+            )
+        );
+        if ($details->fetch())
+        {
+            CRM_Hrjobcontract_JobContractDates::setDates($jobContracts->contact_id, $jobContracts->id, $details->period_start_date, $details->period_end_date);
+        }
+    }
+    
+    return TRUE;
   }
           
   function decToFraction($fte) {
