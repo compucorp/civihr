@@ -5,6 +5,10 @@
     background-color: $brand-primary !important;
   }
 
+  &.badge-secondary {
+    background-color: $brand-secondary !important;
+  }
+
   &.badge-success {
     background-color: $brand-success !important;
   }
@@ -17,7 +21,15 @@
     background-color: $brand-warning !important;
   }
 
+  &.badge-dark {
+    background-color: $brand-dark !important;
+  }
+
   &.badge-danger {
     background-color: $brand-danger !important;
+  }
+
+  &.badge-danger-light {
+    background-color: $brand-danger-light !important;
   }
 }

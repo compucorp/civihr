@@ -16,11 +16,20 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
   };
   padding: $header-bar-padding;
-  width: 100%;
+  max-width: 100%;
 
   &.header-bar-primary {
     background-color: $brand-primary;
     color: #fff;
+
+    a {
+      color: #fff;
+
+      &:hover,
+      &:active {
+        color: darken(#fff, 10%);
+      }
+    }
   }
 
   &.header-bar-success {
@@ -41,5 +50,32 @@ h1, h2, h3, h4, h5, h6 {
   &.header-bar-danger {
     background-color: $brand-danger;
     color: #fff;
+
+    a {
+      color: #fff;
+
+      &:hover,
+      &:active {
+        color: darken(#fff, 10%);
+      }
+    }
+  }
+
+  &.header-bar-danger-light {
+    background-color: #e6807f;
+    color: #fff;
+  }
+
+  &.header-bar-dark {
+    background-color: #5d6779;
+    color: #fff;
+  }
+}
+
+a[disabled]:not(.btn) {
+  color: $text-color;
+
+  &:hover {
+    cursor: default;
   }
 }
