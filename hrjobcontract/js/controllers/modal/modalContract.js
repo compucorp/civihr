@@ -384,6 +384,7 @@ define(['controllers/controllers',
                             return results;
 
                         }).then(function(results){
+
                             $scope.$broadcast('hrjc-loader-hide');
                             $modalInstance.close(results);
                         });
