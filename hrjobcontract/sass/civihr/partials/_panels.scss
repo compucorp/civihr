@@ -11,6 +11,14 @@
   color: $headings-color;
   font-weight: $headings-font-weight;
   text-transform: uppercase;
+
+  .btn-group.btn-group-sm {
+    margin-top: -6px;
+    margin-bottom: -6px;
+    > .btn {
+      padding: 6px 13px;
+    }
+  }
 }
 
 .panel-title {
@@ -24,10 +32,12 @@
 
   > .panel-heading {
     border-bottom: 0 none;
+    padding: 16px 20px;
   }
 
   > .panel-footer {
     border-top: 1px solid $body-bg;
+    padding: 16px 20px;
   }
 }
 

@@ -65,6 +65,10 @@ input[type="checkbox"],
   }
 }
 
+.text-required {
+  color:red;
+}
+
 .form-group.required {
   .control-label:after {
     content:"*";
@@ -120,4 +124,10 @@ input[type="checkbox"],
   .ui-select-match-item {
     margin-bottom: 2px;
   }
+}
+
+.drop-zone {
+  background-color: $gray-lighter;
+  border: 1px dashed $input-border;
+  color: $headings-color;
 }
