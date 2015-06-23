@@ -114,9 +114,14 @@ reqHrjc([
         }
     ]);
 
-    document.addEventListener('hrjcLoad', function(){
+    document.addEventListener('hrjcInit', function(){
         angular.bootstrap(document.getElementById('hrjob-contract'), ['hrjc']);
     });
 
+    document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('hrjcReady') : (function(){
+        var e = document.createEvent('Event');
+        e.initEvent('hrjcReady', true, true);
+        return e;
+    })());
 
 });

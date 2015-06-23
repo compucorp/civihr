@@ -11080,7 +11080,7 @@ a.list-group-item.active > #hrjob-contract .badge, .nav-pills > .active > a > #h
 /* line 74, ../sass/hrjc/partials/_navs.scss */
 #hrjob-contract .tabs-left > .nav-tabs {
   float: left;
-  margin-right: 20px;
+  margin-left: 0;
   border-right: 1px solid #e8eef0;
   margin-right: -1px;
 }
@@ -11107,7 +11107,7 @@ a.list-group-item.active > #hrjob-contract .badge, .nav-pills > .active > a > #h
 /* line 103, ../sass/hrjc/partials/_navs.scss */
 #hrjob-contract .tabs-right > .nav-tabs {
   float: right;
-  margin-left: 20px;
+  margin-right: 0px;
   border-left: 1px solid #e8eef0;
   margin-left: -1px;
 }

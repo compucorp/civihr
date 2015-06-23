@@ -5,6 +5,7 @@ define(['directives/directives'], function(directives){
         return {
             link: function ($scope, el, attrs) {
                 var loader = document.createElement('div'),
+                    loaderSet = false,
                     positionSet = false;
 
                 loader.className = 'hrjc-loader';
@@ -19,11 +20,15 @@ define(['directives/directives'], function(directives){
                         el.css('position','relative');
                         positionSet = true;
                     }
+
                     el.append(loader);
+                    loaderSet = true;
                 }
 
                 function removeLoader(){
-                    loader.remove();
+                    loaderSet && loader.parentNode.removeChild(loader);
+                    loaderSet = false;
+
                     if (positionSet) {
                         el.css('position','');
                     }

@@ -73,7 +73,7 @@
 .tabs-left {
   > .nav-tabs {
     float: left;
-    margin-right: 20px;
+    margin-left: 0;
     border-right: 1px solid $nav-tabs-border-color;
     margin-right: -1px;
 
@@ -102,7 +102,7 @@
 .tabs-right {
   > .nav-tabs {
     float: right;
-    margin-left: 20px;
+    margin-right: 0px;
     border-left: 1px solid $nav-tabs-border-color;
     margin-left: -1px;
 
