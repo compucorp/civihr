@@ -698,7 +698,7 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
                     'dbAlias' => 'hrjobcontract_role_civireport.percent_pay_role',
                 ),
                 'role_location' => array(
-                    'title' => ts('Location'),
+                    'title' => ts('Normal Place of Work'),
                     'no_repeat' => TRUE,
                     'dbAlias' => 'hrjobcontract_role_civireport.location',
                 ),

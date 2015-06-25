@@ -467,6 +467,15 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         return $this->_pensionTypeOptionsFlipped[$value];
     }
     
+    public function role_location_export($value)
+    {
+        return $this->details_location_export($value);
+    }
+    public function role_location_import($value)
+    {
+        return $this->details_location_import($value);
+    }
+    
     protected function _getAnnualReadableValues($field, $json)
     {
         $list = json_decode($json, true);
