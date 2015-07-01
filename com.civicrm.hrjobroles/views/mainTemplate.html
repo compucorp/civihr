@@ -1,11 +1,73 @@
 <div ng-controller="ExampleCtrl as jobroles">
-
     <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">
         {{jobroles.message}}
     </div>
+    <div ng-repeat="(key, job_roles) in jobroles.getData | groupBy: 'status'">
+        <h3 class="header-bar header-bar-primary" ng-show="key == 10">Current Roles and Projects:</h3>
+        <h3 class="header-bar header-bar-primary" ng-hide="key == 10">Past Roles and Projects:</h3>
+        <ul class="{{prefix}}list-role">
+            <li class="{{prefix}}list-role-item" ng-repeat="job_roles_data in job_roles">
+                <div class="panel panel-default">
+                    <div class="panel-heading {{prefix}}panel-action">
+                        <div class="row form-horizontal">
+                            <div class="col-xs-12 col-sm-5">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-sm-5 control-label">Role / Project Name:</label>
+                                    <div class="col-xs-12  col-sm-7">
+                                        <p class="form-control-static">{{edit_data[job_roles_data.id]['title']}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <a class="btn btn-collapse">
+                                    <i class="fa fa-chevron-down"></i>
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                        <div class="{{prefix}}role-details">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <tabset>
+                                        <tab heading="Basic Details">
+                                            <p>Lorem ipsum dolor sit amet 1</p>
+                                        </tab>
+                                        <tab heading="Funding">
+                                            <p>Lorem ipsum dolor sit amet 2</p>
+                                        </tab>
+                                        <tab heading="Cost Centers">
+                                            <p>Lorem ipsum dolor sit amet 3</p>
+                                        </tab>
+                                    </tabset>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <button class="btn btn-default btn-danger">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                        Delete this job role
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div ng-controller="ExampleCtrl as jobroles">
+
+    <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">
+        {{jobroles.message}} reg ergerg
+    </div>
 
     <div class="page-header">
-
         <h3 class="createrole" ng-show="add_new">Create New Role</h3>
 
         <button class="btn-setup btn btn-default btn-primary" ng-click="add_new_role()" ng-hide="add_new">

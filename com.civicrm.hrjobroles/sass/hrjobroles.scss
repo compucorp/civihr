@@ -1,12 +1,13 @@
-@import "modules/config";
+@import "civihr/modules/config";
 
 @import "compass/css3/border-radius";
 @import "compass/css3/box-shadow";
+@import "compass/css3/animation";
 @import "compass/css3/transform";
 
 ##{$module} {
   //Unset reset.css
-  @import "modules/unset";
+  @import "civihr/modules/unset";
 
   // bootstrap-sass v3.3.0.1
   // bootstrap/normalize and bootstrap/scaffolding customized to enable
@@ -15,19 +16,19 @@
   @import "bootstrap-sprockets";
 
   @import "bootstrap-compass";
-  @import "bootstrap-variables";
+  @import "civihr/bootstrap-variables";
 
   @import "bootstrap/variables";
   @import "bootstrap/mixins";
 
   // Reset and dependencies
-  @import "bootstrap/normalize-custom";
+  @import "civihr/bootstrap/normalize-custom";
   @include normalize;
   @import "bootstrap/print";
-  @import "bootstrap/glyphicons-custom";
+  @import "civihr/bootstrap/glyphicons-custom";
 
   // Core CSS
-  @import "bootstrap/scaffolding-custom";
+  @import "civihr/bootstrap/scaffolding-custom";
   @include scaffolding;
   @import "bootstrap/type";
   @import "bootstrap/code";
@@ -60,7 +61,7 @@
   @import "bootstrap/close";
 
   // Components w/ JavaScript
-  @import "bootstrap/modals-custom";
+  @import "civihr/bootstrap/modals-custom";
   @import "bootstrap/tooltip";
   @import "bootstrap/popovers";
   @import "bootstrap/carousel";
@@ -69,15 +70,50 @@
   @import "bootstrap/utilities";
   @import "bootstrap/responsive-utilities";
 
-  // CiviCRM Module Custom
+  // CiviHR Theme
   // ==========================================================================
-  @import "modules/variables";
-  @import "modules/print";
-  @import "modules/fontawesome";
-  @import "modules/angular";
-  @import "modules/utils";
+  @import "civihr/modules/variables";
+  @import "civihr/modules/print";
+  @import "civihr/modules/fontawesome";
+  @import "civihr/modules/fonts";
+  @import "civihr/modules/angular";
+  @import "civihr/modules/utils";
+  @import "civihr/modules/select";
+  @import "civihr/modules/textangular";
+  @import "civihr/modules/mixins";
+  @import "civihr/modules/animate";
 
-  @import "partials/global";
+  @import "civihr/partials/typography";
+  @import "civihr/partials/global";
   @include global;
-  @import "partials/example";
+  @import "civihr/partials/badge";
+  @import "civihr/partials/breadcrumb";
+  @import "civihr/partials/buttons";
+  @import "civihr/partials/collapse";
+  @import "civihr/partials/datepicker";
+  @import "civihr/partials/dropdowns";
+  @import "civihr/partials/forms";
+  @import "civihr/partials/iframe";
+  @import "civihr/partials/modals";
+  @import "civihr/partials/page-contact";
+  @import "civihr/partials/pagination";
+  @import "civihr/partials/panels";
+  @import "civihr/partials/select";
+  @import "civihr/partials/tables";
+  @import "civihr/partials/tooltip";
+  @import "civihr/partials/wells";
+
+  // CiviHR Job Roles Ext. Custom
+  // ==========================================================================
+  @import "hrjobroles/modules/print";
+  @import "hrjobroles/modules/animate";
+
+  @import "hrjobroles/partials/global";
+  @include global;
+  @import "hrjobroles/partials/collapse";
+  @import "hrjobroles/partials/list";
+  @import "hrjobroles/partials/navs";
+  @import "hrjobroles/partials/panels";
+  @import "hrjobroles/partials/example";
+
 }
