@@ -59,6 +59,30 @@ define(['controllers/controllers',
                 angular.forEach($scope.leave, function(leaveType, leaveTypeId){
                     angular.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
                 });
+            };
+
+            function updateContractList(newEndDate){
+                var isCurrentContract;
+
+                //Is contract end date changed
+                if ($scope.details.period_end_date ?
+                new Date($scope.details.period_end_date).getTime() !== new Date(newEndDate).getTime() :
+                !!$scope.details.period_end_date !== !!newEndDate) {
+
+                    isCurrentContract = !newEndDate || new Date(newEndDate) > new Date();
+
+                    if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
+                        if (isCurrentContract) {
+                            $scope.$parent.contract.is_current = '1';
+                            $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
+                            $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
+                        } else {
+                            $scope.$parent.contract.is_current = '0';
+                            $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
+                            $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
+                        }
+                    }
+                }
             }
 
             $q.all({
@@ -203,21 +227,18 @@ define(['controllers/controllers',
                         return;
                     }
 
-                    var isCurrentRevision = true,
-                        isCurrentContract;
-
                     if (results.revisionCreated) {
 
                         var dateEffectiveRevisionCreated = new Date(results.revisionCreated.effective_date).setHours(0, 0, 0, 0),
                             dateEffectiveRevisionCurrent = new Date($scope.revisionCurrent.effective_date).setHours(0, 0, 0, 0),
                             dateToday = new Date().setHours(0, 0, 0, 0);
 
-                        isCurrentRevision = (dateEffectiveRevisionCreated <= dateToday &&
-                        dateEffectiveRevisionCreated >= dateEffectiveRevisionCurrent) ||
-                        (dateEffectiveRevisionCurrent > dateToday &&
-                        dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent)
-
-                        if (isCurrentRevision) {
+                        //Is current revision
+                        if ((dateEffectiveRevisionCreated <= dateToday &&
+                            dateEffectiveRevisionCreated >= dateEffectiveRevisionCurrent) ||
+                            (dateEffectiveRevisionCurrent > dateToday &&
+                            dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent)) {
+                            updateContractList(results.details.period_end_date);
                             updateContractView(results);
                         }
 
@@ -231,6 +252,7 @@ define(['controllers/controllers',
                     } else {
                         var revisionListEntitiesView = ['details','hour','pay'], i, objExt;
 
+                        updateContractList(results.details.period_end_date);
                         updateContractView(results);
 
                         if ($scope.contract.is_primary != results.contract.is_primary) {
@@ -250,29 +272,6 @@ define(['controllers/controllers',
                             }
 
                         })
-                    }
-
-                    if (isCurrentRevision) {
-
-                        //Is contract end date changed
-                        if ($scope.details.period_end_date ?
-                            new Date($scope.details.period_end_date).getTime() !== new Date(results.details.period_end_date).getTime() :
-                            !!$scope.details.period_end_date !== !!results.details.period_end_date) {
-
-                            isCurrentContract = !results.details.period_end_date || new Date(results.details.period_end_date) > new Date();
-
-                            if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
-                                if (isCurrentContract) {
-                                    $scope.$parent.contract.is_current = '1';
-                                    $scope.$parent.$parent.contractCurrent.push($scope.$parent.contract);
-                                    $scope.$parent.$parent.contractPast.splice($scope.$parent.$parent.contractPast.indexOf($scope.$parent.contract),1);
-                                } else {
-                                    $scope.$parent.contract.is_current = '0';
-                                    $scope.$parent.$parent.contractPast.push($scope.$parent.contract);
-                                    $scope.$parent.$parent.contractCurrent.splice($scope.$parent.$parent.contractCurrent.indexOf($scope.$parent.contract),1)
-                                }
-                            }
-                        }
                     }
 
                     if (results.files) {
