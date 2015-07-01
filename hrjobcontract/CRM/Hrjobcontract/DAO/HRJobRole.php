@@ -405,7 +405,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                 'hrjobcontract_role_location' => array(
                   'name' => 'location',
                   'type' => CRM_Utils_Type::T_STRING,
-                  'title' => ts('Location') ,
+                  'title' => ts('Normal Place of Work') ,
                   'export' => true,
                   'import' => true,
                   'maxlength' => 127,
@@ -416,7 +416,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'pseudoconstant' => array(
                     'optionGroupName' => 'hrjc_location',
                   ),
-                  'headerPattern' => '/^location/i',
+                  'headerPattern' => '/^normal\s?place\s?of\s?work/i',
                 ) ,
             )
         );
