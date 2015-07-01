@@ -10952,6 +10952,20 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
   padding-bottom: 10px;
   padding-top: 10px;
 }
+/* line 2, ../sass/hrjobroles/partials/_forms.scss */
+#hrjobroles .form-group .form-group.editable-controls {
+  margin: 0;
+}
+/* line 6, ../sass/hrjobroles/partials/_forms.scss */
+#hrjobroles .form-group .editable-textarea {
+  display: block;
+}
+/* line 10, ../sass/hrjobroles/partials/_forms.scss */
+#hrjobroles .form-group .editable-empty,
+#hrjobroles .form-group .editable-empty:hover,
+#hrjobroles .form-group .editable-empty:focus {
+  color: #727e8a;
+}
 /* line 1, ../sass/hrjobroles/partials/_list.scss */
 #hrjobroles .hrjobroles-list-role {
   list-style: none;
@@ -11129,6 +11143,18 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 #hrjobroles .hrjobroles-panel-action + .panel-body {
   padding-bottom: 10px;
   padding-top: 10px;
+}
+/* line 1, ../sass/hrjobroles/partials/_basic-details.scss */
+#hrjobroles .hrjobroles-basic-details {
+  padding: 20px 20px 10px 20px;
+}
+/* line 4, ../sass/hrjobroles/partials/_basic-details.scss */
+#hrjobroles .hrjobroles-basic-details .form-group {
+  margin-bottom: 10px;
+}
+/* line 7, ../sass/hrjobroles/partials/_basic-details.scss */
+#hrjobroles .hrjobroles-basic-details .form-group .form-control-static {
+  min-height: 31px;
 }
 /* line 1, ../sass/hrjobroles/partials/_example.scss */
 #hrjobroles .add-new-row {
