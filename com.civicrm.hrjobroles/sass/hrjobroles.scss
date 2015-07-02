@@ -110,11 +110,13 @@
 
   @import "hrjobroles/partials/global";
   @include global;
+  @import "hrjobroles/partials/buttons";
   @import "hrjobroles/partials/collapse";
   @import "hrjobroles/partials/forms";
   @import "hrjobroles/partials/list";
   @import "hrjobroles/partials/navs";
   @import "hrjobroles/partials/panels";
+  @import "hrjobroles/partials/tables";
   @import "hrjobroles/partials/basic-details";
   @import "hrjobroles/partials/example";
 

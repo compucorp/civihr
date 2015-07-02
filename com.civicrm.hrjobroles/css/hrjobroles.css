@@ -10947,6 +10947,22 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
   -webkit-box-shadow: none;
   box-shadow: none;
 }
+/* line 1, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-tab-action {
+  margin-top: -31px;
+}
+/* line 4, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-tab-action .glyphicon {
+  margin-right: 3px;
+}
+/* line 8, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-group-tab-action {
+  margin-top: -31px;
+}
+/* line 11, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-group-tab-action .btn-tab-action {
+  margin-top: 0;
+}
 /* line 1, ../sass/hrjobroles/partials/_collapse.scss */
 #hrjobroles .hrjobroles-role-details {
   padding-bottom: 10px;
@@ -11143,6 +11159,32 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 #hrjobroles .hrjobroles-panel-action + .panel-body {
   padding-bottom: 10px;
   padding-top: 10px;
+}
+/* line 1, ../sass/hrjobroles/partials/_tables.scss */
+#hrjobroles .hrjobroles-table-sort {
+  margin-bottom: 0;
+}
+/* line 4, ../sass/hrjobroles/partials/_tables.scss */
+#hrjobroles .hrjobroles-table-sort > thead > tr,
+#hrjobroles .hrjobroles-table-sort > tbody > tr:nth-child(even) {
+  background-color: #f4f7f8;
+}
+/* line 9, ../sass/hrjobroles/partials/_tables.scss */
+#hrjobroles .hrjobroles-table-sort th > a {
+  color: #525966;
+  padding-right: 15px;
+  position: relative;
+}
+/* line 14, ../sass/hrjobroles/partials/_tables.scss */
+#hrjobroles .hrjobroles-table-sort th > a .fa {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-top: -6px;
+}
+/* line 22, ../sass/hrjobroles/partials/_tables.scss */
+#hrjobroles .hrjobroles-table-sort .form-group {
+  margin-bottom: 0;
 }
 /* line 1, ../sass/hrjobroles/partials/_basic-details.scss */
 #hrjobroles .hrjobroles-basic-details {
