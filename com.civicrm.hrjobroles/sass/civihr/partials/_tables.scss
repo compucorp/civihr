@@ -1,0 +1,54 @@
+.table {
+
+  > tbody,
+  > tfoot {
+    > tr {
+
+      > th {
+        border-top: 0 none;
+      }
+
+      > td {
+        border-top: 0 none;
+
+        .#{$prefix}context-menu-toggle {
+          margin: -2px 0;
+          position: relative;
+          top: 1px;
+        }
+
+        &.checkbox {
+          padding: $table-cell-padding;
+          text-align: left;
+        }
+      }
+
+    }
+  }
+
+  > thead {
+    > tr {
+      > th,
+      > th.checkbox {
+        border: 0 none;
+        color: $headings-color;
+        font-size: $font-size-h3;
+        font-weight: $headings-font-weight;
+        padding: {
+          bottom: 12px;
+          top: 10px;
+        };
+        text-align: left;
+
+        label {
+          font-weight: $headings-font-weight;
+        }
+      }
+
+      > td {
+        border-top: 0 none;
+      }
+    }
+  }
+
+}

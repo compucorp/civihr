@@ -2,7 +2,7 @@
 {assign var="prefix" value="hrjobroles-" }
 
 <div id="{$module}" >
-    <div class="container-fluid" ng-view></div>
+    <div class="container" ng-view></div>
 </div>
 
 {literal}
