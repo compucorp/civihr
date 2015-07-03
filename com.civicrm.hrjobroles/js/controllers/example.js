@@ -21,7 +21,7 @@ define(['controllers/controllers'], function(controllers){
             $scope.edit_data = {};
 
             // Define the add new role URL
-            $scope.add_new_role_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'add_new_role.html?v='+(new Date().getTime());
+            $scope.add_new_role_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'add_new_role.html';
 
             // Store the contractsData
             $scope.contractsData = [];

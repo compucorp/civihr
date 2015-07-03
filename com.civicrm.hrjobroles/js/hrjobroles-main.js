@@ -35,7 +35,7 @@ reqHrjr([
             $routeProvider.
                 when('/', {
                     controller: 'ExampleCtrl',
-                    templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html?v='+ (new Date().getTime()),
+                    templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
                     resolve: {}
                 }).
                 otherwise({redirectTo:'/'});
