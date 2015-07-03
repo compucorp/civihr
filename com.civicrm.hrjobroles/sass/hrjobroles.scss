@@ -4,6 +4,7 @@
 @import "compass/css3/box-shadow";
 @import "compass/css3/animation";
 @import "compass/css3/transform";
+@import "compass/css3/transition";
 
 ##{$module} {
   //Unset reset.css
@@ -118,6 +119,7 @@
   @import "hrjobroles/partials/panels";
   @import "hrjobroles/partials/tables";
   @import "hrjobroles/partials/basic-details";
+  @import "hrjobroles/partials/switch";
   @import "hrjobroles/partials/example";
 
 }

@@ -11,15 +11,21 @@
                         <div class="row form-horizontal">
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group">
-                                    <label class="col-xs-12 col-sm-5 control-label">Role / Project Name:</label>
+                                    <label class="col-xs-12 col-sm-5 control-label control-label-lg">Role / Project Name:</label>
                                     <div class="col-xs-12  col-sm-7">
-                                        <p class="form-control-static">{{edit_data[job_roles_data.id]['title']}}</p>
+                                        <p class="form-control-static form-control-static-lg">{{edit_data[job_roles_data.id]['title']}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'status', job_roles_data.status)">
-                                    <select ng-init="edit_data[job_roles_data.id]['status'] = job_roles_data.status" ng-options="k as filterItem.name for (k, filterItem) in filterItems" ng-model="edit_data[job_roles_data.id]['status']" ng-change="filterChange(job_roles_data.id)"></select>
+                                    <div class="col-xs-12 col-sm-3 col-lg-2 control-label">Active:</div>
+                                    <div class="col-xs-12 col-sm-3">
+                                        <div class="form-control-static">
+                                            <input class="{{prefix}}switch" name="status-switch-{{key}}-{{$index}}" id="status-switch-{{key}}-{{$index}}" type="checkbox" ng-init="edit_data[job_roles_data.id]['status'] = job_roles_data.status" ng-model="edit_data[job_roles_data.id]['status']" ng-true-value="10" ng-false-value="20" ng-change="filterChange(job_roles_data.id)">
+                                            <label for="status-switch-{{key}}-{{$index}}"></label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -197,7 +203,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                                                                        <a href ng-disabled="tableform.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'funder')" class=" btn"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
+                                                                        <a href ng-disabled="tableform.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'funder')" class=" btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

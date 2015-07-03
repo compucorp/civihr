@@ -7,18 +7,27 @@
 
   @include grid-condensed(5px);
 
-  .control-label,
-  .form-control-static {
+  .#{$prefix}switch + label {
+    position: relative;
+    top: 4px;
+  }
+
+  .control-label {
+    padding-top: 8px;
+  }
+
+  .control-label-lg,
+  .form-control-static-lg {
     font-size: 14px;
+    padding: {
+      bottom: 7px;
+      top: 7px;
+    };
   }
 
   .form-control-static {
     text-transform: none;
     font-weight: normal;
-    padding: {
-      bottom: 7px;
-      top: 7px;
-    };
   }
 
   .form-group {

@@ -247,11 +247,6 @@ define(['controllers/controllers'], function(controllers){
                 getJobRolesList($scope.$parent.contactId);
             }
 
-            // Select list for Status options
-            $scope.filterItems = {};
-            $scope.filterItems[10] = {id: 10, name: 'Active'};
-            $scope.filterItems[20] = {id: 20, name: 'Inactive'};
-
             // Select list for Row Types (used for Funders and Cost Centers)
             $scope.rowTypes = {};
             $scope.rowTypes[0] = {id: 0, name: 'Fixed'};

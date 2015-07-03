@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* line 8, ../sass/hrjobroles.scss */
+/* line 9, ../sass/hrjobroles.scss */
 #hrjobroles {
   /**
    * Unset Eric Meyer's Reset CSS styles.
@@ -7371,7 +7371,7 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
   position: fixed;
 }
 @-ms-viewport {
-  /* line 8, ../sass/hrjobroles.scss */
+  /* line 9, ../sass/hrjobroles.scss */
   #hrjobroles {
     width: device-width;
   }
@@ -10963,13 +10963,22 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 #hrjobroles .btn-tab-action .glyphicon {
   margin-right: 3px;
 }
-/* line 16, ../sass/hrjobroles/partials/_buttons.scss */
+/* line 17, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-group-tab-action {
   margin-top: -31px;
 }
-/* line 19, ../sass/hrjobroles/partials/_buttons.scss */
+/* line 20, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-group-tab-action .btn-tab-action {
   margin-top: 0;
+}
+/* line 25, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-link {
+  font-size: 13px;
+  text-transform: none;
+}
+/* line 29, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-link:hover, #hrjobroles .btn-link:focus {
+  text-decoration: none;
 }
 /* line 1, ../sass/hrjobroles/partials/_collapse.scss */
 #hrjobroles .hrjobroles-role-details {
@@ -11148,22 +11157,32 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
   padding-right: 5px;
 }
 /* line 10, ../sass/hrjobroles/partials/_panels.scss */
-#hrjobroles .hrjobroles-panel-action .control-label,
-#hrjobroles .hrjobroles-panel-action .form-control-static {
-  font-size: 14px;
+#hrjobroles .hrjobroles-panel-action .hrjobroles-switch + label, #hrjobroles .hrjobroles-panel-action .hrjobroles-switch + .checkbox-label,
+#hrjobroles .hrjobroles-panel-action .hrjobroles-switch + .radio-label {
+  position: relative;
+  top: 4px;
 }
 /* line 15, ../sass/hrjobroles/partials/_panels.scss */
-#hrjobroles .hrjobroles-panel-action .form-control-static {
-  text-transform: none;
-  font-weight: normal;
+#hrjobroles .hrjobroles-panel-action .control-label {
+  padding-top: 8px;
+}
+/* line 19, ../sass/hrjobroles/partials/_panels.scss */
+#hrjobroles .hrjobroles-panel-action .control-label-lg,
+#hrjobroles .hrjobroles-panel-action .form-control-static-lg {
+  font-size: 14px;
   padding-bottom: 7px;
   padding-top: 7px;
 }
-/* line 24, ../sass/hrjobroles/partials/_panels.scss */
+/* line 28, ../sass/hrjobroles/partials/_panels.scss */
+#hrjobroles .hrjobroles-panel-action .form-control-static {
+  text-transform: none;
+  font-weight: normal;
+}
+/* line 33, ../sass/hrjobroles/partials/_panels.scss */
 #hrjobroles .hrjobroles-panel-action .form-group {
   margin-bottom: 0;
 }
-/* line 28, ../sass/hrjobroles/partials/_panels.scss */
+/* line 37, ../sass/hrjobroles/partials/_panels.scss */
 #hrjobroles .hrjobroles-panel-action + .panel-body {
   padding-bottom: 10px;
   padding-top: 10px;
@@ -11205,6 +11224,77 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 /* line 7, ../sass/hrjobroles/partials/_basic-details.scss */
 #hrjobroles .hrjobroles-basic-details .form-group .form-control-static {
   min-height: 31px;
+}
+/* line 1, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch {
+  position: absolute;
+  margin-left: -9999px !important;
+  visibility: hidden;
+}
+/* line 6, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch + label, #hrjobroles .hrjobroles-switch + .checkbox-label,
+#hrjobroles .hrjobroles-switch + .radio-label {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  width: 24px;
+  height: 13px;
+  -moz-border-radius: 11px;
+  -webkit-border-radius: 11px;
+  border-radius: 11px;
+}
+/* line 19, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch + label:after, #hrjobroles .hrjobroles-switch + .checkbox-label:after,
+#hrjobroles .hrjobroles-switch + .radio-label:after, #hrjobroles .hrjobroles-switch + label:before, #hrjobroles .hrjobroles-switch + .checkbox-label:before,
+#hrjobroles .hrjobroles-switch + .radio-label:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  content: "";
+}
+/* line 29, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch + label:before, #hrjobroles .hrjobroles-switch + .checkbox-label:before,
+#hrjobroles .hrjobroles-switch + .radio-label:before {
+  right: 0;
+  background-color: #db6c86;
+  -moz-border-radius: 11px;
+  -webkit-border-radius: 11px;
+  border-radius: 11px;
+  -webkit-transition: background 0.4s;
+  -o-transition: background 0.4s;
+  transition: background 0.4s;
+}
+/* line 36, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch + label:after, #hrjobroles .hrjobroles-switch + .checkbox-label:after,
+#hrjobroles .hrjobroles-switch + .radio-label:after {
+  width: 11px;
+  height: 11px;
+  background-color: #fff;
+  top: 1px;
+  left: 1px;
+  -moz-border-radius: 100%;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  -webkit-transition: margin 0.4s;
+  -o-transition: margin 0.4s;
+  transition: margin 0.4s;
+}
+/* line 52, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch:checked + label:before, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:before,
+#hrjobroles .hrjobroles-switch:checked + .radio-label:before {
+  background-color: #42b0cb;
+}
+/* line 56, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch:checked + label:after, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:after,
+#hrjobroles .hrjobroles-switch:checked + .radio-label:after {
+  margin-left: 11px;
 }
 /* line 1, ../sass/hrjobroles/partials/_example.scss */
 #hrjobroles .add-new-row {
