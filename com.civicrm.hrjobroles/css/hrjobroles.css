@@ -10949,17 +10949,25 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 }
 /* line 1, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-tab-action {
+  background-color: transparent;
+  color: #525966;
   margin-top: -31px;
 }
-/* line 4, ../sass/hrjobroles/partials/_buttons.scss */
+/* line 6, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-tab-action:hover, #hrjobroles .btn-tab-action:active {
+  color: #727e8a;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+/* line 12, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-tab-action .glyphicon {
   margin-right: 3px;
 }
-/* line 8, ../sass/hrjobroles/partials/_buttons.scss */
+/* line 16, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-group-tab-action {
   margin-top: -31px;
 }
-/* line 11, ../sass/hrjobroles/partials/_buttons.scss */
+/* line 19, ../sass/hrjobroles/partials/_buttons.scss */
 #hrjobroles .btn-group-tab-action .btn-tab-action {
   margin-top: 0;
 }

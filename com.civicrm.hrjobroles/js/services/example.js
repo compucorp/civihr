@@ -284,7 +284,7 @@ define(['services/services'], function (services) {
 
                 CRM.api3('Contact', 'get', {
                     "sequential": 1,
-                    "return": "id,sort_name",
+                    "return": "id,sort_name"
                 }).done(function(result) {
 
                     // Passing data to deferred's resolve function on successful completion
