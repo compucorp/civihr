@@ -59,7 +59,7 @@
         <td>
           <%
           var balance = collection.calculateSubtotal(function(absence){
-            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id && (FieldOptions.status_id[absence.get('status_id')]== "Approved" || FieldOptions.status_id[absence.get('status_id')]== "Requested");
+            return absence.get('activity_type_id') == actId && absence.getPeriodId() == period_id && (FieldOptions.status_id[absence.get('status_id')] != "Rejected" && FieldOptions.status_id[absence.get('status_id')] != "Cancelled");
           });
           var entitlement = entitlementCollection.findByTypeAndPeriod(
             absenceTypeCollection.findByDebitTypeId(actId),
