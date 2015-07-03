@@ -3,7 +3,7 @@
     <div class="alert alert-warning" ng-show="jobroles.empty">{{jobroles.empty}}</div>
     <div ng-repeat="(key, job_roles) in jobroles.getData | groupBy: 'status'">
         <h3 class="header-bar header-bar-primary" ng-show="key == 10">Current Roles and Projects:</h3>
-        <h3 class="header-bar header-bar-danger" ng-hide="key == 10">Past Roles and Projects:</h3>
+        <h3 class="header-bar header-bar-danger" ng-show="key == 20">Past Roles and Projects:</h3>
         <ul class="{{prefix}}list-role">
             <li class="{{prefix}}list-role-item" ng-repeat="job_roles_data in job_roles">
                 <div class="panel panel-default">
@@ -273,7 +273,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                                                                        <a href ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')" class=" btn"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
+                                                                        <a href ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Center</a>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

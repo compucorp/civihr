@@ -10980,6 +10980,11 @@ a.list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjob
 #hrjobroles .btn-link:hover, #hrjobroles .btn-link:focus {
   text-decoration: none;
 }
+/* line 34, ../sass/hrjobroles/partials/_buttons.scss */
+#hrjobroles .btn-link .glyphicon {
+  font-size: 11px;
+  top: 0;
+}
 /* line 1, ../sass/hrjobroles/partials/_collapse.scss */
 #hrjobroles .hrjobroles-role-details {
   padding-bottom: 10px;
