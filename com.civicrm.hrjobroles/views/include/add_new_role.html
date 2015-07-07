@@ -18,20 +18,24 @@
                 <div class="col-xs-12">
                     <tabset>
                         <tab heading="Basic Details">
-                            <form class="form-horizontal" role="form">
+                            <form name="form" class="form-horizontal" role="form">
                                 <div class="{{prefix}}basic-details">
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-6">
                                             <div class="form-group">
-                                                <label for="inputTitle" class="col-xs-4 control-label">Title:</label>
+                                                <label for="inputTitle" class="col-xs-4 control-label">Title:
+                                                    <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.title.$error.required"></i>
+                                                </label>
                                                 <div class="col-xs-6 control-label">
-                                                    <input type="text" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="edit_data['new_role_id']['title']" ng-change="showSave('new_role_id')">
+                                                    <input type="text" name="title" class="form-control" id="inputTitle" placeholder="Enter role title" ng-model="edit_data['new_role_id']['title']" ng-change="showSave('new_role_id')" required />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label for="newContractId" class="col-xs-4 control-label">Contract:</label>
+                                                <label for="newContractId" class="col-xs-4 control-label">Contract:
+                                                    <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.contract.$error.required"></i>
+                                                </label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control"></select>
+                                                    <select name="contract" ng-options="k as v.title for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control" required></select>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -217,7 +221,8 @@
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <button type="submit" class="btn btn-success" ng-click="saveNewRole()">
+
+                    <button type="submit" class="btn btn-success" ng-click="saveNewRole()" ng-disabled="checkNewRole()">
                         <span class="fa fa-save" aria-hidden="true"></span> Save New Role
                     </button>
 

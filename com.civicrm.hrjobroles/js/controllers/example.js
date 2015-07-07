@@ -193,6 +193,25 @@ define(['controllers/controllers'], function(controllers){
                 $scope.edit_data[row_id]['is_edit'] = true;
             }
 
+            /**
+             * Check if we allow to submit the form
+             * Rule -> Allow only if the minimum required data are filled
+             * @returns {boolean}
+             */
+            $scope.checkNewRole = function() {
+
+                if(typeof $scope.edit_data['new_role_id'] === 'undefined'
+                    || typeof $scope.edit_data['new_role_id']['title'] === 'undefined'
+                    || $scope.edit_data['new_role_id']['title'] == ''
+                    || typeof $scope.edit_data['new_role_id']['job_contract_id'] === 'undefined'
+                    || $scope.edit_data['new_role_id']['job_contract_id'] == '') {
+
+                    return true;
+                }
+
+                return false;
+            }
+
             // Saves the new Job Role
             $scope.saveNewRole = function(data) {
 
