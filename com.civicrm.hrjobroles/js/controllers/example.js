@@ -5,7 +5,6 @@ define(['controllers/controllers'], function(controllers){
 
             // Validate fields
             $scope.validateTitle = function(data) {
-                console.log(data);
                 if (data == 'title' || data == ' ') {
                     return "Title cannot be title!";
                 }
@@ -191,9 +190,6 @@ define(['controllers/controllers'], function(controllers){
 
             // Set the is_edit value
             $scope.showSave = function(row_id) {
-
-                console.log($scope.edit_data);
-
                 $scope.edit_data[row_id]['is_edit'] = true;
             }
 
@@ -237,8 +233,6 @@ define(['controllers/controllers'], function(controllers){
             $scope.updateRole = function(role_id) {
 
                 $log.debug('Update Role');
-                console.log(role_id);
-                console.log($scope.edit_data[role_id]);
 
                 // Update the job role
                 updateJobRole(role_id, $scope.edit_data[role_id]);
@@ -253,19 +247,6 @@ define(['controllers/controllers'], function(controllers){
             $scope.rowTypes[1] = {id: 1, name: '%'};
 
             //$scope.rowTypes = [ {id: 0, name: 'Fixed'}, {id: 1, name: '%'}];
-
-            // Change the current filter value and update the Role Data
-            $scope.filterChange = function(role_id) {
-
-                $log.debug('Update Role status');
-
-                // Update the job role
-                updateJobRole(role_id, $scope.edit_data[role_id]);
-
-                // Get job roles based on the passed Contact ID (refresh part of the page)
-                getJobRolesList($scope.$parent.contactId);
-
-            }
 
             // Show Row Type default value
             $scope.showRowType = function(object) {
@@ -303,9 +284,6 @@ define(['controllers/controllers'], function(controllers){
             // Add additional rows (funder or cost centres)
             $scope.addAdditionalRow = function(role_id, row_type) {
 
-                console.log(role_id);
-
-                console.log(row_type);
                 // Check if we have the array already
                 if (typeof $scope.edit_data[role_id] == "undefined") {
                     $scope.edit_data[role_id] = {};
@@ -588,16 +566,48 @@ define(['controllers/controllers'], function(controllers){
                                 // Job contract IDs which will be passed to the "getAllJobRoles" service
                                 job_contract_ids.push(data.values[i]['id']);
 
-                                contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title']};
+                                // Check the period end date
+                                if (data.values[i]['period_end_date'] == undefined) {
+
+                                    // No period end date defined (means contract is active)
+                                    var status = '10';
+                                }
+                                else {
+
+                                    // Get the current date
+                                    var today = new Date();
+                                    var period_end_date = new Date();
+
+                                    var date_values = data.values[i]['period_end_date'].split("-");
+
+                                    // Javascript calculates the months from 0 (so we use month - 1)
+                                    period_end_date.setFullYear(date_values[0], date_values[1] - 1, date_values[2]);
+
+                                    // If the period end date is in the future or today's date set the contract to active
+                                    if (period_end_date >= today) {
+                                        var status = '10';
+                                    }
+                                    else {
+                                        var status = '20';
+                                    }
+
+                                }
+
+                                contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title'], status: status};
                             }
 
                             // Store the ContractsData what we can reuse later
                             job_roles.contractsData = contractsData;
 
-                            ExampleService.getAllJobRoles(job_contract_ids).then(function(data){
-                                    job_roles.getData = data.values;
+                            ExampleService.getAllJobRoles(job_contract_ids).then(function(data) {
 
-                                    console.log(job_roles.getData);
+                                    // Overwrite whatever status is stored in job roles table with the status based on the assigned job contract
+                                    angular.forEach(data.values, function(object_data, key) {
+                                        data.values[key]['status'] = job_roles.contractsData[object_data.job_contract_id].status;
+                                    });
+
+                                    // Assign data
+                                    job_roles.getData = data.values;
 
                                     if (data.is_error == 1) {
                                         job_roles.status = 'Data load failure';

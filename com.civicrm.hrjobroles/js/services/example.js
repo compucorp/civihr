@@ -14,7 +14,7 @@ define(['services/services'], function (services) {
                     "sequential": 1,
                     "contact_id": contact_id,
                     "deleted": 0,
-                    "return": "title"
+                    "return": "title,period_end_date"
                 }).done(function(result) {
 
                     // Passing data to deferred's resolve function on successful completion
@@ -83,8 +83,6 @@ define(['services/services'], function (services) {
 
             createJobRole: function(job_roles_data) {
 
-                console.log(job_roles_data);
-
                 // Define funder IDs string
                 var funders = "|";
 
@@ -116,8 +114,6 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.funders.length; i < l; i++) {
 
                         if (job_roles_data.funders[i]) {
-                            console.log(job_roles_data.funders[i]['funder_id']['id']);
-
                             funders += job_roles_data.funders[i]['funder_id']['id'] + "|";
                             funder_types += job_roles_data.funders[i]['type'] + "|";
                             percent_funders += job_roles_data.funders[i]['percentage'] + "|";
@@ -133,8 +129,6 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
 
                         if (job_roles_data.cost_centers[i]) {
-                            console.log(job_roles_data.cost_centers[i]['cost_centre_id']['id']);
-
                             cost_centers += job_roles_data.cost_centers[i]['cost_centre_id']['id'] + "|";
                             cost_center_types += job_roles_data.cost_centers[i]['type'] + "|";
                             percent_cost_centers += job_roles_data.cost_centers[i]['percentage'] + "|";
@@ -164,7 +158,6 @@ define(['services/services'], function (services) {
                     "department": job_roles_data.department
                 }).done(function(result) {
 
-                    console.log(result);
                     // Passing data to deferred's resolve function on successful completion
                     deferred.resolve(result);
 
@@ -212,8 +205,6 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.funders.length; i < l; i++) {
 
                         if (job_roles_data.funders[i]) {
-                            console.log(job_roles_data.funders[i]);
-
                             funders += job_roles_data.funders[i]['funder_id']['id'] + "|";
                             funder_types += job_roles_data.funders[i]['type'] + "|";
                             percent_funders += job_roles_data.funders[i]['percentage'] + "|";
@@ -229,8 +220,6 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
 
                         if (job_roles_data.cost_centers[i]) {
-                            console.log(job_roles_data.cost_centers[i]['cost_centre_id']['id']);
-
                             cost_centers += job_roles_data.cost_centers[i]['cost_centre_id']['id'] + "|";
                             cost_center_types += job_roles_data.cost_centers[i]['type'] + "|";
                             percent_cost_centers += job_roles_data.cost_centers[i]['percentage'] + "|";
@@ -304,16 +293,12 @@ define(['services/services'], function (services) {
 
             getOptionValues: function(option_group_name) {
 
-                console.log(option_group_name);
-
                 var deferred = $q.defer();
 
                 CRM.api3('OptionGroup', 'get', {
                     "sequential": 1,
                     "name": option_group_name
                 }).done(function(option_group_data) {
-                    console.log(option_group_data);
-
                     if (option_group_data.is_error !== 1) {
 
                         CRM.api3('OptionValue', 'get', {
