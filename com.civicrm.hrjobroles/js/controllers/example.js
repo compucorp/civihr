@@ -226,6 +226,9 @@ define(['controllers/controllers'], function(controllers){
                 // Hide the add new form
                 $scope.add_new = false;
 
+                // Remove if any data are added / Reset form
+                delete $scope.edit_data['new_role_id'];
+
                 // Hide the empty message if visible
                 $scope.empty = false;
 
@@ -239,6 +242,9 @@ define(['controllers/controllers'], function(controllers){
             // Hides the add new job role form
             $scope.cancelNewRole = function() {
                 $scope.add_new = false;
+
+                // Remove if any data are added / Reset form
+                delete $scope.edit_data['new_role_id'];
             }
 
             // Removes the Role based on Role ID
