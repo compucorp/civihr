@@ -69,7 +69,7 @@ define(['controllers/controllers',
                 new Date($scope.details.period_end_date).getTime() !== new Date(newEndDate).getTime() :
                 !!$scope.details.period_end_date !== !!newEndDate) {
 
-                    isCurrentContract = !newEndDate || new Date(newEndDate) > new Date();
+                    isCurrentContract = !newEndDate || new Date(newEndDate).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
 
                     if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
                         if (isCurrentContract) {
