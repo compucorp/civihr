@@ -217,7 +217,13 @@
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <button type="submit" class="btn btn-success" ng-click="saveNewRole()">Save new role</button>
+                    <button type="submit" class="btn btn-success" ng-click="saveNewRole()">
+                        <span class="fa fa-save" aria-hidden="true"></span> Save New Role
+                    </button>
+
+                    <button class="btn btn-danger pull-right" ng-click="cancelNewRole()">
+                        <span class="fa fa-remove" aria-hidden="true"></span> Cancel
+                    </button>
                 </div>
             </div>
         </div>

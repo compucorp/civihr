@@ -217,6 +217,11 @@ define(['controllers/controllers'], function(controllers){
                 $scope.add_new = true;
             }
 
+            // Hides the add new job role form
+            $scope.cancelNewRole = function() {
+                $scope.add_new = false;
+            }
+
             // Removes the Role based on Role ID
             $scope.removeRole = function(row_id) {
 
