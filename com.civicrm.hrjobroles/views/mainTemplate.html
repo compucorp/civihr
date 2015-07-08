@@ -241,8 +241,8 @@
                                                                 <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                                     <td>
                                                                         <!-- editable cost centre (text with validation) -->
-                                                                        <span editable-text="cost_centre.cost_centre_id" e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
-                                                                            {{ cost_centre.cost_centre_id.sort_name || 'empty' }}
+                                                                        <span editable-text="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
+                                                                            {{ cost_centre.cost_centre_id || 'empty' }}
                                                                         </span>
                                                                     </td>
                                                                     <td>

@@ -129,7 +129,7 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
 
                         if (job_roles_data.cost_centers[i]) {
-                            cost_centers += job_roles_data.cost_centers[i]['cost_centre_id']['id'] + "|";
+                            cost_centers += job_roles_data.cost_centers[i]['cost_centre_id'] + "|";
                             cost_center_types += job_roles_data.cost_centers[i]['type'] + "|";
                             percent_cost_centers += job_roles_data.cost_centers[i]['percentage'] + "|";
                             amount_cost_centers += job_roles_data.cost_centers[i]['amount'] + "|";
@@ -220,7 +220,7 @@ define(['services/services'], function (services) {
                     for (var i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
 
                         if (job_roles_data.cost_centers[i]) {
-                            cost_centers += job_roles_data.cost_centers[i]['cost_centre_id']['id'] + "|";
+                            cost_centers += job_roles_data.cost_centers[i]['cost_centre_id'] + "|";
                             cost_center_types += job_roles_data.cost_centers[i]['type'] + "|";
                             percent_cost_centers += job_roles_data.cost_centers[i]['percentage'] + "|";
                             amount_cost_centers += job_roles_data.cost_centers[i]['amount'] + "|";

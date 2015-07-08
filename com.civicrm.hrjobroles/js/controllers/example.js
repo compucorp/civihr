@@ -157,7 +157,7 @@ define(['controllers/controllers'], function(controllers){
                             // Set default funder rows funder rows
                             $scope.edit_data[role_id]['cost_centers'].push({
                                 id: $scope.edit_data[role_id]['cost_centers'].length + 1,
-                                cost_centre_id: { id: cost_center_contact_ids[i], sort_name: job_roles.contactListObject[cost_center_contact_ids[i]]['sort_name'] },
+                                cost_centre_id: cost_center_contact_ids[i],
                                 type: cost_center_types[i],
                                 percentage: percent_cost_centers[i],
                                 amount: amount_cost_centers[i]
@@ -263,7 +263,7 @@ define(['controllers/controllers'], function(controllers){
             $scope.updateRole = function(role_id) {
 
                 $log.debug('Update Role');
-
+                
                 // Update the job role
                 updateJobRole(role_id, $scope.edit_data[role_id]);
 
@@ -659,7 +659,6 @@ define(['controllers/controllers'], function(controllers){
                                 });
                         }
                         else {
-                            console.log('no job contract');
                             job_roles.empty = 'No Job Contracts found for this Contact!';
                         }
 
