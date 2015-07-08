@@ -74,6 +74,21 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $publicHolidays = json_encode($publicHolidays);
     $this->assign('publicHolidays', $publicHolidays);
 
+    // Load the activity entity
+    $main_activity = entity_load_single('civicrm_activity', $this->_aid);
+
+    // Check if attachment is set
+    if (isset($main_activity->field_attachment['und'][0]['uri'])) {
+      $imgpath = $main_activity->field_attachment['und'][0]['uri'];
+      $markup = '<div class="show-attached-file"><div class="show-attached-file-label"><b>' . t('Attached file: ') . '</b></div>' . l("View Attachment", file_create_url($imgpath), array('html' => TRUE, 'attributes' => array('target' => '_blank'))) . '</div>';
+    }
+    else {
+      $markup = ts('No File Attached!');
+    }
+
+    // Assign the attached file URL
+    $this->assign('attachedFile', $markup);
+
     if (($this->_action == CRM_Core_Action::VIEW || $this->_action == CRM_Core_Action::UPDATE)) {
       $this->_activityId = CRM_Utils_Request::retrieve('aid', 'String', $this);
 
