@@ -56,6 +56,9 @@
     </tbody>
   </table>
 
+   {* This will show the attached private file from Drupal (if any) *}
+   {$attachedFile}
+
    <div id="commentDisplay">
      {ts}(Please mark absences for dates that you need off. If you don't normally work on a weekened or holiday, omit it.){/ts}
    </div>

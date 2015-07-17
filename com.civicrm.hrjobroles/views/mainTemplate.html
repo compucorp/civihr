@@ -143,7 +143,7 @@
                                             </tab>
                                             <tab heading="Funding">
                                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
-                                                    <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
+                                                    <form editable-form name="tableform" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
                                                         <!-- buttons -->
                                                         <button type="button" class="btn btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -203,7 +203,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                                                                        <a href ng-disabled="tableform.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'funder')" class=" btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
+                                                                        <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'funder')" class=" btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -213,7 +213,7 @@
                                             </tab>
                                             <tab heading="Cost Centers">
                                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
-                                                    <form editable-form name="tableformcc" onaftersave="saveTable()" oncancel="cancel()">
+                                                    <form editable-form name="tableformcc" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
                                                         <!-- buttons -->
                                                         <button type="button" class="btn btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -241,8 +241,8 @@
                                                                 <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                                     <td>
                                                                         <!-- editable cost centre (text with validation) -->
-                                                                        <span editable-text="cost_centre.cost_centre_id" e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
-                                                                            {{ cost_centre.cost_centre_id.sort_name || 'empty' }}
+                                                                        <span editable-text="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
+                                                                            {{ cost_centre.cost_centre_id || 'empty' }}
                                                                         </span>
                                                                     </td>
                                                                     <td>
@@ -273,7 +273,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                     <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                                                                        <a href ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Center</a>
+                                                                        <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Center</a>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
