@@ -40,7 +40,8 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
           'defaultCurrency' => $config->defaultCurrency,
           'path' => CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract'),
           'fields' => CRM_Hrjobcontract_Page_JobContractTab::getFields(),
-          'contractList' => CRM_Hrjobcontract_Page_JobContractTab::getContractList()
+          'contractList' => CRM_Hrjobcontract_Page_JobContractTab::getContractList(),
+          'maxFileSize' => file_upload_max_size(),
         ),
         'debug' => $config->debug,
       );
