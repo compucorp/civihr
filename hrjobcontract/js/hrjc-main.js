@@ -60,7 +60,8 @@ reqHrjc([
             options: CRM.FieldOptions || {},
             defaultCurrency: CRM.jobContractTabApp.defaultCurrency,
             apiTsFmt: 'YYYY-MM-DD HH:mm:ss',
-            fields: CRM.jobContractTabApp.fields
+            fields: CRM.jobContractTabApp.fields,
+            maxFileSize: CRM.jobContractTabApp.maxFileSize
         }
     });
 
