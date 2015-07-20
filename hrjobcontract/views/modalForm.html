@@ -145,7 +145,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="{{prefix}}contract-file" class="col-sm-4 control-label">Contract File(s)</label>
+                            <label for="{{prefix}}contract-file" class="col-sm-4 control-label control-label-line-2">Contract File(s)<br>(max. file size {{fileMaxSize/1024/1024}} MB)</label>
 
                             <div class="col-sm-8">
                                 <input type="file" class="form-control-file" id="{{prefix}}contract-file"
@@ -179,9 +179,15 @@
                                                 </button>
                                             </td>
                                         </tr>
-                                        <tr ng-repeat="item in uploader.details.contract_file.queue">
-                                            <td><strong>{{files.details.length + $index+1}}</strong></td>
-                                            <td><strong>{{ item.file.name }}</strong></td>
+                                        <tr ng-repeat="item in uploader.details.contract_file.queue" ng-class="{'danger':(item.file.size > fileMaxSize)}">
+                                            <td><strong>{{files.details.length + $index+1}}</strong>
+                                                <span ng-if="(item.file.size > fileMaxSize)">
+                                                    <br><a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                            <td><strong>{{ item.file.name }}</strong><br>test {{(item.file.size > fileMaxSize)}} {{item.file.size}} {{fileMaxSize}}</td>
                                             <td ng-show="uploader.details.contract_file.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                                             <td nowrap>
                                                 <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
@@ -782,7 +788,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="{{prefix}}pension-evidence-file" class="col-sm-4 control-label">Evidence File</label>
+                            <label for="{{prefix}}pension-evidence-file" class="col-sm-4 control-label">Evidence File<br>(max. file size {{fileMaxSize/1024/1024}} MB)</label>
 
                             <div class="col-sm-8">
                                 <input type="file" class="form-control-file" id="{{prefix}}pension-evidence-file"
@@ -815,8 +821,15 @@
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr ng-repeat="item in uploader.pension.evidence_file.queue">
-                                        <td><strong>{{$index+1}}</strong></td>
+                                    <tr ng-repeat="item in uploader.pension.evidence_file.queue" ng-class="{'danger':(item.file.size > fileMaxSize)}">
+                                        <td>
+                                            <strong>{{$index+1}}</strong>
+                                            <span ng-if="(item.file.size > fileMaxSize)">
+                                                <br><a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                    <i class="fa fa-question-circle"></i>
+                                                </a>
+                                            </span>
+                                        </td>
                                         <td><strong>{{ item.file.name }}</strong></td>
                                         <td ng-show="uploader.pension.evidence_file.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                                         <td nowrap>

@@ -30,6 +30,7 @@ define(['controllers/controllers',
             $scope.allowSave = typeof content.allowSave !== 'undefined' ? content.allowSave : false;
             $scope.entity = {};
             $scope.copy = copy;
+            $scope.fileMaxSize = settings.CRM.maxFileSize || 0;
             $scope.files = {};
             $scope.filesTrash = {};
             $scope.isDisabled = typeof content.isDisabled !== 'undefined' ? content.isDisabled : true;
@@ -184,6 +185,17 @@ define(['controllers/controllers',
                     });
 
                     $q.all(promiseContractEdit).then(function(results){
+
+                        angular.forEach(uploader, function(entity){
+                            angular.forEach(entity, function(field){
+                                angular.forEach(field.queue, function(item){
+                                    if (item.file.size > $scope.fileMaxSize) {
+                                        item.remove();
+                                    }
+                                });
+                            });
+                        });
+
                         if (uploader.details.contract_file.queue.length) {
                             promiseFilesEditUpload.push(ContractFilesService.upload(uploader.details.contract_file, entityNew.details.jobcontract_revision_id));
                         }
@@ -240,8 +252,9 @@ define(['controllers/controllers',
                         filesTrash = $scope.filesTrash,
                         uploader = $scope.uploader,
                         entityName, field, fieldName, file, entityChangedList = [], entityChangedListLen = 0,
-                        entityFilesTrashLen, i = 0, isChanged, modalInstance, promiseContractChange = {},
-                        promiseFilesChangeDelete = [], promiseFilesChangeUpload = [], revisionId, entityServices = {
+                        entityFilesTrashLen, fieldQueueLen = 0, i = 0, ii, isChanged, item, modalInstance,
+                        promiseContractChange = {}, promiseFilesChangeDelete = [], promiseFilesChangeUpload = [],
+                        revisionId, entityServices = {
                             details: ContractDetailsService,
                             hour: ContractHourService,
                             pay: ContractPayService,
@@ -354,7 +367,19 @@ define(['controllers/controllers',
                                 if (uploader[entityName]) {
                                     for (fieldName in uploader[entityName]) {
                                         field = uploader[entityName][fieldName];
-                                        if (field.queue.length) {
+                                        fieldQueueLen = field.queue.length;
+                                        ii = 0;
+
+                                        for (ii; ii < fieldQueueLen; ii++) {
+                                            item = field.queue[ii];
+                                            if (item.file.size > $scope.fileMaxSize) {
+                                                item.remove();
+                                                ii--;
+                                                fieldQueueLen--;
+                                            }
+                                        }
+
+                                        if (fieldQueueLen) {
                                             promiseFilesChangeUpload.push(ContractFilesService.upload(field, revisionId));
                                         }
                                     }
