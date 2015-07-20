@@ -32,7 +32,7 @@ define(['controllers/controllers', 'moment'], function(controllers, moment){
             };
 
             $scope.$watch('effective_date', function(dateSelected){
-                $scope.isPast = (new Date(dateSelected) < new Date());
+                $scope.isPast = (new Date(dateSelected).setHours(0,0,0,0) < new Date().setHours(0,0,0,0));
             });
         }]);
 });
