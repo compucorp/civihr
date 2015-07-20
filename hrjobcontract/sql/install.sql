@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS=0;
+
 DROP TABLE IF EXISTS `civicrm_hrjobcontract_details`;
 DROP TABLE IF EXISTS `civicrm_hrjobcontract_role`;
 DROP TABLE IF EXISTS `civicrm_hrjobcontract_pension`;
@@ -261,3 +263,4 @@ CREATE TABLE `civicrm_hrjobcontract_role` (
     CONSTRAINT `FK_civicrm_hrjobcontract_role_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+SET FOREIGN_KEY_CHECKS=1;

@@ -372,13 +372,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   
   public function getPayScaleId($payScale)
   {
-    //$data['pay_scale'] = isset($data['pay_scale']) ? $data['pay_scale'] : null;
-    //$data['pay_grade'] = isset($data['pay_grade']) ? $data['pay_grade'] : null;
-    //$data['currency'] = isset($data['currency']) ? $data['currency'] : null;
-    //$data['amount'] = isset($data['amount']) ? $data['amount'] : null;
-    //$data['periodicity'] = isset($data['periodicity']) ? $data['periodicity'] : null;
+    if (!$payScale)
+    {
+        return null;
+    }
     
-    //$selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 AND pay_grade = %2 AND currency = %3 AND amount = %4 AND periodicity = %5 LIMIT 1';
     $selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 LIMIT 1';
     $selectPayScaleParams = array(
         1 => array($payScale, 'String'),
