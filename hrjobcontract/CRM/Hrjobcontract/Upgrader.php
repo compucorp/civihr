@@ -399,7 +399,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     return $payScaleId;
   }
-    
+  
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
     $this->executeCustomDataFile('xml/option_group_install.xml');
@@ -466,7 +466,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     $optionGroupId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_hours_type', 'id', 'name');
     //change value of stored hours type
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjobcontract_hour SET hours_type = CASE hours_type WHEN 'full' THEN 8 WHEN 'part' THEN 4 WHEN 'casual' THEN 0 ELSE NULL END");
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_hrjobcontract_hour SET hours_type = CASE hours_type WHEN 'full' THEN 8 WHEN 'part' THEN 4 WHEN 'casual' THEN 0 ELSE hours_type END");
 
     //$this->ctx->log->info('Applying update 1402');
     //Upgrade for HR-394 and HR-395
@@ -477,7 +477,28 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'title' => 'Region',
         'is_active' => 1,
       );
-      civicrm_api3('OptionGroup', 'create', $params);
+      $newRegionGroupResult = civicrm_api3('OptionGroup', 'create', $params);
+    }
+    
+    // Migrate old 'hrjob_region' option values into new 'hrjc_region':
+    if (!empty($newRegionGroupResult['id'])) {
+        $oldRegionGroup = civicrm_api3('OptionGroup', 'get', array(
+        'sequential' => 1,
+        'name' => "hrjob_region",
+        ));
+        if (!empty($oldRegionGroup['id'])) {
+            $oldRegionsResult = civicrm_api3('OptionValue', 'get', array(
+            'sequential' => 1,
+            'option_group_id' => $oldRegionGroup['id'],
+            ));
+
+            foreach ($oldRegionsResult['values'] as $oldRegion) {
+                $newRegion = $oldRegion;
+                unset($newRegion['id']);
+                $newRegion['option_group_id'] = $newRegionGroupResult['id'];
+                civicrm_api3('OptionValue', 'create', $newRegion);
+            }
+        }
     }
 
     $result = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjobcontract_hour ORDER BY id ASC');
@@ -754,13 +775,40 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'name' => "hrjc_location",
     ));
     if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Normal place of work'),
-        'name'       => 'hrjc_location',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
+        $jobContractOptionsMenuTree[] = array(
+          'label'      => ts('Normal place of work'),
+          'name'       => 'hrjc_location',
+          'url'        => 'civicrm/admin/options?gid=' . $result['id'],
+          'permission' => 'administer CiviCRM',
+          'parent_id'  => $administerNavId,
+        );
+        
+        // Migrating old 'hrjob_location' option values into new 'hrjc_location':
+        $oldLocationGroup = civicrm_api3('OptionGroup', 'get', array(
+        'sequential' => 1,
+        'name' => "hrjob_location",
+        ));
+        if (!empty($oldLocationGroup['id'])) {
+            $oldLocationsResult = civicrm_api3('OptionValue', 'get', array(
+            'sequential' => 1,
+            'option_group_id' => $oldLocationGroup['id'],
+            ));
+
+            foreach ($oldLocationsResult['values'] as $oldLocation) {
+                $newLocationResult = civicrm_api3('OptionValue', 'get', array(
+                    'sequential' => 1,
+                    'option_group_id' => $result['id'],
+                    'value' => $oldLocation['value'],
+                ));
+                if (!empty($newLocationResult['id'])) {
+                    continue;
+                }
+                $newLocation = $oldLocation;
+                unset($newLocation['id']);
+                $newLocation['option_group_id'] = $result['id'];
+                civicrm_api3('OptionValue', 'create', $newLocation);
+            }
+        }
     }
 
     // hrjc_pay_cycle:
