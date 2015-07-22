@@ -36,7 +36,7 @@ CRM.HRAbsenceApp.module('List', function(List, HRAbsenceApp, Backbone, Marionett
       if (console.log) console.log('ListView.initialize  with ' + options.collection.models.length + ' item(s)');
       var view = this,
         jobLeavesCollection = new HRAbsenceApp.Models.JobLeavesCollection([], {
-          crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': 1}
+          crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': {jobcontract_id: '$value.id'}, 'return': 'is_primary,position,period_start_date,period_end_date'}
         });
         jobLeavesCollection.fetch({
           success: function(e) {

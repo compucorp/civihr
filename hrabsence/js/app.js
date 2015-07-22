@@ -95,7 +95,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       crmCriteriaModel: entitlementCriteria
     });
     jobLeavesCollection = new HRAbsenceApp.Models.JobLeavesCollection([], {
-      crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': 1}
+      crmCriteria: { contact_id: CRM.absenceApp.contactId, 'api.HRJobLeave.get': {jobcontract_id: '$value.id'}, 'return': 'is_primary,position,period_start_date,period_end_date'}
     });
 
     // NOTE: Generally don't like to put globalish variables in HRAbsenceApp, but this
