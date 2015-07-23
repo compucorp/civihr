@@ -555,16 +555,16 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
 
   function where() {
     parent::where();
-    $params = array('name'=>'Final_Termination_Date');
-    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
+    $params = array('name'=>'Final_Termination_Date', 'custom_group_id' => $cGrp['id']);
+    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     if (!$this->isFieldSelected($this->_columns[$cGrp['table_name']])) {
       $whereClauses[] = "({$dbAlias} >= CURDATE() OR {$dbAlias} IS NULL)";
     }
 
-    $params = array('name'=>'Initial_Join_Date');
+    $params = array('name'=>'Initial_Join_Date', 'custom_group_id' => $cGrp['id']);
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $params, $cField);
     $dbAlias = $this->_columns[$cGrp['table_name']]['fields']["custom_{$cField['id']}"]['dbAlias'];
     $addWhereClauses = "({$this->_aliases['civicrm_hrjobcontract']}.is_primary IS NULL AND {$dbAlias} IS NOT NULL AND {$dbAlias} <= CURDATE())";
