@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="{{prefix}}location" class="col-sm-4 control-label">Normal Place of Work {{test}}</label>
+                            <label for="{{prefix}}location" class="col-sm-4 control-label">Normal Place of Work</label>
 
                             <div class="col-sm-5">
                                 <select id="{{prefix}}location" class="form-control"
@@ -187,7 +187,7 @@
                                                     </a>
                                                 </span>
                                             </td>
-                                            <td><strong>{{ item.file.name }}</strong><br>test {{(item.file.size > fileMaxSize)}} {{item.file.size}} {{fileMaxSize}}</td>
+                                            <td><strong>{{ item.file.name }}</strong></td>
                                             <td ng-show="uploader.details.contract_file.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                                             <td nowrap>
                                                 <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">

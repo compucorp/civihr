@@ -28,6 +28,7 @@ define(['controllers/controllers',
             $scope.isDisabled = false;
             $scope.showIsPrimary = utils.contractListLen;
 
+            $scope.fileMaxSize = settings.CRM.maxFileSize || 0;
             $scope.uploader = {
                 details: {
                     contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')
