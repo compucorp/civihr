@@ -107,9 +107,9 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
         'provider_life_insurance',
         'plan_type_life_insurance',
       ),
-      'HRJobLeave' => array(
-        'leave_type',
-      ),
+//      'HRJobLeave' => array(
+//        'leave_type',
+//      ),
       'HRJobRole' => array(
         'location',
         'department',
@@ -123,6 +123,15 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
       foreach ($fieldNames as $fieldName) {
         $fieldOptions[$entityName][$fieldName] = CRM_Core_PseudoConstant::get("CRM_Hrjobcontract_DAO_{$entityName}", $fieldName);
       }
+    }
+    
+    $absenceTypeResult = civicrm_api3('HRAbsenceType', 'get', array(
+        'sequential' => 1,
+        'return' => 'id,title',
+    ));
+    
+    foreach ($absenceTypeResult['values'] as $value) {
+        $fieldOptions['HRJobLeave']['leave_type'][$value['id']] = $value['title'];
     }
     
     $fieldOptions['HRJobPay']['benefit_name'] = CRM_Hrjobcontract_Page_JobContractTab::getCustomOptions('hrjc_benefit_name');
