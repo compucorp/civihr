@@ -34,7 +34,6 @@ reqHrjr([
 
             $routeProvider.
                 when('/', {
-                    controller: 'ExampleCtrl',
                     templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
                     resolve: {}
                 }).
