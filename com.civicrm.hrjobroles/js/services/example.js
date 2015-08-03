@@ -1,6 +1,6 @@
 define(['services/services'], function (services) {
 
-    services.factory('ExampleService',['settings', '$log' , '$q', function(settings, $log, $q){
+    services.factory('ExampleService',['settings', '$log' , '$q', function(settings, $log, $q) {
         $log.debug('Service: ExampleService');
 
         return {
@@ -295,16 +295,35 @@ define(['services/services'], function (services) {
 
                 var deferred = $q.defer();
 
+                // Define option group names and IDs
+                var optionGroupData = {};
+
                 CRM.api3('OptionGroup', 'get', {
                     "sequential": 1,
-                    "name": option_group_name
+                    "name": { "IN": option_group_name }
                 }).done(function(option_group_data) {
+
                     if (option_group_data.is_error !== 1) {
+
+                        var option_group_ids = [];
+
+                        angular.forEach(option_group_data['values'], function (option_group, key) {
+
+                            // Store the option group names and IDs
+                            optionGroupData[option_group['name']] = option_group['id'];
+
+                            // Prepare option group IDs for the API call
+                            option_group_ids.push(option_group['id']);
+
+                        });
 
                         CRM.api3('OptionValue', 'get', {
                             "sequential": 1,
-                            "option_group_id": option_group_data.id
+                            "option_group_id": { "IN": option_group_ids }
                         }).done(function(result) {
+
+                            // Pass the additional info about optionGroupData
+                            result['optionGroupData'] = optionGroupData;
 
                             // Passing data to deferred's resolve function on successful completion
                             deferred.resolve(result);
