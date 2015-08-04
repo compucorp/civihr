@@ -78,5 +78,6 @@ define(['controllers/controllers', 'moment'], function(controllers, moment){
                     entityDetails.notice_unit_employee = newVal;
                 }
             });
+
         }]);
 });

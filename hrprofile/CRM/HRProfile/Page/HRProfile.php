@@ -15,9 +15,9 @@ class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
     $extraWhereClause = NULL;
     $grpParams = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $grpParams, $cGrp);
-    $fdParams = array('name'=>'Final_Termination_Date');
+    $fdParams = array('name'=>'Final_Termination_Date', 'custom_group_id' => $cGrp['id']);
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $fdParams, $fdField);
-    $idParams = array('name'=>'Initial_Join_Date');
+    $idParams = array('name'=>'Initial_Join_Date', 'custom_group_id' => $cGrp['id']);
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $idParams, $idField);
 
     $extraWhereClause = " (({$cGrp['table_name']}.{$fdField['column_name']} >= CURDATE() OR {$cGrp['table_name']}.{$fdField['column_name']} IS NULL) AND

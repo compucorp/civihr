@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="{{prefix}}location" class="col-sm-4 control-label">Normal Place of Work {{test}}</label>
+                            <label for="{{prefix}}location" class="col-sm-4 control-label">Normal Place of Work</label>
 
                             <div class="col-sm-5">
                                 <select id="{{prefix}}location" class="form-control"
@@ -144,7 +144,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" ng-class="{'has-error':(contractForm.$error.maxFile)}">
                             <label for="{{prefix}}contract-file" class="col-sm-4 control-label control-label-line-2">Contract File(s)<br>(max. file size {{fileMaxSize/1024/1024}} MB)</label>
 
                             <div class="col-sm-8">
@@ -182,15 +182,15 @@
                                         <tr ng-repeat="item in uploader.details.contract_file.queue" ng-class="{'danger':(item.file.size > fileMaxSize)}">
                                             <td><strong>{{files.details.length + $index+1}}</strong>
                                                 <span ng-if="(item.file.size > fileMaxSize)">
-                                                    <br><a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                    <a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
                                                         <i class="fa fa-question-circle"></i>
                                                     </a>
                                                 </span>
                                             </td>
-                                            <td><strong>{{ item.file.name }}</strong><br>test {{(item.file.size > fileMaxSize)}} {{item.file.size}} {{fileMaxSize}}</td>
+                                            <td><strong>{{ item.file.name }}</strong></td>
                                             <td ng-show="uploader.details.contract_file.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                                             <td nowrap>
-                                                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                                <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove(); filesValidate();">
                                                     <span class="glyphicon glyphicon-trash"></span> Remove
                                                 </button>
                                             </td>
@@ -825,7 +825,7 @@
                                         <td>
                                             <strong>{{$index+1}}</strong>
                                             <span ng-if="(item.file.size > fileMaxSize)">
-                                                <br><a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                <a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
                                                     <i class="fa fa-question-circle"></i>
                                                 </a>
                                             </span>
@@ -833,7 +833,7 @@
                                         <td><strong>{{ item.file.name }}</strong></td>
                                         <td ng-show="uploader.pension.evidence_file.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
                                         <td nowrap>
-                                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                            <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove(); filesValidate();">
                                                 <span class="glyphicon glyphicon-trash"></span> Remove
                                             </button>
                                         </td>

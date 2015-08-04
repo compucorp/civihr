@@ -373,17 +373,8 @@ define(['controllers/controllers'], function(controllers){
             // Variable to check if we adding new job role
             var job_roles = this;
 
-            // Get the option groups -> level types
-            getLevels();
-
-            // Get the option groups -> location types
-            getLocations();
-
-            // Get the option groups -> region types
-            getRegions();
-
-            // Get the option groups -> department types
-            getDepartments();
+            // Get the option groups and option values
+            getOptionValues();
 
             // Get job roles based on the passed Contact ID
             getJobRolesList($scope.$parent.contactId);
@@ -432,142 +423,93 @@ define(['controllers/controllers'], function(controllers){
                     });
             }
 
-            function getLevels() {
+            function getOptionValues() {
 
-                ExampleService.getOptionValues('hrjc_level_type').then(function(data){
+                // Set the option groups for which we want to get the values
+                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type'];
 
-                        if (data.is_error == 1) {
-                            job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Cannot get level list!';
-                        }
-                        else {
-
-                            // Pass the level option group list to the scope
-                            var LevelList = {};
-
-                            for (var i = 0; i < data.count; i++) {
-
-                                // Build the contact list
-                                LevelList[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['label']};
-
-                            }
-
-                            // Store the Level types what we can reuse later
-                            job_roles.LevelsData = LevelList;
-
-                            job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Level list OK!';
-                        }
-
-                        // Hide the message after some seconds
-                        $timeout(function() {
-                            job_roles.message = null;
-                        }, 3000);
-                    },
-                    function(errorMessage){
-                        $scope.error = errorMessage;
-                    });
-            }
-
-            function getLocations() {
-
-                ExampleService.getOptionValues('hrjc_location').then(function(data){
+                ExampleService.getOptionValues(option_groups).then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Cannot get location list!';
-                        }
-                        else {
-
-                            // Pass the location option group list to the scope
-                            var LocationList = {};
-
-                            for (var i = 0; i < data.count; i++) {
-
-                                // Build the contact list
-                                LocationList[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['label']};
-
-                            }
-
-                            // Store the Location types what we can reuse later
-                            job_roles.LocationsData = LocationList;
-
-                            job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Location list OK!';
-                        }
-
-                        // Hide the message after some seconds
-                        $timeout(function() {
-                            job_roles.message = null;
-                        }, 3000);
-                    },
-                    function(errorMessage){
-                        $scope.error = errorMessage;
-                    });
-            }
-
-            function getRegions() {
-
-                ExampleService.getOptionValues('hrjc_region').then(function(data){
-
-                        if (data.is_error == 1) {
-                            job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Cannot get region list!';
-                        }
-                        else {
-
-                            // Pass the region option group list to the scope
-                            var RegionList = {};
-
-                            for (var i = 0; i < data.count; i++) {
-
-                                // Build the region list
-                                RegionList[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['label']};
-
-                            }
-
-                            // Store the Region types what we can reuse later
-                            job_roles.RegionsData = RegionList;
-
-                            job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Region list OK!';
-                        }
-
-                        // Hide the message after some seconds
-                        $timeout(function() {
-                            job_roles.message = null;
-                        }, 3000);
-                    },
-                    function(errorMessage){
-                        $scope.error = errorMessage;
-                    });
-            }
-
-            function getDepartments() {
-
-                ExampleService.getOptionValues('hrjc_department').then(function(data){
-
-                        if (data.is_error == 1) {
-                            job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Cannot get department list!';
+                            job_roles.message = 'Cannot get option values!';
                         }
                         else {
 
                             // Pass the department option group list to the scope
                             var DepartmentList = {};
 
-                            for (var i = 0; i < data.count; i++) {
+                            // Pass the region option group list to the scope
+                            var RegionList = {};
 
-                                // Build the department list
-                                DepartmentList[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['label']};
+                            // Pass the location option group list to the scope
+                            var LocationList = {};
 
-                            }
+                            // Pass the level option group list to the scope
+                            var LevelList = {};
+
+                            angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
+
+                                for (var i = 0; i < data.count; i++) {
+
+                                    switch(option_group_name) {
+                                        case 'hrjc_department':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the department list
+                                                DepartmentList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                            }
+
+                                            break;
+                                        case 'hrjc_region':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the region list
+                                                RegionList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+
+                                            }
+
+                                            break;
+                                        case 'hrjc_location':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the contact list
+                                                LocationList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+
+                                            }
+
+                                            break;
+                                        case 'hrjc_level_type':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the contact list
+                                                LevelList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+
+                                            }
+
+                                            break;
+                                    }
+
+
+
+                                }
+
+                            });
 
                             // Store the Department types what we can reuse later
                             job_roles.DepartmentsData = DepartmentList;
 
+                            // Store the Region types what we can reuse later
+                            job_roles.RegionsData = RegionList;
+
+                            // Store the Location types what we can reuse later
+                            job_roles.LocationsData = LocationList;
+
+                            // Store the Level types what we can reuse later
+                            job_roles.LevelsData = LevelList;
+
                             job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Department list OK!';
+                            job_roles.message = 'Option values list OK!';
                         }
 
                         // Hide the message after some seconds
@@ -584,7 +526,7 @@ define(['controllers/controllers'], function(controllers){
             function getJobRolesList(contact_id) {
 
                 // Get the job contracts for the contact
-                ExampleService.getContracts(contact_id).then(function(data){
+                ExampleService.getContracts(contact_id).then(function(data) {
 
                         var job_contract_ids = [];
                         var contractsData = {};
@@ -673,7 +615,7 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "deleteJobRole" service
             function deleteJobRole(job_role_id) {
 
-                ExampleService.deleteJobRole(job_role_id).then(function(data){
+                ExampleService.deleteJobRole(job_role_id).then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -698,7 +640,7 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "createJobRole" service
             function createJobRole(job_roles_data) {
 
-                ExampleService.createJobRole(job_roles_data).then(function(data){
+                ExampleService.createJobRole(job_roles_data).then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';

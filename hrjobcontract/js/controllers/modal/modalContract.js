@@ -114,6 +114,42 @@ define(['controllers/controllers',
                 entityFiles.splice(index, 1);
             };
 
+            $scope.filesValidate = function() {
+                var entityName,
+                    fieldName,
+                    fileMaxSize = $scope.fileMaxSize,
+                    uploader = $scope.uploader,
+                    uploaderEntity,
+                    uploaderEntityField,
+                    uploaderEntityFieldQueue,
+                    isValid = true, i, len;
+
+                for (entityName in uploader) {
+                    uploaderEntity = uploader[entityName];
+
+                    for (fieldName in uploaderEntity) {
+                        uploaderEntityField = uploaderEntity[fieldName],
+                        uploaderEntityFieldQueue = uploaderEntityField.queue,
+                        i = 0, len = uploaderEntityFieldQueue.length;
+
+                        for (; i < len && isValid; i++) {
+                            isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
+                        }
+                    }
+                }
+
+                $scope.contractForm.$setValidity('maxFileSize', isValid);
+
+            };
+
+            angular.forEach($scope.uploader, function(entity){
+                angular.forEach(entity, function(field){
+                    field.onAfterAddingAll = function(){
+                        $scope.filesValidate();
+                    }
+                });
+            });
+
             if ($scope.allowSave) {
                 function changeReason(){
                     var modalChangeReason = $modal.open({
