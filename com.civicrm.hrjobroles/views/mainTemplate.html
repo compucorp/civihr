@@ -13,7 +13,7 @@
                                 <div class="form-group">
                                     <label class="col-xs-12 col-sm-5 control-label control-label-lg">Role / Project Name:</label>
                                     <div class="col-xs-12  col-sm-7">
-                                        <p class="form-control-static form-control-static-lg">{{edit_data[job_roles_data.id]['title']}}</p>
+                                        <p class="form-control-static form-control-static-md">{{edit_data[job_roles_data.id]['title']}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -51,15 +51,15 @@
                                             <tab heading="Basic Details">
                                                 <form class="form-horizontal" role="form" editable-form name="editableForm" onaftersave="updateRole(job_roles_data.id)">
                                                     <!-- button to show edit form -->
-                                                    <button type="button" class="btn btn-tab-action pull-right" ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
+                                                    <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
                                                         <span class="glyphicon glyphicon-pencil"></span> Edit
                                                     </button>
                                                     <!-- buttons to submit / cancel form -->
-                                                    <div class="btn-group btn-group-tab-action pull-right" ng-show="editableForm.$visible">
-                                                        <button type="submit" class="btn btn-tab-action" ng-disabled="editableForm.$waiting">
+                                                    <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="editableForm.$visible">
+                                                        <button type="submit" class="btn btn-sm btn-tab-action" ng-disabled="editableForm.$waiting">
                                                             <span class="glyphicon glyphicon-ok"></span> Save
                                                         </button>
-                                                        <button type="button" class="btn btn-tab-action" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">
+                                                        <button type="button" class="btn btn-sm btn-tab-action" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">
                                                             <span class="glyphicon glyphicon-remove"></span> Cancel
                                                         </button>
                                                     </div>
@@ -145,14 +145,14 @@
                                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
                                                     <form editable-form name="tableform" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
                                                         <!-- buttons -->
-                                                        <button type="button" class="btn btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                                                        <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </button>
-                                                        <div class="btn-group btn-group-tab-action pull-right" ng-show="tableform.$visible">
-                                                            <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-tab-action">
+                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableform.$visible">
+                                                            <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-ok"></span> save
                                                             </button>
-                                                            <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-tab-action">
+                                                            <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-remove"></span> cancel
                                                             </button>
                                                         </div>
@@ -215,14 +215,14 @@
                                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
                                                     <form editable-form name="tableformcc" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
                                                         <!-- buttons -->
-                                                        <button type="button" class="btn btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
+                                                        <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </button>
-                                                        <div class="btn-group btn-group-tab-action pull-right" ng-show="tableformcc.$visible">
-                                                            <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-tab-action">
+                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableformcc.$visible">
+                                                            <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-ok"></span> save
                                                             </button>
-                                                            <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-tab-action">
+                                                            <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-remove"></span> cancel
                                                             </button>
                                                         </div>

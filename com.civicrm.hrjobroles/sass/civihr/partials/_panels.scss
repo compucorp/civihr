@@ -10,19 +10,23 @@
 .panel-heading {
   color: $headings-color;
   font-weight: $headings-font-weight;
-  text-transform: uppercase;
 
   .btn-group.btn-group-sm {
-    margin-top: -6px;
-    margin-bottom: -6px;
+    margin-top: -2px;
+    margin-bottom: -3px;
     > .btn {
-      padding: 6px 13px;
+      padding: 5px 13px;
+      text-transform: none;
     }
+  }
+
+  .btn-collapse {
+    margin: 4px 0 2px;
   }
 }
 
 .panel-title {
-  font-size: $font-size-h1;
+  font-size: $font-size-h2;
   line-height: $line-height-base;
 }
 
@@ -32,7 +36,7 @@
 
   > .panel-heading {
     border-bottom: 0 none;
-    padding: 16px 20px;
+    padding: 12px 20px 13px;
   }
 
   > .panel-footer {

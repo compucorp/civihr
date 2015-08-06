@@ -11435,7 +11435,7 @@ fieldset[disabled]
 /* line 24, ../sass/hrjc/partials/_panels.scss */
 #hrjob-contract .hrjc-panel-action .btn.btn-sm, #hrjob-contract .hrjc-panel-action .btn-group-sm > .btn {
   padding: 4px;
-  margin-right: -5px;
+  margin-right: -10px;
   margin-left: 0;
 }
 /* line 30, ../sass/hrjc/partials/_panels.scss */

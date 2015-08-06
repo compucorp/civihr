@@ -16,12 +16,19 @@
     padding-top: 8px;
   }
 
-  .control-label-lg,
-  .form-control-static-lg {
+
+  .control-label-lg {
+    font-size: 16px;
+    padding: {
+      top: 7px;
+    };
+  }
+
+  .form-control-static-md {
     font-size: 14px;
     padding: {
-      bottom: 7px;
-      top: 7px;
+      bottom: 6px;
+      top: 10px;
     };
   }
 
