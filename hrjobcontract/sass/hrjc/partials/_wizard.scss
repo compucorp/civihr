@@ -6,9 +6,10 @@
 
     > .tab-content {
       float: left;
+      margin-bottom: 20px;
 
       > .tab-pane {
-        min-height: 273px;
+        min-height: 365px;
         padding: $grid-gutter-width/2;
       }
     }
@@ -19,9 +20,13 @@
     width: 350px;
   }
 
-  h4 {
-    font-size: $font-size-h1;
+  h4:not(.modal-title) {
+    font-size: 16px;
     margin-top: 0;
+
+    + hr {
+      margin-top: 16px;
+    }
   }
 
   /** Wizard - Tab - General **/

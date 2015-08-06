@@ -21,6 +21,16 @@
       margin-right: 3px;
     }
 
+    &.btn-sm {
+      padding: 4px;
+      margin-right: -5px;
+      margin-left: 0;
+    }
+
+    &:first-child {
+      margin-left: 0;
+    }
+
     &:hover,
     &:focus {
       background-color: lighten($panel-default-heading-bg, 2%);
@@ -45,15 +55,16 @@
   }
 
   > .#{$prefix}row-action {
-    .control-label,
-    .form-control-static {
-      font-size: 14px;
+
+    .control-label {
+      font-size: 16px;
     }
 
     .form-control-static {
+      font-size: 14px;
       padding: {
-        bottom: 7px;
-        top: 7px;
+        bottom: 6px;
+        top: 10px;
       };
     }
   }
@@ -62,6 +73,11 @@
     .control-label,
     .form-control-static {
       color: $gray-light;
+    }
+
+    .badge {
+      font-size: 12px;
+      padding: 3px 8px;
     }
   }
 

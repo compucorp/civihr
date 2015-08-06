@@ -5,3 +5,7 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.shadow-global {
+  @include box-shadow($box-shadow-global);
+}

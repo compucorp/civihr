@@ -2,7 +2,6 @@
   border-bottom: 0 none;
 
   > li > a {
-    text-transform: uppercase;
     font-size: $btn-font-size;
     font-weight: $btn-font-weight;
   }
@@ -61,6 +60,7 @@
         min-width: 74px;
         margin-right: 0;
         margin-bottom: 3px;
+        padding: 15px;
       }
     }
   }
