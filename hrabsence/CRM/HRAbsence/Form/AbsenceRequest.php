@@ -529,6 +529,8 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
    * @return none
    */
   public function postProcess() {
+    global $user;
+    $isAdmin = in_array('civihr_admin', $user->roles) ? true : false;
     $session = CRM_Core_Session::singleton();
     $submitValues = $this->_submitValues;
     if (!empty($submitValues['contacts_id'])) {
@@ -602,7 +604,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         'assignee_contact_id' => $this->_managerContactID,
         'activity_type_id' => $this->_activityTypeID,
       );
-      if (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
+      if (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues) || $isAdmin) {
         $activityParam['status_id'] = CRM_Utils_Array::key('Completed', $activityStatus);
       }
       else {
@@ -649,7 +651,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
       }
-      elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues)) {
+      elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues) || $isAdmin) {
         if (!empty($this->_managerContactID)) {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
