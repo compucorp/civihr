@@ -281,6 +281,8 @@ define(['controllers/controllers',
                         });
                     }
 
+                    CRM.refreshParent('#hrjobroles');
+
                 });
             };
 
