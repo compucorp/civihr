@@ -183,6 +183,75 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
     CRM_Utils_System::civiExit( );
   }
   
+  static function fileZip() {
+      $config = CRM_Core_Config::singleton();
+      $dest = $config->customFileUploadDir;
+      $params = $_GET;
+      $files = array();
+      $mimeType = 'application/zip';
+      $ext = 'zip';
+      $revisionId = (int)$params['entityID'];
+      $entityFiles = CRM_Core_BAO_File::getEntityFile( $params['entityTable'], $revisionId );
+      
+      if (empty($entityFiles)) {
+          CRM_Utils_System::civiExit();
+      }
+      
+      $zipname = 'jobcontract_' . (int)$params['entityID'] . '_files';
+      $jobContractResult = civicrm_api3('HRJobContract', 'get', array(
+        'sequential' => 1,
+        'jobcontract_revision_id' => $revisionId,
+      ));
+      if ($jobContractResult['count']) {
+        $contactResult = civicrm_api3('Contact', 'get', array(
+          'sequential' => 1,
+          'id' => $jobContractResult['values'][0]['contact_id'],
+        ));
+        $jobContractDetailsResult = civicrm_api3('HRJobDetails', 'get', array(
+          'sequential' => 1,
+          'jobcontract_revision_id' => $revisionId,
+        ));
+        if ($contactResult['count'] && $jobContractDetailsResult['count']) {
+            $zipname = CRM_Utils_String::munge($contactResult['values'][0]['sort_name']) . '-' . CRM_Utils_String::munge($jobContractDetailsResult['values'][0]['position']) . '-r' . $revisionId;
+        }
+      }
+      
+      if (count($entityFiles) > 1) {
+        foreach ($entityFiles as $entityFile) {
+            if (!empty($entityFile['fullPath'])) {
+              $files[] = $entityFile['fullPath'];
+            }
+        }
+
+        if (empty($files)) {
+            CRM_Utils_System::civiExit();
+        }
+        
+        $zipname .= '.' . $ext;
+        $zipfullpath = $dest . '/' . $zipname;
+        $zip = new ZipArchive();
+        $zip->open($zipfullpath, ZipArchive::CREATE);
+        foreach ($files as $file) {
+          $zip->addFile($file, substr($file, strrpos($file, '/') + 1));
+        }
+        $zip->close();
+      } else {
+        $firstFile = CRM_Utils_Array::first($entityFiles);
+        $zipfullpath = $firstFile['fullPath'];
+        $mimeType = $firstFile['mime_type'];
+        $parts = explode('.', $zipfullpath);
+        $ext = end($parts);
+        $zipname .= '.' . $ext;
+      }
+      
+      header('Content-Type: ' . $mimeType);
+      header('Content-disposition: attachment; filename='.$zipname);
+      header('Content-Length: ' . filesize($zipfullpath));
+      readfile($zipfullpath);
+      
+      CRM_Utils_System::civiExit();
+  }
+  
   /**
    * @param $name
    *

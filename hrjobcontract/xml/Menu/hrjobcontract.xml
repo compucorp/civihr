@@ -43,6 +43,12 @@
     <!--<access_arguments>edit HRJobs</access_arguments>-->
   </item>
   <item>
+    <path>civicrm/hrjobcontract/file/zip</path>
+    <page_callback>CRM_Hrjobcontract_Page_Files::fileZip</page_callback>
+    <title>FileZip</title>
+    <!--<access_arguments>edit HRJobs</access_arguments>-->
+  </item>
+  <item>
     <path>civicrm/hour/editoption</path>
     <page_callback>CRM_Hrjobcontract_Form_EditHourOption</page_callback>
     <title>Hours Type Option</title>
