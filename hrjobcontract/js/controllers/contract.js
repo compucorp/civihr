@@ -20,6 +20,7 @@ define(['controllers/controllers',
 
             $scope.contractLoaded = false;
             $scope.isCollapsed = true;
+            $scope.files = {};
             $scope.revisionCurrent = {};
             $scope.revisionList = [];
             $scope.revisionDataList = [];
@@ -85,6 +86,17 @@ define(['controllers/controllers',
                 }
             }
 
+            function updateContractFiles(){
+                promiseFiles = $q.all({
+                    details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
+                    pension: ContractFilesService.get($scope.pension.jobcontract_revision_id,'civicrm_hrjobcontract_pension')
+                });
+
+                promiseFiles.then(function (files){
+                    $scope.files = files;
+                });
+            }
+
             $q.all({
                 details: ContractDetailsService.getOne({ jobcontract_id: contractId}),
                 hour: ContractHourService.getOne({ jobcontract_id: contractId}),
@@ -104,12 +116,7 @@ define(['controllers/controllers',
 
                 $scope.$broadcast('hrjc-loader-hide');
 
-            }).then(function(){
-                promiseFiles = $q.all({
-                    details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
-                    pension: ContractFilesService.get($scope.pension.jobcontract_revision_id,'civicrm_hrjobcontract_pension')
-                });
-            });
+            }).then(updateContractFiles);
 
             $scope.modalContract = function(action, revisionEntityIdObj){
                 $scope.$broadcast('hrjc-loader-show');
@@ -275,10 +282,7 @@ define(['controllers/controllers',
                     }
 
                     if (results.files) {
-                        promiseFiles = $q.all({
-                            details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
-                            pension: ContractFilesService.get($scope.pension.jobcontract_revision_id,'civicrm_hrjobcontract_pension')
-                        });
+                        updateContractFiles();
                     }
 
                     CRM.refreshParent('#hrjobroles');
@@ -347,12 +351,7 @@ define(['controllers/controllers',
                 }).then(function(results){
                     updateContractView(results)
                     $scope.$broadcast('hrjc-loader-hide');
-                }).then(function(){
-                    promiseFiles = $q.all({
-                        details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
-                        pension: ContractFilesService.get($scope.pension.jobcontract_revision_id,'civicrm_hrjobcontract_pension')
-                    });
-                });
+                }).then(updateContractFiles);
             });
 
         }]);
