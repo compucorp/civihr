@@ -1,8 +1,8 @@
 define(['controllers/controllers', 'services/contract'], function(controllers){
     controllers.controller('RevisionListCtrl',['$scope', '$filter', '$q', '$modal', '$rootElement', 'settings', 'ContractService',
-        'ContractDetailsService', 'ContractHourService', 'ContractPayService', '$log',
+        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log',
         function($scope, $filter, $q, $modal, $rootElement, settings, ContractService,
-                 ContractDetailsService, ContractHourService, ContractPayService, $log){
+                 ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log){
             $log.debug('Controller: RevisionListCtrl');
 
             var contractId = $scope.contract.id,
@@ -93,6 +93,9 @@ define(['controllers/controllers', 'services/contract'], function(controllers){
                             pay: ContractPayService.getOne({
                                 jobcontract_revision_id: revision.pay_revision_id,
                                 return: 'pay_scale, pay_annualized_est, pay_currency'
+                            }),
+                            files: $q.all({
+                                details: ContractFilesService.get(revision.details_revision_id,'civicrm_hrjobcontract_details')
                             })
                         }));
                     });
@@ -102,7 +105,6 @@ define(['controllers/controllers', 'services/contract'], function(controllers){
                 }).then(function(results){
                     $scope.revisionDataList.push.apply($scope.revisionDataList,results);
                 });
-
             };
             fetchRevisions(contractId);
 

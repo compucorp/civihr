@@ -87,6 +87,7 @@ define(['controllers/controllers',
             }
 
             function updateContractFiles(){
+
                 promiseFiles = $q.all({
                     details: ContractFilesService.get($scope.details.jobcontract_revision_id,'civicrm_hrjobcontract_details'),
                     pension: ContractFilesService.get($scope.pension.jobcontract_revision_id,'civicrm_hrjobcontract_pension')
@@ -95,6 +96,8 @@ define(['controllers/controllers',
                 promiseFiles.then(function (files){
                     $scope.files = files;
                 });
+
+                return promiseFiles;
             }
 
             $q.all({
@@ -238,24 +241,40 @@ define(['controllers/controllers',
 
                         var dateEffectiveRevisionCreated = new Date(results.revisionCreated.effective_date).setHours(0, 0, 0, 0),
                             dateEffectiveRevisionCurrent = new Date($scope.revisionCurrent.effective_date).setHours(0, 0, 0, 0),
-                            dateToday = new Date().setHours(0, 0, 0, 0);
+                            dateToday = new Date().setHours(0, 0, 0, 0),
+                            revisionData = {
+                                revisionEntityIdObj: results.revisionCreated,
+                                details: results.details,
+                                hour: results.hour,
+                                pay: results.pay
+                            },
+                            isCurrentRevision = (dateEffectiveRevisionCreated <= dateToday &&
+                                dateEffectiveRevisionCreated >= dateEffectiveRevisionCurrent) ||
+                                (dateEffectiveRevisionCurrent > dateToday &&
+                                dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent);
 
-                        //Is current revision
-                        if ((dateEffectiveRevisionCreated <= dateToday &&
-                            dateEffectiveRevisionCreated >= dateEffectiveRevisionCurrent) ||
-                            (dateEffectiveRevisionCurrent > dateToday &&
-                            dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent)) {
+                        if (isCurrentRevision) {
                             updateContractList(results.details.period_end_date);
                             updateContractView(results);
                         }
 
+                        if (results.files) {
+                            if (isCurrentRevision) {
+                                updateContractFiles().then(function(files){
+                                    revisionData.files = files;
+                                });
+                            } else {
+                                $q.all({
+                                    details: ContractFilesService.get(results.revisionCreated.details_revision_id,'civicrm_hrjobcontract_details')
+                                }).then(function(files){
+                                    revisionData.files = files;
+                                });
+                            }
+                        }
+
                         $scope.revisionList.unshift(results.revisionCreated);
-                        $scope.revisionDataList.unshift({
-                            revisionEntityIdObj: results.revisionCreated,
-                            details: results.details,
-                            hour: results.hour,
-                            pay: results.pay
-                        });
+                        $scope.revisionDataList.unshift(revisionData);
+
                     } else {
                         var revisionListEntitiesView = ['details','hour','pay'], i, objExt;
 
@@ -273,16 +292,20 @@ define(['controllers/controllers',
                                 if (revisionData.revisionEntityIdObj[revisionListEntitiesView[i]+'_revision_id'] ==
                                     $scope.revisionCurrent[revisionListEntitiesView[i]+'_revision_id']) {
                                     objExt[revisionListEntitiesView[i]] = results[revisionListEntitiesView[i]];
+
+                                    if (revisionListEntitiesView[i] == 'details' && results.files) {
+                                        updateContractFiles().then(function(files){
+                                            objExt.files = files;
+                                            angular.extend(revisionData, objExt);
+                                        });
+                                    }
+
                                     angular.extend(revisionData, objExt);
                                 }
                                 i++;
                             }
 
                         })
-                    }
-
-                    if (results.files) {
-                        updateContractFiles();
                     }
 
                     CRM.refreshParent('#hrjobroles');
