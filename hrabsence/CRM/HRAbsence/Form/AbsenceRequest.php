@@ -402,26 +402,13 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
 
     if ($this->_mode == 'edit') {
       if ($this->_action && ($this->_action == CRM_Core_Action::ADD)) {
-        $saveButton = array(
-          'type' => 'done',
-          'name' => ts('Save'),
-          'subName' => 'save',
-          'isDefault' => TRUE,
-        );
         $approveButton = array(
           'type' => 'done',
           'name' => ts('Save and Approve'),
           'subName' => 'saveandapprove',
           'isDefault' => TRUE,
         );
-        if (CRM_Core_Permission::check('administer CiviCRM') || CRM_Core_Permission::check('edit HRAbsences') ||
-          (!empty($this->_managerContactID) && in_array($this->_loginUserID, $this->_managerContactID)))
-          {
-            $this->addButtons(array($saveButton,$approveButton));
-          }
-        else {
-          $this->addButtons(array($saveButton));
-        }
+        $this->addButtons(array($approveButton));
       }
       else {
         $this->add('hidden', 'source_record_id', $this->_aid);
