@@ -9,9 +9,9 @@
     <email>meszaros275@gmail.com</email>
   </maintainer>
   <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
+    <url desc="Main Extension Page">https://civicrm.org/extensions/civihr</url>
+    <url desc="Documentation">https://civicrm.org/extensions/civihr</url>
+    <url desc="Support">http://compucorp.co.uk</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
   <releaseDate>2015-03-04</releaseDate>
@@ -20,7 +20,7 @@
   <compatibility>
     <ver>4.5</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Emergency Contacts extensions for CiviHR</comments>
   <civix>
     <namespace>CRM/Hremergency</namespace>
   </civix>

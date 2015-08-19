@@ -21,6 +21,151 @@
   </CustomGroups>
   <CustomFields>
     <CustomField>
+      <name>Mobile_number</name>
+      <label>Mobile number</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>2</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>512</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>mobile_number_91</column_name>
+      <in_selector>1</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Dependant_s_</name>
+      <label>Dependant(s)</label>
+      <data_type>String</data_type>
+      <html_type>Radio</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>13</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>dependant_s__92</column_name>
+      <in_selector>1</in_selector>
+      <option_group_name>dependant_s__20150819112338</option_group_name>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Street_Address</name>
+      <label>Street Address</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>512</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>street_address_93</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Street_Address_Line_2</name>
+      <label>Street Address Line 2</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>6</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>512</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>street_address_line_2_94</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>City</name>
+      <label>City</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>7</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>512</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>city_95</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Postal_Code</name>
+      <label>Postal Code</label>
+      <data_type>String</data_type>
+      <html_type>Text</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>8</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>postal_code_96</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Province</name>
+      <label>State/Province</label>
+      <data_type>StateProvince</data_type>
+      <html_type>Select State/Province</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>10</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>province_97</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Country</name>
+      <label>Country</label>
+      <data_type>Country</data_type>
+      <html_type>Select Country</html_type>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>9</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>country_98</column_name>
+      <in_selector>0</in_selector>
+      <custom_group_name>Emergency_Contacts</custom_group_name>
+    </CustomField>
+    <CustomField>
       <name>Name</name>
       <label>Name</label>
       <data_type>String</data_type>
@@ -46,7 +191,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>2</weight>
+      <weight>3</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>512</text_length>
@@ -64,7 +209,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>3</weight>
+      <weight>4</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>512</text_length>
@@ -82,7 +227,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>4</weight>
+      <weight>11</weight>
       <is_active>1</is_active>
       <is_view>0</is_view>
       <text_length>255</text_length>
@@ -101,7 +246,7 @@
       <is_required>0</is_required>
       <is_searchable>0</is_searchable>
       <is_search_range>0</is_search_range>
-      <weight>5</weight>
+      <weight>12</weight>
       <attributes>rows=4, cols=60</attributes>
       <is_active>1</is_active>
       <is_view>0</is_view>
@@ -114,6 +259,12 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
+      <name>dependant_s__20150819112338</name>
+      <title>Dependant(s)</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
       <name>relationship_with_employee_20150304120408</name>
       <title>Relationship with Employee</title>
       <is_reserved>1</is_reserved>
@@ -121,6 +272,28 @@
     </OptionGroup>
   </OptionGroups>
   <OptionValues>
+    <OptionValue>
+      <label>Yes</label>
+      <value>yes</value>
+      <name>Yes</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>dependant_s__20150819112338</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>No</label>
+      <value>no</value>
+      <name>No</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>dependant_s__20150819112338</option_group_name>
+    </OptionValue>
     <OptionValue>
       <label>Sibling</label>
       <value>sibling</value>

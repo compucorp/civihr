@@ -12,6 +12,12 @@ WHERE option_group_id IN (SELECT id FROM civicrm_option_group WHERE name = "rela
 DELETE FROM civicrm_option_group 
 WHERE name = "relationship_with_employee_20150304120408";
 
+DELETE FROM civicrm_option_value
+WHERE option_group_id IN (SELECT id FROM civicrm_option_group WHERE name = "dependant_s__20150819112338");
+
+DELETE FROM civicrm_option_group
+WHERE name = "dependant_s__20150819112338";
+
 DELETE FROM civicrm_custom_field 
 WHERE custom_group_id IN (SELECT id FROM civicrm_custom_group WHERE name = "Emergency_Contacts");
 
