@@ -11498,7 +11498,6 @@ fieldset[disabled]
 #hrjobroles .hrjobroles-switch + .radio-label {
   display: block;
   position: relative;
-  cursor: pointer;
   outline: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -11510,7 +11509,7 @@ fieldset[disabled]
   -webkit-border-radius: 11px;
   border-radius: 11px;
 }
-/* line 19, ../sass/hrjobroles/partials/_switch.scss */
+/* line 18, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch + label:after, #hrjobroles .hrjobroles-switch + .checkbox-label:after,
 #hrjobroles .hrjobroles-switch + .radio-label:after, #hrjobroles .hrjobroles-switch + label:before, #hrjobroles .hrjobroles-switch + .checkbox-label:before,
 #hrjobroles .hrjobroles-switch + .radio-label:before {
@@ -11521,7 +11520,7 @@ fieldset[disabled]
   bottom: 0;
   content: "";
 }
-/* line 29, ../sass/hrjobroles/partials/_switch.scss */
+/* line 28, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch + label:before, #hrjobroles .hrjobroles-switch + .checkbox-label:before,
 #hrjobroles .hrjobroles-switch + .radio-label:before {
   right: 0;
@@ -11533,7 +11532,7 @@ fieldset[disabled]
   -o-transition: background 0.4s;
   transition: background 0.4s;
 }
-/* line 36, ../sass/hrjobroles/partials/_switch.scss */
+/* line 35, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch + label:after, #hrjobroles .hrjobroles-switch + .checkbox-label:after,
 #hrjobroles .hrjobroles-switch + .radio-label:after {
   width: 11px;
@@ -11548,17 +11547,22 @@ fieldset[disabled]
   -o-transition: margin 0.4s;
   transition: margin 0.4s;
 }
-/* line 52, ../sass/hrjobroles/partials/_switch.scss */
+/* line 47, ../sass/hrjobroles/partials/_switch.scss */
+#hrjobroles .hrjobroles-switch:not([disabled]) + label, #hrjobroles .hrjobroles-switch:not([disabled]) + .checkbox-label,
+#hrjobroles .hrjobroles-switch:not([disabled]) + .radio-label {
+  cursor: pointer;
+}
+/* line 55, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch:checked + label:before, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:before,
 #hrjobroles .hrjobroles-switch:checked + .radio-label:before {
   background-color: #42b0cb;
 }
-/* line 56, ../sass/hrjobroles/partials/_switch.scss */
+/* line 59, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch:checked + label:after, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:after,
 #hrjobroles .hrjobroles-switch:checked + .radio-label:after {
   margin-left: 11px;
 }
-/* line 62, ../sass/hrjobroles/partials/_switch.scss */
+/* line 65, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch[disabled] + label, #hrjobroles .hrjobroles-switch[disabled] + .checkbox-label,
 #hrjobroles .hrjobroles-switch[disabled] + .radio-label {
   cursor: not-allowed;
