@@ -7,10 +7,6 @@ input[type="checkbox"],
   margin-top: 2px;
 }
 
-.form-control {
-  font-size: 11px;
-}
-
 .form-control-file {
   padding: 6px 12px;
 }
@@ -82,9 +78,7 @@ input[type="checkbox"],
 .checkbox-label,
 .radio-label {
   color: $headings-color;
-  text-transform: uppercase;
   font-weight: bold;
-  font-size: 11px;
 }
 
 .checkbox-label,
@@ -112,9 +106,11 @@ input[type="checkbox"],
 
 .ui-select-multiple.ui-select-bootstrap {
   min-height: $input-height-base;
+  padding: 2px 2px 0 2px;
 
   input.ui-select-search {
     height: 1.9em;
+    text-indent: 10px;
   }
 
   .ui-select-match .close {
@@ -122,7 +118,10 @@ input[type="checkbox"],
   }
 
   .ui-select-match-item {
-    margin-bottom: 2px;
+    border-color: $brand-primary;
+    margin: 0 2px 2px 1px;
+    padding: 2px 8px;
+    text-transform: none;
   }
 }
 
@@ -130,4 +129,10 @@ input[type="checkbox"],
   background-color: $gray-lighter;
   border: 1px dashed $input-border;
   color: $headings-color;
+}
+
+.ui-select-placeholder,
+.ui-select-match-text {
+  font-weight: normal;
+  text-transform: none;
 }

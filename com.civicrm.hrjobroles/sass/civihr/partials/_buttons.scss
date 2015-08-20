@@ -1,17 +1,5 @@
 .btn {
   text-transform: uppercase;
-  font-size: $btn-font-size;
-  line-height: $btn-line-height;
-}
-
-.btn-lg {
-  font-size: $font-size-large;
-  line-height: $line-height-large;
-}
-.btn-sm,
-.btn-xs {
-  font-size: $font-size-small;
-  line-height: $line-height-small;
 }
 
 .btn-gray {
@@ -43,8 +31,10 @@
   background: none;
   border: 0 none;
   color: $gray;
+  font-weight: normal;
   padding: 0;
   cursor: pointer;
+  text-transform: none;
   vertical-align: baseline;
 
   &:hover {
@@ -60,5 +50,23 @@
     font-size: 9px;
     position: relative;
     top: -1px;
+  }
+}
+
+.#{$prefix}context-menu-toggle {
+  color: $gray;
+  padding: 0px 10px;
+  text-align: center;
+  display: inline-block;
+  font-size: 14px;
+
+  &:hover {
+    color: $brand-primary;
+  }
+}
+
+.btn-group.open {
+  .#{$prefix}context-menu-toggle.dropdown-toggle {
+    @include box-shadow(none);
   }
 }

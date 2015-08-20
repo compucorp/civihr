@@ -42,13 +42,13 @@
                 <td></td>
                 <td>
                     <div class="btn-group btn-group-xs btn-group-action" dropdown>
-                        <a class="btn btn-default btn-xs" ng-click="modalContract('view',revision.revisionEntityIdObj)">
+                        <a href ng-click="modalContract('view',revision.revisionEntityIdObj)">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View
                         </a>
-                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" aria-expanded="false" dropdown-toggle>
-                            <span class="caret"></span>
+                        <a href class="dropdown-toggle {{prefix}}context-menu-toggle" aria-expanded="false" dropdown-toggle>
+                            <span class="fa fa-ellipsis-v"></span>
                             <span class="sr-only">Toggle Dropdown</span>
-                        </button>
+                        </a>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
                             <li ng-show="!!revision.files.details.length"><a ng-href="/civicrm/hrjobcontract/file/zip?entityID={{revision.revisionEntityIdObj.id}}&entityTable=civicrm_hrjobcontract_details"
                                     ><span class="fa fa-download" aria-hidden="true"></span> Download</a></li>

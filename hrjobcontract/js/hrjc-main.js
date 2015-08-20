@@ -66,8 +66,8 @@ reqHrjc([
         }
     });
 
-    app.config(['settings','$routeProvider','$resourceProvider','$logProvider','$httpProvider', 'uiSelectConfig',
-        function(settings, $routeProvider, $resourceProvider, $logProvider, $httpProvider, uiSelectConfig){
+    app.config(['settings','$routeProvider','$resourceProvider','$logProvider','$httpProvider','datepickerConfig','uiSelectConfig',
+        function(settings, $routeProvider, $resourceProvider, $logProvider, $httpProvider, datepickerConfig, uiSelectConfig){
             $logProvider.debugEnabled(settings.debug);
 
             $routeProvider.
@@ -87,6 +87,8 @@ reqHrjc([
             $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
             uiSelectConfig.theme = 'bootstrap';
+
+            datepickerConfig.showWeeks = false;
         }
     ]);
 
