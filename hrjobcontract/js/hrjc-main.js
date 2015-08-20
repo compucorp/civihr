@@ -3,6 +3,7 @@ var module, reqHrjc = require.config({
     baseUrl: CRM.jobContractTabApp.path + 'js',
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
+        angularSelect: 'vendor/angular/select',
         fraction: 'vendor/fraction',
         moment: 'vendor/moment.min',
         jobSummary: 'vendor/jobsummary',
@@ -65,8 +66,8 @@ reqHrjc([
         }
     });
 
-    app.config(['settings','$routeProvider','$resourceProvider','$logProvider','$httpProvider',
-        function(settings, $routeProvider, $resourceProvider, $logProvider, $httpProvider){
+    app.config(['settings','$routeProvider','$resourceProvider','$logProvider','$httpProvider', 'uiSelectConfig',
+        function(settings, $routeProvider, $resourceProvider, $logProvider, $httpProvider, uiSelectConfig){
             $logProvider.debugEnabled(settings.debug);
 
             $routeProvider.
@@ -84,6 +85,8 @@ reqHrjc([
             $resourceProvider.defaults.stripTrailingSlashes = false;
 
             $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+            uiSelectConfig.theme = 'bootstrap';
         }
     ]);
 
