@@ -595,7 +595,7 @@
                                             ng-model="entity.health.provider">
                                         <ui-select-match
                                                 placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices  repeat="contact.id as contact in contacts | filter: $select.search"
+                                        <ui-select-choices  repeat="contact.id as contact in contacts.Health_Insurance_Provider | filter: $select.search"
                                                             refresh="refreshContacts($select.search, 'Health_Insurance_Provider')"
                                                             refresh-delay="0">
                                             <div ng-bind="contact.label"></div>
@@ -664,7 +664,7 @@
                                             ng-model="entity.health.provider_life_insurance">
                                         <ui-select-match
                                                 placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                                        <ui-select-choices  repeat="contact.id as contact in contacts | filter: $select.search"
+                                        <ui-select-choices  repeat="contact.id as contact in contacts.Life_Insurance_Provider | filter: $select.search"
                                                             refresh="refreshContacts($select.search, 'Life_Insurance_Provider')"
                                                             refresh-delay="0">
                                             <div ng-bind="contact.label"></div>
