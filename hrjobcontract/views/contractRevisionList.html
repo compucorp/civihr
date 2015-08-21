@@ -1,29 +1,88 @@
 <div ng-controller="RevisionListCtrl" class="{{prefix}}history">
-    <a ng-href="{{urlCSV}}" class="btn btn-xs btn-export pull-right">
-        <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
-    </a>
+    <div class="btn-group btn-group-xs btn-group-action pull-right">
+        <a ng-href="{{urlCSV}}" class="btn btn-link btn-xs">
+            <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
+        </a>
+        <div class="btn-group btn-group-xs" dropdown>
+            <a href class="btn btn-link btn-xs dropdown-toggle" dropdown-toggle
+                    ng-disabled="disabled">
+                Fields <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.effectiveDate"
+                                      ng-click="display.effectiveDate = !display.effectiveDate"> Effective Date</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.position"
+                                      ng-click="display.position = !display.position"> Position</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.payScale"
+                                      ng-click="display.payScale = !display.payScale"> Pay Scale</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.totalSalary"
+                                      ng-click="display.totalSalary = !display.totalSalary"> Total Salary</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.hours"
+                                      ng-click="display.hours = !display.hours"> Hours (FT/PT)</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.placeOfWork"
+                                      ng-click="display.placeOfWork = !display.placeOfWork"> Normal Place of Work</label>
+                    </div>
+                </li>
+                <li>
+                    <div class="checkbox">
+                        <label><input type="checkbox"
+                                      ng-checked="display.recordedBy"
+                                      ng-click="display.recordedBy = !display.recordedBy"> Change Recorded By</label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
     <table class="table table-striped {{prefix}}table-sort {{prefix}}table-revision-list">
         <thead>
             <tr>
-                <th><a href="" ng-click="sortBy('revisionEntityIdObj.effective_date');createPage();">Effective Date <i class="fa"
+                <th ng-hide="!display.effectiveDate"><a href="" ng-click="sortBy('revisionEntityIdObj.effective_date');createPage();">Effective Date <i class="fa"
                                                                                                                        ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                                        ng-show="sortCol == 'revisionEntityIdObj.effective_date'"></i></a></th>
-                <th><a href="" ng-click="sortBy('details.position');createPage();">Position <i class="fa"
+                <th ng-hide="!display.position"><a href="" ng-click="sortBy('details.position');createPage();">Position <i class="fa"
                                                                                                ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                ng-show="sortCol == 'details.position'"></i></a></th>
-                <th><a href="" ng-click="sortBy('pay.pay_scale');createPage();">Pay Scale <i class="fa"
+                <th ng-hide="!display.payScale"><a href="" ng-click="sortBy('pay.pay_scale');createPage();">Pay Scale <i class="fa"
                                                                                              ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                              ng-show="sortCol == 'pay.pay_scale'"></i></a></th>
-                <th><a href="" ng-click="sortBy('pay.pay_annualized_est');createPage();">Total Salary <i class="fa"
+                <th ng-hide="!display.totalSalary"><a href="" ng-click="sortBy('pay.pay_annualized_est');createPage();">Total Salary <i class="fa"
                                                                                                          ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                          ng-show="sortCol == 'pay.pay_annualized_est'"></i></a></th>
-                <th><a href="" ng-click="sortBy('hour.hours_type');createPage();">Hours (FT/PT) <i class="fa"
+                <th ng-hide="!display.hours"><a href="" ng-click="sortBy('hour.hours_type');createPage();">Hours (FT/PT) <i class="fa"
                                                                                                                       ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                                       ng-show="sortCol == 'hour.hours_type'"></i></a></th>
-                <th><a href="" ng-click="sortBy('details.location');createPage();">Normal Place of Work <i class="fa"
+                <th ng-hide="!display.placeOfWork"><a href="" ng-click="sortBy('details.location');createPage();">Normal Place of Work <i class="fa"
                                                                                                ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                ng-show="sortCol == 'details.location'"></i></a></th>
-                <th><a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">Change Recorded By <i class="fa"
+                <th ng-hide="!display.recordedBy"><a href="" ng-click="sortBy('revisionEntityIdObj.editor_name');createPage();">Change Recorded By <i class="fa"
                                                                                                                            ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
                                                                                                                            ng-show="sortCol == 'revisionEntityIdObj.editor_name'"></i></a></th>
                 <th>&nbsp;</th>
@@ -32,13 +91,13 @@
         </thead>
         <tbody>
             <tr ng-repeat="revision in revisionDataListPage">
-                <td>{{(revision.revisionEntityIdObj.effective_date | date: 'yyyy/MM/dd') || '-'}}</td>
-                <td>{{revision.details.position || '-'}}</td>
-                <td>{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-') + ' ' + ((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_grade') || '' )) : '-'}}</td>
-                <td>{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
-                <td>{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
-                <td>{{options.details.location[revision.details.location] || '-'}}</td>
-                <td>{{revision.revisionEntityIdObj.editor_name || '-'}}</td>
+                <td ng-hide="!display.effectiveDate">{{(revision.revisionEntityIdObj.effective_date | date: 'yyyy/MM/dd') || '-'}}</td>
+                <td ng-hide="!display.position">{{revision.details.position || '-'}}</td>
+                <td ng-hide="!display.payScale">{{revision.pay.pay_scale ? (((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_scale') || '-') + ' ' + ((utils.payScaleGrade | getObjById:revision.pay.pay_scale:'pay_grade') || '' )) : '-'}}</td>
+                <td ng-hide="!display.totalSalary">{{revision.pay.pay_annualized_est || '-'}} {{options.pay.pay_currency[revision.pay.pay_currency]}}</td>
+                <td ng-hide="!display.hours">{{options.hour.hours_type[revision.hour.hours_type] || '-'}}</td>
+                <td ng-hide="!display.placeOfWork">{{options.details.location[revision.details.location] || '-'}}</td>
+                <td ng-hide="!display.recordedBy">{{revision.revisionEntityIdObj.editor_name || '-'}}</td>
                 <td></td>
                 <td>
                     <div class="btn-group btn-group-xs btn-group-action" dropdown>

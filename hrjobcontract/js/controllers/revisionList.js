@@ -14,6 +14,16 @@ define(['controllers/controllers', 'services/contract'], function(controllers){
             $scope.maxSize = 5;
             $scope.sortCol = 'revisionEntityIdObj.effective_date';
             $scope.sortReverse = true;
+            $scope.display = {
+                effectiveDate: true,
+                position: true,
+                payScale: true,
+                totalSalary: true,
+                hours: true,
+                placeOfWork: true,
+                recordedBy: true
+            };
+
 
             $scope.createPage = function(){
                 var start = (($scope.currentPage - 1) * $scope.itemsPerPage),
@@ -110,7 +120,7 @@ define(['controllers/controllers', 'services/contract'], function(controllers){
 
             function urlCSVBuild(){
                 var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?' ),
-                    fields = $scope.fields;
+                    fields = $scope.$parent.fields;
 
                 angular.forEach(fields, function(entityFields, entityName){
                     url += 'fields['+entityName+'_revision_id]=1&';

@@ -10670,27 +10670,31 @@ fieldset[disabled]
   text-transform: uppercase;
 }
 /* line 5, ../sass/civihr/partials/_buttons.scss */
+#hrjob-contract .btn-link {
+  font-weight: bold;
+}
+/* line 9, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray {
   color: #767e8f;
   background-color: #fff;
   border-color: #767e8f;
 }
-/* line 10, ../sass/civihr/partials/_buttons.scss */
+/* line 14, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray:hover, #hrjob-contract .btn-gray:focus, #hrjob-contract .btn-gray.btn-focus {
   color: #535966;
   border-color: #535966;
 }
-/* line 17, ../sass/civihr/partials/_buttons.scss */
+/* line 21, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray.active {
   background-color: #767e8f;
   color: #fff;
 }
-/* line 21, ../sass/civihr/partials/_buttons.scss */
+/* line 25, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray.active:hover, #hrjob-contract .btn-gray.active:focus, #hrjob-contract .btn-gray.active.btn-focus {
   background-color: #5e6574;
   color: #fff;
 }
-/* line 30, ../sass/civihr/partials/_buttons.scss */
+/* line 34, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-collapse {
   background: none;
   border: 0 none;
@@ -10701,23 +10705,23 @@ fieldset[disabled]
   text-transform: none;
   vertical-align: baseline;
 }
-/* line 40, ../sass/civihr/partials/_buttons.scss */
+/* line 44, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-collapse:hover {
   color: #373e4b;
 }
-/* line 44, ../sass/civihr/partials/_buttons.scss */
+/* line 48, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-collapse:active {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-/* line 48, ../sass/civihr/partials/_buttons.scss */
+/* line 52, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-collapse .fa {
   margin-right: 3px;
   font-size: 9px;
   position: relative;
   top: -1px;
 }
-/* line 56, ../sass/civihr/partials/_buttons.scss */
+/* line 60, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .hrjc-context-menu-toggle {
   color: #586277;
   padding: 0px 10px;
@@ -10725,11 +10729,11 @@ fieldset[disabled]
   display: inline-block;
   font-size: 14px;
 }
-/* line 63, ../sass/civihr/partials/_buttons.scss */
+/* line 67, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .hrjc-context-menu-toggle:hover {
   color: #42b0cb;
 }
-/* line 69, ../sass/civihr/partials/_buttons.scss */
+/* line 73, ../sass/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-group.open .hrjc-context-menu-toggle.dropdown-toggle {
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -11179,6 +11183,22 @@ fieldset[disabled]
 #hrjob-contract .hrjc-list-contract-item .hrjc-loader {
   opacity: 1;
 }
+/* line 3, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-group-action .dropdown-menu .checkbox {
+  font-size: 12px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 0px 10px;
+}
+/* line 9, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-group-action .dropdown-menu .checkbox input[type="checkbox"] {
+  margin-top: 1px;
+}
+/* line 13, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-group-action .dropdown-menu .checkbox label, #hrjob-contract .btn-group-action .dropdown-menu .checkbox .checkbox-label,
+#hrjob-contract .btn-group-action .dropdown-menu .checkbox .radio-label {
+  min-height: 17px;
+}
 /* line 1, ../sass/hrjc/partials/_collapse.scss */
 #hrjob-contract .hrjc-contract-details {
   padding-bottom: 10px;
@@ -11189,7 +11209,7 @@ fieldset[disabled]
   padding-top: 0;
 }
 /* line 2, ../sass/hrjc/partials/_history.scss */
-#hrjob-contract .hrjc-history .btn-export {
+#hrjob-contract .hrjc-history .btn-group-action {
   margin-top: -31px;
 }
 /* line 6, ../sass/hrjc/partials/_history.scss */
@@ -11249,42 +11269,26 @@ fieldset[disabled]
   margin-right: 20px;
   margin-top: -2px;
 }
-/* line 8, ../sass/hrjc/partials/_modals.scss */
-#hrjob-contract .modal-revision .modal-header .btn-group-action .checkbox {
-  font-size: 12px;
-  margin-bottom: 5px;
-  margin-top: 5px;
-  padding: 0px 10px;
-}
-/* line 14, ../sass/hrjc/partials/_modals.scss */
-#hrjob-contract .modal-revision .modal-header .btn-group-action .checkbox input[type="checkbox"] {
-  margin-top: 1px;
-}
-/* line 18, ../sass/hrjc/partials/_modals.scss */
-#hrjob-contract .modal-revision .modal-header .btn-group-action .checkbox label, #hrjob-contract .modal-revision .modal-header .btn-group-action .checkbox .checkbox-label,
-#hrjob-contract .modal-revision .modal-header .btn-group-action .checkbox .radio-label {
-  min-height: 17px;
-}
-/* line 26, ../sass/hrjc/partials/_modals.scss */
+/* line 10, ../sass/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .table {
   font-size: 13px;
 }
-/* line 29, ../sass/hrjc/partials/_modals.scss */
+/* line 13, ../sass/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .table .table {
   background-color: transparent;
   font-size: 12px;
 }
-/* line 33, ../sass/hrjc/partials/_modals.scss */
+/* line 17, ../sass/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .table .table th {
   font-size: 12px;
 }
-/* line 39, ../sass/hrjc/partials/_modals.scss */
+/* line 23, ../sass/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .pagination {
   margin-top: 10px;
   margin-bottom: 10px;
 }
 @media (min-width: 992px) {
-  /* line 47, ../sass/hrjc/partials/_modals.scss */
+  /* line 31, ../sass/hrjc/partials/_modals.scss */
   #hrjob-contract .modal-revision .modal-dialog {
     width: 1140px;
   }
