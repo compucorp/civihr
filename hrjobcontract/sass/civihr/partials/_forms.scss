@@ -136,3 +136,18 @@ input[type="checkbox"],
   font-weight: normal;
   text-transform: none;
 }
+
+.ui-select-match-text {
+  color: $input-color;
+}
+
+.ui-select-toggle[disabled] {
+  background-color: $input-bg-disabled;
+  opacity: 1;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: $input-bg-disabled;
+  }
+}
