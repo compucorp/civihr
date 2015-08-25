@@ -592,6 +592,7 @@
                                 <div class="input-group">
                                     <ui-select
                                             allow-clear
+                                            ng-disabled="isDisabled"
                                             ng-model="entity.health.provider">
                                         <ui-select-match
                                                 placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
@@ -603,7 +604,8 @@
                                         </ui-select-choices>
                                     </ui-select>
                                     <span class="input-group-btn">
-                                      <a ng-click="entity.health.provider = ''" class="btn btn-default">
+                                      <a ng-disabled="isDisabled"
+                                         ng-click="entity.health.provider = ''" class="btn btn-default">
                                           <span class="fa fa-remove"></span>
                                       </a>
                                     </span>
@@ -661,6 +663,7 @@
                                 <div class="input-group">
                                     <ui-select
                                             allow-clear
+                                            ng-disabled="isDisabled"
                                             ng-model="entity.health.provider_life_insurance">
                                         <ui-select-match
                                                 placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
@@ -672,7 +675,8 @@
                                         </ui-select-choices>
                                     </ui-select>
                                     <span class="input-group-btn">
-                                      <a ng-click="entity.health.provider_life_insurance = ''" class="btn btn-default">
+                                      <a ng-disabled="isDisabled"
+                                         ng-click="entity.health.provider_life_insurance = ''" class="btn btn-default">
                                           <span class="fa fa-remove"></span>
                                       </a>
                                     </span>

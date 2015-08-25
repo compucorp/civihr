@@ -3138,7 +3138,7 @@
 }
 /* line 140, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_forms.scss */
 #hrjob-contract .form-control[disabled], #hrjob-contract .form-control[readonly], fieldset[disabled] #hrjob-contract .form-control {
-  background-color: #e8eef0;
+  background-color: #f4f7f8;
   opacity: 1;
 }
 /* line 147, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_forms.scss */
@@ -10955,6 +10955,19 @@ fieldset[disabled]
 #hrjob-contract .ui-select-match-text {
   font-weight: normal;
   text-transform: none;
+}
+/* line 140, ../sass/civihr/partials/_forms.scss */
+#hrjob-contract .ui-select-match-text {
+  color: #586277;
+}
+/* line 144, ../sass/civihr/partials/_forms.scss */
+#hrjob-contract .ui-select-toggle[disabled] {
+  background-color: #f4f7f8;
+  opacity: 1;
+}
+/* line 148, ../sass/civihr/partials/_forms.scss */
+#hrjob-contract .ui-select-toggle[disabled]:hover, #hrjob-contract .ui-select-toggle[disabled]:focus, #hrjob-contract .ui-select-toggle[disabled]:active {
+  background-color: #f4f7f8;
 }
 /* line 1, ../sass/civihr/partials/_iframe.scss */
 #hrjob-contract .hrjc-iframe {
