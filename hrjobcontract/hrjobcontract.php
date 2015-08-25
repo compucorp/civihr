@@ -226,36 +226,14 @@ function hrjobcontract_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
 function hrjobcontract_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  _hrjobcontract_civix_civicrm_alterSettingsFolders($metaDataFolders);
+  $settingsDir = __DIR__ . DIRECTORY_SEPARATOR . 'settings';
+  if (is_dir($settingsDir) && !in_array($settingsDir, $metaDataFolders)) {
+    $metaDataFolders[] = $settingsDir;
+  }
+  $metaDataFolders = array_unique($metaDataFolders);
 }
 
 function hrjobcontract_civicrm_navigationMenu( &$params ) {
-/*  $vacancyMenuItems = array();
-  $vacancyStatus = CRM_Core_OptionGroup::values('vacancy_status');
-  $vacancyID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'id', 'name');
-  $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'find_vacancies', 'id', 'name');
-  $count = 0;
-  foreach ($vacancyStatus as $value => $status) {
-    $vacancyMenuItems[$count] = array(
-      'attributes' => array(
-        'label' => "{$status}",
-        'name' => "{$status}",
-        'url' => "civicrm/vacancy/find?force=1&status={$value}&reset=1",
-        'permission' => NULL,
-        'operator' => 'OR',
-        'separator' => NULL,
-        'parentID' => $parentID,
-        'navID' => 1,
-        'active' => 1
-      )
-    );
-    $count++;
-  }
-  if (!empty($vacancyMenuItems)) {
-    $params[$vacancyID]['child'][$parentID]['child'] = $vacancyMenuItems;
-  }
-*/
-    
   // Add sub-menu
   $submenuItems = array();
   $topMenuID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'id', 'name');
