@@ -11,7 +11,7 @@
       <help_pre></help_pre>
       <help_post></help_post>
       <weight>13</weight>
-      <is_active>1</is_active>
+      <is_active>0</is_active>
       <table_name>civicrm_value_jobcontract_dates_13</table_name>
       <is_multiple>1</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
@@ -24,7 +24,7 @@
       <label>Contract ID</label>
       <data_type>Int</data_type>
       <html_type>Text</html_type>
-      <is_required>1</is_required>
+      <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
       <weight>1</weight>

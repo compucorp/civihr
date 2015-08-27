@@ -1015,7 +1015,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         $hrjobcontractReportTemplateParams = array(
             1 => array($reportTemplateOptionGroup->id, 'Integer'),
         );
-    CRM_Core_DAO::executeQuery($hrjobcontractReportTemplateQuery, $hrjobcontractReportTemplateParams);
+        CRM_Core_DAO::executeQuery($hrjobcontractReportTemplateQuery, $hrjobcontractReportTemplateParams);
+    }
+    return TRUE;
+  }
+  
+  function upgrade_1004() {
+    $jobcontractDatesCustomGroup = CRM_Core_DAO::executeQuery("SELECT id FROM `civicrm_custom_group` WHERE name='HRJobContract_Dates' AND is_active = 1 LIMIT 1");
+    if ($jobcontractDatesCustomGroup->fetch())
+    {
+      CRM_Core_DAO::executeQuery("UPDATE `civicrm_custom_group` SET is_active = 0 WHERE name = 'HRJobContract_Dates'");
+      $jobcontractDatesCustomFieldQuery = "UPDATE `civicrm_custom_field` SET is_required = 0 WHERE custom_group_id = %1 AND name = 'Contract_ID'";
+      $jobcontractDatesCustomFieldParams = array(
+          1 => array($jobcontractDatesCustomGroup->id, 'Integer'),
+      );
+      CRM_Core_DAO::executeQuery($jobcontractDatesCustomFieldQuery, $jobcontractDatesCustomFieldParams);
     }
     return TRUE;
   }
