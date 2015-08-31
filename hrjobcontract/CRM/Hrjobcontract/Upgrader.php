@@ -1033,6 +1033,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     return TRUE;
   }
+  
+  function upgrade_1005() {
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` CHANGE `leave_amount` `leave_amount` DECIMAL( 8, 2 ) UNSIGNED NULL DEFAULT NULL COMMENT 'The number of leave days'");
+      return TRUE;
+  }
           
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
