@@ -514,8 +514,16 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_DAO::executeQuery($sql);
     CRM_Core_DAO::triggerRebuild();
 
-    CRM_Core_DAO::executeQuery("INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`, `weight`, `description`, `is_optgroup`, `is_reserved`, `is_active`, `component_id`, `domain_id`, `visibility_id`) VALUES
-        (40, 'JobContract Revision Report', 'hrjobcontract/summary', 'CRM_Hrjobcontract_Report_Form_Summary', NULL, 0, 0, 54, 'JobContract Revision Report', 0, 0, 1, NULL, NULL, NULL)");
+    $reportTemplateOptionGroup = CRM_Core_DAO::executeQuery("SELECT * FROM civicrm_option_group WHERE name='report_template' AND is_active = 1 LIMIT 1");
+    if ($reportTemplateOptionGroup->fetch())
+    {
+        $hrjobcontractReportTemplateQuery = "INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`, `weight`, `description`, `is_optgroup`, `is_reserved`, `is_active`, `component_id`, `domain_id`, `visibility_id`) VALUES
+        (%1, 'JobContract Revision Report', 'hrjobcontract/summary', 'CRM_Hrjobcontract_Report_Form_Summary', NULL, 0, 0, 54, 'JobContract Revision Report', 0, 0, 1, NULL, NULL, NULL)";
+        $hrjobcontractReportTemplateParams = array(
+            1 => array($reportTemplateOptionGroup->id, 'Integer'),
+        );
+    CRM_Core_DAO::executeQuery($hrjobcontractReportTemplateQuery, $hrjobcontractReportTemplateParams);
+    }
 
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_hour` ADD `location_type` INT(3) NULL DEFAULT NULL AFTER `id`");
 
@@ -995,6 +1003,40 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     
     return TRUE;
+  }
+  
+  function upgrade_1003() {
+    CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_option_value` WHERE name = 'CRM_Hrjobcontract_Report_Form_Summary'");
+    $reportTemplateOptionGroup = CRM_Core_DAO::executeQuery("SELECT * FROM civicrm_option_group WHERE name='report_template' AND is_active = 1 LIMIT 1");
+    if ($reportTemplateOptionGroup->fetch())
+    {
+        $hrjobcontractReportTemplateQuery = "INSERT INTO `civicrm_option_value` (`option_group_id`, `label`, `value`, `name`, `grouping`, `filter`, `is_default`, `weight`, `description`, `is_optgroup`, `is_reserved`, `is_active`, `component_id`, `domain_id`, `visibility_id`) VALUES
+        (%1, 'JobContract Revision Report', 'hrjobcontract/summary', 'CRM_Hrjobcontract_Report_Form_Summary', NULL, 0, 0, 54, 'JobContract Revision Report', 0, 0, 1, NULL, NULL, NULL)";
+        $hrjobcontractReportTemplateParams = array(
+            1 => array($reportTemplateOptionGroup->id, 'Integer'),
+        );
+        CRM_Core_DAO::executeQuery($hrjobcontractReportTemplateQuery, $hrjobcontractReportTemplateParams);
+    }
+    return TRUE;
+  }
+  
+  function upgrade_1004() {
+    $jobcontractDatesCustomGroup = CRM_Core_DAO::executeQuery("SELECT id FROM `civicrm_custom_group` WHERE name='HRJobContract_Dates' AND is_active = 1 LIMIT 1");
+    if ($jobcontractDatesCustomGroup->fetch())
+    {
+      CRM_Core_DAO::executeQuery("UPDATE `civicrm_custom_group` SET is_active = 0 WHERE name = 'HRJobContract_Dates'");
+      $jobcontractDatesCustomFieldQuery = "UPDATE `civicrm_custom_field` SET is_required = 0 WHERE custom_group_id = %1 AND name = 'Contract_ID'";
+      $jobcontractDatesCustomFieldParams = array(
+          1 => array($jobcontractDatesCustomGroup->id, 'Integer'),
+      );
+      CRM_Core_DAO::executeQuery($jobcontractDatesCustomFieldQuery, $jobcontractDatesCustomFieldParams);
+    }
+    return TRUE;
+  }
+  
+  function upgrade_1005() {
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` CHANGE `leave_amount` `leave_amount` DECIMAL( 8, 2 ) UNSIGNED NULL DEFAULT NULL COMMENT 'The number of leave days'");
+      return TRUE;
   }
           
   function decToFraction($fte) {
