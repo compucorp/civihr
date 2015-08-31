@@ -225,7 +225,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
     $data = array();
     $result = civicrm_api3('OptionValue', 'get', array('option_group_id' => $optionGroupName));
     foreach ($result['values'] as $key => $val) {
-      $data[$val['value']] = $val['name'];
+      $data[$val['value']] = $val['label'];
     }
     return $data;
   }

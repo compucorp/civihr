@@ -46,11 +46,11 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         // annual benefits options:
         CRM_Core_OptionGroup::getAssoc('hrjc_benefit_name', $this->_annualOptions['benefit']['name']);
         CRM_Core_OptionGroup::getAssoc('hrjc_benefit_type', $this->_annualOptions['benefit']['type']);
-        foreach ($this->_annualOptions['benefit']['name']['name'] as $key => $value)
+        foreach ($this->_annualOptions['benefit']['name']['label'] as $key => $value)
         {
             $this->_annualOptionsFlipped['benefit']['name'][$value] = $key;
         }
-        foreach ($this->_annualOptions['benefit']['type']['name'] as $key => $value)
+        foreach ($this->_annualOptions['benefit']['type']['label'] as $key => $value)
         {
             $this->_annualOptionsFlipped['benefit']['type'][$value] = $key;
         }
@@ -58,11 +58,11 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         // annual deductions options:
         CRM_Core_OptionGroup::getAssoc('hrjc_deduction_name', $this->_annualOptions['deduction']['name']);
         CRM_Core_OptionGroup::getAssoc('hrjc_deduction_type', $this->_annualOptions['deduction']['type']);
-        foreach ($this->_annualOptions['deduction']['name']['name'] as $key => $value)
+        foreach ($this->_annualOptions['deduction']['name']['label'] as $key => $value)
         {
             $this->_annualOptionsFlipped['deduction']['name'][$value] = $key;
         }
-        foreach ($this->_annualOptions['deduction']['type']['name'] as $key => $value)
+        foreach ($this->_annualOptions['deduction']['type']['label'] as $key => $value)
         {
             $this->_annualOptionsFlipped['deduction']['type'][$value] = $key;
         }
