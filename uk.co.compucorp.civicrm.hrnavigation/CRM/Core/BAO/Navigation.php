@@ -605,7 +605,7 @@ ORDER BY parent_id, weight";
           module_exists('admin_menu') && user_access('access administration menu')
         )
       ) {
-        $hideLabel = ts('Drupal Menu');
+        $hideLabel = ts('Self Service Portal');//ts('Drupal Menu');
       }
       elseif ($config->userSystem->is_wordpress) {
         $hideLabel = ts('WordPress Menu');
