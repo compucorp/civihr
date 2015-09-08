@@ -121,14 +121,19 @@ class CRM_Contact_Form_Inline_CustomData extends CRM_Contact_Form_Inline {
                 'contact_id' => $this->_contactId,
             ));
             foreach ($jobContractsResult['values'] as $jobContract) {
-                if ($jobContract['is_current']) {
+                if ($jobContract['is_current'] && !$jobContract['deleted']) {
                     $jobContractSummaryDates = $this->_getJobContractSummaryDates($this->_groupTree[$this->_groupID]['fields'], $params);
-                    $result = civicrm_api3('HRJobDetails', 'create', array(
+                    $createParams = array(
                         'sequential' => 1,
                         'jobcontract_id' => $jobContract['id'],
-                        'period_start_date' => $jobContractSummaryDates['startDate'],
-                        'period_end_date' => $jobContractSummaryDates['endDate'],
-                    ));
+                    );
+                    if (!empty($jobContractSummaryDates['startDate'])) {
+                        $createParams['period_start_date'] = $jobContractSummaryDates['startDate'];
+                    }
+                    if (!empty($jobContractSummaryDates['endDate'])) {
+                        $createParams['period_end_date'] = $jobContractSummaryDates['endDate'];
+                    }
+                    $result = civicrm_api3('HRJobDetails', 'create', $createParams);
                     break;
                 }
             }
