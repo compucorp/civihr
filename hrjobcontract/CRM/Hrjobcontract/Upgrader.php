@@ -1038,6 +1038,45 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` CHANGE `leave_amount` `leave_amount` DECIMAL( 8, 2 ) UNSIGNED NULL DEFAULT NULL COMMENT 'The number of leave days'");
       return TRUE;
   }
+  
+  /**
+   * Populates old Job Summary dates into Job Contract period_start_date and period_end_date fields.
+   * 
+   * @return boolean
+   */
+  function upgrade_1006() {
+    $tableExists = $this->checkTableExists(array(
+        'civicrm_value_job_summary_10',
+    ));
+    if (!$tableExists['civicrm_value_job_summary_10']) {
+        return TRUE;
+    }
+    $jobSummary = CRM_Core_DAO::executeQuery("SELECT * FROM civicrm_value_job_summary_10 ORDER BY entity_id ASC");
+    while ($jobSummary->fetch()) {
+      $jobContractsResult = civicrm_api3('HRJobContract', 'get', array(
+        'sequential' => 1,
+        'contact_id' => $jobSummary->entity_id,
+      ));
+      foreach ($jobContractsResult['values'] as $jobContract) {
+        if ($jobContract['is_current'] && !$jobContract['deleted']) {
+          $createParams = array(
+            'sequential' => 1,
+            'jobcontract_id' => $jobContract['id'],
+          );
+          if (!empty($jobSummary->initial_join_date_56)) {
+            $createParams['period_start_date'] = $jobSummary->initial_join_date_56;
+          }
+          if (!empty($jobSummary->final_termination_date_57)) {
+            $createParams['period_end_date'] = $jobSummary->final_termination_date_57;
+          }
+          $result = civicrm_api3('HRJobDetails', 'create', $createParams);
+          break;
+        }
+      }
+    }
+    
+    return TRUE;
+  }
           
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
