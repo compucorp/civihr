@@ -1053,9 +1053,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     $jobSummary = CRM_Core_DAO::executeQuery("SELECT * FROM civicrm_value_job_summary_10 ORDER BY entity_id ASC");
     while ($jobSummary->fetch()) {
+      $jobContractSummaryDates = array(
+        'startDate' => $jobSummary->initial_join_date_56 ? date('Y-m-d', strtotime($jobSummary->initial_join_date_56)) : null,
+        'endDate' => $jobSummary->final_termination_date_57 ? date('Y-m-d', strtotime($jobSummary->final_termination_date_57)) : null,
+      );
       $jobContractsResult = civicrm_api3('HRJobContract', 'get', array(
         'sequential' => 1,
         'contact_id' => $jobSummary->entity_id,
+        'return' => "period_start_date,period_end_date",
       ));
       foreach ($jobContractsResult['values'] as $jobContract) {
         if ($jobContract['is_current'] && !$jobContract['deleted']) {
@@ -1063,14 +1068,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
             'sequential' => 1,
             'jobcontract_id' => $jobContract['id'],
           );
-          if (!empty($jobSummary->initial_join_date_56)) {
-            $createParams['period_start_date'] = $jobSummary->initial_join_date_56;
+          if (empty($jobContract['period_start_date']) && !empty($jobContractSummaryDates['startDate'])) {
+            $createParams['period_start_date'] = $jobContractSummaryDates['startDate'];
           }
-          if (!empty($jobSummary->final_termination_date_57)) {
-            $createParams['period_end_date'] = $jobSummary->final_termination_date_57;
+          if (
+            (
+                empty($jobContract['period_end_date']) ||
+                ($jobContract['period_end_date'] > $jobContractSummaryDates['endDate'])
+            )
+            && !empty($jobContractSummaryDates['endDate'])
+           ) {
+            $createParams['period_end_date'] = $jobContractSummaryDates['endDate'];
           }
           $result = civicrm_api3('HRJobDetails', 'create', $createParams);
-          break;
         }
       }
     }

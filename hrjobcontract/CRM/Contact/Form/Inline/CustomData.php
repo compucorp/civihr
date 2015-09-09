@@ -119,6 +119,7 @@ class CRM_Contact_Form_Inline_CustomData extends CRM_Contact_Form_Inline {
             $jobContractsResult = civicrm_api3('HRJobContract', 'get', array(
                 'sequential' => 1,
                 'contact_id' => $this->_contactId,
+                'return' => "period_start_date,period_end_date",
             ));
             foreach ($jobContractsResult['values'] as $jobContract) {
                 if ($jobContract['is_current'] && !$jobContract['deleted']) {
@@ -127,14 +128,19 @@ class CRM_Contact_Form_Inline_CustomData extends CRM_Contact_Form_Inline {
                         'sequential' => 1,
                         'jobcontract_id' => $jobContract['id'],
                     );
-                    if (!empty($jobContractSummaryDates['startDate'])) {
+                    if (empty($jobContract['period_start_date']) && !empty($jobContractSummaryDates['startDate'])) {
                         $createParams['period_start_date'] = $jobContractSummaryDates['startDate'];
                     }
-                    if (!empty($jobContractSummaryDates['endDate'])) {
+                    if (
+                        (
+                            empty($jobContract['period_end_date']) ||
+                            ($jobContract['period_end_date'] > $jobContractSummaryDates['endDate'])
+                        )
+                        && !empty($jobContractSummaryDates['endDate'])
+                       ) {
                         $createParams['period_end_date'] = $jobContractSummaryDates['endDate'];
                     }
                     $result = civicrm_api3('HRJobDetails', 'create', $createParams);
-                    break;
                 }
             }
         }
@@ -159,8 +165,8 @@ class CRM_Contact_Form_Inline_CustomData extends CRM_Contact_Form_Inline {
       }
       
       return array(
-          'startDate' => $startDate,
-          'endDate' => $endDate,
+          'startDate' => $startDate ? date('Y-m-d', strtotime($startDate)) : null,
+          'endDate' => $endDate ? date('Y-m-d', strtotime($endDate)) : null,
       );
   }
 }
