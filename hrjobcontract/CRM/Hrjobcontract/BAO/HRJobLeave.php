@@ -73,6 +73,25 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
   }
   
+  /**
+   * Recalculating HR Absence Entitlement values for given Contact.
+   * 
+   * @param int $jobContractId
+   */
+  static function recalculateAbsenceEntitlementForContact($contactId) {
+    try {
+      $periods = CRM_Hrjobcontract_BAO_HRJobLeave::getAbsencePeriods();
+
+      foreach ($periods as $periodId => $periodValue) {
+        $leaves = CRM_Hrjobcontract_BAO_HRJobLeave::getLeavesForPeriod($contactId, $periodValue['start'], $periodValue['end']);
+        CRM_Hrjobcontract_BAO_HRJobLeave::overwriteAbsenceEntitlementPeriod($contactId, $periodId, $leaves);
+      }
+
+    } catch (\Exception $e) {
+      throw new \Exception($e);
+    }
+  }
+  
   static function getAllAbsencePeriods() {
     $data = array();
     $result = civicrm_api3('HRAbsencePeriod', 'get', array(
