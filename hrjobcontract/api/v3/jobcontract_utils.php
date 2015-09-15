@@ -334,6 +334,7 @@ function _civicrm_hrjobcontract_api3_deletecontract($params) {
         civicrm_api3('HRJobContractRevision', 'create', array('version' => 3, 'id' => $revision['id'], 'deleted' => 1));
     }
     civicrm_api3('HRJobContract', 'create', array('version' => 3, 'id' => $contract['id'], 'deleted' => 1));
+    CRM_Hrjobcontract_JobContractDates::removeDates($contract['id']);
     
     return 1;
   }
