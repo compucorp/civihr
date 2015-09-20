@@ -1,0 +1,1 @@
+define(['controllers/controllers'], function(controllers){    controllers.controller('NameCtrl',['$scope', '$log',        function($scope, $log){            $log.debug('Controller: ExampleCtrl');        }]);});
