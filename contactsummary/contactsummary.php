@@ -143,6 +143,11 @@ function contactsummary_civicrm_preProcess($formName, &$form) {
 function contactsummary_civicrm_pageRun($page) {
     if ($page instanceof CRM_Contact_Page_View_Summary) {
 
+        CRM_Core_Resources::singleton()->addVars('contactsummary', array(
+            'baseURL' => CRM_Extension_System::singleton()
+              ->getMapper()->keyToUrl('org.civicrm.contactsummary')
+        ));
+
         CRM_Core_Region::instance('page-footer')->add(array(
             'type' => 'markup',
             'markup' => '<script data-main="'
