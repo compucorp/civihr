@@ -1,0 +1,1 @@
+define(['controllers/controllers', 'services/keyDetails'], function (controllers) {  controllers.controller('ContactSummaryCtrl', ['$log', 'KeyDetailsService',    function ($log, KeyDetails) {      $log.debug('Controller: ContactSummaryCtrl');      this.keyDetails = KeyDetails.get();    }]);});

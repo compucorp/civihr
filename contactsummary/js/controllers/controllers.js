@@ -1,4 +1,5 @@
-define(['angular'], function(angular){
-    'use strict'
-    return angular.module('controllers',[]);
-})
+define(['angular'], function (angular) {
+  'use strict';
+
+  return angular.module('controllers', ['services']);
+});
