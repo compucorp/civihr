@@ -1,10 +1,10 @@
-define(['angularMocks', 'controllers/contactSummary'], function (angular, angularMocks) {
+define(['angularMocks', 'app', 'controllers/contactSummary'], function () {
   'use strict';
 
   describe('ContactSummaryCtrl', function () {
     var ctrl;
 
-    beforeEach(module('controllers'));
+    beforeEach(module('contactsummary'));
 
     beforeEach(inject(function ($controller) {
       ctrl = $controller('ContactSummaryCtrl');

@@ -1,10 +1,10 @@
-define(['angularMocks', 'services/keyDetails'], function () {
+define(['angularMocks', 'app', 'services/keyDetails'], function () {
   'use strict';
 
   describe('KeyDetailsService', function () {
     var service;
 
-    beforeEach(module('services'));
+    beforeEach(module('contactsummary'));
 
     beforeEach(inject(function (KeyDetailsService) {
       service = KeyDetailsService;
