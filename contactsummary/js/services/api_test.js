@@ -27,7 +27,7 @@ define(['angularMocks', 'jQuery', 'app', 'services/api'], function () {
 
       // Make the call
       service.get('test').then(function (response) {
-        actualResult = response.data;
+        actualResult = response;
       });
 
       // Flush the backend to "execute" the request to do the expectedGET assertion.

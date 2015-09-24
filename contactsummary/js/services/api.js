@@ -5,10 +5,11 @@ define(['angular', 'services/services'], function (angular, services) {
    * @ngdoc service
    * @name ApiService
    * @param $http
+   * @param $q
    * @returns {{}}
    * @constructor
    */
-  function ApiService($http) {
+  function ApiService($http, $q) {
     var factory = {};
 
     ////////////////////
@@ -20,10 +21,11 @@ define(['angular', 'services/services'], function (angular, services) {
      * @name ApiService#get
      * @param entityName
      * @param data
+     * @param cached
      * @returns {*}
      */
-    factory.get = function (entityName, data) {
-      return post(entityName, data, 'get');
+    factory.get = function (entityName, data, cached) {
+      return post(entityName, data, 'get', cached);
     };
 
     factory.getValue = function (entityName, data) {
@@ -70,7 +72,15 @@ define(['angular', 'services/services'], function (angular, services) {
      * @private
      */
     function sendPost(url, data, config) {
-      return $http.post(url, data, config);
+      return $http.post(url, data, config)
+        .then(function (response) {
+          if (response.is_error) return $q.reject(response);
+
+          return response.data;
+        })
+        .catch(function (response) {
+          return response;
+        });
     }
 
     /**
@@ -123,5 +133,5 @@ define(['angular', 'services/services'], function (angular, services) {
     }
   }
 
-  services.factory('ApiService', ['$http', ApiService]);
+  services.factory('ApiService', ['$http', '$q', ApiService]);
 });
