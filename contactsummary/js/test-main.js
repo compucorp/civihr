@@ -30,6 +30,7 @@ require.config({
     angularResource: 'vendor/angular/angular-resource.min',
     angularRoute: 'vendor/angular/angular-route.min',
     angularMocks: 'vendor/angular/angular-mocks',
+    jQuery: 'vendor/jquery.min',
     lodash: 'vendor/lodash.min'
   },
 
