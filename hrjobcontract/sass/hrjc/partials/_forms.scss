@@ -5,3 +5,11 @@
     }
   }
 }
+
+.form-group.required {
+
+  .control-label:after {
+    color: $brand-danger-light;
+    margin-left: 5px;
+  }
+}
