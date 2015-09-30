@@ -19,6 +19,7 @@ define(['controllers/controllers',
             $log.debug('Controller: ModalContractNewCtrl');
 
             $scope.allowSave = true;
+            $scope.action = 'new';
             $scope.copy = {
                 close: 'Cancel',
                 save: 'Add New Job Contract',

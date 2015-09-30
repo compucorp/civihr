@@ -29,6 +29,7 @@ define(['controllers/controllers',
 
             $scope.allowSave = typeof content.allowSave !== 'undefined' ? content.allowSave : false;
             $scope.entity = {};
+            $scope.action = action;
             $scope.copy = copy;
             $scope.fileMaxSize = settings.CRM.maxFileSize || 0;
             $scope.files = {};
