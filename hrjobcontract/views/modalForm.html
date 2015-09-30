@@ -68,7 +68,7 @@
                             <label for="{{prefix}}period-start-date" class="col-sm-4 control-label">Contract Start Date</label>
 
                             <div class="col-sm-4">
-                                <div class="input-group">
+                                <div class="input-group input-group-unstyled">
                                     <input type="text" class="form-control" id="{{prefix}}period-start-date" name="detailsPeriodStartDate"
                                            datepicker-popup="yyyy-MM-dd"
                                            is-open="dpDateStartOpen"
@@ -77,7 +77,7 @@
                                            ng-disabled="isDisabled"
                                            required>
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateStartOpen')"  ng-disabled="isDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateStartOpen')"  ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
                                     </span>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@
                             <label for="{{prefix}}period-end-date" class="col-sm-4 control-label">Contract End Date</label>
 
                             <div class="col-sm-4">
-                                <div class="input-group">
+                                <div class="input-group input-group-unstyled">
                                     <input type="text" class="form-control" id="{{prefix}}period-end-date"
                                            datepicker-popup="yyyy-MM-dd"
                                            is-open="dpDateEndOpen"
@@ -94,7 +94,7 @@
                                            ng-model="entity.details.period_end_date"
                                            ng-disabled="isDisabled">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateEndOpen')" ng-disabled="isDisabled"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateEndOpen')" ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
                                     </span>
                                 </div>
                             </div>

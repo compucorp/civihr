@@ -1,15 +1,27 @@
 .form-horizontal {
-  .control-label {
-    &.control-label-checkbox {
-      padding-top: 0;
+
+    .control-label {
+
+        &.control-label-checkbox {
+            padding-top: 0;
+        }
     }
-  }
 }
 
 .form-group.required {
 
-  .control-label:after {
-    color: $brand-danger-light;
-    margin-left: 5px;
-  }
+    .control-label:after {
+        color: $brand-danger-light;
+        margin-left: 5px;
+    }
+}
+
+.input-group-unstyled {
+
+    .input-group-addon,
+    .input-group-btn > button {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 }
