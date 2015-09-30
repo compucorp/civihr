@@ -1,1 +1,45 @@
-.btn-group-action {    .dropdown-menu {        .checkbox {            font-size: 12px;            margin-bottom: 5px;            margin-top: 5px;            padding: 0px 10px;            input[type="checkbox"] {                margin-top: 1px;            }            label {                min-height: 17px;            }        }    }}// Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons).btn-danger-outline {    color: $brand-danger;    background-color: transparent;    border-color: $brand-danger;}.btn-primary-outline {  color: $brand-primary;  background-color: transparent;  border-color: $brand-primary;}.btn-success-outline {    color: $brand-success;    background-color: transparent;    border-color: $brand-success;}.btn-warning-outline {    color: $brand-warning;    background-color: transparent;    border-color: $brand-warning;}
+.btn-group-action {
+
+    .dropdown-menu {
+
+        .checkbox {
+            font-size: 12px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            padding: 0px 10px;
+
+            input[type="checkbox"] {
+                margin-top: 1px;
+            }
+
+            label {
+                min-height: 17px;
+            }
+        }
+    }
+}
+
+// Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons)
+.btn-danger-outline {
+    color: $brand-danger;
+    background-color: transparent;
+    border-color: $brand-danger;
+}
+
+.btn-primary-outline {
+  color: $brand-primary;
+  background-color: transparent;
+  border-color: $brand-primary;
+}
+
+.btn-success-outline {
+    color: $brand-success;
+    background-color: transparent;
+    border-color: $brand-success;
+}
+
+.btn-warning-outline {
+    color: $brand-warning;
+    background-color: transparent;
+    border-color: $brand-warning;
+}
