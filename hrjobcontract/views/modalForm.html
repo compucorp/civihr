@@ -884,6 +884,6 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="cancel()">{{copy.close}}</button>
-        <button type="submit" class="btn btn-primary btn-save" ng-show="allowSave" ng-disabled="!contractForm.$valid">{{copy.save}}</button>
+        <button type="submit" class="btn btn-primary btn-save" ng-class="{ 'btn-danger-outline': action !== 'new' }" ng-show="allowSave" ng-disabled="!contractForm.$valid">{{copy.save}}</button>
     </div>
 </form>
