@@ -20,26 +20,25 @@
 }
 
 // Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons)
-.btn-danger-outline {
-    color: $brand-danger;
-    background-color: transparent;
-    border-color: $brand-danger;
-}
+$buttons-w-colors: (
+  danger: $brand-danger,
+  primary: $brand-primary,
+  success: $brand-success,
+  warning: $brand-warning
+);
 
-.btn-primary-outline {
-  color: $brand-primary;
-  background-color: transparent;
-  border-color: $brand-primary;
-}
+@each $button-type, $button-color in $buttons-w-colors {
 
-.btn-success-outline {
-    color: $brand-success;
+  .btn-#{$button-type}-outline {
     background-color: transparent;
-    border-color: $brand-success;
-}
+    border-color: $button-color;
+    color: $button-color;
 
-.btn-warning-outline {
-    color: $brand-warning;
-    background-color: transparent;
-    border-color: $brand-warning;
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      border-color: darken($button-color, 10%);
+      color: darken($button-color, 10%);
+    }
+  }
 }

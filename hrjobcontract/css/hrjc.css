@@ -11223,29 +11223,53 @@ fieldset[disabled]
 #hrjob-contract .btn-group-action .dropdown-menu .checkbox .radio-label {
   min-height: 17px;
 }
-/* line 23, ../sass/hrjc/partials/_buttons.scss */
+/* line 32, ../sass/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-danger-outline {
-  color: #db6c86;
   background-color: transparent;
   border-color: #db6c86;
+  color: #db6c86;
 }
-/* line 29, ../sass/hrjc/partials/_buttons.scss */
+/* line 37, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-danger-outline:hover, #hrjob-contract .btn-danger-outline:focus {
+  background-color: transparent;
+  border-color: #d14364;
+  color: #d14364;
+}
+/* line 32, ../sass/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-primary-outline {
-  color: #42b0cb;
   background-color: transparent;
   border-color: #42b0cb;
+  color: #42b0cb;
 }
-/* line 35, ../sass/hrjc/partials/_buttons.scss */
+/* line 37, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-primary-outline:hover, #hrjob-contract .btn-primary-outline:focus {
+  background-color: transparent;
+  border-color: #2f93ab;
+  color: #2f93ab;
+}
+/* line 32, ../sass/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-success-outline {
-  color: #7dc4a7;
   background-color: transparent;
   border-color: #7dc4a7;
+  color: #7dc4a7;
 }
-/* line 41, ../sass/hrjc/partials/_buttons.scss */
+/* line 37, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-success-outline:hover, #hrjob-contract .btn-success-outline:focus {
+  background-color: transparent;
+  border-color: #5ab48f;
+  color: #5ab48f;
+}
+/* line 32, ../sass/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-warning-outline {
-  color: #f7b284;
   background-color: transparent;
   border-color: #f7b284;
+  color: #f7b284;
+}
+/* line 37, ../sass/hrjc/partials/_buttons.scss */
+#hrjob-contract .btn-warning-outline:hover, #hrjob-contract .btn-warning-outline:focus {
+  background-color: transparent;
+  border-color: #f49454;
+  color: #f49454;
 }
 /* line 1, ../sass/hrjc/partials/_collapse.scss */
 #hrjob-contract .hrjc-contract-details {
