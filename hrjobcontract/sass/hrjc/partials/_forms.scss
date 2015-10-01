@@ -44,6 +44,17 @@ $customselect-padding-right: $customselect-caret-width + 12;
     line-height: 33px;
     -webkit-font-smoothing: antialiased;
   }
+
+  .ie9 & {
+
+    > select {
+      padding-right: 10px;
+    }
+
+    &:after {
+      display: none;
+    }
+  }
 }
 
 .chr_custom-select--full {
@@ -55,8 +66,6 @@ $customselect-padding-right: $customselect-caret-width + 12;
   background: transparent;
 }
 
-
-// Don't know why but `.has-feedback &` doesn't work
 .has-feedback {
 
   .chr_custom-select {
