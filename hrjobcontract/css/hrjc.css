@@ -63,6 +63,17 @@
   /* copy the popover code from bootstrap so this will work even without it */
   padding: 20px;
   min-height: 151px;
+  /**
+   * Custom select dropdown style
+   *
+   */
+  /**
+   * An extension of Bootstraps' input-group,
+   * so that the addon has no background or border set
+   */
+  /**
+   * Ad-hoc customizations
+   */
 }
 /* line 7, ../sass/civihr/modules/_unset.scss */
 #hrjob-contract html,
@@ -11241,21 +11252,82 @@ fieldset[disabled]
   padding-bottom: 10px;
   padding-top: 10px;
 }
-/* line 5, ../sass/hrjc/partials/_forms.scss */
-#hrjob-contract .form-horizontal .control-label.control-label-checkbox {
-  padding-top: 0;
+/* line 8, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select {
+  background: #ffffff;
+  color: #767B8E;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
 }
-/* line 13, ../sass/hrjc/partials/_forms.scss */
-#hrjob-contract .form-group.required .control-label:after {
-  color: #e6807f;
-  margin-left: 5px;
+/* line 15, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select > select {
+  background: transparent;
+  border: 1px solid #586277;
+  padding: 6px 44px 6px 12px;
+  position: relative;
+  width: 100%;
+  z-index: 2;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
 }
-/* line 21, ../sass/hrjc/partials/_forms.scss */
+/* line 27, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select > select::-ms-expand {
+  display: none;
+}
+/* line 32, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select:after {
+  content: '\f0d7';
+  border-left: 1px solid #586277;
+  bottom: 0;
+  font-family: "FontAwesome";
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 32px;
+  z-index: 1;
+  line-height: 33px;
+  -webkit-font-smoothing: antialiased;
+}
+/* line 49, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select--full {
+  display: block;
+  width: auto;
+}
+/* line 54, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select--transparent {
+  background: transparent;
+}
+/* line 64, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .has-feedback .chr_custom-select > select {
+  padding-right: 44px;
+}
+/* line 67, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .has-feedback .chr_custom-select > select + .form-control-feedback {
+  right: 27px !important;
+}
+/* line 82, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .input-group-unstyled .input-group-addon,
 #hrjob-contract .input-group-unstyled .input-group-btn > button {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+}
+/* line 98, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .form-horizontal .control-label.control-label-checkbox {
+  padding-top: 0;
+}
+/* line 106, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .form-group.required .control-label:after {
+  color: #e6807f;
+  margin-left: 5px;
+}
+/* line 114, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .form-inline .form-control {
+  vertical-align: top;
 }
 /* line 2, ../sass/hrjc/partials/_history.scss */
 #hrjob-contract .hrjc-history .btn-group-action {
