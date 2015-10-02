@@ -11,6 +11,7 @@ $customselect-padding-right: $customselect-caret-width + 12;
   display: inline-block;
   overflow: hidden;
   position: relative;
+  vertical-align: top;
 
   > select {
     background: transparent;
@@ -64,6 +65,10 @@ $customselect-padding-right: $customselect-caret-width + 12;
 
 .chr_custom-select--transparent {
   background: transparent;
+
+  option {
+    background: #ffffff;
+  }
 }
 
 .has-feedback {

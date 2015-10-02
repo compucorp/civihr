@@ -11283,8 +11283,9 @@ fieldset[disabled]
   display: inline-block;
   overflow: hidden;
   position: relative;
+  vertical-align: top;
 }
-/* line 15, ../sass/hrjc/partials/_forms.scss */
+/* line 16, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .chr_custom-select > select {
   background: transparent;
   border: 1px solid #586277;
@@ -11296,11 +11297,11 @@ fieldset[disabled]
   -webkit-appearance: none;
   -webkit-border-radius: 0px;
 }
-/* line 27, ../sass/hrjc/partials/_forms.scss */
+/* line 28, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .chr_custom-select > select::-ms-expand {
   display: none;
 }
-/* line 32, ../sass/hrjc/partials/_forms.scss */
+/* line 33, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .chr_custom-select:after {
   content: '\f0d7';
   border-left: 1px solid #586277;
@@ -11316,48 +11317,52 @@ fieldset[disabled]
   line-height: 33px;
   -webkit-font-smoothing: antialiased;
 }
-/* line 50, ../sass/hrjc/partials/_forms.scss */
+/* line 51, ../sass/hrjc/partials/_forms.scss */
 .ie9 #hrjob-contract .chr_custom-select > select {
   padding-right: 10px;
 }
-/* line 54, ../sass/hrjc/partials/_forms.scss */
+/* line 55, ../sass/hrjc/partials/_forms.scss */
 .ie9 #hrjob-contract .chr_custom-select:after {
   display: none;
 }
-/* line 60, ../sass/hrjc/partials/_forms.scss */
+/* line 61, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .chr_custom-select--full {
   display: block;
   width: auto;
 }
-/* line 65, ../sass/hrjc/partials/_forms.scss */
+/* line 66, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .chr_custom-select--transparent {
   background: transparent;
 }
-/* line 73, ../sass/hrjc/partials/_forms.scss */
+/* line 69, ../sass/hrjc/partials/_forms.scss */
+#hrjob-contract .chr_custom-select--transparent option {
+  background: #ffffff;
+}
+/* line 78, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .has-feedback .chr_custom-select > select {
   padding-right: 44px;
 }
-/* line 76, ../sass/hrjc/partials/_forms.scss */
+/* line 81, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .has-feedback .chr_custom-select > select + .form-control-feedback {
   right: 27px !important;
 }
-/* line 91, ../sass/hrjc/partials/_forms.scss */
+/* line 96, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .input-group-unstyled .input-group-addon,
 #hrjob-contract .input-group-unstyled .input-group-btn > button {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
-/* line 107, ../sass/hrjc/partials/_forms.scss */
+/* line 112, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .form-horizontal .control-label.control-label-checkbox {
   padding-top: 0;
 }
-/* line 115, ../sass/hrjc/partials/_forms.scss */
+/* line 120, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .form-group.required .control-label:after {
   color: #e6807f;
   margin-left: 5px;
 }
-/* line 123, ../sass/hrjc/partials/_forms.scss */
+/* line 128, ../sass/hrjc/partials/_forms.scss */
 #hrjob-contract .form-inline .form-control {
   vertical-align: top;
 }
