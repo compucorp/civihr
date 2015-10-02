@@ -234,7 +234,7 @@ function _civicrm_hrjobcontract_api3_custom_get($bao_name, &$params, $returnAsSu
  *   - all other items: keys which identify new/pre-existing records
  * @return array|int
  */
-function _civicrm_hrjobcontract_api3_replace($entity, $params) {
+function _civicrm_hrjobcontract_api3_replace($entity, $params, $forceRevisionId = null) {
 
   $transaction = new CRM_Core_Transaction();
   try {
@@ -259,6 +259,9 @@ function _civicrm_hrjobcontract_api3_replace($entity, $params) {
       if (empty($replacement['id']) && empty($replacement['jobcontract_revision_id']))
       {
         $replacement['jobcontract_revision_id'] = $jobcontractRevisionId;
+      }
+      if ($forceRevisionId) {
+        $replacement['jobcontract_revision_id'] = $forceRevisionId;
       }
       // Sugar: Don't force clients to duplicate the 'key' data
       $replacement = array_merge($baseParams, $replacement);

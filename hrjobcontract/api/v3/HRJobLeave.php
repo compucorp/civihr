@@ -82,7 +82,16 @@ function civicrm_api3_h_r_job_leave_get($params) {
  * @throws API_Exception
  */
 function civicrm_api3_h_r_job_leave_replace($params) {
-    $result =  _civicrm_hrjobcontract_api3_replace(_civicrm_get_entity_name(_civicrm_api3_get_BAO(__FUNCTION__)), $params);
+    $validRevisionId = null;
+    if (!empty($params['values'])) {
+        foreach ($params['values'] as $leave) {
+            if (!empty($leave['id']) && !empty($leave['jobcontract_revision_id'])) {
+                $validRevisionId = $leave['jobcontract_revision_id'];
+                break;
+            }
+        }
+    }
+    $result =  _civicrm_hrjobcontract_api3_replace(_civicrm_get_entity_name(_civicrm_api3_get_BAO(__FUNCTION__)), $params, $validRevisionId);
     
     if (!empty($params['values'])) {
       $firstLeaveEntry = CRM_Utils_Array::first($params['values']);
