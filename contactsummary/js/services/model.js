@@ -63,6 +63,8 @@ define(['services/services'], function (services) {
      * @type {ItemService}
      */
     var data;
+
+    return factory;
   }
 
   services.factory('ModelService', ['ItemService', ModelService]);
