@@ -25,7 +25,7 @@ define(['angular', 'services/services'], function (angular, services) {
      * @returns {*}
      */
     factory.get = function (entityName, data, cached) {
-      return post(entityName, data, 'get', cached);
+      return factory.post(entityName, data, 'get', cached);
     };
 
     factory.getValue = function (entityName, data) {
@@ -44,6 +44,19 @@ define(['angular', 'services/services'], function (angular, services) {
       // todo
     };
 
+    /**
+     * @ngdoc method
+     * @name ApiService#post
+     * @param entityName
+     * @param data
+     * @param action
+     * @param cached
+     * @returns {HttpPromise}
+     */
+    factory.post = function (entityName, data, action, cached) {
+      return sendPost(getApiUrl(), buildPostData(entityName, data, action), buildPostConfig({cached: cached}));
+    };
+
     return factory;
 
     /////////////////////
@@ -59,9 +72,6 @@ define(['angular', 'services/services'], function (angular, services) {
      * @returns {*}
      * @private
      */
-    function post(entityName, data, action, cached) {
-      return sendPost(getApiUrl(), buildPostData(entityName, data, action), buildPostConfig({cached: cached}));
-    }
 
     /**
      * @ngdoc function
