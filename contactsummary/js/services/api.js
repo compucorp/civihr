@@ -2,14 +2,17 @@ define(['angular', 'services/services'], function (angular, services) {
   'use strict';
 
   /**
-   * @ngdoc service
-   * @name ApiService
    * @param $http
    * @param $q
-   * @returns {{}}
+   * @returns {Object}
    * @constructor
    */
   function ApiService($http, $q) {
+
+    /**
+     * @ngdoc service
+     * @name ApiService
+     */
     var factory = {};
 
     ////////////////////
@@ -18,7 +21,8 @@ define(['angular', 'services/services'], function (angular, services) {
 
     /**
      * @ngdoc method
-     * @name ApiService#get
+     * @name get
+     * @methodOf ApiService
      * @param entityName
      * @param data
      * @param cached
@@ -46,7 +50,8 @@ define(['angular', 'services/services'], function (angular, services) {
 
     /**
      * @ngdoc method
-     * @name ApiService#post
+     * @name post
+     * @methodOf ApiService
      * @param entityName
      * @param data
      * @param action
