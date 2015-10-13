@@ -940,6 +940,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     $this->upgrade_1001();
     $this->upgrade_1002();
+    $this->upgrade_1003();
+    $this->upgrade_1004();
+    $this->upgrade_1005();
+    $this->upgrade_1006();
+    $this->upgrade_1008();
+    
   }
   
   function upgrade_1001() {
@@ -1086,6 +1092,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     
     return TRUE;
+  }
+  
+  function upgrade_1008() {
+      CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrhours_location` CHANGE  `standard_hours`  `standard_hours` DECIMAL( 8, 2 ) NULL DEFAULT NULL");
+      return TRUE;
   }
           
   function decToFraction($fte) {
