@@ -1,4 +1,4 @@
-define(['services/services', 'moment', 'services/api', 'lodash'], function (services, moment) {
+define(['services/services', 'moment', 'services/model', 'services/api', 'lodash'], function (services, moment) {
   'use strict';
 
   /**
@@ -25,6 +25,9 @@ define(['services/services', 'moment', 'services/api', 'lodash'], function (serv
     var factory = Model.createInstance();
 
     /**
+     * @ngdoc method
+     * @name get
+     * @methodOf ContactDetailsService
      * @this ContactDetailsService
      * @returns {*}
      */
@@ -67,6 +70,8 @@ define(['services/services', 'moment', 'services/api', 'lodash'], function (serv
           .catch(function (response) {
             deferred.reject(response);
           });
+      } else {
+        deferred.resolve();
       }
 
       return deferred.promise;

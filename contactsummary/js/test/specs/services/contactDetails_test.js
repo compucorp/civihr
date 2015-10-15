@@ -48,7 +48,7 @@ define([
         expectedResponse = {values: [{birth_date: expectedDateOfBirth}]}, expectedContactId = 123;
 
       beforeEach(function () {
-        ApiServiceMock.respond('get', expectedResponse);
+        ApiServiceMock.respondGet('Contact', expectedResponse);
         settingsMock.contactId = expectedContactId;
 
         ContactDetailsService.get().then(function (response) {
@@ -56,6 +56,8 @@ define([
         });
 
         rootScope.$digest();
+
+        ApiServiceMock.flush();
       });
 
       it('should return contact details', function () {
