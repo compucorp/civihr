@@ -112,7 +112,7 @@ define(['angular', 'services/services'], function (angular, services) {
 
       data = data || {};
 
-      angular.extend(data, {entity: entityName, action: action, sequential: 1, json: 1, rowCount: 0});
+      data = angular.extend({entity: entityName, action: action, sequential: 1, json: 1, rowCount: 0}, data);
 
       // Because data needs to be sent as string for CiviCRM to accept
       return jQuery.param(data);
