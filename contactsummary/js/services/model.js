@@ -1,4 +1,4 @@
-define(['services/services'], function (services) {
+define(['services/services', 'services/item'], function (services) {
   'use strict';
 
   /**
@@ -23,46 +23,63 @@ define(['services/services'], function (services) {
     var factory = {};
 
     /**
+     * @name data
+     * @propertyOf ModelService
+     * @type {ItemService}
+     */
+    factory.data = {};
+
+    /**
      * @ngdoc method
      * @name createInstance
      * @methodOf ModelService
-     * @returns {ModelService|Object}
+     * @returns {(ModelService|Object)}
      * @constructs
      */
     factory.createInstance = function () {
-      data = Item.create();
-      return Object.create(this);
+      var instance = Object.create(this);
+      instance.data = Item.createInstance();
+
+      return instance;
     };
 
     /**
      * @ngdoc method
      * @name getData
      * @methodOf ModelService
+     * @this factory
      * @returns {Object}
      */
     factory.getData = function () {
-      return data.get();
+      return this.data.get();
+    };
+
+    /**
+     * @ngdoc method
+     * @name setData
+     * @methodOf ModelService
+     * @this factory
+     * @param value
+     */
+    factory.setData = function (value) {
+      this.data.set(value);
     };
 
     /**
      * @ngdoc method
      * @name setDataKey
      * @methodOf ModelService
+     * @this factory
      * @param key
      * @param value
      */
     factory.setDataKey = function (key, value) {
-      data.setKey(key, value);
+      this.data.setKey(key, value);
     };
 
     /////////////////////
     // Private Members //
     /////////////////////
-
-    /**
-     * @type {ItemService}
-     */
-    var data;
 
     return factory;
   }
