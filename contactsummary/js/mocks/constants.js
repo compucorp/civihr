@@ -1,7 +1,11 @@
 define(['mocks/module'], function (module) {
   'use strict';
 
-  var settingsMock = jasmine.createSpyObj('settings', ['pathBaseUrl', 'pathTpl']);
+  var settingsMock = {
+    pathBaseUrl: '',
+    pathTpl: '',
+    contactId: 123
+  };
 
   module.constant('settingsMock', settingsMock);
 });
