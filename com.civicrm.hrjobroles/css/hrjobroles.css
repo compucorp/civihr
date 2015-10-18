@@ -1405,12 +1405,12 @@
 }
 /* line 48, ../sass/civihr/bootstrap/_scaffolding-custom.scss */
 #hrjobroles a {
-  color: #42b0cb;
+  color: #41afcb;
   text-decoration: none;
 }
 /* line 52, ../sass/civihr/bootstrap/_scaffolding-custom.scss */
 #hrjobroles a:hover, #hrjobroles a:focus {
-  color: #2a8197;
+  color: #298096;
   text-decoration: none;
 }
 /* line 58, ../sass/civihr/bootstrap/_scaffolding-custom.scss */
@@ -1486,7 +1486,7 @@
 #hrjobroles h1, #hrjobroles h2, #hrjobroles h3, #hrjobroles h4, #hrjobroles h5, #hrjobroles h6,
 #hrjobroles .h1, #hrjobroles .h2, #hrjobroles .h3, #hrjobroles .h4, #hrjobroles .h5, #hrjobroles .h6 {
   font-family: inherit;
-  font-weight: bold;
+  font-weight: 600;
   line-height: 1.1;
   color: #525966;
 }
@@ -1637,12 +1637,12 @@
 }
 /* line 5, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjobroles .text-primary {
-  color: #42b0cb;
+  color: #41afcb;
 }
 /* line 8, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjobroles a.text-primary:hover,
 #hrjobroles a.text-primary:focus {
-  color: #2f93ab;
+  color: #2f91aa;
 }
 /* line 5, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjobroles .text-success {
@@ -1686,12 +1686,12 @@
 }
 /* line 5, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_background-variant.scss */
 #hrjobroles .bg-primary {
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 8, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_background-variant.scss */
 #hrjobroles a.bg-primary:hover,
 #hrjobroles a.bg-primary:focus {
-  background-color: #2f93ab;
+  background-color: #2f91aa;
 }
 /* line 5, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_background-variant.scss */
 #hrjobroles .bg-success {
@@ -2878,12 +2878,12 @@
   padding: 11px 8px 10px;
   line-height: 1.42857143;
   vertical-align: top;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e8eef0;
 }
 /* line 41, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table > thead > tr > th {
   vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #e8eef0;
 }
 /* line 50, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table > caption + thead > tr:first-child > th,
@@ -2896,7 +2896,7 @@
 }
 /* line 57, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table > tbody + tbody {
-  border-top: 2px solid #ddd;
+  border-top: 2px solid #e8eef0;
 }
 /* line 62, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table .table {
@@ -2913,7 +2913,7 @@
 }
 /* line 88, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table-bordered {
-  border: 1px solid #ddd;
+  border: 1px solid #e8eef0;
 }
 /* line 94, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table-bordered > thead > tr > th,
@@ -2922,7 +2922,7 @@
 #hrjobroles .table-bordered > tbody > tr > td,
 #hrjobroles .table-bordered > tfoot > tr > th,
 #hrjobroles .table-bordered > tfoot > tr > td {
-  border: 1px solid #ddd;
+  border: 1px solid #e8eef0;
 }
 /* line 101, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
 #hrjobroles .table-bordered > thead > tr > th,
@@ -3052,7 +3052,7 @@
     margin-bottom: 13.5px;
     overflow-y: hidden;
     -ms-overflow-style: -ms-autohiding-scrollbar;
-    border: 1px solid #ddd;
+    border: 1px solid #e8eef0;
   }
   /* line 183, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_tables.scss */
   #hrjobroles .table-responsive > .table {
@@ -3208,7 +3208,7 @@
 }
 /* line 140, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_forms.scss */
 #hrjobroles .form-control[disabled], #hrjobroles .form-control[readonly], fieldset[disabled] #hrjobroles .form-control {
-  background-color: #e8eef0;
+  background-color: #f4f7f8;
   opacity: 1;
 }
 /* line 147, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_forms.scss */
@@ -3762,7 +3762,7 @@ fieldset[disabled]
 #hrjobroles .btn {
   display: inline-block;
   margin-bottom: 0;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
   vertical-align: middle;
   touch-action: manipulation;
@@ -3787,7 +3787,7 @@ fieldset[disabled]
 }
 /* line 32, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn:hover, #hrjobroles .btn:focus, #hrjobroles .btn.focus {
-  color: #333;
+  color: #535a67;
   text-decoration: none;
 }
 /* line 39, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
@@ -3811,31 +3811,31 @@ fieldset[disabled]
 }
 /* line 68, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn-default {
-  color: #333;
+  color: #535a67;
   background-color: #fff;
   border-color: #727e8a;
 }
 /* line 11, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-default:focus, #hrjobroles .btn-default.focus {
-  color: #333;
+  color: #535a67;
   background-color: #e6e6e6;
   border-color: #383e44;
 }
 /* line 17, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-default:hover {
-  color: #333;
+  color: #535a67;
   background-color: #e6e6e6;
   border-color: #565f68;
 }
 /* line 22, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-default:active, #hrjobroles .btn-default.active, .open > #hrjobroles .btn-default.dropdown-toggle {
-  color: #333;
+  color: #535a67;
   background-color: #e6e6e6;
   border-color: #565f68;
 }
 /* line 29, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-default:active:hover, #hrjobroles .btn-default:active:focus, #hrjobroles .btn-default:active.focus, #hrjobroles .btn-default.active:hover, #hrjobroles .btn-default.active:focus, #hrjobroles .btn-default.active.focus, .open > #hrjobroles .btn-default.dropdown-toggle:hover, .open > #hrjobroles .btn-default.dropdown-toggle:focus, .open > #hrjobroles .btn-default.dropdown-toggle.focus {
-  color: #333;
+  color: #535a67;
   background-color: #d4d4d4;
   border-color: #383e44;
 }
@@ -3851,37 +3851,37 @@ fieldset[disabled]
 /* line 56, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-default .badge {
   color: #fff;
-  background-color: #333;
+  background-color: #535a67;
 }
 /* line 71, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn-primary {
   color: #fff;
-  background-color: #42b0cb;
-  border-color: #35a4bf;
+  background-color: #41afcb;
+  border-color: #34a2be;
 }
 /* line 11, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary:focus, #hrjobroles .btn-primary.focus {
   color: #fff;
-  background-color: #2f93ab;
-  border-color: #194e5b;
+  background-color: #2f91aa;
+  border-color: #194d5a;
 }
 /* line 17, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary:hover {
   color: #fff;
-  background-color: #2f93ab;
-  border-color: #277b8f;
+  background-color: #2f91aa;
+  border-color: #27798e;
 }
 /* line 22, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary:active, #hrjobroles .btn-primary.active, .open > #hrjobroles .btn-primary.dropdown-toggle {
   color: #fff;
-  background-color: #2f93ab;
-  border-color: #277b8f;
+  background-color: #2f91aa;
+  border-color: #27798e;
 }
 /* line 29, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary:active:hover, #hrjobroles .btn-primary:active:focus, #hrjobroles .btn-primary:active.focus, #hrjobroles .btn-primary.active:hover, #hrjobroles .btn-primary.active:focus, #hrjobroles .btn-primary.active.focus, .open > #hrjobroles .btn-primary.dropdown-toggle:hover, .open > #hrjobroles .btn-primary.dropdown-toggle:focus, .open > #hrjobroles .btn-primary.dropdown-toggle.focus {
   color: #fff;
-  background-color: #277b8f;
-  border-color: #194e5b;
+  background-color: #27798e;
+  border-color: #194d5a;
 }
 /* line 37, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary:active, #hrjobroles .btn-primary.active, .open > #hrjobroles .btn-primary.dropdown-toggle {
@@ -3889,12 +3889,12 @@ fieldset[disabled]
 }
 /* line 45, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary.disabled, #hrjobroles .btn-primary.disabled:hover, #hrjobroles .btn-primary.disabled:focus, #hrjobroles .btn-primary.disabled.focus, #hrjobroles .btn-primary.disabled:active, #hrjobroles .btn-primary.disabled.active, #hrjobroles .btn-primary[disabled], #hrjobroles .btn-primary[disabled]:hover, #hrjobroles .btn-primary[disabled]:focus, #hrjobroles .btn-primary[disabled].focus, #hrjobroles .btn-primary[disabled]:active, #hrjobroles .btn-primary[disabled].active, fieldset[disabled] #hrjobroles .btn-primary, fieldset[disabled] #hrjobroles .btn-primary:hover, fieldset[disabled] #hrjobroles .btn-primary:focus, fieldset[disabled] #hrjobroles .btn-primary.focus, fieldset[disabled] #hrjobroles .btn-primary:active, fieldset[disabled] #hrjobroles .btn-primary.active {
-  background-color: #42b0cb;
-  border-color: #35a4bf;
+  background-color: #41afcb;
+  border-color: #34a2be;
 }
 /* line 56, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-primary .badge {
-  color: #42b0cb;
+  color: #41afcb;
   background-color: #fff;
 }
 /* line 75, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
@@ -4032,32 +4032,32 @@ fieldset[disabled]
 /* line 87, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn-danger {
   color: #fff;
-  background-color: #db6c86;
-  border-color: #d65875;
+  background-color: #e6807f;
+  border-color: #e6807f;
 }
 /* line 11, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger:focus, #hrjobroles .btn-danger.focus {
   color: #fff;
-  background-color: #d14364;
-  border-color: #8c223b;
+  background-color: #de5654;
+  border-color: #c02726;
 }
 /* line 17, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger:hover {
   color: #fff;
-  background-color: #d14364;
-  border-color: #c12f51;
+  background-color: #de5654;
+  border-color: #dc4d4c;
 }
 /* line 22, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger:active, #hrjobroles .btn-danger.active, .open > #hrjobroles .btn-danger.dropdown-toggle {
   color: #fff;
-  background-color: #d14364;
-  border-color: #c12f51;
+  background-color: #de5654;
+  border-color: #dc4d4c;
 }
 /* line 29, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger:active:hover, #hrjobroles .btn-danger:active:focus, #hrjobroles .btn-danger:active.focus, #hrjobroles .btn-danger.active:hover, #hrjobroles .btn-danger.active:focus, #hrjobroles .btn-danger.active.focus, .open > #hrjobroles .btn-danger.dropdown-toggle:hover, .open > #hrjobroles .btn-danger.dropdown-toggle:focus, .open > #hrjobroles .btn-danger.dropdown-toggle.focus {
   color: #fff;
-  background-color: #c12f51;
-  border-color: #8c223b;
+  background-color: #d83836;
+  border-color: #c02726;
 }
 /* line 37, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger:active, #hrjobroles .btn-danger.active, .open > #hrjobroles .btn-danger.dropdown-toggle {
@@ -4065,17 +4065,17 @@ fieldset[disabled]
 }
 /* line 45, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger.disabled, #hrjobroles .btn-danger.disabled:hover, #hrjobroles .btn-danger.disabled:focus, #hrjobroles .btn-danger.disabled.focus, #hrjobroles .btn-danger.disabled:active, #hrjobroles .btn-danger.disabled.active, #hrjobroles .btn-danger[disabled], #hrjobroles .btn-danger[disabled]:hover, #hrjobroles .btn-danger[disabled]:focus, #hrjobroles .btn-danger[disabled].focus, #hrjobroles .btn-danger[disabled]:active, #hrjobroles .btn-danger[disabled].active, fieldset[disabled] #hrjobroles .btn-danger, fieldset[disabled] #hrjobroles .btn-danger:hover, fieldset[disabled] #hrjobroles .btn-danger:focus, fieldset[disabled] #hrjobroles .btn-danger.focus, fieldset[disabled] #hrjobroles .btn-danger:active, fieldset[disabled] #hrjobroles .btn-danger.active {
-  background-color: #db6c86;
-  border-color: #d65875;
+  background-color: #e6807f;
+  border-color: #e6807f;
 }
 /* line 56, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjobroles .btn-danger .badge {
-  color: #db6c86;
+  color: #e6807f;
   background-color: #fff;
 }
 /* line 96, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn-link {
-  color: #42b0cb;
+  color: #41afcb;
   font-weight: normal;
   border-radius: 0;
 }
@@ -4091,7 +4091,7 @@ fieldset[disabled]
 }
 /* line 115, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjobroles .btn-link:hover, #hrjobroles .btn-link:focus {
-  color: #2a8197;
+  color: #298096;
   text-decoration: none;
   background-color: transparent;
 }
@@ -4251,7 +4251,7 @@ fieldset[disabled]
   color: #fff;
   text-decoration: none;
   outline: 0;
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 103, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_dropdowns.scss */
 #hrjobroles .dropdown-menu > .disabled > a, #hrjobroles .dropdown-menu > .disabled > a:hover, #hrjobroles .dropdown-menu > .disabled > a:focus {
@@ -4730,7 +4730,7 @@ fieldset[disabled]
 /* line 46, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_navs.scss */
 #hrjobroles .nav .open > a, #hrjobroles .nav .open > a:hover, #hrjobroles .nav .open > a:focus {
   background-color: #e8eef0;
-  border-color: #42b0cb;
+  border-color: #41afcb;
 }
 /* line 59, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_navs.scss */
 #hrjobroles .nav .nav-divider {
@@ -4786,7 +4786,7 @@ fieldset[disabled]
 /* line 131, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_navs.scss */
 #hrjobroles .nav-pills > li.active > a, #hrjobroles .nav-pills > li.active > a:hover, #hrjobroles .nav-pills > li.active > a:focus {
   color: #fff;
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 144, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_navs.scss */
 #hrjobroles .nav-stacked > li {
@@ -5534,7 +5534,7 @@ fieldset[disabled]
   padding: 6px 12px;
   line-height: 1.42857143;
   text-decoration: none;
-  color: #42b0cb;
+  color: #41afcb;
   background-color: #fff;
   border: 1px solid #ddd;
   margin-left: -1px;
@@ -5557,7 +5557,7 @@ fieldset[disabled]
 #hrjobroles .pagination > li > span:hover,
 #hrjobroles .pagination > li > span:focus {
   z-index: 3;
-  color: #2a8197;
+  color: #298096;
   background-color: #e8eef0;
   border-color: #ddd;
 }
@@ -5568,8 +5568,8 @@ fieldset[disabled]
 #hrjobroles .pagination > .active > span:focus {
   z-index: 2;
   color: #fff;
-  background-color: #42b0cb;
-  border-color: #42b0cb;
+  background-color: #41afcb;
+  border-color: #41afcb;
   cursor: default;
 }
 /* line 64, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_pagination.scss */
@@ -5714,11 +5714,11 @@ fieldset[disabled]
 }
 /* line 48, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_labels.scss */
 #hrjobroles .label-primary {
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 7, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_labels.scss */
 #hrjobroles .label-primary[href]:hover, #hrjobroles .label-primary[href]:focus {
-  background-color: #2f93ab;
+  background-color: #2f91aa;
 }
 /* line 52, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_labels.scss */
 #hrjobroles .label-success {
@@ -5746,11 +5746,11 @@ fieldset[disabled]
 }
 /* line 64, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_labels.scss */
 #hrjobroles .label-danger {
-  background-color: #db6c86;
+  background-color: #f08290;
 }
 /* line 7, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_labels.scss */
 #hrjobroles .label-danger[href]:hover, #hrjobroles .label-danger[href]:focus {
-  background-color: #d14364;
+  background-color: #eb5468;
 }
 /* line 7, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_badges.scss */
 #hrjobroles .badge {
@@ -5758,7 +5758,7 @@ fieldset[disabled]
   min-width: 10px;
   padding: 3px 7px;
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 600;
   color: #fff;
   line-height: 1;
   vertical-align: middle;
@@ -5783,7 +5783,7 @@ fieldset[disabled]
 }
 /* line 41, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_badges.scss */
 .list-group-item.active > #hrjobroles .badge, .nav-pills > .active > a > #hrjobroles .badge {
-  color: #42b0cb;
+  color: #41afcb;
   background-color: #fff;
 }
 /* line 47, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_badges.scss */
@@ -5883,7 +5883,7 @@ fieldset[disabled]
 #hrjobroles a.thumbnail:hover,
 #hrjobroles a.thumbnail:focus,
 #hrjobroles a.thumbnail.active {
-  border-color: #42b0cb;
+  border-color: #41afcb;
 }
 /* line 9, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_alerts.scss */
 #hrjobroles .alert {
@@ -5899,7 +5899,7 @@ fieldset[disabled]
 }
 /* line 23, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_alerts.scss */
 #hrjobroles .alert .alert-link {
-  font-weight: bold;
+  font-weight: 600;
 }
 /* line 28, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_alerts.scss */
 #hrjobroles .alert > p,
@@ -6014,7 +6014,7 @@ fieldset[disabled]
   line-height: 18px;
   color: #fff;
   text-align: center;
-  background-color: #42b0cb;
+  background-color: #41afcb;
   -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
   -webkit-transition: width 0.6s ease;
@@ -6068,7 +6068,7 @@ fieldset[disabled]
 }
 /* line 85, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_progress-bars.scss */
 #hrjobroles .progress-bar-danger {
-  background-color: #db6c86;
+  background-color: #f08290;
 }
 /* line 7, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_progress-bar.scss */
 .progress-striped #hrjobroles .progress-bar-danger {
@@ -6203,8 +6203,8 @@ fieldset[disabled]
 #hrjobroles .list-group-item.active, #hrjobroles .list-group-item.active:hover, #hrjobroles .list-group-item.active:focus {
   z-index: 2;
   color: #fff;
-  background-color: #42b0cb;
-  border-color: #42b0cb;
+  background-color: #41afcb;
+  border-color: #41afcb;
 }
 /* line 96, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_list-group.scss */
 #hrjobroles .list-group-item.active .list-group-item-heading,
@@ -6218,7 +6218,7 @@ fieldset[disabled]
 }
 /* line 101, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_list-group.scss */
 #hrjobroles .list-group-item.active .list-group-item-text, #hrjobroles .list-group-item.active:hover .list-group-item-text, #hrjobroles .list-group-item.active:focus .list-group-item-text {
-  color: #e2f3f7;
+  color: #e1f2f7;
 }
 /* line 4, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_list-group.scss */
 #hrjobroles .list-group-item-success {
@@ -6538,7 +6538,7 @@ fieldset[disabled]
 #hrjobroles .panel > .panel-body + .table-responsive,
 #hrjobroles .panel > .table + .panel-body,
 #hrjobroles .panel > .table-responsive + .panel-body {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #e8eef0;
 }
 /* line 170, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_panels.scss */
 #hrjobroles .panel > .table > tbody:first-child > tr:first-child th,
@@ -6662,26 +6662,26 @@ fieldset[disabled]
 }
 /* line 257, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_panels.scss */
 #hrjobroles .panel-primary {
-  border-color: #42b0cb;
+  border-color: #41afcb;
 }
 /* line 6, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjobroles .panel-primary > .panel-heading {
   color: #fff;
-  background-color: #42b0cb;
-  border-color: #42b0cb;
+  background-color: #41afcb;
+  border-color: #41afcb;
 }
 /* line 11, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjobroles .panel-primary > .panel-heading + .panel-collapse > .panel-body {
-  border-top-color: #42b0cb;
+  border-top-color: #41afcb;
 }
 /* line 14, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjobroles .panel-primary > .panel-heading .badge {
-  color: #42b0cb;
+  color: #41afcb;
   background-color: #fff;
 }
 /* line 20, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjobroles .panel-primary > .panel-footer + .panel-collapse > .panel-body {
-  border-bottom-color: #42b0cb;
+  border-bottom-color: #41afcb;
 }
 /* line 260, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/_panels.scss */
 #hrjobroles .panel-success {
@@ -6835,7 +6835,7 @@ fieldset[disabled]
 #hrjobroles .close {
   float: right;
   font-size: 19.5px;
-  font-weight: bold;
+  font-weight: 600;
   line-height: 1;
   color: #000;
   text-shadow: 0 1px 0 #fff;
@@ -10052,14 +10052,28 @@ fieldset[disabled]
   font-family: 'Open Sans';
   src: url("../fonts/open-sans/opensans-semibold.eot");
   src: url("../fonts/open-sans/opensans-semibold.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans/opensans-semibold.woff2") format("woff2"), url("../fonts/open-sans/opensans-semibold.woff") format("woff"), url("../fonts/open-sans/opensans-semibold.ttf") format("truetype"), url("../fonts/open-sans/opensans-semibold.svg#open_sanssemibold") format("svg");
-  font-weight: bold;
+  font-weight: 600;
   font-style: normal;
 }
 @font-face {
   font-family: 'Open Sans';
   src: url("../fonts/open-sans/opensans-semibolditalic.eot");
   src: url("../fonts/open-sans/opensans-semibolditalic.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans/opensans-semibolditalic.woff2") format("woff2"), url("../fonts/open-sans/opensans-semibolditalic.woff") format("woff"), url("../fonts/open-sans/opensans-semibolditalic.ttf") format("truetype"), url("../fonts/open-sans/opensans-semibolditalic.svg#open_sanssemibold_italic") format("svg");
-  font-weight: bold;
+  font-weight: 600;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Open Sans';
+  src: url("../fonts/open-sans/opensans-bold.eot");
+  src: url("../fonts/open-sans/opensans-bold.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans/opensans-bold.woff2") format("woff2"), url("../fonts/open-sans/opensans-bold.woff") format("woff"), url("../fonts/open-sans/opensans-bold.ttf") format("truetype"), url("../fonts/open-sans/opensans-bold.svg#open_sansbold") format("svg");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Open Sans';
+  src: url("../fonts/open-sans/opensans-bolditalic.eot");
+  src: url("../fonts/open-sans/opensans-bolditalic.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans/opensans-bolditalic.woff2") format("woff2"), url("../fonts/open-sans/opensans-bolditalic.woff") format("woff"), url("../fonts/open-sans/opensans-bolditalic.ttf") format("truetype"), url("../fonts/open-sans/opensans-bolditalic.svg#open_sansbold_italic") format("svg");
+  font-weight: 700;
   font-style: italic;
 }
 /* line 1, ../sass/civihr/modules/_angular.scss */
@@ -10086,7 +10100,7 @@ fieldset[disabled]
 }
 /* line 10, ../sass/civihr/modules/_select.scss */
 #hrjobroles .ui-select-highlight {
-  font-weight: bold;
+  font-weight: 600;
 }
 /* line 14, ../sass/civihr/modules/_select.scss */
 #hrjobroles .ui-select-offscreen {
@@ -10168,7 +10182,7 @@ fieldset[disabled]
 }
 /* line 105, ../sass/civihr/modules/_select.scss */
 #hrjobroles .input-group > .ui-select-bootstrap > input.ui-select-search.form-control {
-  border-radius: 4px;
+  border-radius: 0;
   /* FIXME hardcoded value :-/ */
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -10591,12 +10605,12 @@ fieldset[disabled]
 }
 /* line 5, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjobroles .text-danger-light {
-  color: #db6c86;
+  color: #f08290;
 }
 /* line 8, ../../../../../../../../../../../../../var/lib/gems/2.1.0/gems/bootstrap-sass-3.3.5.1/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjobroles a.text-danger-light:hover,
 #hrjobroles a.text-danger-light:focus {
-  color: #d14364;
+  color: #eb5468;
 }
 /* line 6, ../sass/civihr/partials/_typography.scss */
 #hrjobroles .header-bar {
@@ -10604,15 +10618,15 @@ fieldset[disabled]
   box-shadow: 1px 4px 15px 0px rgba(0, 0, 0, 0.1);
   background-color: #f4f7f8;
   font-size: 18px;
+  font-weight: 600;
   margin-bottom: 15px;
   margin-top: 0;
   padding: 11px 20px 10px;
-  text-transform: uppercase;
   max-width: 100%;
 }
 /* line 18, ../sass/civihr/partials/_typography.scss */
 #hrjobroles .header-bar.header-bar-primary {
-  background-color: #42b0cb;
+  background-color: #41afcb;
   color: #fff;
 }
 /* line 22, ../sass/civihr/partials/_typography.scss */
@@ -10635,12 +10649,12 @@ fieldset[disabled]
 }
 /* line 42, ../sass/civihr/partials/_typography.scss */
 #hrjobroles .header-bar.header-bar-warning {
-  background-color: #db6c86;
+  background-color: #f08290;
   color: #fff;
 }
 /* line 47, ../sass/civihr/partials/_typography.scss */
 #hrjobroles .header-bar.header-bar-danger {
-  background-color: #db6c86;
+  background-color: #f08290;
   color: #fff;
 }
 /* line 51, ../sass/civihr/partials/_typography.scss */
@@ -10692,7 +10706,7 @@ fieldset[disabled]
 }
 /* line 5, ../sass/civihr/partials/_badge.scss */
 #hrjobroles .badge.badge-primary {
-  background-color: #42b0cb !important;
+  background-color: #41afcb !important;
 }
 /* line 9, ../sass/civihr/partials/_badge.scss */
 #hrjobroles .badge.badge-secondary {
@@ -10716,7 +10730,7 @@ fieldset[disabled]
 }
 /* line 29, ../sass/civihr/partials/_badge.scss */
 #hrjobroles .badge.badge-danger {
-  background-color: #db6c86 !important;
+  background-color: #f08290 !important;
 }
 /* line 33, ../sass/civihr/partials/_badge.scss */
 #hrjobroles .badge.badge-danger-light {
@@ -10724,7 +10738,7 @@ fieldset[disabled]
 }
 /* line 1, ../sass/civihr/partials/_breadcrumb.scss */
 #hrjobroles .breadcrumb {
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 0;
 }
 /* line 5, ../sass/civihr/partials/_breadcrumb.scss */
@@ -10738,29 +10752,36 @@ fieldset[disabled]
 /* line 1, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn {
   text-transform: uppercase;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
 }
-/* line 5, ../sass/civihr/partials/_buttons.scss */
+/* line 6, ../sass/civihr/partials/_buttons.scss */
+#hrjobroles .btn-link {
+  font-weight: 600;
+}
+/* line 10, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-gray {
   color: #767e8f;
   background-color: #fff;
   border-color: #767e8f;
 }
-/* line 10, ../sass/civihr/partials/_buttons.scss */
+/* line 15, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-gray:hover, #hrjobroles .btn-gray:focus, #hrjobroles .btn-gray.btn-focus {
   color: #535966;
   border-color: #535966;
 }
-/* line 17, ../sass/civihr/partials/_buttons.scss */
+/* line 22, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-gray.active {
   background-color: #767e8f;
   color: #fff;
 }
-/* line 21, ../sass/civihr/partials/_buttons.scss */
+/* line 26, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-gray.active:hover, #hrjobroles .btn-gray.active:focus, #hrjobroles .btn-gray.active.btn-focus {
   background-color: #5e6574;
   color: #fff;
 }
-/* line 30, ../sass/civihr/partials/_buttons.scss */
+/* line 35, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-collapse {
   background: none;
   border: 0 none;
@@ -10771,23 +10792,23 @@ fieldset[disabled]
   text-transform: none;
   vertical-align: baseline;
 }
-/* line 40, ../sass/civihr/partials/_buttons.scss */
+/* line 45, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-collapse:hover {
   color: #373e4b;
 }
-/* line 44, ../sass/civihr/partials/_buttons.scss */
+/* line 49, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-collapse:active {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-/* line 48, ../sass/civihr/partials/_buttons.scss */
+/* line 53, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-collapse .fa {
   margin-right: 3px;
   font-size: 9px;
   position: relative;
   top: -1px;
 }
-/* line 56, ../sass/civihr/partials/_buttons.scss */
+/* line 61, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .hrjobroles-context-menu-toggle {
   color: #586277;
   padding: 0px 10px;
@@ -10795,11 +10816,11 @@ fieldset[disabled]
   display: inline-block;
   font-size: 14px;
 }
-/* line 63, ../sass/civihr/partials/_buttons.scss */
+/* line 68, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .hrjobroles-context-menu-toggle:hover {
-  color: #42b0cb;
+  color: #41afcb;
 }
-/* line 69, ../sass/civihr/partials/_buttons.scss */
+/* line 74, ../sass/civihr/partials/_buttons.scss */
 #hrjobroles .btn-group.open .hrjobroles-context-menu-toggle.dropdown-toggle {
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -10849,7 +10870,7 @@ fieldset[disabled]
 #hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn.active {
   -webkit-box-shadow: none;
   box-shadow: none;
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 40, ../sass/civihr/partials/_datepicker.scss */
 #hrjobroles .hrjobroles-datepicker table tbody .btn.active span,
@@ -10969,7 +10990,7 @@ fieldset[disabled]
 #hrjobroles .checkbox-label,
 #hrjobroles .radio-label {
   color: #525966;
-  font-weight: bold;
+  font-weight: 600;
 }
 /* line 89, ../sass/civihr/partials/_forms.scss */
 #hrjobroles .ta-editor.ta-html,
@@ -10990,37 +11011,29 @@ fieldset[disabled]
   margin-bottom: -1px;
 }
 /* line 107, ../sass/civihr/partials/_forms.scss */
-#hrjobroles .ui-select-multiple.ui-select-bootstrap {
-  min-height: 32px;
-  padding: 2px 2px 0 2px;
-}
-/* line 111, ../sass/civihr/partials/_forms.scss */
-#hrjobroles .ui-select-multiple.ui-select-bootstrap input.ui-select-search {
-  height: 1.9em;
-  text-indent: 10px;
-}
-/* line 116, ../sass/civihr/partials/_forms.scss */
-#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match .close {
-  line-height: 0.8;
-}
-/* line 120, ../sass/civihr/partials/_forms.scss */
-#hrjobroles .ui-select-multiple.ui-select-bootstrap .ui-select-match-item {
-  border-color: #42b0cb;
-  margin: 0 2px 2px 1px;
-  padding: 2px 8px;
-  text-transform: none;
-}
-/* line 128, ../sass/civihr/partials/_forms.scss */
 #hrjobroles .drop-zone {
   background-color: #e8eef0;
   border: 1px dashed #727e8a;
   color: #525966;
 }
-/* line 134, ../sass/civihr/partials/_forms.scss */
+/* line 113, ../sass/civihr/partials/_forms.scss */
 #hrjobroles .ui-select-placeholder,
 #hrjobroles .ui-select-match-text {
   font-weight: normal;
   text-transform: none;
+}
+/* line 119, ../sass/civihr/partials/_forms.scss */
+#hrjobroles .ui-select-match-text {
+  color: #586277;
+}
+/* line 123, ../sass/civihr/partials/_forms.scss */
+#hrjobroles .ui-select-toggle[disabled] {
+  background-color: #f4f7f8;
+  opacity: 1;
+}
+/* line 127, ../sass/civihr/partials/_forms.scss */
+#hrjobroles .ui-select-toggle[disabled]:hover, #hrjobroles .ui-select-toggle[disabled]:focus, #hrjobroles .ui-select-toggle[disabled]:active {
+  background-color: #f4f7f8;
 }
 /* line 1, ../sass/civihr/partials/_iframe.scss */
 #hrjobroles .hrjobroles-iframe {
@@ -11033,45 +11046,53 @@ fieldset[disabled]
   transition: opacity 0.5s;
   opacity: 1;
 }
-/* line 2, ../sass/civihr/partials/_modals.scss */
+/* line 1, ../sass/civihr/partials/_modals.scss */
+#hrjobroles .modal-header {
+  border-bottom: 0 none;
+}
+/* line 4, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-header .close {
   margin-top: 0px;
 }
-/* line 8, ../sass/civihr/partials/_modals.scss */
+/* line 9, ../sass/civihr/partials/_modals.scss */
+#hrjobroles .modal-body {
+  background-color: #f4f7f8;
+}
+/* line 14, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-progress .modal-body {
   overflow: hidden;
   padding-top: 25px;
 }
-/* line 13, ../sass/civihr/partials/_modals.scss */
+/* line 19, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-progress .progress {
   margin-bottom: 2px;
 }
-/* line 17, ../sass/civihr/partials/_modals.scss */
+/* line 23, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-progress .progress-bar {
   min-width: 2.5em;
 }
-/* line 22, ../sass/civihr/partials/_modals.scss */
+/* line 28, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-title {
   font-size: 18px;
 }
-/* line 29, ../sass/civihr/partials/_modals.scss */
+/* line 35, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-content .form-horizontal .row,
 #hrjobroles .modal-content .form-horizontal .form-group {
   margin-left: -15px;
   margin-right: -15px;
 }
-/* line 37, ../sass/civihr/partials/_modals.scss */
+/* line 43, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-content .form-horizontal .modal-body {
   padding-bottom: 0;
 }
-/* line 42, ../sass/civihr/partials/_modals.scss */
+/* line 48, ../sass/civihr/partials/_modals.scss */
 #hrjobroles .modal-content [class^="col-"],
 #hrjobroles .modal-content [class*=" col-"] {
   padding-left: 15px;
   padding-right: 15px;
 }
 @media (min-width: 768px) {
-  /* line 52, ../sass/civihr/partials/_modals.scss */
+  /* line 58, ../sass/civihr/partials/_modals.scss */
   #hrjobroles .modal-dialog {
     margin: 60px auto;
   }
@@ -11097,7 +11118,7 @@ fieldset[disabled]
 /* line 10, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-heading {
   color: #525966;
-  font-weight: bold;
+  font-weight: 600;
 }
 /* line 14, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-heading .btn-group.btn-group-sm {
@@ -11113,28 +11134,44 @@ fieldset[disabled]
 #hrjobroles .panel-heading .btn-collapse {
   margin: 4px 0 2px;
 }
-/* line 28, ../sass/civihr/partials/_panels.scss */
+/* line 30, ../sass/civihr/partials/_panels.scss */
+#hrjobroles .panel-filter {
+  margin-bottom: 0;
+}
+/* line 34, ../sass/civihr/partials/_panels.scss */
+#hrjobroles .panel-filter__filter {
+  font-weight: normal;
+}
+/* line 37, ../sass/civihr/partials/_panels.scss */
+#hrjobroles .panel-filter__filter:first-child {
+  border-radius: 2px 0 0 2px;
+}
+/* line 41, ../sass/civihr/partials/_panels.scss */
+#hrjobroles .panel-filter__filter:last-child {
+  border-radius: 0 2px 2px 0;
+}
+/* line 48, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-title {
   font-size: 18px;
   line-height: 1.42857143;
 }
-/* line 33, ../sass/civihr/partials/_panels.scss */
+/* line 53, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-light {
   border: 0 none;
   -webkit-box-shadow: 0 0 0 0;
   box-shadow: 0 0 0 0;
 }
-/* line 37, ../sass/civihr/partials/_panels.scss */
+/* line 57, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-light > .panel-heading {
   border-bottom: 0 none;
   padding: 12px 20px 13px;
 }
-/* line 42, ../sass/civihr/partials/_panels.scss */
+/* line 62, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-light > .panel-footer {
   border-top: 1px solid #e8eef0;
   padding: 16px 20px;
 }
-/* line 49, ../sass/civihr/partials/_panels.scss */
+/* line 69, ../sass/civihr/partials/_panels.scss */
 #hrjobroles .panel-secondary > .panel-body,
 #hrjobroles .panel-secondary .list-group,
 #hrjobroles .panel-secondary .list-group-item {
@@ -11144,50 +11181,69 @@ fieldset[disabled]
 #hrjobroles .ui-select-bootstrap .ui-select-choices-row:not(.active) > a small {
   color: #586277;
 }
+/* line 10, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap input {
+  font-weight: normal;
+}
+/* line 14, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap .ui-select-toggle {
+  padding-right: 30px;
+}
+/* line 18, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap.ui-select-multiple {
+  min-height: 32px;
+  padding: 2px 2px 0 2px;
+}
+/* line 22, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap.ui-select-multiple input.ui-select-search {
+  height: 1.9em;
+  text-indent: 10px;
+}
+/* line 27, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match .close {
+  line-height: 0.8;
+}
+/* line 31, ../sass/civihr/partials/_select.scss */
+#hrjobroles .ui-select-bootstrap.ui-select-multiple .ui-select-match-item {
+  border-color: #41afcb;
+  margin: 0 2px 2px 1px;
+  padding: 2px 8px;
+  text-transform: none;
+}
 /* line 7, ../sass/civihr/partials/_tables.scss */
-#hrjobroles .table > tbody > tr > th,
-#hrjobroles .table > tfoot > tr > th {
-  border-top: 0 none;
-}
-/* line 11, ../sass/civihr/partials/_tables.scss */
-#hrjobroles .table > tbody > tr > td,
-#hrjobroles .table > tfoot > tr > td {
-  border-top: 0 none;
-}
-/* line 14, ../sass/civihr/partials/_tables.scss */
 #hrjobroles .table > tbody > tr > td .hrjobroles-context-menu-toggle,
 #hrjobroles .table > tfoot > tr > td .hrjobroles-context-menu-toggle {
   margin: -2px 0;
   position: relative;
   top: 1px;
 }
-/* line 20, ../sass/civihr/partials/_tables.scss */
+/* line 13, ../sass/civihr/partials/_tables.scss */
 #hrjobroles .table > tbody > tr > td.checkbox,
 #hrjobroles .table > tfoot > tr > td.checkbox {
   padding: 11px 8px 10px;
   text-align: left;
 }
-/* line 31, ../sass/civihr/partials/_tables.scss */
+/* line 24, ../sass/civihr/partials/_tables.scss */
 #hrjobroles .table > thead > tr > th,
 #hrjobroles .table > thead > tr > th.checkbox {
   border: 0 none;
   color: #525966;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 600;
   padding-bottom: 12px;
   padding-top: 10px;
   text-align: left;
   text-transform: none;
 }
-/* line 44, ../sass/civihr/partials/_tables.scss */
+/* line 37, ../sass/civihr/partials/_tables.scss */
 #hrjobroles .table > thead > tr > th label, #hrjobroles .table > thead > tr > th .checkbox-label,
 #hrjobroles .table > thead > tr > th .radio-label,
 #hrjobroles .table > thead > tr > th.checkbox label,
 #hrjobroles .table > thead > tr > th.checkbox .checkbox-label,
 #hrjobroles .table > thead > tr > th.checkbox .radio-label {
-  font-weight: bold;
+  font-weight: 600;
 }
-/* line 49, ../sass/civihr/partials/_tables.scss */
+/* line 42, ../sass/civihr/partials/_tables.scss */
 #hrjobroles .table > thead > tr > td {
   border-top: 0 none;
 }
@@ -11282,7 +11338,7 @@ fieldset[disabled]
 /* line 4, ../sass/hrjobroles/partials/_navs.scss */
 #hrjobroles .nav-tabs > li > a {
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 600;
 }
 /* line 11, ../sass/hrjobroles/partials/_navs.scss */
 #hrjobroles .tab-content > .tab-pane {
@@ -11524,7 +11580,7 @@ fieldset[disabled]
 #hrjobroles .hrjobroles-switch + label:before, #hrjobroles .hrjobroles-switch + .checkbox-label:before,
 #hrjobroles .hrjobroles-switch + .radio-label:before {
   right: 0;
-  background-color: #db6c86;
+  background-color: #f08290;
   -moz-border-radius: 11px;
   -webkit-border-radius: 11px;
   border-radius: 11px;
@@ -11555,7 +11611,7 @@ fieldset[disabled]
 /* line 55, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch:checked + label:before, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:before,
 #hrjobroles .hrjobroles-switch:checked + .radio-label:before {
-  background-color: #42b0cb;
+  background-color: #41afcb;
 }
 /* line 59, ../sass/hrjobroles/partials/_switch.scss */
 #hrjobroles .hrjobroles-switch:checked + label:after, #hrjobroles .hrjobroles-switch:checked + .checkbox-label:after,

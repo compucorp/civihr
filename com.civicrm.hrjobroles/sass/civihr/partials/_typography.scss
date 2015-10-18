@@ -7,12 +7,12 @@
   @include box-shadow($box-shadow-global);
   background-color: $panel-default-heading-bg;
   font-size: $header-bar-font-size;
+  font-weight: 600;
   margin: {
     bottom: 15px;
     top: 0;
   };
   padding: $header-bar-padding;
-  text-transform: uppercase;
   max-width: 100%;
 
   &.header-bar-primary {
@@ -59,7 +59,7 @@
   }
 
   &.header-bar-danger-light {
-    background-color: #e6807f;
+    background-color: $brand-danger-light;
     color: #fff;
   }
 
