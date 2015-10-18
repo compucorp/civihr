@@ -19,49 +19,47 @@
         </div>
         <h4 class="modal-title">Contract - {{entity | capitalize}}</h4>
     </div>
-    <div class="modal-body">
-        <div class="table-responsive">
-            <table class="table table-striped {{prefix}}table-sort">
-                <thead>
-                <tr>
-                    <th ng-repeat="field in fields" ng-if="field.selected && field.display">
-                        <a href="" ng-click="sortBy(field.name);createPage();">{{field.title}} <i class="fa"
-                                                                                        ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                        ng-show="sortCol == field.name"></i></a></th>
-                    <th>&nbsp;</th>
-                </tr>
-                </thead>
-                <tbody ng-if="!isMultiDim">
-                    <tr ng-repeat="revisionData in revisionDataListPage">
-                        <td ng-repeat="field in fields" ng-if="field.selected && field.display">
-                            {{!field.isArray ? (!subFields[field.name] ? ((!field.pseudoconstant ? revisionData[field.name] : options[entity][field.name][revisionData[field.name]]) || '-') : (revisionData[field.name].length ? '' : '-')) : ''}}
-                            <table ng-if="!!subFields[field.name] && revisionData[field.name].length" class="table table-condensed">
-                                <thead>
-                                    <tr>
-                                        <th ng-repeat="subField in subFields[field.name]">{{subField.title}}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="revisionDataEntry in revisionData[field.name]">
-                                        <td ng-repeat="subField in subFields[field.name]">{{!subField.pseudoconstant ? revisionDataEntry[subField.name] : options[entity][subField.pseudoconstant][revisionDataEntry[subField.name]] }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table ng-if="field.isArray && revisionData.data">
-                                <tr ng-repeat="revisionDataEntry in revisionData.data">
-                                    <td>{{(!field.pseudoconstant ? revisionDataEntry[field.name] : options[entity][field.name][revisionDataEntry[field.name]]) || '-'}}</td>
+    <div class="table-responsive">
+        <table class="table table-striped {{prefix}}table-sort">
+            <thead>
+            <tr>
+                <th ng-repeat="field in fields" ng-if="field.selected && field.display">
+                    <a href="" ng-click="sortBy(field.name);createPage();">{{field.title}} <i class="fa"
+                                                                                    ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+                                                                                    ng-show="sortCol == field.name"></i></a></th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody ng-if="!isMultiDim">
+                <tr ng-repeat="revisionData in revisionDataListPage">
+                    <td ng-repeat="field in fields" ng-if="field.selected && field.display">
+                        {{!field.isArray ? (!subFields[field.name] ? ((!field.pseudoconstant ? revisionData[field.name] : options[entity][field.name][revisionData[field.name]]) || '-') : (revisionData[field.name].length ? '' : '-')) : ''}}
+                        <table ng-if="!!subFields[field.name] && revisionData[field.name].length" class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th ng-repeat="subField in subFields[field.name]">{{subField.title}}</th>
                                 </tr>
-                            </table>
-                        </td>
-                        <td><a class="cursor-pointer" ng-click="modalContract('view',revisionListPage[$index])">view this contract revision</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
-            <div class="col-xs-12 text-center">
-                <pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
-            </div>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="revisionDataEntry in revisionData[field.name]">
+                                    <td ng-repeat="subField in subFields[field.name]">{{!subField.pseudoconstant ? revisionDataEntry[subField.name] : options[entity][subField.pseudoconstant][revisionDataEntry[subField.name]] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table ng-if="field.isArray && revisionData.data">
+                            <tr ng-repeat="revisionDataEntry in revisionData.data">
+                                <td>{{(!field.pseudoconstant ? revisionDataEntry[field.name] : options[entity][field.name][revisionDataEntry[field.name]]) || '-'}}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td><a class="cursor-pointer" ng-click="modalContract('view',revisionListPage[$index])">view this contract revision</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
+        <div class="col-xs-12 text-center">
+            <pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
         </div>
     </div>
     <div class="modal-footer">
