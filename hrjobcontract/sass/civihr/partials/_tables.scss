@@ -3,14 +3,7 @@
   > tbody,
   > tfoot {
     > tr {
-
-      > th {
-        border-top: 0 none;
-      }
-
       > td {
-        border-top: 0 none;
-
         .#{$prefix}context-menu-toggle {
           margin: -2px 0;
           position: relative;

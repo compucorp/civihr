@@ -2,6 +2,7 @@
   border-bottom: 0 none;
 
   > li > a {
+    @include border-top-radius($border-radius-alt);
     font-size: $btn-font-size;
     font-weight: $btn-font-weight;
   }
@@ -10,10 +11,10 @@
 .tab-content {
   >.tab-pane {
     background-color: $nav-tabs-active-link-hover-bg;
-    @include border-radius($border-radius-base);
+    @include border-radius($border-radius-alt);
 
     &:first-child {
-      @include border-radius(0 $border-radius-base $border-radius-base $border-radius-base);
+      @include border-radius(0 $border-radius-alt $border-radius-alt $border-radius-alt);
     }
 
     border: {
@@ -33,7 +34,7 @@
       margin-bottom: 0;
 
       > a {
-        @include border-radius(0 0 $border-radius-base $border-radius-base);
+        @include border-radius(0 0 $border-radius-alt $border-radius-alt);
 
         &:hover, &:focus {
           border-top-color: $nav-tabs-border-color;
@@ -79,7 +80,7 @@
 
     > li > a {
       margin-right: -1px;
-      @include border-radius($border-radius-base 0 0 $border-radius-base);
+      @include border-radius($border-radius-alt 0 0 $border-radius-alt);
 
       &:hover, &:focus {
         border-color: $nav-tabs-link-hover-border-color $nav-tabs-border-color $nav-tabs-link-hover-border-color $nav-tabs-link-hover-border-color;
@@ -108,7 +109,7 @@
 
     > li > a {
       margin-left: -1px;
-      @include border-radius(0 $border-radius-base $border-radius-base 0);
+      @include border-radius(0 $border-radius-alt $border-radius-alt 0);
 
       &:hover, &:focus {
         border-color: $nav-tabs-link-hover-border-color $nav-tabs-link-hover-border-color $nav-tabs-link-hover-border-color $nav-tabs-border-color;
