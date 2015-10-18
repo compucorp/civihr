@@ -27,6 +27,12 @@
 
 }
 
+.modal-contract {
+  .modal-body {
+    background-color: #fff;
+  }
+}
+
 @media (min-width: $screen-md-min) {
   .modal-revision .modal-dialog {
     width: ($container-large-desktop - $grid-gutter-width);
