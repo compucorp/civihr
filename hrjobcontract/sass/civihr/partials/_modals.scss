@@ -1,7 +1,13 @@
 .modal-header {
+  border-bottom: 0 none;
+
   .close {
     margin-top: 0px;
   }
+}
+
+.modal-body {
+  background-color: $brand-secondary;
 }
 
 .modal-progress {

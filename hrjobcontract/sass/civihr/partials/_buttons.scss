@@ -1,5 +1,6 @@
 .btn {
   text-transform: uppercase;
+  @include border-radius($border-radius-alt);
 }
 
 .btn-link {
