@@ -556,11 +556,12 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   if ($context == "form" && $tplName == "CRM/Contact/Form/Contact.tpl" ) {
     $content .="<script type=\"text/javascript\">
       CRM.$(function($) {
-        $('#first_name').keyup(function() {
-          var value = $( this ).val();
-          $('#nick_name').val(value);
-          })
-          .keyup();
+        if(!$('#internal_identifier_display').val()){
+          $('#first_name').keyup(function() {
+            var value = $( this ).val();
+            $('#nick_name').val(value);
+            });
+        }
       });
     </script>";
   }
