@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+    <item>
+    <path>civicrm/appraisal_criteria</path>
+    <page_callback>CRM_Appraisals_Page_AppraisalCriteria</page_callback>
+    <title>Appraisal Criteria</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
