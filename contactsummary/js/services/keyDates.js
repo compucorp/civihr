@@ -4,10 +4,12 @@ define(['services/services', 'lodash'], function (services, _) {
   /**
    * @ngdoc service
    * @name KeyDatesService
+   * @param {ApiService} Api
+   * @param $log
    * @returns {{}}
    * @constructor
    */
-  function KeyDatesService() {
+  function KeyDatesService(Api, $q, $log) {
     var factory = {};
     var data = [];
 
@@ -21,7 +23,15 @@ define(['services/services', 'lodash'], function (services, _) {
      * @returns {Array}
      */
     factory.get = function () {
+      var deferred = $q.defer();
+
       if (_.isEmpty(data)) {
+        //var data = {target_contact_id: 197, period_id: 1, options: {'absence-range': 1}};
+        //Api.post('Activity', data, 'getabsences')
+        //  .then(function (response) {
+        //    $log.debug('Absences', response);
+        //  });
+
         data.push({
           label: 'Initial Join Date',
           date: '23/23/23'
@@ -36,7 +46,9 @@ define(['services/services', 'lodash'], function (services, _) {
         });
       }
 
-      return data;
+      deferred.resolve(data);
+
+      return deferred.promise;
     };
 
     return factory;
@@ -47,5 +59,5 @@ define(['services/services', 'lodash'], function (services, _) {
 
   }
 
-  services.factory('KeyDatesService', [KeyDatesService]);
+  services.factory('KeyDatesService', ['ApiService', '$q', '$log', KeyDatesService]);
 });
