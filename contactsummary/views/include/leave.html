@@ -1,7 +1,21 @@
-<div>
+<div ng-controller="LeaveCtrl as LeaveCtrl" id="leaves">
     <h1>Leave</h1>
 
-    <div ng-repeat="(key, value) in ContactSummaryCtrl.contact.leave">
-        {{value.title}}: {{value.taken}} days
+    <h2>Leave Type: Annual</h2>
+
+    <div ng-repeat="leave in LeaveCtrl.leaves">
+        {{leave.title}}: {{leave.taken}} days
+    </div>
+
+    <div data-cs-donut-chart data-items="ContactSummaryCtrl.contact.leave"
+         data-item-key="entitled" data-ready="ContactSummaryCtrl.ready"></div>
+
+    <div>
+        Annual Leave Entitlement: {{LeaveCtrl.totalEntitlement}}
+    </div>
+
+    <div>
+        TOIL Days Accrued: {{LeaveCtrl.toil.entitled}} days
+        TOIL Days Claimed: {{LeaveCtrl.toil.taken}} days
     </div>
 </div>

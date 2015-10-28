@@ -1,19 +1,22 @@
-<div>
+<div ng-controller="KeyDetailsCtrl as KeyDetails">
     <h1>Key Details</h1>
 
     <div>
-        Age: {{ ContactSummaryCtrl.contact.age }}
+        Age: {{ KeyDetails.contactDetails.age }}
     </div>
     <div>
-        Date of Birth: {{ ContactSummaryCtrl.contact.dateOfBirth }}
+        Date of Birth: {{ KeyDetails.contactDetails.dateOfBirth }}
     </div>
     <div>
-        Contract Type: {{ ContactSummaryCtrl.contact.contractType }}
+        Length of Service: {{ KeyDetails.primaryContract.lengthOfService }}
     </div>
     <div>
-        Gross Annual Pay: {{ ContactSummaryCtrl.contact.grossAnnualPay }}
+        Contract Type: {{ KeyDetails.primaryContract.type }}
     </div>
     <div>
-        Hours: {{ ContactSummaryCtrl.contact.hours }}
+        Gross Annual Pay: {{ KeyDetails.primaryContract.pay.currency }} {{ KeyDetails.primaryContract.pay.amount }}
+    </div>
+    <div>
+        Hours: {{ KeyDetails.primaryContract.hours.amount }} per {{ KeyDetails.primaryContract.hours.unit }}
     </div>
 </div>

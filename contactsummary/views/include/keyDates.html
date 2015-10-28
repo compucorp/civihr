@@ -1,0 +1,9 @@
+<div ng-controller="KeyDatesCtrl as KeyDates">
+    <h1 class="">Key Dates</h1>
+
+    <div class="dates">
+        <div ng-repeat="(key, value) in dates = (KeyDates.dates | orderBy: 'date')">
+            <span class="title">{{value.title}}:</span><span class="date">{{value.date}}</span>
+        </div>
+    </div>
+</div>
