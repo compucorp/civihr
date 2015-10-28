@@ -30,7 +30,9 @@ define(['services/services', 'lodash'], function (services, _) {
      * @returns {*}
      */
     factory.get = function () {
+      /** @type {(LeaveService|ModelService)} */
       var self = this;
+
       return init().then(function () {
         return self.getData();
       });
@@ -44,7 +46,7 @@ define(['services/services', 'lodash'], function (services, _) {
     factory.getEntitlement = function () {
       var deferred = $q.defer();
 
-      if (_.isEmpty(entitlements))  {
+      if (_.isEmpty(entitlements)) {
         ContactDetails.get()
           .then(function (response) {
             return Api.get('HRAbsenceEntitlement', {contact_id: response.id, options: {'absence-range': 1}});
@@ -128,13 +130,25 @@ define(['services/services', 'lodash'], function (services, _) {
     var absenceTypes = [], absences, entitlements;
 
     function init() {
-      return factory.getAbsenceTypes()
-        .then(factory.getAbsences)
-        .then(factory.getEntitlement)
-        .then(assembleLeave)
-        .catch(function (response) {
-          $log.debug('An error has occurred', response);
-        });
+      var deferred = $q.defer();
+
+      if (_.isEmpty(factory.getData())) {
+        factory.getAbsenceTypes()
+          .then(factory.getAbsences)
+          .then(factory.getEntitlement)
+          .then(assembleLeave)
+          .then(function () {
+            deferred.resolve();
+          })
+          .catch(function (response) {
+            $log.debug('An error has occurred', response);
+            deferred.reject(response);
+          });
+      } else {
+        deferred.resolve();
+      }
+
+      return deferred.promise;
     }
 
     function assembleLeave() {
@@ -153,6 +167,7 @@ define(['services/services', 'lodash'], function (services, _) {
 
         if (!data.hasOwnProperty(typeId)) data[typeId] = {};
 
+        data[typeId].type_id = typeId;
         data[typeId].title = type.title;
         data[typeId].credit_activity_type_id = type.credit_activity_type_id ? type.credit_activity_type_id : null;
         data[typeId].debit_activity_type_id = type.debit_activity_type_id ? type.debit_activity_type_id : null;

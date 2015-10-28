@@ -1,16 +1,24 @@
-define(['services/services', 'services/model', 'services/leave', 'services/contactDetails', 'lodash'], function (services) {
+define([
+  'services/services',
+  'services/model',
+  'services/leave',
+  'services/contactDetails',
+  'services/contract',
+  'lodash'
+], function (services) {
   'use strict';
 
   /**
    * @param {ModelService} Model
    * @param ContactDetails
    * @param {LeaveService} Leave
+   * @param {ContractService} Contract
    * @param $q
    * @param $log
    * @returns {Object}
    * @constructor
    */
-  function ContactService(Model, ContactDetails, Leave, $q, $log) {
+  function ContactService(Model, ContactDetails, Leave, Contract, $q, $log) {
     $log.debug('Service: ContactService');
 
     ////////////////////
@@ -32,13 +40,10 @@ define(['services/services', 'services/model', 'services/leave', 'services/conta
     factory.get = function () {
       /** @type {(ContactService|ModelService)} */
       var self = this;
-      var deferred = $q.defer();
 
-      init().finally(function () {
-        deferred.resolve(self.getData());
+      return init().then(function () {
+        return self.getData();
       });
-
-      return deferred.promise;
     };
 
     return factory;
@@ -52,7 +57,7 @@ define(['services/services', 'services/model', 'services/leave', 'services/conta
 
       if (_.isEmpty(factory.getData())) {
         initContactDetails()
-          //.then(initContract)
+          .then(initContract)
           .then(initLeave)
           .then(function () {
             deferred.resolve();
@@ -74,6 +79,10 @@ define(['services/services', 'services/model', 'services/leave', 'services/conta
     }
 
     function initContract() {
+      return Contract.get()
+        .then(function (response) {
+          factory.setDataKey('contract', response);
+        });
     }
 
     function initLeave() {
@@ -84,5 +93,5 @@ define(['services/services', 'services/model', 'services/leave', 'services/conta
     }
   }
 
-  services.factory('ContactService', ['ModelService', 'ContactDetailsService', 'LeaveService', '$q', '$log', ContactService]);
+  services.factory('ContactService', ['ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', '$q', '$log', ContactService]);
 });

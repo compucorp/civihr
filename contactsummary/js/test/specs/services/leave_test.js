@@ -84,15 +84,19 @@ define([
         });
 
         rootScope.$digest();
+
+        ApiServiceMock.flush();
+        ContactDetailsServiceMock.flush();
       });
 
       it('should return leaves', function () {
-        expect(angular.isObject(leaves)).toEqual(true);
-        expect(_.size(leaves)).toBeGreaterThan(0);
+        expect(angular.isObject(leaves)).toBe(true);
       });
 
       describe('a leave', function () {
         it('should have the required fields', function () {
+          expect(_.size(leaves)).toBeGreaterThan(0);
+
           angular.forEach(leaves, function (leave) {
             expect(leave.title).toBeDefined();
             expect(leave.entitled).toBeDefined();

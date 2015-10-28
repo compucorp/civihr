@@ -166,7 +166,6 @@ function contactsummary_civicrm_pageRun($page) {
 /**
  * Implementation of hook_civicrm_tabs
  */
-
 function contactsummary_civicrm_tabs(&$tabs) {
     $tabs[] = Array(
         'id'        => 'contactsummary',

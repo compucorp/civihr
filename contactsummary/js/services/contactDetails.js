@@ -2,7 +2,6 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
   'use strict';
 
   /**
-   *
    * @param Api
    * @param {ModelService} Model
    * @param settings
@@ -36,7 +35,7 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
       var self = this;
       var deferred = $q.defer();
 
-      init().finally(function () {
+      init().then(function () {
         deferred.resolve(self.getData());
       });
 
