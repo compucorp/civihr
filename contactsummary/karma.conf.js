@@ -2,10 +2,15 @@
 // Generated on Mon Sep 21 2015 08:25:08 GMT+0100 (BST)
 
 module.exports = function (config) {
-  config.set({
+  var basePath = '../../../../';
+  //var extPath = basePath + 'modules/civicrm/tools/extensions/civihr/contactsummary/';
+  //var extPath = basePath + 'tools/extensions/civihr/contactsummary/';
+  var extPath = 'tools/extensions/civihr/contactsummary/';
 
+  config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    //basePath: '',
+    basePath: basePath,
 
     plugins: [
       'karma-requirejs',
@@ -23,13 +28,21 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'js/test-main.js',
-      {pattern: 'js/vendor/**/*.js', included: false},
-      {pattern: 'js/app.js', included: false},
-      {pattern: 'js/controllers/**/*.js', included: false},
-      {pattern: 'js/directives/**/*.js', included: false},
-      {pattern: 'js/filters/**/*.js', included: false},
-      {pattern: 'js/services/**/*.js', included: false}
+      extPath + 'js/test-main.js',
+      extPath + 'js/contactsummary-main.js',
+      {pattern: extPath + 'js/vendor/**/*.js', included: false},
+      {pattern: extPath + 'js/vendor/**/*.map', included: false},
+      {pattern: extPath + 'js/app.js', included: false},
+      {pattern: extPath + 'js/controllers/**/*.js', included: false},
+      {pattern: extPath + 'js/directives/**/*.js', included: false},
+      {pattern: extPath + 'js/filters/**/*.js', included: false},
+      {pattern: extPath + 'js/services/**/*.js', included: false},
+      {pattern: extPath + 'js/mocks/**/*.js', included: false},
+      {pattern: extPath + 'js/test/**/*.js', included: false},
+      //{pattern: 'js/Common.js', included: false},
+      {pattern: 'js/**/*.js', included: false},
+      {pattern: 'packages/jquery/plugins/**/*.js', included: false},
+      {pattern: 'packages/jquery/jquery-ui/**/*.js', included: false}
     ],
 
     // list of files to exclude
@@ -64,5 +77,5 @@ module.exports = function (config) {
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
-  })
-}
+  });
+};
