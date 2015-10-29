@@ -180,7 +180,7 @@ define([
       if (_.isEmpty(factory.collection.get())) {
         factory.getContracts()
           .then(assembleContracts)
-          .then(function () {
+          .finally(function () {
             deferred.resolve();
           });
       } else {
