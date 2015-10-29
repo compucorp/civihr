@@ -177,7 +177,7 @@
       <is_search_range>0</is_search_range>
       <weight>164</weight>
       <is_active>1</is_active>
-      <is_view>1</is_view>
+      <is_view>0</is_view>
       <text_length>255</text_length>
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
@@ -409,7 +409,7 @@
     <ProfileField>
       <field_name>custom.civicrm_value_identify_2.is_government</field_name>
       <is_active>1</is_active>
-      <is_view>1</is_view>
+      <is_view>0</is_view>
       <is_required>0</is_required>
       <weight>9</weight>
       <help_post></help_post>
