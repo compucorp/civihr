@@ -10,6 +10,39 @@ define(['controllers/controllers'], function(controllers){
                 }
             };
 
+            $scope.today = function() {
+                //$scope.newStartDate = new Date();
+                console.log('set today');
+
+                $scope.CalendarShow['newStartDate'] = false;
+                $scope.CalendarShow['newEndDate'] = false;
+            };
+
+            // As default hide the datepickers
+            $scope.CalendarShow = [];
+
+            // Init values
+            $scope.today();
+
+            // Set required min date
+            $scope.toggleMin = function() {
+                $scope.minDate = $scope.minDate ? null : new Date(2000, 01, 01);
+            };
+            $scope.toggleMin();
+            $scope.maxDate = new Date(2020, 5, 22);
+
+            $scope.open = function(event) {
+                console.log('open test');
+                console.log(event);
+                $scope.CalendarShow[event] = true;
+            };
+
+            $scope.select = function(event) {
+                console.log('selected');
+                console.log(event);
+                $scope.CalendarShow[event] = false;
+            };
+
             // Tracks collapsed / expanded rows
             $scope.collapsedRows = [];
 
