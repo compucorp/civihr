@@ -1,0 +1,42 @@
+.panel-default-inverted {
+
+    .panel-body {
+        background: $panel-default-heading-bg;
+    }
+
+    .panel-footer,
+    .panel-heading {
+        background: $brand-primary-light;
+    }
+}
+
+.panel-default-plain {
+
+    .panel-body,
+    .panel-footer,
+    .panel-heading {
+        background: $panel-default-heading-bg;
+    }
+
+    .panel-footer {
+        padding-top: 0;
+
+        > hr {
+            margin: $panel-footer-padding;
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: 0;
+        }
+    }
+
+    .panel-heading {
+        padding-bottom: 0;
+
+        > hr {
+            margin: $panel-heading-big-padding;
+            margin-bottom: 0;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+}

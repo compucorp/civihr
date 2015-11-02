@@ -1,0 +1,27 @@
+// Override and custom variables
+@import "overrides/variables";
+
+// Default variables and mixins
+@import "../vendor/bootstrap/scss/variables";
+@import "../vendor/bootstrap/scss/mixins";
+
+// Custom fonts
+@import "fonts/*";
+
+// Custom Mixins
+@import "mixins/*";
+
+#{$bootstrap-namespace} {
+    // Custom Components
+    @import "components/*";
+
+    @if $bootstrap-namespace != "" {
+        @import "overrides/namespace-reset-civicrm";
+    }
+
+    // Custom global overrides
+    @import "overrides/reset-drupal";
+}
+
+// Font Awesome
+@import "../vendor/font-awesome/scss/font-awesome";
