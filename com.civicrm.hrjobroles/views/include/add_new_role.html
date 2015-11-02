@@ -38,12 +38,45 @@
                                                     <select name="contract" ng-options="k as v.title for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control" required></select>
                                                 </div>
                                             </div>
+
                                             <div class="form-group">
-                                                <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+                                                <label for="{{prefix}}newStartDate" class="col-xs-4 control-label">Start Date: {{ startDateCalendarshow }}</label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select ng-options="k as v.title for (k, v) in jobroles.LevelsData" ng-model="edit_data['new_role_id']['level']" class="form-control"></select>
+                                                    <p class="input-group">
+                                                        <input type="text" class="form-control" id="{{prefix}}newStartDate"
+                                                            datepicker-popup="yyyy-MM-dd"
+                                                            is-open="CalendarShow['newStartDate'] == true"
+                                                            min-date="minDate"
+                                                            ng-model="edit_data['new_role_id']['newStartDate']"
+                                                            ng-change="select('newStartDate')"
+                                                            ng-disabled="isDisabled"
+                                                            close-text="Close" >
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" ng-click="open('newStartDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                        </span>
+                                                    </p>
                                                 </div>
                                             </div>
+
+                                            <div class="form-group">
+                                                <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
+                                                <div class="col-xs-6 control-label">
+                                                    <p class="input-group">
+                                                        <input type="text" class="form-control" id="{{prefix}}newEndDate"
+                                                               datepicker-popup="yyyy-MM-dd"
+                                                               is-open="CalendarShow['newEndDate'] == true"
+                                                               min-date="minDate"
+                                                               ng-model="edit_data['new_role_id']['newEndDate']"
+                                                               ng-change="select('newEndDate')"
+                                                               ng-disabled="isDisabled"
+                                                               close-text="Close" >
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
                                         </div>
                                         <div class="col-xs-12 col-sm-6">
                                             <div class="form-group">
@@ -64,6 +97,13 @@
                                                     <select ng-options="k as v.title for (k, v) in jobroles.DepartmentsData" ng-model="edit_data['new_role_id']['department']" class="form-control"></select>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+                                                <div class="col-xs-6 control-label">
+                                                    <select ng-options="k as v.title for (k, v) in jobroles.LevelsData" ng-model="edit_data['new_role_id']['level']" class="form-control"></select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="row">

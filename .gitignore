@@ -5,3 +5,6 @@ hrjob/build
 bin/setup.conf
 hrabsence/build
 /nbproject/private/
+
+# Exclude sass cache from all extension directories
+*/.sass-cache/
