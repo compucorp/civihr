@@ -1,8 +1,7 @@
 {assign var="module" value="contactsummary" }
-{assign var="prefix" value="contactsummary-" }
 
-<div id="{$module}">
-    <div class="container" ng-view>
+<div id="bootstrap-theme">
+    <div id="{$module}" ng-view>
     </div>
 </div>
 {literal}
