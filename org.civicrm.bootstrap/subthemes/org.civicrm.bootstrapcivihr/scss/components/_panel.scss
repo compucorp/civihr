@@ -8,44 +8,49 @@
 // Default panel with body/header colors inverted
 .panel-default-inverted {
 
-    .panel-body {
+    > .panel-body {
         background: $panel-default-heading-bg;
     }
 
-    .panel-footer,
-    .panel-heading {
+    > .panel-footer,
+    > .panel-heading {
         background: $brand-primary-light;
     }
 }
 
-// Default panel with one color (heading color)
-.panel-default-plain {
+// Default panels with same color for body and heading
+.panel-default-plain,
+.panel-default-plain-inverted {
 
-    .panel-body,
-    .panel-footer,
-    .panel-heading {
-        background: $panel-default-heading-bg;
-    }
-
-    .panel-footer {
-        padding-top: 0;
-
-        > hr {
-            margin: $panel-footer-padding;
-            margin-left: 0;
-            margin-right: 0;
-            margin-top: 0;
-        }
-    }
-
-    .panel-heading {
+    > .panel-heading {
         padding-bottom: 0;
 
+        // An <hr> can serve as a separator
         > hr {
             margin: $panel-heading-big-padding;
             margin-bottom: 0;
             margin-left: 0;
             margin-right: 0;
         }
+    }
+}
+
+// Default panel with heading color applied to body and heading
+.panel-default-plain {
+
+    > .panel-body {
+        background: $panel-default-heading-bg;
+    }
+
+    > .panel-footer {
+        background: $brand-primary-light;
+    }
+}
+
+// Default panel with body color applied to body and heading
+.panel-default-plain-inverted {
+
+    > .panel-heading {
+        background: $brand-primary-light;
     }
 }
