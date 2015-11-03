@@ -7,12 +7,17 @@
 
 #{$bootstrap-namespace} {
     // Reset and dependencies
+
+    @if $bootstrap-namespace != "" {
+        @import "overrides/reset-drupal";
+    }
+
     @import "../vendor/bootstrap/scss/normalize";
     @import "../vendor/bootstrap/scss/print";
     @import "../vendor/bootstrap/scss/glyphicons";
 
     // Core CSS
-    @if $bootstrap-namespace != '' {
+    @if $bootstrap-namespace != "" {
         @import "overrides/namespace-body";
         @import "overrides/namespace-scaffolding";
     } else {

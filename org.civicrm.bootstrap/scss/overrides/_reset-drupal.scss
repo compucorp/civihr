@@ -304,6 +304,12 @@ table tr.error {
 .nav-tabs {
   margin-bottom: 10px;
 }
+
+ul {
+  margin: initial;
+  padding-left: 40px;
+}
+
 ul li.collapsed,
 ul li.expanded,
 ul li.leaf {
