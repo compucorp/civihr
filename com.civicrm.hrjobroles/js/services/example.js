@@ -84,6 +84,8 @@ define(['services/services'], function (services) {
             createJobRole: function(job_roles_data) {
 
                 console.log(job_roles_data);
+                console.log(job_roles_data.newStartDate.getTime());
+                console.log(job_roles_data.newEndDate.getTime());
 
                 // Define funder IDs string
                 var funders = "|";
@@ -157,7 +159,9 @@ define(['services/services'], function (services) {
                     "level_type": job_roles_data.level,
                     "location": job_roles_data.location,
                     "region": job_roles_data.region,
-                    "department": job_roles_data.department
+                    "department": job_roles_data.department,
+                    "start_date": job_roles_data.newStartDate,
+                    "end_date": job_roles_data.newEndDate
                 }).done(function(result) {
 
                     // Passing data to deferred's resolve function on successful completion

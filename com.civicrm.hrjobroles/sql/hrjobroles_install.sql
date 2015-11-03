@@ -31,7 +31,9 @@ CREATE TABLE `civicrm_hrjobroles` (
   `funder_val_type` varchar(127)    COMMENT 'Funder value type (fixed or %)',
   `percent_pay_funder` varchar(255)   DEFAULT 0 COMMENT 'Percentage of Pay Assigned to this funder',
   `amount_pay_funder` varchar(255)   DEFAULT 0 COMMENT 'Amount of Pay Assigned to this funder',
-  `location` varchar(127)    COMMENT 'Main work location'
+  `location` varchar(127)    COMMENT 'Main work location',
+  `start_date` timestamp   DEFAULT 0 COMMENT 'Start Date of the job role',
+  `end_date` timestamp   DEFAULT 0 COMMENT 'End Date of the job role'
   ,
   PRIMARY KEY ( `id` )
 
