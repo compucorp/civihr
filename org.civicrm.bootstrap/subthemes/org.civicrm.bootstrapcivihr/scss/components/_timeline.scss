@@ -1,0 +1,61 @@
+.crm_timeline {
+    @include clearfix;
+
+    margin: 0;
+
+    > .crm_timeline__entry {
+        padding: em(35) 0 0 em(40);
+        position: relative;
+
+        &:last-child {
+            padding-bottom: em(35);
+        }
+    }
+}
+
+.crm_timeline__entry {
+
+    &:after {
+        content: "";
+        border: 3px solid $gray-lighter;
+        bottom: 0;
+        left: 7px;
+        position: absolute;
+        top: 0;
+    }
+
+    &:before {
+        content: "";
+        background: $gray-lighter;
+        border: 2px solid $gray-light;
+        border-radius: 50%;
+        display: inline-block;
+        height: 20px;
+        left: 0;
+        position: absolute;
+        vertical-align: bottom;
+        width: 20px;
+        z-index: 2;
+    }
+}
+
+.crm_timeline__entry--future {
+
+    &:before {
+        border-color: $brand-primary;
+    }
+}
+
+.crm_timeline__entry--past {
+
+    &:before {
+        border-color: $brand-danger;
+    }
+}
+
+.crm_timeline__entry__name {
+    color: $gray-darker;
+    font-weight: 600;
+    display: block;
+    margin-bottom: em(5);
+}
