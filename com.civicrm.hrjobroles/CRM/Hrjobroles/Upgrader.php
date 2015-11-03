@@ -44,17 +44,18 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
-   * Example: Run a couple simple queries
+   * Example: Add start and and date for job roles
    *
    * @return TRUE on success
    * @throws Exception
    *
-  public function upgrade_4200() {
-    $this->ctx->log->info('Applying update 4200');
-    CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-    CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
+   */
+  public function upgrade_1001() {
+    $this->ctx->log->info('Applying update for job role start and end dates');
+    CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `start_date` timestamp DEFAULT 0 COMMENT 'Start Date of the job role'");
+    CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `end_date` timestamp DEFAULT 0 COMMENT 'End Date of the job role'");
     return TRUE;
-  } // */
+  }
 
 
   /**
