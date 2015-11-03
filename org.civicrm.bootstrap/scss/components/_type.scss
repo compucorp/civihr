@@ -38,6 +38,7 @@ dt {
     }
 }
 
+// The definitions list takes the full width available
 .dl-horizontal-full {
 
     @media (min-width: $grid-float-breakpoint) {
@@ -45,11 +46,32 @@ dt {
 
         dt {
             clear: right;
+            width: auto;
         }
 
         dd {
             float: right;
             margin-left: 0;
+        }
+    }
+}
+
+// The term and definition appear inline one after the other
+.dl-horizontal-inline {
+
+    @media (min-width: $grid-float-breakpoint) {
+        @include clearfix;
+
+        display: inline-block;
+        vertical-align: top;
+
+        dt {
+            width: auto;
+        }
+
+        dd {
+            float: left;
+            margin-left: 10px;
         }
     }
 }
