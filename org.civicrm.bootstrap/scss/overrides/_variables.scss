@@ -122,6 +122,7 @@ $panel-bg:                    transparent !default;
 $panel-body-padding:          20px !default;
 $panel-heading-padding:       10px 20px !default;
 $panel-heading-big-padding:   15px 20px !default;
+$panel-footer-big-padding:    $panel-heading-big-padding !default;
 $panel-border-radius:         0 !default;
 
 //** Border color for elements within panels

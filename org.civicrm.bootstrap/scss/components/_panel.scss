@@ -30,6 +30,10 @@
 // Contextual variations
 .panel-default {
 
+    > .panel-footer {
+        padding: $panel-footer-big-padding;
+    }
+
     > .panel-heading {
         padding: $panel-heading-big-padding;
     }
