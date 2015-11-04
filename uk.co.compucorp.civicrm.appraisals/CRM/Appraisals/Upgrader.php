@@ -87,7 +87,7 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
     /**
      * Add "Appraisal Cycle" as a new 'tag_used_for' option value.
      */
-    public function upgrade_0003() {
+    /*public function upgrade_0003() {
         $optionGroupResult = civicrm_api3('OptionGroup', 'getsingle', array(
             'sequential' => 1,
             'name' => "tag_used_for",
@@ -107,12 +107,12 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         }
 
         return TRUE;
-    }
+    }*/
     
     /**
      * Installing main groups of Appraisal Cycle tags.
      */
-    public function upgrade_0004() {
+    /*public function upgrade_0004() {
         $tags = array(
             "department", "level", "location", "region", // "role"(?), "status"(?)
         );
@@ -126,7 +126,7 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         }
 
         return TRUE;
-    }
+    }*/
 
     public function enable() {
         $this->setIsActive(1);
@@ -150,9 +150,9 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         );
         
         // Enable / Disable specific OptionValues:
-        CRM_Core_DAO::executeQuery(
+        /*CRM_Core_DAO::executeQuery(
             "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$status} WHERE civicrm_option_group.name = 'tag_used_for' AND civicrm_option_value.value = 'civicrm_appraisal_cycle'"
-        );
+        );*/
         
         // Enable / Disable navigation items:
         CRM_Core_DAO::executeQuery(
@@ -177,10 +177,10 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
     public function uninstall()
     {
         // Delete all tags used for 'civicrm_appraisal_cycle':
-        CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE used_for = 'civicrm_appraisal_cycle'");
+        //CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE used_for = 'civicrm_appraisal_cycle'");
         
         // Delete 'civicrm_appraisal_cycle' Option Value of 'tag_used_for' Option Group:
-        CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE value = 'civicrm_appraisal_cycle'");
+        //CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE value = 'civicrm_appraisal_cycle'");
         
         // Delete all OptionGroups and OptionValues:
         $result = civicrm_api3('OptionGroup', 'getsingle', array(
