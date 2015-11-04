@@ -12,21 +12,19 @@ h6, .h6 { font-weight: $font-weight-h6; }
 // Lists
 // -------------------------
 
-dl,
-dd {
+dl {
     &:last-child {
         margin-bottom: 0;
     }
 }
 
-dt,
-dd {
-  line-height: 2.5;
-}
-
 dt {
     color: $gray-darker;
     font-weight: 600;
+
+    &:not(:first-child) {
+        margin-top: em(23);
+    }
 }
 
 .dl-horizontal {
@@ -34,6 +32,13 @@ dt {
     @media (min-width: $grid-float-breakpoint) {
         dt {
             text-align: left;
+
+            &:not(:first-child) {
+
+                + dd {
+                    margin-top: em(23);
+                }
+            }
         }
     }
 }
@@ -45,7 +50,6 @@ dt {
         @include clearfix;
 
         dt {
-            clear: right;
             width: auto;
         }
 

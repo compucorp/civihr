@@ -87,6 +87,11 @@ body {
   }
 }
 
+dt,
+dd {
+  margin: 0;
+}
+
 // Default navbar.
 .navbar.container {
   @media #{$tablet} {
