@@ -1,9 +1,9 @@
-.crm_timeline {
+.chr_timeline {
     @include clearfix;
 
     margin: 0;
 
-    > .crm_timeline__entry {
+    > .chr_timeline__entry {
         padding: em(35) 0 0 em(40);
         position: relative;
 
@@ -13,7 +13,7 @@
     }
 }
 
-.crm_timeline__entry {
+.chr_timeline__entry {
 
     &:after {
         content: "";
@@ -39,21 +39,21 @@
     }
 }
 
-.crm_timeline__entry--future {
+.chr_timeline__entry--future {
 
     &:before {
         border-color: $brand-primary;
     }
 }
 
-.crm_timeline__entry--past {
+.chr_timeline__entry--past {
 
     &:before {
         border-color: $brand-danger;
     }
 }
 
-.crm_timeline__entry__name {
+.chr_timeline__entry__name {
     color: $gray-darker;
     font-weight: 600;
     display: block;
