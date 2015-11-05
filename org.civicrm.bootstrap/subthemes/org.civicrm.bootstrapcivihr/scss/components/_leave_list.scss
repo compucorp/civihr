@@ -1,12 +1,12 @@
 .chr_leave-list {
     @include clearfix;
 
-    > .chr_leave_list__type {
+    > .chr_leave-list__type {
         margin-bottom: 10px;
     }
 }
 
-.chr_leave_list__type {
+.chr_leave-list__type {
 
     > .chr_leave-list__type__color {
         margin-right: 5px;
