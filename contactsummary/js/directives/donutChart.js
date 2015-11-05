@@ -22,6 +22,9 @@ define(['directives/directives', 'd3'], function (directives, d3) {
           .attr('fill', function (d, i) {
               return color(i);
           })
+          .attr('class', function (d, i) {
+              return 'chart-color-' + i;
+          })
           .attr('d', arc);
     }
 

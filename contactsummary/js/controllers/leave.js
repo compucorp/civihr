@@ -1,7 +1,8 @@
 define([
   'controllers/controllers',
   'services/leave',
-  'directives/donutChart'
+  'directives/donutChart',
+  'd3'
 ], function (controllers) {
   'use strict';
 
@@ -21,6 +22,7 @@ define([
     this.toil = {};
     this.totalEntitlement = 0;
     this.ready = false;
+    this.chartColors = d3.scale.category20();
 
     Leave.get()
       .then(function (response) {
