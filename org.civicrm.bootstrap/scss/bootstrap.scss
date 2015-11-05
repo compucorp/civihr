@@ -7,9 +7,8 @@
 
 #{$bootstrap-namespace} {
     // Reset and dependencies
-
     @if $bootstrap-namespace != "" {
-        @import "overrides/reset-drupal";
+        @import "overrides/reset/drupal";
     }
 
     @import "../vendor/bootstrap/scss/normalize";
@@ -18,8 +17,7 @@
 
     // Core CSS
     @if $bootstrap-namespace != "" {
-        @import "overrides/namespace-body";
-        @import "overrides/namespace-scaffolding";
+        @import "overrides/namespace/*";
     } else {
         @import "../vendor/bootstrap/scss/scaffolding";
     }

@@ -1,16 +1,12 @@
-// Override and custom variables
 @import "overrides/variables";
-
-// (Parent) Override and custom variables
 @import "../../../scss/overrides/variables";
 
-// (Bootstrap) Default variables and mixins
 @import "../../../vendor/bootstrap/scss/variables";
 @import "../../../vendor/bootstrap/scss/mixins";
 
-// (Parent) Custom Mixins
 @import "../../../scss/mixins/*";
 
 #{$bootstrap-namespace} {
+    @import "overrides/style/*";
     @import "components/*";
 }
