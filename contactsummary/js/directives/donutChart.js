@@ -29,8 +29,6 @@ define(['directives/directives', 'd3'], function (directives, d3) {
     }
 
     function constructData() {
-        console.log('Key is', this.itemKey);
-
         var pieLayout = d3.layout.pie()
           .sort(null)
           .value(function (d) {
@@ -79,8 +77,6 @@ define(['directives/directives', 'd3'], function (directives, d3) {
                 var unbindWatch = scope.$watch(function () {
                     return scope.ready;
                 }, function (newValue, oldValue) {
-                    console.log(oldValue, newValue);
-
                     if (newValue === true) {
                         ctrl.drawChart();
                         unbindWatch();
