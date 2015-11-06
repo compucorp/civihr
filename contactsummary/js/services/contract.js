@@ -197,9 +197,13 @@ define([
         var assembledContract = {};
 
         assembledContract.id = contract.id;
-        assembledContract.revision_id = contract.api_HRJobContractRevision_getcurrentrevision.values.id;
         assembledContract.is_primary = contract.is_primary;
         assembledContract.is_current = contract.is_current;
+        assembledContract.revision_id = null;
+
+        if (contract.api_HRJobContractRevision_getcurrentrevision) {
+          assembledContract.revision_id = contract.api_HRJobContractRevision_getcurrentrevision.values.id;
+        }
 
         var promise = factory.getContractDetails(contract.id)
           .then(function (response) {
@@ -227,64 +231,6 @@ define([
 
       return deferred.promise;
     }
-
-    //function assembleContracts() {
-    //  var deferred = $q.defer(), promises = [];
-    //
-    //  angular.forEach(contracts, function (contract) {
-    //    var assembledContract = {};
-    //
-    //    assembledContract.id = contract.id;
-    //    assembledContract.revision_id = contract.api_HRJobContractRevision_getcurrentrevision.values.id;
-    //
-    //    var promise = factory.getContractDetails(contract.api_HRJobContractRevision_getcurrentrevision.values.id)
-    //      .then(function (response) {
-    //        assembledContract.title = response.title;
-    //        assembledContract.start_date = response.period_start_date;
-    //        assembledContract.end_date = response.period_end_date;
-    //      })
-    //      .then(function () {
-    //        factory.collection.insertItem(contract.id, assembledContract);
-    //      });
-    //
-    //    promises.push(promise);
-    //  });
-    //
-    //  $q.all(promises).then(function () {
-    //    deferred.resolve();
-    //  });
-    //
-    //  return deferred.promise;
-    //}
-
-    //function assembleContractDetails() {
-    //  var promises = [];
-    //
-    //  angular.forEach(contracts, function (contract) {
-    //    var assembledContract = {};
-    //
-    //    assembledContract.id = contract.id;
-    //    assembledContract.revision_id = contract.api_HRJobContractRevision_getcurrentrevision.values.id;
-    //
-    //    var promise = factory.getContractDetails(contract.api_HRJobContractRevision_getcurrentrevision.values.id)
-    //      .then(function (response) {
-    //        assembledContract.title = response.title;
-    //        assembledContract.start_date = response.period_start_date;
-    //        assembledContract.end_date = response.period_end_date;
-    //      })
-    //      .then(function () {
-    //        factory.collection.insertItem(contract.id, assembledContract);
-    //      });
-    //
-    //    promises.push(promise);
-    //  });
-    //
-    //  $q.all(promises).then(function () {
-    //    deferred.resolve();
-    //  });
-    //
-    //  return promises;
-    //}
 
     return factory;
   }
