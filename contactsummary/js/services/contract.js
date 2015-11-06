@@ -103,9 +103,15 @@ define([
             return Api.get('HRJobContract', data);
           })
           .then(function (response) {
-            if (response.values.length === 0) return deferred.reject('No job contract found');
+            var activeContracts = response.values.filter(function (contract) {
+              return parseInt(contract.deleted) === 0;
+            });
 
-            contracts = response.values;
+            if (activeContracts.length === 0) {
+              return deferred.reject('No job contract found');
+            }
+
+            contracts = activeContracts;
 
             deferred.resolve(contracts);
           })
@@ -223,7 +229,7 @@ define([
 
       $q.all(promises)
         .catch(function (response) {
-          $log.debug('Something went wrong', response);
+          $log.error('Something went wrong', response);
         })
         .finally(function () {
           deferred.resolve();
