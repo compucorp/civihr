@@ -230,7 +230,7 @@
                                                         <table class="table table-striped {{prefix}}table-sort">
                                                             <thead>
                                                                 <tr>
-                                                                    <th style="width:40%">Cost Centre</th>
+                                                                    <th style="width:40%">Cost Centers</th>
                                                                     <th style="width:15%">Type</th>
                                                                     <th style="width:15%">% Amount</th>
                                                                     <th style="width:15%">Absolute Amount</th>
@@ -240,9 +240,9 @@
                                                             <tbody>
                                                                 <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                                     <td>
-                                                                        <!-- editable cost centre (text with validation) -->
-                                                                        <span editable-text="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
-                                                                            {{ cost_centre.cost_centre_id || 'empty' }}
+                                                                        <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCenterList">
+                                                                            {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                                                         </span>
                                                                     </td>
                                                                     <td>
