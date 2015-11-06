@@ -7,6 +7,37 @@ define([
   'use strict';
 
   /**
+   * Add the contract dates to the timeline
+   *
+   * @param {Object} contract
+   */
+  function addContractDates(contract) {
+    this.dates.push({
+      title: contract.title + ' (Start)',
+      date: contract.start_date,
+      future: isDateInFuture(contract.start_date)
+    });
+
+    if (contract.end_date) {
+      this.dates.push({
+        title: contract.title + ' (End)',
+        date: contract.end_date,
+        future: isDateInFuture(contract.end_date)
+      });
+    }
+  }
+
+  /**
+   * Checks if a date is in the future
+   *
+   * @param {string} date
+   * @return {boolean}
+   */
+  function isDateInFuture(date) {
+    return moment().diff(date) < 0;
+  }
+
+  /**
    * @ngdoc controller
    * @name KeyDatesCtrl
    * @param $log
@@ -26,20 +57,20 @@ define([
     Contract.get()
       .then(function (response) {
         angular.forEach(response, function (contract) {
-          self.dates.push({title: contract.title + ' (Start)', date: contract.start_date});
+          addContractDates.call(self, contract);
 
-          if (contract.end_date) {
-            self.dates.push({title: contract.title + ' (End)', date: contract.end_date});
-          }
-
-          if (contract.is_current) self.activeContracts++;
+          if (contract.is_current) {
+            self.activeContracts++
+          };
         });
 
         return JobRole.get();
       })
       .then(function (response) {
         angular.forEach(response, function (role) {
-          if (role.status === '10') self.activeRoles++;
+          if (role.status === '10') {
+            self.activeRoles++;
+          }
         });
       })
       .finally(function () {
