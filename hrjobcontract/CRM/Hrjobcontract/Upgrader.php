@@ -1098,9 +1098,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrhours_location` CHANGE  `standard_hours`  `standard_hours` DECIMAL( 8, 2 ) NULL DEFAULT NULL");
       return TRUE;
   }
-  
+
   function upgrade_1009() {
       CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobcontract_leave` CHANGE  `leave_amount`  `leave_amount` DOUBLE UNSIGNED NULL DEFAULT NULL COMMENT  'The number of leave days'");
+      return TRUE;
+  }
+
+  function upgrade_1010() {
+      CRM_Hrjobcontract_JobContractDates::rewriteContactIds();
       return TRUE;
   }
           
