@@ -3,7 +3,6 @@
 class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
 {    
     public function install() {
-        // $this->executeCustomDataFile('xml/customdata.xml');
         $this->executeSqlFile('sql/install.sql');
 
         $revisions = $this->getRevisions();
@@ -44,6 +43,43 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
     }
     
     /*
+     * Install Appraisal Cycle types
+     * 
+     * - Annual
+     * - Mid Probation
+     * - End Probation
+     */
+    public function upgrade_0002() {
+
+        $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'appraisal_cycle_type', 'id', 'name');
+        if (!$optionGroupID) {
+            $params = array(
+                'name' => 'appraisal_cycle_type',
+                'title' => 'Appraisal Cycle Type',
+                'is_active' => 1,
+                'is_reserved' => 1,
+            );
+            civicrm_api3('OptionGroup', 'create', $params);
+            $optionsValue = array(
+                1 => 'Annual',
+                2 => 'Mid Probation',
+                3 => 'End Probation',
+            );
+            foreach ($optionsValue as $key => $value) {
+                $opValueParams = array(
+                    'option_group_id' => 'appraisal_cycle_type',
+                    'name' => $value,
+                    'label' => $value,
+                    'value' => $key,
+                );
+                civicrm_api3('OptionValue', 'create', $opValueParams);
+            }
+        }
+
+        return TRUE;
+    }
+    
+    /*
      * Install Appraisal statuses
      * 
      * - Awaiting self appraisal (When newly created)
@@ -52,7 +88,7 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
      * - Awaiting HR approval
      * - Complete
      */
-    public function upgrade_0002() {
+    public function upgrade_0003() {
 
         $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'appraisal_status', 'id', 'name');
         if (!$optionGroupID) {
@@ -83,51 +119,32 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
 
         return TRUE;
     }
-
-    /**
-     * Add "Appraisal Cycle" as a new 'tag_used_for' option value.
-     */
-    /*public function upgrade_0003() {
-        $optionGroupResult = civicrm_api3('OptionGroup', 'getsingle', array(
-            'sequential' => 1,
-            'name' => "tag_used_for",
-        ));
-        if ($optionGroupResult['id']) {
-          $optionValueResult = civicrm_api3('OptionValue', 'create', array(
-            'sequential' => 1,
-            'option_group_id' => $optionGroupResult['id'],
-            'label' => "Appraisal Cycles",
-            'value' => "civicrm_appraisal_cycle",
-            'name' => "Appraisal Cycles",
-            'grouping' => 0,
-            'is_optgroup' => 0,
-            'is_reserved' => 0,
-            'is_active' => 1,
-          ));
-        }
-
-        return TRUE;
-    }*/
     
     /**
-     * Installing main groups of Appraisal Cycle tags.
+     * Install default Appraisals Criteria entries
      */
-    /*public function upgrade_0004() {
-        $tags = array(
-            "department", "level", "location", "region", // "role"(?), "status"(?)
+    public function upgrade_0004() {
+        
+        $criteria = array(
+            1 => 'Below Expectations',
+            2 => 'Meets Expectations',
+            3 => 'Exceeds Expectations',
+            4 => 'Excellent',
+            5 => 'Lorem Ipsum',
         );
-        foreach ($tags as $tag) {
-            $result = civicrm_api3('Tag', 'create', array(
-              'sequential' => 1,
-              'name' => $tag,
-              'parent_id' => "",
-              'used_for' => "civicrm_appraisal_cycle",
-            ));
+        
+        foreach ($criteria as $value => $label) {
+            $params = array(
+                'value' => $value,
+                'label' => $label,
+                'is_active' => 1,
+            );
+            CRM_Appraisals_BAO_AppraisalCriteria::create($params);
         }
-
+        
         return TRUE;
-    }*/
-
+    }
+    
     public function enable() {
         $this->setIsActive(1);
         
@@ -149,11 +166,6 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
             "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$status} WHERE civicrm_option_group.name IN ('appraisal_status')"
         );
         
-        // Enable / Disable specific OptionValues:
-        /*CRM_Core_DAO::executeQuery(
-            "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$status} WHERE civicrm_option_group.name = 'tag_used_for' AND civicrm_option_value.value = 'civicrm_appraisal_cycle'"
-        );*/
-        
         // Enable / Disable navigation items:
         CRM_Core_DAO::executeQuery(
             "UPDATE civicrm_navigation SET is_active={$status} WHERE name IN ('appraisal_criteria')"
@@ -165,9 +177,6 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
     
     /**
      * Uninstall function which removes:
-     *  //- civicrm_entity_tag
-     *  - civicrm_tag (where 'used_for' = 'civicrm_appraisal_cycle')
-     *  - OptionValues where option_group = 'tag_used_for'
      *  - OptionValues and OptionGroup for 'appraisal_status'
      *  //- Files related to Appraisals entities
      *  - civicrm_navigation where name = 'appraisal_criteria'
@@ -176,12 +185,6 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
      */
     public function uninstall()
     {
-        // Delete all tags used for 'civicrm_appraisal_cycle':
-        //CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE used_for = 'civicrm_appraisal_cycle'");
-        
-        // Delete 'civicrm_appraisal_cycle' Option Value of 'tag_used_for' Option Group:
-        //CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE value = 'civicrm_appraisal_cycle'");
-        
         // Delete all OptionGroups and OptionValues:
         $result = civicrm_api3('OptionGroup', 'getsingle', array(
             'sequential' => 1,

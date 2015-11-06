@@ -93,6 +93,30 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
    */
   public $manager_appraisal_file_id;
   /**
+   * Self Appraisal Due date.
+   *
+   * @var datetime
+   */
+  public $self_appraisal_due;
+  /**
+   * Manager Appraisal Due date.
+   *
+   * @var datetime
+   */
+  public $manager_appraisal_due;
+  /**
+   * Grade Due date.
+   *
+   * @var datetime
+   */
+  public $grade_due;
+  /**
+   * Is any individual due date changed?
+   * 
+   * @var bool
+   */
+  public $due_changed;
+  /**
    * Meeting date.
    *
    * @var datetime
@@ -190,6 +214,7 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
           'headerPattern' => '/(appraisal.)?cycle(.id$)/i',
           'dataPattern' => '',
           'export' => false,
+          'FKClassName' => 'CRM_Appraisals_DAO_AppraisalCycle',
         ) ,
         'contact_id' => array(
           'name' => 'contact_id',
@@ -232,6 +257,59 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
           'headerPattern' => '/manager(.)?appraisal(.)?file(.)?id/i',
           'dataPattern' => '',
           'export' => true,
+        ) ,
+        'self_appraisal_due' => array(
+          'name' => 'self_appraisal_due',
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
+          'title' => ts('Self Appraisal Due') ,
+          'import' => true,
+          'where' => 'civicrm_appraisal.self_appraisal_due',
+          'headerPattern' => '/self.appraisal.due/i',
+          'dataPattern' => '',
+          'export' => true,
+          'html' => array(
+            'type' => 'Select Date',
+          ) ,
+        ) ,
+        'manager_appraisal_due' => array(
+          'name' => 'manager_appraisal_due',
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
+          'title' => ts('Manager Appraisal Due') ,
+          'import' => true,
+          'where' => 'civicrm_appraisal.manager_appraisal_due',
+          'headerPattern' => '/manager.appraisal.due/i',
+          'dataPattern' => '',
+          'export' => true,
+          'html' => array(
+            'type' => 'Select Date',
+          ) ,
+        ) ,
+        'grade_due' => array(
+          'name' => 'grade_due',
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
+          'title' => ts('Grade Due') ,
+          'import' => true,
+          'where' => 'civicrm_appraisal.grade_due',
+          'headerPattern' => '/grade.due/i',
+          'dataPattern' => '',
+          'export' => true,
+          'html' => array(
+            'type' => 'Select Date',
+          ) ,
+        ) ,
+        'due_changed' => array(
+          'name' => 'due_changed',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'title' => ts('Is any individual due date changed?') ,
+          'import' => true,
+          'where' => 'civicrm_appraisal.due_changed',
+          'headerPattern' => '/due.changed/i',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => '0',
+          'html' => array(
+            'type' => 'CheckBox',
+          ) ,
         ) ,
         'meeting_date' => array(
           'name' => 'meeting_date',
@@ -334,6 +412,10 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
         'manager_id' => 'manager_id',
         'self_appraisal_file_id' => 'self_appraisal_file_id',
         'manager_appraisal_file_id' => 'manager_appraisal_file_id',
+        'self_appraisal_due' => 'self_appraisal_due',
+        'manager_appraisal_due' => 'manager_appraisal_due',
+        'grade_due' => 'grade_due',
+        'due_changed' => 'due_changed',
         'meeting_date' => 'meeting_date',
         'meeting_completed' => 'meeting_completed',
         'approved_by_employee' => 'approved_by_employee',

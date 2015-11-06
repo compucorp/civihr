@@ -91,9 +91,9 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
    *
    * @var datetime
    */
-  public $manager_due;
+  public $manager_appraisal_due;
   /**
-   * Grade Appraisal Due date.
+   * Grade Due date.
    *
    * @var datetime
    */
@@ -104,12 +104,6 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
    * @var int
    */
   public $type_id;
-  /**
-   * Appraisal Cycle status ID.
-   *
-   * @var int
-   */
-  public $status_id;
 
   /**
    * class constructor
@@ -133,8 +127,6 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = static ::createReferenceColumns(__CLASS__);
-      // TODO: type_id
-      // TODO: status_id
     }
     return self::$_links;
   }
@@ -161,7 +153,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         ) ,
         'name' => array(
           'name' => 'name',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Appraisal Cycle name') ,
           'required' => true,
           'import' => true,
@@ -198,7 +190,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         ) ,
         'self_appraisal_due' => array(
           'name' => 'self_appraisal_due',
-          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('Self Appraisal Due') ,
           'import' => true,
           'where' => 'civicrm_appraisal_cycle.self_appraisal_due',
@@ -209,13 +201,13 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
             'type' => 'Select Date',
           ) ,
         ) ,
-        'manager_due' => array(
-          'name' => 'manager_due',
-          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-          'title' => ts('Manager Due') ,
+        'manager_appraisal_due' => array(
+          'name' => 'manager_appraisal_due',
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
+          'title' => ts('Manager Appraisal Due') ,
           'import' => true,
-          'where' => 'civicrm_appraisal_cycle.manager_due',
-          'headerPattern' => '/manager.due/i',
+          'where' => 'civicrm_appraisal_cycle.manager_appraisal_due',
+          'headerPattern' => '/manager.appraisal.due/i',
           'dataPattern' => '',
           'export' => true,
           'html' => array(
@@ -224,7 +216,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         ) ,
         'grade_due' => array(
           'name' => 'grade_due',
-          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('Grade Due') ,
           'import' => true,
           'where' => 'civicrm_appraisal_cycle.grade_due',
@@ -244,16 +236,9 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
           'headerPattern' => '/type.id$/i',
           'dataPattern' => '',
           'export' => true,
-        ) ,
-        'status_id' => array(
-          'name' => 'status_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Status ID') ,
-          'import' => true,
-          'where' => 'civicrm_appraisal_cycle.status_id',
-          'headerPattern' => '/status.id$/i',
-          'dataPattern' => '',
-          'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'appraisal_cycle_type',
+          )
         ) ,
       );
     }
@@ -275,10 +260,9 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         'cycle_start_date' => 'cycle_start_date',
         'cycle_end_date' => 'cycle_end_date',
         'self_appraisal_due' => 'self_appraisal_due',
-        'manager_due' => 'manager_due',
+        'manager_appraisal_due' => 'manager_appraisal_due',
         'grade_due' => 'grade_due',
         'type_id' => 'type_id',
-        'status_id' => 'status_id',
       );
     }
     return self::$_fieldKeys;

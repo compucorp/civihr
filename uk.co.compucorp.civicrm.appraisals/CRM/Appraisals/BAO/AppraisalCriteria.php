@@ -28,16 +28,16 @@
 class CRM_Appraisals_BAO_AppraisalCriteria extends CRM_Appraisals_DAO_AppraisalCriteria {
 
   public static function create($params) {
+    $className = 'CRM_Appraisals_DAO_AppraisalCriteria';
     $entityName = 'AppraisalCriteria';
     $hook = empty($params['id']) ? 'create' : 'edit';
-    
+
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new self();
+    $instance = new $className();
     $instance->copyValues($params);
     $instance->save();
-    
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
-    
+
     return $instance;
   }
   
