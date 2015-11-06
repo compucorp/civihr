@@ -297,7 +297,7 @@ define(['controllers/controllers'], function(controllers){
 
             $scope.getCostLabel = function(id) {
                 var label = '';
-                angular.forEach($scope.CostCenterList, function(v, k){
+                angular.forEach($scope.CostCentreList, function(v, k){
                     if(v.id == id){
                         label = v.title;
                     }
@@ -460,7 +460,7 @@ define(['controllers/controllers'], function(controllers){
                             var LevelList = {};
 
                             // Pass the Cost Centers option group list to the scope
-                            var CostCenterList = {};
+                            var CostCentreList = {};
 
                             angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
@@ -506,7 +506,7 @@ define(['controllers/controllers'], function(controllers){
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                CostCenterList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                CostCentreList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
 
                                             }
 
@@ -532,8 +532,8 @@ define(['controllers/controllers'], function(controllers){
                             job_roles.LevelsData = LevelList;
 
                             // Store the Level types what we can reuse later
-                            $scope.CostCenterList = CostCenterList;
-                            $log.info($scope.CostCenterList);
+                            $scope.CostCentreList = CostCentreList;
+                            $log.info($scope.CostCentreList);
 
                             job_roles.message_type = 'alert-success';
                             job_roles.message = 'Option values list OK!';
