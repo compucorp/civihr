@@ -163,7 +163,7 @@ define([
                 'api.HRJobHour.get': { 'jobcontract_id': id }
             };
 
-            return Api.get('HRJobDetails', data)
+            return Api.post('HRJobDetails', data, 'get')
                 .then(function (response) {
                     if (response.values.length === 0) {
                         return $q.reject('No details found for contract revision with ID ' + id);

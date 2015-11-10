@@ -73,7 +73,7 @@ define(['services/services', 'lodash'], function (services, _) {
             contractIds.push(contract.id);
           });
 
-          Api.get('HrJobRoles', {job_contract_id: {'IN': contractIds}})
+          Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
             .then(function (response) {
               if (response.values.length === 0) return $q.reject('No job roles found for contracts');
 
