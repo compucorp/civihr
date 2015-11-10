@@ -22,7 +22,7 @@ define([
     this.totalEntitlement = 0;
     this.ready = false;
 
-    Leave.get()
+    Leave.getCurrent()
       .then(function (response) {
         angular.forEach(response, function (leave) {
           self.totalEntitlement += leave.entitled;
