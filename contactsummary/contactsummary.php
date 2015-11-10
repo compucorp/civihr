@@ -110,7 +110,7 @@ function contactsummary_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function contactsummary_civicrm_angularModules(&$angularModules) {
-_contactsummary_civix_civicrm_angularModules($angularModules);
+  _contactsummary_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -125,52 +125,53 @@ function contactsummary_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 /**
  * Functions below this ship commented out. Uncomment as required.
  *
-
-/**
+ *
+ * /**
  * Implements hook_civicrm_preProcess().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
  *
-function contactsummary_civicrm_preProcess($formName, &$form) {
-
-}
-
-*/
+ * function contactsummary_civicrm_preProcess($formName, &$form) {
+ *
+ * }
+ */
 
 /**
  * Implementation of hook_civicrm_pageRun
  */
 function contactsummary_civicrm_pageRun($page) {
-    if ($page instanceof CRM_Contact_Page_View_Summary) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
 
-        CRM_Core_Resources::singleton()->addVars('contactsummary', array(
-            'baseURL' => CRM_Extension_System::singleton()
-              ->getMapper()->keyToUrl('org.civicrm.contactsummary')
-        ));
+    CRM_Core_Resources::singleton()->addVars('contactsummary', array(
+      'baseURL' => CRM_Extension_System::singleton()
+        ->getMapper()->keyToUrl('org.civicrm.contactsummary')
+    ));
 
-        CRM_Core_Region::instance('page-footer')->add(array(
-            'type' => 'markup',
-            'markup' => '<script data-main="'
-                .CRM_Core_Resources::singleton()->getUrl('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/contactsummary-main' : 'dist/contactsummary-main', FALSE).
-                '" src="'
-                .CRM_Core_Resources::singleton()->getUrl('org.civicrm.contactsummary', 'js/vendor/require.js', TRUE).
-                '"></script>',
-            'weight' => 1003
-        ));
+    CRM_Core_Region::instance('page-footer')->add(array(
+      'type'   => 'markup',
+      'markup' => '<script data-main="'
+        . CRM_Core_Resources::singleton()
+          ->getUrl('org.civicrm.contactsummary',
+            CRM_Core_Config::singleton()->debug ? 'js/contactsummary-main' : 'dist/contactsummary-main', FALSE) .
+        '" src="'
+        . CRM_Core_Resources::singleton()->getUrl('org.civicrm.contactsummary', 'js/vendor/require.js', TRUE) .
+        '"></script>',
+      'weight' => 1003
+    ));
 
-        CRM_Core_Resources::singleton()
-            ->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
-    }
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
+  }
 }
 
 /**
  * Implementation of hook_civicrm_tabs
  */
 function contactsummary_civicrm_tabs(&$tabs) {
-    $tabs[] = Array(
-        'id'        => 'contactsummary',
-        'url'       => CRM_Utils_System::url('civicrm/contact-summary'),
-        'title'     => ts('Contact Summary'),
-        'weight'    => 1
-    );
+  $tabs[] = Array(
+    'id'     => 'contactsummary',
+    'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
+    'title'  => ts('Contact Summary'),
+    'weight' => 1
+  );
 }
