@@ -52,8 +52,6 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
       if (_.isEmpty(factory.getData())) {
         var contactId = settings.contactId;
 
-        factory.setDataKey('id', contactId);
-
         Api.get('Contact', {contact_id: contactId, return: 'birth_date'})
           .then(function (response) {
             if (response.values.length === 0) throw new Error('Contact with ID ' + contactId + ' not found');
@@ -61,6 +59,7 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
             var dob = response.values[0].birth_date,
               age = moment(moment(dob, 'YYYY-MM-DD')).fromNow(true);
 
+            factory.setDataKey('id', contactId);
             factory.setDataKey('dateOfBirth', dob);
             factory.setDataKey('age', age);
 
