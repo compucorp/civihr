@@ -1,235 +1,257 @@
 define([
-  'lodash',
-  'modules/services',
-  'services/api',
-  'services/model',
-  'services/contactDetails'
+    'lodash',
+    'modules/services',
+    'services/api',
+    'services/model',
+    'services/contactDetails'
 ], function (_, services) {
-  'use strict';
-
-  /**
-   * @param {ApiService} Api
-   * @param {ModelService} Model
-   * @param {ContactDetailsService} ContactDetails
-   * @param $q
-   * @param $log
-   * @returns {ModelService|Object|*}
-   * @constructor
-   */
-  function LeaveService($q, $log, Api, Model, ContactDetails) {
-    $log.debug('Service: LeaveService');
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
+    'use strict';
 
     /**
-     * @ngdoc service
-     * @name LeaveService
+     * @param {ApiService} Api
+     * @param {ModelService} Model
+     * @param {ContactDetailsService} ContactDetails
+     * @param $q
+     * @param $log
+     * @returns {ModelService|Object|*}
+     * @constructor
      */
-    var factory = Model.createInstance();
+    function LeaveService($q, $log, Api, Model, ContactDetails) {
+        $log.debug('Service: LeaveService');
 
-    /**
-     * @ngdoc method
-     * @name get
-     * @methodOf LeaveService
-     * @returns {*}
-     */
-    factory.get = function () {
-      /** @type {(LeaveService|ModelService)} */
-      var self = this;
+        ////////////////////
+        // Public Members //
+        ////////////////////
 
-      return init().then(function () {
-        return self.getData();
-      });
-    };
+        /**
+         * @ngdoc service
+         * @name LeaveService
+         */
+        var factory = Model.createInstance();
 
-    /**
-     * @ngdoc method
-     * @name getEntitlement
-     * @methodOf LeaveService
-     */
-    factory.getEntitlement = function () {
-      var deferred = $q.defer();
+        /**
+         * @ngdoc method
+         * @name get
+         * @methodOf LeaveService
+         * @returns {*}
+         */
+        factory.get = function () {
+            /** @type {(LeaveService|ModelService)} */
+            var self = this;
 
-      if (_.isEmpty(entitlements)) {
-        ContactDetails.get()
-          .then(function (response) {
-            return Api.get('HRAbsenceEntitlement', {contact_id: response.id, options: {'absence-range': 1}});
-          })
-          .then(function (response) {
-            if (response.values.length === 0) return deferred.reject('No absence entitlement found');
+            return init().then(function () {
+                return self.getData();
+            });
+        };
 
-            entitlements = response.values;
+        /**
+         * @ngdoc method
+         * @name getEntitlement
+         * @methodOf LeaveService
+         */
+        factory.getEntitlement = function () {
+            var deferred = $q.defer();
 
-            deferred.resolve(entitlements);
-          });
-      } else {
-        deferred.resolve(entitlements);
-      }
+            if (_.isEmpty(entitlements)) {
+                ContactDetails.get()
+                    .then(function (response) {
+                        return Api.get('HRAbsenceEntitlement', {contact_id: response.id, options: {'absence-range': 1}});
+                    })
+                    .then(function (response) {
+                        if (response.values.length === 0) {
+                            return deferred.reject('No absence entitlement found');
+                        }
 
-      return deferred.promise;
-    };
+                        entitlements = response.values;
 
-    /**
-     * @ngdoc method
-     * @name getAbsences
-     * @methodOf LeaveService
-     * @returns {*}
-     */
-    factory.getAbsences = function () {
-      var deferred = $q.defer();
+                        deferred.resolve(entitlements);
+                    });
+            } else {
+                deferred.resolve(entitlements);
+            }
 
-      if (_.isEmpty(absences)) {
-        ContactDetails.get()
-          .then(function (response) {
-            var data = {
-              target_contact_id: response.id,
-              period_id: [1], // todo: make this dynamic
-              options: {'absence-range': 1},
-              sequential: 0 // this is important in order to get absences in correct format!
-            };
+            return deferred.promise;
+        };
 
-            return Api.post('Activity', data, 'getabsences');
-          })
-          .then(function (response) {
-            if (response.values.length === 0) return deferred.reject('No absences found');
+        /**
+         * @ngdoc method
+         * @name getAbsences
+         * @methodOf LeaveService
+         * @returns {*}
+         */
+        factory.getAbsences = function () {
+            var deferred = $q.defer();
 
-            absences = response.values;
+            if (_.isEmpty(absences)) {
+                ContactDetails.get()
+                    .then(function (response) {
+                        var data = {
+                            target_contact_id: response.id,
+                            period_id: [1], // todo: make this dynamic
+                            options: {'absence-range': 1},
+                            sequential: 0 // this is important in order to get absences in correct format!
+                        };
 
-            deferred.resolve(absences);
-          });
-      } else {
-        deferred.resolve(absences);
-      }
+                        return Api.post('Activity', data, 'getabsences');
+                    })
+                    .then(function (response) {
+                        if (response.values.length === 0) {
+                            return deferred.reject('No absences found');
+                        }
 
-      return deferred.promise;
-    };
+                        absences = response.values;
 
-    /**
-     * @ngdoc method
-     * @name getAbsenceTypes
-     * @methodOf LeaveService
-     */
-    factory.getAbsenceTypes = function () {
-      var deferred = $q.defer();
+                        deferred.resolve(absences);
+                    });
+            } else {
+                deferred.resolve(absences);
+            }
 
-      if (_.isEmpty(absenceTypes)) {
-        Api.get('HRAbsenceType').then(function (response) {
-          if (response.values.length === 0) throw new Error('No absence type not found');
+            return deferred.promise;
+        };
 
-          absenceTypes = response.values;
+        /**
+         * @ngdoc method
+         * @name getAbsenceTypes
+         * @methodOf LeaveService
+         */
+        factory.getAbsenceTypes = function () {
+            var deferred = $q.defer();
 
-          deferred.resolve(absenceTypes);
-        });
-      } else {
-        deferred.resolve(absenceTypes);
-      }
+            if (_.isEmpty(absenceTypes)) {
+                Api.get('HRAbsenceType').then(function (response) {
+                    if (response.values.length === 0) {
+                        throw new Error('No absence type not found');
+                    }
 
-      return deferred.promise;
-    };
+                    absenceTypes = response.values;
 
-    /////////////////////
-    // Private Members //
-    /////////////////////
+                    deferred.resolve(absenceTypes);
+                });
+            } else {
+                deferred.resolve(absenceTypes);
+            }
 
-    var absenceTypes = [], absences, entitlements;
+            return deferred.promise;
+        };
 
-    function init() {
-      var deferred = $q.defer();
+        /////////////////////
+        // Private Members //
+        /////////////////////
 
-      if (_.isEmpty(factory.getData())) {
-        factory.getAbsenceTypes()
-          .then(factory.getAbsences)
-          .then(factory.getEntitlement)
-          .then(assembleLeave)
-          .then(function () {
-            deferred.resolve();
-          })
-          .catch(function (response) {
-            $log.debug('An error has occurred', response);
-            deferred.reject(response);
-          });
-      } else {
-        deferred.resolve();
-      }
+        var absenceTypes = [], absences, entitlements;
 
-      return deferred.promise;
-    }
+        function init() {
+            var deferred = $q.defer();
 
-    function assembleLeave() {
-      assembleAbsenceTypes();
-      assembleEntitlements();
-      assembleAbsences();
-    }
+            if (_.isEmpty(factory.getData())) {
+                factory
+                    .getAbsenceTypes()
+                    .then(factory.getAbsences)
+                    .then(factory.getEntitlement)
+                    .then(assembleLeave)
+                    .then(function () {
+                        deferred.resolve();
+                    })
+                    .catch(function (response) {
+                        $log.debug('An error has occurred', response);
+                        deferred.reject(response);
+                    });
+            } else {
+                deferred.resolve();
+            }
 
-    function assembleAbsenceTypes() {
-      var data = factory.getData();
-
-      angular.forEach(absenceTypes, function (type) {
-        if (type.is_active !== '1') return;
-
-        var typeId = type.id;
-
-        if (!data.hasOwnProperty(typeId)) data[typeId] = {};
-
-        data[typeId].type_id = typeId;
-        data[typeId].title = type.title;
-        data[typeId].credit_activity_type_id = type.credit_activity_type_id ? type.credit_activity_type_id : null;
-        data[typeId].debit_activity_type_id = type.debit_activity_type_id ? type.debit_activity_type_id : null;
-
-        // Initialise remaining keys
-        data[typeId].entitled = 0;
-        data[typeId].taken = 0;
-      });
-
-      if (_.size(data)) factory.setData(data);
-    }
-
-    function assembleEntitlements() {
-      var data = factory.getData();
-
-      angular.forEach(entitlements, function (entitlement) {
-        var typeId = entitlement.type_id;
-
-        if (!data.hasOwnProperty(typeId)) return;
-
-        data[typeId].entitled = +entitlement.amount;
-      });
-
-      if (_.size(data)) factory.setData(data);
-    }
-
-    function assembleAbsences() {
-      var data = factory.getData();
-
-      var absenceActivityTypeLookup = {};
-      angular.forEach(absenceTypes, function (type) {
-        if (type.credit_activity_type_id) absenceActivityTypeLookup[type.credit_activity_type_id] = type.id;
-        if (type.debit_activity_type_id) absenceActivityTypeLookup[type.debit_activity_type_id] = type.id;
-      });
-
-      angular.forEach(absences, function (absence) {
-        var typeId;
-
-        if (absenceActivityTypeLookup.hasOwnProperty(absence.activity_type_id)) {
-          typeId = absenceActivityTypeLookup[absence.activity_type_id];
+            return deferred.promise;
         }
 
-        if (typeId) {
-          if (!data.hasOwnProperty(typeId)) return;
-
-          var hoursTaken = Math.ceil(absence.absence_range.duration / 60);
-
-          data[typeId].taken += Math.ceil(hoursTaken / 8);
+        function assembleLeave() {
+            assembleAbsenceTypes();
+            assembleEntitlements();
+            assembleAbsences();
         }
-      });
 
-      if (_.size(data)) factory.setData(data);
+        function assembleAbsenceTypes() {
+            var data = factory.getData();
+
+            angular.forEach(absenceTypes, function (type) {
+                if (type.is_active !== '1') {
+                    return;
+                }
+
+                var typeId = type.id;
+
+                if (!data.hasOwnProperty(typeId)) data[typeId] = {};
+
+                data[typeId].type_id = typeId;
+                data[typeId].title = type.title;
+                data[typeId].credit_activity_type_id = type.credit_activity_type_id ? type.credit_activity_type_id : null;
+                data[typeId].debit_activity_type_id = type.debit_activity_type_id ? type.debit_activity_type_id : null;
+
+                // Initialise remaining keys
+                data[typeId].entitled = 0;
+                data[typeId].taken = 0;
+            });
+
+            if (_.size(data)) {
+                factory.setData(data);
+            }
+        }
+
+        function assembleEntitlements() {
+            var data = factory.getData();
+
+            angular.forEach(entitlements, function (entitlement) {
+                var typeId = entitlement.type_id;
+
+                if (!data.hasOwnProperty(typeId)) {
+                    return;
+                }
+
+                data[typeId].entitled = +entitlement.amount;
+            });
+
+            if (_.size(data)) {
+                factory.setData(data);
+            }
+        }
+
+        function assembleAbsences() {
+            var data = factory.getData();
+            var absenceActivityTypeLookup = {};
+
+            angular.forEach(absenceTypes, function (type) {
+                if (type.credit_activity_type_id) {
+                    absenceActivityTypeLookup[type.credit_activity_type_id] = type.id;
+                }
+
+                if (type.debit_activity_type_id) {
+                    absenceActivityTypeLookup[type.debit_activity_type_id] = type.id;
+                }
+            });
+
+            angular.forEach(absences, function (absence) {
+                var typeId;
+
+                if (absenceActivityTypeLookup.hasOwnProperty(absence.activity_type_id)) {
+                    typeId = absenceActivityTypeLookup[absence.activity_type_id];
+                }
+
+                if (typeId) {
+                    if (!data.hasOwnProperty(typeId)) {
+                        return;
+                    }
+
+                    var hoursTaken = Math.ceil(absence.absence_range.duration / 60);
+
+                    data[typeId].taken += Math.ceil(hoursTaken / 8);
+                }
+            });
+
+            if (_.size(data)) factory.setData(data);
+        }
+
+        return factory;
     }
 
-    return factory;
-  }
-
-  services.factory('LeaveService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
+    services.factory('LeaveService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
 });

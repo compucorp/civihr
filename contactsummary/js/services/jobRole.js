@@ -5,103 +5,111 @@ define([
   'services/contract',
   'services/model'
 ], function (_, services) {
-  'use strict';
-
-  /**
-   * @param {ApiService} Api
-   * @param {ModelService} Model
-   * @param {ContractService} Contract
-   * @param $q
-   * @param $log
-   * @returns {ModelService|Object|*}
-   * @constructor
-   */
-  function JobRoleService($q, $log, Api, Model, Contract) {
-    $log.debug('Service: JobRoleService');
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
+    'use strict';
 
     /**
-     * @ngdoc service
-     * @name JobRoleService
+     * @param {ApiService} Api
+     * @param {ModelService} Model
+     * @param {ContractService} Contract
+     * @param $q
+     * @param $log
+     * @returns {ModelService|Object|*}
+     * @constructor
      */
-    //var factory = Model.createInstance();
-    var factory = {};
+    function JobRoleService($q, $log, Api, Model, Contract) {
+        $log.debug('Service: JobRoleService');
 
-    factory.collection = {
-      items: {},
-      insertItem: function (key, item) {
-        this.items[key] = item;
-      },
-      getItem: function (key) {
-        return this.items[key];
-      },
-      set: function (collection) {
-        this.items = collection;
-      },
-      get: function () {
-        return this.items;
-      }
-    };
+        ////////////////////
+        // Public Members //
+        ////////////////////
 
-    factory.getCollection = function () {
-      return this.collection.get();
-    };
+        /**
+         * @ngdoc service
+         * @name JobRoleService
+         */
+        //var factory = Model.createInstance();
+        var factory = {};
 
-    /**
-     * @ngdoc method
-     * @name get
-     * @methodOf JobRoleService
-     * @returns {*}
-     */
-    factory.get = function () {
-      /** @type {(JobRoleService|ModelService)} */
-      var self = this;
+        factory.collection = {
+            items: {},
+            insertItem: function (key, item) {
+                this.items[key] = item;
+            },
+            getItem: function (key) {
+                return this.items[key];
+            },
+            set: function (collection) {
+                this.items = collection;
+            },
+            get: function () {
+                return this.items;
+            }
+        };
 
-      return init().then(function () {
-        return self.getCollection();
-      });
-    };
+        factory.getCollection = function () {
+            return this.collection.get();
+        };
 
-    /////////////////////
-    // Private Members //
-    /////////////////////
+        /**
+         * @ngdoc method
+         * @name get
+         * @methodOf JobRoleService
+         * @returns {*}
+         */
+        factory.get = function () {
+            /** @type {(JobRoleService|ModelService)} */
+            var self = this;
 
-    function init() {
-      var deferred = $q.defer();
-
-      if (_.isEmpty(factory.collection.get())) {
-        Contract.get().then(function (response) {
-          var contractIds = [];
-          angular.forEach(response, function (contract) {
-            contractIds.push(contract.id);
-          });
-
-          Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
-            .then(function (response) {
-              if (response.values.length === 0) return $q.reject('No job roles found for contracts');
-
-              var roles = response.values.map(function (role) {
-                return {id: role.id, title: role.title, department: role.department, status: role.status};
-              });
-
-              factory.collection.set(roles);
-            })
-            .finally(function () {
-              deferred.resolve();
+            return init().then(function () {
+                return self.getCollection();
             });
-        });
-      } else {
-        deferred.resolve();
-      }
+        };
 
-      return deferred.promise;
+        /////////////////////
+        // Private Members //
+        /////////////////////
+
+        function init() {
+            var deferred = $q.defer();
+
+            if (_.isEmpty(factory.collection.get())) {
+                Contract.get().then(function (response) {
+                    var contractIds = [];
+
+                    angular.forEach(response, function (contract) {
+                        contractIds.push(contract.id);
+                    });
+
+                    Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
+                        .then(function (response) {
+                            if (response.values.length === 0) {
+                                return $q.reject('No job roles found for contracts');
+                            }
+
+                        var roles = response.values.map(function (role) {
+                            return {
+                                id: role.id,
+                                title: role.title,
+                                department: role.department,
+                                status: role.status
+                            };
+                        });
+
+                        factory.collection.set(roles);
+                    })
+                    .finally(function () {
+                        deferred.resolve();
+                    });
+                });
+            } else {
+                deferred.resolve();
+            }
+
+            return deferred.promise;
+        }
+
+        return factory;
     }
 
-    return factory;
-  }
-
-  services.factory('JobRoleService', ['$q', '$log', 'ApiService', 'ModelService', 'ContractService', JobRoleService]);
+    services.factory('JobRoleService', ['$q', '$log', 'ApiService', 'ModelService', 'ContractService', JobRoleService]);
 });
