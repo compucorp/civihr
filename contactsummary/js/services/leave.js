@@ -1,4 +1,10 @@
-define(['services/services', 'lodash'], function (services, _) {
+define([
+  'lodash',
+  'modules/services',
+  'services/api',
+  'services/model',
+  'services/contactDetails'
+], function (_, services) {
   'use strict';
 
   /**
@@ -10,7 +16,7 @@ define(['services/services', 'lodash'], function (services, _) {
    * @returns {ModelService|Object|*}
    * @constructor
    */
-  function LeaveService(Api, Model, ContactDetails, $q, $log) {
+  function LeaveService($q, $log, Api, Model, ContactDetails) {
     $log.debug('Service: LeaveService');
 
     ////////////////////
@@ -225,5 +231,5 @@ define(['services/services', 'lodash'], function (services, _) {
     return factory;
   }
 
-  services.factory('LeaveService', ['ApiService', 'ModelService', 'ContactDetailsService', '$q', '$log', LeaveService]);
+  services.factory('LeaveService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
 });

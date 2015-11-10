@@ -1,4 +1,10 @@
-define(['services/services', 'lodash'], function (services, _) {
+define([
+  'lodash',
+  'modules/services',
+  'services/api',
+  'services/contract',
+  'services/model'
+], function (_, services) {
   'use strict';
 
   /**
@@ -10,7 +16,7 @@ define(['services/services', 'lodash'], function (services, _) {
    * @returns {ModelService|Object|*}
    * @constructor
    */
-  function JobRoleService(Api, Model, Contract, $q, $log) {
+  function JobRoleService($q, $log, Api, Model, Contract) {
     $log.debug('Service: JobRoleService');
 
     ////////////////////
@@ -97,5 +103,5 @@ define(['services/services', 'lodash'], function (services, _) {
     return factory;
   }
 
-  services.factory('JobRoleService', ['ApiService', 'ModelService', 'ContractService', '$q', '$log', JobRoleService]);
+  services.factory('JobRoleService', ['$q', '$log', 'ApiService', 'ModelService', 'ContractService', JobRoleService]);
 });

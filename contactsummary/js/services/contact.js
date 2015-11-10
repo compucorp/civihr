@@ -1,11 +1,11 @@
 define([
-  'services/services',
+  'lodash',
+  'modules/services',
   'services/model',
   'services/leave',
   'services/contactDetails',
-  'services/contract',
-  'lodash'
-], function (services) {
+  'services/contract'
+], function (_, services) {
   'use strict';
 
   /**
@@ -18,7 +18,7 @@ define([
    * @returns {Object}
    * @constructor
    */
-  function ContactService(Model, ContactDetails, Leave, Contract, $q, $log) {
+  function ContactService($log, $q, Model, ContactDetails, Leave, Contract) {
     $log.debug('Service: ContactService');
 
     ////////////////////
@@ -93,5 +93,5 @@ define([
     }
   }
 
-  services.factory('ContactService', ['ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', '$q', '$log', ContactService]);
+  services.factory('ContactService', ['$log', '$q', 'ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', ContactService]);
 });

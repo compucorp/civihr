@@ -1,4 +1,7 @@
-define(['services/services', 'services/item'], function (services) {
+define([
+  'modules/services',
+  'services/item'
+], function (services) {
   'use strict';
 
   /**

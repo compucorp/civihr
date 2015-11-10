@@ -1,9 +1,8 @@
 define([
-  'controllers/controllers',
-  'services/leave',
-  'directives/donutChart',
-  'd3'
-], function (controllers) {
+  'd3',
+  'modules/controllers',
+  'services/leave'
+], function (d3, controllers) {
   'use strict';
 
   /**

@@ -1,4 +1,6 @@
-define(['angular', 'services/services'], function (angular, services) {
+define([
+    'modules/services'
+], function (services) {
     'use strict';
 
     services.factory('ApiService', ['$http', '$q', function ($http, $q) {

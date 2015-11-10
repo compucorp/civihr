@@ -15,7 +15,7 @@ define([
       ApiServiceMock, ModelServiceMock, ContactDetailsServiceMock,
       rootScope;
 
-    beforeEach(module('contactsummary', 'contactsummaryMocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ApiService', function () {

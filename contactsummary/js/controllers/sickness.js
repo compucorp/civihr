@@ -1,5 +1,5 @@
 define([
-  'controllers/controllers',
+  'modules/controllers',
   'services/leave'
 ], function (controllers) {
   'use strict';

@@ -1,4 +1,7 @@
-define(['services/services', 'moment', 'services/api', 'lodash'], function (services, moment) {
+define([
+  'moment',
+  'modules/services'
+], function (moment, services) {
   'use strict';
 
   /**
@@ -65,5 +68,5 @@ define(['services/services', 'moment', 'services/api', 'lodash'], function (serv
     return factory;
   }
 
-  services.factory('ItemService', ['ApiService', 'settings', '$q', '$log', ItemService]);
+  services.factory('ItemService', ItemService);
 });

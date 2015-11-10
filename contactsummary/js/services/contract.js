@@ -1,7 +1,9 @@
 define([
     'lodash',
-    'services/services',
-    'services/model'
+    'modules/services',
+    'services/api',
+    'services/contactDetails',
+    'services/model',
 ], function (_, services) {
     'use strict';
 
@@ -14,7 +16,7 @@ define([
      * @returns {ModelService|Object|ItemService|*}
      * @constructor
      */
-    function ContractService(Api, Model, ContactDetails, $q, $log) {
+    function ContractService($q, $log, Api, Model, ContactDetails) {
         $log.debug('Service: Contract Service');
 
         ////////////////////
@@ -245,5 +247,5 @@ define([
         return factory;
     }
 
-    services.factory('ContractService', ['ApiService', 'ModelService', 'ContactDetailsService', '$q', '$log', ContractService]);
+    services.factory('ContractService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', ContractService]);
 });

@@ -1,4 +1,11 @@
-define(['services/services', 'moment', 'services/model', 'services/api', 'lodash'], function (services, moment) {
+define([
+    'lodash',
+    'moment',
+    'modules/services',
+    'modules/settings',
+    'services/api',
+    'services/model'
+], function (_, moment, services) {
     'use strict';
 
     /**
@@ -10,7 +17,7 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
      * @returns {*|Object|ModelService}
      * @constructor
      */
-    function ContactDetailsService(Api, Model, settings, $q, $log) {
+    function ContactDetailsService($q, $log, Api, Model, settings) {
         $log.debug('Service: ContactDetailsService');
 
         ////////////////////
@@ -80,5 +87,5 @@ define(['services/services', 'moment', 'services/model', 'services/api', 'lodash
         return factory;
     }
 
-    services.factory('ContactDetailsService', ['ApiService', 'ModelService', 'settings', '$q', '$log', ContactDetailsService]);
+    services.factory('ContactDetailsService', ['$q', '$log', 'ApiService', 'ModelService', 'settings', ContactDetailsService]);
 });

@@ -1,4 +1,8 @@
-define(['services/services', 'lodash'], function (services, _) {
+define([
+  'lodash',
+  'modules/services',
+  'services/api'
+], function (_, services) {
   'use strict';
 
   /**
@@ -9,7 +13,7 @@ define(['services/services', 'lodash'], function (services, _) {
    * @returns {{}}
    * @constructor
    */
-  function KeyDatesService(Api, $q, $log) {
+  function KeyDatesService($q, $log, Api) {
     var factory = {};
     var data = [];
 
@@ -52,12 +56,7 @@ define(['services/services', 'lodash'], function (services, _) {
     };
 
     return factory;
-
-    /////////////////////
-    // Private Members //
-    /////////////////////
-
   }
 
-  services.factory('KeyDatesService', ['ApiService', '$q', '$log', KeyDatesService]);
+  services.factory('KeyDatesService', ['$q', '$log', 'ApiService', KeyDatesService]);
 });

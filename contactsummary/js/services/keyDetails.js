@@ -1,4 +1,10 @@
-define(['services/services', 'lodash', 'services/api', 'moment'], function (services) {
+define([
+  'lodash',
+  'moment',
+  'modules/services',
+  'modules/settings',
+  'services/api'
+], function (_, moment, services) {
   'use strict';
 
   /**

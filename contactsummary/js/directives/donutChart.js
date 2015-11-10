@@ -1,4 +1,7 @@
-define(['directives/directives', 'd3'], function (directives, d3) {
+define([
+  'd3',
+  'modules/directives'
+], function (d3, directives) {
     'use strict';
 
     function init($element) {
