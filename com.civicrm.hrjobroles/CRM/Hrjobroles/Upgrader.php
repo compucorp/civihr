@@ -18,6 +18,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
   public function upgrade_1002(){
     $this->installCostCentreTypes();
+
+    return TRUE;
   }
 
   /**
