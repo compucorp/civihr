@@ -22,7 +22,7 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
                 'sequential' => 1,
                 'id' => (int)$params['appraisal_cycle_id'],
             ));
-            if ((int)$appraisalCycle['is_error']) {
+            if (!empty($appraisalCycle['is_error']) && (int)$appraisalCycle['is_error']) {
                 throw new Exception("Cannot find Appraisal Cycle with 'id' = " . (int)$params['appraisal_cycle_id'] . '.');
             }
 

@@ -47,13 +47,21 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
             $populateData['grade_due'] = $params['grade_due'];
         }
         
-        $appraisal = new CRM_Appraisals_BAO_Appraisal();
-        $appraisal->appraisal_cycle_id = $params['id'];
-        $appraisal->find();
-        while ($appraisal->fetch()) {
-            echo 'a';
+        if (empty($populateData)) {
+            return false;
         }
-        
-        
+
+        $queryParams = array();
+        $queryFieldSet = array();
+        $i = 1;
+        foreach ($populateData as $field => $value) {
+            $queryFieldSet[] = $field . ' = %' . $i;
+            $queryParams[$i++] = array($value, 'String');
+        }
+        $query = 'UPDATE civicrm_appraisal SET ' . implode(', ', $queryFieldSet) . ' WHERE appraisal_cycle_id = %' . $i . ' AND due_changed = 0';
+        $queryParams[$i] = array($params['id'], 'Integer');
+        CRM_Core_DAO::executeQuery($query, $queryParams);
+
+        return true;
     }
 }

@@ -313,7 +313,7 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
         ) ,
         'meeting_date' => array(
           'name' => 'meeting_date',
-          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_STRING,//T_DATE + CRM_Utils_Type::T_TIME,
           'title' => ts('Meeting Date') ,
           'import' => true,
           'where' => 'civicrm_appraisal.meeting_date',
