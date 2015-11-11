@@ -12,14 +12,22 @@
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group">
                                     <label class="col-xs-12 col-sm-5 control-label control-label-lg">Role / Project Name:</label>
-                                    <div class="col-xs-12  col-sm-7">
+                                    <div class="col-xs-12 col-sm-7">
                                         <p class="form-control-static form-control-static-md">{{edit_data[job_roles_data.id]['title']}}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-5">
+                                <div class="form-group">
+                                    <label class="col-xs-12 col-sm-2 control-label control-label-lg">Dates:</label>
+                                    <div class="col-xs-12 col-sm-10">
+                                        <p class="form-control-static form-control-static-md">LOL!</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-2">
                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'status', job_roles_data.status)">
-                                    <div class="col-xs-12 col-sm-3 col-lg-2 control-label">Active:</div>
+                                    <div class="col-xs-12 col-sm-5 col-lg-3 control-label">Active:</div>
                                     <div class="col-xs-12 col-sm-3">
                                         <div class="form-control-static">
                                             <input class="{{prefix}}switch" name="status-switch-{{key}}-{{$index}}" id="status-switch-{{key}}-{{$index}}" type="checkbox" ng-init="edit_data[job_roles_data.id]['status'] = job_roles_data.status" ng-model="edit_data[job_roles_data.id]['status']" ng-true-value="10" ng-false-value="20" disabled="disabled">
