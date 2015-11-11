@@ -194,24 +194,15 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     parent::preProcess();
   }
 
+  /**
+   * Gets manager contact as defined on the Self Service portal
+   * @param $employeeID
+   * @return mixed
+   */
   public function getManagerContacts($employeeID) {
-    $managerContactID = array();
     if ($employeeID) {
-      $primaryJobContractId = $this->getPrimaryJobContractId($employeeID);
-      if ($primaryJobContractId) {
-        $result = civicrm_api3('HRJobRole', 'get', array(
-          'sequential' => 1,
-          'return' => "manager_contact_id",
-          'jobcontract_id' => $primaryJobContractId,
-        ));
-        foreach($result['values'] as $key => $val) {
-          if(array_key_exists('manager_contact_id',$val)) {
-            $managerContactID[] = $val['manager_contact_id'];
-          }
-        }
-      }
+      return _getManagerContacts($employeeID);
     }
-    return $managerContactID;
   }
   
   public function getPrimaryJobContractId($employeeID)

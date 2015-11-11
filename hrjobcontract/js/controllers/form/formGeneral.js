@@ -44,7 +44,7 @@ define(['controllers/controllers', 'moment'], function(controllers, moment){
             });
 
             $scope.$watch('entity.details.period_end_date', function(){
-                $scope.dpDateStartMax = entityDetails.period_end_date ? moment(entityDetails.period_end_date).subtract(1, 'day').format() : entityDetails.period_end_date = '';
+                $scope.dpDateStartMax = entityDetails.period_end_date ? moment(entityDetails.period_end_date).subtract(1, 'day').format() : '';
                 $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
             });
 
