@@ -38,7 +38,7 @@ define(['services/services'], function (services) {
 
                 CRM.api3('HrJobRoles', 'get', {
                     "sequential": 1,
-                    "return": "id,job_contract_id,title,description,status,funder,funder_val_type,percent_pay_funder,amount_pay_funder,cost_center,cost_center_val_type,percent_pay_cost_center,amount_pay_cost_center,level_type,location,region,department",
+                    "return": "id,job_contract_id,title,description,status,funder,funder_val_type,percent_pay_funder,amount_pay_funder,cost_center,cost_center_val_type,percent_pay_cost_center,amount_pay_cost_center,level_type,location,region,department,end_date,start_date",
                     "job_contract_id": {"IN": job_contract_ids}
                 }).done(function(result) {
 
