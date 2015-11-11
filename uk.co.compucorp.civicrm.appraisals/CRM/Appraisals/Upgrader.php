@@ -134,6 +134,12 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         );
         
         foreach ($criteria as $value => $label) {
+            $instance = new CRM_Appraisals_BAO_AppraisalCriteria();
+            $instance->value = $value;
+            $criteriaFound = $instance->find(true);
+            if ($criteriaFound) {
+                continue;
+            }
             $params = array(
                 'value' => $value,
                 'label' => $label,

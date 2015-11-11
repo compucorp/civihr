@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_appraisal` (
     `manager_appraisal_due` DATE DEFAULT NULL,
     `grade_due` DATE DEFAULT NULL,
     `due_changed` TINYINT(1) UNSIGNED DEFAULT 0,
-    `meeting_date` DATETIME DEFAULT NULL,
+    `meeting_date` DATE DEFAULT NULL,
     `meeting_completed` TINYINT(1) UNSIGNED DEFAULT 0,
     `approved_by_employee` TINYINT(1) UNSIGNED DEFAULT 0,
     `grade` int(3) UNSIGNED DEFAULT NULL,
