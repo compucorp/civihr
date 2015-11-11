@@ -1,5 +1,7 @@
 *~
 *.bak
+**/.sass-cache
+.DS_Store
 hrabsence/build
 hrjob/build
 bin/setup.conf

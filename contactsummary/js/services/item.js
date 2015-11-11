@@ -1,69 +1,74 @@
-define(['services/services', 'moment', 'services/api', 'lodash'], function (services, moment) {
-  'use strict';
-
-  /**
-   * @constructor
-   */
-  function ItemService() {
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
+define([
+    'moment',
+    'modules/services'
+], function (moment, services) {
+    'use strict';
 
     /**
-     * @ngdoc service
-     * @name ItemService
+     * @constructor
      */
-    var factory = {};
+    function ItemService() {
 
-    /**
-     * @ngdoc method
-     * @name createInstance
-     * @methodOf ItemService
-     * @returns {(Object|ItemService)}
-     */
-    factory.createInstance = function () {
-      var instance = Object.create(this);
-      instance.item = {};
+        ////////////////////
+        // Public Members //
+        ////////////////////
 
-      return instance;
-    };
+        /**
+         * @ngdoc service
+         * @name ItemService
+         */
+        var factory = {};
 
-    /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ItemService
-     * @returns {Object}
-     */
-    factory.get = function () {
-      return this.item;
-    };
+        /**
+         * @ngdoc method
+         * @name createInstance
+         * @methodOf ItemService
+         * @returns {(Object|ItemService)}
+         */
+        factory.createInstance = function () {
+            var instance = Object.create(this);
+            instance.item = {};
 
-    /**
-     * @ngdoc method
-     * @name set
-     * @methodOf ItemService
-     * @param data
-     */
-    factory.set = function (data) {
-      if (!angular.isObject(data)) throw new TypeError('Data must be of type Object');
+            return instance;
+        };
 
-      this.item = data;
-    };
+        /**
+         * @ngdoc method
+         * @name get
+         * @methodOf ItemService
+         * @returns {Object}
+         */
+        factory.get = function () {
+            return this.item;
+        };
 
-    /**
-     * @ngdoc method
-     * @name setKey
-     * @methodOf ItemService
-     * @param key
-     * @param value
-     */
-    factory.setKey = function (key, value) {
-      this.item[key] = value;
-    };
+        /**
+         * @ngdoc method
+         * @name set
+         * @methodOf ItemService
+         * @param data
+         */
+        factory.set = function (data) {
+            if (!angular.isObject(data)) {
+                throw new TypeError('Data must be of type Object');
+            }
 
-    return factory;
-  }
+            this.item = data;
+        };
 
-  services.factory('ItemService', ['ApiService', 'settings', '$q', '$log', ItemService]);
+        /**
+         * @ngdoc method
+         * @name setKey
+         * @methodOf ItemService
+         * @param key
+         * @param value
+         */
+        factory.setKey = function (key, value) {
+            this.item[key] = value;
+        };
+
+        return factory;
+    }
+
+    services.factory('ItemService', ItemService);
 });
