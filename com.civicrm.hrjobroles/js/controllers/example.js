@@ -437,7 +437,7 @@ define(['controllers/controllers'], function(controllers){
             function getOptionValues() {
 
                 // Set the option groups for which we want to get the values
-                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centers'];
+                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
                 ExampleService.getOptionValues(option_groups).then(function(data) {
 
@@ -502,7 +502,7 @@ define(['controllers/controllers'], function(controllers){
                                             }
 
                                             break;
-                                        case 'cost_centers':
+                                        case 'cost_centres':
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
