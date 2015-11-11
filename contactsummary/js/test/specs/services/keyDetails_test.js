@@ -4,7 +4,7 @@ define(['angularMocks', 'app', 'mocks/services', 'services/keyDetails'], functio
   xdescribe('KeyDetailsService', function () {
     var settingsMock;
 
-    beforeEach(module('contactsummary', 'contactsummaryMocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
     beforeEach(module(function ($provide) {
       $provide.value('settings', function () {

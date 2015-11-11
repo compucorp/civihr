@@ -12,7 +12,7 @@ define([
         ModelServiceMock, ContactDetailsServiceMock, ItemServiceMock, LeaveServiceMock,
         rootScope;
 
-      beforeEach(module('contactsummary', 'contactsummaryMocks'));
+      beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
       beforeEach(module(function ($provide) {
         $provide.factory('ModelService', function () {

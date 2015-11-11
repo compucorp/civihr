@@ -1,4 +1,7 @@
-define(['directives/directives', 'd3'], function (directives, d3) {
+define([
+    'd3',
+    'modules/directives'
+], function (d3, directives) {
     'use strict';
 
     function init($element) {
@@ -9,41 +12,41 @@ define(['directives/directives', 'd3'], function (directives, d3) {
 
     function constructArc() {
         return d3.svg.arc()
-          .innerRadius(this.radius - this.thickness)
-          .outerRadius(this.radius);
+            .innerRadius(this.radius - this.thickness)
+            .outerRadius(this.radius);
     }
 
     function constructChart(svg, arc, data) {
         var color = d3.scale.category20();
 
         return svg.selectAll('path')
-          .data(data)
-          .enter().append('path')
-          .attr('fill', function (d, i) {
-              return color(i);
-          })
-          .attr('class', function (d, i) {
-              return 'chart-color-' + i;
-          })
-          .attr('d', arc);
+            .data(data)
+            .enter().append('path')
+            .attr('fill', function (d, i) {
+                return color(i);
+            })
+            .attr('class', function (d, i) {
+                return 'chart-color-' + i;
+            })
+            .attr('d', arc);
     }
 
     function constructData() {
         var pieLayout = d3.layout.pie()
-          .sort(null)
-          .value(function (d) {
-              return d.value[this.itemKey];
-          }.bind(this));
+            .sort(null)
+            .value(function (d) {
+                return d.value[this.itemKey];
+            }.bind(this));
 
         return pieLayout(d3.entries(this.items));
     }
 
     function constructSvg($element) {
         return d3.select($element).append('svg')
-          .attr('width', this.width)
-          .attr('height', this.height)
-          .append('g')
-          .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')');
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .append('g')
+            .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')');
     }
 
 

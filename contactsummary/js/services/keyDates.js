@@ -1,63 +1,62 @@
-define(['services/services', 'lodash'], function (services, _) {
-  'use strict';
-
-  /**
-   * @ngdoc service
-   * @name KeyDatesService
-   * @param {ApiService} Api
-   * @param $log
-   * @returns {{}}
-   * @constructor
-   */
-  function KeyDatesService(Api, $q, $log) {
-    var factory = {};
-    var data = [];
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
+define([
+    'lodash',
+    'modules/services',
+'services/api'
+], function (_, services) {
+    'use strict';
 
     /**
-     * @ngdoc method
-     * @name KeyDatesService#get
-     * @returns {Array}
-     */
-    factory.get = function () {
-      var deferred = $q.defer();
+    * @ngdoc service
+    * @name KeyDatesService
+    * @param {ApiService} Api
+    * @param $log
+    * @returns {{}}
+    * @constructor
+    */
+    function KeyDatesService($q, $log, Api) {
+        var factory = {};
+        var data = [];
 
-      if (_.isEmpty(data)) {
-        //var data = {target_contact_id: 197, period_id: 1, options: {'absence-range': 1}};
-        //Api.post('Activity', data, 'getabsences')
-        //  .then(function (response) {
-        //    $log.debug('Absences', response);
-        //  });
+        ////////////////////
+        // Public Members //
+        ////////////////////
 
-        data.push({
-          label: 'Initial Join Date',
-          date: '23/23/23'
-        });
-        data.push({
-          label: 'Contract Start Date',
-          date: '23/23/23'
-        });
-        data.push({
-          label: 'Final Termination Date',
-          date: '23/23/23'
-        });
-      }
+        /**
+         * @ngdoc method
+         * @name KeyDatesService#get
+         * @returns {Array}
+         */
+        factory.get = function () {
+            var deferred = $q.defer();
 
-      deferred.resolve(data);
+            if (_.isEmpty(data)) {
+                //var data = {target_contact_id: 197, period_id: 1, options: {'absence-range': 1}};
+                //Api.post('Activity', data, 'getabsences')
+                //  .then(function (response) {
+                //    $log.debug('Absences', response);
+                //  });
 
-      return deferred.promise;
-    };
+                data.push({
+                    label: 'Initial Join Date',
+                    date: '23/23/23'
+                });
+                data.push({
+                    label: 'Contract Start Date',
+                    date: '23/23/23'
+                });
+                data.push({
+                    label: 'Final Termination Date',
+                    date: '23/23/23'
+                });
+            }
 
-    return factory;
+            deferred.resolve(data);
 
-    /////////////////////
-    // Private Members //
-    /////////////////////
+            return deferred.promise;
+        };
 
-  }
+        return factory;
+    }
 
-  services.factory('KeyDatesService', ['ApiService', '$q', '$log', KeyDatesService]);
+    services.factory('KeyDatesService', ['$q', '$log', 'ApiService', KeyDatesService]);
 });

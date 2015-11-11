@@ -1,7 +1,9 @@
 define([
     'lodash',
-    'services/services',
-    'services/model'
+    'modules/services',
+    'services/api',
+    'services/contactDetails',
+    'services/model',
 ], function (_, services) {
     'use strict';
 
@@ -14,7 +16,7 @@ define([
      * @returns {ModelService|Object|ItemService|*}
      * @constructor
      */
-    function ContractService(Api, Model, ContactDetails, $q, $log) {
+    function ContractService($q, $log, Api, Model, ContactDetails) {
         $log.debug('Service: Contract Service');
 
         ////////////////////
@@ -163,7 +165,7 @@ define([
                 'api.HRJobHour.get': { 'jobcontract_id': id }
             };
 
-            return Api.get('HRJobDetails', data)
+            return Api.post('HRJobDetails', data, 'get')
                 .then(function (response) {
                     if (response.values.length === 0) {
                         return $q.reject('No details found for contract revision with ID ' + id);
@@ -245,5 +247,5 @@ define([
         return factory;
     }
 
-    services.factory('ContractService', ['ApiService', 'ModelService', 'ContactDetailsService', '$q', '$log', ContractService]);
+    services.factory('ContractService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', ContractService]);
 });

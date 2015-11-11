@@ -1,9 +1,9 @@
 define([
-    'controllers/controllers',
     'moment',
+    'modules/controllers',
     'services/contract',
     'services/jobRole'
-], function (controllers, moment) {
+], function (moment, controllers) {
     'use strict';
 
     /**
