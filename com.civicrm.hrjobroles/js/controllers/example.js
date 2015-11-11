@@ -175,7 +175,7 @@ define(['controllers/controllers'], function(controllers){
                     $scope.edit_data[role_id][form_id] = data;
 
                 }
-            }
+            };
 
             // Check if the data are changed in the form (based on job role ID)
             $scope.isChanged = function(row_id) {
@@ -186,12 +186,12 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return false;
-            }
+            };
 
             // Set the is_edit value
             $scope.showSave = function(row_id) {
                 $scope.edit_data[row_id]['is_edit'] = true;
-            }
+            };
 
             /**
              * Check if we allow to submit the form
@@ -210,7 +210,7 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return false;
-            }
+            };
 
             // Saves the new Job Role
             $scope.saveNewRole = function(data) {
@@ -237,7 +237,7 @@ define(['controllers/controllers'], function(controllers){
             // Sets the add new job role form visibility
             $scope.add_new_role = function() {
                 $scope.add_new = true;
-            }
+            };
 
             // Hides the add new job role form
             $scope.cancelNewRole = function() {
@@ -245,7 +245,7 @@ define(['controllers/controllers'], function(controllers){
 
                 // Remove if any data are added / Reset form
                 delete $scope.edit_data['new_role_id'];
-            }
+            };
 
             // Removes the Role based on Role ID
             $scope.removeRole = function(row_id) {
@@ -269,7 +269,7 @@ define(['controllers/controllers'], function(controllers){
 
                 // Get job roles based on the passed Contact ID (refresh part of the page)
                 getJobRolesList($scope.$parent.contactId);
-            }
+            };
 
             // Select list for Row Types (used for Funders and Cost Centers)
             $scope.rowTypes = {};
@@ -293,7 +293,18 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return 'Not set';
-            }
+            };
+
+            $scope.getCostLabel = function(id) {
+                var label = '';
+                angular.forEach($scope.CostCentreList, function(v, k){
+                    if(v.id == id){
+                        label = v.title;
+                    }
+                });
+
+                return label;
+            };
 
             // Update funder type scope on request
             $scope.updateAdditionalRowType = function(role_id, row_type, key, data) {
@@ -309,7 +320,7 @@ define(['controllers/controllers'], function(controllers){
                     $scope.edit_data[role_id]['funders'][key]['type'] = data;
                 }
 
-            }
+            };
 
             // Add additional rows (funder or cost centres)
             $scope.addAdditionalRow = function(role_id, row_type) {
@@ -426,7 +437,7 @@ define(['controllers/controllers'], function(controllers){
             function getOptionValues() {
 
                 // Set the option groups for which we want to get the values
-                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type'];
+                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
                 ExampleService.getOptionValues(option_groups).then(function(data) {
 
@@ -447,6 +458,9 @@ define(['controllers/controllers'], function(controllers){
 
                             // Pass the level option group list to the scope
                             var LevelList = {};
+
+                            // Pass the Cost Centers option group list to the scope
+                            var CostCentreList = {};
 
                             angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
@@ -488,6 +502,15 @@ define(['controllers/controllers'], function(controllers){
                                             }
 
                                             break;
+                                        case 'cost_centres':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the contact list
+                                                CostCentreList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+
+                                            }
+
+                                            break;
                                     }
 
 
@@ -507,6 +530,10 @@ define(['controllers/controllers'], function(controllers){
 
                             // Store the Level types what we can reuse later
                             job_roles.LevelsData = LevelList;
+
+                            // Store the Level types what we can reuse later
+                            $scope.CostCentreList = CostCentreList;
+                            $log.info($scope.CostCentreList);
 
                             job_roles.message_type = 'alert-success';
                             job_roles.message = 'Option values list OK!';

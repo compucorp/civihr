@@ -10,9 +10,14 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
   /**
    * Example: Run an external SQL script when the module is installed
-   *
+   */
   public function install() {
-    $this->executeSqlFile('sql/myinstall.sql');
+//    $this->executeSqlFile('sql/myinstall.sql');
+    $this->installCostCentreTypes();
+  }
+
+  public function upgrade_1002(){
+    $this->installCostCentreTypes();
   }
 
   /**
@@ -112,4 +117,39 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     return TRUE;
   } // */
 
+  /**
+   * Creates new Option Group for Cost Centres
+   */
+  public function installCostCentreTypes() {
+
+    function save($val, $key, $id){
+      civicrm_api3('OptionValue', 'create', array(
+          'sequential' => 1,
+          'option_group_id' => $id,
+          'label' => $val,
+          'value' => $val,
+          'name' => $val,
+      ));
+    }
+
+    try{
+      $result = civicrm_api3('OptionGroup', 'create', array(
+          'sequential' => 1,
+          'name' => "cost_centres",
+          'title' => "Cost Centres",
+      ));
+
+      $id = $result['id'];
+
+      $options = array(
+          'Other' => 'Other'
+      );
+
+      array_walk($options, 'save', $id);
+
+    } catch(Exception $e){
+      // OptionGroup already exists
+      // Skip this
+    }
+  }
 }

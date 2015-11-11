@@ -1,4 +1,3 @@
-
 <div class="panel panel-default">
     <div class="panel-heading {{prefix}}panel-action">
         <div class="row form-horizontal">
@@ -148,7 +147,7 @@
                                 </table>
                             </form>
                         </tab>
-                        <tab heading="Cost Centers">
+                        <tab heading="Cost Centres">
                             <form editable-form name="tableformcc" onaftersave="saveTable()" oncancel="cancel()">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
@@ -166,7 +165,7 @@
                                 <table class="table table-striped {{prefix}}table-sort">
                                     <thead>
                                     <tr>
-                                        <th style="width:40%">Cost Centre</th>
+                                        <th style="width:40%">Cost Centres</th>
                                         <th style="width:15%">Type</th>
                                         <th style="width:15%">% Amount</th>
                                         <th style="width:15%">Absolute Amount</th>
@@ -176,9 +175,9 @@
                                     <tbody>
                                     <tr ng-repeat="(key, cost_centre) in edit_data['new_role_id']['cost_centers']">
                                         <td>
-                                            <!-- editable cost centre (text with validation) -->
-                                            <span editable-text="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
-                                                {{ cost_centre.cost_centre_id || 'empty' }}
+                                            <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                                            <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCentreList">
+                                                {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                             </span>
                                         </td>
                                         <td>
@@ -209,7 +208,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                                            <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Center</a>
+                                            <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
                                         </td>
                                     </tr>
                                     </tbody>
