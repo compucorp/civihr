@@ -42,4 +42,33 @@ class CRM_Hrjobcontract_JobContractDates
         
         return true;
     }
+    
+    public static function rewriteContactIds()
+    {
+        $contractTable = CRM_Core_DAO::checkTableExists('civicrm_hrjobcontract');
+        $datesTable = CRM_Core_DAO::checkTableExists('civicrm_value_jobcontract_dates_13');
+        
+        if (!$contractTable || !$datesTable) {
+            return false;
+        }
+        
+        $dates = CRM_Core_DAO::executeQuery('SELECT id, contract_id FROM civicrm_value_jobcontract_dates_13 ORDER BY id ASC');
+        while ($dates->fetch())
+        {
+            $contract = CRM_Core_DAO::executeQuery('SELECT contact_id FROM civicrm_hrjobcontract WHERE id = %1',
+                array(1 => array($dates->contract_id, 'Integer'))
+            );
+            if ($contract->fetch())
+            {
+                CRM_Core_DAO::executeQuery('UPDATE civicrm_value_jobcontract_dates_13 SET entity_id = %1 WHERE id = %2',
+                    array(
+                        1 => array($contract->contact_id, 'Integer'),
+                        2 => array($dates->id, 'Integer'),
+                    )
+                );
+            }
+        }
+        
+        return true;
+    }
 }
