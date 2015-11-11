@@ -1,11 +1,13 @@
-define(['mocks/module'], function (module) {
-  'use strict';
+define([
+    'modules/mocks'
+], function (mocks) {
+    'use strict';
 
-  var settingsMock = {
-    pathBaseUrl: '',
-    pathTpl: '',
-    contactId: 123
-  };
+    var settingsMock = {
+        pathBaseUrl: '',
+        pathTpl: '',
+        contactId: 123
+    };
 
-  module.constant('settingsMock', settingsMock);
+    mocks.constant('settingsMock', settingsMock);
 });

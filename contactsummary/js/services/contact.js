@@ -1,97 +1,97 @@
 define([
-  'services/services',
-  'services/model',
-  'services/leave',
-  'services/contactDetails',
-  'services/contract',
-  'lodash'
-], function (services) {
-  'use strict';
-
-  /**
-   * @param {ModelService} Model
-   * @param ContactDetails
-   * @param {LeaveService} Leave
-   * @param {ContractService} Contract
-   * @param $q
-   * @param $log
-   * @returns {Object}
-   * @constructor
-   */
-  function ContactService(Model, ContactDetails, Leave, Contract, $q, $log) {
-    $log.debug('Service: ContactService');
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
+    'lodash',
+    'modules/services',
+    'services/model',
+    'services/leave',
+    'services/contactDetails',
+    'services/contract'
+], function (_, services) {
+    'use strict';
 
     /**
-     * @ngdoc service
-     * @name ContactService
+     * @param {ModelService} Model
+     * @param ContactDetails
+     * @param {LeaveService} Leave
+     * @param {ContractService} Contract
+     * @param $q
+     * @param $log
+     * @returns {Object}
+     * @constructor
      */
-    var factory = Model.createInstance();
+    function ContactService($log, $q, Model, ContactDetails, Leave, Contract) {
+        $log.debug('Service: ContactService');
 
-    /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ContactService
-     * @returns {*}
-     */
-    factory.get = function () {
-      /** @type {(ContactService|ModelService)} */
-      var self = this;
+        ////////////////////
+        // Public Members //
+        ////////////////////
 
-      return init().then(function () {
-        return self.getData();
-      });
-    };
+        /**
+         * @ngdoc service
+         * @name ContactService
+         */
+        var factory = Model.createInstance();
 
-    return factory;
+        /**
+         * @ngdoc method
+         * @name get
+         * @methodOf ContactService
+         * @returns {*}
+         */
+        factory.get = function () {
+            /** @type {(ContactService|ModelService)} */
+            var self = this;
 
-    /////////////////////
-    // Private Members //
-    /////////////////////
+            return init().then(function () {
+                return self.getData();
+            });
+        };
 
-    function init() {
-      var deferred = $q.defer();
+        return factory;
 
-      if (_.isEmpty(factory.getData())) {
-        initContactDetails()
-          .then(initContract)
-          .then(initLeave)
-          .then(function () {
-            deferred.resolve();
-          });
-      } else {
-        deferred.resolve();
-      }
+        /////////////////////
+        // Private Members //
+        /////////////////////
 
-      return deferred.promise;
+        function init() {
+            var deferred = $q.defer();
+
+            if (_.isEmpty(factory.getData())) {
+                initContactDetails()
+                    .then(initContract)
+                    .then(initLeave)
+                    .then(function () {
+                        deferred.resolve();
+                    });
+            } else {
+                deferred.resolve();
+            }
+
+            return deferred.promise;
+        }
+
+        function initContactDetails() {
+            return ContactDetails.get()
+                .then(function (response) {
+                    factory.setDataKey('id', response.id);
+                    factory.setDataKey('dateOfBirth', response.dateOfBirth);
+                    factory.setDataKey('age', response.age);
+                });
+        }
+
+        function initContract() {
+            return Contract.get()
+                .then(function (response) {
+                    factory.setDataKey('contract', response);
+                });
+        }
+
+        function initLeave() {
+            return Leave.get()
+                .then(function (response) {
+                    factory.setDataKey('leave', response);
+                });
+        }
     }
 
-    function initContactDetails() {
-      return ContactDetails.get()
-        .then(function (response) {
-          factory.setDataKey('id', response.id);
-          factory.setDataKey('dateOfBirth', response.dateOfBirth);
-          factory.setDataKey('age', response.age);
-        });
-    }
-
-    function initContract() {
-      return Contract.get()
-        .then(function (response) {
-          factory.setDataKey('contract', response);
-        });
-    }
-
-    function initLeave() {
-      return Leave.get()
-        .then(function (response) {
-          factory.setDataKey('leave', response);
-        });
-    }
-  }
-
-  services.factory('ContactService', ['ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', '$q', '$log', ContactService]);
+    services.factory('ContactService', ['$log', '$q', 'ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', ContactService]);
 });
