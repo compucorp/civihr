@@ -17,13 +17,29 @@ define([
         var self = this;
 
         this.taken = 0;
+        this.takenPreviously = 0;
+        this.staffAverage = 0;
         this.ready = false;
 
-        Leave.get()
+        Leave.getCurrent()
             .then(function (response) {
                 angular.forEach(response, function (leave) {
                     if (leave.title === 'Sick') {
                         self.taken = leave.taken;
+                    }
+                });
+
+                return Leave.getStaffAverage('sick');
+            })
+            .then(function (response) {
+                self.staffAverage = response;
+
+                return Leave.getPrevious();
+            })
+            .then(function (response) {
+                angular.forEach(response, function (leave) {
+                    if (leave.title === 'Sick') {
+                        self.takenPreviously = leave.taken;
                     }
                 });
             })

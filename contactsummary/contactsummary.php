@@ -110,7 +110,7 @@ function contactsummary_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function contactsummary_civicrm_angularModules(&$angularModules) {
-_contactsummary_civix_civicrm_angularModules($angularModules);
+  _contactsummary_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -140,10 +140,10 @@ function contactsummary_civicrm_pageRun($page) {
  * Implementation of hook_civicrm_tabs
  */
 function contactsummary_civicrm_tabs(&$tabs) {
-    $tabs[] = Array(
-        'id'        => 'contactsummary',
-        'url'       => CRM_Utils_System::url('civicrm/contact-summary'),
-        'title'     => ts('Contact Summary'),
-        'weight'    => 1
-    );
+  $tabs[] = Array(
+    'id'     => 'contactsummary',
+    'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
+    'title'  => ts('Contact Summary'),
+    'weight' => 1
+  );
 }

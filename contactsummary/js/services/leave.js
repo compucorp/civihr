@@ -8,15 +8,15 @@ define([
     'use strict';
 
     /**
-     * @param {ApiService} Api
-     * @param {ModelService} Model
-     * @param {ContactDetailsService} ContactDetails
-     * @param $q
-     * @param $log
-     * @returns {ModelService|Object|*}
-     * @constructor
-     */
-    function LeaveService($q, $log, Api, Model, ContactDetails) {
+    * @param {ApiService} Api
+    * @param {ModelService} Model
+    * @param {ContactDetailsService} ContactDetails
+    * @param $q
+    * @param $log
+    * @returns {ModelService|Object|*}
+    * @constructor
+    */
+    function LeaveService($q, $log, $filter, Api, Model, ContactDetails) {
         $log.debug('Service: LeaveService');
 
         ////////////////////
@@ -27,7 +27,28 @@ define([
          * @ngdoc service
          * @name LeaveService
          */
-        var factory = Model.createInstance();
+        var factory = {};
+
+        factory.collection = {
+            items: {},
+            insertItem: function (key, item) {
+                this.items[key] = item;
+            },
+            getItem: function (key) {
+                return this.items[key];
+            },
+            set: function (collection) {
+                this.items = collection;
+            },
+            get: function () {
+                return this.items;
+            }
+        };
+
+        factory.getCollection = function () {
+            return this.collection.get();
+        };
+
 
         /**
          * @ngdoc method
@@ -39,9 +60,51 @@ define([
             /** @type {(LeaveService|ModelService)} */
             var self = this;
 
-            return init().then(function () {
+            return init(periodId).then(function () {
                 return self.getData();
             });
+        };
+
+        factory.getCurrent = function () {
+            /** @type {(LeaveService|ModelService)} */
+            var self = this;
+            var deferred = $q.defer(), periodId;
+
+            getCurrentPeriod()
+                .then(function (response) {
+                    if (response.hasOwnProperty('id')) {
+                        periodId = response.id;
+
+                        init(periodId).then(function () {
+                            deferred.resolve(self.collection.getItem(periodId));
+                        })
+                    } else {
+                        deferred.resolve({});
+                    }
+                });
+
+            return deferred.promise;
+        };
+
+        factory.getPrevious = function () {
+            /** @type {(LeaveService|ModelService)} */
+            var self = this;
+            var deferred = $q.defer(), periodId;
+
+            getPreviousPeriod()
+                .then(function (response) {
+                    if (response.hasOwnProperty('id')) {
+                        periodId = response.id;
+
+                        init(periodId).then(function () {
+                            deferred.resolve(self.collection.getItem(periodId));
+                        })
+                    } else {
+                        deferred.resolve({});
+                    }
+                });
+
+            return deferred.promise;
         };
 
         /**
@@ -49,26 +112,28 @@ define([
          * @name getEntitlement
          * @methodOf LeaveService
          */
-        factory.getEntitlement = function () {
+        factory.getEntitlement = function (periodId) {
             var deferred = $q.defer();
 
-            if (_.isEmpty(entitlements)) {
-                ContactDetails.get()
-                    .then(function (response) {
-                        return Api.get('HRAbsenceEntitlement', {contact_id: response.id, options: {'absence-range': 1}});
-                    })
-                    .then(function (response) {
-                        if (response.values.length === 0) {
-                            return deferred.reject('No absence entitlement found');
-                        }
+            ContactDetails.get()
+                .then(function (response) {
+                    var data = {
+                        contact_id: response.id,
+                        period_id: periodId,
+                        options: { 'absence-range': 1 }
+                    };
 
-                        entitlements = response.values;
+                    return Api.get('HRAbsenceEntitlement', data);
+                })
+                .then(function (response) {
+                    if (response.values.length === 0) {
+                        return {};
+                    }
 
-                        deferred.resolve(entitlements);
-                    });
-            } else {
-                deferred.resolve(entitlements);
-            }
+                    entitlements = response.values;
+
+                    deferred.resolve(entitlements);
+                });
 
             return deferred.promise;
         };
@@ -79,36 +144,40 @@ define([
          * @methodOf LeaveService
          * @returns {*}
          */
-        factory.getAbsences = function () {
+        factory.getAbsences = function (periodId) {
             var deferred = $q.defer();
+            var contactId;
 
-            if (_.isEmpty(absences)) {
-                ContactDetails.get()
-                    .then(function (response) {
-                        var data = {
-                            target_contact_id: response.id,
-                            period_id: [1], // todo: make this dynamic
-                            options: {'absence-range': 1},
-                            sequential: 0 // this is important in order to get absences in correct format!
-                        };
+            ContactDetails.get()
+                .then(function (response) {
+                    contactId = response.id;
 
-                        return Api.post('Activity', data, 'getabsences');
-                    })
-                    .then(function (response) {
-                        if (response.values.length === 0) {
-                            return deferred.reject('No absences found');
-                        }
+                    return getPeriods();
+                })
+                .then(function (response) {
+                    var data = {
+                        target_contact_id: contactId,
+                        period_id: [periodId],
+                        options: {'absence-range': 1},
+                        sequential: 0 // this is *important* in order to get absences in correct format!
+                    };
 
-                        absences = response.values;
+                    return Api.post('Activity', data, 'getabsences');
+                })
+                .then(function (response) {
+                    if (response.values.length === 0) {
+                        return deferred.reject('No absences found');
+                    }
 
-                        deferred.resolve(absences);
-                    });
-            } else {
-                deferred.resolve(absences);
-            }
+                    absences = response.values;
+
+                    deferred.resolve(absences);
+                });
 
             return deferred.promise;
         };
+
+        //var deferreds = {};
 
         /**
          * @ngdoc method
@@ -116,6 +185,11 @@ define([
          * @methodOf LeaveService
          */
         factory.getAbsenceTypes = function () {
+            // todo
+            //if (!deferreds.hasOwnProperty('absenceTypes')) {
+            //  deferreds.absenceTypes = $q.defer();
+            //}
+
             var deferred = $q.defer();
 
             if (_.isEmpty(absenceTypes)) {
@@ -135,21 +209,102 @@ define([
             return deferred.promise;
         };
 
+        /**
+         * @ngdoc method
+         * @name getStaffAverage
+         * @methodOf LeaveService
+         * @returns {*}
+         */
+        factory.getStaffAverage = function (type) {
+            var deferred = $q.defer(), average = 0;
+
+            getCurrentPeriod()
+                .then(function (response) {
+                    if (response.hasOwnProperty('id')) {
+                        var periodId = response.id;
+
+                        Api.post('ContactSummary', {absence_types: type, period_id: periodId}, 'getabsenceaggregate')
+                            .then(function (response) {
+                                if (response.values.length === 0) {
+                                    return $q.reject('Staff average not returned');
+                                }
+
+                                var hours = Math.ceil(response.values[0].result / 60);
+
+                                average = Math.ceil(hours / 8);
+
+                                deferred.resolve(average);
+                            });
+                    } else {
+                        deferred.resolve(average);
+                    }
+                });
+
+            return deferred.promise;
+        };
+
+        factory.getDepartmentAverage = function () {
+            // todo: need to revisit this once it has been decided which department to show the average for.
+        };
+
         /////////////////////
         // Private Members //
         /////////////////////
 
-        var absenceTypes = [], absences, entitlements;
+        var absenceTypes = [], absences, entitlements, periods;
 
-        function init() {
+        function getCurrentPeriod() {
+            return getPeriods()
+                .then(function (response) {
+                    var period = {}, now = moment();
+
+                    for (var i = 0; i < response.length; i++) {
+                        var start = moment(response[i].start_date, 'YYYY-MM-DD HH:mm:ss'),
+                        end = moment(response[i].end_date, 'YYYY-MM-DD HH:mm:ss');
+
+                        if (now.diff(start) >= 0 && now.diff(end) <= 0) {
+                            period = response[i];
+                        }
+                    }
+
+                    return period;
+                });
+        }
+
+        function getPreviousPeriod() {
+            var currentPeriod, previousPeriod = {};
+
+            return getCurrentPeriod()
+                .then(function (response) {
+                    currentPeriod = response;
+
+                    return getPeriods();
+                })
+                .then(function (response) {
+                    var currentPeriodIndex = response.indexOf(currentPeriod);
+
+                    if (currentPeriodIndex !== -1 && currentPeriodIndex > 0) {
+                        previousPeriod = response[currentPeriodIndex - 1];
+                    }
+
+                    return previousPeriod;
+                });
+        }
+
+        function init(periodId) {
             var deferred = $q.defer();
 
-            if (_.isEmpty(factory.getData())) {
-                factory
-                    .getAbsenceTypes()
-                    .then(factory.getAbsences)
-                    .then(factory.getEntitlement)
-                    .then(assembleLeave)
+            if (_.isEmpty(factory.collection.getItem(periodId))) {
+                factory.getAbsenceTypes()
+                    .then(function () {
+                        return factory.getAbsences(periodId);
+                    })
+                    .then(function () {
+                        return factory.getEntitlement(periodId);
+                    })
+                    .then(function () {
+                        return assembleLeave(periodId);
+                    })
                     .then(function () {
                         deferred.resolve();
                     })
@@ -164,14 +319,41 @@ define([
             return deferred.promise;
         }
 
-        function assembleLeave() {
-            assembleAbsenceTypes();
-            assembleEntitlements();
-            assembleAbsences();
+        function getPeriods() {
+            var deferred = $q.defer();
+
+            if (_.isEmpty(periods)) {
+                Api.get('HRAbsencePeriod')
+                    .then(function (response) {
+                        if (response.values.length === 0) {
+                            return deferred.reject('No absence periods found');
+                        }
+
+                        periods = response.values;
+                        periods = $filter('orderBy')(periods, 'start_date');
+                        console.log('Periods in order', periods);
+
+                        deferred.resolve(periods);
+                    })
+                    .catch(function (response) {
+                        $log.debug('An error has occured', response);
+                        deferred.reject(response);
+                    });
+            } else {
+                deferred.resolve(periods);
+            }
+
+            return deferred.promise;
         }
 
-        function assembleAbsenceTypes() {
-            var data = factory.getData();
+        function assembleLeave(periodId) {
+            assembleAbsenceTypes(periodId);
+            assembleEntitlements(periodId);
+            assembleAbsences(periodId);
+        }
+
+        function assembleAbsenceTypes(periodId) {
+            var data = factory.collection.getItem(periodId) || {};
 
             angular.forEach(absenceTypes, function (type) {
                 if (type.is_active !== '1') {
@@ -192,13 +374,13 @@ define([
                 data[typeId].taken = 0;
             });
 
-            if (_.size(data)) {
-                factory.setData(data);
-            }
+            factory.collection.insertItem(periodId, data);
+
+            //if (_.size(data)) factory.setData(data); // todo
         }
 
-        function assembleEntitlements() {
-            var data = factory.getData();
+        function assembleEntitlements(periodId) {
+            var data = factory.collection.getItem(periodId);
 
             angular.forEach(entitlements, function (entitlement) {
                 var typeId = entitlement.type_id;
@@ -210,13 +392,13 @@ define([
                 data[typeId].entitled = +entitlement.amount;
             });
 
-            if (_.size(data)) {
-                factory.setData(data);
-            }
+            factory.collection.insertItem(periodId, data);
+
+            //if (_.size(data)) factory.setData(data); // todo
         }
 
-        function assembleAbsences() {
-            var data = factory.getData();
+        function assembleAbsences(periodId) {
+            var data = factory.collection.getItem(periodId);
             var absenceActivityTypeLookup = {};
 
             angular.forEach(absenceTypes, function (type) {
@@ -237,9 +419,7 @@ define([
                 }
 
                 if (typeId) {
-                    if (!data.hasOwnProperty(typeId)) {
-                        return;
-                    }
+                    if (!data.hasOwnProperty(typeId)) return;
 
                     var hoursTaken = Math.ceil(absence.absence_range.duration / 60);
 
@@ -247,11 +427,13 @@ define([
                 }
             });
 
-            if (_.size(data)) factory.setData(data);
+            factory.collection.insertItem(periodId, data);
+
+            //if (_.size(data)) factory.setData(data); // todo
         }
 
         return factory;
     }
 
-    services.factory('LeaveService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
+    services.factory('LeaveService', ['$q', '$log', '$filter', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
 });

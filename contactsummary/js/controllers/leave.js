@@ -23,7 +23,7 @@ define([
         this.ready = false;
         this.chartColors = d3.scale.category20();
 
-        Leave.get()
+        Leave.getCurrent()
             .then(function (response) {
                 angular.forEach(response, function (leave) {
                     self.totalEntitlement += leave.entitled;
