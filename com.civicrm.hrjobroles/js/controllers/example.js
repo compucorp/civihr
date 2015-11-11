@@ -302,7 +302,7 @@ define(['controllers/controllers'], function(controllers){
 
                 // Get job roles based on the passed Contact ID (refresh part of the page)
                 getJobRolesList($scope.$parent.contactId);
-            }
+            };
 
             // Select list for Row Types (used for Funders and Cost Centers)
             $scope.rowTypes = {};
@@ -326,7 +326,7 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return 'Not set';
-            }
+            };
 
             // Update funder type scope on request
             $scope.updateAdditionalRowType = function(role_id, row_type, key, data) {

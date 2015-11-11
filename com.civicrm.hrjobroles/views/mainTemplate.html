@@ -11,18 +11,14 @@
                         <div class="row form-horizontal">
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group">
-                                    <label class="col-xs-12 col-sm-5 control-label control-label-lg">Role / Project Name:</label>
-                                    <div class="col-xs-12 col-sm-7">
-                                        <p class="form-control-static form-control-static-md">{{edit_data[job_roles_data.id]['title']}}</p>
-                                    </div>
+                                    <label class="control-label control-label-lg">Role / Project Name:</label>
+                                    <span class="form-control-static form-control-static-md">{{edit_data[job_roles_data.id]['title']}}</span>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group">
-                                    <label class="col-xs-12 col-sm-2 control-label control-label-lg">Dates:</label>
-                                    <div class="col-xs-12 col-sm-10">
-                                        <p class="form-control-static form-control-static-md">LOL!</p>
-                                    </div>
+                                    <label class="control-label control-label-lg">Dates:</label>
+                                    <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | date:"dd/MM/yyyy"}} - {{job_roles_data['end_date'] | date:"dd/MM/yyyy"}}</span>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-2">
@@ -88,10 +84,20 @@
                                                                         <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['job_contract_id']" e-name="contract" e-ng-options="k as v.title for (k, v) in jobroles.contractsData">{{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}</p>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'level', job_roles_data.level_type)">
-                                                                    <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+
+                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'start_date', job_roles_data.start_date)">
+                                                                    <!-- editable contract select list + validation -->
+                                                                    <label for="contract" class="col-xs-4 control-label">Start Date:</label>
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['level']" e-name="newLevel" e-ng-options="k as v.title for (k, v) in jobroles.LevelsData">{{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static" editable-bsdate="edit_data[job_roles_data.id]['start_date']" e-name="start_date" e-datepicker-popup="dd-MMMM-yyyy">{{edit_data[job_roles_data.id]['start_date'] | date:"dd/MM/yyyy"}}</p>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'end_date', job_roles_data.end_date)">
+                                                                    <!-- editable contract select list + validation -->
+                                                                    <label for="contract" class="col-xs-4 control-label">End Date:</label>
+                                                                    <div class="col-xs-8">
+                                                                        <p class="form-control-static" editable-bsdate="edit_data[job_roles_data.id]['end_date']" e-name="end_date" e-datepicker-popup="dd-MMMM-yyyy">{{edit_data[job_roles_data.id]['end_date'] | date:"dd/MM/yyyy"}}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -112,6 +118,12 @@
                                                                     <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
                                                                     <div class="col-xs-8">
                                                                         <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['department']" e-name="newDepartment" e-ng-options="k as v.title for (k, v) in jobroles.DepartmentsData">{{jobroles.DepartmentsData[edit_data[job_roles_data.id]['department']]['title'] || '-'}}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'level', job_roles_data.level_type)">
+                                                                    <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+                                                                    <div class="col-xs-8">
+                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['level']" e-name="newLevel" e-ng-options="k as v.title for (k, v) in jobroles.LevelsData">{{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}}</p>
                                                                     </div>
                                                                 </div>
                                                             </div>
