@@ -1,8 +1,10 @@
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
 <div ng-controller="ExampleCtrl as jobroles">
     <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
     <div class="alert alert-warning" ng-show="jobroles.empty">{{jobroles.empty}}</div>
     <div ng-repeat="(key, job_roles) in jobroles.getData | groupBy: 'status'">
         <h3 class="header-bar header-bar-primary" ng-show="key == 10">Current Roles and Projects:</h3>
+
         <h3 class="header-bar header-bar-danger" ng-show="key == 20">Past Roles and Projects:</h3>
         <ul class="{{prefix}}list-role">
             <li class="{{prefix}}list-role-item" ng-repeat="job_roles_data in job_roles">
@@ -18,15 +20,20 @@
                             <div class="col-xs-12 col-sm-5">
                                 <div class="form-group">
                                     <label class="control-label control-label-lg">Dates:</label>
-                                    <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | date:"dd/MM/yyyy"}} - {{job_roles_data['end_date'] | date:"dd/MM/yyyy"}}</span>
+                                    <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | customDate}} - {{job_roles_data['end_date'] | customDate}}</span>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-2">
-                                <div class="form-group" ng-init="initData(job_roles_data.id, 'status', job_roles_data.status)">
+                                <div class="form-group"
+                                     ng-init="initData(job_roles_data.id, 'status', job_roles_data.status)">
                                     <div class="col-xs-12 col-sm-5 col-lg-3 control-label">Active:</div>
                                     <div class="col-xs-12 col-sm-3">
                                         <div class="form-control-static">
-                                            <input class="{{prefix}}switch" name="status-switch-{{key}}-{{$index}}" id="status-switch-{{key}}-{{$index}}" type="checkbox" ng-init="edit_data[job_roles_data.id]['status'] = job_roles_data.status" ng-model="edit_data[job_roles_data.id]['status']" ng-true-value="10" ng-false-value="20" disabled="disabled">
+                                            <input class="{{prefix}}switch" name="status-switch-{{key}}-{{$index}}"
+                                                   id="status-switch-{{key}}-{{$index}}" type="checkbox"
+                                                   ng-init="edit_data[job_roles_data.id]['status'] = job_roles_data.status"
+                                                   ng-model="edit_data[job_roles_data.id]['status']" ng-true-value="10"
+                                                   ng-false-value="20" disabled="disabled">
                                             <label for="status-switch-{{key}}-{{$index}}"></label>
                                         </div>
                                     </div>
@@ -53,77 +60,174 @@
                                     <div class="col-xs-12">
                                         <tabset>
                                             <tab heading="Basic Details">
-                                                <form class="form-horizontal" role="form" editable-form name="editableForm" onaftersave="updateRole(job_roles_data.id)">
+                                                <form class="form-horizontal" role="form" editable-form
+                                                      name="editableForm" onaftersave="updateRole(job_roles_data.id)">
                                                     <!-- button to show edit form -->
-                                                    <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-click="editableForm.$show()" ng-show="!editableForm.$visible">
+                                                    <button type="button" class="btn btn-sm btn-tab-action pull-right"
+                                                            ng-click="editableForm.$show()"
+                                                            ng-show="!editableForm.$visible">
                                                         <span class="glyphicon glyphicon-pencil"></span> Edit
                                                     </button>
                                                     <!-- buttons to submit / cancel form -->
-                                                    <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="editableForm.$visible">
-                                                        <button type="submit" class="btn btn-sm btn-tab-action" ng-disabled="editableForm.$waiting">
+                                                    <div class="btn-group btn-group-sm btn-group-tab-action pull-right"
+                                                         ng-show="editableForm.$visible">
+                                                        <button type="submit" class="btn btn-sm btn-tab-action"
+                                                                ng-disabled="editableForm.$waiting">
                                                             <span class="glyphicon glyphicon-ok"></span> Save
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-tab-action" ng-disabled="editableForm.$waiting" ng-click="editableForm.$cancel()">
+                                                        <button type="button" class="btn btn-sm btn-tab-action"
+                                                                ng-disabled="editableForm.$waiting"
+                                                                ng-click="editableForm.$cancel()">
                                                             <span class="glyphicon glyphicon-remove"></span> Cancel
                                                         </button>
                                                     </div>
                                                     <div class="{{prefix}}basic-details">
                                                         <div class="row">
                                                             <div class="col-xs-12 col-sm-6">
-                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'title', job_roles_data.title)">
+                                                                <div class="form-group"
+                                                                     ng-init="initData(job_roles_data.id, 'title', job_roles_data.title)">
                                                                     <!-- editable title + validation -->
                                                                     <label for="title" class="col-xs-4 control-label">Title:</label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-text="edit_data[job_roles_data.id]['title']" e-name="title" onbeforesave="validateTitle($data)" e-required>{{ edit_data[job_roles_data.id]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-text="edit_data[job_roles_data.id]['title']"
+                                                                           e-name="title"
+                                                                           onbeforesave="validateTitle($data)"
+                                                                           e-required>{{
+                                                                            edit_data[job_roles_data.id]['title'] ||
+                                                                            '-'}}</p>
                                                                     </div>
                                                                 </div>
-                                                                <div class="form-group" ng-init="initData(job_roles_data.id, 'job_contract_id', job_roles_data.job_contract_id)">
+                                                                <div class="form-group"
+                                                                     ng-init="initData(job_roles_data.id, 'job_contract_id', job_roles_data.job_contract_id)">
                                                                     <!-- editable contract select list + validation -->
-                                                                    <label for="contract" class="col-xs-4 control-label">Contract:</label>
+                                                                    <label for="contract"
+                                                                           class="col-xs-4 control-label">Contract:</label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['job_contract_id']" e-name="contract" e-ng-options="k as v.title for (k, v) in jobroles.contractsData">{{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-select="edit_data[job_roles_data.id]['job_contract_id']"
+                                                                           e-name="contract"
+                                                                           e-ng-options="k as v.title for (k, v) in jobroles.contractsData">
+                                                                            {{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'start_date', job_roles_data.start_date)">
-                                                                    <!-- editable contract select list + validation -->
-                                                                    <label for="contract" class="col-xs-4 control-label">Start Date:</label>
+                                                                    <label for="start_date" class="col-xs-4 control-label">
+                                                                        Start Date:
+                                                                    </label>
+
+                                                                    <!-- FIX: xeditable datepicker doesn't work here as it isn't compatible with input field -->
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-bsdate="edit_data[job_roles_data.id]['start_date']" e-name="start_date" e-datepicker-popup="dd-MMMM-yyyy">{{edit_data[job_roles_data.id]['start_date'] | date:"dd/MM/yyyy"}}</p>
+                                                                        <p class="input-group" ng-hide="!editableForm.$visible">
+                                                                            <input type="text" class="form-control" id="{{prefix}}start_date"
+                                                                                   datepicker-popup="dd/MM/yyyy"
+                                                                                   is-open="CalendarShow['start_date'] == true"
+                                                                                   min-date="minDate"
+                                                                                   ng-model="edit_data[job_roles_data.id]['start_date']"
+                                                                                   ng-change="select('start_date')"
+                                                                                   ng-disabled="isDisabled"
+                                                                                   close-text="Close"
+                                                                                   custom-date-input
+                                                                                   required>
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default" ng-click="open('start_date')"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </p>
+
+                                                                        <p class="form-control-static" ng-show="!editableForm.$visible">
+                                                                            {{edit_data[job_roles_data.id]['start_date'] | customDate}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'end_date', job_roles_data.end_date)">
-                                                                    <!-- editable contract select list + validation -->
-                                                                    <label for="contract" class="col-xs-4 control-label">End Date:</label>
+                                                                    <label for="end_date" class="col-xs-4 control-label">
+                                                                        End Date:
+                                                                    </label>
+
+                                                                    <!-- FIX: xeditable datepicker doesn't work here as it isn't compatible with input field -->
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-bsdate="edit_data[job_roles_data.id]['end_date']" e-name="end_date" e-datepicker-popup="dd-MMMM-yyyy">{{edit_data[job_roles_data.id]['end_date'] | date:"dd/MM/yyyy"}}</p>
+                                                                        <p class="input-group" ng-hide="!editableForm.$visible">
+                                                                            <input type="text" class="form-control" id="{{prefix}}end_date"
+                                                                                   onbeforesave="validateDate($data)"
+                                                                                   datepicker-popup="dd/MM/yyyy"
+                                                                                   is-open="CalendarShow['end_date'] == true"
+                                                                                   min-date="minDate"
+                                                                                   ng-model="edit_data[job_roles_data.id]['end_date']"
+                                                                                   ng-change="select('end_date')"
+                                                                                   ng-disabled="isDisabled"
+                                                                                   close-text="Close"
+                                                                                   custom-date-input
+                                                                                   required>
+                                                                            <span class="input-group-btn">
+                                                                                <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                                            </span>
+                                                                        </p>
+
+                                                                        <p class="form-control-static" ng-show="!editableForm.$visible">
+                                                                            {{ edit_data[job_roles_data.id]['end_date'] | customDate}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="col-xs-12 col-sm-6">
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'location', job_roles_data.location)">
-                                                                    <label for="newLocation" class="col-xs-4 control-label">Location:</label>
+                                                                    <label for="newLocation" class="col-xs-4 control-label">
+                                                                        Location:
+                                                                    </label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['location']" e-name="newLocation" e-ng-options="k as v.title for (k, v) in jobroles.LocationsData">{{jobroles.LocationsData[edit_data[job_roles_data.id]['location']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-select="edit_data[job_roles_data.id]['location']"
+                                                                           e-name="newLocation"
+                                                                           e-ng-options="k as v.title for (k, v) in jobroles.LocationsData">
+                                                                            {{jobroles.LocationsData[edit_data[job_roles_data.id]['location']]['title'] || '-'}}</p>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'region', job_roles_data.region)">
-                                                                    <label for="newRegion" class="col-xs-4 control-label">Region:</label>
+                                                                    <label for="newRegion" class="col-xs-4 control-label">
+                                                                        Region:
+                                                                    </label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['region']" e-name="newRegion" e-ng-options="k as v.title for (k, v) in jobroles.RegionsData">{{jobroles.RegionsData[edit_data[job_roles_data.id]['region']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-select="edit_data[job_roles_data.id]['region']"
+                                                                           e-name="newRegion"
+                                                                           e-ng-options="k as v.title for (k, v) in jobroles.RegionsData">
+                                                                            {{jobroles.RegionsData[edit_data[job_roles_data.id]['region']]['title'] || '-'}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'department', job_roles_data.department)">
-                                                                    <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
+                                                                    <label for="newDepartment" class="col-xs-4 control-label">
+                                                                        Department:
+                                                                    </label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['department']" e-name="newDepartment" e-ng-options="k as v.title for (k, v) in jobroles.DepartmentsData">{{jobroles.DepartmentsData[edit_data[job_roles_data.id]['department']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-select="edit_data[job_roles_data.id]['department']"
+                                                                           e-name="newDepartment"
+                                                                           e-ng-options="k as v.title for (k, v) in jobroles.DepartmentsData">
+                                                                            {{jobroles.DepartmentsData[edit_data[job_roles_data.id]['department']]['title'] || '-'}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'level', job_roles_data.level_type)">
-                                                                    <label for="newLevel" class="col-xs-4 control-label">Level:</label>
+                                                                    <label for="newLevel" class="col-xs-4 control-label">
+                                                                        Level:
+                                                                    </label>
+
                                                                     <div class="col-xs-8">
-                                                                        <p class="form-control-static" editable-select="edit_data[job_roles_data.id]['level']" e-name="newLevel" e-ng-options="k as v.title for (k, v) in jobroles.LevelsData">{{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}}</p>
+                                                                        <p class="form-control-static"
+                                                                           editable-select="edit_data[job_roles_data.id]['level']"
+                                                                           e-name="newLevel"
+                                                                           e-ng-options="k as v.title for (k, v) in jobroles.LevelsData">
+                                                                            {{jobroles.LevelsData[edit_data[job_roles_data.id]['level']]['title'] || '-'}}
+                                                                        </p>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -131,10 +235,14 @@
                                                         <div class="row">
                                                             <div class="col-xs-12">
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'description', job_roles_data.description)">
-                                                                    <!-- editable job role description textarea -->
-                                                                    <label for="description" class="col-xs-2 control-label">Description:</label>
+                                                                    <label for="description" class="col-xs-2 control-label">
+                                                                        Description:
+                                                                    </label>
+
                                                                     <div class="col-xs-10">
-                                                                        <p class="form-control-static" editable-textarea="edit_data[job_roles_data.id]['description']" e-name="description" e-rows="6" e-cols="40">
+                                                                        <p class="form-control-static"
+                                                                           editable-textarea="edit_data[job_roles_data.id]['description']"
+                                                                           e-name="description" e-rows="6" e-cols="40">
                                                                             {{ edit_data[job_roles_data.id]['description'] || '-'}}
                                                                         </p>
                                                                     </div>
@@ -163,69 +271,102 @@
                                             </tab>
                                             <tab heading="Funding">
                                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
-                                                    <form editable-form name="tableform" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
+                                                    <form editable-form name="tableform"
+                                                          onaftersave="updateRole(job_roles_data.id)"
+                                                          oncancel="cancel()">
                                                         <!-- buttons -->
-                                                        <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-tab-action pull-right"
+                                                                ng-show="!tableform.$visible"
+                                                                ng-click="tableform.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </button>
-                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableform.$visible">
-                                                            <button type="submit" ng-disabled="tableform.$waiting" class="btn btn-sm btn-tab-action">
+                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right"
+                                                             ng-show="tableform.$visible">
+                                                            <button type="submit" ng-disabled="tableform.$waiting"
+                                                                    class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-ok"></span> save
                                                             </button>
-                                                            <button type="button" ng-disabled="tableform.$waiting" ng-click="tableform.$cancel()" class="btn btn-sm btn-tab-action">
+                                                            <button type="button" ng-disabled="tableform.$waiting"
+                                                                    ng-click="tableform.$cancel()"
+                                                                    class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-remove"></span> cancel
                                                             </button>
                                                         </div>
                                                         <!-- table -->
                                                         <table class="table table-striped {{prefix}}table-sort">
                                                             <thead>
-                                                                <tr>
-                                                                    <th style="width:40%">Funder</th>
-                                                                    <th style="width:15%">Type</th>
-                                                                    <th style="width:15%">% Amount</th>
-                                                                    <th style="width:15%">Absolute Amount</th>
-                                                                    <th style="width:15%" ng-show="tableform.$visible">Action</th>
-                                                                </tr>
+                                                            <tr>
+                                                                <th style="width:40%">Funder</th>
+                                                                <th style="width:15%">Type</th>
+                                                                <th style="width:15%">% Amount</th>
+                                                                <th style="width:15%">Absolute Amount</th>
+                                                                <th style="width:15%" ng-show="tableform.$visible">
+                                                                    Action
+                                                                </th>
+                                                            </tr>
                                                             </thead>
                                                             <tbody>
-                                                                <tr ng-repeat="(key, funder) in edit_data[job_roles_data.id]['funders']">
-                                                                    <td>
-                                                                        <!-- editable funder (text with validation) -->
-                                                                        <span editable-text="funder.funder_id" e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableform" e-name="funder" onbeforesave="checkName($data, user.id)">
+                                                            <tr ng-repeat="(key, funder) in edit_data[job_roles_data.id]['funders']">
+                                                                <td>
+                                                                    <!-- editable funder (text with validation) -->
+                                                                        <span editable-text="funder.funder_id"
+                                                                              e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10"
+                                                                              e-form="tableform" e-name="funder"
+                                                                              onbeforesave="checkName($data, user.id)">
                                                                             {{funder.funder_id.sort_name || 'empty'}}
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <!-- editable funder type (will restrict the fields to amount or percentage -->
-                                                                        <span editable-select="funder.type" e-form="tableform" e-name="funder-type" e-ng-options="k as rowType.name for (k, rowType) in rowTypes" e-ng-change="updateAdditionalRowType(job_roles_data.id, 'funder', key, $data)">
+                                                                </td>
+                                                                <td>
+                                                                    <!-- editable funder type (will restrict the fields to amount or percentage -->
+                                                                        <span editable-select="funder.type"
+                                                                              e-form="tableform" e-name="funder-type"
+                                                                              e-ng-options="k as rowType.name for (k, rowType) in rowTypes"
+                                                                              e-ng-change="updateAdditionalRowType(job_roles_data.id, 'funder', key, $data)">
                                                                             {{showRowType(funder)}}
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
+                                                                </td>
+                                                                <td>
                                                                         <span ng-show="funder.type == 1">
                                                                             <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
-                                                                            <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
+                                                                            <span editable-text="funder.percentage"
+                                                                                  e-form="tableform"
+                                                                                  e-name="funder-percent"
+                                                                                  onbeforesave="checkName($data, user.id)">
                                                                                 {{funder.percentage || 'empty'}}
                                                                             </span>
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
+                                                                </td>
+                                                                <td>
                                                                         <span ng-show="funder.type == 0">
                                                                             <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
-                                                                            <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
+                                                                            <span editable-text="funder.amount"
+                                                                                  e-form="tableform"
+                                                                                  e-name="funder-amount"
+                                                                                  onbeforesave="checkName($data, user.id)">
                                                                                 {{funder.amount || 'empty'}}
                                                                             </span>
                                                                         </span>
-                                                                    </td>
-                                                                    <td ng-show="tableform.$visible">
-                                                                        <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'funder', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="{{!tableform.$visible ? 4 : 5}}">
-                                                                        <a href ng-show="tableform.$visible" ng-disabled="tableform.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'funder')" class=" btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Funder</a>
-                                                                    </td>
-                                                                </tr>
+                                                                </td>
+                                                                <td ng-show="tableform.$visible">
+                                                                    <button type="button"
+                                                                            ng-click="deleteAdditionalRow(job_roles_data.id, 'funder', key)"
+                                                                            class="btn btn-danger pull-right"><span
+                                                                            class="fa fa-remove"
+                                                                            aria-hidden="true"></span></button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="{{!tableform.$visible ? 4 : 5}}">
+                                                                    <a href ng-show="tableform.$visible"
+                                                                       ng-disabled="tableform.$waiting"
+                                                                       ng-click="addAdditionalRow(job_roles_data.id, 'funder')"
+                                                                       class=" btn btn-link"><span
+                                                                            class="glyphicon glyphicon-plus"
+                                                                            aria-hidden="true"></span> Add New
+                                                                        Funder</a>
+                                                                </td>
+                                                            </tr>
                                                             </tbody>
                                                         </table>
                                                     </form>
@@ -233,69 +374,102 @@
                                             </tab>
                                             <tab heading="Cost Centers">
                                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
-                                                    <form editable-form name="tableformcc" onaftersave="updateRole(job_roles_data.id)" oncancel="cancel()">
+                                                    <form editable-form name="tableformcc"
+                                                          onaftersave="updateRole(job_roles_data.id)"
+                                                          oncancel="cancel()">
                                                         <!-- buttons -->
-                                                        <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-tab-action pull-right"
+                                                                ng-show="!tableformcc.$visible"
+                                                                ng-click="tableformcc.$show()">
                                                             <span class="glyphicon glyphicon-pencil"></span> Edit
                                                         </button>
-                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right" ng-show="tableformcc.$visible">
-                                                            <button type="submit" ng-disabled="tableformcc.$waiting" class="btn btn-sm btn-tab-action">
+                                                        <div class="btn-group btn-group-sm btn-group-tab-action pull-right"
+                                                             ng-show="tableformcc.$visible">
+                                                            <button type="submit" ng-disabled="tableformcc.$waiting"
+                                                                    class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-ok"></span> save
                                                             </button>
-                                                            <button type="button" ng-disabled="tableformcc.$waiting" ng-click="tableformcc.$cancel()" class="btn btn-sm btn-tab-action">
+                                                            <button type="button" ng-disabled="tableformcc.$waiting"
+                                                                    ng-click="tableformcc.$cancel()"
+                                                                    class="btn btn-sm btn-tab-action">
                                                                 <span class="glyphicon glyphicon-remove"></span> cancel
                                                             </button>
                                                         </div>
                                                         <!-- table -->
                                                         <table class="table table-striped {{prefix}}table-sort">
                                                             <thead>
-                                                                <tr>
-                                                                    <th style="width:40%">Cost Centre</th>
-                                                                    <th style="width:15%">Type</th>
-                                                                    <th style="width:15%">% Amount</th>
-                                                                    <th style="width:15%">Absolute Amount</th>
-                                                                    <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
-                                                                </tr>
+                                                            <tr>
+                                                                <th style="width:40%">Cost Centre</th>
+                                                                <th style="width:15%">Type</th>
+                                                                <th style="width:15%">% Amount</th>
+                                                                <th style="width:15%">Absolute Amount</th>
+                                                                <th style="width:15%" ng-show="tableformcc.$visible">
+                                                                    Action
+                                                                </th>
+                                                            </tr>
                                                             </thead>
                                                             <tbody>
-                                                                <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
-                                                                    <td>
-                                                                        <!-- editable cost centre (text with validation) -->
-                                                                        <span editable-text="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" onbeforesave="checkName($data, user.id)">
+                                                            <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
+                                                                <td>
+                                                                    <!-- editable cost centre (text with validation) -->
+                                                                        <span editable-text="cost_centre.cost_centre_id"
+                                                                              e-form="tableformcc" e-name="cost-centre"
+                                                                              onbeforesave="checkName($data, user.id)">
                                                                             {{ cost_centre.cost_centre_id || 'empty' }}
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
-                                                                        <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                                                        <span editable-select="cost_centre.type" e-form="tableformcc" e-name="cost-centre-type" e-ng-options="k as rowType.name for (k, rowType) in rowTypes" e-ng-change="updateAdditionalRowType(job_roles_data.id, 'cost_centre', key, $data)">
+                                                                </td>
+                                                                <td>
+                                                                    <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
+                                                                        <span editable-select="cost_centre.type"
+                                                                              e-form="tableformcc"
+                                                                              e-name="cost-centre-type"
+                                                                              e-ng-options="k as rowType.name for (k, rowType) in rowTypes"
+                                                                              e-ng-change="updateAdditionalRowType(job_roles_data.id, 'cost_centre', key, $data)">
                                                                             {{ showRowType(cost_centre) }}
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
+                                                                </td>
+                                                                <td>
                                                                         <span ng-show="cost_centre.type == 1">
                                                                             <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
-                                                                            <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
+                                                                            <span editable-text="cost_centre.percentage"
+                                                                                  e-form="tableformcc"
+                                                                                  e-name="cost-centre-percent"
+                                                                                  onbeforesave="checkName($data, user.id)">
                                                                                 {{ cost_centre.percentage || 'empty' }}
                                                                             </span>
                                                                         </span>
-                                                                    </td>
-                                                                    <td>
+                                                                </td>
+                                                                <td>
                                                                         <span ng-show="cost_centre.type == 0">
                                                                             <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
-                                                                            <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
+                                                                            <span editable-text="cost_centre.amount"
+                                                                                  e-form="tableformcc"
+                                                                                  e-name="cost-centre-amount"
+                                                                                  onbeforesave="checkName($data, user.id)">
                                                                                 {{ cost_centre.amount || 'empty' }}
                                                                             </span>
                                                                         </span>
-                                                                    </td>
-                                                                    <td ng-show="tableformcc.$visible">
-                                                                        <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
-                                                                        <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Center</a>
-                                                                    </td>
-                                                                </tr>
+                                                                </td>
+                                                                <td ng-show="tableformcc.$visible">
+                                                                    <button type="button"
+                                                                            ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)"
+                                                                            class="btn btn-danger pull-right"><span
+                                                                            class="fa fa-remove"
+                                                                            aria-hidden="true"></span></button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
+                                                                    <a href ng-show="tableformcc.$visible"
+                                                                       ng-disabled="tableformcc.$waiting"
+                                                                       ng-click="addAdditionalRow(job_roles_data.id, 'cost_centre')"
+                                                                       class="btn btn-link"><span
+                                                                            class="glyphicon glyphicon-plus"
+                                                                            aria-hidden="true"></span> Add New Cost
+                                                                        Center</a>
+                                                                </td>
+                                                            </tr>
                                                             </tbody>
                                                         </table>
                                                     </form>
@@ -306,7 +480,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <button class="btn btn-default btn-danger" ng-click="removeRole(job_roles_data.id)">
+                                        <button class="btn btn-default btn-danger"
+                                                ng-click="removeRole(job_roles_data.id)">
                                             <span class="glyphicon glyphicon-trash"></span>
                                             Delete this job role
                                         </button>
