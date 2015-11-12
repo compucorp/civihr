@@ -254,6 +254,8 @@ define(['services/services'], function (services) {
                     "level_type": job_roles_data.level,
                     "location": job_roles_data.location,
                     "region": job_roles_data.region,
+                    "start_date": job_roles_data.start_date,
+                    "end_date": job_roles_data.end_date,
                     "department": job_roles_data.department
 
                 }).done(function(result) {

@@ -3,11 +3,23 @@ define(['controllers/controllers'], function(controllers){
         function($scope, $log, $routeParams, ExampleService, $route, $timeout){
             $log.debug('Controller: ExampleCtrl');
 
+            $scope.dpOpen = function($event){
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.picker.opened = true;
+
+            };
+
             // Validate fields
             $scope.validateTitle = function(data) {
                 if (data == 'title' || data == ' ') {
                     return "Title cannot be title!";
                 }
+            };
+
+            $scope.validateDate = function(data) {
+                    return "" + data;
             };
 
             $scope.today = function() {
@@ -296,7 +308,7 @@ define(['controllers/controllers'], function(controllers){
             $scope.updateRole = function(role_id) {
 
                 $log.debug('Update Role');
-                
+
                 // Update the job role
                 updateJobRole(role_id, $scope.edit_data[role_id]);
 
