@@ -1,32 +1,27 @@
-{assign var="module" value="civitasks" }
-{assign var="prefix" value="ct-" }
+{assign var="module" value="appraisals" }
+{assign var="prefix" value="appr-" }
 
-<div id="{$module}" ng-controller="MainCtrl" ct-spinner ct-spinner-show>
-    <div class="container fade-in" ng-view>
+Appraisals Main Template
+
+<div id="{$module}">
+    <div class="container" ng-view>
     </div>
 </div>
 {literal}
-    <script type="text/javascript">
-        (function(){
-            function taInit(){
-                var detail = {
-                    'app': 'appTasks',
-                    'module': 'civitasks'
-                };
+<script type="text/javascript">
+    (function(){
+        function apprInit(){
+            document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('apprInit') : (function(){
+                var e = document.createEvent('Event');
+                e.initEvent('apprInit', true, true);
+                return e;
+            })());
+        };
+        apprInit();
 
-                document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('taInit', {
-                    'detail': detail
-                }) : (function(){
-                    var e = document.createEvent('CustomEvent');
-                    e.initCustomEvent('taInit', true, true, detail);
-                    return e;
-                })());
-            };
-            taInit();
-
-            document.addEventListener('taReady', function(){
-                taInit();
-            });
-        })();
-    </script>
+        document.addEventListener('apprReady', function(){
+            apprInit();
+        });
+    })();
+</script>
 {/literal}
