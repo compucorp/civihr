@@ -131,7 +131,14 @@ function contactsummary_civicrm_pageRun($page) {
             'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.contactsummary')
         ));
 
+        $script = <<<EOT
+            window.setTimeout(function() {
+                cj("#tab_contactsummary > a").click();
+            }, 2000);
+EOT;
+
         CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/contactsummary-main.js' : 'dist/contactsummary-main.js', 1010);
+        CRM_Core_Resources::singleton()->addScript($script, 1020, 'page-footer');
         CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
     }
 }

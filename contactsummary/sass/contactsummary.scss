@@ -1,6 +1,10 @@
 @import "../../org.civicrm.bootstrap/scss/overrides/variables";
 @import "../../org.civicrm.bootstrap/vendor/bootstrap/scss/variables";
 
+#tab_summary, #contact-summary {
+  display: none !important;
+}
+
 #contactsummary {
     padding: 20px;
 
