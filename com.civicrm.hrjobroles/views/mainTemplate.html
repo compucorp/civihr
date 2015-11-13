@@ -1,4 +1,3 @@
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
 <div ng-controller="ExampleCtrl as jobroles">
     <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
     <div class="alert alert-warning" ng-show="jobroles.empty">{{jobroles.empty}}</div>
@@ -60,8 +59,12 @@
                                     <div class="col-xs-12">
                                         <tabset>
                                             <tab heading="Basic Details">
-                                                <form class="form-horizontal" role="form" editable-form
-                                                      name="editableForm" onaftersave="updateRole(job_roles_data.id)">
+                                                <form class="form-horizontal"
+                                                      role="form"
+                                                      editable-form
+                                                      name="editableForm"
+                                                      onbeforesave="validateRole(editableForm)"
+                                                      onaftersave="updateRole(job_roles_data.id)">
                                                     <!-- button to show edit form -->
                                                     <button type="button" class="btn btn-sm btn-tab-action pull-right"
                                                             ng-click="editableForm.$show()"
@@ -124,6 +127,7 @@
                                                                     <div class="col-xs-8">
                                                                         <p class="input-group" ng-hide="!editableForm.$visible">
                                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
+                                                                                   name="start_date"
                                                                                    datepicker-popup="dd/MM/yyyy"
                                                                                    is-open="CalendarShow['start_date'] == true"
                                                                                    min-date="minDate"
@@ -143,7 +147,6 @@
                                                                         </p>
                                                                     </div>
                                                                 </div>
-
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'end_date', job_roles_data.end_date)">
                                                                     <label for="end_date" class="col-xs-4 control-label">
                                                                         End Date:
@@ -153,6 +156,7 @@
                                                                     <div class="col-xs-8">
                                                                         <p class="input-group" ng-hide="!editableForm.$visible">
                                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
+                                                                                   name="end_date"
                                                                                    onbeforesave="validateDate($data)"
                                                                                    datepicker-popup="dd/MM/yyyy"
                                                                                    is-open="CalendarShow['end_date'] == true"
