@@ -31,10 +31,10 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 if(start.length !== 10 || s.length != 3 || checkFormat(s)){
-                    error('Date is invalid!', ['start_date']);
+                    error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['start_date']);
                 }
                 if(end.length !== 10 || e.length != 3 || checkFormat(e)){
-                    error('Date is invalid!', ['end_date']);
+                    error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['end_date']);
                 }
 
                 function checkIfValuesAreValid(index, date, field_name) {
