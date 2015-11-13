@@ -18,8 +18,57 @@ define(['controllers/controllers'], function(controllers){
                 }
             };
 
-            $scope.validateDate = function(data) {
-                    return "" + data;
+            $scope.validateDates = function(start, end, error) {
+                var s = start.split('/'),
+                    e = end.split('/');
+
+
+                function checkFormat(d){
+                    return !(d[0].length == 2 && d[1].length == 2 && d[2].length == 4);
+                }
+
+                if(start.length !== 10 || s.length != 3 || checkFormat(s)){
+                    error('Start Date is invalid!')
+                }
+                if(end.length !== 10 || e.length != 3 || checkFormat(e)){
+                    error('End Date is invalid!')
+                }
+
+                function checkIfStartDateIsLower(s, e, index){
+                    //Prevent endless iteration
+                    if(index < 0) return true;
+
+                    if(index == 2 && (parseInt(e[index], 10) < $scope.minDate.getFullYear() || parseInt(s[index], 10) <  $scope.minDate.getFullYear())){
+
+                        error('Year cannot be lower than ' + $scope.minDate.getFullYear() + '.');
+
+                    } else if(index == 2 && (parseInt(e[index], 10) > $scope.maxDate.getFullYear() || parseInt(s[index], 10) >  $scope.maxDate.getFullYear())){
+
+                        error('Year cannot be higher than ' + $scope.maxDate.getFullYear() + '.');
+
+                    } else if(parseInt(e[index], 10) < 1 || parseInt(s[index], 10) < 1){
+                        error('Neither Days or Months can be negative or equal to 0.')
+                    }
+
+                    if(parseInt(e[index], 10) < parseInt(s[index], 10)){
+                        error('Start Date cannot be higher than End Date!')
+                    } else if(parseInt(e[index], 10) == parseInt(s[index], 10)) {
+                        return checkIfStartDateIsLower(s, e, index -1);
+                    }
+                }
+
+                checkIfStartDateIsLower(s, e, 2);
+            };
+
+            $scope.validateRole = function(data) {
+                var errors = [];
+
+                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function(error){
+                    errors.push(error);
+                });
+
+                console.log(data);
+                return errors.length > 0? errors.join('</ br>') : true;
             };
 
             $scope.today = function() {
