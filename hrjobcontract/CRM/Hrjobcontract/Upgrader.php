@@ -940,6 +940,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     $this->upgrade_1001();
     $this->upgrade_1002();
+    $this->upgrade_1003();
+    $this->upgrade_1004();
+    $this->upgrade_1005();
+    $this->upgrade_1006();
+    $this->upgrade_1008();
+    $this->upgrade_1009();
   }
   
   function upgrade_1001() {
@@ -1086,6 +1092,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     
     return TRUE;
+  }
+  
+  function upgrade_1008() {
+      CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrhours_location` CHANGE  `standard_hours`  `standard_hours` DECIMAL( 8, 2 ) NULL DEFAULT NULL");
+      return TRUE;
+  }
+
+  function upgrade_1009() {
+      CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobcontract_leave` CHANGE  `leave_amount`  `leave_amount` DOUBLE UNSIGNED NULL DEFAULT NULL COMMENT  'The number of leave days'");
+      return TRUE;
+  }
+
+  function upgrade_1010() {
+      CRM_Hrjobcontract_JobContractDates::rewriteContactIds();
+      return TRUE;
   }
           
   function decToFraction($fte) {

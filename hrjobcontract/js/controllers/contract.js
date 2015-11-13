@@ -129,6 +129,7 @@ define(['controllers/controllers',
                         controller: 'ModalContractCtrl',
                         targetDomEl: $rootElement.find('div').eq(0),
                         templateUrl: settings.pathApp+'views/modalForm.html?v=4444',
+                        windowClass: 'modal-contract',
                         size: 'lg',
                         resolve: {
                             action: function(){
@@ -333,7 +334,7 @@ define(['controllers/controllers',
                     targetDomEl: $rootElement.find('div').eq(0),
                     size: 'lg',
                     controller: 'ModalRevisionCtrl',
-                    templateUrl: settings.pathApp+'views/modalRevision.html?v=ergerg',
+                    templateUrl: settings.pathApp+'views/modalRevision.html?v=1234',
                     windowClass: 'modal-revision',
                     resolve: {
                         entity: function(){

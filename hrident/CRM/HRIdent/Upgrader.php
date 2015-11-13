@@ -218,4 +218,14 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
 
     return TRUE;
   }
+  
+  public function upgrade_1500(){
+      $this->ctx->log->info('Planning update 1500'); //PEAR Log interface
+      
+      // Make is_goverment field editable
+      $sql = "UPDATE civicrm_custom_field SET is_view = '0' WHERE name = 'is_government'";
+      CRM_Core_DAO::executeQuery($sql);
+      
+      return true;
+  }
 }

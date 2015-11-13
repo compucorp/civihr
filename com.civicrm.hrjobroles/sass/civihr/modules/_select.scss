@@ -8,7 +8,7 @@
 
 /* Style when highlighting a search. */
 .ui-select-highlight {
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .ui-select-offscreen {
@@ -103,7 +103,7 @@ body > .select2-container.open {
 }
 
 .input-group > .ui-select-bootstrap > input.ui-select-search.form-control {
-  border-radius: 4px; /* FIXME hardcoded value :-/ */
+  border-radius: $border-radius-base; /* FIXME hardcoded value :-/ */
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }

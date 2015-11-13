@@ -1,5 +1,10 @@
 .btn {
   text-transform: uppercase;
+  @include border-radius($border-radius-alt);
+}
+
+.btn-link {
+  font-weight: 600;
 }
 
 .btn-gray {

@@ -1,7 +1,131 @@
-.form-horizontal {
-  .control-label {
-    &.control-label-checkbox {
-      padding-top: 0;
+/**
+ * Custom select dropdown style
+ *
+ */
+$customselect-caret-width: 32;
+$customselect-padding-right: $customselect-caret-width + 12;
+
+.chr_custom-select {
+  background: #ffffff;
+  color: #767B8E;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  vertical-align: top;
+
+  > select {
+    background: transparent;
+    border: 1px solid $gray;
+    padding: 6px #{$customselect-padding-right}px 6px 12px;
+    position: relative;
+    width: 100%;
+    z-index: 2;
+
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    -webkit-border-radius: 0px;
+
+    &::-ms-expand {
+      display: none;
     }
   }
+
+  &:after {
+    content: '\f0d7';
+    border-left: 1px solid $gray;
+    bottom: 0;
+    font-family: "FontAwesome";
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: #{$customselect-caret-width}px;
+    z-index: 1;
+    line-height: 33px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .ie9 & {
+
+    > select {
+      padding-right: 10px;
+    }
+
+    &:after {
+      display: none;
+    }
+  }
+}
+
+.chr_custom-select--full {
+  display: block;
+  width: auto;
+}
+
+.chr_custom-select--transparent {
+  background: transparent;
+
+  option {
+    background: #ffffff;
+  }
+}
+
+.has-feedback {
+
+  .chr_custom-select {
+
+    > select {
+      padding-right: #{$customselect-padding-right}px;
+
+      + .form-control-feedback {
+          right: #{$customselect-caret-width - 5}px !important;
+      }
+    }
+  }
+}
+
+
+
+/**
+ * An extension of Bootstraps' input-group,
+ * so that the addon has no background or border set
+ */
+.input-group-unstyled {
+
+    .input-group-addon,
+    .input-group-btn > button {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+}
+
+
+/**
+ * Ad-hoc customizations
+ */
+.form-horizontal {
+
+    .control-label {
+
+        &.control-label-checkbox {
+            padding-top: 0;
+        }
+    }
+}
+
+.form-group.required {
+
+    .control-label:after {
+        color: $brand-danger-light;
+        margin-left: 5px;
+    }
+}
+
+.form-inline {
+
+    .form-control {
+        vertical-align: top;
+    }
 }

@@ -115,6 +115,7 @@ define(['controllers/controllers',
                         templateUrl: settings.pathApp+'views/modalForm.html?v=2222',
                         size: 'lg',
                         controller: 'ModalContractNewCtrl',
+                        windowClass: 'modal-contract',
                         resolve: {
                             model: function() {
                                 return $scope.model;

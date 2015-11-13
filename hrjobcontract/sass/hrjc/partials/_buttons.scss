@@ -1,1 +1,42 @@
-.btn-group-action {  .dropdown-menu {    .checkbox {      font-size: 12px;      margin-bottom: 5px;      margin-top: 5px;      padding: 0px 10px;      input[type="checkbox"] {        margin-top: 1px;      }      label {        min-height: 17px;      }    }  }}
+.btn-group-action {
+    .dropdown-menu {
+        .checkbox {
+            font-size: 12px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            padding: 0px 10px;
+
+            input[type="checkbox"] {
+                margin-top: 1px;
+            }
+
+            label {
+                min-height: 17px;
+            }
+        }
+    }
+}
+
+// Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons)
+$buttons-w-colors: (
+  danger: $brand-danger,
+  primary: $brand-primary,
+  success: $brand-success,
+  warning: $brand-warning
+);
+
+@each $button-type, $button-color in $buttons-w-colors {
+
+  .btn-#{$button-type}-outline {
+    background-color: transparent;
+    border-color: $button-color;
+    color: $button-color;
+
+    &:hover,
+    &:focus {
+      background-color: transparent;
+      border-color: darken($button-color, 10%);
+      color: darken($button-color, 10%);
+    }
+  }
+}
