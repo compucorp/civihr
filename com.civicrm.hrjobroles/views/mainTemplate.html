@@ -140,6 +140,9 @@
                                                                             <span class="input-group-btn">
                                                                                 <button type="button" class="btn btn-default" ng-click="open('start_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
+                                                                            <div ng-show="editableForm.start_date.$error.custom" style="color:maroon" role="alert">
+                                                                                <div ng-repeat="error in editableForm.start_date.$error.custom">{{error}}</div>
+                                                                            </div>
                                                                         </p>
 
                                                                         <p class="form-control-static" ng-show="!editableForm.$visible">
@@ -170,6 +173,10 @@
                                                                             <span class="input-group-btn">
                                                                                 <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
+
+                                                                            <div ng-show="editableForm.end_date.$error.custom" style="color:maroon" role="alert">
+                                                                                <div ng-repeat="error in editableForm.end_date.$error.custom">{{error}}</div>
+                                                                            </div>
                                                                         </p>
 
                                                                         <p class="form-control-static" ng-show="!editableForm.$visible">
