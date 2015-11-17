@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.bootstrapcivihr" type="module">
   <file>bootstrapcivihr</file>
-  <name>Bootstrap based theme extension (CiviHR)</name>
-  <description>An extension for CiviHR of the Bootstrap based theme</description>
+  <name>CiviCRM Bootstrap theme extension (CiviHR)</name>
+  <description>A CiviHR extension of the CiviCRM Bootstrap theme</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Alessandro Verdura</author>

@@ -1,18 +1,68 @@
 @import "overrides/variables";
 
-@import "../vendor/bootstrap/scss/variables";
-@import "../vendor/bootstrap/scss/mixins";
+// Override and custom variables (via gulp-import)
+//= include ../subthemes/**/overrides/_variables.scss
 
-@import "fonts/*";
-@import "mixins/*";
+// Core variables and mixins
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
 
 #{$bootstrap-namespace} {
-    @import "overrides/style/*";
-    @import "components/*";
+    // Reset and dependencies
+    @import "overrides/reset/drupal";
 
     @if $bootstrap-namespace != "" {
         @import "overrides/reset/civicrm";
     }
-}
 
-@import "../vendor/font-awesome/scss/font-awesome";
+    @import "bootstrap/scss/normalize";
+    @import "bootstrap/scss/print";
+    @import "bootstrap/scss/glyphicons";
+
+    // Core CSS
+    @if $bootstrap-namespace != "" {
+        @import "overrides/namespace/*";
+    } else {
+        @import "bootstrap/scss/scaffolding";
+    }
+
+    @import "bootstrap/scss/type";
+    @import "bootstrap/scss/code";
+    @import "bootstrap/scss/grid";
+    @import "bootstrap/scss/tables";
+    @import "bootstrap/scss/forms";
+    @import "bootstrap/scss/buttons";
+
+    // Components
+    @import "bootstrap/scss/component-animations";
+    @import "bootstrap/scss/dropdowns";
+    @import "bootstrap/scss/button-groups";
+    @import "bootstrap/scss/input-groups";
+    @import "bootstrap/scss/navs";
+    @import "bootstrap/scss/navbar";
+    @import "bootstrap/scss/breadcrumbs";
+    @import "bootstrap/scss/pagination";
+    @import "bootstrap/scss/pager";
+    @import "bootstrap/scss/labels";
+    @import "bootstrap/scss/badges";
+    @import "bootstrap/scss/jumbotron";
+    @import "bootstrap/scss/thumbnails";
+    @import "bootstrap/scss/alerts";
+    @import "bootstrap/scss/progress-bars";
+    @import "bootstrap/scss/media";
+    @import "bootstrap/scss/list-group";
+    @import "bootstrap/scss/panels";
+    @import "bootstrap/scss/responsive-embed";
+    @import "bootstrap/scss/wells";
+    @import "bootstrap/scss/close";
+
+    // Components w/ JavaScript
+    @import "bootstrap/scss/modals";
+    @import "bootstrap/scss/tooltip";
+    @import "bootstrap/scss/popovers";
+    @import "bootstrap/scss/carousel";
+
+    // Utility classes
+    @import "bootstrap/scss/utilities";
+    @import "bootstrap/scss/responsive-utilities";
+}

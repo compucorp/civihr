@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.bootstrap" type="module">
   <file>bootstrap</file>
-  <name>Bootstrap based theme</name>
-  <description>A theme based on Bootstrap</description>
+  <name>Bootstrap theme</name>
+  <description>A namespaced Bootstrap theme</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Alessandro Verdura</author>
