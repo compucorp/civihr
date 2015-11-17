@@ -139,6 +139,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
           'sequential' => 1,
           'name' => "cost_centres",
           'title' => "Cost Centres",
+          'is_active' => 1
       ));
 
       $id = $result['id'];
