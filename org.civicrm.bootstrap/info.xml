@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.bootstrap" type="module">
   <file>bootstrap</file>
-  <name>Bootstrap theme</name>
-  <description>A namespaced Bootstrap theme</description>
+  <name>Bootstrap basic theme</name>
+  <description>
+    A namespaced Bootstrap theme, that can either be used "as is" (enabled), or used as the foundation for custom theme extension (disabled)
+  </description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Alessandro Verdura</author>
@@ -14,7 +16,11 @@
   <compatibility>
     <ver>4.2</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>
+    Enable this extension to get the default bootstrap style.
+
+    If instead you want to create a custom theme that customizes/extends Bootstrap, keep this extension disabled and use src/bootstrap.scss as the starting point
+  </comments>
   <civix>
     <namespace>CRM/Bootstrap</namespace>
   </civix>

@@ -1,8 +1,5 @@
 @import "overrides/variables";
-@import "../../../scss/overrides/variables";
-
-@import "../../../vendor/bootstrap/scss/variables";
-@import "../../../vendor/bootstrap/scss/mixins";
+@import "../../../scss/bootstrap";
 
 @import "fonts/*";
 @import "mixins/*";
