@@ -1,0 +1,1 @@
+require.config({    context: 'hrcontactsummary',    baseUrl: CRM.vars.contactsummary.baseURL + '/js',    urlArgs: 'bust=' + (new Date()).getTime(),    paths: {        d3: 'vendor/d3.min',        lodash: 'vendor/lodash.min',        moment: 'vendor/moment.min'    }})(['app']);

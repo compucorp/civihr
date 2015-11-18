@@ -1,0 +1,12 @@
+{
+  "name": "contact-summary",
+  "version": "0.0.1",
+  "devDependencies": {
+    "karma": "^0.13.9",
+    "karma-chrome-launcher": "0.1.5",
+    "karma-jasmine": "0.1.5",
+    "karma-requirejs": "^0.2.2",
+    "protractor": "1.4.0",
+    "requirejs": "^2.1.20"
+  }
+}
