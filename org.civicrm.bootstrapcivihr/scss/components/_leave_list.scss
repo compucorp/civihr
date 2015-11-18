@@ -1,0 +1,26 @@
+.chr_leave-list {
+    @include clearfix;
+
+    > .chr_leave-list__type {
+        margin-bottom: 10px;
+    }
+}
+
+.chr_leave-list__type {
+
+    > .chr_leave-list__type__color {
+        margin-right: 5px;
+    }
+}
+
+.chr_leave-list__type__color {
+    background: $gray-light;
+    display: inline-block;
+    height: 15px;
+    vertical-align: sub;
+    width: 15px;
+}
+
+.chr_leave-list__type__count {
+    float: right;
+}

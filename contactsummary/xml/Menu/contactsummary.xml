@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/contact-summary</path>
+    <page_callback>CRM_Contactsummary_Page_ContactSummary</page_callback>
+    <title>ContactSummary</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
