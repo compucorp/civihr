@@ -277,4 +277,26 @@
         <fieldName>location</fieldName>
     </index>
 
+    <field>
+        <name>start_date</name>
+        <title>start_date</title>
+        <type>timestamp</type>
+        <default>0</default>
+        <comment>Start Date of the job role</comment>
+        <export>true</export>
+        <import>true</import>
+        <uniqueName>hrjc_role_start_date</uniqueName>
+    </field>
+
+    <field>
+        <name>end_date</name>
+        <title>end_date</title>
+        <type>timestamp</type>
+        <default>0</default>
+        <comment>End Date of the job role</comment>
+        <export>true</export>
+        <import>true</import>
+        <uniqueName>hrjc_role_end_date</uniqueName>
+    </field>
+
 </table>
