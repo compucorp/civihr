@@ -7,15 +7,11 @@
 // --------------------------------------------------
 
 
-@at-root {
-
-    body#{$bootstrap-namespace},
-    #{$bootstrap-namespace} {
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
-        font-family: $font-family-base;
-        font-size: $font-size-base;
-        line-height: $line-height-base;
-        color: $text-color;
-        background-color: $body-bg;
-    }
+@include body-namespaced {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    font-family: $font-family-base;
+    font-size: $font-size-base;
+    line-height: $line-height-base;
+    color: $text-color;
+    background-color: $body-bg;
 }
