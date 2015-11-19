@@ -1,13 +1,130 @@
 define(['controllers/controllers'], function(controllers){
-    controllers.controller('ExampleCtrl',['$scope', '$log', '$routeParams', 'ExampleService', '$route', '$timeout',
-        function($scope, $log, $routeParams, ExampleService, $route, $timeout){
+    controllers.controller('ExampleCtrl',['$scope', '$log', '$routeParams', 'ExampleService', '$route', '$timeout', '$filter',
+        function($scope, $log, $routeParams, ExampleService, $route, $timeout, $filter){
             $log.debug('Controller: ExampleCtrl');
+
+            $scope.dpOpen = function($event){
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.picker.opened = true;
+
+            };
 
             // Validate fields
             $scope.validateTitle = function(data) {
                 if (data == 'title' || data == ' ') {
                     return "Title cannot be title!";
                 }
+            };
+
+            $scope.validateDates = function(start, end, error) {
+                // We apply filter, so we have the same date format in both variables
+                start = $filter('customDate')(start);
+                end = $filter('customDate')(end);
+
+                var s = start.split('/'),
+                    e = end.split('/');
+
+                function checkFormat(d){
+                    return !(d[0].length == 2 && d[1].length == 2 && d[2].length == 4);
+                }
+
+                if(start.length !== 10 || s.length != 3 || checkFormat(s)){
+                    error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['start_date']);
+                }
+                if(end.length !== 10 || e.length != 3 || checkFormat(e)){
+                    error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['end_date']);
+                }
+
+                function checkIfValuesAreValid(index, date, field_name) {
+                    if (index == 2 && (parseInt(date[index], 10) < $scope.minDate.getFullYear())) {
+                        error('Year cannot be lower than ' + $scope.minDate.getFullYear() + '.', field_name);
+                    }
+
+                    if (index == 2 && (parseInt(date[index], 10) > $scope.maxDate.getFullYear())) {
+                        error('Year cannot be higher than ' + $scope.maxDate.getFullYear() + '.', field_name);
+                    }
+
+                    if (parseInt(date[index], 10) < 1) {
+                        error('Neither Days or Months can be negative or equal to 0.', field_name);
+                    }
+
+                    if(index == 1 && (parseInt(date[index], 10) > 12)){
+                        error('This month doesn\'t exist.', field_name);
+                    }
+
+                    if(index == 0 && (parseInt(date[index], 10) > 31)){
+                        error('Day of the month is invalid.', field_name);
+                    }
+                }
+
+                function checkIfStartDateIsLower(s, e, index){
+                    //Prevent endless iteration
+                    if(index < 0) return true;
+
+                    if(parseInt(e[index], 10) < parseInt(s[index], 10)){
+                        error('Start Date cannot be higher than End Date!', ['start_date', 'end_date']);
+                    } else if(parseInt(e[index], 10) == parseInt(s[index], 10)) {
+                        return checkIfStartDateIsLower(s, e, index -1);
+                    }
+                }
+
+                checkIfStartDateIsLower(s, e, 2);
+                //Check for year, month and day
+                for(var index = 2; index > -1; index--) {
+                    checkIfValuesAreValid(index, e, ['end_date']);
+                    checkIfValuesAreValid(index, s, ['start_date']);
+                }
+            };
+
+            $scope.validateRole = function(data) {
+                var errors = 0;
+                // Reset Error Messages
+                data.start_date.$error.custom = [];
+                data.end_date.$error.custom = [];
+
+                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function(error, field){
+                    errors++;
+                    if(field.indexOf('start_date') > -1) {
+                        data.start_date.$error.custom.push(error);
+                    }
+                    if(field.indexOf('end_date') > -1){
+                        data.end_date.$error.custom.push(error);
+                    }
+                });
+
+                return errors > 0? 'Error' : true;
+            };
+
+            $scope.today = function() {
+                $scope.CalendarShow['newStartDate'] = false;
+                $scope.CalendarShow['newEndDate'] = false;
+            };
+
+            // As default hide the datepickers
+            $scope.CalendarShow = [];
+
+            // Init values
+            $scope.today();
+
+            // Set required min date
+            $scope.toggleMin = function() {
+                $scope.minDate = $scope.minDate ? null : new Date(2000, 01, 01);
+            };
+            $scope.toggleMin();
+            $scope.maxDate = new Date(2020, 5, 22);
+
+            $scope.open = function(event) {
+                console.log('open test');
+                console.log(event);
+                $scope.CalendarShow[event] = true;
+            };
+
+            $scope.select = function(event) {
+                console.log('selected');
+                console.log(event);
+                $scope.CalendarShow[event] = false;
             };
 
             // Tracks collapsed / expanded rows
@@ -175,7 +292,7 @@ define(['controllers/controllers'], function(controllers){
                     $scope.edit_data[role_id][form_id] = data;
 
                 }
-            }
+            };
 
             // Check if the data are changed in the form (based on job role ID)
             $scope.isChanged = function(row_id) {
@@ -186,12 +303,12 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return false;
-            }
+            };
 
             // Set the is_edit value
             $scope.showSave = function(row_id) {
                 $scope.edit_data[row_id]['is_edit'] = true;
-            }
+            };
 
             /**
              * Check if we allow to submit the form
@@ -210,7 +327,7 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return false;
-            }
+            };
 
             // Saves the new Job Role
             $scope.saveNewRole = function(data) {
@@ -237,7 +354,7 @@ define(['controllers/controllers'], function(controllers){
             // Sets the add new job role form visibility
             $scope.add_new_role = function() {
                 $scope.add_new = true;
-            }
+            };
 
             // Hides the add new job role form
             $scope.cancelNewRole = function() {
@@ -245,7 +362,7 @@ define(['controllers/controllers'], function(controllers){
 
                 // Remove if any data are added / Reset form
                 delete $scope.edit_data['new_role_id'];
-            }
+            };
 
             // Removes the Role based on Role ID
             $scope.removeRole = function(row_id) {
@@ -263,13 +380,13 @@ define(['controllers/controllers'], function(controllers){
             $scope.updateRole = function(role_id) {
 
                 $log.debug('Update Role');
-                
+
                 // Update the job role
                 updateJobRole(role_id, $scope.edit_data[role_id]);
 
                 // Get job roles based on the passed Contact ID (refresh part of the page)
                 getJobRolesList($scope.$parent.contactId);
-            }
+            };
 
             // Select list for Row Types (used for Funders and Cost Centers)
             $scope.rowTypes = {};
@@ -293,7 +410,18 @@ define(['controllers/controllers'], function(controllers){
                 }
 
                 return 'Not set';
-            }
+            };
+
+            $scope.getCostLabel = function(id) {
+                var label = '';
+                angular.forEach($scope.CostCentreList, function(v, k){
+                    if(v.id == id){
+                        label = v.title;
+                    }
+                });
+
+                return label;
+            };
 
             // Update funder type scope on request
             $scope.updateAdditionalRowType = function(role_id, row_type, key, data) {
@@ -309,7 +437,7 @@ define(['controllers/controllers'], function(controllers){
                     $scope.edit_data[role_id]['funders'][key]['type'] = data;
                 }
 
-            }
+            };
 
             // Add additional rows (funder or cost centres)
             $scope.addAdditionalRow = function(role_id, row_type) {
@@ -426,7 +554,7 @@ define(['controllers/controllers'], function(controllers){
             function getOptionValues() {
 
                 // Set the option groups for which we want to get the values
-                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type'];
+                var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
                 ExampleService.getOptionValues(option_groups).then(function(data) {
 
@@ -447,6 +575,9 @@ define(['controllers/controllers'], function(controllers){
 
                             // Pass the level option group list to the scope
                             var LevelList = {};
+
+                            // Pass the Cost Centers option group list to the scope
+                            var CostCentreList = {};
 
                             angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
@@ -488,6 +619,15 @@ define(['controllers/controllers'], function(controllers){
                                             }
 
                                             break;
+                                        case 'cost_centres':
+
+                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                                // Build the contact list
+                                                CostCentreList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+
+                                            }
+
+                                            break;
                                     }
 
 
@@ -507,6 +647,10 @@ define(['controllers/controllers'], function(controllers){
 
                             // Store the Level types what we can reuse later
                             job_roles.LevelsData = LevelList;
+
+                            // Store the Level types what we can reuse later
+                            $scope.CostCentreList = CostCentreList;
+                            $log.info($scope.CostCentreList);
 
                             job_roles.message_type = 'alert-success';
                             job_roles.message = 'Option values list OK!';

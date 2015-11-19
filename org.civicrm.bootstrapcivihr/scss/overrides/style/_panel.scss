@@ -1,0 +1,56 @@
+// Inner section with extra padding
+.panel-body-section {
+    padding: $panel-body-padding;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+// Default panel with body/header colors inverted
+.panel-default-inverted {
+
+    > .panel-body {
+        background: $panel-default-heading-bg;
+    }
+
+    > .panel-footer,
+    > .panel-heading {
+        background: $brand-primary-light;
+    }
+}
+
+// Default panels with same color for body and heading
+.panel-default-plain,
+.panel-default-plain-inverted {
+
+    > .panel-heading {
+        padding-bottom: 0;
+
+        // An <hr> can serve as a separator
+        > hr {
+            margin: $panel-heading-big-padding;
+            margin-bottom: 0;
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+}
+
+// Default panel with heading color applied to body and heading
+.panel-default-plain {
+
+    > .panel-body {
+        background: $panel-default-heading-bg;
+    }
+
+    > .panel-footer {
+        background: $brand-primary-light;
+    }
+}
+
+// Default panel with body color applied to body and heading
+.panel-default-plain-inverted {
+
+    > .panel-heading {
+        background: $brand-primary-light;
+    }
+}

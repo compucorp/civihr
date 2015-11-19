@@ -494,7 +494,9 @@ function hrabsence_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   if ($entity == 'h_r_absence_entitlement' && $action == 'get') {
     $permissions['h_r_absence_entitlement']['get'] = array('access CiviCRM', array('administer CiviCRM', 'view HRAbsences', 'edit HRAbsences', 'manage own HRAbsences'));
   }
-  $permissions['CiviHRAbsence'] = $permissions['h_r_absence'];
+  if (isset($permissions['h_r_absence'])) {
+    $permissions['CiviHRAbsence'] = $permissions['h_r_absence'];
+  }
 }
 
 function hrabsence_civicrm_navigationMenu( &$params ) {

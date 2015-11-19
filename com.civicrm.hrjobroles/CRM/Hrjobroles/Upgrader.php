@@ -10,9 +10,16 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
   /**
    * Example: Run an external SQL script when the module is installed
-   *
+   */
   public function install() {
-    $this->executeSqlFile('sql/myinstall.sql');
+//    $this->executeSqlFile('sql/myinstall.sql');
+    $this->installCostCentreTypes();
+  }
+
+  public function upgrade_1002(){
+    $this->installCostCentreTypes();
+
+    return TRUE;
   }
 
   /**
@@ -37,17 +44,18 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
-   * Example: Run a couple simple queries
+   * Example: Add start and and date for job roles
    *
    * @return TRUE on success
    * @throws Exception
    *
-  public function upgrade_4200() {
-    $this->ctx->log->info('Applying update 4200');
-    CRM_Core_DAO::executeQuery('UPDATE foo SET bar = "whiz"');
-    CRM_Core_DAO::executeQuery('DELETE FROM bang WHERE willy = wonka(2)');
+   */
+  public function upgrade_1001() {
+    $this->ctx->log->info('Applying update for job role start and end dates');
+    CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `start_date` timestamp DEFAULT 0 COMMENT 'Start Date of the job role'");
+    CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `end_date` timestamp DEFAULT 0 COMMENT 'End Date of the job role'");
     return TRUE;
-  } // */
+  }
 
 
   /**
@@ -112,4 +120,40 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     return TRUE;
   } // */
 
+  /**
+   * Creates new Option Group for Cost Centres
+   */
+  public function installCostCentreTypes() {
+
+    function save($val, $key, $id){
+      civicrm_api3('OptionValue', 'create', array(
+          'sequential' => 1,
+          'option_group_id' => $id,
+          'label' => $val,
+          'value' => $val,
+          'name' => $val,
+      ));
+    }
+
+    try{
+      $result = civicrm_api3('OptionGroup', 'create', array(
+          'sequential' => 1,
+          'name' => "cost_centres",
+          'title' => "Cost Centres",
+          'is_active' => 1
+      ));
+
+      $id = $result['id'];
+
+      $options = array(
+          'Other' => 'Other'
+      );
+
+      array_walk($options, 'save', $id);
+
+    } catch(Exception $e){
+      // OptionGroup already exists
+      // Skip this
+    }
+  }
 }
