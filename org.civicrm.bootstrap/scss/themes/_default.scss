@@ -5,7 +5,6 @@
 
 // Core CSS
 @if $bootstrap-namespace != "" {
-    @import "../overrides/namespace/body";
     @import "../overrides/namespace/scaffolding";
 } @else {
     @import "../vendor/bootstrap/scss/scaffolding";
