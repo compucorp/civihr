@@ -23,17 +23,28 @@
         <section>
             <div class="row">
                 <div class="col-md-2">
-                    <ul class="nav nav-pills nav-stacked">
-                        <li class="active">
-                            <a href="#">Dashboard</a>
-                        </li>
-                        <li>
-                            <a href="#">Profile</a>
-                        </li>
-                        <li>
-                            <a href="#">Messages</a>
-                        </li>
-                    </ul>
+                    <aside class="crm_sidebar">
+                        <ul class="nav nav-stacked">
+                            <li class="active">
+                                <a href="#">
+                                    <i class="fa fa-list"></i>
+                                    &nbsp; Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="fa fa-sign-in fa-flip-horizontal"></i>
+                                    &nbsp; Messages
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
                 </div>
                 <main class="col-md-10">
                     <footer class="text-center">
