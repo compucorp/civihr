@@ -86,7 +86,9 @@
                     Donec id justo. Donec vitae sapien ut libero venenatis faucibus. Etiam imperdiet imperdiet orci. Phasellus volutpat, metus eget egestas mollis, lacus lacus blandit dui, id egestas quam mauris ut lacus.
 
                     <footer class="chr_page__footer">
-                        <span class="chr_page__footer__logo">CiviHR</strong>
+                        <span class="chr_page__footer__logo">
+                            <i class="icomoon-logo--full"></i>
+                        </span>
                         <p>
                             CiviHR is openly available under the GNU AGPL License
                         </p>

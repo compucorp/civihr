@@ -7,6 +7,16 @@
 
 .chr_page__footer {
     text-align: center;
+
+    > .chr_page__footer__logo {
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+}
+
+.chr_page__footer__logo {
+    color: $gray-darker;
+    font-size: em(22);
 }
 
 .chr_page__main {
