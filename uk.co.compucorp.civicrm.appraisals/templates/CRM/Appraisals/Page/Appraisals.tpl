@@ -16,7 +16,7 @@
                     <div class="col-md-4 text-right">
                         <a class="breadcrumb-bar-link">
                             <span class="fa fa-plus-circle"></span>
-                            Add Assignment
+                            &nbsp; Add Appraisal Cycle
                         </a>
                     </div>
                 </div>
@@ -45,43 +45,6 @@
                 </ul>
             </aside>
             <main class="chr_page__main">
-                Praesent egestas neque eu enim. Sed cursus turpis vitae tortor. Nunc sed turpis. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
-                <br>
-                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. Cras sagittis. Vestibulum facilisis, purus nec pulvinar iaculis, ligula mi congue nunc, vitae euismod ligula urna in dolor. Nunc nec neque.
-                <br>
-                Aenean ut eros et nisl sagittis vestibulum. Suspendisse non nisl sit amet velit hendrerit rutrum. Ut a nisl id ante tempus hendrerit. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam.
-                <br>
-                Etiam feugiat lorem non metus. Maecenas egestas arcu quis ligula mattis placerat. Nullam dictum felis eu pede mollis pretium. Nam eget dui.
-                <br>
-                Donec id justo. Donec vitae sapien ut libero venenatis faucibus. Etiam imperdiet imperdiet orci. Phasellus volutpat, metus eget egestas mollis, lacus lacus blandit dui, id egestas quam mauris ut lacus.
-                Praesent egestas neque eu enim. Sed cursus turpis vitae tortor. Nunc sed turpis. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
-                <br>
-                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. Cras sagittis. Vestibulum facilisis, purus nec pulvinar iaculis, ligula mi congue nunc, vitae euismod ligula urna in dolor. Nunc nec neque.
-                <br>
-                Aenean ut eros et nisl sagittis vestibulum. Suspendisse non nisl sit amet velit hendrerit rutrum. Ut a nisl id ante tempus hendrerit. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam.
-                <br>
-                Etiam feugiat lorem non metus. Maecenas egestas arcu quis ligula mattis placerat. Nullam dictum felis eu pede mollis pretium. Nam eget dui.
-                <br>
-                Donec id justo. Donec vitae sapien ut libero venenatis faucibus. Etiam imperdiet imperdiet orci. Phasellus volutpat, metus eget egestas mollis, lacus lacus blandit dui, id egestas quam mauris ut lacus.
-                Praesent egestas neque eu enim. Sed cursus turpis vitae tortor. Nunc sed turpis. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
-                <br>
-                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. Cras sagittis. Vestibulum facilisis, purus nec pulvinar iaculis, ligula mi congue nunc, vitae euismod ligula urna in dolor. Nunc nec neque.
-                <br>
-                Aenean ut eros et nisl sagittis vestibulum. Suspendisse non nisl sit amet velit hendrerit rutrum. Ut a nisl id ante tempus hendrerit. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam.
-                <br>
-                Etiam feugiat lorem non metus. Maecenas egestas arcu quis ligula mattis placerat. Nullam dictum felis eu pede mollis pretium. Nam eget dui.
-                <br>
-                Donec id justo. Donec vitae sapien ut libero venenatis faucibus. Etiam imperdiet imperdiet orci. Phasellus volutpat, metus eget egestas mollis, lacus lacus blandit dui, id egestas quam mauris ut lacus.
-                Praesent egestas neque eu enim. Sed cursus turpis vitae tortor. Nunc sed turpis. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.
-                <br>
-                Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. Cras sagittis. Vestibulum facilisis, purus nec pulvinar iaculis, ligula mi congue nunc, vitae euismod ligula urna in dolor. Nunc nec neque.
-                <br>
-                Aenean ut eros et nisl sagittis vestibulum. Suspendisse non nisl sit amet velit hendrerit rutrum. Ut a nisl id ante tempus hendrerit. Pellentesque libero tortor, tincidunt et, tincidunt eget, semper nec, quam.
-                <br>
-                Etiam feugiat lorem non metus. Maecenas egestas arcu quis ligula mattis placerat. Nullam dictum felis eu pede mollis pretium. Nam eget dui.
-                <br>
-                Donec id justo. Donec vitae sapien ut libero venenatis faucibus. Etiam imperdiet imperdiet orci. Phasellus volutpat, metus eget egestas mollis, lacus lacus blandit dui, id egestas quam mauris ut lacus.
-
                 <footer class="chr_page__footer">
                     <span class="chr_page__footer__logo">
                         <i class="icomoon-logo--full"></i>
