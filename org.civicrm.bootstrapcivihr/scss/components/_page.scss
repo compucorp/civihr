@@ -1,0 +1,33 @@
+.chr_page__content {
+
+    .chr_page__main {
+        margin-top: $line-height-computed;
+    }
+}
+
+.chr_page__footer {
+    text-align: center;
+}
+
+.chr_page__main {
+    padding-bottom: 50px;
+
+    &[class*="col-"] {
+        padding-right: $grid-gutter-width;
+    }
+
+    > .chr_page__footer {
+        margin-top: 50px;
+    }
+}
+
+.chr_page__sidebar {
+
+    &[class*="col-"] {
+        padding-right: 0;
+    }
+}
+
+.chr_page__sidebar__wrapper {
+    background: #fff;
+}
