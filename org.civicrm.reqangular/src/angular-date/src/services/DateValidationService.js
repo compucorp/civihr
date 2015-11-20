@@ -17,32 +17,55 @@ function DateValidationService($filter) {
         throw new Error(error_msg);
     };
 
+    me._reset = function(){
+        me.start = '';
+        me.end = '';
+
+        me.start_parts = [];
+        me.end_parts = [];
+    };
+
     /**
      *
      * @param {function} error
      * @throws TypeError
      */
     me.setErrorCallback = function setErrorCallback(error) {
-        if (error) {
+        if (!!(error && error.constructor && error.call && error.apply)) {
             me._error = error;
         } else {
-            throw new TypeError('Error callback is not defined.');
+            throw new TypeError('Error callback must be a function.');
+        }
+    };
+
+    me.setDates = function(start_date, end_date){
+        me._reset();
+        // We apply filter, so we have the same date format in both variables
+        if(!!start_date) {
+            me.start = $filter('CustomDate')(start_date);
+            me.start_parts = me.start.split('/');
+        } else {
+            me._error('Start date is required!', ['start_date']);
+        }
+
+        if(!!end_date) {
+            me.end = $filter('CustomDate')(end_date);
+            me.end_parts = me.end.split('/');
         }
     };
 
     me.validate = function validate(start_date, end_date) {
-        // We apply filter, so we have the same date format in both variables
-        me.start = $filter('customDate')(start_date);
-        me.end = $filter('customDate')(end_date);
 
-        me.start_parts = me.start.split('/');
-        me.end_parts = me.end.split('/');
+        if(!me.start_date || !!start_date) me.setDates(start_date, end_date);
 
-        me.checkIfStartDateIsLower(s, e, 2);
+        me.checkIfFormatIsValid();
+        me.checkIfStartDateIsLower(me.start_parts, me.end_parts, 2);
         //Check for year, month and day
         for (var index = 2; index > -1; index--) {
-            me.checkIfValuesAreValid(index, e, ['end_date']);
-            me.checkIfValuesAreValid(index, s, ['start_date']);
+            if(me.end) {
+                me.checkIfValuesAreValid(index, me.end_parts, ['end_date']);
+            }
+            me.checkIfValuesAreValid(index, me.start_parts, ['start_date']);
         }
     };
 
@@ -50,8 +73,11 @@ function DateValidationService($filter) {
         if (me.start.length !== 10 || me.start_parts.length != 3 || me.checkFormat(me.start_parts)) {
             me._error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['start_date']);
         }
-        if (me.end.length !== 10 || me.end_parts.length != 3 || me.checkFormat(me.end_parts)) {
-            me._error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['end_date']);
+
+        if(me.end) {
+            if (me.end.length !== 10 || me.end_parts.length != 3 || me.checkFormat(me.end_parts)) {
+                me._error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['end_date']);
+            }
         }
     };
 
@@ -65,12 +91,15 @@ function DateValidationService($filter) {
     };
 
     me.checkIfValuesAreValid = function checkIfValuesAreValid(index, date, field_name) {
-        if (index == 2 && (parseInt(date[index], 10) < $scope.minDate.getFullYear())) {
-            me._error('Year cannot be lower than ' + $scope.minDate.getFullYear() + '.', field_name);
+        if (me.options.minDate) {
+            if (index == 2 && (parseInt(date[index], 10) < me.options.minDate.getFullYear())) {
+                me._error('Year cannot be lower than ' + me.options.minDate.getFullYear() + '.', field_name);
+            }
         }
-
-        if (index == 2 && (parseInt(date[index], 10) > $scope.maxDate.getFullYear())) {
-            me._error('Year cannot be higher than ' + $scope.maxDate.getFullYear() + '.', field_name);
+        if (me.options.maxDate) {
+            if (index == 2 && (parseInt(date[index], 10) > me.options.maxDate.getFullYear())) {
+                me._error('Year cannot be higher than ' + me.options.maxDate.getFullYear() + '.', field_name);
+            }
         }
 
         if (parseInt(date[index], 10) < 1) {
@@ -84,6 +113,9 @@ function DateValidationService($filter) {
         if (index === 0 && (parseInt(date[index], 10) > 31)) {
             me._error('Day of the month is invalid.', field_name);
         }
+        if(isNaN(parseInt(date[index], 10))){
+            me._error('It\'s not a date!', field_name);
+        }
     };
 
     /**
@@ -96,7 +128,10 @@ function DateValidationService($filter) {
      */
     me.checkIfStartDateIsLower = function checkIfStartDateIsLower(start_parts, end_parts, index) {
         //Prevent endless iteration
-        if (index < 0) return true;
+        if (index < 0){
+            me._error('Start Date cannot be he same as End Date!', ['start_date', 'end_date']);
+            return true;
+        }
 
         if (parseInt(end_parts[index], 10) < parseInt(start_parts[index], 10)) {
             me._error('Start Date cannot be higher than End Date!', ['start_date', 'end_date']);
