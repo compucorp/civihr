@@ -328,7 +328,8 @@ define(['services/services'], function (services) {
 
                         CRM.api3('OptionValue', 'get', {
                             "sequential": 1,
-                            "option_group_id": { "IN": option_group_ids }
+                            "option_group_id": { "IN": option_group_ids },
+                            "options": {"limit":1000}
                         }).done(function(result) {
 
                             // Pass the additional info about optionGroupData
