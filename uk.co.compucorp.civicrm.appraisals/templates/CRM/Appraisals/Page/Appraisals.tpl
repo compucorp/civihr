@@ -3,31 +3,23 @@
 
 <div id="bootstrap-theme">
     <div id="{$module}">
-        <nav class="navbar navbar-default">
+        <div class="breadcrumb-bar">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <ol class="breadcrumb">
-                        <li>
-                            <a href="#" class="navbar-link">CiviHR</a>
-                        </li>
-                        <li>
-                            <a href="#" class="navbar-link">Appraisals</a>
-                        </li>
-                        <li class="active">
-                            Dashboard
-                        </li>
+                        <li>CiviHR</li>
+                        <li>Appraisals</li>
+                        <li class="active">Dashboard</li>
                     </ol>
                 </div>
-                <div class="col-md-offset-4 col-md-2">
-                    <span class="navbar-text">
-                        <a class="navbar-link">
-                            <span class="fa fa-plus-circle"></span>
-                            Add Assignment
-                        </a>
-                    </span>
+                <div class="col-md-4 text-right">
+                    <a class="breadcrumb-bar-link">
+                        <span class="fa fa-plus-circle"></span>
+                        Add Assignment
+                    </a>
                 </div>
             </div>
-        </nav>
+        </div>
         <section>
             <div class="row">
                 <div class="col-md-2">
