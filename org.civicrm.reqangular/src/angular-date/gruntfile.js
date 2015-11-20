@@ -23,12 +23,15 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['src/**/*.js', 'main.js'], tasks: ['browserify', 'test']
+            },
+            options: {
+                atBegin: true
             }
         },
         karma: {
             unit: {
                 options: {
-                    frameworks: ['jasmine'],
+                    frameworks: ['jasmine', 'commonjs'],
                     singleRun: true,
                     browsers: ['PhantomJS'],
                     files: [
@@ -36,7 +39,15 @@ module.exports = function (grunt) {
                         'dist/angular-date.js',
                         'node_modules/angular-mocks/angular-mocks.js',
                         'src/**/*Test.js'
-                    ]
+                    ],
+                    reporters: ['progress', 'coverage'],
+                    preprocessors: {
+                        'dist/angular-date.js': ['commonjs', 'coverage']
+                    },
+                    coverageReporter: {
+                        type : 'html',
+                        dir : 'coverage/'
+                    }
                 }
             }
         },
