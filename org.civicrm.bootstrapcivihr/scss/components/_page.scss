@@ -1,7 +1,21 @@
 .chr_page__content {
 
-    .chr_page__main {
-        margin-top: $line-height-computed;
+    @media (min-width: $screen-md-min) {
+        overflow: hidden;
+
+        .chr_page__main {
+            margin-left: $chr-page-sidebar-width;
+        }
+
+        .chr_page__sidebar {
+            float: left;
+            width: $chr-page-sidebar-width;
+
+            // equal height with container solution
+            margin-bottom: -99999px;
+            padding-bottom: 99999px;
+        }
+
     }
 }
 
@@ -20,11 +34,8 @@
 }
 
 .chr_page__main {
+    padding: $chr-page-main-padding;
     padding-bottom: 50px;
-
-    &[class*="col-"] {
-        padding-right: $grid-gutter-width;
-    }
 
     > .chr_page__footer {
         margin-top: 50px;
@@ -32,12 +43,5 @@
 }
 
 .chr_page__sidebar {
-
-    &[class*="col-"] {
-        padding-right: 0;
-    }
-}
-
-.chr_page__sidebar__wrapper {
     background: #fff;
 }
