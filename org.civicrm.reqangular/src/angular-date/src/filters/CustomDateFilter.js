@@ -1,14 +1,28 @@
 module.exports = function ($filter) {
     return function (datetime) {
-        try {
-            var match = datetime.match(/^(\d+)-(\d+)-(\d+)/), date;
+        if(typeof datetime === 'string') {
+            var match, match2, date;
 
-            date = new Date(match[1], match[2] - 1, match[3]);
+            match = datetime.match(/^(\d{2})-(\d{2})-(\d{4})/);
+            match2 = datetime.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if(match){
+                date = new Date(match[3], match[2] - 1, match[1]);
+                return $filter('date')(date.getTime(), 'dd/MM/yyyy');
+            } else if(match2){
+                date = new Date(match2[1], match2[2] - 1, match2[3]);
+                return $filter('date')(date.getTime(), 'dd/MM/yyyy');
+            }
 
-            return $filter('date')(date.getTime(), 'dd/MM/yyyy');
-        } catch (e) {
+            return $filter('date')(datetime, 'dd/MM/yyyy');
+
+        } else if(typeof datetime === 'object'){
+            if(datetime.getTime){
+                return $filter('date')(datetime.getTime(), 'dd/MM/yyyy');
+            }
+        } else if(typeof datetime === 'number'){
             return $filter('date')(datetime, 'dd/MM/yyyy');
         }
 
+        return null;
     };
 };
