@@ -46,6 +46,334 @@
             </div>
             <div class="col-md-10">
                 <main class="crm_page__main">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <section class="panel panel-default">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">Active Cycles</h2>
+                                </header>
+                                <div class="panel-body text-center">
+                                    9
+                                </div>
+                                <footer class="panel-footer">
+                                    <dl class="dl-horizontal dl-horizontal-inline">
+                                        <dt>Total Cycles:</dt>
+                                        <dd>20</dd>
+                                    </dl>
+                                </footer>
+                            </section>
+                        </div>
+                        <div class="col-md-4">
+                            <section class="panel panel-default">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">Status</h2>
+                                </header>
+                                <div class="panel-body">
+                                </div>
+                                <footer class="panel-footer">
+                                    <dl class="dl-horizontal dl-horizontal-inline">
+                                        <dt>Total number of appraysals in all cycles:</dt>
+                                        <dd>248</dd>
+                                    </dl>
+                                </footer>
+                            </section>
+                        </div>
+                        <div class="col-md-4">
+                            <section class="panel panel-default">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">Grades</h2>
+                                </header>
+                                <div class="panel-body"></div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <section class="panel panel-default">
+                                <header class="panel-heading clearfix">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <h2 class="panel-title">
+                                                Appraisal Cycles
+                                            </h2>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-secondary-outline active">Active</button>
+                                                <button class="btn btn-secondary-outline">Inactive</button>
+                                                <button class="btn btn-secondary-outline">All</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-right">
+                                            <a href="#">Filter Appraisals</a>
+                                        </div>
+                                    </div>
+                                </header>
+                                <div class="panel-body">
+                                    <form class="form-inline">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="cycle-name">Cycle Name:</label>
+                                                    <input type="text" class="form-control" id="cycle-name">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="cycle-type">Cycle type:</label>
+                                                    <select class="form-control" id="cycle-type">
+                                                        <option value="">- select -</option>
+                                                        <option value="foo">foo</option>
+                                                        <option value="bar">bar</option>
+                                                        <option value="baz">baz</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="cycle-status">Cycle Status:</label>
+                                                    <select class="form-control" id="cycle-status">
+                                                        <option value="">- select -</option>
+                                                        <option value="foo">foo</option>
+                                                        <option value="bar">bar</option>
+                                                        <option value="baz">baz</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="self-due-from">Self Appraisal Due From:</label>
+                                                    <input type="text" class="form-control" id="self-due-from">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="self-due-to">To:</label>
+                                                    <input type="text" class="form-control" id="self-due-to">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="manager-due-from">Manager Appraisal Due From:</label>
+                                                    <input type="text" class="form-control" id="manager-due-from">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="manager-due-to">To:</label>
+                                                    <input type="text" class="form-control" id="manager-due-to">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="grade-due-from">Grade Due From:</label>
+                                                    <input type="text" class="form-control" id="grade-due-from">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="grade-due-to">To:</label>
+                                                    <input type="text" class="form-control" id="grade-due-to">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="appraisal-due-from">Appraisal Period From:</label>
+                                                    <input type="text" class="form-control" id="appraisal-due-from">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="appraisal-due-to">To:</label>
+                                                    <input type="text" class="form-control" id="appraisal-due-to">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <section class="panel panel-primary panel--dashboard-appraisals">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">
+                                        10 Overdue Appraisals and 80 Due this week
+                                    </h2>
+                                </header>
+                                <article class="panel panel-default panel-default-plain-inverted">
+                                    <header class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3 class="panel-title">
+                                                    Appraisal Cycle 1 (Active)
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong>100 Appraisals</strong>
+                                                <strong>45% complete</strong>
+                                                <a href="#">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </header>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>Cycle ID:</dt>
+                                            <dd>42131</dd>
+                                            <dt>Period:</dt>
+                                            <dd>01/01/2014 - 01/01/2015</dd>
+                                            <dt>Next Due:</dt>
+                                            <dd>Manager Appraisal (23/23/2023)</dd>
+                                        </dl>
+                                    </div>
+                                    <footer class="panel-footer">
+
+                                    </footer>
+                                </article>
+                                <article class="panel panel-default panel-default-plain-inverted">
+                                    <header class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3 class="panel-title">
+                                                    Appraisal Cycle 2 (Active)
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong>100 Appraisals</strong>
+                                                <strong>45% complete</strong>
+                                                <a href="#">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </header>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>Cycle ID:</dt>
+                                            <dd>42131</dd>
+                                            <dt>Period:</dt>
+                                            <dd>01/01/2014 - 01/01/2015</dd>
+                                            <dt>Next Due:</dt>
+                                            <dd>Self Appraisal (23/23/2023)</dd>
+                                        </dl>
+                                    </div>
+                                    <footer class="panel-footer">
+
+                                    </footer>
+                                </article>
+                                <article class="panel panel-default panel-default-plain-inverted">
+                                    <header class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3 class="panel-title">
+                                                    Appraisal Cycle 3 (Active)
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong>100 Appraisals</strong>
+                                                <strong>45% complete</strong>
+                                                <a href="#">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </header>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>Cycle ID:</dt>
+                                            <dd>42131</dd>
+                                            <dt>Period:</dt>
+                                            <dd>01/01/2014 - 01/01/2015</dd>
+                                            <dt>Next Due:</dt>
+                                            <dd>Self Appraisal (23/23/2023)</dd>
+                                        </dl>
+                                    </div>
+                                    <footer class="panel-footer">
+
+                                    </footer>
+                                </article>
+                                <article class="panel panel-default panel-default-plain-inverted">
+                                    <header class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3 class="panel-title">
+                                                    Appraisal Cycle 4 (Active)
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong>100 Appraisals</strong>
+                                                <strong>45% complete</strong>
+                                                <a href="#">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </header>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>Cycle ID:</dt>
+                                            <dd>42131</dd>
+                                            <dt>Period:</dt>
+                                            <dd>01/01/2014 - 01/01/2015</dd>
+                                            <dt>Next Due:</dt>
+                                            <dd>Self Appraisal (23/23/2023)</dd>
+                                        </dl>
+                                    </div>
+                                    <footer class="panel-footer">
+
+                                    </footer>
+                                </article>
+                                <article class="panel panel-default panel-default-plain-inverted">
+                                    <header class="panel-heading">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h3 class="panel-title">
+                                                    Appraisal Cycle 5 (Active)
+                                                </h3>
+                                            </div>
+                                            <div class="col-md-6 text-right">
+                                                <strong>100 Appraisals</strong>
+                                                <strong>45% complete</strong>
+                                                <a href="#">
+                                                    <i class="fa fa-ellipsis-v"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </header>
+                                    <div class="panel-body">
+                                        <dl class="dl-horizontal">
+                                            <dt>Cycle ID:</dt>
+                                            <dd>42131</dd>
+                                            <dt>Period:</dt>
+                                            <dd>01/01/2014 - 01/01/2015</dd>
+                                            <dt>Next Due:</dt>
+                                            <dd>Self Appraisal (23/23/2023)</dd>
+                                        </dl>
+                                    </div>
+                                    <footer class="panel-footer">
+
+                                    </footer>
+                                </article>
+                                <div class="panel--dashboard-appraisals__show-more text-center">
+                                    <button class="btn btn-default text-uppercase">
+                                        show more
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                     <footer class="crm_page__footer">
                         <span class="crm_page__footer__logo">
                             <i class="icomoon-logo--full"></i>
