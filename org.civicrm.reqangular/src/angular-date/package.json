@@ -26,7 +26,8 @@
     "phantomjs": "^1.9.18",
     "karma-coverage": "~0.5.3",
     "browserify-istanbul": "~0.2.1",
-    "karma-commonjs": "0.0.13"
+    "karma-commonjs": "0.0.13",
+    "browserify-derequire": "~0.9.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

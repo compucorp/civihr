@@ -15,7 +15,7 @@ module.exports = function ($filter) {
 
             return $filter('date')(datetime, 'dd/MM/yyyy');
 
-        } else if(typeof datetime === 'object'){
+        } else if(typeof datetime === 'object' && datetime !== null ){
             if(datetime.getTime){
                 return $filter('date')(datetime.getTime(), 'dd/MM/yyyy');
             }

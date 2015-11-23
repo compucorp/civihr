@@ -1,11 +1,13 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 var Module = angular.module('angular-date', []);
 
-Module.service('DateValidationService', DateValidationService);
-Module.filter('CustomDate', CustomDateFilter);
-Module.directive('customDateInput', CustomDateInput);
+Module.service('DateValidationService', _dereq_('./src/services/DateValidationService'));
+Module.filter('CustomDate', _dereq_('./src/filters/CustomDateFilter'));
+Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'));
 
 
-function CustomDateInput($filter) {
+},{"./src/directives/CustomDateInput":2,"./src/filters/CustomDateFilter":3,"./src/services/DateValidationService":4}],2:[function(_dereq_,module,exports){
+module.exports = function CustomDateInput($filter) {
     return {
         require: 'ngModel',
         link: function(scope, element, attrs, ngModelController) {
@@ -17,8 +19,10 @@ function CustomDateInput($filter) {
             ngModelController.$formatters.push(convert);
         }
     };
-}
-function CustomDateFilter($filter) {
+};
+
+},{}],3:[function(_dereq_,module,exports){
+module.exports = function ($filter) {
     return function (datetime) {
         if(typeof datetime === 'string') {
             var match, match2, date;
@@ -35,7 +39,7 @@ function CustomDateFilter($filter) {
 
             return $filter('date')(datetime, 'dd/MM/yyyy');
 
-        } else if(typeof datetime === 'object'){
+        } else if(typeof datetime === 'object' && datetime !== null ){
             if(datetime.getTime){
                 return $filter('date')(datetime.getTime(), 'dd/MM/yyyy');
             }
@@ -45,8 +49,9 @@ function CustomDateFilter($filter) {
 
         return null;
     };
-}
+};
 
+},{}],4:[function(_dereq_,module,exports){
 function DateValidationService($filter) {
     var me = this;
 
@@ -189,3 +194,6 @@ function DateValidationService($filter) {
         }
     };
 }
+
+module.exports = DateValidationService;
+},{}]},{},[1]);

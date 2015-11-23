@@ -7,6 +7,11 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     'dist/angular-date.js': ['main.js']
+                },
+                options: {
+                    plugin: [
+                        [ "browserify-derequire" ]
+                    ]
                 }
             }
         },

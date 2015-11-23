@@ -28,6 +28,7 @@ describe('Unit: CustomDateFilter', function() {
 
     it('Invalid date Should return null.', function() {
         expect(Filter(undefined)).toEqual(null);
+        expect(Filter(null)).toEqual(null);
     });
 
     it('Empty date Should return empty string.', function() {
