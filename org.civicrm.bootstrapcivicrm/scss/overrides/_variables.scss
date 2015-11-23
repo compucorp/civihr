@@ -1,3 +1,17 @@
+//== CiviCRM Page
+//
+//##
+
+$crm-page-sidebar-bg:          #fff !default;
+$crm-page-sidebar-width:       170px !default;
+$crm-page-main-padding:        15px !default;
+
+$crm-page-topbar-bg:           #586277 !default;
+$crm-page-topbar-color:        #fff !default;
+$crm-page-topbar-item-padding: 15px !default;
+
+
+
 //
 // Variables override
 // --------------------------------------------------
@@ -128,6 +142,29 @@ $panel-default-text:          $gray-darker !default;
 $panel-default-heading-bg:    #ffffff !default;
 
 
+//== Grid system
+//
+//## Define your custom responsive grid.
+
+$grid-gutter-width: 16px !default;
+
+
+//== Navs
+//
+//##
+
+$nav-link-hover-bg:         $brand-primary-light !default;
+
+//=== Nav contained in sidebar
+$nav-pills-sidebar-border-radius: 0;
+$nav-pills-sidebar-color:         $gray-darker;
+$nav-pills-sidebar-weigth:        600;
+
+$nav-pills-sidebar-link-padding:  16px 17px!default;
+$nav-pills-sidebar-link-color:    $brand-primary !default;
+$nav-pills-sidebar-link-hover-bg: $background-color !default;
+
+
 //== Pagination
 //
 //##
@@ -143,6 +180,13 @@ $pagination-active-bg:                 $pagination-bg !default;
 
 $pagination-disabled-color:            $gray-lighter !default;
 $pagination-disabled-bg:               $pagination-bg !default;
+
+
+//== Breadcrumbs
+//
+//##
+
+$breadcrumb-separator:          ">" !default;
 
 
 //== Type

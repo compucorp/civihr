@@ -1,11 +1,13 @@
-@import "overrides/variables";
-
 @import "../../org.civicrm.bootstrapcivicrm/scss/overrides/variables";
 @import "../../org.civicrm.bootstrapcivicrm/scss/mixins/*";
+
+@import "overrides/variables";
 
 @import "../../org.civicrm.bootstrap/scss/overrides/variables";
 @import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/scss/variables";
 @import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/scss/mixins";
+
+@import "fonts/*";
 
 #{$bootstrap-namespace} {
     @import "overrides/style/*";
