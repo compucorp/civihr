@@ -22,7 +22,7 @@
         </div>
         <div class="crm_page__content">
             <aside class="crm_page__sidebar">
-                <ul class="nav nav-stacked nav-stacked-sidebar">
+                <ul class="nav nav-pills nav-stacked nav-pills-stacked-sidebar">
                     <li class="active">
                         <a href="#">
                             <i class="fa fa-list"></i>
