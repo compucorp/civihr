@@ -4,20 +4,18 @@
 <div id="bootstrap-theme">
     <section id="{$module}" class="chr_page">
         <div class="crm_page__topbar">
-            <div class="breadcrumb-bar">
-                <div class="row">
-                    <div class="col-md-8">
-                        <ol class="breadcrumb">
-                            <li>CiviHR</li>
-                            <li>Appraisals</li>
-                            <li class="active">Dashboard</li>
-                        </ol>
-                    </div>
-                    <div class="col-md-4 text-right">
-                        <a class="breadcrumb-bar-link">
-                            <span class="fa fa-plus-circle"></span>
-                            &nbsp; Add Appraisal Cycle
-                        </a>
+            <div class="row">
+                <div class="col-md-8">
+                    <ol class="breadcrumb">
+                        <li>CiviHR</li>
+                        <li>Appraisals</li>
+                        <li class="active">Dashboard</li>
+                    </ol>
+                </div>
+                <div class="col-md-4 text-right">
+                    <div class="crm_page__topbar__link">
+                        <span class="fa fa-plus-circle"></span>&nbsp;
+                        <a href="#">Add Appraisal Cycle</a>
                     </div>
                 </div>
             </div>
