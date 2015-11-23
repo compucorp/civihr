@@ -235,7 +235,6 @@ define(['services/services'], function (services) {
                 }
 
                 var deferred = $q.defer();
-
                 CRM.api3('HrJobRoles', 'create', {
                     "sequential": 1,
                     "id": role_id,

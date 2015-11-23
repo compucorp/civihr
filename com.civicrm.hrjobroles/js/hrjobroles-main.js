@@ -12,10 +12,8 @@ var reqHrjr = require.config({
 reqHrjr([
     'app',
     'controllers/example',
-    'filters/customDate',
     'services/example',
-    'directives/example',
-    'directives/customDateInput'
+    'directives/example'
 ],function(app){
     'use strict';
 
