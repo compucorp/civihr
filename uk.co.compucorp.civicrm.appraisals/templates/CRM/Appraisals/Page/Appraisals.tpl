@@ -3,7 +3,7 @@
 
 <div id="bootstrap-theme">
     <section id="{$module}" class="chr_page">
-        <div class="chr_page__topbar">
+        <div class="crm_page__topbar">
             <div class="breadcrumb-bar">
                 <div class="row">
                     <div class="col-md-8">
@@ -22,8 +22,8 @@
                 </div>
             </div>
         </div>
-        <div class="chr_page__content">
-            <aside class="chr_page__sidebar">
+        <div class="crm_page__content">
+            <aside class="crm_page__sidebar">
                 <ul class="nav nav-stacked nav-stacked-sidebar">
                     <li class="active">
                         <a href="#">
@@ -44,9 +44,9 @@
                     </li>
                 </ul>
             </aside>
-            <main class="chr_page__main">
-                <footer class="chr_page__footer">
-                    <span class="chr_page__footer__logo">
+            <main class="crm_page__main">
+                <footer class="crm_page__footer">
+                    <span class="crm_page__footer__logo">
                         <i class="icomoon-logo--full"></i>
                     </span>
                     <p>

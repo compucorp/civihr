@@ -1,15 +1,15 @@
-.chr_page__content {
+.crm_page__content {
 
     @media (min-width: $screen-md-min) {
         overflow: hidden;
 
-        .chr_page__main {
-            margin-left: $chr-page-sidebar-width;
+        .crm_page__main {
+            margin-left: $crm-page-sidebar-width;
         }
 
-        .chr_page__sidebar {
+        .crm_page__sidebar {
             float: left;
-            width: $chr-page-sidebar-width;
+            width: $crm-page-sidebar-width;
 
             // equal height with container solution
             margin-bottom: -99999px;
@@ -19,29 +19,29 @@
     }
 }
 
-.chr_page__footer {
+.crm_page__footer {
     text-align: center;
 
-    > .chr_page__footer__logo {
+    > .crm_page__footer__logo {
         display: inline-block;
         margin-bottom: 15px;
     }
 }
 
-.chr_page__footer__logo {
+.crm_page__footer__logo {
     color: $gray-darker;
     font-size: em(22);
 }
 
-.chr_page__main {
-    padding: $chr-page-main-padding;
+.crm_page__main {
+    padding: $crm-page-main-padding;
     padding-bottom: 50px;
 
-    > .chr_page__footer {
+    > .crm_page__footer {
         margin-top: 50px;
     }
 }
 
-.chr_page__sidebar {
-    background: $chr-page-sidebar-bg;
+.crm_page__sidebar {
+    background: $crm-page-sidebar-bg;
 }
