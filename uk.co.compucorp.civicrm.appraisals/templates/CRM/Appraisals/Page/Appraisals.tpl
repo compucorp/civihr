@@ -210,7 +210,7 @@
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h3 class="panel-title">
+                                                <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 1 (Active)
                                                 </h3>
                                             </div>
@@ -244,7 +244,7 @@
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h3 class="panel-title">
+                                                <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 2 (Active)
                                                 </h3>
                                             </div>
@@ -278,7 +278,7 @@
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h3 class="panel-title">
+                                                <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 3 (Active)
                                                 </h3>
                                             </div>
@@ -312,7 +312,7 @@
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h3 class="panel-title">
+                                                <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 4 (Active)
                                                 </h3>
                                             </div>
@@ -346,7 +346,7 @@
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h3 class="panel-title">
+                                                <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 5 (Active)
                                                 </h3>
                                             </div>
