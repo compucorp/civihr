@@ -206,7 +206,7 @@
                                         10 Overdue Appraisals and 80 Due this week
                                     </h2>
                                 </header>
-                                <article class="panel panel-default panel-default-plain-inverted">
+                                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -215,11 +215,13 @@
                                                 </h3>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong>100 Appraisals</strong>
-                                                <strong>45% complete</strong>
-                                                <a href="#">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
+                                                <div class="chr_appraisal-cycle-summary__details">
+                                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
+                                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -238,7 +240,7 @@
 
                                     </footer>
                                 </article>
-                                <article class="panel panel-default panel-default-plain-inverted">
+                                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -247,11 +249,13 @@
                                                 </h3>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong>100 Appraisals</strong>
-                                                <strong>45% complete</strong>
-                                                <a href="#">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
+                                                <div class="chr_appraisal-cycle-summary__details">
+                                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
+                                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -270,7 +274,7 @@
 
                                     </footer>
                                 </article>
-                                <article class="panel panel-default panel-default-plain-inverted">
+                                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -279,11 +283,13 @@
                                                 </h3>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong>100 Appraisals</strong>
-                                                <strong>45% complete</strong>
-                                                <a href="#">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
+                                                <div class="chr_appraisal-cycle-summary__details">
+                                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
+                                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -302,7 +308,7 @@
 
                                     </footer>
                                 </article>
-                                <article class="panel panel-default panel-default-plain-inverted">
+                                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -311,11 +317,13 @@
                                                 </h3>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong>100 Appraisals</strong>
-                                                <strong>45% complete</strong>
-                                                <a href="#">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
+                                                <div class="chr_appraisal-cycle-summary__details">
+                                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
+                                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -334,7 +342,7 @@
 
                                     </footer>
                                 </article>
-                                <article class="panel panel-default panel-default-plain-inverted">
+                                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -343,11 +351,13 @@
                                                 </h3>
                                             </div>
                                             <div class="col-md-6 text-right">
-                                                <strong>100 Appraisals</strong>
-                                                <strong>45% complete</strong>
-                                                <a href="#">
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
+                                                <div class="chr_appraisal-cycle-summary__details">
+                                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
+                                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>

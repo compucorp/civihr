@@ -1,0 +1,16 @@
+.chr_appraisal-cycle-summary__details {
+
+    > .chr_appraisal-cycle-summary__meta {
+        margin-right: 15px;
+    }
+}
+
+.chr_appraisal-cycle-summary__actions {
+    color: inherit;
+}
+
+.chr_appraisal-cycle-summary__meta { // same as .panel-title
+    font-size: $font-size-h3;
+    font-weight: $font-weight-h3;
+    line-height: $headings-line-height;
+}
