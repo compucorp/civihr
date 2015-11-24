@@ -218,9 +218,23 @@
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
-                                                        <i class="fa fa-ellipsis-v"></i>
-                                                    </a>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-chain"></i> View Cycle
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-pencil"></i> Edit Cycle
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -252,9 +266,23 @@
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
-                                                        <i class="fa fa-ellipsis-v"></i>
-                                                    </a>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-chain"></i> View Cycle
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-pencil"></i> Edit Cycle
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -286,9 +314,23 @@
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
-                                                        <i class="fa fa-ellipsis-v"></i>
-                                                    </a>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-chain"></i> View Cycle
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-pencil"></i> Edit Cycle
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -320,9 +362,23 @@
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
-                                                        <i class="fa fa-ellipsis-v"></i>
-                                                    </a>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-chain"></i> View Cycle
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-pencil"></i> Edit Cycle
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -354,9 +410,23 @@
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <a class="chr_appraisal-cycle-summary__actions" href="#">
-                                                        <i class="fa fa-ellipsis-v"></i>
-                                                    </a>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-chain"></i> View Cycle
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a href="#">
+                                                                    <i class="fa fa-pencil"></i> Edit Cycle
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
