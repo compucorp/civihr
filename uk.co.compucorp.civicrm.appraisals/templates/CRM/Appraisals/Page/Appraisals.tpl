@@ -225,7 +225,7 @@
                                         <hr>
                                     </header>
                                     <div class="panel-body">
-                                        <dl class="dl-horizontal">
+                                        <dl class="dl-inline">
                                             <dt>Cycle ID:</dt>
                                             <dd>42131</dd>
                                             <dt>Period:</dt>
@@ -257,7 +257,7 @@
                                         <hr>
                                     </header>
                                     <div class="panel-body">
-                                        <dl class="dl-horizontal">
+                                        <dl class="dl-inline">
                                             <dt>Cycle ID:</dt>
                                             <dd>42131</dd>
                                             <dt>Period:</dt>
@@ -289,7 +289,7 @@
                                         <hr>
                                     </header>
                                     <div class="panel-body">
-                                        <dl class="dl-horizontal">
+                                        <dl class="dl-inline">
                                             <dt>Cycle ID:</dt>
                                             <dd>42131</dd>
                                             <dt>Period:</dt>
@@ -321,7 +321,7 @@
                                         <hr>
                                     </header>
                                     <div class="panel-body">
-                                        <dl class="dl-horizontal">
+                                        <dl class="dl-inline">
                                             <dt>Cycle ID:</dt>
                                             <dd>42131</dd>
                                             <dt>Period:</dt>
@@ -353,7 +353,7 @@
                                         <hr>
                                     </header>
                                     <div class="panel-body">
-                                        <dl class="dl-horizontal">
+                                        <dl class="dl-inline">
                                             <dt>Cycle ID:</dt>
                                             <dd>42131</dd>
                                             <dt>Period:</dt>
