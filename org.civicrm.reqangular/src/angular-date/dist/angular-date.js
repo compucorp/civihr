@@ -166,7 +166,7 @@ function DateValidationService($filter) {
         }
 
         if (parseInt(date[index], 10) < 1) {
-            me._error('Neither Days or Months can be negative or equal to 0.', field_name);
+            me._error('Neither Days nor Months can be negative or equal to 0.', field_name);
         }
 
         if (index == 1 && (parseInt(date[index], 10) > 12)) {

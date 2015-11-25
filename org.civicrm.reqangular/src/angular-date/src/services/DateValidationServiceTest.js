@@ -109,7 +109,7 @@ describe('Unit: DateValidationService', function() {
 
         expect(function(){
             Service.validate('12/11/2009', '10/-1/2012');
-        }).toThrow(new Error('Neither Days or Months can be negative or equal to 0.'));
+        }).toThrow(new Error('Neither Days nor Months can be negative or equal to 0.'));
 
         expect(function(){
             Service.validate('12/11/2009', '10/91/2012');
