@@ -110,71 +110,45 @@
                                     </div>
                                 </header>
                                 <div class="panel-body">
-                                    <form class="form-inline">
+                                    <form class="form-horizontal">
                                         <div class="row">
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label for="cycle-name">Cycle Name:</label>
-                                                    <input type="text" class="form-control" id="cycle-name">
+                                                    <label for="cycle-name" class="control-label col-sm-3">
+                                                        Cycle Name:
+                                                    </label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="cycle-name">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label for="cycle-type">Cycle type:</label>
-                                                    <select class="form-control" id="cycle-type">
-                                                        <option value="">- select -</option>
-                                                        <option value="foo">foo</option>
-                                                        <option value="bar">bar</option>
-                                                        <option value="baz">baz</option>
-                                                    </select>
+                                                    <label for="cycle-type" class="control-label col-sm-5">
+                                                        Cycle type:
+                                                    </label>
+                                                    <div class="col-sm-7">
+                                                        <select class="form-control" id="cycle-type">
+                                                            <option value="">- select -</option>
+                                                            <option value="foo">foo</option>
+                                                            <option value="bar">bar</option>
+                                                            <option value="baz">baz</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-3">
                                                 <div class="form-group">
-                                                    <label for="cycle-status">Cycle Status:</label>
-                                                    <select class="form-control" id="cycle-status">
-                                                        <option value="">- select -</option>
-                                                        <option value="foo">foo</option>
-                                                        <option value="bar">bar</option>
-                                                        <option value="baz">baz</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm-4">
-                                                <div class="form-group form-group-sm">
-                                                    <label for="self-due-from">Self Appraisal Due From:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="self-due-from">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <div class="form-group form-group-sm">
-                                                    <label for="self-due-to">To:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="self-due-to">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-4">
-                                                <div class="form-group form-group-sm">
-                                                    <label for="manager-due-from">Manager Appraisal Due From:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="manager-due-from">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <div class="form-group form-group-sm">
-                                                    <label for="manager-due-to">To:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="manager-due-to">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    <label for="cycle-status" class="control-label col-sm-5">
+                                                        Cycle Status:
+                                                    </label>
+                                                    <div class="col-sm-7">
+                                                        <select class="form-control" id="cycle-status">
+                                                            <option value="">- select -</option>
+                                                            <option value="foo">foo</option>
+                                                            <option value="bar">bar</option>
+                                                            <option value="baz">baz</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,37 +156,107 @@
                                         <div class="row">
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
-                                                    <label for="grade-due-from">Grade Due From:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="grade-due-from">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    <label for="self-due-from" class="control-label col-sm-7">
+                                                        Self Appraisal Due From:
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="self-due-from">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
-                                                    <label for="grade-due-to">To:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="grade-due-to">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    <label for="self-due-to" class="control-label col-sm-2">
+                                                        To:
+                                                    </label>
+                                                    <div class="col-sm-10">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="self-due-to">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
-                                                    <label for="appraisal-due-from">Appraisal Period From:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="appraisal-due-from">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    <label for="manager-due-from" class="control-label col-sm-7">
+                                                        Manager Appraisal Due From:
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="manager-due-from">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
-                                                    <label for="appraisal-due-to">To:</label>
-                                                    <div class="input-group input-group-sm input-group-unstyled">
-                                                        <input type="text" class="form-control" id="appraisal-due-to">
-                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    <label for="manager-due-to" class="control-label col-sm-2">
+                                                        To:
+                                                    </label>
+                                                    <div class="col-sm-10">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="manager-due-to">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <div class="form-group form-group-sm">
+                                                    <label for="grade-due-from" class="control-label col-sm-7">
+                                                        Grade Due From:
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="grade-due-from">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="form-group form-group-sm">
+                                                    <label for="grade-due-to" class="control-label col-sm-2">
+                                                        To:
+                                                    </label>
+                                                    <div class="col-sm-10">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="grade-due-to">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group form-group-sm">
+                                                    <label for="appraisal-due-from" class="control-label col-sm-7">
+                                                        Appraisal Period From:
+                                                    </label>
+                                                    <div class="col-sm-5">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="appraisal-due-from">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="form-group form-group-sm">
+                                                    <label for="appraisal-due-to" class="control-label col-sm-2">
+                                                        To:
+                                                    </label>
+                                                    <div class="col-sm-10">
+                                                        <div class="input-group input-group-sm input-group-unstyled">
+                                                            <input type="text" class="form-control" id="appraisal-due-to">
+                                                            <span class="input-group-addon fa fa-calendar"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
