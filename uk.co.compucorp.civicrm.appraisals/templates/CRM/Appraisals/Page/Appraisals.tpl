@@ -5,14 +5,14 @@
     <section id="{$module}" class="crm_page">
         <div class="crm_page__topbar">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-sm-8">
                     <ol class="breadcrumb">
                         <li>CiviHR</li>
                         <li>Appraisals</li>
                         <li class="active">Dashboard</li>
                     </ol>
                 </div>
-                <div class="col-md-4 text-right">
+                <div class="col-sm-4 text-right">
                     <div class="crm_page__topbar__link">
                         <span class="fa fa-plus-circle"></span>&nbsp;
                         <a href="#">Add Appraisal Cycle</a>
@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="crm_page__content row">
-            <div class="col-md-2">
+            <div class="col-sm-2">
                 <aside class="crm_page__sidebar">
                     <ul class="nav nav-pills nav-stacked nav-pills-stacked-sidebar">
                         <li class="active">
@@ -44,10 +44,10 @@
                     </ul>
                 </aside>
             </div>
-            <div class="col-md-10">
+            <div class="col-sm-10">
                 <main class="crm_page__main">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-sm-4">
                             <section class="panel panel-default">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Active Cycles</h2>
@@ -63,7 +63,7 @@
                                 </footer>
                             </section>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-sm-4">
                             <section class="panel panel-default">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Status</h2>
@@ -78,7 +78,7 @@
                                 </footer>
                             </section>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-sm-4">
                             <section class="panel panel-default">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Grades</h2>
@@ -88,23 +88,23 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-sm-12">
                             <section class="panel panel-default">
                                 <header class="panel-heading clearfix">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-sm-4">
                                             <h2 class="panel-title">
                                                 Appraisal Cycles
                                             </h2>
                                         </div>
-                                        <div class="col-md-4 text-center">
+                                        <div class="col-sm-4 text-center">
                                             <div class="btn-group btn-group-sm">
                                                 <button class="btn btn-secondary-outline active">Active</button>
                                                 <button class="btn btn-secondary-outline">Inactive</button>
                                                 <button class="btn btn-secondary-outline">All</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 text-right">
+                                        <div class="col-sm-4 text-right">
                                             <a href="#">Filter Appraisals</a>
                                         </div>
                                     </div>
@@ -112,13 +112,13 @@
                                 <div class="panel-body">
                                     <form class="form-inline">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label for="cycle-name">Cycle Name:</label>
                                                     <input type="text" class="form-control" id="cycle-name">
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label for="cycle-type">Cycle type:</label>
                                                     <select class="form-control" id="cycle-type">
@@ -129,7 +129,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-sm-3">
                                                 <div class="form-group">
                                                     <label for="cycle-status">Cycle Status:</label>
                                                     <select class="form-control" id="cycle-status">
@@ -142,25 +142,25 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <label for="self-due-from">Self Appraisal Due From:</label>
                                                     <input type="text" class="form-control" id="self-due-from">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
                                                     <label for="self-due-to">To:</label>
                                                     <input type="text" class="form-control" id="self-due-to">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <label for="manager-due-from">Manager Appraisal Due From:</label>
                                                     <input type="text" class="form-control" id="manager-due-from">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
                                                     <label for="manager-due-to">To:</label>
                                                     <input type="text" class="form-control" id="manager-due-to">
@@ -168,25 +168,25 @@
                                             </div>
                                         </div>
                                         <div class="row">
-                                            <div class="col-md-4">
+                                            <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <label for="grade-due-from">Grade Due From:</label>
                                                     <input type="text" class="form-control" id="grade-due-from">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
                                                     <label for="grade-due-to">To:</label>
                                                     <input type="text" class="form-control" id="grade-due-to">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-sm-4">
                                                 <div class="form-group">
                                                     <label for="appraisal-due-from">Appraisal Period From:</label>
                                                     <input type="text" class="form-control" id="appraisal-due-from">
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-sm-2">
                                                 <div class="form-group">
                                                     <label for="appraisal-due-to">To:</label>
                                                     <input type="text" class="form-control" id="appraisal-due-to">
@@ -199,7 +199,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-sm-12">
                             <section class="panel panel-primary panel--dashboard-appraisals">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">
@@ -209,16 +209,16 @@
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 1 (Active)
                                                 </h3>
                                             </div>
-                                            <div class="col-md-6 text-right">
+                                            <div class="col-sm-6 text-right">
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                                         <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-v"></i>
                                                         </a>
@@ -257,16 +257,16 @@
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 2 (Active)
                                                 </h3>
                                             </div>
-                                            <div class="col-md-6 text-right">
+                                            <div class="col-sm-6 text-right">
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                                         <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-v"></i>
                                                         </a>
@@ -305,16 +305,16 @@
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 3 (Active)
                                                 </h3>
                                             </div>
-                                            <div class="col-md-6 text-right">
+                                            <div class="col-sm-6 text-right">
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                                         <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-v"></i>
                                                         </a>
@@ -353,16 +353,16 @@
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 4 (Active)
                                                 </h3>
                                             </div>
-                                            <div class="col-md-6 text-right">
+                                            <div class="col-sm-6 text-right">
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                                         <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-v"></i>
                                                         </a>
@@ -401,16 +401,16 @@
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
                                     <header class="panel-heading">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-sm-6">
                                                 <h3 class="panel-title panel-title-sm">
                                                     Appraisal Cycle 5 (Active)
                                                 </h3>
                                             </div>
-                                            <div class="col-md-6 text-right">
+                                            <div class="col-sm-6 text-right">
                                                 <div class="chr_appraisal-cycle-summary__details">
                                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                                    <div class="chr_appraisal-cycle-summary__actions dropdown open" dropdown>
+                                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                                         <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                             <i class="fa fa-ellipsis-v"></i>
                                                         </a>
