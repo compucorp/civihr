@@ -34,7 +34,7 @@
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="form.contract.$error.required"></i>
                                                 </label>
                                                 <div class="col-xs-6 control-label">
-                                                    <select name="contract" ng-options="k as v.title for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control" required></select>
+                                                    <select ng-change="onContractSelected($event)" name="contract" ng-options="k as v.title for (k, v) in jobroles.contractsData" ng-model="edit_data['new_role_id']['job_contract_id']" class="form-control" required></select>
                                                 </div>
                                             </div>
 
@@ -43,16 +43,20 @@
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group">
                                                         <input type="text" class="form-control" id="{{prefix}}newStartDate"
-                                                            datepicker-popup="yyyy-MM-dd"
-                                                            is-open="CalendarShow['newStartDate'] == true"
-                                                            min-date="minDate"
-                                                            ng-model="edit_data['new_role_id']['newStartDate']"
-                                                            ng-change="select('newStartDate')"
-                                                            ng-disabled="isDisabled"
-                                                            close-text="Close" >
+                                                               datepicker-popup="dd/MM/yyyy"
+                                                               is-open="CalendarShow['newStartDate'] == true"
+                                                                min-date="minDate"
+                                                                ng-model="edit_data['new_role_id']['newStartDate']"
+                                                                ng-change="select('newStartDate')"
+                                                                ng-disabled="isDisabled"
+                                                                close-text="Close"
+                                                                required />
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newStartDate')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
+                                                        <div ng-show="errors.newStartDate" style="color:maroon" role="alert">
+                                                            <div> {{ errors.newStartDate[0] }}</div>
+                                                        </div>
                                                     </p>
                                                 </div>
                                             </div>
@@ -62,16 +66,20 @@
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group">
                                                         <input type="text" class="form-control" id="{{prefix}}newEndDate"
-                                                               datepicker-popup="yyyy-MM-dd"
+                                                               datepicker-popup="dd/MM/yyyy"
                                                                is-open="CalendarShow['newEndDate'] == true"
                                                                min-date="minDate"
                                                                ng-model="edit_data['new_role_id']['newEndDate']"
                                                                ng-change="select('newEndDate')"
                                                                ng-disabled="isDisabled"
                                                                close-text="Close" >
+
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
+                                                        <div ng-show="errors.newEndDate" style="color:maroon" role="alert">
+                                                            <div> {{ errors.newEndDate[0] }}</div>
+                                                        </div>
                                                     </p>
                                                 </div>
                                             </div>

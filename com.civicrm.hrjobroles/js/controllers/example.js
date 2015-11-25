@@ -1,4 +1,5 @@
 define(['controllers/controllers'], function(controllers){
+
     controllers.controller('ExampleCtrl',['$scope', '$log', '$routeParams', 'ExampleService', '$route', '$timeout', '$filter', 'DateValidationService',
         function($scope, $log, $routeParams, ExampleService, $route, $timeout, $filter, DateValidationService){
             $log.debug('Controller: ExampleCtrl');
@@ -9,6 +10,24 @@ define(['controllers/controllers'], function(controllers){
 
                 $scope.picker.opened = true;
 
+            };
+            $scope.onContractSelected = function(){
+                ExampleService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).done(function(result) {
+
+                    if(result.period_start_date){
+                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.period_start_date);
+                    } else {
+                        $scope.edit_data['new_role_id']['newStartDate'] = null;
+                    }
+
+                    if(result.period_end_date){
+                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(result.period_end_date);
+                    } else {
+                        $scope.edit_data['new_role_id']['newEndDate'] = null;
+                    }
+
+                    $scope.$apply();
+                });
             };
 
             // Validate fields
@@ -66,14 +85,10 @@ define(['controllers/controllers'], function(controllers){
             $scope.maxDate = new Date(2020, 5, 22);
 
             $scope.open = function(event) {
-                console.log('open test');
-                console.log(event);
                 $scope.CalendarShow[event] = true;
             };
 
             $scope.select = function(event) {
-                console.log('selected');
-                console.log(event);
                 $scope.CalendarShow[event] = false;
             };
 
@@ -281,24 +296,49 @@ define(['controllers/controllers'], function(controllers){
 
             // Saves the new Job Role
             $scope.saveNewRole = function(data) {
-
                 $log.debug('Add New Role');
 
-                // Create the new job role
-                createJobRole($scope.edit_data.new_role_id);
+                var errors = 0,
+                    error_msg = [];
 
-                // Get job roles based on the passed Contact ID (refresh part of the page)
-                getJobRolesList($scope.$parent.contactId);
+                $scope.errors = {};
+                $scope.errors.newStartDate = [];
+                $scope.errors.newEndDate = [];
 
-                // Hide the add new form
-                $scope.add_new = false;
+                console.log($scope.edit_data['new_role_id']['newEndDate']);
+                console.log($scope.edit_data['new_role_id']['newStartDate']);
 
-                // Remove if any data are added / Reset form
-                delete $scope.edit_data['new_role_id'];
+                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function(error, field){
+                    errors++;
+                    if(field.indexOf('start_date') > -1) {
+                        $scope.errors.newStartDate.push(error);
+                    }
+                    if(field.indexOf('end_date') > -1){
+                        $scope.errors.newEndDate.push(error);
+                    }
+                });
 
-                // Hide the empty message if visible
-                $scope.empty = false;
+                if(errors === 0){
 
+                    if($scope.edit_data.new_role_id.newEndDate === null){
+                        delete $scope.edit_data.new_role_id.newEndDate;
+                    }
+                    // Create the new job role
+                    createJobRole($scope.edit_data.new_role_id).then(function(){
+
+                        // Get job roles based on the passed Contact ID (refresh part of the page)
+                        getJobRolesList($scope.$parent.contactId);
+
+                        // Hide the add new form
+                        $scope.add_new = false;
+
+                        // Remove if any data are added / Reset form
+                        delete $scope.edit_data['new_role_id'];
+
+                        // Hide the empty message if visible
+                        $scope.empty = false;
+                    });
+                }
             };
 
             // Sets the add new job role form visibility
@@ -324,12 +364,16 @@ define(['controllers/controllers'], function(controllers){
 
                 // Get job roles based on the passed Contact ID (refresh part of the page)
                 getJobRolesList($scope.$parent.contactId);
-
             };
 
             $scope.updateRole = function(role_id) {
-
                 $log.debug('Update Role');
+
+                var end = $scope.edit_data[role_id].end_date;
+
+                if(end === null || end === '0000-00-00 00:00:00'){
+                    delete $scope.edit_data[role_id].end_date;
+                }
 
                 // Update the job role
                 updateJobRole(role_id, $scope.edit_data[role_id]);
@@ -347,7 +391,6 @@ define(['controllers/controllers'], function(controllers){
 
             // Show Row Type default value
             $scope.showRowType = function(object) {
-
                 var selected = '';
 
                 if(typeof object.type !== "undefined") {
@@ -356,7 +399,6 @@ define(['controllers/controllers'], function(controllers){
                     selected = $scope.rowTypes[object.type];
 
                     return selected.name;
-
                 }
 
                 return 'Not set';
@@ -375,18 +417,13 @@ define(['controllers/controllers'], function(controllers){
 
             // Update funder type scope on request
             $scope.updateAdditionalRowType = function(role_id, row_type, key, data) {
-
                 if (row_type == 'cost_centre') {
-
                     // Update cost centers row
                     $scope.edit_data[role_id]['cost_centers'][key]['type'] = data;
-                }
-                else {
-
+                } else {
                     // Update funder Type scope as default
                     $scope.edit_data[role_id]['funders'][key]['type'] = data;
                 }
-
             };
 
             // Add additional rows (funder or cost centres)
@@ -413,9 +450,7 @@ define(['controllers/controllers'], function(controllers){
                         amount: "0"
                     });
 
-                }
-
-                else {
+                } else {
 
                     // As default add funder rows
                     // Check if we have the array already
@@ -440,8 +475,7 @@ define(['controllers/controllers'], function(controllers){
 
                     // Remove the cost centre row
                     $scope.edit_data[role_id]['cost_centers'].splice(row_id, 1);
-                }
-                else {
+                } else {
 
                     // Remove the funder row as default
                     $scope.edit_data[role_id]['funders'].splice(row_id, 1);
@@ -734,13 +768,13 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "createJobRole" service
             function createJobRole(job_roles_data) {
 
-                ExampleService.createJobRole(job_roles_data).then(function(data) {
+                return ExampleService.createJobRole(job_roles_data)
+                    .then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
                             job_roles.message = 'Role creation failed!';
-                        }
-                        else {
+                        } else {
                             job_roles.message_type = 'alert-success';
                             job_roles.message = 'Role added successfully!';
                         }
@@ -752,7 +786,8 @@ define(['controllers/controllers'], function(controllers){
                     },
                     function(errorMessage){
                         $scope.error = errorMessage;
-                    });
+                    }
+                );
 
             }
 
