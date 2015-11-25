@@ -172,3 +172,48 @@ function appraisals_civicrm_preProcess($formName, &$form) {
 }
 
 */
+
+/**
+ * Implementation of hook_civicrm_buildForm
+ *
+ * @params string $formName - the name of the form
+ *         object $form - reference to the form object
+ * @return void
+ */
+function appraisals_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Export_Form_Select') {
+    $_POST['unchange_export_selected_column'] = TRUE;
+    if (!empty($form->_submitValues) && $form->_submitValues['exportOption'] == CRM_Export_Form_Select::EXPORT_SELECTED) {
+      $_POST['unchange_export_selected_column'] = FALSE;
+    }
+  }
+}
+
+function appraisals_civicrm_export( $exportTempTable, $headerRows, $sqlColumns, $exportMode ) {
+  if ($exportMode == CRM_Export_Form_Select::EXPORT_ALL && !empty($_POST['unchange_export_selected_column'])) {
+    //drop column from table -- HR-379
+    $col = array('do_not_trade', 'do_not_email');
+    if ($_POST['unchange_export_selected_column']) {
+      $sql = "ALTER TABLE ".$exportTempTable." ";
+      $sql .= "DROP COLUMN do_not_email ";
+      $sql .= ",DROP COLUMN do_not_trade ";
+      CRM_Core_DAO::singleValueQuery($sql);
+
+      $i = 0;
+      foreach($sqlColumns as $key => $val){
+        if (in_array($key, $col)){
+          //unset column from sqlColumn and headerRow
+          unset($sqlColumns[$key]);
+          unset($headerRows[$i]);
+        }
+        $i++;
+      }
+      CRM_Export_BAO_Export::writeCSVFromTable($exportTempTable, $headerRows, $sqlColumns, $exportMode);
+
+      // delete the export temp table
+      $sql = "DROP TABLE IF EXISTS {$exportTempTable}";
+      CRM_Core_DAO::executeQuery($sql);
+      CRM_Utils_System::civiExit();
+    }
+  }
+}

@@ -2,6 +2,8 @@
 
 class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycle
 {
+    static $_importableFields = array();
+    
     /**
      * Create a new AppraisalCycle based on array-data
      *
@@ -64,4 +66,97 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
 
         return true;
     }
+    
+    /**
+     * combine all the importable fields from the lower levels object
+     *
+     * The ordering is important, since currently we do not have a weight
+     * scheme. Adding weight is super important
+     *
+     * @param int     $contactType     contact Type
+     * @param boolean $status          status is used to manipulate first title
+     * @param boolean $showAll         if true returns all fields (includes disabled fields)
+     * @param boolean $isProfile       if its profile mode
+     * @param boolean $checkPermission if false, do not include permissioning clause (for custom data)
+     *
+     * @return array array of importable Fields
+     * @access public
+     * @static
+     */
+  static function importableFields($contactType = 'Individual',
+    $status          = FALSE,
+    $showAll         = FALSE,
+    $isProfile       = FALSE,
+    $checkPermission = TRUE,
+    $withMultiCustomFields = FALSE
+  ) {
+    $cacheKeyString = "";
+    $cacheKeyString .= $status ? '_1' : '_0';
+    $cacheKeyString .= $showAll ? '_1' : '_0';
+    $cacheKeyString .= $isProfile ? '_1' : '_0';
+    $cacheKeyString .= $checkPermission ? '_1' : '_0';
+    
+    $contactType = 'Individual';
+
+    $fields = CRM_Utils_Array::value($cacheKeyString, self::$_importableFields);
+    
+    if (!$fields) {
+      $fields = CRM_Appraisals_DAO_AppraisalCycle::import();
+
+      $tmpContactField = $contactFields = array();
+      
+        $contactFields = CRM_Contact_BAO_Contact::importableFields($contactType, NULL);
+        
+        // Using new Dedupe rule.
+        $ruleParams = array(
+          'contact_type' => $contactType,
+          'used'         => 'Unsupervised',
+        );
+        $fieldsArray = CRM_Dedupe_BAO_Rule::dedupeRuleFields($ruleParams);
+        if (is_array($fieldsArray)) {
+          foreach ($fieldsArray as $value) {
+            $customFieldId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomField',
+              $value,
+              'id',
+              'column_name'
+            );
+            $value = $customFieldId ? 'custom_' . $customFieldId : $value;
+            $tmpContactField[trim($value)] = CRM_Utils_Array::value(trim($value), $contactFields);
+            if (!$status) {
+              $title = $tmpContactField[trim($value)]['title'] . ' (match to contact)';
+            }
+            else {
+              $title = $tmpContactField[trim($value)]['title'];
+            }
+
+            $tmpContactField[trim($value)]['title'] = $title;
+          }
+        }
+        
+      $extIdentifier = CRM_Utils_Array::value('external_identifier', $contactFields);
+      if ($extIdentifier) {
+        $tmpContactField['external_identifier'] = $extIdentifier;
+        $tmpContactField['external_identifier']['title'] =
+          CRM_Utils_Array::value('title', $extIdentifier) . ' (match to contact)';
+      }
+
+      $fields = array_merge($fields, $tmpContactField);
+
+      //Sorting fields in alphabetical order(CRM-1507)
+      $fields = CRM_Utils_Array::crmArraySortByField($fields, 'title');
+      $fields = CRM_Utils_Array::index(array('name'), $fields);
+
+      CRM_Core_BAO_Cache::setItem($fields, 'contact fields', $cacheKeyString);
+     }
+
+    self::$_importableFields[$cacheKeyString] = $fields;
+
+    if (!$isProfile) {
+        $fields = array_merge(array('do_not_import' => array('title' => ts('- do not import -'))),
+          self::$_importableFields[$cacheKeyString]
+        );
+    }
+    return $fields;
+  }
+
 }

@@ -151,6 +151,26 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         return TRUE;
     }
     
+    /**
+     * Alter Appraisal Cycle columns and add 'cycle_' prefix
+     */
+    public function upgrade_0005() {
+        
+        $queries = array(
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `name` `cycle_name` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `self_appraisal_due` `cycle_self_appraisal_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `manager_appraisal_due` `cycle_manager_appraisal_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `grade_due` `cycle_grade_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `type_id` `cycle_type_id` INT(10) UNSIGNED NULL DEFAULT NULL',
+        );
+        
+        foreach ($queries as $query) {
+            CRM_Core_DAO::executeQuery($query);
+        }
+        
+        return TRUE;
+    }
+    
     public function enable() {
         $this->setIsActive(1);
         
