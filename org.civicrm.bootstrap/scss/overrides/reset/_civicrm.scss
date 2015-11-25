@@ -1,0 +1,12 @@
+@at-root {
+
+    #{$bootstrap-namespace} {
+
+        .crm-container & .panel {
+            position: initial;
+            padding: initial;
+            width: initial;
+            z-index: initial;
+        }
+    }
+}

@@ -1,0 +1,19 @@
+.chr_sickness-days {
+    display: inline-block;
+    width: 165px;
+}
+
+.chr_sickness-days__count {
+    background: $brand-danger;
+    color: white;
+    font-size: em(85);
+    text-align: center;
+}
+
+.chr_sickness-days__label {
+    background: $background-color;
+    font-size: em(18);
+    padding: 5px 0;
+    text-align: center;
+    text-transform: uppercase;
+}

@@ -38,7 +38,7 @@ define(['services/services'], function (services) {
 
                 CRM.api3('HrJobRoles', 'get', {
                     "sequential": 1,
-                    "return": "id,job_contract_id,title,description,status,funder,funder_val_type,percent_pay_funder,amount_pay_funder,cost_center,cost_center_val_type,percent_pay_cost_center,amount_pay_cost_center,level_type,location,region,department",
+                    "return": "id,job_contract_id,title,description,status,funder,funder_val_type,percent_pay_funder,amount_pay_funder,cost_center,cost_center_val_type,percent_pay_cost_center,amount_pay_cost_center,level_type,location,region,department,end_date,start_date",
                     "job_contract_id": {"IN": job_contract_ids}
                 }).done(function(result) {
 
@@ -82,6 +82,10 @@ define(['services/services'], function (services) {
             },
 
             createJobRole: function(job_roles_data) {
+
+                console.log(job_roles_data);
+                console.log(job_roles_data.newStartDate.getTime());
+                console.log(job_roles_data.newEndDate.getTime());
 
                 // Define funder IDs string
                 var funders = "|";
@@ -155,7 +159,9 @@ define(['services/services'], function (services) {
                     "level_type": job_roles_data.level,
                     "location": job_roles_data.location,
                     "region": job_roles_data.region,
-                    "department": job_roles_data.department
+                    "department": job_roles_data.department,
+                    "start_date": job_roles_data.newStartDate,
+                    "end_date": job_roles_data.newEndDate
                 }).done(function(result) {
 
                     // Passing data to deferred's resolve function on successful completion
@@ -248,6 +254,8 @@ define(['services/services'], function (services) {
                     "level_type": job_roles_data.level,
                     "location": job_roles_data.location,
                     "region": job_roles_data.region,
+                    "start_date": job_roles_data.start_date,
+                    "end_date": job_roles_data.end_date,
                     "department": job_roles_data.department
 
                 }).done(function(result) {
@@ -300,7 +308,8 @@ define(['services/services'], function (services) {
 
                 CRM.api3('OptionGroup', 'get', {
                     "sequential": 1,
-                    "name": { "IN": option_group_name }
+                    "name": { "IN": option_group_name },
+                    "options": {"limit":1000}
                 }).done(function(option_group_data) {
 
                     if (option_group_data.is_error !== 1) {
