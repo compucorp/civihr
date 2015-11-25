@@ -4,7 +4,11 @@ module.exports = function CustomDateInput($filter) {
         link: function(scope, element, attrs, ngModelController) {
 
             function convert(data){
-                return $filter('CustomDate')(data);
+                var output = $filter('CustomDate')(data);
+
+                output = (output == 'Unspecified')? '' : output;
+
+                return output;
             }
 
             ngModelController.$formatters.push(convert);

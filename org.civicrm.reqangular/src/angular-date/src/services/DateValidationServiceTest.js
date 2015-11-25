@@ -130,10 +130,6 @@ describe('Unit: DateValidationService', function() {
         expect(function(){
             Service.validate('1/11/2009', '10/16/2012');
         }).toThrow();
-
-        /* we allow timestamps */
-        Service.setDates('12111013', '10012009');
-        expect(Service.checkIfFormatIsValid).not.toThrow();
     });
 
     it('Start date cannot be higher', function() {
@@ -241,6 +237,22 @@ describe('Unit: DateValidationService', function() {
 
         expect(function(){
             Service.validate('20/03/2006', '02/11/2037');
+        }).toThrow();
+    });
+
+    it('Invalid values', function() {
+        /* valid date */
+        expect(function(){
+            Service.validate('20/03/2013', 'ttestowystrring');
+        }).toThrow();
+
+        /* invalid dates */
+        expect(function(){
+            Service.validate('testteest', '02/11/2017');
+        }).toThrow();
+
+        expect(function(){
+            Service.validate('sgdlskgs', 'sdgskjdgsdkg');
         }).toThrow();
     });
 });

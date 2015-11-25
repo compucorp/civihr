@@ -31,8 +31,9 @@ describe('Unit: CustomDateFilter', function() {
         expect(Filter(null)).toEqual(null);
     });
 
-    it('Empty date Should return empty string.', function() {
-        expect(Filter('')).toEqual('');
+    it('Empty date Should return "Unspecified".', function() {
+        expect(Filter('')).toEqual('Unspecified');
+        expect(Filter('0000-00-00 00:00:00')).toEqual('Unspecified');
     });
 
     it('Invalid string should not be modified.', function() {

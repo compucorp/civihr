@@ -45,7 +45,7 @@ function DateValidationService($filter) {
             me.start = $filter('CustomDate')(start_date);
             me.start_parts = me.start.split('/');
         } else {
-            me._error('Start date is required!', ['start_date']);
+            me._error('Please enter valid Start Date!', ['start_date']);
         }
 
         if(!!end_date) {

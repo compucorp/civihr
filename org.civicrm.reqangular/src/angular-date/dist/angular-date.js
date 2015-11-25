@@ -13,7 +13,11 @@ module.exports = function CustomDateInput($filter) {
         link: function(scope, element, attrs, ngModelController) {
 
             function convert(data){
-                return $filter('CustomDate')(data);
+                var output = $filter('CustomDate')(data);
+
+                output = (output == 'Unspecified')? '' : output;
+
+                return output;
             }
 
             ngModelController.$formatters.push(convert);
@@ -29,15 +33,20 @@ module.exports = function ($filter) {
 
             match = datetime.match(/^(\d{2})-(\d{2})-(\d{4})/);
             match2 = datetime.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
             if(match){
-                date = new Date(match[3], match[2] - 1, match[1]);
-                return $filter('date')(date.getTime(), 'dd/MM/yyyy');
+                date = new Date(match[3], match[2] - 1, match[1]).getTime();
             } else if(match2){
-                date = new Date(match2[1], match2[2] - 1, match2[3]);
-                return $filter('date')(date.getTime(), 'dd/MM/yyyy');
+                date = new Date(match2[1], match2[2] - 1, match2[3]).getTime();
+            } else {
+                date = datetime;
             }
 
-            return $filter('date')(datetime, 'dd/MM/yyyy');
+            if(date < 0 || datetime.length < 10){
+                return 'Unspecified';
+            } else {
+                return $filter('date')(date, 'dd/MM/yyyy');
+            }
 
         } else if(typeof datetime === 'object' && datetime !== null ){
             if(datetime.getTime){
@@ -99,7 +108,7 @@ function DateValidationService($filter) {
             me.start = $filter('CustomDate')(start_date);
             me.start_parts = me.start.split('/');
         } else {
-            me._error('Start date is required!', ['start_date']);
+            me._error('Please enter valid Start Date!', ['start_date']);
         }
 
         if(!!end_date) {
