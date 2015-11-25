@@ -298,15 +298,11 @@ define(['controllers/controllers'], function(controllers){
             $scope.saveNewRole = function(data) {
                 $log.debug('Add New Role');
 
-                var errors = 0,
-                    error_msg = [];
+                var errors = 0;
 
                 $scope.errors = {};
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
-
-                console.log($scope.edit_data['new_role_id']['newEndDate']);
-                console.log($scope.edit_data['new_role_id']['newStartDate']);
 
                 $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function(error, field){
                     errors++;
