@@ -145,25 +145,37 @@
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
                                                     <label for="self-due-from">Self Appraisal Due From:</label>
-                                                    <input type="text" class="form-control" id="self-due-from">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="self-due-from">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
                                                     <label for="self-due-to">To:</label>
-                                                    <input type="text" class="form-control" id="self-due-to">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="self-due-to">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
                                                     <label for="manager-due-from">Manager Appraisal Due From:</label>
-                                                    <input type="text" class="form-control" id="manager-due-from">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="manager-due-from">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
                                                     <label for="manager-due-to">To:</label>
-                                                    <input type="text" class="form-control" id="manager-due-to">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="manager-due-to">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -171,25 +183,37 @@
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
                                                     <label for="grade-due-from">Grade Due From:</label>
-                                                    <input type="text" class="form-control" id="grade-due-from">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="grade-due-from">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
                                                     <label for="grade-due-to">To:</label>
-                                                    <input type="text" class="form-control" id="grade-due-to">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="grade-due-to">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-4">
                                                 <div class="form-group form-group-sm">
                                                     <label for="appraisal-due-from">Appraisal Period From:</label>
-                                                    <input type="text" class="form-control" id="appraisal-due-from">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="appraisal-due-from">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-2">
                                                 <div class="form-group form-group-sm">
                                                     <label for="appraisal-due-to">To:</label>
-                                                    <input type="text" class="form-control" id="appraisal-due-to">
+                                                    <div class="input-group input-group-sm input-group-unstyled">
+                                                        <input type="text" class="form-control" id="appraisal-due-to">
+                                                        <span class="input-group-addon fa fa-calendar"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
