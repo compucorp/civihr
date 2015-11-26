@@ -69,15 +69,53 @@
                                     <h2 class="panel-title">Status</h2>
                                 </header>
                                 <div class="panel-body">
-                                    <div class="chr_appraisals-status">
-                                        <ul class="list-unstyled chr_steps chr_steps--compact">
-                                            <li class="chr_steps__step chart-color-0">Step 1</li>
-                                            <li class="chr_steps__step chart-color-1">Step 2</li>
-                                            <li class="chr_steps__step chart-color-2">Step 3</li>
-                                            <li class="chr_steps__step chart-color-3">Step 4</li>
-                                            <li class="chr_steps__step chart-color-4">Step 5</li>
-                                        </ul>
-                                    </div>
+                                    <ul class="list-unstyled chr_steps chr_steps--compact">
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-0">Step 1</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
+                                                    <p>28<br> Contacts</p>
+                                                    <p>130<br> Overdue</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-1">Step 2</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-1 text-center">
+                                                    <p>140<br> Contacts</p>
+                                                    <p>12<br> Overdue</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-2">Step 3</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-2 text-center">
+                                                    <p>36<br> Contacts</p>
+                                                    <p>0<br> Overdue</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-3">Step 4</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-3 text-center">
+                                                    <p>28<br> Contacts</p>
+                                                    <p>0<br> Overdue</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-4">Step 5</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-4 text-center">
+                                                    <p>0<br> Contacts</p>
+                                                    <p>0<br> Overdue</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
                                 </div>
                                 <footer class="panel-footer">
                                     <dl class="dl-horizontal dl-horizontal-inline">
@@ -330,11 +368,21 @@
                                     </div>
                                     <footer class="panel-footer">
                                         <ul class="list-unstyled chr_steps">
-                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 30</li>
-                                            <li class="chr_steps__step chr_steps__step--primary">Assigned to Manager: 22</li>
-                                            <li class="chr_steps__step">Awaiting Grade: 2</li>
-                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
-                                            <li class="chr_steps__step">Complete: 45</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Self Appraisal: 30</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--primary">
+                                                <span class="chr_steps__step__arrow">Assigned to Manager: 22</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting Grade: 2</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                                            </li>
                                         </ul>
                                     </footer>
                                 </article>
@@ -384,11 +432,21 @@
                                     </div>
                                     <footer class="panel-footer">
                                         <ul class="list-unstyled chr_steps">
-                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
-                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
-                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
-                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
-                                            <li class="chr_steps__step">Complete: 45</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--primary">
+                                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                                            </li>
                                         </ul>
                                     </footer>
                                 </article>
@@ -438,11 +496,21 @@
                                     </div>
                                     <footer class="panel-footer">
                                         <ul class="list-unstyled chr_steps">
-                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
-                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
-                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
-                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
-                                            <li class="chr_steps__step">Complete: 45</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--primary">
+                                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                                            </li>
                                         </ul>
                                     </footer>
                                 </article>
@@ -492,11 +560,21 @@
                                     </div>
                                     <footer class="panel-footer">
                                         <ul class="list-unstyled chr_steps">
-                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
-                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
-                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
-                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
-                                            <li class="chr_steps__step">Complete: 45</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--primary">
+                                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                                            </li>
                                         </ul>
                                     </footer>
                                 </article>
@@ -546,11 +624,21 @@
                                     </div>
                                     <footer class="panel-footer">
                                         <ul class="list-unstyled chr_steps">
-                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
-                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
-                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
-                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
-                                            <li class="chr_steps__step">Complete: 45</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--danger">
+                                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
+                                            </li>
+                                            <li class="chr_steps__step chr_steps__step--primary">
+                                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
+                                            </li>
+                                            <li class="chr_steps__step">
+                                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                                            </li>
                                         </ul>
                                     </footer>
                                 </article>
