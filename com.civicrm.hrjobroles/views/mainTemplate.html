@@ -1,7 +1,7 @@
 <div ng-controller="HRJobRolesController as jobroles">
     <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
     <div class="alert alert-warning" ng-show="jobroles.empty">{{jobroles.empty}}</div>
-    
+
     <div ng-repeat="(key, job_roles) in jobroles.getData | groupBy: 'status'">
         <h3 class="header-bar header-bar-primary" ng-show="key == 10">Current Roles and Projects:</h3>
 
@@ -114,15 +114,15 @@
                                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
                                                                                    name="start_date"
                                                                                    datepicker-popup="dd/MM/yyyy"
-                                                                                   show-weeks="false"
-                                                                                   is-open="CalendarShow['start_date']"
+                                                                                   is-open="CalendarShow['start_date'] == true"
                                                                                    min-date="minDate"
                                                                                    ng-model="edit_data[job_roles_data.id]['start_date']"
                                                                                    ng-change="select('start_date')"
                                                                                    ng-disabled="isDisabled"
                                                                                    close-text="Close"
                                                                                    custom-date-input
-                                                                                   required>
+                                                                                   required
+                                                                            />
                                                                             <span class="input-group-btn">
                                                                                 <button type="button" class="btn btn-default" ng-click="open('start_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
@@ -137,7 +137,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group" ng-init="initData(job_roles_data.id, 'end_date', job_roles_data.end_date)">
-                                                                    <label for="end_date" class="col-xs-4 control-label">
+                                                                    <label for="{{prefix}}end_date" class="col-xs-4 control-label">
                                                                         End Date:
                                                                     </label>
 
@@ -147,15 +147,15 @@
                                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
                                                                                    name="end_date"
                                                                                    show-weeks="false"
-                                                                                   onbeforesave="validateDate($data)"
                                                                                    datepicker-popup="dd/MM/yyyy"
-                                                                                   is-open="CalendarShow['end_date']"
+                                                                                   is-open="CalendarShow['end_date'] == true"
                                                                                    min-date="minDate"
                                                                                    ng-model="edit_data[job_roles_data.id]['end_date']"
                                                                                    ng-change="select('end_date')"
                                                                                    ng-disabled="isDisabled"
                                                                                    close-text="Close"
-                                                                                   custom-date-input>
+                                                                                   custom-date-input
+                                                                            />
                                                                             <span class="input-group-btn">
                                                                                 <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                                             </span>
@@ -477,9 +477,11 @@
             </li>
         </ul>
     </div>
+
     <div class="{{prefix}}list-role-item" ng-show="!!add_new">
         <div ng-include src="add_new_role_url"></div>
     </div>
+
     <button class="btn btn-default btn-primary" ng-click="add_new_role()" ng-hide="add_new">
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add new job role
     </button>
