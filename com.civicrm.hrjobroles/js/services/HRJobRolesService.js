@@ -1,7 +1,6 @@
 define(['services/services'], function (services) {
 
-    services.factory('ExampleService',['settings', '$log' , '$q', function(settings, $log, $q) {
-        $log.debug('Service: ExampleService');
+    services.factory('HRJobRolesService',['settings', '$log' , '$q', function(settings, $log, $q) {
 
         return {
 
@@ -357,7 +356,7 @@ define(['services/services'], function (services) {
 
             },
 
-            getNewJobRole: function(contract_id){
+            getNewJobRole: function getNewJobRole(contract_id){
                 //Creates new JobRole depending on contract id and returns promise
                 return CRM.api3('HrJobRoles', 'create', {
                     "sequential": 1,

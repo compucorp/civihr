@@ -10,8 +10,8 @@
     },
     deps: [
         'app',
-        'controllers/example',
-        'services/example',
+        'controllers/HRJobRolesController',
+        'services/HRJobRolesService',
         'directives/example',
         'requireLib'
     ],

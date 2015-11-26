@@ -11,8 +11,8 @@ var reqHrjr = require.config({
 
 reqHrjr([
     'app',
-    'controllers/example',
-    'services/example',
+    'controllers/HRJobRolesController',
+    'services/HRJobRolesService',
     'directives/example'
 ],function(app){
     'use strict';

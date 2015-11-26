@@ -1,6 +1,7 @@
-<div ng-controller="ExampleCtrl as jobroles">
+<div ng-controller="HRJobRolesController as jobroles">
     <div class="alert {{jobroles.message_type}}" ng-show="jobroles.message">{{jobroles.message}}</div>
     <div class="alert alert-warning" ng-show="jobroles.empty">{{jobroles.empty}}</div>
+    
     <div ng-repeat="(key, job_roles) in jobroles.getData | groupBy: 'status'">
         <h3 class="header-bar header-bar-primary" ng-show="key == 10">Current Roles and Projects:</h3>
 

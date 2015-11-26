@@ -1,8 +1,8 @@
 define(['controllers/controllers'], function(controllers){
 
-    controllers.controller('ExampleCtrl',['$scope', '$log', '$routeParams', 'ExampleService', '$route', '$timeout', '$filter', 'DateValidationService',
-        function($scope, $log, $routeParams, ExampleService, $route, $timeout, $filter, DateValidationService){
-            $log.debug('Controller: ExampleCtrl');
+    controllers.controller('HRJobRolesController',['$scope', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService',
+        function($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService){
+            $log.debug('Controller: HRJobRolesController');
 
             $scope.dpOpen = function($event){
                 $event.preventDefault();
@@ -12,7 +12,7 @@ define(['controllers/controllers'], function(controllers){
 
             };
             $scope.onContractSelected = function(){
-                ExampleService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).done(function(result) {
+                HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).done(function(result) {
 
                     if(result.period_start_date){
                         $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.period_start_date);
@@ -460,7 +460,7 @@ define(['controllers/controllers'], function(controllers){
 
             function getContactList() {
 
-                ExampleService.getContactList().then(function(data){
+                HRJobRolesService.getContactList().then(function(data){
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -504,7 +504,7 @@ define(['controllers/controllers'], function(controllers){
                 // Set the option groups for which we want to get the values
                 var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
-                ExampleService.getOptionValues(option_groups).then(function(data) {
+                HRJobRolesService.getOptionValues(option_groups).then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -616,7 +616,7 @@ define(['controllers/controllers'], function(controllers){
             function getJobRolesList(contact_id) {
 
                 // Get the job contracts for the contact
-                ExampleService.getContracts(contact_id).then(function(data) {
+                HRJobRolesService.getContracts(contact_id).then(function(data) {
 
                         var job_contract_ids = [];
                         var contractsData = {};
@@ -661,7 +661,7 @@ define(['controllers/controllers'], function(controllers){
                             // Store the ContractsData what we can reuse later
                             job_roles.contractsData = contractsData;
 
-                            ExampleService.getAllJobRoles(job_contract_ids).then(function(data) {
+                            HRJobRolesService.getAllJobRoles(job_contract_ids).then(function(data) {
 
                                     // Overwrite whatever status is stored in job roles table with the status based on the assigned job contract
                                     angular.forEach(data.values, function(object_data, key) {
@@ -705,7 +705,7 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "deleteJobRole" service
             function deleteJobRole(job_role_id) {
 
-                ExampleService.deleteJobRole(job_role_id).then(function(data) {
+                HRJobRolesService.deleteJobRole(job_role_id).then(function(data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -730,7 +730,7 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "createJobRole" service
             function createJobRole(job_roles_data) {
 
-                return ExampleService.createJobRole(job_roles_data)
+                return HRJobRolesService.createJobRole(job_roles_data)
                     .then(function(data) {
 
                         if (data.is_error == 1) {
@@ -756,7 +756,7 @@ define(['controllers/controllers'], function(controllers){
             // Implements the "updateJobRole" service
             function updateJobRole(role_id, job_roles_data) {
 
-                ExampleService.updateJobRole(role_id, job_roles_data).then(function(data){
+                HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function(data){
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
