@@ -39,7 +39,10 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="{{prefix}}newStartDate" class="col-xs-4 control-label">Start Date: {{ startDateCalendarshow }}</label>
+                                                <label for="{{prefix}}newStartDate" class="col-xs-4 control-label">Start Date:
+                                                    <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="!edit_data['new_role_id']['newStartDate']"></i>
+                                                    {{ startDateCalendarshow }}
+                                                </label>
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group">
                                                         <input type="text" class="form-control" id="{{prefix}}newStartDate"
