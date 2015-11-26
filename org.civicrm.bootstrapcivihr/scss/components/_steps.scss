@@ -5,7 +5,7 @@
 
 .chr_steps__step {
     background: $gray-dark;
-    border-left-color: $gray-dark;
+    border-color: $gray-dark;
     color: $steps-color;
     float: left;
     height: $steps-height;
@@ -47,10 +47,10 @@
 
 .chr_steps__step--danger {
     background: $brand-danger;
-    border-left-color: $brand-danger;
+    border-color: $brand-danger;
 }
 
 .chr_steps__step--primary {
     background: $brand-primary;
-    border-left-color: $brand-primary;
+    border-color: $brand-primary;
 }
