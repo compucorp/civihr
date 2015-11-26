@@ -113,12 +113,13 @@
                                     <form class="form-horizontal">
                                         <div class="row">
                                             <div class="col-sm-6">
-                                                <div class="form-group">
+                                                <div class="form-group has-feedback">
                                                     <label for="cycle-name" class="control-label col-sm-3">
                                                         Cycle Name:
                                                     </label>
                                                     <div class="col-sm-9">
                                                         <input type="text" class="form-control" id="cycle-name">
+                                                        <span class="fa fa-search form-control-feedback"></span>
                                                     </div>
                                                 </div>
                                             </div>
