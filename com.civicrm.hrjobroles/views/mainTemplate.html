@@ -37,7 +37,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div collapse="isThingsCollapsed(job_roles_data.id)">
+                        <div collapse="isRowCollapsed(job_roles_data.id)">
                             <div class="{{prefix}}role-details">
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -113,7 +113,8 @@
                                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
                                                                                    name="start_date"
                                                                                    datepicker-popup="dd/MM/yyyy"
-                                                                                   is-open="CalendarShow['start_date'] == true"
+                                                                                   show-weeks="false"
+                                                                                   is-open="CalendarShow['start_date']"
                                                                                    min-date="minDate"
                                                                                    ng-model="edit_data[job_roles_data.id]['start_date']"
                                                                                    ng-change="select('start_date')"
@@ -144,9 +145,10 @@
                                                                         <p class="input-group" ng-hide="!editableForm.$visible">
                                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
                                                                                    name="end_date"
+                                                                                   show-weeks="false"
                                                                                    onbeforesave="validateDate($data)"
                                                                                    datepicker-popup="dd/MM/yyyy"
-                                                                                   is-open="CalendarShow['end_date'] == true"
+                                                                                   is-open="CalendarShow['end_date']"
                                                                                    min-date="minDate"
                                                                                    ng-model="edit_data[job_roles_data.id]['end_date']"
                                                                                    ng-change="select('end_date')"
@@ -474,7 +476,7 @@
             </li>
         </ul>
     </div>
-    <div class="{{prefix}}list-role-item" ng-show="add_new == true">
+    <div class="{{prefix}}list-role-item" ng-show="!!add_new">
         <div ng-include src="add_new_role_url"></div>
     </div>
     <button class="btn btn-default btn-primary" ng-click="add_new_role()" ng-hide="add_new">

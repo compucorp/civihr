@@ -46,6 +46,7 @@
                                                                datepicker-popup="dd/MM/yyyy"
                                                                is-open="CalendarShow['newStartDate'] == true"
                                                                 min-date="minDate"
+                                                                show-weeks="false"
                                                                 ng-model="edit_data['new_role_id']['newStartDate']"
                                                                 ng-change="select('newStartDate')"
                                                                 ng-disabled="isDisabled"
@@ -67,6 +68,7 @@
                                                     <p class="input-group">
                                                         <input type="text" class="form-control" id="{{prefix}}newEndDate"
                                                                datepicker-popup="dd/MM/yyyy"
+                                                               show-weeks="false"
                                                                is-open="CalendarShow['newEndDate'] == true"
                                                                min-date="minDate"
                                                                ng-model="edit_data['new_role_id']['newEndDate']"

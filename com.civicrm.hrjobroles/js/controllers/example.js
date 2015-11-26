@@ -132,39 +132,17 @@ define(['controllers/controllers'], function(controllers){
 
             // Check if current tab
             $scope.isTab = function(row_id, tab_id) {
-
-                if ($scope.view_tab[row_id] == tab_id) {
-                    return true;
-                }
-
-                return false;
+                return ($scope.view_tab[row_id] == tab_id);
             };
 
             // Check for collapsed rows
-            $scope.isThingsCollapsed = function(row_id) {
-
-                if ($scope.collapsedRows[row_id] == true) {
-                    return true;
-                }
-
-                else if ($scope.collapsedRows[row_id] == false) {
-                    return false;
-                }
-
-                return true;
+            $scope.isRowCollapsed = function(row_id) {
+                return !!($scope.collapsedRows[row_id]);
             };
 
             // Collapse the row or Expand when clicked
             $scope.collapseRow = function(row_id) {
-
-                // If already collapsed, expand
-                if ($scope.collapsedRows[row_id] == false) {
-                    $scope.collapsedRows[row_id] = true;
-                }
-                else {
-                    $scope.collapsedRows[row_id] = false;
-                }
-
+                $scope.collapsedRows[row_id] = !$scope.collapsedRows[row_id];
             };
 
             // Set the data from the webservice call
@@ -261,13 +239,8 @@ define(['controllers/controllers'], function(controllers){
 
             // Check if the data are changed in the form (based on job role ID)
             $scope.isChanged = function(row_id) {
-
                 // If there are data it means we edited the form
-                if ($scope.edit_data[row_id]['is_edit'] == true) {
-                    return true;
-                }
-
-                return false;
+                return !!($scope.edit_data[row_id]['is_edit']);
             };
 
             // Set the is_edit value
@@ -280,22 +253,17 @@ define(['controllers/controllers'], function(controllers){
              * Rule -> Allow only if the minimum required data are filled
              * @returns {boolean}
              */
-            $scope.checkNewRole = function() {
+            $scope.checkNewRole = function checkNewRole() {
 
-                if(typeof $scope.edit_data['new_role_id'] === 'undefined'
+                return (typeof $scope.edit_data['new_role_id'] === 'undefined'
                     || typeof $scope.edit_data['new_role_id']['title'] === 'undefined'
                     || $scope.edit_data['new_role_id']['title'] == ''
                     || typeof $scope.edit_data['new_role_id']['job_contract_id'] === 'undefined'
-                    || $scope.edit_data['new_role_id']['job_contract_id'] == '') {
-
-                    return true;
-                }
-
-                return false;
+                    || $scope.edit_data['new_role_id']['job_contract_id'] == '');
             };
 
             // Saves the new Job Role
-            $scope.saveNewRole = function(data) {
+            $scope.saveNewRole = function saveNewRole() {
                 $log.debug('Add New Role');
 
                 var errors = 0;
@@ -314,7 +282,7 @@ define(['controllers/controllers'], function(controllers){
                     }
                 });
 
-                if(errors === 0){
+                if(!errors){
 
                     if($scope.edit_data.new_role_id.newEndDate === null){
                         delete $scope.edit_data.new_role_id.newEndDate;
@@ -577,7 +545,6 @@ define(['controllers/controllers'], function(controllers){
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the region list
                                                 RegionList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
-
                                             }
 
                                             break;
@@ -586,7 +553,6 @@ define(['controllers/controllers'], function(controllers){
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
                                                 LocationList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
-
                                             }
 
                                             break;
