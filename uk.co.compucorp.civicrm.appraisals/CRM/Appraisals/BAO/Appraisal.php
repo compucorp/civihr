@@ -168,4 +168,81 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
     }
     return $fields;
   }
+  
+  public static function filter($params) {
+      $roleContactsIds = array();
+      if (CRM_Core_DAO::checkTableExists('civicrm_hrjobroles') && CRM_Core_DAO::checkTableExists('civicrm_hrjobcontract')) {
+        $availableTags = array('department', 'level_type', 'region', 'location');
+        $rolesContactsWhere = array();
+        foreach ($availableTags as $tag) {
+          if (!empty($params['tags'][$tag])) {
+              $rolesContactsWhere[] = "r.{$tag} IN (" . implode(', ', array_map('intval', $params['tags'][$tag])) . ")";
+          }
+        }
+        
+        if (!empty($rolesContactsWhere)) {
+            $rolesContactsWhere[] = "hrjc.deleted = 0";
+            $rolesContactsQuery = "SELECT c.id, c.sort_name FROM civicrm_contact c "
+              . "INNER JOIN civicrm_hrjobcontract hrjc ON hrjc.contact_id = c.id "
+              . "INNER JOIN civicrm_hrjobroles r ON r.job_contract_id = hrjc.id "
+              . "WHERE " . implode(" AND ", $rolesContactsWhere);
+            echo 'query: ' . $rolesContactsQuery;
+            $rolesContactsResult = CRM_Core_DAO::executeQuery($rolesContactsQuery);
+
+            while ($rolesContactsResult->fetch()) {
+                echo $rolesContactsResult->id . ', ' . $rolesContactsResult->sort_name . '<br/>';
+                $roleContactsIds[] = $rolesContactsResult->id;
+            }
+            
+            if (!empty($params['contact_id'])) {
+                if (!in_array((int)$params['contact_id'], $roleContactsIds)) {
+                    return array();
+                }
+                $roleContactsIds = array((int)$params['contact_id']);
+            }
+        }
+      }
+      
+      if (!empty($params['contact_id']) && empty($roleContactsIds)) {
+          $roleContactsIds = array((int)$params['contact_id']);
+      }
+      
+      $getParams = array();
+      if (!empty($params['appraisal_cycle_id'])) {
+          $getParams['appraisal_cycle_id'] = (int)$params['appraisal_cycle_id'];
+      }
+      if (!empty($roleContactsIds)) {
+          $getParams['contact_id'] = array('IN' => $roleContactsIds);
+      }
+      if (!empty($params['status_id'])) {
+          $getParams['status_id'] = array('IN' => $params['status_id']);
+      }
+      $getParams['self_appraisal_due'] = array(
+          'BETWEEN' => array(
+              empty($params['self_appraisal_due_from']) ? '0000-00-00' : $params['self_appraisal_due_from'],
+              empty($params['self_appraisal_due_to']) ? '9999-00-00' : $params['self_appraisal_due_to'],
+          ),
+      );
+      $getParams['manager_appraisal_due'] = array(
+          'BETWEEN' => array(
+              empty($params['manager_appraisal_due_from']) ? '0000-00-00' : $params['manager_appraisal_due_from'],
+              empty($params['manager_appraisal_due_to']) ? '9999-00-00' : $params['manager_appraisal_due_to'],
+          ),
+      );
+      $getParams['grade_due'] = array(
+          'BETWEEN' => array(
+              empty($params['grade_due_from']) ? '0000-00-00' : $params['grade_due_from'],
+              empty($params['grade_due_to']) ? '9999-00-00' : $params['grade_due_to'],
+          ),
+      );
+      if (!empty($params['sequential'])) {
+          $getParams['sequential'] = $params['sequential'];
+      }
+      if (!empty($params['options'])) {
+          $getParams['options'] = $params['options'];
+      }
+      
+      $result = civicrm_api3('Appraisal', 'get', $getParams);
+      return $result;
+  }
 }

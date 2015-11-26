@@ -43,3 +43,18 @@ function civicrm_api3_appraisal_delete($params) {
 function civicrm_api3_appraisal_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+function civicrm_api3_appraisal_tags($params) {
+    $values = array();
+
+    $values['department'] = CRM_Core_OptionGroup::values('hrjc_department', false, false, false, null, 'label', true, false, 'id');
+    $values['level_type'] = CRM_Core_OptionGroup::values('hrjc_level_type', false, false, false, null, 'label', true, false, 'id');
+    $values['region'] = CRM_Core_OptionGroup::values('hrjc_region', false, false, false, null, 'label', true, false, 'id');
+    $values['location'] = CRM_Core_OptionGroup::values('hrjc_location', false, false, false, null, 'label', true, false, 'id');
+
+    return civicrm_api3_create_success($values, $params, 'Appraisal', 'tags');
+}
+
+function civicrm_api3_appraisal_filter($params) {
+    return CRM_Appraisals_BAO_Appraisal::filter($params);
+}
