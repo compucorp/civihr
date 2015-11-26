@@ -11,7 +11,7 @@
     height: $steps-height;
     line-height: $steps-height;
     margin-right: $steps-gutter;
-    padding: 0 $padding-base-horizontal;
+    padding: 0 $padding-small-horizontal 0 $padding-base-horizontal;
     position: relative;
 
     &:not(:first-child) {
@@ -38,10 +38,13 @@
         z-index: 2;
     }
 
-    &:before {
-        border-left-color: #fff;
-        margin-left: $steps-gutter;
-        z-index: 1;
+    &:not(:last-child) {
+
+        &:before {
+            border-left-color: #fff;
+            margin-left: $steps-gutter;
+            z-index: 1;
+        }
     }
 }
 
@@ -54,3 +57,26 @@
     background: $brand-primary;
     border-color: $brand-primary;
 }
+
+// A more compact version: smaller padding, smaller font
+.chr_steps--compact {
+
+    > .chr_steps__step {
+        font-size: $font-size-small;
+        font-weight: 600;
+        height: $steps-compact-height;
+        line-height: $steps-compact-height;
+        padding: 0 $padding-xs-horizontal 0 $padding-small-horizontal;
+
+        &:not(:first-child) {
+            padding-left: $padding-xs-horizontal + $steps-gutter;
+        }
+
+        &:after,
+        &:before {
+            border-width: ($steps-compact-height / 2) 0 ($steps-compact-height / 2) $steps-gutter;
+            margin-top: -($steps-compact-height / 2);
+        }
+    }
+}
+

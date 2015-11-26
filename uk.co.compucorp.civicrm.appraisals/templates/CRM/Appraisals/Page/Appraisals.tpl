@@ -69,6 +69,15 @@
                                     <h2 class="panel-title">Status</h2>
                                 </header>
                                 <div class="panel-body">
+                                    <div class="chr_appraisals-status">
+                                        <ul class="list-unstyled chr_steps chr_steps--compact">
+                                            <li class="chr_steps__step chart-color-0">Step 1</li>
+                                            <li class="chr_steps__step chart-color-1">Step 2</li>
+                                            <li class="chr_steps__step chart-color-2">Step 3</li>
+                                            <li class="chr_steps__step chart-color-3">Step 4</li>
+                                            <li class="chr_steps__step chart-color-4">Step 5</li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <footer class="panel-footer">
                                     <dl class="dl-horizontal dl-horizontal-inline">
