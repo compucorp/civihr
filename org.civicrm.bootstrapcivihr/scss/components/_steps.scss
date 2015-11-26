@@ -130,3 +130,19 @@
         border-color: $brand-primary;
     }
 }
+
+
+// Specific variations
+.chr_steps--appraisals-status__contacts {
+    color: $brand-primary;
+}
+
+.chr_steps--appraisals-status__count {
+    font-size: 12px;
+    font-weight: 600;
+    display: block;
+}
+
+.chr_steps--appraisals-status__overdue {
+    color: $brand-danger;
+}

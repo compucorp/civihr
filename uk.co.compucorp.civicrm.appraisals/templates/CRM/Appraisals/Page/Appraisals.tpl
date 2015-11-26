@@ -69,13 +69,19 @@
                                     <h2 class="panel-title">Status</h2>
                                 </header>
                                 <div class="panel-body">
-                                    <ul class="list-unstyled chr_steps chr_steps--compact">
+                                    <ul class="list-unstyled chr_steps chr_steps--compact chr_steps--appraisals-status">
                                         <li class="chr_steps__step">
                                             <span class="chr_steps__step__arrow chart-color-0">Step 1</span>
                                             <div class="chr_steps__step__legend">
                                                 <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
-                                                    <p>28<br> Contacts</p>
-                                                    <p>130<br> Overdue</p>
+                                                    <p class="chr_steps--appraisals-status__contacts">
+                                                        <span class="chr_steps--appraisals-status__count">28</span>
+                                                        Contacts
+                                                    </p>
+                                                    <p class="chr_steps--appraisals-status__overdue">
+                                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                                        Overdue
+                                                    </p>
                                                 </div>
                                             </div>
                                         </li>
@@ -83,8 +89,14 @@
                                             <span class="chr_steps__step__arrow chart-color-1">Step 2</span>
                                             <div class="chr_steps__step__legend">
                                                 <div class="chr_steps__step__legend__content chart-color-border-1 text-center">
-                                                    <p>140<br> Contacts</p>
-                                                    <p>12<br> Overdue</p>
+                                                    <p class="chr_steps--appraisals-status__contacts">
+                                                        <span class="chr_steps--appraisals-status__count">40</span>
+                                                        Contacts
+                                                    </p>
+                                                    <p class="chr_steps--appraisals-status__overdue">
+                                                        <span class="chr_steps--appraisals-status__count">2</span>
+                                                        Overdue
+                                                    </p>
                                                 </div>
                                             </div>
                                         </li>
@@ -92,8 +104,14 @@
                                             <span class="chr_steps__step__arrow chart-color-2">Step 3</span>
                                             <div class="chr_steps__step__legend">
                                                 <div class="chr_steps__step__legend__content chart-color-border-2 text-center">
-                                                    <p>36<br> Contacts</p>
-                                                    <p>0<br> Overdue</p>
+                                                    <p class="chr_steps--appraisals-status__contacts">
+                                                        <span class="chr_steps--appraisals-status__count">36</span>
+                                                        Contacts
+                                                    </p>
+                                                    <p class="chr_steps--appraisals-status__overdue">
+                                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                                        Overdue
+                                                    </p>
                                                 </div>
                                             </div>
                                         </li>
@@ -101,8 +119,14 @@
                                             <span class="chr_steps__step__arrow chart-color-3">Step 4</span>
                                             <div class="chr_steps__step__legend">
                                                 <div class="chr_steps__step__legend__content chart-color-border-3 text-center">
-                                                    <p>28<br> Contacts</p>
-                                                    <p>0<br> Overdue</p>
+                                                    <p class="chr_steps--appraisals-status__contacts">
+                                                        <span class="chr_steps--appraisals-status__count">28</span>
+                                                        Contacts
+                                                    </p>
+                                                    <p class="chr_steps--appraisals-status__overdue">
+                                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                                        Overdue
+                                                    </p>
                                                 </div>
                                             </div>
                                         </li>
@@ -110,8 +134,14 @@
                                             <span class="chr_steps__step__arrow chart-color-4">Step 5</span>
                                             <div class="chr_steps__step__legend">
                                                 <div class="chr_steps__step__legend__content chart-color-border-4 text-center">
-                                                    <p>0<br> Contacts</p>
-                                                    <p>0<br> Overdue</p>
+                                                    <p class="chr_steps--appraisals-status__contacts">
+                                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                                        Contacts
+                                                    </p>
+                                                    <p class="chr_steps--appraisals-status__overdue">
+                                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                                        Overdue
+                                                    </p>
                                                 </div>
                                             </div>
                                         </li>
