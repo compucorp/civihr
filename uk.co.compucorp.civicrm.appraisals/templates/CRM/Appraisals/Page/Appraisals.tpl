@@ -320,7 +320,13 @@
                                         </dl>
                                     </div>
                                     <footer class="panel-footer">
-
+                                        <ul class="list-unstyled chr_steps">
+                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 30</li>
+                                            <li class="chr_steps__step chr_steps__step--primary">Assigned to Manager: 22</li>
+                                            <li class="chr_steps__step">Awaiting Grade: 2</li>
+                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
+                                            <li class="chr_steps__step">Complete: 45</li>
+                                        </ul>
                                     </footer>
                                 </article>
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
@@ -368,7 +374,13 @@
                                         </dl>
                                     </div>
                                     <footer class="panel-footer">
-
+                                        <ul class="list-unstyled chr_steps">
+                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
+                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
+                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
+                                            <li class="chr_steps__step">Complete: 45</li>
+                                        </ul>
                                     </footer>
                                 </article>
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
@@ -416,7 +428,13 @@
                                         </dl>
                                     </div>
                                     <footer class="panel-footer">
-
+                                        <ul class="list-unstyled chr_steps">
+                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
+                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
+                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
+                                            <li class="chr_steps__step">Complete: 45</li>
+                                        </ul>
                                     </footer>
                                 </article>
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
@@ -464,7 +482,13 @@
                                         </dl>
                                     </div>
                                     <footer class="panel-footer">
-
+                                        <ul class="list-unstyled chr_steps">
+                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
+                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
+                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
+                                            <li class="chr_steps__step">Complete: 45</li>
+                                        </ul>
                                     </footer>
                                 </article>
                                 <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
@@ -512,7 +536,13 @@
                                         </dl>
                                     </div>
                                     <footer class="panel-footer">
-
+                                        <ul class="list-unstyled chr_steps">
+                                            <li class="chr_steps__step chr_steps__step--danger">Self Appraisal: 0</li>
+                                            <li class="chr_steps__step chr_steps__step--danger">Assigned to Manager: 12</li>
+                                            <li class="chr_steps__step chr_steps__step--primary">Awaiting Grade: 42</li>
+                                            <li class="chr_steps__step">Awaiting HR Approval: 1</li>
+                                            <li class="chr_steps__step">Complete: 45</li>
+                                        </ul>
                                     </footer>
                                 </article>
                                 <div class="panel--dashboard-appraisals__show-more text-center">

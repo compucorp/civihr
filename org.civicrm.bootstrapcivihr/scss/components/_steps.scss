@@ -1,0 +1,56 @@
+.chr_steps {
+    @include clearfix;
+    margin: 0;
+}
+
+.chr_steps__step {
+    background: $gray-dark;
+    border-left-color: $gray-dark;
+    color: $steps-color;
+    float: left;
+    height: $steps-height;
+    line-height: $steps-height;
+    margin-right: $steps-gutter;
+    padding: 0 $padding-base-horizontal;
+    position: relative;
+
+    &:not(:first-child) {
+        padding-left: $padding-base-horizontal + $steps-gutter;
+    }
+
+    &:after,
+    &:before {
+        content: "";
+        border-color: transparent;
+        border-style: solid;
+        border-width: ($steps-height / 2) 0 ($steps-height / 2) $steps-gutter;
+        display: block;
+        height: 0;
+        left: 100%;
+        margin-top: -($steps-height / 2);
+        position: absolute;
+        top: 50%;
+        width: 0;
+    }
+
+    &:after {
+        border-left-color: inherit;
+        z-index: 2;
+    }
+
+    &:before {
+        border-left-color: #fff;
+        margin-left: $steps-gutter;
+        z-index: 1;
+    }
+}
+
+.chr_steps__step--danger {
+    background: $brand-danger;
+    border-left-color: $brand-danger;
+}
+
+.chr_steps__step--primary {
+    background: $brand-primary;
+    border-left-color: $brand-primary;
+}
