@@ -296,7 +296,10 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-4 text-right">
-                                            <a href="#">Filter Appraisals</a>
+                                            <span>
+                                                <i class="fa fa-chevron-right fa-fw fa-0_5x"></i>
+                                                Filter Appraisals
+                                            </span>
                                         </div>
                                     </div>
                                 </header>
