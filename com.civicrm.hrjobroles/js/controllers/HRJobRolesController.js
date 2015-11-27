@@ -16,7 +16,7 @@ define(['controllers/controllers'], function(controllers){
             };
 
             $scope.onContractSelected = function(){
-                HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).done(function(result) {
+                HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).then(function(result) {
 
                     if(result.period_start_date){
                         $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.period_start_date);
@@ -40,7 +40,7 @@ define(['controllers/controllers'], function(controllers){
 
             $scope.onContractEdited = function(role_id, jobContractId){
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
-                return HRJobRolesService.getContractDetails(id).done(function(result) {
+                return HRJobRolesService.getContractDetails(id).then(function(result) {
 
                     if(result.period_start_date){
                         $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date);
