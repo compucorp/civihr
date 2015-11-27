@@ -87,6 +87,7 @@
                                                         <p class="form-control-static"
                                                            editable-select="edit_data[job_roles_data.id]['job_contract_id']"
                                                            e-name="contract"
+                                                           e-ng-change="onContractEdit($data, job_roles_data.id)"
                                                            e-ng-options="k as v.title for (k, v) in jobroles.contractsData">
                                                             {{jobroles.contractsData[edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}
                                                         </p>

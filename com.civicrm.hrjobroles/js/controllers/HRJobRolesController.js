@@ -34,8 +34,13 @@ define(['controllers/controllers'], function(controllers){
                 });
             };
 
-            $scope.onContractEdited = function(role_id){
-                return HRJobRolesService.getContractDetails($scope.edit_data[role_id]['job_contract_id']).done(function(result) {
+            $scope.onContractEdit = function(data, jobRoleId) {
+                return $scope.onContractEdited(jobRoleId, data);
+            };
+
+            $scope.onContractEdited = function(role_id, jobContractId){
+                var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
+                return HRJobRolesService.getContractDetails(id).done(function(result) {
 
                     if(result.period_start_date){
                         $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date);
@@ -665,89 +670,75 @@ define(['controllers/controllers'], function(controllers){
                 // Get the job contracts for the contact
                 HRJobRolesService.getContracts(contact_id).then(function(data) {
 
-                        var job_contract_ids = [];
-                        var contractsData = {};
+                    var job_contract_ids = [];
+                    var contractsData = {};
 
-                        // If we have job contracts, try to get the job roles for the contract
-                        if (data.count != 0) {
-                            for (var i = 0; i < data.count; i++) {
+                    // If we have job contracts, try to get the job roles for the contract
+                    if (data.count != 0) {
+                        for (var i = 0; i < data.count; i++) {
 
-                                // Job contract IDs which will be passed to the "getAllJobRoles" service
-                                job_contract_ids.push(data.values[i]['id']);
+                            // Job contract IDs which will be passed to the "getAllJobRoles" service
+                            job_contract_ids.push(data.values[i]['id']);
 
-                                // Check the period end date
-                                if (data.values[i]['period_end_date'] == undefined) {
+                            // Check the period end date
+                            if (data.values[i]['period_end_date'] == undefined) {
+                                // No period end date defined (means contract is active)
+                                var status = '10';
+                            } else {
+                                // Get the current date
+                                var today = new Date();
+                                var period_end_date = new Date();
 
-                                    // No period end date defined (means contract is active)
-                                    var status = '10';
-                                }
-                                else {
+                                var date_values = data.values[i]['period_end_date'].split("-");
 
-                                    // Get the current date
-                                    var today = new Date();
-                                    var period_end_date = new Date();
-
-                                    var date_values = data.values[i]['period_end_date'].split("-");
-
-                                    // Javascript calculates the months from 0 (so we use month - 1)
-                                    period_end_date.setFullYear(date_values[0], date_values[1] - 1, date_values[2]);
-                                }
-
-                                contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title'], status: status};
+                                // Javascript calculates the months from 0 (so we use month - 1)
+                                period_end_date.setFullYear(date_values[0], date_values[1] - 1, date_values[2]);
                             }
 
-                            // Store the ContractsData what we can reuse later
-                            job_roles.contractsData = contractsData;
-
-                            HRJobRolesService.getAllJobRoles(job_contract_ids).then(function(data) {
-
-                                    //console.log(data);
-                                    //// Overwrite whatever status is stored in job roles table with the status based on the assigned job contract
-                                    //angular.forEach(data.values, function(object_data, key) {
-                                    //    data.values[key]['status'] = job_roles.contractsData[object_data.job_contract_id].status;
-                                    //});
-
-                                    // Assign data
-                                    job_roles.present_job_roles = [];
-                                    job_roles.past_job_roles = [];
-
-                                    angular.forEach(data.values, function(object_data) {
-                                        var end_date = new Date(object_data.end_date);
-
-                                        if (end_date > new Date() || isNaN(end_date)) {
-                                            job_roles.present_job_roles.push(object_data);
-                                        } else {
-                                            job_roles.past_job_roles.push(object_data);
-                                        }
-                                    });
-
-                                    if (data.is_error == 1) {
-                                        job_roles.status = 'Data load failure';
-                                    } else {
-
-                                        if (data.count == 0) {
-                                            job_roles.empty = 'No Job Roles found!';
-                                        } else {
-                                            job_roles.empty = null;
-                                        }
-
-                                        job_roles.status = 'Data load OK';
-                                    }
-                                },
-                                function(errorMessage){
-                                    $scope.error = errorMessage;
-                                });
-                        }
-                        else {
-                            job_roles.empty = 'No Job Contracts found for this Contact!';
+                            contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title'], status: status};
                         }
 
+                        // Store the ContractsData what we can reuse later
+                        job_roles.contractsData = contractsData;
 
-                    },
-                    function(errorMessage){
-                        $scope.error = errorMessage;
-                    });
+                        HRJobRolesService.getAllJobRoles(job_contract_ids).then(function(data) {
 
+                            // Assign data
+                            job_roles.present_job_roles = [];
+                            job_roles.past_job_roles = [];
+
+                            angular.forEach(data.values, function(object_data) {
+                                var end_date = new Date(object_data.end_date);
+
+                                if (end_date > new Date() || isNaN(end_date)) {
+                                    job_roles.present_job_roles.push(object_data);
+                                } else {
+                                    job_roles.past_job_roles.push(object_data);
+                                }
+                            });
+
+                            if (data.is_error == 1) {
+                                job_roles.error = 'Data load failure';
+                            } else {
+
+                                if (data.count == 0) {
+                                    job_roles.empty = 'No Job Roles found!';
+                                } else {
+                                    job_roles.empty = null;
+                                }
+
+                                job_roles.status = 'Data load OK';
+                            }
+                        }, function(errorMessage){
+                            $scope.error = errorMessage;
+                        });
+                    } else {
+                        job_roles.empty = 'No Job Contracts found for this Contact!';
+                    }
+                },
+                function(errorMessage){
+                    $scope.error = errorMessage;
+                });
             }
 
             // Implements the "deleteJobRole" service
