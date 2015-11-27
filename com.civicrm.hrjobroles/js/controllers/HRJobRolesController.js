@@ -4,6 +4,9 @@ define(['controllers/controllers'], function(controllers){
         function($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService){
             $log.debug('Controller: HRJobRolesController');
 
+            $scope.present_job_roles = [];
+            $scope.past_job_roles = [];
+
             $scope.dpOpen = function($event){
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -11,6 +14,7 @@ define(['controllers/controllers'], function(controllers){
                 $scope.picker.opened = true;
 
             };
+
             $scope.onContractSelected = function(){
                 HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).done(function(result) {
 
@@ -24,6 +28,25 @@ define(['controllers/controllers'], function(controllers){
                         $scope.edit_data['new_role_id']['newEndDate'] = new Date(result.period_end_date);
                     } else {
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
+                    }
+
+                    $scope.$apply();
+                });
+            };
+
+            $scope.onContractEdited = function(role_id){
+                return HRJobRolesService.getContractDetails($scope.edit_data[role_id]['job_contract_id']).done(function(result) {
+
+                    if(result.period_start_date){
+                        $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date);
+                    } else {
+                        $scope.edit_data[role_id]['start_date'] = null;
+                    }
+
+                    if(result.period_end_date){
+                        $scope.edit_data[role_id]['end_date'] = new Date(result.period_end_date);
+                    } else {
+                        $scope.edit_data[role_id]['end_date'] = null;
                     }
 
                     $scope.$apply();
@@ -103,6 +126,7 @@ define(['controllers/controllers'], function(controllers){
 
             // Define the add new role URL
             $scope.add_new_role_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'add_new_role.html';
+            $scope.job_role_panel_url = $scope.$parent.pathBaseUrl + $scope.$parent.pathIncludeTpl + 'job_role_panel.html';
 
             // Store the contractsData
             $scope.contractsData = [];
@@ -152,7 +176,6 @@ define(['controllers/controllers'], function(controllers){
                 if (typeof $scope.edit_data[role_id] == "undefined") {
                     $scope.edit_data[role_id] = {};
                 }
-
                 // If we have funders or cost centers, we have a special way to init our data
                 if (form_id == 'funders') {
 
@@ -173,26 +196,24 @@ define(['controllers/controllers'], function(controllers){
 
                     // Loop data and crete the required array of values
                     for (var i = 0; i < funder_contact_ids.length; i++) {
-
                         if (funder_contact_ids[i] != "") {
-
                             // Set default funder rows funder rows
                             $scope.edit_data[role_id]['funders'].push({
                                 id: $scope.edit_data[role_id]['funders'].length + 1,
-                                funder_id: { id: funder_contact_ids[i], sort_name: job_roles.contactListObject[funder_contact_ids[i]]['sort_name'] },
+                                funder_id: {
+                                    id: funder_contact_ids[i],
+                                    sort_name: job_roles.contactListObject[funder_contact_ids[i]]['sort_name']
+                                },
                                 type: funder_types[i],
                                 percentage: percent_funders[i],
                                 amount: amount_funders[i]
                             });
-
                         }
-
                     }
-
                 }
-
                 // If we have funders or cost centers, we have a special way to init our data
-                else if (form_id == 'cost_centers') {
+                else if (form_id == 'cost_centers')
+                {
 
                     // Init empty array for funder default values
                     $scope.edit_data[role_id]['cost_centers'] = [];
@@ -227,13 +248,39 @@ define(['controllers/controllers'], function(controllers){
 
                     }
 
-                }
+                } else {
 
-                else {
+                    var bothJustSet = (typeof $scope.edit_data[role_id].start_date == 'undefined'
+                                    || typeof $scope.edit_data[role_id].job_contract_id == 'undefined');
 
                     // Default data init
                     $scope.edit_data[role_id][form_id] = data;
 
+                    /* If dates are not set, we programatically set them here. */
+                    var invalidDate = (isNaN(new Date($scope.edit_data[role_id].start_date)) && typeof $scope.edit_data[role_id].start_date != 'undefined');
+
+                    var presentJobContract = !(typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
+
+                    if(invalidDate && presentJobContract && bothJustSet){
+                        console.info('Fired Dates\' update for', role_id);
+                        $scope.onContractEdited(role_id).then(function(){
+                            $scope.$apply();
+                            return $scope.updateRole(role_id);
+                        });
+                    }
+
+                    //
+                    //if($scope.edit_data[role_id].job_contract_id && !present) {
+                    //    $scope.$watch(function(){
+                    //        return $scope.edit_data[role_id].job_contract_id;
+                    //    }, function(oldVal, newVal){
+                    //        if(oldVal != newVal){
+                    //            $scope.onContractEdited(role_id).then(function(){
+                    //                $scope.$apply();
+                    //            });
+                    //        }
+                    //    });
+                    //}
                 }
             };
 
@@ -644,15 +691,6 @@ define(['controllers/controllers'], function(controllers){
 
                                     // Javascript calculates the months from 0 (so we use month - 1)
                                     period_end_date.setFullYear(date_values[0], date_values[1] - 1, date_values[2]);
-
-                                    // If the period end date is in the future or today's date set the contract to active
-                                    if (period_end_date >= today) {
-                                        var status = '10';
-                                    }
-                                    else {
-                                        var status = '20';
-                                    }
-
                                 }
 
                                 contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title'], status: status};
@@ -663,23 +701,33 @@ define(['controllers/controllers'], function(controllers){
 
                             HRJobRolesService.getAllJobRoles(job_contract_ids).then(function(data) {
 
-                                    // Overwrite whatever status is stored in job roles table with the status based on the assigned job contract
-                                    angular.forEach(data.values, function(object_data, key) {
-                                        data.values[key]['status'] = job_roles.contractsData[object_data.job_contract_id].status;
-                                    });
+                                    //console.log(data);
+                                    //// Overwrite whatever status is stored in job roles table with the status based on the assigned job contract
+                                    //angular.forEach(data.values, function(object_data, key) {
+                                    //    data.values[key]['status'] = job_roles.contractsData[object_data.job_contract_id].status;
+                                    //});
 
                                     // Assign data
-                                    job_roles.getData = data.values;
+                                    job_roles.present_job_roles = [];
+                                    job_roles.past_job_roles = [];
+
+                                    angular.forEach(data.values, function(object_data) {
+                                        var end_date = new Date(object_data.end_date);
+
+                                        if (end_date > new Date() || isNaN(end_date)) {
+                                            job_roles.present_job_roles.push(object_data);
+                                        } else {
+                                            job_roles.past_job_roles.push(object_data);
+                                        }
+                                    });
 
                                     if (data.is_error == 1) {
                                         job_roles.status = 'Data load failure';
-                                    }
-                                    else {
+                                    } else {
 
                                         if (data.count == 0) {
                                             job_roles.empty = 'No Job Roles found!';
-                                        }
-                                        else {
+                                        } else {
                                             job_roles.empty = null;
                                         }
 
