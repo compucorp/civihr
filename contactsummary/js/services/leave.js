@@ -77,7 +77,7 @@ define([
 
                         init(periodId).then(function () {
                             deferred.resolve(self.collection.getItem(periodId));
-                        })
+                        });
                     } else {
                         deferred.resolve({});
                     }
@@ -421,9 +421,18 @@ define([
                 if (typeId) {
                     if (!data.hasOwnProperty(typeId)) return;
 
-                    var hoursTaken = Math.ceil(absence.absence_range.duration / 60);
+                    var hours = Math.ceil(absence.absence_range.duration / 60),
+                        days = +(hours / 8).toFixed(1);
 
-                    data[typeId].taken += Math.ceil(hoursTaken / 8);
+                    if (data[typeId].title.toLowerCase() === 'toil') {
+                        if (absence.activity_type_id === data[typeId].credit_activity_type_id) {
+                            data[typeId].entitled += days;
+                        } else {
+                            data[typeId].taken += days;
+                        }
+                    } else {
+                        data[typeId].taken += days;
+                    }                    
                 }
             });
 
