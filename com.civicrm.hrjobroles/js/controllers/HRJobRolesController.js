@@ -19,13 +19,13 @@ define(['controllers/controllers'], function(controllers){
                 HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).then(function(result) {
 
                     if(result.period_start_date){
-                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.period_start_date);
+                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.period_start_date.replace(' ', 'T'));
                     } else {
                         $scope.edit_data['new_role_id']['newStartDate'] = null;
                     }
 
                     if(result.period_end_date){
-                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(result.period_end_date);
+                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(result.period_end_date.replace(' ', 'T'));
                     } else {
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
                     }
@@ -43,13 +43,13 @@ define(['controllers/controllers'], function(controllers){
                 return HRJobRolesService.getContractDetails(id).then(function(result) {
 
                     if(result.period_start_date){
-                        $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date);
+                        $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date.replace(' ', 'T'));
                     } else {
                         $scope.edit_data[role_id]['start_date'] = null;
                     }
 
                     if(result.period_end_date){
-                        $scope.edit_data[role_id]['end_date'] = new Date(result.period_end_date);
+                        $scope.edit_data[role_id]['end_date'] = new Date(result.period_end_date.replace(' ', 'T'));
                     } else {
                         $scope.edit_data[role_id]['end_date'] = null;
                     }
@@ -261,31 +261,19 @@ define(['controllers/controllers'], function(controllers){
                     // Default data init
                     $scope.edit_data[role_id][form_id] = data;
 
+                    var date = new Date($scope.edit_data[role_id].start_date.replace(' ', 'T'));
                     /* If dates are not set, we programatically set them here. */
-                    var invalidDate = (isNaN(new Date($scope.edit_data[role_id].start_date)) && typeof $scope.edit_data[role_id].start_date != 'undefined');
+                    var invalidDate = (isNaN(date) && typeof $scope.edit_data[role_id].start_date != 'undefined');
 
                     var presentJobContract = !(typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
 
                     if(invalidDate && presentJobContract && bothJustSet){
-                        console.info('Fired Dates\' update for', role_id);
+                        console.info('UPDATED', role_id);
                         $scope.onContractEdited(role_id).then(function(){
                             $scope.$apply();
                             return $scope.updateRole(role_id);
                         });
                     }
-
-                    //
-                    //if($scope.edit_data[role_id].job_contract_id && !present) {
-                    //    $scope.$watch(function(){
-                    //        return $scope.edit_data[role_id].job_contract_id;
-                    //    }, function(oldVal, newVal){
-                    //        if(oldVal != newVal){
-                    //            $scope.onContractEdited(role_id).then(function(){
-                    //                $scope.$apply();
-                    //            });
-                    //        }
-                    //    });
-                    //}
                 }
             };
 
@@ -708,7 +696,7 @@ define(['controllers/controllers'], function(controllers){
                             job_roles.past_job_roles = [];
 
                             angular.forEach(data.values, function(object_data) {
-                                var end_date = new Date(object_data.end_date);
+                                var end_date = new Date(object_data.end_date.replace(' ', 'T'));
 
                                 if (end_date > new Date() || isNaN(end_date)) {
                                     job_roles.present_job_roles.push(object_data);
