@@ -32,7 +32,7 @@ define(['services/services'], function (services) {
             },
 
             getContractDetails: function getContractDetails(id){
-              return CRM.api3('HRJobContractRevision', 'getcurrentrevision', {
+                return CRM.api3('HRJobContractRevision', 'getcurrentrevision', {
                     "sequential": 1,
                     "jobcontract_id": id
                 }).then(function(result){
