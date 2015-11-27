@@ -7,6 +7,18 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
+    <path>civicrm/appraisals/dashboard</path>
+    <page_callback>CRM_Appraisals_Page_Dashboard</page_callback>
+    <title>Appraisals Dashboard</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/appraisals/search</path>
+    <page_callback>CRM_Appraisals_Page_Search</page_callback>
+    <title>Search Appraisals</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
     <path>civicrm/appraisal_criteria</path>
     <page_callback>CRM_Appraisals_Page_AppraisalCriteria</page_callback>
     <title>Appraisal Criteria</title>

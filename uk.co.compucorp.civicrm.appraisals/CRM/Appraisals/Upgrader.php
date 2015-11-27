@@ -151,6 +151,108 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         return TRUE;
     }
     
+    /**
+     * Alter Appraisal Cycle columns and add 'cycle_' prefix
+     */
+    public function upgrade_0005() {
+        
+        $queries = array(
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `name` `cycle_name` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `self_appraisal_due` `cycle_self_appraisal_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `manager_appraisal_due` `cycle_manager_appraisal_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `grade_due` `cycle_grade_due` DATE NULL DEFAULT NULL',
+            'ALTER TABLE `civicrm_appraisal_cycle` CHANGE `type_id` `cycle_type_id` INT(10) UNSIGNED NULL DEFAULT NULL',
+        );
+        
+        foreach ($queries as $query) {
+            CRM_Core_DAO::executeQuery($query);
+        }
+        
+        return TRUE;
+    }
+    
+    /**
+     * Remove 'appraisal_criteria' from Administer Dropdown menu
+     * 
+     * @return boolean
+     */
+    public function upgrade_0006() {
+        CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_navigation` WHERE name IN ('appraisal_criteria')");
+        CRM_Core_BAO_Navigation::resetNavigation();
+        
+        return TRUE;
+    }
+    
+    /**
+     * Install Appraisals top navigation
+     * 
+     * @return boolean
+     */
+    public function upgrade_0007() {
+        // Add Appraisals to the Top Navigation menu
+        CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_navigation` WHERE name = 'appraisals' and parent_id IS NULL");
+
+        $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'weight', 'name');
+        //$contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+        $appraisalsNavigation = new CRM_Core_DAO_Navigation();
+        $params = array (
+            'domain_id'  => CRM_Core_Config::domainID(),
+            'label'      => ts('Appraisals'),
+            'name'       => 'appraisals',
+            'url'        => null,
+            'parent_id'  => null,
+            'weight'     => $weight + 1,
+            //'permission' => 'access Appraisals',
+            'separator'  => 1,
+            'is_active'  => 1
+        );
+        $appraisalsNavigation->copyValues($params);
+        $appraisalsNavigation->save();
+
+        if ($appraisalsNavigation->id) {
+            $submenu = array(
+                array(
+                    'label' => ts('Appraisals Dashboard'),
+                    'name' => 'appraisals_dashboard',
+                    'url' => 'civicrm/appraisals/dashboard',
+                ),
+                array(
+                    'label' => ts('Search Appraisals'),
+                    'name' => 'search_appraisals',
+                    'url' => 'civicrm/appraisals/search',
+                ),
+                array(
+                    'label' => ts('Import Appraisals'),
+                    'name' => 'import_appraisals',
+                    'url' => 'civicrm/appraisals/import',
+                ),
+            );
+
+            foreach ($submenu as $key => $item)
+            {
+                $item['parent_id'] = $appraisalsNavigation->id;
+                $item['weight'] = $key;
+                $item['is_active'] = 1;
+                CRM_Core_BAO_Navigation::add($item);
+            }
+        }
+
+        $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+        $aministerAppraisalMenu = array(
+            'label'      => ts('Appraisal grade labels'),
+            'name'       => 'appraisal_grade_labels',
+            'url'        => 'civicrm/appraisal_criteria',
+            'permission' => 'administer CiviCRM',
+            'parent_id'  => $administerNavId,
+            'is_active' => 1,
+        );
+        CRM_Core_BAO_Navigation::add($aministerAppraisalMenu);
+
+        CRM_Core_BAO_Navigation::resetNavigation();
+        
+        return TRUE;
+    }
+    
     public function enable() {
         $this->setIsActive(1);
         
@@ -173,9 +275,7 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         );
         
         // Enable / Disable navigation items:
-        CRM_Core_DAO::executeQuery(
-            "UPDATE civicrm_navigation SET is_active={$status} WHERE name IN ('appraisal_criteria')"
-        );
+        CRM_Core_DAO::executeQuery("UPDATE `civicrm_navigation` SET is_active = {$status} WHERE name IN ('appraisals', 'appraisals_dashboard', 'search_appraisals', 'import_appraisals', 'appraisal_grade_labels')");
         CRM_Core_BAO_Navigation::resetNavigation();
         
         return TRUE;
@@ -207,7 +307,7 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         ////CRM_Core_DAO::executeQuery("DELETE FROM civicrm_entity_file WHERE entity_table LIKE 'civicrm_appraisal_%'");
         
         // Delete navigation items:
-        CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('appraisal_criteria')");
+        CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_navigation` WHERE name IN ('appraisals', 'appraisals_dashboard', 'search_appraisals', 'import_appraisals', 'appraisal_grade_labels')");
         CRM_Core_BAO_Navigation::resetNavigation();
         
         return TRUE;
