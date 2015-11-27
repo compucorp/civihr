@@ -48,7 +48,7 @@
                 <main class="crm_page__main">
                     <div class="row">
                         <div class="col-sm-4">
-                            <section class="panel panel-default">
+                            <section class="panel panel-default panel--active-cycles">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Active Cycles</h2>
                                 </header>
@@ -64,7 +64,7 @@
                             </section>
                         </div>
                         <div class="col-sm-4">
-                            <section class="panel panel-default">
+                            <section class="panel panel-default panel--status">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Status</h2>
                                 </header>
@@ -156,7 +156,7 @@
                             </section>
                         </div>
                         <div class="col-sm-4">
-                            <section class="panel panel-default">
+                            <section class="panel panel-default panel--grades">
                                 <header class="panel-heading">
                                     <h2 class="panel-title">Grades</h2>
                                 </header>
