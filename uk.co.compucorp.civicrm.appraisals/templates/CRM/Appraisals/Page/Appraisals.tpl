@@ -2,6 +2,26 @@
 {assign var="prefix" value="appr-" }
 
 <div id="bootstrap-theme">
+    <div class="modal fade in show" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h2 class="modal-title text-capitalize">create new appraisal cycle</h2>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal">cancel</button>
+                    <button type="button" class="btn btn-primary text-uppercase">create cycle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <section id="{$module}" class="crm_page">
         <div class="crm_page__topbar">
             <div class="row">
