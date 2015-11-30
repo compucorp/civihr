@@ -29,7 +29,8 @@ define(['controllers/controllers'], function(controllers){
                     } else {
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
                     }
-
+                    return result;
+                }).then(function(){
                     $scope.$apply();
                 });
             };
