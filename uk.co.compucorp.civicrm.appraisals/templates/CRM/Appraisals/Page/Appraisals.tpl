@@ -35,20 +35,6 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="form-group">
-                            <label for="access" class="control-label col-sm-3">
-                                Access
-                            </label>
-                            <div class="col-sm-9">
-                                <select class="form-control" id="access">
-                                    <option value="">- select -</option>
-                                    <option value="foo">foo</option>
-                                    <option value="bar">bar</option>
-                                    <option value="baz">baz</option>
-                                </select>
-                            </div>
-                        </div>
-                        <hr>
                         <h3>
                             Cycle Period
                             <i class="fa fa-question-circle fa-1x fa-fw fa-color-primary"></i>
