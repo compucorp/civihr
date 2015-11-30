@@ -1,8 +1,3 @@
-/* line 4, ../sass/contactsummary.scss */
-#tab_summary, #contact-summary {
-  display: none !important;
-}
-
 /* line 8, ../sass/contactsummary.scss */
 #contactsummary {
   padding: 20px;
@@ -16,8 +11,12 @@
 #contactsummary .panel--key-details {
   margin-bottom: 0 !important;
 }
+/* line 24, ../sass/contactsummary.scss */
+#contactsummary .panel--leave .list-unstyled {
+  margin-bottom: 0;
+}
 @media (min-width: 1200px) {
-  /* line 26, ../sass/contactsummary.scss */
+  /* line 32, ../sass/contactsummary.scss */
   #contactsummary .panel--sickness .col--sickness-days {
     text-align: right;
   }

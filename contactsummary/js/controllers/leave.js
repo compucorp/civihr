@@ -20,15 +20,17 @@ define([
         this.leaves = [];
         this.toil = {};
         this.totalEntitlement = 0;
+        this.totalTaken = 0;
         this.ready = false;
         this.chartColors = d3.scale.category20();
 
         Leave.getCurrent()
             .then(function (response) {
                 angular.forEach(response, function (leave) {
-                    self.totalEntitlement += leave.entitled;
-
                     if (leave.title !== 'Sick') {
+                        self.totalEntitlement += leave.entitled;
+                        self.totalTaken += leave.taken;
+
                         if (leave.title === 'TOIL') {
                             self.toil = leave;
                         } else {

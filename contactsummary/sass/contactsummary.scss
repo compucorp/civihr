@@ -1,8 +1,8 @@
 @import "../../org.civicrm.bootstrap/scss/overrides/variables";
-@import "../../org.civicrm.bootstrap/vendor/bootstrap/scss/variables";
+@import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/scss/variables";
 
 #tab_summary, #contact-summary {
-  display: none !important;
+  //display: none !important;
 }
 
 #contactsummary {
@@ -20,6 +20,12 @@
         margin-bottom: 0 !important;
     }
 
+    .panel--leave {
+        .list-unstyled {
+            margin-bottom: 0;
+        }
+    }
+
     .panel--sickness {
 
         @media(min-width: $screen-lg-min) {
@@ -28,4 +34,6 @@
             }
         }
     }
+
+
 }
