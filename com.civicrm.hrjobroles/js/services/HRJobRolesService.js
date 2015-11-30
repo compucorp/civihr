@@ -36,19 +36,10 @@ define(['services/services'], function (services) {
                     "sequential": 1,
                     "jobcontract_id": id
                 }).then(function(result){
-                    var current = result.values.id;
-
                     return CRM.api3('HRJobDetails', 'get', {
                         "sequential": 1,
-                        "jobcontract_id": id
-                    }).then(function(result){
-                        var current_revision = '';
-                        angular.forEach(result.values, function(value){
-                            if(value.id == current){
-                                current_revision = value;
-                            }
-                        });
-                        return current_revision;
+                        "jobcontract_id": id,
+                        "jobcontract_revision_id": result.values.details_revision_id
                     });
                 });
             },
