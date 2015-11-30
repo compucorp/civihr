@@ -627,21 +627,21 @@ table {
 }
 
 // Exposed filters
-.form-horizontal .form-group label {
-  position: relative;
-  min-height: 1px;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 7px;
-  padding-left:  ($grid-gutter-width / 2);
-  padding-right: ($grid-gutter-width / 2);
-  text-align: right;
+// .form-horizontal .form-group label {
+//   position: relative;
+//   min-height: 1px;
+//   margin-top: 0;
+//   margin-bottom: 0;
+//   padding-top: 7px;
+//   padding-left:  ($grid-gutter-width / 2);
+//   padding-right: ($grid-gutter-width / 2);
+//   text-align: right;
 
-  @media (min-width: $screen-sm-min) {
-    float: left;
-    width: percentage((2 / $grid-columns));
-  }
-}
+//   @media (min-width: $screen-sm-min) {
+//     float: left;
+//     width: percentage((2 / $grid-columns));
+//   }
+// }
 
 // Treat all links inside alert as .alert-link
 .alert a {

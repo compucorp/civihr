@@ -1,0 +1,132 @@
+.chr_steps {
+    @include clearfix;
+    margin: 0;
+}
+
+.chr_steps__step {
+    display: table;
+    float: left;
+    margin-right: $steps-gutter;
+
+    &:not(:first-child) {
+
+        .chr_steps__step__arrow {
+            padding-left: $padding-base-horizontal + $steps-gutter;
+        }
+    }
+
+    &:not(:last-child) {
+
+        .chr_steps__step__arrow {
+
+            &:before {
+                border-left-color: #fff;
+                margin-left: $steps-gutter;
+                z-index: 1;
+            }
+        }
+    }
+}
+
+.chr_steps__step__arrow {
+    background: $gray-dark;
+    border-color: $gray-dark;
+    color: $steps-color;
+    display: table-cell;
+    height: $steps-height;
+    line-height: $steps-height;
+    padding: 0 $padding-small-horizontal 0 $padding-base-horizontal;
+    position: relative;
+
+    &:after,
+    &:before {
+        content: "";
+        border-color: transparent;
+        border-style: solid;
+        border-width: ($steps-height / 2) 0 ($steps-height / 2) $steps-gutter;
+        display: block;
+        height: 0;
+        left: 100%;
+        margin-top: -($steps-height / 2);
+        position: absolute;
+        top: 50%;
+        width: 0;
+    }
+
+    &:after {
+        border-left-color: inherit;
+        z-index: 2;
+    }
+}
+
+.chr_steps__step__legend {
+    display: table-row;
+
+    > .chr_steps__step__legend__content {
+        margin-top: 10px;
+    }
+}
+
+.chr_steps__step__legend__content {
+    background: white;
+    border: 1px solid $gray-dark;
+    font-size: 10px;
+    min-height: 90px;
+    padding: 10px 4px;
+    width: 100%;
+}
+
+
+// A more compact version: smaller padding, smaller font
+.chr_steps--compact {
+
+    > .chr_steps__step {
+
+        &:not(:first-child) {
+
+            .chr_steps__step__arrow {
+                padding-left: $padding-xs-horizontal + $steps-gutter;
+            }
+        }
+    }
+
+    .chr_steps__step__arrow {
+        font-size: $font-size-small;
+        font-weight: 600;
+        height: $steps-compact-height;
+        line-height: $steps-compact-height;
+        padding: 0 $padding-xs-horizontal 0 $padding-small-horizontal;
+
+        &:after,
+        &:before {
+            border-width: ($steps-compact-height / 2) 0 ($steps-compact-height / 2) $steps-gutter;
+            margin-top: -($steps-compact-height / 2);
+        }
+    }
+}
+
+
+// Contextual variations
+.chr_steps__step--danger {
+
+    > .chr_steps__step__arrow {
+        background: $brand-danger;
+        border-color: $brand-danger;
+    }
+
+    .chr_steps__step__legend__content {
+        border-color: $brand-danger;
+    }
+}
+
+.chr_steps__step--primary {
+
+    > .chr_steps__step__arrow {
+        background: $brand-primary;
+        border-color: $brand-primary;
+    }
+
+    .chr_steps__step__legend__content {
+        border-color: $brand-primary;
+    }
+}
