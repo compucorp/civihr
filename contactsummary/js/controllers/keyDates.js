@@ -59,8 +59,8 @@ define([
                 angular.forEach(response, function (contract) {
                     addContractDates.call(self, contract);
 
-                    if (contract.is_current) {
-                        self.activeContracts++
+                    if (contract.is_current === '1') {
+                        self.activeContracts++;
                     };
                 });
 
