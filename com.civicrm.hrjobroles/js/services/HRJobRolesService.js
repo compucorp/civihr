@@ -13,7 +13,7 @@ define(['services/services'], function (services) {
                     "sequential": 1,
                     "contact_id": contact_id,
                     "deleted": 0,
-                    "return": "title,period_end_date"
+                    "return": "title,period_end_date,period_start_date"
                 }).done(function(result) {
 
                     // Passing data to deferred's resolve function on successful completion
