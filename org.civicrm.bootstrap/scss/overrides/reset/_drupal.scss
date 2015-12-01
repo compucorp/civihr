@@ -119,6 +119,17 @@ dd {
 }
 #toolbar {
   z-index: 1600;
+
+  ul {
+    padding: 0;
+    margin: 0;
+
+    a,
+    a:hover {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
 }
 // Adjust z-index of bootstrap modals
 .modal {
