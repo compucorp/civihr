@@ -68,7 +68,9 @@ define([
             })
             .then(function (response) {
                 angular.forEach(response, function (role) {
-                    if (role.status === '10') {
+                    var endDate = moment(role.end_date);
+
+                    if (!endDate.isValid() || isDateInFuture(endDate)) {
                         self.activeRoles++;
                     }
                 });
