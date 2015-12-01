@@ -91,7 +91,9 @@ define([
                                 id: role.id,
                                 title: role.title,
                                 department: role.department,
-                                status: role.status
+                                status: role.status,
+                                start_date: role.start_date,
+                                end_date: role.end_date
                             };
                         });
 

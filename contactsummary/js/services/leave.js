@@ -146,17 +146,11 @@ define([
          */
         factory.getAbsences = function (periodId) {
             var deferred = $q.defer();
-            var contactId;
 
             ContactDetails.get()
                 .then(function (response) {
-                    contactId = response.id;
-
-                    return getPeriods();
-                })
-                .then(function (response) {
                     var data = {
-                        target_contact_id: contactId,
+                        target_contact_id: response.id,
                         period_id: [periodId],
                         options: {'absence-range': 1},
                         sequential: 0 // this is *important* in order to get absences in correct format!
@@ -165,10 +159,6 @@ define([
                     return Api.post('Activity', data, 'getabsences');
                 })
                 .then(function (response) {
-                    if (response.values.length === 0) {
-                        return deferred.reject('No absences found');
-                    }
-
                     absences = _.filter(response.values, function (absence) {
                         return absence.status_id === '2';
                     });
@@ -332,12 +322,11 @@ define([
 
                         periods = response.values;
                         periods = $filter('orderBy')(periods, 'start_date');
-                        console.log('Periods in order', periods);
 
                         deferred.resolve(periods);
                     })
                     .catch(function (response) {
-                        $log.debug('An error has occured', response);
+                        $log.debug('An error has occurred', response);
                         deferred.reject(response);
                     });
             } else {
