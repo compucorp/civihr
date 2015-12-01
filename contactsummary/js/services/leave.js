@@ -169,7 +169,9 @@ define([
                         return deferred.reject('No absences found');
                     }
 
-                    absences = response.values;
+                    absences = _.filter(response.values, function (absence) {
+                        return absence.status_id === '2';
+                    });
 
                     deferred.resolve(absences);
                 });
@@ -421,7 +423,7 @@ define([
                 if (typeId) {
                     if (!data.hasOwnProperty(typeId)) return;
 
-                    var hours = Math.ceil(absence.absence_range.duration / 60),
+                    var hours = Math.ceil(absence.absence_range.approved_duration / 60),
                         days = +(hours / 8).toFixed(1);
 
                     if (data[typeId].title.toLowerCase() === 'toil') {
