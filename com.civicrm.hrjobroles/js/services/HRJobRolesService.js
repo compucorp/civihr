@@ -1,7 +1,6 @@
 define(['services/services'], function (services) {
 
-    services.factory('ExampleService',['settings', '$log' , '$q', function(settings, $log, $q) {
-        $log.debug('Service: ExampleService');
+    services.factory('HRJobRolesService',['settings', '$log' , '$q', function(settings, $log, $q) {
 
         return {
 
@@ -30,6 +29,19 @@ define(['services/services'], function (services) {
                 // Returning the promise object
                 return deferred.promise;
 
+            },
+
+            getContractDetails: function getContractDetails(id){
+                return CRM.api3('HRJobContractRevision', 'getcurrentrevision', {
+                    "sequential": 1,
+                    "jobcontract_id": id
+                }).then(function(result){
+                    return CRM.api3('HRJobDetails', 'get', {
+                        "sequential": 1,
+                        "jobcontract_id": id,
+                        "jobcontract_revision_id": result.values.details_revision_id
+                    });
+                });
             },
 
             getAllJobRoles: function(job_contract_ids) {
@@ -84,8 +96,6 @@ define(['services/services'], function (services) {
             createJobRole: function(job_roles_data) {
 
                 console.log(job_roles_data);
-                console.log(job_roles_data.newStartDate.getTime());
-                console.log(job_roles_data.newEndDate.getTime());
 
                 // Define funder IDs string
                 var funders = "|";
@@ -130,7 +140,7 @@ define(['services/services'], function (services) {
                 if (typeof job_roles_data.cost_centers !== "undefined") {
 
                     // Loop cost_centers and set up the data to store the cost_centers
-                    for (var i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
+                    for (i = 0, l = job_roles_data.cost_centers.length; i < l; i++) {
 
                         if (job_roles_data.cost_centers[i]) {
                             cost_centers += job_roles_data.cost_centers[i]['cost_centre_id'] + "|";
@@ -142,36 +152,35 @@ define(['services/services'], function (services) {
                 }
 
                 var deferred = $q.defer();
-
-                CRM.api3('HrJobRoles', 'create', {
-                    "sequential": 1,
-                    "job_contract_id": job_roles_data.job_contract_id,
-                    "title": job_roles_data.title,
-                    "description": job_roles_data.description,
-                    "funder": funders,
-                    "funder_val_type": funder_types,
-                    "percent_pay_funder": percent_funders,
-                    "amount_pay_funder": amount_funders,
-                    "cost_center": cost_centers,
-                    "cost_center_val_type": cost_center_types,
-                    "percent_pay_cost_center": percent_cost_centers,
-                    "amount_pay_cost_center": amount_cost_centers,
-                    "level_type": job_roles_data.level,
-                    "location": job_roles_data.location,
-                    "region": job_roles_data.region,
-                    "department": job_roles_data.department,
-                    "start_date": job_roles_data.newStartDate,
-                    "end_date": job_roles_data.newEndDate
-                }).done(function(result) {
-
+                //FIXME 'solution' to the bug failing saving correct dates to DB a first save
+                this.getNewJobRole(job_roles_data.job_contract_id).done(function(result){
+                        return CRM.api3('HrJobRoles', 'create', {
+                            "id": result.id,
+                            "sequential": 1,
+                            "job_contract_id": job_roles_data.job_contract_id,
+                            "title": job_roles_data.title,
+                            "description": job_roles_data.description,
+                            "funder": funders,
+                            "funder_val_type": funder_types,
+                            "percent_pay_funder": percent_funders,
+                            "amount_pay_funder": amount_funders,
+                            "cost_center": cost_centers,
+                            "cost_center_val_type": cost_center_types,
+                            "percent_pay_cost_center": percent_cost_centers,
+                            "amount_pay_cost_center": amount_cost_centers,
+                            "level_type": job_roles_data.level,
+                            "location": job_roles_data.location,
+                            "region": job_roles_data.region,
+                            "department": job_roles_data.department,
+                            "start_date": job_roles_data.newStartDate,
+                            "end_date": job_roles_data.newEndDate || 0
+                        });
+                }).done(function(response) {
                     // Passing data to deferred's resolve function on successful completion
-                    deferred.resolve(result);
-
+                    deferred.resolve(response);
                 }).error(function(result) {
-
                     // Sending a friendly error message in case of failure
                     deferred.reject("An error occured while adding items");
-
                 });
 
                 // Returning the promise object
@@ -255,7 +264,7 @@ define(['services/services'], function (services) {
                     "location": job_roles_data.location,
                     "region": job_roles_data.region,
                     "start_date": job_roles_data.start_date,
-                    "end_date": job_roles_data.end_date,
+                    "end_date": job_roles_data.end_date || 0,
                     "department": job_roles_data.department
 
                 }).done(function(result) {
@@ -328,7 +337,8 @@ define(['services/services'], function (services) {
 
                         CRM.api3('OptionValue', 'get', {
                             "sequential": 1,
-                            "option_group_id": { "IN": option_group_ids }
+                            "option_group_id": { "IN": option_group_ids },
+                            "options": {"limit":1000}
                         }).done(function(result) {
 
                             // Pass the additional info about optionGroupData
@@ -353,8 +363,16 @@ define(['services/services'], function (services) {
 
             },
 
-        }
+            getNewJobRole: function getNewJobRole(contract_id){
+                //Creates new JobRole depending on contract id and returns promise
+                return CRM.api3('HrJobRoles', 'create', {
+                    "sequential": 1,
+                    "job_contract_id": contract_id,
+                    "title": ''
+                });
+            }
 
+        }
     }]);
 
 });

@@ -12,7 +12,7 @@
                     </dl>
                 </div>
                 <div class="col-md-6 col--sickness-days">
-                    <div class="chr_sickness-days">
+                    <div class="chr_sickness-days" ng-class="{ 'chr_sickness-days--danger': Sick.taken > Sick.staffAverage }">
                         <div class="chr_sickness-days__count">
                             {{Sick.taken}}
                         </div>

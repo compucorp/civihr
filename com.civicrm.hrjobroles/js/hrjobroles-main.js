@@ -11,11 +11,9 @@ var reqHrjr = require.config({
 
 reqHrjr([
     'app',
-    'controllers/example',
-    'filters/customDate',
-    'services/example',
-    'directives/example',
-    'directives/customDateInput'
+    'controllers/HRJobRolesController',
+    'services/HRJobRolesService',
+    'directives/example'
 ],function(app){
     'use strict';
 
