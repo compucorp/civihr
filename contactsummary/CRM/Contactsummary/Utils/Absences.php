@@ -32,11 +32,15 @@ class CRM_Contactsummary_Utils_Absences {
    */
   private static function getAbsenceDuration($absenceTypeNames = array(), $periodId) {
     $absenceTypeIds = static::getActivityIdsForAbsenceTypeNames($absenceTypeNames, $periodId);
+    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
 
     $sql = "
       SELECT SUM(duration) duration
       FROM civicrm_activity
-      WHERE activity_type_id = %1 AND source_record_id IN (" . implode(',', $absenceTypeIds) . ")
+      WHERE
+        activity_type_id = %1
+        AND source_record_id IN (" . implode(',', $absenceTypeIds) . ")
+        AND status_id = " . CRM_Utils_Array::key('Completed', $activityStatus) . "
     ";
 
     $params = array(1 => array(static::getAbsenceActivityTypeId(), 'Integer'));
