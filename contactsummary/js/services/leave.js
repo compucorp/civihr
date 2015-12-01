@@ -218,7 +218,7 @@ define([
          * @returns {*}
          */
         factory.getStaffAverage = function (type) {
-            var deferred = $q.defer(), average = 0;
+            var deferred = $q.defer(), days = 0;
 
             getCurrentPeriod()
                 .then(function (response) {
@@ -231,14 +231,13 @@ define([
                                     return $q.reject('Staff average not returned');
                                 }
 
-                                var hours = Math.ceil(response.values[0].result / 60);
+                                var hours = Math.ceil(response.values[0].result / 60),
+                                    days = +(hours / 8).toFixed(1);
 
-                                average = Math.ceil(hours / 8);
-
-                                deferred.resolve(average);
+                                deferred.resolve(days);
                             });
                     } else {
-                        deferred.resolve(average);
+                        deferred.resolve(days);
                     }
                 });
 
