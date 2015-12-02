@@ -65,8 +65,10 @@ define([
                             throw new Error('Contact with ID ' + contactId + ' not found');
                         }
 
-                        var dob = response.values[0].birth_date,
-                            age = moment(moment(dob, 'YYYY-MM-DD')).fromNow(true);
+                        var dob = response.values[0].birth_date;
+                        var age = moment(dob, 'YYYY-MM-DD').isValid()
+                            ? moment(moment(dob, 'YYYY-MM-DD')).fromNow(true)
+                            : '';
 
                         factory.setDataKey('id', contactId);
                         factory.setDataKey('dateOfBirth', dob);
