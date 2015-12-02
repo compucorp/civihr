@@ -1,4 +1,5 @@
-<section class="panel panel-default panel-default-plain panel--key-details" ng-controller="KeyDetailsCtrl as KeyDetails">
+<section class="panel panel-default panel-default-plain panel--key-details"
+         ng-controller="KeyDetailsCtrl as KeyDetails">
     <header class="panel-heading">
         <h2 class="panel-title">Key Details</h2>
         <hr>
@@ -16,7 +17,10 @@
             <dt>Gross Annual Pay</dt>
             <dd>{{ KeyDetails.primaryContract.pay.currency }} {{ KeyDetails.primaryContract.pay.amount }}</dd>
             <dt>Hours</dt>
-            <dd>{{ KeyDetails.primaryContract.hours.amount }} per {{ KeyDetails.primaryContract.hours.unit }}</dd>
+            <dd>
+                {{ KeyDetails.primaryContract.hours.amount }}
+                {{ KeyDetails.primaryContract.hours.unit ? 'per ' + KeyDetails.primaryContract.hours.unit : ''}}
+            </dd>
         </dl>
     </div>
 </section>
