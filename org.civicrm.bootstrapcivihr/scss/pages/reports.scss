@@ -1,0 +1,63 @@
+.page-civihr-reports {
+
+    .form-inline {
+
+        &.text-right {
+
+            @media(max-width: $screen-sm-max) {
+                text-align: left;
+            }
+        }
+
+        .control-label {
+            font-size: em(14);
+            margin-right: 5px;
+        }
+    }
+
+    [data-graph-section="data"] {
+
+        .panel {
+            position: relative;
+
+            .dropdown {
+                color: #ffffff;
+                position: absolute;
+                right: 10px;
+                top: 2px;
+            }
+
+            .dropdown-menu {
+                border-color: $gray-lighter;
+                padding: 0;
+
+                > li {
+
+                    > a {
+                        font-size: $font-size-medium;
+                        padding-bottom: 12px;
+                        padding-top: 12px;
+
+                        &:hover {
+                            background: $brand-primary-light;
+                        }
+                    }
+                }
+            }
+
+            .dropdown-toggle {
+                color: inherit;
+                font-size: 14px;
+                text-decoration: none !important;
+            }
+        }
+    }
+
+    [data-graph-section="legend"] {
+        margin-top: 50px;
+    }
+
+    [data-graph-calendar] {
+        max-width: 140px;
+    }
+}
