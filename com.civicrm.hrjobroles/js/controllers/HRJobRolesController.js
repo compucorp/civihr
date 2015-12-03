@@ -4,6 +4,8 @@ define(['controllers/controllers'], function(controllers){
         function($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService){
             $log.debug('Controller: HRJobRolesController');
 
+            var me = this;
+
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
 
@@ -16,46 +18,71 @@ define(['controllers/controllers'], function(controllers){
             };
 
             $scope.onContractSelected = function(){
-                HRJobRolesService.getContractDetails($scope.edit_data['new_role_id']['job_contract_id']).then(function(result) {
-                    console.log(result);
-                    if(result.values[0].period_start_date){
-                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(result.values[0].period_start_date.replace(' ', 'T'));
+                var id = $scope.edit_data['new_role_id']['job_contract_id'];
+
+                var contract = me.contractsData[id];
+
+                var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
+
+                if(!areDatesCustom) {
+                    if (!!contract.start_date) {
+                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(contract.start_date);
                     } else {
                         $scope.edit_data['new_role_id']['newStartDate'] = null;
                     }
 
-                    if(result.values[0].period_end_date){
-                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(result.values[0].period_end_date.replace(' ', 'T'));
+                    if (!!contract.end_date) {
+                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(contract.end_date);
                     } else {
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
                     }
+                }
 
-                    $scope.$apply();
+            };
+
+            $scope.checkIfDatesAreCustom = function(start, end){
+                if(start == '0000-00-00 00:00:00') start = null;
+                if(end == '0000-00-00 00:00:00') end = null;
+
+                var custom = true;
+
+                if(!start) return false;
+
+
+                angular.forEach(me.contractsData, function(value){
+                    if($filter('CustomDate')(start) == $filter('CustomDate')(value.start_date)
+                        && $filter('CustomDate')(end) == $filter('CustomDate')(value.end_date))
+                    custom = false;
                 });
+
+                if(custom){
+                    console.info('Leaving old JobRole Dates.');
+                }
+
+                return custom;
             };
 
-            $scope.onContractEdit = function(data, jobRoleId) {
-                return $scope.onContractEdited(jobRoleId, data);
-            };
-
-            $scope.onContractEdited = function(role_id, jobContractId){
+            $scope.onContractEdited = function(jobContractId, role_id){
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
-                return HRJobRolesService.getContractDetails(id).then(function(result) {
 
-                    if(result.period_start_date){
-                        $scope.edit_data[role_id]['start_date'] = new Date(result.period_start_date.replace(' ', 'T'));
+                var contract = me.contractsData[id];
+
+                var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
+
+                if(!areDatesCustom) {
+                    if (!!contract.start_date) {
+                        $scope.edit_data[role_id]['start_date'] = new Date(contract.start_date);
                     } else {
                         $scope.edit_data[role_id]['start_date'] = null;
                     }
 
-                    if(result.period_end_date){
-                        $scope.edit_data[role_id]['end_date'] = new Date(result.period_end_date.replace(' ', 'T'));
+                    if (!!contract.end_date) {
+                        $scope.edit_data[role_id]['end_date'] = new Date(contract.end_date);
                     } else {
                         $scope.edit_data[role_id]['end_date'] = null;
                     }
+                }
 
-                    $scope.$apply();
-                });
             };
 
             // Validate fields
@@ -261,18 +288,20 @@ define(['controllers/controllers'], function(controllers){
                     // Default data init
                     $scope.edit_data[role_id][form_id] = data;
 
-                    var date = new Date($scope.edit_data[role_id].start_date.replace(' ', 'T'));
-                    /* If dates are not set, we programatically set them here. */
-                    var invalidDate = (isNaN(date) && typeof $scope.edit_data[role_id].start_date != 'undefined');
+                    if(!!$scope.edit_data[role_id].start_date) {
+                        var date = new Date($scope.edit_data[role_id].start_date.replace(' ', 'T'));
+                        /* If dates are not set, we programatically set them here. */
+                        var invalidDate = (isNaN(date) && typeof $scope.edit_data[role_id].start_date != 'undefined');
 
-                    var presentJobContract = !(typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
+                        var presentJobContract = !(typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
 
-                    if(invalidDate && presentJobContract && bothJustSet){
-                        console.info('UPDATED', role_id);
-                        $scope.onContractEdited(role_id).then(function(){
-                            $scope.$apply();
-                            return $scope.updateRole(role_id);
-                        });
+                        if (invalidDate && presentJobContract && bothJustSet) {
+                            console.info('UPDATED', role_id);
+                            $scope.onContractEdited(role_id).then(function () {
+                                $scope.$apply();
+                                return $scope.updateRole(role_id);
+                            });
+                        }
                     }
                 }
             };
@@ -668,22 +697,18 @@ define(['controllers/controllers'], function(controllers){
                             // Job contract IDs which will be passed to the "getAllJobRoles" service
                             job_contract_ids.push(data.values[i]['id']);
 
-                            // Check the period end date
-                            if (data.values[i]['period_end_date'] == undefined) {
-                                // No period end date defined (means contract is active)
-                                var status = '10';
-                            } else {
-                                // Get the current date
-                                var today = new Date();
-                                var period_end_date = new Date();
+                            var contract = {
+                                id: data.values[i]['id'],
+                                title: data.values[i]['title'],
+                                start_date: data.values[i]['period_start_date'],
+                                end_date: data.values[i]['period_end_date'],
+                                status: status
+                            };
 
-                                var date_values = data.values[i]['period_end_date'].split("-");
+                            var optionalEndDate = $filter('CustomDate')(contract.end_date) || 'Unspecified';
+                            contract.label = contract.title + ' (' + $filter('CustomDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
 
-                                // Javascript calculates the months from 0 (so we use month - 1)
-                                period_end_date.setFullYear(date_values[0], date_values[1] - 1, date_values[2]);
-                            }
-
-                            contractsData[data.values[i]['id']] = {id: data.values[i]['id'], title: data.values[i]['title'], status: status};
+                            contractsData[data.values[i]['id']] = contract;
                         }
 
                         // Store the ContractsData what we can reuse later
