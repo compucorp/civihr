@@ -122,7 +122,7 @@ function reqangular_civicrm_pageRun($page) {
         'angularFileUpload' => "$url/src/common/vendor/angular/angular-file-upload",
         'angularResource' => "$url/src/common/vendor/angular/angular-resource.min",
         'angularRoute' => "$url/src/common/vendor/angular/angular-route.min",
-        'requireLib' => "$url/src/common/vendor/require",
+        'requireLib' => "$url/src/common/vendor/require.min",
         'reqangular' => "$url/dist/reqangular.min",
     ));
 

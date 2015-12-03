@@ -1,7 +1,6 @@
 ({
     baseUrl : 'src',
     out: 'dist/reqangular.min.js',
-    skipModuleInsertion: true,
     uglify: {
         no_mangle: true,
         max_line_length: 1000
@@ -15,7 +14,7 @@
         'common/angularResource': 'common/vendor/angular/angular-resource.min',
         'common/angularRoute': 'common/vendor/angular/angular-route.min',
         'common/angular-date': 'common/angular-date/dist/angular-date',
-        'common/require': 'common/vendor/require',
+        'common/require': 'common/vendor/require.min',
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
         'common/moment': 'common/vendor/moment.min',
