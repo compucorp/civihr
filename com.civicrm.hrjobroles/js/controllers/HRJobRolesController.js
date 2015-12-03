@@ -297,7 +297,7 @@ define(['controllers/controllers'], function(controllers){
 
                         if (invalidDate && presentJobContract && bothJustSet) {
                             console.info('UPDATED', role_id);
-                            $scope.onContractEdited(role_id).then(function () {
+                            $scope.onContractEdited(null, role_id).then(function () {
                                 $scope.$apply();
                                 return $scope.updateRole(role_id);
                             });
