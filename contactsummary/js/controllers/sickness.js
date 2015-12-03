@@ -21,18 +21,18 @@ define([
         this.staffAverage = 0;
         this.ready = false;
 
-        Leave.getCurrent()
+        Leave.getStaffAverage('sick')
+            .then(function (response) {
+                self.staffAverage = response;
+
+                return Leave.getCurrent();
+            })
             .then(function (response) {
                 angular.forEach(response, function (leave) {
                     if (leave.title === 'Sick') {
                         self.taken = leave.taken;
                     }
                 });
-
-                return Leave.getStaffAverage('sick');
-            })
-            .then(function (response) {
-                self.staffAverage = response;
 
                 return Leave.getPrevious();
             })

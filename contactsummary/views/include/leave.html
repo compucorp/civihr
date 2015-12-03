@@ -6,7 +6,7 @@
         <div class="panel-body-section text-center">
             <dl class="dl-horizontal dl-horizontal-inline">
                 <dt>Leave Type:</dt>
-                <dd>Annual</dd>
+                <dd>All</dd>
             </dl>
         </div>
         <hr>
@@ -27,7 +27,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-md-4 col-md-offset-2 text-center">
+                <div class="col-md-4 col-md-offset-2 text-center" ng-if="LeaveCtrl.totalTaken">
                     <div data-cs-donut-chart data-items="LeaveCtrl.leaves"
                          data-item-key="taken" data-ready="LeaveCtrl.ready">
                     </div>

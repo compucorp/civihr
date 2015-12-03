@@ -2,13 +2,27 @@
     @include box-shadow(none);
 
     border: none;
+    margin-bottom: $grid-gutter-width;
 }
 
 .panel-body {
     background: $brand-primary-light;
 
+    // Avoid extra spacing due to margin bottom of last element
     > *:last-child {
         margin-bottom: 0;
+
+        // A (temporary?) solution to remove extra spacing in a
+        // panel containing an horizontal form
+        &.form-horizontal {
+
+            > .row:last-child {
+
+                .form-group {
+                    margin-bottom: 0;
+                }
+            }
+        }
     }
 }
 
@@ -26,9 +40,15 @@
     line-height: $headings-line-height;
 }
 
+.panel-title-sm {
+    font-size: $font-size-h3;
+    font-weight: $font-weight-h3;
+}
+
 
 // Contextual variations
 .panel-default {
+    @include box-shadow($box-shadow);
 
     > .panel-footer {
         padding: $panel-footer-big-padding;
@@ -36,6 +56,10 @@
 
     > .panel-heading {
         padding: $panel-heading-big-padding;
+
+        .btn-group-sm {
+            margin: -13px 0 -10px 0;
+        }
     }
 }
 
@@ -44,6 +68,34 @@
 .panel-info,
 .panel-warning,
 .panel-danger {
+
+    > .panel-body,
+    > .panel-footer,
+    > .panel-heading {
+        @include box-shadow($box-shadow);
+    }
+
+    > .panel-body {
+        position: relative;
+
+        // Kind of a temporary hack to hide the footer's top border shadow
+        // which overflows into .panel-body. The :before pseudo-element
+        // just sits on top of it with the same panel-body bg color
+        &:before {
+            content: "";
+            background: $brand-primary-light;;
+            bottom: 0;
+            height: 10px;
+            left: 0;
+            position: absolute;
+            width: 100%;
+            z-index: 2;
+        }
+    }
+
+    > .panel-footer {
+        position: relative;
+    }
 
     > .panel-heading {
         margin-bottom: 15px;

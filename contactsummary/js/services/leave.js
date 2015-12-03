@@ -77,7 +77,7 @@ define([
 
                         init(periodId).then(function () {
                             deferred.resolve(self.collection.getItem(periodId));
-                        })
+                        });
                     } else {
                         deferred.resolve({});
                     }
@@ -146,17 +146,11 @@ define([
          */
         factory.getAbsences = function (periodId) {
             var deferred = $q.defer();
-            var contactId;
 
             ContactDetails.get()
                 .then(function (response) {
-                    contactId = response.id;
-
-                    return getPeriods();
-                })
-                .then(function (response) {
                     var data = {
-                        target_contact_id: contactId,
+                        target_contact_id: response.id,
                         period_id: [periodId],
                         options: {'absence-range': 1},
                         sequential: 0 // this is *important* in order to get absences in correct format!
@@ -165,11 +159,9 @@ define([
                     return Api.post('Activity', data, 'getabsences');
                 })
                 .then(function (response) {
-                    if (response.values.length === 0) {
-                        return deferred.reject('No absences found');
-                    }
-
-                    absences = response.values;
+                    absences = _.filter(response.values, function (absence) {
+                        return absence.status_id === '2';
+                    });
 
                     deferred.resolve(absences);
                 });
@@ -216,7 +208,7 @@ define([
          * @returns {*}
          */
         factory.getStaffAverage = function (type) {
-            var deferred = $q.defer(), average = 0;
+            var deferred = $q.defer(), days = 0;
 
             getCurrentPeriod()
                 .then(function (response) {
@@ -229,14 +221,13 @@ define([
                                     return $q.reject('Staff average not returned');
                                 }
 
-                                var hours = Math.ceil(response.values[0].result / 60);
+                                var hours = Math.ceil(response.values[0].result / 60),
+                                    days = +(hours / 8).toFixed(1);
 
-                                average = Math.ceil(hours / 8);
-
-                                deferred.resolve(average);
+                                deferred.resolve(days);
                             });
                     } else {
-                        deferred.resolve(average);
+                        deferred.resolve(days);
                     }
                 });
 
@@ -331,12 +322,11 @@ define([
 
                         periods = response.values;
                         periods = $filter('orderBy')(periods, 'start_date');
-                        console.log('Periods in order', periods);
 
                         deferred.resolve(periods);
                     })
                     .catch(function (response) {
-                        $log.debug('An error has occured', response);
+                        $log.debug('An error has occurred', response);
                         deferred.reject(response);
                     });
             } else {
@@ -421,9 +411,18 @@ define([
                 if (typeId) {
                     if (!data.hasOwnProperty(typeId)) return;
 
-                    var hoursTaken = Math.ceil(absence.absence_range.duration / 60);
+                    var hours = Math.ceil(absence.absence_range.approved_duration / 60),
+                        days = +(hours / 8).toFixed(1);
 
-                    data[typeId].taken += Math.ceil(hoursTaken / 8);
+                    if (data[typeId].title.toLowerCase() === 'toil') {
+                        if (absence.activity_type_id === data[typeId].credit_activity_type_id) {
+                            data[typeId].entitled += days;
+                        } else {
+                            data[typeId].taken += days;
+                        }
+                    } else {
+                        data[typeId].taken += days;
+                    }                    
                 }
             });
 

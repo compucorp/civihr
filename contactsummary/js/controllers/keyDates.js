@@ -59,8 +59,8 @@ define([
                 angular.forEach(response, function (contract) {
                     addContractDates.call(self, contract);
 
-                    if (contract.is_current) {
-                        self.activeContracts++
+                    if (contract.is_current === '1') {
+                        self.activeContracts++;
                     };
                 });
 
@@ -68,7 +68,9 @@ define([
             })
             .then(function (response) {
                 angular.forEach(response, function (role) {
-                    if (role.status === '10') {
+                    var endDate = moment(role.end_date);
+
+                    if (!endDate.isValid() || isDateInFuture(endDate)) {
                         self.activeRoles++;
                     }
                 });

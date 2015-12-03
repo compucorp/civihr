@@ -3,8 +3,15 @@
     width: 165px;
 }
 
+.chr_sickness-days--danger {
+
+    .chr_sickness-days__count {
+        background: $brand-danger;
+    }
+}
+
 .chr_sickness-days__count {
-    background: $brand-danger;
+    background: $brand-success;
     color: white;
     font-size: em(85);
     text-align: center;

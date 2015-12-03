@@ -8,11 +8,11 @@
                 <div class="col-md-6">
                     <dl>
                         <dt>Sick Days Taken:</dt>
-                        <dd>Period: <span data-angular-placeholder>Last Year</span></dd>
+                        <dd>Period: <span data-angular-placeholder>Current Year</span></dd>
                     </dl>
                 </div>
                 <div class="col-md-6 col--sickness-days">
-                    <div class="chr_sickness-days">
+                    <div class="chr_sickness-days" ng-class="{ 'chr_sickness-days--danger': Sick.taken > Sick.staffAverage }">
                         <div class="chr_sickness-days__count">
                             {{Sick.taken}}
                         </div>

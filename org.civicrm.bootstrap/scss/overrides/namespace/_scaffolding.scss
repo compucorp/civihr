@@ -1,7 +1,7 @@
 //
 // Scaffolding for namespaced theme
 //
-// <body> and <html> styles are removed so that the style
+// <body> is namespaced and <html> removed so that the style
 // doesn't leak out of the namespace
 // --------------------------------------------------
 
@@ -19,6 +19,21 @@
   @include box-sizing(border-box);
 }
 
+
+// Body reset
+
+// Namespaced body
+//
+// The <body> styles defined in the default _scaffolding partials
+// are applied directly either to the body with the namespace, or to
+// whatever element of the page that has the namespace applied to it
+@include body-namespaced {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $text-color;
+  background-color: $body-bg;
+}
 
 // Reset fonts for relevant elements
 input,

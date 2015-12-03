@@ -1,6 +1,8 @@
 define(['angularEditable', 'angularFilter','controllers/controllers', 'directives/directives', 'filters/filters', 'services/services'], function(){
     return angular.module('hrjobroles',
-        ['ngAnimate',
+        [
+            'ngAnimate',
+            'angular-date',
             'ngRoute',
             'xeditable',
             'angular.filter',
@@ -9,5 +11,7 @@ define(['angularEditable', 'angularFilter','controllers/controllers', 'directive
             'hrjobroles.controllers',
             'hrjobroles.directives',
             'hrjobroles.filters',
-            'hrjobroles.services']);
+            'hrjobroles.services'
+        ]
+    );
 });
