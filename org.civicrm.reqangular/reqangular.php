@@ -116,15 +116,15 @@ function reqangular_civicrm_pageRun($page) {
 
     CRM_Core_Resources::singleton()->addVars('reqAngular', array(
         'baseUrl' => $url,
-        'angular' => $url . '/src/angular/angular.min',
-        'angularAnimate' => $url . '/src/angular/angular-animate.min',
-        'angularBootstrap' => $url . '/src/angular/ui-bootstrap-tpls',
-        'angularFileUpload' => $url . '/src/angular/angular-file-upload',
-        'angularResource' => $url . '/src/angular/angular-resource.min',
-        'angularRoute' => $url . '/src/angular/angular-route.min',
-        'requireLib' => $url . '/src/require',
-        'reqangular' => $url . '/reqangular',
+        'angular' => "$url/src/common/vendor/angular/angular.min",
+        'angularAnimate' => "$url/src/common/vendor/angular/angular-animate.min",
+        'angularBootstrap' => "$url/src/common/vendor/angular/ui-bootstrap-tpls",
+        'angularFileUpload' => "$url/src/common/vendor/angular/angular-file-upload",
+        'angularResource' => "$url/src/common/vendor/angular/angular-resource.min",
+        'angularRoute' => "$url/src/common/vendor/angular/angular-route.min",
+        'requireLib' => "$url/src/common/vendor/require",
+        'reqangular' => "$url/dist/reqangular.min",
     ));
 
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular','reqangular.js', 1000);
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular', 'dist/reqangular.min.js', 1000);
 }
