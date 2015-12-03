@@ -35,7 +35,7 @@ function civicrm_api3_contact_summary_GetAbsenceAggregate($params) {
   $numStaff = CRM_Contactsummary_Utils_Staff::getStaffNum();
   $totalAbsences = CRM_Contactsummary_Utils_Absences::getTotalAbsences($absenceTypes, $periodId);
 
-  $values = array();
+  $values = array('staff' => $numStaff, 'absences' => $totalAbsences);
 
   switch ($aggregateType) {
     case CRM_Contactsummary_Utils_Aggregate::TYPE_AVERAGE:
