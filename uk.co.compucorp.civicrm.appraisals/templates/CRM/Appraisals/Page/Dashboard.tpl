@@ -122,20 +122,18 @@
                 <aside class="crm_page__sidebar">
                     <ul class="nav nav-pills nav-stacked nav-pills-stacked-sidebar">
                         <li class="active">
-                            <a href="#">
-                                <i class="fa fa-list"></i>
-                                &nbsp; Dashboard
+                            <a ui-sref="dashboard">
+                                <i class="fa fa-list"></i> &nbsp; Dashboard
                             </a>
                         </li>
                         <li>
-                            <a href="#">
+                            <a ui-sref="profile">
                                 <i class="fa fa-search"></i>&nbsp; Profile
                             </a>
                         </li>
                         <li>
-                            <a href="#">
-                                <i class="fa fa-sign-in fa-flip-horizontal"></i>
-                                &nbsp; Import
+                            <a ui-sref="import">
+                                <i class="fa fa-sign-in fa-flip-horizontal"></i> &nbsp; Import
                             </a>
                         </li>
                     </ul>
