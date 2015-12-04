@@ -1,4 +1,4 @@
-<div id="bootstrap-theme">
+<div id="bootstrap-theme" data-appraisals-app ng-controller="AppraisalsCtrl as mainCtrl">
     <div class="modal fade in" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -793,22 +793,3 @@
         </div>
     </section>
 </div>
-{literal}
-<script type="text/javascript">
-    (function(){
-        function apprInit(){
-            document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('apprInit') : (function(){
-                var e = document.createEvent('Event');
-                e.initEvent('apprInit', true, true);
-                return e;
-            })());
-        };
-        apprInit();
-
-        document.addEventListener('apprReady', function(){
-            apprInit();
-        });
-    })();
-</script>
-{/literal}
-
