@@ -4,6 +4,7 @@
     name: 'appraisals',
     skipModuleInsertion: true,
     paths: {
-        'common': 'empty:'
+        'common': 'empty:',
+        'appraisals/vendor/ui-router': 'appraisals/vendor/angular-ui-router.min'
     }
 })

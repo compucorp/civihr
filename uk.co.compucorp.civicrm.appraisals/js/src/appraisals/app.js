@@ -1,11 +1,12 @@
 define([
     'common/angular',
     'common/angularBootstrap',
+    'appraisals/vendor/ui-router',
     'appraisals/controllers/appraisals-ctrl'
 ], function (angular) {
     angular.module('appraisals', [
-        'ngRoute',
         'ngResource',
+        'ui.router',
         'ui.bootstrap',
         'appraisals.controllers'
     ])
