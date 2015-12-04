@@ -1,53 +1,68 @@
 @import "../../org.civicrm.bootstrapcivihr/scss/overrides/variables";
 @import "../../org.civicrm.bootstrapcivicrm/scss/overrides/variables";
 @import "../../org.civicrm.bootstrap/scss/overrides/variables";
-@import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/scss/variables";
-
+@import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/variables";
 @import "../../org.civicrm.bootstrapcivicrm/scss/mixins/*";
 
-.chr_steps--appraisals-status__contacts {
-    color: $brand-primary;
-}
+.page-civicrm-appraisals-dashboard {
 
-.chr_steps--appraisals-status__count {
-    font-size: em(12, 10);
-    font-weight: 600;
-    display: block;
-}
-
-.chr_steps--appraisals-status__overdue {
-    color: $brand-danger;
-}
-
-
-.panel--active-cycles,
-.panel--status {
-
-    > .panel-body {
-        height: 176px;
+    #{$bootstrap-namespace} {
+        padding-top: 25px;
     }
-}
 
-.panel--grades {
-
-    > .panel-body {
-        height: 225px;
+    #branding {
+        display: none;
     }
-}
 
-.panel--active-cycles {
+    #page {
+        margin: 0;
+        padding: 0;
+    }
 
-    > .panel-body {
-        color: $gray-darker;
-        font-size: em(120);
+    .chr_steps--appraisals-status__contacts {
+        color: $brand-primary;
+    }
+
+    .chr_steps--appraisals-status__count {
+        font-size: em(12, 10);
         font-weight: 600;
-        line-height: 126px;
+        display: block;
     }
-}
 
-.panel--dashboard-appraisals {
+    .chr_steps--appraisals-status__overdue {
+        color: $brand-danger;
+    }
 
-    > .panel--dashboard-appraisals__show-more {
-        margin-top: 30px;
+
+    .panel--active-cycles,
+    .panel--status {
+
+        > .panel-body {
+            height: 176px;
+        }
+    }
+
+    .panel--grades {
+
+        > .panel-body {
+            height: 225px;
+        }
+    }
+
+    .panel--active-cycles {
+
+        > .panel-body {
+            color: $gray-darker;
+            font-size: em(120);
+            font-weight: 600;
+            line-height: 126px;
+        }
+    }
+
+    .panel--dashboard-appraisals {
+
+        > .panel--dashboard-appraisals__show-more {
+            margin-top: 30px;
+        }
     }
 }
