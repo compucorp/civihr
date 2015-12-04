@@ -48,7 +48,7 @@ class CRM_Appraisals_Import_Form_DataSource extends CRM_Appraisals_Import_Form_D
   /**
   * Include duplicate options
   */
-  protected $isDuplicateOptions = FALSE;
+  protected $isDuplicateOptions = TRUE;
 
     /**
    * Function to actually build the form - this appears to be entirely code that should be in a shared baseclass in core

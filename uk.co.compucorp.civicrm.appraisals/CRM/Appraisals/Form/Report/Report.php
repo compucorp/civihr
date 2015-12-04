@@ -97,8 +97,6 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
         'dao' => 'CRM_Appraisals_DAO_Appraisal',
         'fields' => array(
             'id' => array(),
-            //'appraisal_cycle_id' => array(),
-            //'contact_id' => array(),
             'manager_id' => array(),
             'self_appraisal_file_id' => array(),
             'manager_appraisal_file_id' => array(),
@@ -112,6 +110,9 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
             'grade' => array(),
             'notes' => array(),
             'status_id' => array(),
+            'original_id' => array(),
+            'created_date' => array(),
+            'is_current' => array(),
         ),
         'filters' => array(
           'id' => array('default' => null),
