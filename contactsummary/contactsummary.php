@@ -137,7 +137,7 @@ function contactsummary_civicrm_pageRun($page) {
             }, 2000);
 EOT;
 
-        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/contactsummary-main.js' : 'dist/contactsummary-main.js', 1010);
+        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/src/contact-summary.js' : 'js/dist/contact-summary.min.js', 1005);
 
         // Script disabled as need to find a better approach to make Contact Summary the default tab
         // CRM_Core_Resources::singleton()->addScript($script, 1020, 'page-footer');
