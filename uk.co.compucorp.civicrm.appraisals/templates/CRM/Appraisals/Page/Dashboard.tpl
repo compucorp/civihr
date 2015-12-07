@@ -1,4 +1,4 @@
-<div id="bootstrap-theme" data-appraisals-app ng-controller="AppraisalsCtrl as mainCtrl">
+<div id="bootstrap-theme" data-appraisals-app ng-controller="AppraisalsCtrl as main">
     <div class="modal fade in" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">

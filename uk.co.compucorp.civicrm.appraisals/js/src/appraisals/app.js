@@ -3,6 +3,7 @@ define([
     'common/angularBootstrap',
     'appraisals/utils/routes',
     'appraisals/controllers/appraisals-ctrl',
+    'appraisals/controllers/appraisals-dashboard-ctrl',
     'appraisals/vendor/ui-router',
 ], function (angular, _, routes) {
     angular.module('appraisals', [
