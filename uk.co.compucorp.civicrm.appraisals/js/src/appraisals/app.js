@@ -24,6 +24,4 @@ define([
     .run(['$log', function ($log) {
         $log.debug('app.run');
     }]);
-
-    angular.bootstrap(document.querySelector('[data-appraisals-app]'), ['appraisals']);
 });

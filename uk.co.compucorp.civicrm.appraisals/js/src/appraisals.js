@@ -9,5 +9,7 @@
         }
     });
 
-    require(['appraisals/app']);
+    require(['appraisals/app'], function () {
+        angular.bootstrap(document.querySelector('[data-appraisals-app]'), ['appraisals']);
+    });
 })(require);
