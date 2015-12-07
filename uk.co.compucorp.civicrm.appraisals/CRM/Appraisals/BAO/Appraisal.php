@@ -76,8 +76,12 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
         $instance = new $className();
         $instance->copyValues($params);
         $instance->save();
-        $instance->original_id = $instance->id;
-        $instance->created_date = $now;
+        if (empty($params['original_id'])) {
+            $instance->original_id = $instance->id;
+        }
+        if (empty($params['created_date'])) {
+            $instance->created_date = $now;
+        }
         $instance->save();
         CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
         ////TODO: trigger on post: CRM_Tasksassignments_Reminder::sendReminder((int)$instance->id);
