@@ -32,18 +32,39 @@ class CRM_Contactsummary_Utils_Absences {
    */
   private static function getAbsenceDuration($absenceTypeNames = array(), $periodId) {
     $absenceTypeIds = static::getActivityIdsForAbsenceTypeNames($absenceTypeNames, $periodId);
-    $activityStatus = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
+    $activityStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
 
     $sql = "
-      SELECT SUM(duration) duration
-      FROM civicrm_activity
+      SELECT SUM(a1.duration) duration
+      FROM civicrm_activity a
+
+      INNER JOIN civicrm_activity_contact ac
+      ON a.id = ac.activity_id
+
+      INNER JOIN civicrm_contact c
+      ON (ac.contact_id = c.id AND c.contact_type = 'Individual')
+
+      INNER JOIN civicrm_hrjobcontract jc
+      ON c.id = jc.contact_id AND jc.is_primary = 1
+
+      INNER JOIN civicrm_hrjobcontract_revision jcr
+      ON (jc.id = jcr.jobcontract_id AND jcr.effective_date <= NOW())
+
+      INNER JOIN civicrm_hrjobcontract_details jcd
+      ON (jcr.id = jcd.jobcontract_revision_id AND (jcd.period_end_date >= NOW() OR jcd.period_end_date IS NULL))
+
+      INNER JOIN civicrm_activity a1
+      ON (a.id = a1.source_record_id AND a1.activity_type_id = %1 AND a1.status_id = %2)
+
       WHERE
-        activity_type_id = %1
-        AND source_record_id IN (" . implode(',', $absenceTypeIds) . ")
-        AND status_id = " . CRM_Utils_Array::key('Completed', $activityStatus) . "
+        a.id IN (" . implode(',', $absenceTypeIds) . ")
+        AND a.status_id = %2
     ";
 
-    $params = array(1 => array(static::getAbsenceActivityTypeId(), 'Integer'));
+    $params = array(
+        1 => array(static::getAbsenceActivityTypeId(), 'Integer'),
+        2 => array(CRM_Utils_Array::key('Completed', $activityStatuses), 'Integer'),
+    );
 
     $duration = 0;
 

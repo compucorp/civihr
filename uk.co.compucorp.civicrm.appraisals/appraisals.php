@@ -162,9 +162,18 @@ function appraisals_civicrm_tabs(&$tabs) {
  * Implementation of hook_civicrm_pageRun
  */
 function appraisals_civicrm_pageRun($page) {
-    if ($page instanceof CRM_Contact_Page_View_Summary) {
-        CRM_Core_Resources::singleton()
-            ->addStyleFile('uk.co.compucorp.civicrm.appraisals', 'css/civiappraisals.css');
+    if ($page instanceof CRM_Contact_Page_View_Summary ||
+        $page instanceof CRM_Appraisals_Page_Dashboard) {
+
+        CRM_Core_Resources::singleton()->addVars('appraisals', array(
+            'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('uk.co.compucorp.civicrm.appraisals')
+        ));
+
+        CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.appraisals', 'css/civiappraisals.css');
+
+        if ($page instanceof CRM_Appraisals_Page_Dashboard) {
+            CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.appraisals', CRM_Core_Config::singleton()->debug ? 'js/src/appraisals.js' : 'js/dist/appraisals.min.js', 1010);
+        }
     }
 }
 

@@ -1,1 +1,0 @@
-({    baseUrl : "js",    name: "contactsummary-main",    out: "dist/contactsummary-main.js",    removeCombined: true,    paths: {        d3: 'vendor/d3.min',        lodash: 'vendor/lodash.min',        moment: 'vendor/moment.min'    },    deps: ['app'],    wrap: true})

@@ -1,6 +1,7 @@
 *~
 *.bak
 **/.sass-cache
+*/node_modules
 .DS_Store
 hrabsence/build
 hrjob/build
@@ -10,3 +11,4 @@ hrabsence/build
 
 # Exclude sass cache from all extension directories
 */.sass-cache/
+
