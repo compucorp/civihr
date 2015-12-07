@@ -1,0 +1,36 @@
+define([
+    'common/angularMocks',
+    'appraisals/app'
+], function () {
+    'use strict';
+
+    describe('ModalCtrl', function () {
+        var ctrl;
+        var fakeModalInstance = {
+            dismiss: function() {}
+        };
+
+        beforeEach(module('appraisals'));
+        beforeEach(inject(function ($rootScope, $controller, _$modal_) {
+            var $modal = _$modal_;
+
+            spyOn($modal, 'open').and.returnValue(fakeModalInstance);
+            spyOn(fakeModalInstance, 'dismiss');
+
+            ctrl = $controller('ModalCtrl', {
+                $scope: $rootScope.$new(),
+                $modalInstance: $modal.open()
+            });
+        }));
+
+        describe('on close', function () {
+            beforeEach(function () {
+                ctrl.cancel();
+            });
+
+            it('calls modal instance dismiss()', function () {
+                expect(fakeModalInstance.dismiss).toHaveBeenCalledWith('cancel');
+            });
+        });
+    });
+})

@@ -5,19 +5,24 @@ define([
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
-        var $log, $scope, ctrl;
+        var $log, ctrl;
 
         beforeEach(module('appraisals'));
 
         beforeEach(inject(function ($rootScope, _$log_, $controller) {
             ($log = _$log_) && spyOn($log, 'debug');
 
-            $scope = $rootScope.$new();
-            ctrl = $controller('AppraisalsDashboardCtrl', { $scope: $scope });
+            ctrl = $controller('AppraisalsDashboardCtrl', { $scope: $rootScope.$new() });
         }));
 
-        it('is initialized', function () {
-            expect($log.debug).toHaveBeenCalled();
+        describe('init', function () {
+            it('is initialized', function () {
+                expect($log.debug).toHaveBeenCalled();
+            });
+
+            it('has the filters form collapsed', function () {
+                expect(ctrl.filtersCollapsed).toBe(true);
+            });
         });
     });
 })

@@ -135,167 +135,172 @@
                             </div>
                         </div>
                         <div class="col-sm-4 text-right">
-                            <span>
-                                <i class="fa fa-chevron-right fa-fw fa-0_5x"></i>
+                            <span style="cursor: pointer;" ng-click="dashboard.filtersCollapsed = !dashboard.filtersCollapsed">
+                                <i
+                                    class="fa fa-fw fa-0_5x"
+                                    ng-class="{ 'fa-chevron-right': dashboard.filtersCollapsed, 'fa-chevron-down': !dashboard.filtersCollapsed }"
+                                ></i>
                                 Filter Appraisals
                             </span>
                         </div>
                     </div>
                 </header>
-                <div class="panel-body">
-                    <form class="form-horizontal">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group has-feedback">
-                                    <label for="cycle-name" class="control-label col-sm-3">
-                                        Cycle Name:
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="cycle-name">
-                                        <span class="fa fa-search form-control-feedback"></span>
+                <div collapse="dashboard.filtersCollapsed">
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group has-feedback">
+                                        <label for="cycle-name" class="control-label col-sm-3">
+                                            Cycle Name:
+                                        </label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="cycle-name">
+                                            <span class="fa fa-search form-control-feedback"></span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <label for="cycle-type" class="control-label col-sm-5">
-                                        Cycle type:
-                                    </label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" id="cycle-type">
-                                            <option value="">- select -</option>
-                                            <option value="foo">foo</option>
-                                            <option value="bar">bar</option>
-                                            <option value="baz">baz</option>
-                                        </select>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="cycle-type" class="control-label col-sm-5">
+                                            Cycle type:
+                                        </label>
+                                        <div class="col-sm-7">
+                                            <select class="form-control" id="cycle-type">
+                                                <option value="">- select -</option>
+                                                <option value="foo">foo</option>
+                                                <option value="bar">bar</option>
+                                                <option value="baz">baz</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-3">
-                                <div class="form-group">
-                                    <label for="cycle-status" class="control-label col-sm-5">
-                                        Cycle Status:
-                                    </label>
-                                    <div class="col-sm-7">
-                                        <select class="form-control" id="cycle-status">
-                                            <option value="">- select -</option>
-                                            <option value="foo">foo</option>
-                                            <option value="bar">bar</option>
-                                            <option value="baz">baz</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <div class="form-group form-group-sm">
-                                    <label for="self-due-from" class="control-label col-sm-7">
-                                        Self Appraisal Due From:
-                                    </label>
-                                    <div class="col-sm-5">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="self-due-from">
-                                            <span class="input-group-addon fa fa-calendar"></span>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="cycle-status" class="control-label col-sm-5">
+                                            Cycle Status:
+                                        </label>
+                                        <div class="col-sm-7">
+                                            <select class="form-control" id="cycle-status">
+                                                <option value="">- select -</option>
+                                                <option value="foo">foo</option>
+                                                <option value="bar">bar</option>
+                                                <option value="baz">baz</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
-                                <div class="form-group form-group-sm">
-                                    <label for="self-due-to" class="control-label col-sm-2">
-                                        To:
-                                    </label>
-                                    <div class="col-sm-10">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="self-due-to">
-                                            <span class="input-group-addon fa fa-calendar"></span>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group form-group-sm">
+                                        <label for="self-due-from" class="control-label col-sm-7">
+                                            Self Appraisal Due From:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="self-due-from">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group form-group-sm">
+                                        <label for="self-due-to" class="control-label col-sm-2">
+                                            To:
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="self-due-to">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group form-group-sm">
+                                        <label for="manager-due-from" class="control-label col-sm-7">
+                                            Manager Appraisal Due From:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="manager-due-from">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group form-group-sm">
+                                        <label for="manager-due-to" class="control-label col-sm-2">
+                                            To:
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="manager-due-to">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-4">
-                                <div class="form-group form-group-sm">
-                                    <label for="manager-due-from" class="control-label col-sm-7">
-                                        Manager Appraisal Due From:
-                                    </label>
-                                    <div class="col-sm-5">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="manager-due-from">
-                                            <span class="input-group-addon fa fa-calendar"></span>
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <div class="form-group form-group-sm">
+                                        <label for="grade-due-from" class="control-label col-sm-7">
+                                            Grade Due From:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="grade-due-from">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group form-group-sm">
+                                        <label for="grade-due-to" class="control-label col-sm-2">
+                                            To:
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="grade-due-to">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group form-group-sm">
+                                        <label for="appraisal-due-from" class="control-label col-sm-7">
+                                            Appraisal Period From:
+                                        </label>
+                                        <div class="col-sm-5">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="appraisal-due-from">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group form-group-sm">
+                                        <label for="appraisal-due-to" class="control-label col-sm-2">
+                                            To:
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group input-group-sm input-group-unstyled">
+                                                <input type="text" class="form-control" id="appraisal-due-to">
+                                                <span class="input-group-addon fa fa-calendar"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
-                                <div class="form-group form-group-sm">
-                                    <label for="manager-due-to" class="control-label col-sm-2">
-                                        To:
-                                    </label>
-                                    <div class="col-sm-10">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="manager-due-to">
-                                            <span class="input-group-addon fa fa-calendar"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <div class="form-group form-group-sm">
-                                    <label for="grade-due-from" class="control-label col-sm-7">
-                                        Grade Due From:
-                                    </label>
-                                    <div class="col-sm-5">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="grade-due-from">
-                                            <span class="input-group-addon fa fa-calendar"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group form-group-sm">
-                                    <label for="grade-due-to" class="control-label col-sm-2">
-                                        To:
-                                    </label>
-                                    <div class="col-sm-10">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="grade-due-to">
-                                            <span class="input-group-addon fa fa-calendar"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group form-group-sm">
-                                    <label for="appraisal-due-from" class="control-label col-sm-7">
-                                        Appraisal Period From:
-                                    </label>
-                                    <div class="col-sm-5">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="appraisal-due-from">
-                                            <span class="input-group-addon fa fa-calendar"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group form-group-sm">
-                                    <label for="appraisal-due-to" class="control-label col-sm-2">
-                                        To:
-                                    </label>
-                                    <div class="col-sm-10">
-                                        <div class="input-group input-group-sm input-group-unstyled">
-                                            <input type="text" class="form-control" id="appraisal-due-to">
-                                            <span class="input-group-addon fa fa-calendar"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </section>
         </div>
@@ -321,10 +326,10 @@
                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
                                             <li>
                                                 <a href="#">
                                                     <i class="fa fa-chain"></i> View Cycle
@@ -385,10 +390,10 @@
                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
                                             <li>
                                                 <a href="#">
                                                     <i class="fa fa-chain"></i> View Cycle
@@ -449,10 +454,10 @@
                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
                                             <li>
                                                 <a href="#">
                                                     <i class="fa fa-chain"></i> View Cycle
@@ -513,10 +518,10 @@
                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
                                             <li>
                                                 <a href="#">
                                                     <i class="fa fa-chain"></i> View Cycle
@@ -577,10 +582,10 @@
                                     <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
                                     <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a class="chr_appraisal-cycle-summary__actions__toggle dropdown-toggle" href="#" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
                                             <li>
                                                 <a href="#">
                                                     <i class="fa fa-chain"></i> View Cycle
