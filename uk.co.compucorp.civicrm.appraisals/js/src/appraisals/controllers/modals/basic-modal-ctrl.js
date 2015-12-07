@@ -1,10 +1,10 @@
 define([
     'appraisals/modules/controllers'
 ], function (controllers) {
-    controllers.controller('ModalCtrl',
+    controllers.controller('BasicModalCtrl',
         ['$log', '$modalInstance',
         function ($log, $modalInstance) {
-            $log.debug('ModalCtrl');
+            $log.debug('BasicModalCtrl');
 
             return {
                 cancel: function () {

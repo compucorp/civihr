@@ -10,7 +10,7 @@ define([
                 openAddAppraisalCycleModal: function () {
                     $modal.open({
                         targetDomEl: $rootElement,
-                        controller: 'ModalCtrl',
+                        controller: 'AddAppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,
                         templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-appraisal-cycle.html'

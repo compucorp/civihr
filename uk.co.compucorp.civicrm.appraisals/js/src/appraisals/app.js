@@ -4,7 +4,8 @@ define([
     'appraisals/utils/routes',
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
-    'appraisals/controllers/modal-ctrl',
+    'appraisals/controllers/modals/basic-modal-ctrl',
+    'appraisals/controllers/modals/add-appraisal-cycle-modal-ctrl',
     'appraisals/vendor/ui-router',
 ], function (angular, _, routes) {
     angular.module('appraisals', [

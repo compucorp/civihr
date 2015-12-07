@@ -4,21 +4,20 @@ define([
 ], function () {
     'use strict';
 
-    describe('ModalCtrl', function () {
+    describe('BasicModalCtrl', function () {
         var ctrl;
         var fakeModalInstance = {
             dismiss: function() {}
         };
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function ($rootScope, $controller, _$modal_) {
+        beforeEach(inject(function ($controller, _$modal_) {
             var $modal = _$modal_;
 
             spyOn($modal, 'open').and.returnValue(fakeModalInstance);
             spyOn(fakeModalInstance, 'dismiss');
 
-            ctrl = $controller('ModalCtrl', {
-                $scope: $rootScope.$new(),
+            ctrl = $controller('BasicModalCtrl', {
                 $modalInstance: $modal.open()
             });
         }));
