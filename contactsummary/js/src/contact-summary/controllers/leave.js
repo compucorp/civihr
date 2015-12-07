@@ -28,12 +28,11 @@ define([
             .then(function (response) {
                 angular.forEach(response, function (leave) {
                     if (leave.title !== 'Sick') {
-                        self.totalEntitlement += leave.entitled;
-                        self.totalTaken += leave.taken;
-
                         if (leave.title === 'TOIL') {
                             self.toil = leave;
                         } else {
+                            self.totalEntitlement += leave.entitled;
+                            self.totalTaken += leave.taken;
                             self.leaves.push(leave);
                         }
                     }
