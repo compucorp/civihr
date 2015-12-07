@@ -174,7 +174,6 @@ class CRM_Appraisals_Import_Parser_Api extends CRM_Appraisals_Import_Parser_Base
     }
     
     if (empty($this->_appraisalCycleIds[$importedAppraisalCycleId])) {
-        echo 'creating Appraisal Cycle ' . $importedAppraisalCycleId . "<br/>";
         try {
             unset($rowParams['AppraisalCycle']['id']);
             $appraisalCycleCreateResponse = civicrm_api3('AppraisalCycle', 'create', $rowParams['AppraisalCycle']);
