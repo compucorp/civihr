@@ -379,7 +379,11 @@ define([
                     return;
                 }
 
-                data[typeId].entitled = +entitlement.amount;
+                // Because we don't want to show entitlements for TOIL - they will only include
+                // accrued TOIL days.
+                if (data[typeId].title.toLowerCase() !== 'toil') {
+                    data[typeId].entitled = +entitlement.amount;    
+                }                
             });
 
             factory.collection.insertItem(periodId, data);
