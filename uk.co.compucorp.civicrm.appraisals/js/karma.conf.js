@@ -4,6 +4,7 @@ module.exports = function (config) {
 
     config.set({
         basePath: civicrmPath,
+        browsers: ['Chrome'],
         frameworks: ['jasmine'],
         files: [
             // the global dependencies
@@ -28,12 +29,23 @@ module.exports = function (config) {
             // the test files
             { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/**/*_test.js', included: false },
 
+            // angular templates
+            civihrPath + 'uk.co.compucorp.civicrm.appraisals/views/**/*.html',
+
             // the requireJS config file that bootstraps the whole test suite
             civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/test-main.js'
         ],
         exclude: [
             civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/src/appraisals.js'
         ],
-        browsers: ['Chrome'],
+        // Used to transform angular templates in JS strings
+        preprocessors: (function (obj) {
+            obj[civihrPath + 'uk.co.compucorp.civicrm.appraisals/views/**/*.html'] = ['ng-html2js'];
+            return obj;
+        })({}),
+        ngHtml2JsPreprocessor: {
+            prependPrefix: '/base/',
+            moduleName: 'appraisals.templates'
+        }
     });
 };
