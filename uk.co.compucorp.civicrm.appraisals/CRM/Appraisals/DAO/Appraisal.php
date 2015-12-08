@@ -152,6 +152,24 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
    * @var int
    */
   public $status_id;
+  /**
+   * Original ID.
+   *
+   * @var int
+   */
+  public $original_id;
+  /**
+   * Created date.
+   *
+   * @var datetime
+   */
+  public $created_date;
+  /**
+   * Is current?
+   *
+   * @var int
+   */
+  public $is_current;
 
   /**
    * class constructor
@@ -403,6 +421,42 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
             'optionGroupName' => 'appraisal_status',
           )
         ) ,
+        'original_id' => array(
+          'name' => 'original_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Original ID') ,
+          'required' => true,
+          'import' => true,
+          'where' => 'civicrm_appraisal.original_id',
+          'headerPattern' => '/^original\s?id/i',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => true,
+        ) ,
+        'created_date' => array(
+          'name' => 'created_date',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Created Date') ,
+          'required' => true,
+          'import' => true,
+          'where' => 'civicrm_appraisal.created_date',
+          'headerPattern' => '/^created\s?date/i',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => true,
+        ) ,
+        'is_current' => array(
+          'name' => 'is_current',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Is Current') ,
+          'required' => true,
+          'import' => true,
+          'where' => 'civicrm_appraisal.is_current',
+          'headerPattern' => '/^is\s?current/i',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => true,
+        ) ,
       );
     }
     return self::$_fields;
@@ -435,6 +489,9 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
         'grade' => 'grade',
         'notes' => 'notes',
         'status_id' => 'status_id',
+        'original_id' => 'original_id',
+        'created_date' => 'created_date',
+        'is_current' => 'is_current',
       );
     }
     return self::$_fieldKeys;

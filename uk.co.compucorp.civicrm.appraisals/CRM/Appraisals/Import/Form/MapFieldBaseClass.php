@@ -100,7 +100,7 @@ class CRM_Appraisals_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapFi
       foreach ($this->_onDuplicateUpdateRemove as $value) {
         unset($this->_mapperFields[$value]);
       }
-      foreach ($this->__onDuplicateUpdateHighlight as $name) {
+      foreach ($this->_onDuplicateUpdateHighlight as $name) {
         $this->_highlightedFields[] = $name;
       }
     }
