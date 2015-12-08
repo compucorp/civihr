@@ -26,4 +26,6 @@ define([
     .run(['$log', function ($log) {
         $log.debug('app.run');
     }]);
+
+    return angular;
 });
