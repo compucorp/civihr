@@ -22,7 +22,7 @@ define([
             $resourceProvider.defaults.stripTrailingSlashes = false;
             $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
-            routes.addRoutes($urlRouterProvider, $stateProvider);
+            routes($urlRouterProvider, $stateProvider);
         }
     ])
     .run(['$log', function ($log) {
