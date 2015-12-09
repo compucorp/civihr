@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/dev/styledemo</path>
+    <page_callback>CRM_Styledemo_Page_Styledemo</page_callback>
+    <title>Styledemo</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
