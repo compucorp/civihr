@@ -136,3 +136,20 @@ function styledemo_civicrm_preProcess($formName, &$form) {
 }
 
 */
+
+/**
+ * Implements hook_civicrm_navigationMenu.
+ *
+ * @param array $menu
+ */
+function styledemo_civicrm_navigationMenu(&$menu) {
+  _styledemo_civix_insert_navigation_menu($menu, 'Support/Developer', array(
+    'label' => ts('Style Demo', array('domain' => 'styledemo')),
+    'name' => 'styledemo',
+    'url' => 'civicrm/dev/styledemo',
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
+    'separator' => 0,
+  ));
+  _styledemo_civix_navigationMenu($menu);
+}
