@@ -7,6 +7,7 @@ define([
     'appraisals/controllers/modals/basic-modal-ctrl',
     'appraisals/controllers/modals/add-appraisal-cycle-modal-ctrl',
     'appraisals/directives/show-more',
+    'appraisals/directives/grades-chart',
     'appraisals/vendor/ui-router',
 ], function (angular, _, routes) {
     angular.module('appraisals', [
