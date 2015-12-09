@@ -77,6 +77,17 @@ define([
                     return entry.label === labels[index].textContent;
                 }))
             });
+
+            describe('when the chart data changes', function () {
+                beforeEach(function () {
+                    $scope.chartData = [{ label: "New value", value: 86 }];
+                    $scope.$digest();
+                });
+
+                it('updates the chart', function () {
+                    expect(directive.find('rect').length).toEqual(1);
+                });
+            });
         });
 
         /**
