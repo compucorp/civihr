@@ -6,9 +6,6 @@
 
 .page-civicrm-appraisals-dashboard {
 
-    #{$bootstrap-namespace} {
-        padding-top: 25px;
-    }
 
     #branding {
         display: none;
@@ -19,43 +16,48 @@
         padding: 0;
     }
 
-    .chr_steps--appraisals-status__contacts {
-        color: $brand-primary;
-    }
+    #{$bootstrap-namespace} {
+        padding-top: 25px;
 
-    .chr_steps--appraisals-status__count {
-        font-size: em(12, 10);
-        font-weight: 600;
-        display: block;
-    }
-
-    .chr_steps--appraisals-status__overdue {
-        color: $brand-danger;
-    }
-
-
-    .panel--active-cycles,
-    .panel--status {
-
-        > .panel-body {
-            height: 176px;
+        .chr_steps--appraisals-status__contacts {
+            color: $brand-primary;
         }
-    }
 
-    .panel--grades {
-
-        > .panel-body {
-            height: 225px;
-        }
-    }
-
-    .panel--active-cycles {
-
-        > .panel-body {
-            color: $gray-darker;
-            font-size: em(120);
+        .chr_steps--appraisals-status__count {
+            font-size: em(12, 10);
             font-weight: 600;
-            line-height: 126px;
+            display: block;
+        }
+
+        .chr_steps--appraisals-status__overdue {
+            color: $brand-danger;
+        }
+
+
+        .panel--active-cycles,
+        .panel--status {
+
+            > .panel-body {
+                height: 176px;
+            }
+        }
+
+        .panel--grades {
+
+            > .panel-body {
+                height: 225px;
+                padding: 0;
+            }
+        }
+
+        .panel--active-cycles {
+
+            > .panel-body {
+                color: $gray-darker;
+                font-size: em(120);
+                font-weight: 600;
+                line-height: 126px;
+            }
         }
     }
 }
