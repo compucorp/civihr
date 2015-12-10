@@ -8,6 +8,7 @@ define([
     'appraisals/controllers/modals/add-appraisal-cycle-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
+    'appraisals/models/appraisal-cycle',
     'appraisals/vendor/ui-router',
 ], function (angular, _, routes) {
     angular.module('appraisals', [
@@ -15,7 +16,8 @@ define([
         'ui.router',
         'ui.bootstrap',
         'appraisals.controllers',
-        'appraisals.directives'
+        'appraisals.directives',
+        'appraisals.models'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', '$httpProvider', '$logProvider',
         function ($stateProvider, $urlRouterProvider, $resourceProvider, $httpProvider, $logProvider) {
