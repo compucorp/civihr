@@ -1,18 +1,31 @@
 define([
-    'appraisals/modules/controllers'
+    'appraisals/modules/controllers',
+    'appraisals/models/appraisal-cycle'
 ], function (controllers) {
-    controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', function ($log) {
-        $log.debug('AppraisalsDashboardCtrl');
+    'use strict';
 
-        return {
-            filtersCollapsed: true,
-            data: [ // mock data
-                { label: 1, value: 17 },
-                { label: 2, value: 74 },
-                { label: 3, value: 90 },
-                { label: 4, value: 30 }
-            ]
-        }
-    }]);
+    controllers.controller('AppraisalsDashboardCtrl',
+        ['$log', 'AppraisalCycle',
+        function ($log, AppraisalCycle) {
+            $log.debug('AppraisalsDashboardCtrl');
+
+            var vm = {};
+            vm.chartData = [];
+            vm.filtersCollapsed = true;
+
+            init();
+
+            /**
+             *
+             *
+             */
+            function init() {
+                AppraisalCycle.grades().then(function (grades) {
+                    vm.chartData = grades;
+                });
+            }
+
+            return vm;
+        }]
+    );
 });
