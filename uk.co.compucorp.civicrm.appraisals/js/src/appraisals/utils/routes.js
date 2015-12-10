@@ -12,7 +12,17 @@ define(function () {
         $stateProvider
             .state('dashboard', {
                 url: '/dashboard',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/dashboard.html'
+                controller: 'AppraisalsDashboardCtrl',
+                controllerAs: 'dashboard',
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/dashboard.html',
+                resolve: {
+                    statuses: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.statuses();
+                    }],
+                    types: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.types();
+                    }]
+                }
             })
             .state('profile', {
                 url: '/profile',

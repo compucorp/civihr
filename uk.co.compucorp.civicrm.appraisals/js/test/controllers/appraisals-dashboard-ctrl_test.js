@@ -23,11 +23,16 @@ define([
                     return { then: function () {} };
                 });
 
-                ctrl = $controller('AppraisalsDashboardCtrl', { $scope: $scope });
+                initController();
             });
 
             it('is initialized', function () {
                 expect($log.debug).toHaveBeenCalled();
+            });
+
+            it('is stores on scope the data passed by ui-router', function () {
+                expect(ctrl.statuses).toBeDefined();
+                expect(ctrl.types).toBeDefined();
             });
 
             it('has the filters form collapsed', function () {
@@ -42,5 +47,16 @@ define([
                 expect(AppraisalCycle.grades).toHaveBeenCalled();
             });
         });
+
+        /**
+         * Initializes the controllers with its dependencies injected
+         */
+        function initController() {
+            ctrl = $controller('AppraisalsDashboardCtrl', {
+                $scope: $scope,
+                statuses: [],
+                types: []
+            });
+        }
     });
 })

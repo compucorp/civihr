@@ -1,4 +1,4 @@
-<section ng-controller="AppraisalsDashboardCtrl as dashboard">
+<section>
     <div class="row">
         <div class="col-sm-4">
             <section class="panel panel-default panel--active-cycles">
@@ -167,11 +167,12 @@
                                             Cycle type:
                                         </label>
                                         <div class="col-sm-7">
-                                            <select class="form-control" id="cycle-type">
+                                            <select
+                                                class="form-control"
+                                                id="cycle-type"
+                                                ng-model="filter.type"
+                                                ng-options="type for type in dashboard.types">
                                                 <option value="">- select -</option>
-                                                <option value="foo">foo</option>
-                                                <option value="bar">bar</option>
-                                                <option value="baz">baz</option>
                                             </select>
                                         </div>
                                     </div>
@@ -182,11 +183,12 @@
                                             Cycle Status:
                                         </label>
                                         <div class="col-sm-7">
-                                            <select class="form-control" id="cycle-status">
+                                            <select
+                                                class="form-control"
+                                                id="cycle-status"
+                                                ng-model="filter.status"
+                                                ng-options="type for type in dashboard.statuses">
                                                 <option value="">- select -</option>
-                                                <option value="foo">foo</option>
-                                                <option value="bar">bar</option>
-                                                <option value="baz">baz</option>
                                             </select>
                                         </div>
                                     </div>

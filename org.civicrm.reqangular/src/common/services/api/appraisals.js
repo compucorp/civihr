@@ -51,6 +51,8 @@ define([
              */
             statuses: function () {
                 $log.debug('statuses');
+
+                return this.mockGET(['Status #1', 'Status #2', 'Status #3']);
             },
 
             /**
@@ -65,6 +67,8 @@ define([
              */
             types: function () {
                 $log.debug('types');
+
+                return this.mockGET(['Type #1', 'Type #2', 'Type #3', 'Type #4']);
             }
         });
     }]);
