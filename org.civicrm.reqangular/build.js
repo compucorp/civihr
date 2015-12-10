@@ -43,6 +43,7 @@
         },
     },
     include: [
-        'common/bundles/vendors'
+        'common/bundles/vendors',
+        'common/bundles/apis'
     ]
 })
