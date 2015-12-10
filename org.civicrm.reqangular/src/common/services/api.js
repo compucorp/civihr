@@ -4,7 +4,7 @@ define([
 ], function (angular, apis) {
     'use strict';
 
-    apis.factory('api', ['$log', '$http', function ($log, $http) {
+    apis.factory('api', ['$log', '$http', '$q', function ($log, $http, $q) {
         $log.debug('api');
 
         // Draft
@@ -19,6 +19,16 @@ define([
              */
             extend: function (childAPI) {
                 return angular.extend(Object.create(this), childAPI);
+            },
+
+            /**
+             * # TO DO #
+             */
+            mockGET: function (result) {
+                var deferred = $q.defer();
+                deferred.resolve(result);
+
+                return deferred.promise;
             },
 
             /**
