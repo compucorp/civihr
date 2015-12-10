@@ -43,6 +43,6 @@
         },
     },
     include: [
-        'common/modules/vendor'
+        'common/bundles/vendors'
     ]
 })
