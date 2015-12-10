@@ -60,6 +60,17 @@ define([
              */
             statusOverview: function () {
                 $log.debug('statusOverview');
+
+                return this.mockGET({
+                    steps: [
+                        { contacts: 28, overdue: 0 },
+                        { contacts: 40, overdue: 2 },
+                        { contacts: 36, overdue: 0 },
+                        { contacts: 28, overdue: 0 },
+                        { contacts: 0, overdue: 0 }
+                    ],
+                    totalAppraisalsNumber: 248
+                });
             },
 
             /**

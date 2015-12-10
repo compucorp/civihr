@@ -23,76 +23,16 @@
                 </header>
                 <div class="panel-body">
                     <ul class="list-unstyled chr_steps chr_steps--compact chr_steps--appraisals-status">
-                        <li class="chr_steps__step">
-                            <span class="chr_steps__step__arrow chart-color-0">Step 1</span>
+                        <li class="chr_steps__step" ng-repeat="step in dashboard.statusOverview.steps">
+                            <span class="chr_steps__step__arrow chart-color-{{$index}}">Step {{$index}}</span>
                             <div class="chr_steps__step__legend">
-                                <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
+                                <div class="chr_steps__step__legend__content chart-color-border-{{$index}} text-center">
                                     <p class="chr_steps--appraisals-status__contacts">
-                                        <span class="chr_steps--appraisals-status__count">28</span>
+                                        <span class="chr_steps--appraisals-status__count">{{step.contacts}}</span>
                                         Contacts
                                     </p>
                                     <p class="chr_steps--appraisals-status__overdue">
-                                        <span class="chr_steps--appraisals-status__count">0</span>
-                                        Overdue
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="chr_steps__step">
-                            <span class="chr_steps__step__arrow chart-color-1">Step 2</span>
-                            <div class="chr_steps__step__legend">
-                                <div class="chr_steps__step__legend__content chart-color-border-1 text-center">
-                                    <p class="chr_steps--appraisals-status__contacts">
-                                        <span class="chr_steps--appraisals-status__count">40</span>
-                                        Contacts
-                                    </p>
-                                    <p class="chr_steps--appraisals-status__overdue">
-                                        <span class="chr_steps--appraisals-status__count">2</span>
-                                        Overdue
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="chr_steps__step">
-                            <span class="chr_steps__step__arrow chart-color-2">Step 3</span>
-                            <div class="chr_steps__step__legend">
-                                <div class="chr_steps__step__legend__content chart-color-border-2 text-center">
-                                    <p class="chr_steps--appraisals-status__contacts">
-                                        <span class="chr_steps--appraisals-status__count">36</span>
-                                        Contacts
-                                    </p>
-                                    <p class="chr_steps--appraisals-status__overdue">
-                                        <span class="chr_steps--appraisals-status__count">0</span>
-                                        Overdue
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="chr_steps__step">
-                            <span class="chr_steps__step__arrow chart-color-3">Step 4</span>
-                            <div class="chr_steps__step__legend">
-                                <div class="chr_steps__step__legend__content chart-color-border-3 text-center">
-                                    <p class="chr_steps--appraisals-status__contacts">
-                                        <span class="chr_steps--appraisals-status__count">28</span>
-                                        Contacts
-                                    </p>
-                                    <p class="chr_steps--appraisals-status__overdue">
-                                        <span class="chr_steps--appraisals-status__count">0</span>
-                                        Overdue
-                                    </p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="chr_steps__step">
-                            <span class="chr_steps__step__arrow chart-color-4">Step 5</span>
-                            <div class="chr_steps__step__legend">
-                                <div class="chr_steps__step__legend__content chart-color-border-4 text-center">
-                                    <p class="chr_steps--appraisals-status__contacts">
-                                        <span class="chr_steps--appraisals-status__count">0</span>
-                                        Contacts
-                                    </p>
-                                    <p class="chr_steps--appraisals-status__overdue">
-                                        <span class="chr_steps--appraisals-status__count">0</span>
+                                        <span class="chr_steps--appraisals-status__count">{{step.overdue}}</span>
                                         Overdue
                                     </p>
                                 </div>
@@ -103,7 +43,7 @@
                 <footer class="panel-footer">
                     <dl class="dl-horizontal dl-horizontal-inline">
                         <dt>Total number of appraysals in all cycles:</dt>
-                        <dd>248</dd>
+                        <dd>{{dashboard.statusOverview.totalAppraisalsNumber}}</dd>
                     </dl>
                 </footer>
             </section>

@@ -31,6 +31,7 @@ define([
             });
 
             it('is stores on scope the data passed by ui-router', function () {
+                expect(ctrl.statusOverview).toBeDefined();
                 expect(ctrl.statuses).toBeDefined();
                 expect(ctrl.types).toBeDefined();
             });
@@ -54,6 +55,7 @@ define([
         function initController() {
             ctrl = $controller('AppraisalsDashboardCtrl', {
                 $scope: $scope,
+                statusOverview: [],
                 statuses: [],
                 types: []
             });

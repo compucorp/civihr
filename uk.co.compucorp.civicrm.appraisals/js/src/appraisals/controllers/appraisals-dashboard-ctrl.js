@@ -5,13 +5,14 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', 'AppraisalCycle', 'statuses', 'types',
-        function ($log, AppraisalCycle, statuses, types) {
+        ['$log', 'AppraisalCycle', 'statusOverview', 'statuses', 'types',
+        function ($log, AppraisalCycle, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var vm = {};
             vm.chartData = [];
             vm.filtersCollapsed = true;
+            vm.statusOverview = statusOverview;
             vm.statuses = statuses;
             vm.types = types;
 
