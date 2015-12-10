@@ -16,6 +16,9 @@ define(function () {
                 controllerAs: 'dashboard',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/dashboard.html',
                 resolve: {
+                    activeCycles: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.active();
+                    }],
                     statusOverview: ['AppraisalCycle', function (AppraisalCycle) {
                         return AppraisalCycle.statusOverview();
                     }],
