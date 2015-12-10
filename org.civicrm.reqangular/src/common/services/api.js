@@ -4,7 +4,7 @@ define([
 ], function (angular, apis) {
     'use strict';
 
-    apis.factory('api', ['$log', '$http', '$q', function ($log, $http, $q) {
+    apis.factory('api', ['$log', '$http', '$q', '$timeout', function ($log, $http, $q, $timeout) {
         $log.debug('api');
 
         // Draft
@@ -22,11 +22,18 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Mocks a GET request to the backend endpoints
+             *
+             * @param {any} result - The result the mocked request must return
+             * @param {int} timeout - The value of a simulated delay in ms
+             * @return {Promise}
              */
-            mockGET: function (result) {
+            mockGET: function (result, delay) {
                 var deferred = $q.defer();
-                deferred.resolve(result);
+
+                $timeout(function() {
+                  deferred.resolve(result);
+                }, delay || 0);
 
                 return deferred.promise;
             },
