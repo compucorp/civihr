@@ -324,69 +324,66 @@
                         10 Overdue Appraisals and 80 Due this week
                     </h2>
                 </header>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary" ng-repeat="cycle in dashboard.cycles">
-                    <header class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="panel-title panel-title-sm">
-                                    {{cycle.name}}
-                                    <span ng-if="cycle.active">(Active)</span>
-                                    <span ng-if="!cycle.active">(Inactive)</span>
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">
-                                        {{cycle.appraisalsTotal}} Appraisals
-                                    </span>
-                                    <span class="chr_appraisal-cycle-summary__meta">
-                                        {{cycle.completionPercentage}}% complete</span>
-                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                            <i class="fa fa-ellipsis-v"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-chain"></i> View Cycle
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-pencil"></i> Edit Cycle
-                                                </a>
-                                            </li>
-                                        </ul>
+                <div crm-show-more callback="dashboard.requestCycles(true)" done="dashboard.loadingDone">
+                    <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary" ng-repeat="cycle in dashboard.cycles">
+                        <header class="panel-heading">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h3 class="panel-title panel-title-sm">
+                                        {{cycle.name}}
+                                        <span ng-if="cycle.active">(Active)</span>
+                                        <span ng-if="!cycle.active">(Inactive)</span>
+                                    </h3>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <div class="chr_appraisal-cycle-summary__details">
+                                        <span class="chr_appraisal-cycle-summary__meta">
+                                            {{cycle.appraisalsTotal}} Appraisals
+                                        </span>
+                                        <span class="chr_appraisal-cycle-summary__meta">
+                                            {{cycle.completionPercentage}}% complete</span>
+                                        <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
+                                            <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
+                                                <i class="fa fa-ellipsis-v"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
+                                                <li>
+                                                    <a href="#">
+                                                        <i class="fa fa-chain"></i> View Cycle
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#">
+                                                        <i class="fa fa-pencil"></i> Edit Cycle
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <hr>
+                        </header>
+                        <div class="panel-body">
+                            <dl class="dl-inline">
+                                <dt>Cycle ID:</dt>
+                                <dd>{{cycle.id}}</dd>
+                                <dt>Period:</dt>
+                                <dd>{{cycle.period.start}} - {{cycle.period.end}}</dd>
+                                <dt ng-if="cycle.nextDue">Next Due:</dt>
+                                <dd ng-if="cycle.nextDue">{{cycle.nextDue.type}} ({{cycle.nextDue.date}})</dd>
+                            </dl>
                         </div>
-                        <hr>
-                    </header>
-                    <div class="panel-body">
-                        <dl class="dl-inline">
-                            <dt>Cycle ID:</dt>
-                            <dd>{{cycle.id}}</dd>
-                            <dt>Period:</dt>
-                            <dd>{{cycle.period.start}} - {{cycle.period.end}}</dd>
-                            <dt ng-if="cycle.nextDue">Next Due:</dt>
-                            <dd ng-if="cycle.nextDue">{{cycle.nextDue.type}} ({{cycle.nextDue.date}})</dd>
-                        </dl>
-                    </div>
-                    <footer class="panel-footer">
-                        <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step"
-                                ng-repeat="step in cycle.appraisalsCountByStep"
-                                ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
-                                <span class="chr_steps__step__arrow">{{step.name}}: {{step.count}}</span>
-                            </li>
-                        </ul>
-                    </footer>
-                </article>
-                <div class="panel--dashboard-appraisals__show-more text-center">
-                    <button class="btn btn-default text-uppercase">
-                        show more
-                    </button>
+                        <footer class="panel-footer">
+                            <ul class="list-unstyled chr_steps">
+                                <li class="chr_steps__step"
+                                    ng-repeat="step in cycle.appraisalsCountByStep"
+                                    ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
+                                    <span class="chr_steps__step__arrow">{{step.name}}: {{step.count}}</span>
+                                </li>
+                            </ul>
+                        </footer>
+                    </article>
                 </div>
             </section>
         </div>
