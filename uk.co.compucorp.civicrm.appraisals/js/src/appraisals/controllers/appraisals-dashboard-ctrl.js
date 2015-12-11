@@ -61,14 +61,16 @@ define([
 
                 pagination.page = !!addPage ? pagination.page + 1 : 1;
 
-                AppraisalCycle.all(filters(), pagination).then(function (cycles, totalCount) {
+                AppraisalCycle.all(filters(), pagination).then(function (cycles) {
                     if (addPage) {
-                        vm.cycles.push(cycles);
+                        cycles.list.forEach(function (cycle) {
+                            vm.cycles.push(cycle);
+                        });
                     } else {
-                        vm.cycles = cycles;
+                        vm.cycles = cycles.list;
                     }
 
-                    vm.loadingDone = vm.cycles.length === totalCount;
+                    vm.loadingDone = vm.cycles.length === cycles.total;
                 });
             };
 
