@@ -29,7 +29,7 @@ define([
                 // the filtering and pagination are done here only because
                 // the response is mocked otherwise they would be done by the backend
                 return this.mockGET(mockedCycles()).then(function (cycles) {
-                    var start, end;
+                    var start, end, total;
 
                     if (filters) {
                         cycles = cycles.filter(function (cycle) {
@@ -41,6 +41,8 @@ define([
                         });
                     }
 
+                    total = cycles.length;
+
                     if (pagination) {
                         start = (pagination.page - 1) * pagination.size;
                         end = start + pagination.size;
@@ -48,7 +50,7 @@ define([
                         cycles = cycles.slice(start, end);
                     }
 
-                    return cycles;
+                    return { list: cycles, total: total };
                 });
             },
 
