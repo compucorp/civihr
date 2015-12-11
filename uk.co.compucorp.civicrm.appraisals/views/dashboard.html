@@ -92,7 +92,7 @@
                 </header>
                 <div collapse="dashboard.filtersCollapsed">
                     <div class="panel-body">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" ng-init="dashboard.calendars = {}">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group has-feedback">
@@ -100,7 +100,7 @@
                                             Cycle Name:
                                         </label>
                                         <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="cycle-name">
+                                            <input type="text" ng-model="dashboard.filters.name" class="form-control" id="cycle-name">
                                             <span class="fa fa-search form-control-feedback"></span>
                                         </div>
                                     </div>
@@ -114,7 +114,7 @@
                                             <select
                                                 class="form-control"
                                                 id="cycle-type"
-                                                ng-model="filter.type"
+                                                ng-model="dashboard.filters.type"
                                                 ng-options="type for type in dashboard.types">
                                                 <option value="">- select -</option>
                                             </select>
@@ -130,7 +130,7 @@
                                             <select
                                                 class="form-control"
                                                 id="cycle-status"
-                                                ng-model="filter.status"
+                                                ng-model="dashboard.filters.status"
                                                 ng-options="type for type in dashboard.statuses">
                                                 <option value="">- select -</option>
                                             </select>
@@ -146,7 +146,15 @@
                                         </label>
                                         <div class="col-sm-5">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="self-due-from">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="self-due-from"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.self.from"
+                                                    ng-init="dashboard.calendars.selfFrom = false"
+                                                    ng-click="dashboard.calendars.selfFrom = !dashboard.calendars.selfFrom"
+                                                    is-open="dashboard.calendars.selfFrom">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -154,12 +162,20 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <div class="form-group form-group-sm">
-                                        <label for="self-due-to" class="control-label col-sm-2">
+                                        <label for="self-due-to" ng-model="dashboard.filters.self.to" class="control-label col-sm-2">
                                             To:
                                         </label>
                                         <div class="col-sm-10">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="self-due-to">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="self-due-to"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.self.to"
+                                                    ng-init="dashboard.calendars.selfTo = false"
+                                                    ng-click="dashboard.calendars.selfTo = !dashboard.calendars.selfTo"
+                                                    is-open="dashboard.calendars.selfTo">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -172,7 +188,15 @@
                                         </label>
                                         <div class="col-sm-5">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="manager-due-from">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="manager-due-from"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.manager.from"
+                                                    ng-init="dashboard.calendars.managerFrom = false"
+                                                    ng-click="dashboard.calendars.managerFrom = !dashboard.calendars.managerFrom"
+                                                    is-open="dashboard.calendars.managerFrom">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -185,7 +209,15 @@
                                         </label>
                                         <div class="col-sm-10">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="manager-due-to">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="manager-due-to"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.manager.to"
+                                                    ng-init="dashboard.calendars.managerTo = false"
+                                                    ng-click="dashboard.calendars.managerTo = !dashboard.calendars.managerTo"
+                                                    is-open="dashboard.calendars.managerTo">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -200,7 +232,15 @@
                                         </label>
                                         <div class="col-sm-5">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="grade-due-from">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="grade-due-from"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.grade.from"
+                                                    ng-init="dashboard.calendars.gradeFrom = false"
+                                                    ng-click="dashboard.calendars.gradeFrom = !dashboard.calendars.gradeFrom"
+                                                    is-open="dashboard.calendars.gradeFrom">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -213,7 +253,15 @@
                                         </label>
                                         <div class="col-sm-10">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="grade-due-to">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="grade-due-to"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.grade.to"
+                                                    ng-init="dashboard.calendars.gradeTo = false"
+                                                    ng-click="dashboard.calendars.gradeTo = !dashboard.calendars.gradeTo"
+                                                    is-open="dashboard.calendars.gradeTo">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -226,7 +274,15 @@
                                         </label>
                                         <div class="col-sm-5">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="appraisal-due-from">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="appraisal-due-from"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.period.from"
+                                                    ng-init="dashboard.calendars.periodFrom = false"
+                                                    ng-click="dashboard.calendars.periodFrom = !dashboard.calendars.periodFrom"
+                                                    is-open="dashboard.calendars.periodFrom">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>
@@ -239,7 +295,15 @@
                                         </label>
                                         <div class="col-sm-10">
                                             <div class="input-group input-group-sm input-group-unstyled">
-                                                <input type="text" class="form-control" id="appraisal-due-to">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="appraisal-due-to"
+                                                    datepicker-popup
+                                                    ng-model="dashboard.filters.period.to"
+                                                    ng-init="dashboard.calendars.periodTo = false"
+                                                    ng-click="dashboard.calendars.periodTo = !dashboard.calendars.periodTo"
+                                                    is-open="dashboard.calendars.periodTo">
                                                 <span class="input-group-addon fa fa-calendar"></span>
                                             </div>
                                         </div>

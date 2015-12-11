@@ -1,22 +1,23 @@
 define([
+    'common/angular',
     'common/angularMocks',
     'appraisals/app',
-], function () {
+], function (angular) {
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
-        var $controller, $log, $scope, ctrl, AppraisalCycle;
+        var $controller, $log, $scope, $timeout, ctrl, AppraisalCycle;
 
         beforeEach(module('appraisals'));
 
-        beforeEach(inject(function ($rootScope, _$log_, _$controller_, _AppraisalCycle_) {
+        beforeEach(inject(function ($rootScope, _$log_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
+            $timeout = _$timeout_;
             $scope = $rootScope.$new();
-            AppraisalCycle = _AppraisalCycle_;
 
-            spyOn(AppraisalCycle, 'all').and.callFake(function () {
+            (AppraisalCycle = _AppraisalCycle_) && spyOn(AppraisalCycle, 'all').and.callFake(function () {
                 return { then: function () {} };
             });
         }));
@@ -83,13 +84,10 @@ define([
         describe('after init', function () {
             beforeEach(function () {
                 initController();
+                AppraisalCycle.all.calls.reset();
             });
 
             describe('active filter', function () {
-                beforeEach(function () {
-                    AppraisalCycle.all.calls.reset();
-                });
-
                 describe('when changing to a valid value', function () {
                     beforeEach(function () {
                         ctrl.changeActiveFilter('inactive');
@@ -120,7 +118,7 @@ define([
                         ctrl.changeActiveFilter('foo');
                     });
 
-                    it('keep the old value set', function () {
+                    it('keeps the old value set', function () {
                         expect(ctrl.filters.active).toBe(true);
                     });
 
@@ -142,7 +140,27 @@ define([
                     });
                 })
             });
-        })
+
+            describe('filters', function () {
+                var selectedFilters = {
+                    active: true,
+                    name: 'foo',
+                    status: 'bar',
+                    type: 'baz'
+                };
+
+                beforeEach(function () {
+                    $scope.$digest();
+                    angular.extend(ctrl.filters, selectedFilters);
+                    $scope.$digest();
+                    $timeout.flush();
+                });
+
+                it('makes a new request to the api with the selected filters', function () {
+                    expect(AppraisalCycle.all).toHaveBeenCalledWith(selectedFilters);
+                });
+            });
+        });
 
         /**
          * Initializes the controllers with its dependencies injected

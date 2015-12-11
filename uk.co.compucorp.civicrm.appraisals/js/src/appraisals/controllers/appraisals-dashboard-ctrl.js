@@ -6,8 +6,8 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
-        function ($log, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
+        ['$log', '$scope', '$timeout', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
+        function ($log, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var vm = {};
@@ -65,11 +65,12 @@ define([
              * Initialization code
              */
             function init() {
+                watchFilters();
+                requestCycles();
+
                 AppraisalCycle.grades().then(function (grades) {
                     vm.chartData = grades;
                 });
-
-                requestCycles();
             }
 
             /**
@@ -79,6 +80,23 @@ define([
                 AppraisalCycle.all(filters()).then(function (cycles) {
                     vm.cycles = cycles;
                 });
+            }
+
+            /**
+             * Checks when the filter values change, then wait for a delay
+             * before requesting the new list filtered with the new criteria
+             */
+            function watchFilters() {
+                var timeout = null;
+
+                $scope.$watch(function () {
+                    return vm.filters;
+                }, function (newValue, oldValue) {
+                    if (newValue !== oldValue ) {
+                        $timeout.cancel(timeout);
+                        timeout = $timeout(requestCycles, 500)
+                    }
+                }, true);
             }
 
             return vm;

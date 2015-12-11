@@ -31,7 +31,9 @@ define([
                 return this.mockGET(mockedCycles()).then(function (cycles) {
                     if (filters) {
                         cycles = cycles.filter(function (cycle) {
-                            return Object.keys(filters).every(function (key) {
+                            return Object.keys(filters).filter(function (key) {
+                                return filters[key] !== '' && filters[key] !== null
+                            }).every(function (key) {
                                 return cycle[key] === filters[key];
                             });
                         });
