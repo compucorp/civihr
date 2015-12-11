@@ -26,9 +26,11 @@ define([
             all: function (filters, pagination) {
                 $log.debug('all');
 
-                // the filtering is done here only because the response is mocked
-                // otherwise it would be done by the backend
+                // the filtering and pagination are done here only because
+                // the response is mocked otherwise they would be done by the backend
                 return this.mockGET(mockedCycles()).then(function (cycles) {
+                    var start, end;
+
                     if (filters) {
                         cycles = cycles.filter(function (cycle) {
                             return Object.keys(filters).filter(function (key) {
@@ -37,6 +39,13 @@ define([
                                 return cycle[key] === filters[key];
                             });
                         });
+                    }
+
+                    if (pagination) {
+                        start = (pagination.page - 1) * pagination.size;
+                        end = start + pagination.size;
+
+                        cycles = cycles.slice(start, end);
                     }
 
                     return cycles;
