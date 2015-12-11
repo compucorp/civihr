@@ -39,6 +39,10 @@ define([
                     expect(ctrl.types).toBeDefined();
                 });
 
+                it('it does not consider the full list of cycles loaded', function () {
+                    expect(ctrl.loadingDone).toBe(false);
+                });
+
                 it('has the filters form collapsed', function () {
                     expect(ctrl.filtersCollapsed).toBe(true);
                 });
@@ -75,8 +79,8 @@ define([
                     expect(ctrl.cycles).toEqual([]);
                 });
 
-                it('is requested on init, only the active cycles', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true });
+                it('requires the first page of active cycles', function () {
+                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
                 });
             });
         });
@@ -98,7 +102,7 @@ define([
                     });
 
                     it('makes a new request to the api', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false }, { page: 1, size: 5 });
                     });
 
                     describe('when changing to "all"', function () {
@@ -108,7 +112,7 @@ define([
                         });
 
                         it('removes the `active` property from `filters`', function () {
-                            expect(AppraisalCycle.all).toHaveBeenCalledWith({});
+                            expect(AppraisalCycle.all).toHaveBeenCalledWith({}, { page: 1, size: 5 });
                         });
                     });
                 });
@@ -157,7 +161,36 @@ define([
                 });
 
                 it('makes a new request to the api with the selected filters', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith(selectedFilters);
+                    expect(AppraisalCycle.all).toHaveBeenCalledWith(selectedFilters, { page: 1, size: 5 });
+                });
+            });
+
+            describe('pagination', function () {
+
+                describe('when the full list has not been loaded yet', function () {
+                    beforeEach(function () {
+                        ctrl.requestCycles(true);
+                    });
+
+                    it('can request the next page', function () {
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 2, size: 5 });
+                    });
+                });
+
+                describe('when full list has been loaded', function () {
+                    beforeEach(function () {
+                        ctrl.loadingDone = true;
+                    });
+
+                    it('cannot request a next page', function () {
+                        ctrl.requestCycles(true);
+                        expect(AppraisalCycle.all).not.toHaveBeenCalled();
+                    });
+
+                    it('can request the first page again', function () {
+                        ctrl.requestCycles();
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
+                    });
                 });
             });
         });

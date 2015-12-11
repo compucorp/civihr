@@ -10,6 +10,7 @@ define([
         function ($log, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
+            var pagination = { page: 1, size: 5 };
             var vm = {};
 
             vm.activeFilters = [
@@ -22,6 +23,7 @@ define([
             vm.chartData = [];
             vm.filtersCollapsed = true;
             vm.filters = { active: vm.activeFilters[0].value };
+            vm.loadingDone = false;
 
             vm.activeCycles = activeCycles;
             vm.statusOverview = statusOverview;
@@ -40,8 +42,34 @@ define([
 
                 if (typeof newValue !== 'undefined' && vm.filters.active !== newValue.value) {
                     vm.filters.active = newValue.value;
-                    requestCycles();
+                    vm.requestCycles();
                 }
+            };
+
+            /**
+             * Requests the model to return the list of cycles
+             *
+             * It can either add a new page worth of cycles to the existing list
+             * or it can reset the entire list (in case new filters have been chosen)
+             *
+             * @param {boolean} addPage - If it's to request the next page
+             */
+            vm.requestCycles = function (addPage) {
+                if (addPage && vm.loadingDone) {
+                    return;
+                }
+
+                pagination.page = !!addPage ? pagination.page + 1 : 1;
+
+                AppraisalCycle.all(filters(), pagination).then(function (cycles, totalCount) {
+                    if (addPage) {
+                        vm.cycles.push(cycles);
+                    } else {
+                        vm.cycles = cycles;
+                    }
+
+                    vm.loadingDone = vm.cycles.length === totalCount;
+                });
             };
 
             init();
@@ -66,21 +94,13 @@ define([
              */
             function init() {
                 watchFilters();
-                requestCycles();
+                vm.requestCycles();
 
                 AppraisalCycle.grades().then(function (grades) {
                     vm.chartData = grades;
                 });
             }
 
-            /**
-             * Requests the model to return the list of cycles
-             */
-            function requestCycles() {
-                AppraisalCycle.all(filters()).then(function (cycles) {
-                    vm.cycles = cycles;
-                });
-            }
 
             /**
              * Checks when the filter values change, then wait for a delay
@@ -94,7 +114,7 @@ define([
                 }, function (newValue, oldValue) {
                     if (newValue !== oldValue ) {
                         $timeout.cancel(timeout);
-                        timeout = $timeout(requestCycles, 500)
+                        timeout = $timeout(vm.requestCycles, 500)
                     }
                 }, true);
             }
