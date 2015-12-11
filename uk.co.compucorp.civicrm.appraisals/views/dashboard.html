@@ -70,9 +70,13 @@
                         </div>
                         <div class="col-sm-4 text-center">
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-secondary-outline active">Active</button>
-                                <button class="btn btn-secondary-outline">Inactive</button>
-                                <button class="btn btn-secondary-outline">All</button>
+                                <button
+                                    class="btn btn-secondary-outline text-capitalize"
+                                    ng-repeat="filter in dashboard.activeFilters"
+                                    ng-click="dashboard.changeActiveFilter(filter.label)"
+                                    ng-class="{ active: dashboard.filters.active === filter.value }">
+                                    {{filter.label}}
+                                </button>
                             </div>
                         </div>
                         <div class="col-sm-4 text-right">
@@ -256,18 +260,23 @@
                         10 Overdue Appraisals and 80 Due this week
                     </h2>
                 </header>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
+                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary" ng-repeat="cycle in dashboard.cycles">
                     <header class="panel-heading">
                         <div class="row">
                             <div class="col-sm-6">
                                 <h3 class="panel-title panel-title-sm">
-                                    Appraisal Cycle 1 (Active)
+                                    {{cycle.name}}
+                                    <span ng-if="cycle.active">(Active)</span>
+                                    <span ng-if="!cycle.active">(Inactive)</span>
                                 </h3>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
-                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
+                                    <span class="chr_appraisal-cycle-summary__meta">
+                                        {{cycle.appraisalsTotal}} Appraisals
+                                    </span>
+                                    <span class="chr_appraisal-cycle-summary__meta">
+                                        {{cycle.completionPercentage}}% complete</span>
                                     <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                         <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                             <i class="fa fa-ellipsis-v"></i>
@@ -293,285 +302,19 @@
                     <div class="panel-body">
                         <dl class="dl-inline">
                             <dt>Cycle ID:</dt>
-                            <dd>42131</dd>
+                            <dd>{{cycle.id}}</dd>
                             <dt>Period:</dt>
-                            <dd>01/01/2014 - 01/01/2015</dd>
-                            <dt>Next Due:</dt>
-                            <dd>Manager Appraisal (23/23/2023)</dd>
+                            <dd>{{cycle.period.start}} - {{cycle.period.end}}</dd>
+                            <dt ng-if="cycle.nextDue">Next Due:</dt>
+                            <dd ng-if="cycle.nextDue">{{cycle.nextDue.type}} ({{cycle.nextDue.date}})</dd>
                         </dl>
                     </div>
                     <footer class="panel-footer">
                         <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Self Appraisal: 30</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--primary">
-                                <span class="chr_steps__step__arrow">Assigned to Manager: 22</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting Grade: 2</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Complete: 45</span>
-                            </li>
-                        </ul>
-                    </footer>
-                </article>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
-                    <header class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="panel-title panel-title-sm">
-                                    Appraisal Cycle 2 (Active)
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
-                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                            <i class="fa fa-ellipsis-v"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-chain"></i> View Cycle
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-pencil"></i> Edit Cycle
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </header>
-                    <div class="panel-body">
-                        <dl class="dl-inline">
-                            <dt>Cycle ID:</dt>
-                            <dd>42131</dd>
-                            <dt>Period:</dt>
-                            <dd>01/01/2014 - 01/01/2015</dd>
-                            <dt>Next Due:</dt>
-                            <dd>Self Appraisal (23/23/2023)</dd>
-                        </dl>
-                    </div>
-                    <footer class="panel-footer">
-                        <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--primary">
-                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Complete: 45</span>
-                            </li>
-                        </ul>
-                    </footer>
-                </article>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
-                    <header class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="panel-title panel-title-sm">
-                                    Appraisal Cycle 3 (Active)
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
-                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                            <i class="fa fa-ellipsis-v"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-chain"></i> View Cycle
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-pencil"></i> Edit Cycle
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </header>
-                    <div class="panel-body">
-                        <dl class="dl-inline">
-                            <dt>Cycle ID:</dt>
-                            <dd>42131</dd>
-                            <dt>Period:</dt>
-                            <dd>01/01/2014 - 01/01/2015</dd>
-                            <dt>Next Due:</dt>
-                            <dd>Self Appraisal (23/23/2023)</dd>
-                        </dl>
-                    </div>
-                    <footer class="panel-footer">
-                        <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--primary">
-                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Complete: 45</span>
-                            </li>
-                        </ul>
-                    </footer>
-                </article>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
-                    <header class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="panel-title panel-title-sm">
-                                    Appraisal Cycle 4 (Active)
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
-                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                            <i class="fa fa-ellipsis-v"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-chain"></i> View Cycle
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-pencil"></i> Edit Cycle
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </header>
-                    <div class="panel-body">
-                        <dl class="dl-inline">
-                            <dt>Cycle ID:</dt>
-                            <dd>42131</dd>
-                            <dt>Period:</dt>
-                            <dd>01/01/2014 - 01/01/2015</dd>
-                            <dt>Next Due:</dt>
-                            <dd>Self Appraisal (23/23/2023)</dd>
-                        </dl>
-                    </div>
-                    <footer class="panel-footer">
-                        <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--primary">
-                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Complete: 45</span>
-                            </li>
-                        </ul>
-                    </footer>
-                </article>
-                <article class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary">
-                    <header class="panel-heading">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <h3 class="panel-title panel-title-sm">
-                                    Appraisal Cycle 5 (Active)
-                                </h3>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="chr_appraisal-cycle-summary__details">
-                                    <span class="chr_appraisal-cycle-summary__meta">100 Appraisals</span>
-                                    <span class="chr_appraisal-cycle-summary__meta">45% complete</span>
-                                    <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                        <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                            <i class="fa fa-ellipsis-v"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-chain"></i> View Cycle
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#">
-                                                    <i class="fa fa-pencil"></i> Edit Cycle
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                    </header>
-                    <div class="panel-body">
-                        <dl class="dl-inline">
-                            <dt>Cycle ID:</dt>
-                            <dd>42131</dd>
-                            <dt>Period:</dt>
-                            <dd>01/01/2014 - 01/01/2015</dd>
-                            <dt>Next Due:</dt>
-                            <dd>Self Appraisal (23/23/2023)</dd>
-                        </dl>
-                    </div>
-                    <footer class="panel-footer">
-                        <ul class="list-unstyled chr_steps">
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Self Appraisal: 0</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--danger">
-                                <span class="chr_steps__step__arrow">Assigned to Manager: 12</span>
-                            </li>
-                            <li class="chr_steps__step chr_steps__step--primary">
-                                <span class="chr_steps__step__arrow">Awaiting Grade: 42</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Awaiting HR Approval: 1</span>
-                            </li>
-                            <li class="chr_steps__step">
-                                <span class="chr_steps__step__arrow">Complete: 45</span>
+                            <li class="chr_steps__step"
+                                ng-repeat="step in cycle.appraisalsCountByStep"
+                                ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
+                                <span class="chr_steps__step__arrow">{{step.name}}: {{step.count}}</span>
                             </li>
                         </ul>
                     </footer>
