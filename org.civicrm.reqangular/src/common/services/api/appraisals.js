@@ -63,7 +63,7 @@ define([
 
                 var created = angular.copy(attributes);
 
-                created.id = '' + Math.random() * 5000;
+                created.id = '' + Math.ceil(Math.random() * 5000);
                 created.createdAt = Date.now();
 
                 return this.mockPOST(created);

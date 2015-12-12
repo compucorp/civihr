@@ -2,8 +2,8 @@ define([
     'appraisals/modules/controllers'
 ], function (controllers) {
     controllers.controller('AppraisalsCtrl',
-        ['$log', '$rootElement', '$modal',
-        function ($log, $rootElement, $modal) {
+        ['$log', '$rootElement', '$modal', 'AppraisalCycle',
+        function ($log, $rootElement, $modal, AppraisalCycle) {
             $log.debug('AppraisalsCtrl');
 
             return {
@@ -13,7 +13,12 @@ define([
                         controller: 'AddAppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,
-                        templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-appraisal-cycle.html'
+                        templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-appraisal-cycle.html',
+                        resolve: {
+                            types: function () {
+                                return AppraisalCycle.types();
+                            }
+                        }
                     });
                 },
             }
