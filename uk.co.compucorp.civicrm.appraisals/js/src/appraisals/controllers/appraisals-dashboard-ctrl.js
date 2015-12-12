@@ -6,8 +6,8 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', '$scope', '$timeout', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
-        function ($log, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
+        ['$log', '$rootScope', '$scope', '$timeout', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
+        function ($log, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var pagination = { page: 1, size: 5 };
@@ -97,6 +97,10 @@ define([
             function init() {
                 watchFilters();
                 vm.requestCycles();
+
+                $rootScope.$on('AppraisalCycle::new', function (event, newCycle) {
+                    vm.cycles.unshift(newCycle);
+                });
 
                 AppraisalCycle.grades().then(function (grades) {
                     vm.chartData = grades;

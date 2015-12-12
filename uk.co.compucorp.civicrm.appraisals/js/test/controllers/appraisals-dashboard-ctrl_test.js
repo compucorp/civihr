@@ -6,16 +6,17 @@ define([
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
-        var $controller, $log, $scope, $timeout, ctrl, AppraisalCycle;
+        var $controller, $log, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
 
         beforeEach(module('appraisals'));
 
-        beforeEach(inject(function ($rootScope, _$log_, _$timeout_, _$controller_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$rootScope_, _$log_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
-            $timeout = _$timeout_;
+            $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
+            $timeout = _$timeout_;
 
             (AppraisalCycle = _AppraisalCycle_) && spyOn(AppraisalCycle, 'all').and.callFake(function () {
                 return { then: function () {} };
@@ -102,7 +103,7 @@ define([
                     });
 
                     it('makes a new request to the api', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false }, { page: 1, size: 5 });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false }, jasmine.any(Object));
                     });
 
                     describe('when changing to "all"', function () {
@@ -112,7 +113,7 @@ define([
                         });
 
                         it('removes the `active` property from `filters`', function () {
-                            expect(AppraisalCycle.all).toHaveBeenCalledWith({}, { page: 1, size: 5 });
+                            expect(AppraisalCycle.all).toHaveBeenCalledWith({}, jasmine.any(Object));
                         });
                     });
                 });
@@ -161,12 +162,11 @@ define([
                 });
 
                 it('makes a new request to the api with the selected filters', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith(selectedFilters, { page: 1, size: 5 });
+                    expect(AppraisalCycle.all).toHaveBeenCalledWith(selectedFilters, jasmine.any(Object));
                 });
             });
 
             describe('pagination', function () {
-
                 describe('when the full list has not been loaded yet', function () {
                     beforeEach(function () {
                         ctrl.requestCycles(true);
@@ -191,6 +191,23 @@ define([
                         ctrl.requestCycles();
                         expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
                     });
+                });
+            });
+
+            describe('when a new cycle is added', function () {
+                var newCycle = { id: '4567', name: 'The new cycle' };
+
+                beforeEach(function () {
+                    ctrl.cycles = [{ id: '1', name: '#1'}, { id: '2', name: '#2' }];
+                    $rootScope.$emit('AppraisalCycle::new', newCycle);
+                    $scope.$digest();
+                });
+
+                it('adds it to the top of cycles list', function () {
+                    expect(ctrl.cycles.length).toBe(3);
+                    expect(ctrl.cycles.map(function (cycle) {
+                        return cycle.name;
+                    })).toEqual(['The new cycle', '#1', '#2']);
                 });
             });
         });
