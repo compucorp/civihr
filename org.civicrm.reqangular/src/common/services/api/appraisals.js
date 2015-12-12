@@ -1,7 +1,8 @@
 define([
+    'common/angular',
     'common/modules/apis',
     'common/services/api'
-], function (apis) {
+], function (angular, apis) {
     'use strict';
 
     apis.factory('api.appraisals', ['$log', 'api', function ($log, api) {
@@ -59,6 +60,13 @@ define([
              */
             create: function (attributes) {
                 $log.debug('create');
+
+                var created = angular.copy(attributes);
+
+                created.id = '' + Math.random() * 5000;
+                created.createdAt = Date.now();
+
+                return this.mockPOST(created);
             },
 
             /**

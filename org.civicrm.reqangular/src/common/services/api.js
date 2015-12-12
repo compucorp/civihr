@@ -39,6 +39,13 @@ define([
             },
 
             /**
+             * Mocks a POST request to the backend endpoints
+             */
+            mockPOST: function (result, delay) {
+                return this.mockGET.apply(this, arguments);
+            },
+
+            /**
              * # TO DO #
              */
             sendGET: function () {
