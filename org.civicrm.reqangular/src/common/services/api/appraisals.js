@@ -124,6 +124,19 @@ define([
             /**
              * # TO DO #
              */
+            update: function (id, attributes) {
+                $log.debug('types');
+
+                var cycle = mockedCycles().filter(function (cycle) {
+                    return cycle.id === id;
+                })[0];
+
+                return this.mockPOST(angular.extend({}, cycle, attributes));
+            },
+
+            /**
+             * # TO DO #
+             */
             types: function () {
                 $log.debug('types');
 
