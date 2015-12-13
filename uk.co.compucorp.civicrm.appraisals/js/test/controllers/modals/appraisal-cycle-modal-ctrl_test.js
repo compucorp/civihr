@@ -37,6 +37,13 @@ define([
                 return deferred.promise;
             });
 
+            spyOn(AppraisalCycle, 'update').and.callFake(function (id, value) {
+                var deferred = $q.defer();
+                deferred.resolve(value);
+
+                return deferred.promise;
+            });
+
             initController();
         }));
 
@@ -123,7 +130,7 @@ define([
 
                 beforeEach(function () {
                     ctrl.cycle = newCycle;
-                    ctrl.addCycle();
+                    ctrl.submit();
 
                     $rootScope.$digest();
                 });
@@ -142,20 +149,26 @@ define([
             });
 
             describe('when in "edit mode"', function () {
-                beforeEach(function () {
+                var editedCycle = { id: '657', name: 'Amended name', type: 'Amended type' };
 
+                beforeEach(function () {
+                    ctrl.edit = true;
+                    ctrl.cycle = editedCycle;
+                    ctrl.submit();
+
+                    $rootScope.$digest();
                 });
 
                 it('sends a request to the api with the amended cycle data', function () {
-
+                    expect(AppraisalCycle.update).toHaveBeenCalledWith(editedCycle.id, editedCycle);
                 });
 
                 it('emits an event', function () {
-
+                    expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
                 });
 
                 it('closes the modal', function () {
-
+                    expect($modalInstance.close).toHaveBeenCalled();
                 });
             });
         });

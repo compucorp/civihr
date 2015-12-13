@@ -23,14 +23,35 @@ define([
             /**
              * Adds the new cycle and on complete emits an event, closes the modal
              */
-            vm.addCycle = function () {
-                AppraisalCycle.create(vm.cycle).then(function (newCycle) {
-                    $rootScope.$emit('AppraisalCycle::new', newCycle);
-                    $modalInstance.close();
-                });
+            vm.submit = function () {
+                if (vm.edit) {
+                    editCycle();
+                } else {
+                    createCycle();
+                }
             };
 
             init();
+
+            /**
+             * Creates a new cycle
+             */
+            function createCycle() {
+                AppraisalCycle.create(vm.cycle).then(function (cycle) {
+                    $rootScope.$emit('AppraisalCycle::new', cycle);
+                    $modalInstance.close();
+                });
+            }
+
+            /**
+             * Edits the current cycle
+             */
+            function editCycle() {
+                AppraisalCycle.update(vm.cycle.id, vm.cycle).then(function (cycle) {
+                    $rootScope.$emit('AppraisalCycle::edit', cycle);
+                    $modalInstance.close();
+                });
+            }
 
             /**
              * Initialization code
