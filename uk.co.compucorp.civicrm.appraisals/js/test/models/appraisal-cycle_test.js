@@ -6,7 +6,15 @@ define([
     'use strict';
 
     describe('AppraisalCycle', function () {
-        var $q, $rootScope, AppraisalCycle, appraisalsAPI;
+        var $q, $rootScope, AppraisalCycle, appraisalsAPI, cycles;
+
+        cycles = [
+            { id: '1', type: 'type 1' }, { id: '2', type: 'type 4' },
+            { id: '3', type: 'type 3' }, { id: '4', type: 'type 3' },
+            { id: '5', type: 'type 2' }, { id: '6', type: 'type 3' },
+            { id: '7', type: 'type 1' }, { id: '8', type: 'type 3' },
+            { id: '9', type: 'type 2' }, { id: '10', type: 'type 4' }
+        ];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'api.appraisals',
@@ -20,14 +28,14 @@ define([
 
         it('has the expected api', function () {
             expect(Object.keys(AppraisalCycle)).toEqual([
-                'active', 'all', 'create', 'grades', 'statuses',
+                'active', 'all', 'create', 'find', 'grades', 'statuses',
                 'statusOverview', 'types'
             ]);
         });
 
         describe('active()', function () {
             beforeEach(function () {
-                resolve('activeCycles').with([1, 2, 3, 4, 5]);
+                resolveApiCallTo('activeCycles').with([1, 2, 3, 4, 5]);
             });
 
             it('returns the active cycles', function (done) {
@@ -41,7 +49,7 @@ define([
 
         describe('statusOverview()', function () {
             beforeEach(function () {
-                resolve('statusOverview').with({
+                resolveApiCallTo('statusOverview').with({
                     steps: [
                         { contacts: 28, overdue: 0 },
                         { contacts: 40, overdue: 2 },
@@ -71,7 +79,7 @@ define([
 
         describe('grades()', function () {
             beforeEach(function () {
-                resolve('grades').with([
+                resolveApiCallTo('grades').with([
                     { label: '1', value: 30 },
                     { label: '2', value: 10 },
                     { label: '3', value: 55 },
@@ -95,7 +103,7 @@ define([
 
         describe('types()', function () {
             beforeEach(function () {
-                resolve('types').with(['type 1', 'type 2', 'type 3']);
+                resolveApiCallTo('types').with(['type 1', 'type 2', 'type 3']);
             });
 
             it('returns the appraisal cycle types', function (done) {
@@ -111,7 +119,7 @@ define([
 
         describe('statuses()', function () {
             beforeEach(function () {
-                resolve('statuses').with(['status 1', 'status 2']);
+                resolveApiCallTo('statuses').with(['status 1', 'status 2']);
             });
 
             it('returns the appraisal cycle statuses', function (done) {
@@ -134,7 +142,7 @@ define([
             var newCycleSaved = angular.extend({}, newCycle, { id: '1234' });
 
             beforeEach(function () {
-                resolve('create').with(newCycleSaved);
+                resolveApiCallTo('create').with(newCycleSaved);
             });
 
             it('creates a new appraisal cycle', function (done) {
@@ -147,17 +155,9 @@ define([
         });
 
         describe('all()', function () {
-            var cycles = [
-                { id: '1', type: 'type 1' }, { id: '2', type: 'type 4' },
-                { id: '3', type: 'type 3' }, { id: '4', type: 'type 3' },
-                { id: '5', type: 'type 2' }, { id: '6', type: 'type 3' },
-                { id: '7', type: 'type 1' }, { id: '8', type: 'type 3' },
-                { id: '9', type: 'type 2' }, { id: '10', type: 'type 4' }
-            ];
-
             describe('when called without arguments', function () {
                 beforeEach(function () {
-                    resolve('all').with(cycles);
+                    resolveApiCallTo('all').with(cycles);
                 });
 
                 it('returns all appraisal cycles', function (done) {
@@ -173,7 +173,7 @@ define([
                 var typeFilter = 'type 3';
 
                 beforeEach(function () {
-                    resolve('all').with(cycles.filter(function (cycle) {
+                    resolveApiCallTo('all').with(cycles.filter(function (cycle) {
                         return cycle.type === typeFilter;
                     }));
                 });
@@ -189,14 +189,14 @@ define([
                 });
             });
 
-            describe('when called with filters', function () {
+            describe('when called with pagination', function () {
                 var pagination = { page: 3, size: 2 };
 
                 beforeEach(function () {
                     var start = pagination.page * pagination.size;
                     var end = start + pagination.size;
 
-                    resolve('all').with(cycles.slice(start, end));
+                    resolveApiCallTo('all').with(cycles.slice(start, end));
                 });
 
                 it('can paginate the appraisla cycles list', function (done) {
@@ -209,6 +209,25 @@ define([
             });
         });
 
+        describe('find()', function () {
+            var targetId = '7';
+
+            beforeEach(function () {
+                resolveApiCallTo('find').with(cycles.filter(function (cycle) {
+                    return cycle.id === targetId;
+                })[0]);
+            });
+
+            it('finds a cycle by id', function (done) {
+                AppraisalCycle.find(targetId).then(function (cycle) {
+                    expect(appraisalsAPI.find).toHaveBeenCalledWith(targetId);
+                    expect(cycle.id).toBe('7');
+                    expect(cycle.type).toBe('type 1');
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+        });
+
         /**
          * Adds a `spyOn` on the given `appraisalsApi` method, and then returns
          * an object with a `.with()` method, which receives the value the
@@ -217,7 +236,7 @@ define([
          * @param {string} method
          * @return {object}
          */
-        function resolve(method) {
+        function resolveApiCallTo(method) {
             var spy = spyOn(appraisalsAPI, method);
 
             return {

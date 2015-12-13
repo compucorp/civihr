@@ -44,6 +44,16 @@ define([
             },
 
             /**
+             * Finds an appraisal cycle by id
+             *
+             * @param {string} id
+             * @return {Promise} - Resolves with the new cycle
+             */
+            find: function (id) {
+                return appraisalsAPI.find(id);
+            },
+
+            /**
              * Returns the grades data
              *
              * @return {Promise}
