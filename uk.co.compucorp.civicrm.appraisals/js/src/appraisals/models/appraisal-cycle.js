@@ -81,6 +81,19 @@ define([
             },
 
             /**
+             * Updates the cycle with the given id
+             *
+             * @param {string} id
+             * @param {object} attributes - The new data
+             * @return {Promise}
+             */
+            update: function (id, attributes) {
+                return appraisalsAPI.update(id, attributes).then(function (cycle) {
+                    return cycle;
+                });
+            },
+
+            /**
              * Returns the list of all possible appraisal cycle types
              *
              * @return {Promise}
