@@ -6,14 +6,15 @@ define([
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
-        var $controller, $log, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
+        var $controller, $log, $modal, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
 
         beforeEach(module('appraisals'));
 
-        beforeEach(inject(function (_$rootScope_, _$log_, _$timeout_, _$controller_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
+            $modal = _$modal_;
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
             $timeout = _$timeout_;
@@ -208,6 +209,42 @@ define([
                     expect(ctrl.cycles.map(function (cycle) {
                         return cycle.name;
                     })).toEqual(['The new cycle', '#1', '#2']);
+                });
+            });
+
+            describe('edit cycle', function () {
+                var cycleId = '7';
+
+                beforeEach(function () {
+                    spyOn($modal, 'open').and.callThrough();
+                    ctrl.editCycle(cycleId);
+                });
+
+                it('opens a modal with the cycle id passed to the scope', function () {
+                    expect($modal.open).toHaveBeenCalledWith(jasmine.objectContaining({
+                        scope: jasmine.objectContaining({ cycleId: cycleId })
+                    }));
+                });
+            });
+
+            describe('when a cycle had been edited', function () {
+                var editedCycle = { id: '3', name: 'foo', type: 'bar' };
+
+                beforeEach(function () {
+                    ctrl.cycles = [
+                        { id: '1', name: '#1'}, { id: '2', name: '#2' },
+                        { id: '3', name: '#3'}, { id: '4', name: '#4' },
+                        { id: '5', name: '#5'}, { id: '6', name: '#6' }
+                    ];
+                    $rootScope.$emit('AppraisalCycle::edit', editedCycle);
+                    $scope.$digest();
+                });
+
+                it('updates the list', function () {
+                    expect(ctrl.cycles.length).toBe(6);
+                    expect(ctrl.cycles.filter(function (cycle) {
+                        return cycle.id == 3;
+                    })[0]).toEqual(editedCycle);
                 });
             });
         });
