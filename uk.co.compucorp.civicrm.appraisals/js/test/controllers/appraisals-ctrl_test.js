@@ -27,7 +27,7 @@ define([
             }));
 
             it('opens the modal', function () {
-                ctrl.openAddAppraisalCycleModal();
+                ctrl.openAppraisalCycleModal();
                 expect($modal.open).toHaveBeenCalled();
             });
         });

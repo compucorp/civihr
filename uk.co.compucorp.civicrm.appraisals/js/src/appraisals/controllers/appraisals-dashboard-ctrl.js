@@ -57,11 +57,11 @@ define([
 
                 $modal.open({
                     targetDomEl: $rootElement,
-                    controller: 'AddAppraisalCycleModalCtrl',
+                    controller: 'AppraisalCycleModalCtrl',
                     controllerAs: 'modal',
                     bindToController: true,
                     scope: modalScope,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-appraisal-cycle.html',
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/appraisal-cycle.html',
                 });
             };
 

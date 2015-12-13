@@ -7,20 +7,15 @@ define([
             $log.debug('AppraisalsCtrl');
 
             return {
-                openAddAppraisalCycleModal: function () {
+                openAppraisalCycleModal: function () {
                     $modal.open({
                         targetDomEl: $rootElement,
-                        controller: 'AddAppraisalCycleModalCtrl',
+                        controller: 'AppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,
-                        templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-appraisal-cycle.html',
-                        resolve: {
-                            types: function () {
-                                return AppraisalCycle.types();
-                            }
-                        }
+                        templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/appraisal-cycle.html'
                     });
-                },
+                }
             }
         }
     ]);

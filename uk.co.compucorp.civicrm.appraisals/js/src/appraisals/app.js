@@ -5,7 +5,7 @@ define([
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
     'appraisals/controllers/modals/basic-modal-ctrl',
-    'appraisals/controllers/modals/add-appraisal-cycle-modal-ctrl',
+    'appraisals/controllers/modals/appraisal-cycle-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
     'appraisals/models/appraisal-cycle',

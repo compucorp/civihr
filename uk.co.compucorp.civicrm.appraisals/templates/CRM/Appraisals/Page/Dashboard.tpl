@@ -12,7 +12,7 @@
                 <div class="col-sm-4 text-right">
                     <div class="crm_page__topbar__link">
                         <span class="fa fa-plus-circle"></span>&nbsp;
-                        <a href ng-click="main.openAddAppraisalCycleModal()">Add Appraisal Cycle</a>
+                        <a href ng-click="main.openAppraisalCycleModal()">Add Appraisal Cycle</a>
                     </div>
                 </div>
             </div>
