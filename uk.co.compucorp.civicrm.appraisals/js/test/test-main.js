@@ -1,6 +1,7 @@
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
 var extPath = '/base/tools/extensions/civihr/uk.co.compucorp.civicrm.appraisals';
+var mocksPath = extPath + '/js/test/mocks';
 var srcPath = extPath + '/js/src/appraisals';
 
 Object.keys(window.__karma__.files).forEach(function(file) {
@@ -14,7 +15,8 @@ require.config({
     waitSeconds: 60,
     paths: {
         'appraisals': srcPath,
-        'appraisals/vendor/ui-router': srcPath + '/vendor/angular-ui-router.min'
+        'appraisals/vendor/ui-router': srcPath + '/vendor/angular-ui-router.min',
+        'mocks': mocksPath
     },
     callback: function () {
         // Simple hack to provide value to CRM.vars.appraisals.baseURL

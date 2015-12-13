@@ -26,6 +26,9 @@ module.exports = function (config) {
             // the application modules
             { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/src/appraisals/**/*.js', included: false },
 
+            // the mocked components files
+            { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/mocks/**/*.js', included: false },
+
             // the test files
             { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/**/*_test.js', included: false },
 

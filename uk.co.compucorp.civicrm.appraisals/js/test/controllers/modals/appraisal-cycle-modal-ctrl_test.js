@@ -1,48 +1,21 @@
 define([
     'common/angular',
     'common/angularMocks',
-    'appraisals/app'
+    'appraisals/app',
+    'mocks/models/appraisal-cycle'
 ], function (angular) {
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
         var $controller, $q, $modalInstance, $rootScope, AppraisalCycle, ctrl;
 
-        beforeEach(module('appraisals'));
+        beforeEach(module('appraisals', 'appraisals.mocks'));
         beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycle_) {
             $controller = _$controller_;
             $q = _$q_;
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
             $rootScope = _$rootScope_;
             AppraisalCycle = _AppraisalCycle_;
-
-            spyOn(AppraisalCycle, 'types').and.callFake(function (value) {
-                var deferred = $q.defer();
-                deferred.resolve(value);
-
-                return deferred.promise;
-            });
-
-            spyOn(AppraisalCycle, 'find').and.callFake(function (value) {
-                var deferred = $q.defer();
-                deferred.resolve(value);
-
-                return deferred.promise;
-            });
-
-            spyOn(AppraisalCycle, 'create').and.callFake(function (value) {
-                var deferred = $q.defer();
-                deferred.resolve(value);
-
-                return deferred.promise;
-            });
-
-            spyOn(AppraisalCycle, 'update').and.callFake(function (id, value) {
-                var deferred = $q.defer();
-                deferred.resolve(value);
-
-                return deferred.promise;
-            });
 
             initController();
         }));

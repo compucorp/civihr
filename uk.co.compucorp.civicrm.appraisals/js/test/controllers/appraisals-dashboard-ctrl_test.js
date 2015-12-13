@@ -2,13 +2,14 @@ define([
     'common/angular',
     'common/angularMocks',
     'appraisals/app',
+    'mocks/models/appraisal-cycle'
 ], function (angular) {
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
         var $controller, $log, $modal, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
 
-        beforeEach(module('appraisals'));
+        beforeEach(module('appraisals', 'appraisals.mocks'));
 
         beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
@@ -19,9 +20,7 @@ define([
             $scope = $rootScope.$new();
             $timeout = _$timeout_;
 
-            (AppraisalCycle = _AppraisalCycle_) && spyOn(AppraisalCycle, 'all').and.callFake(function () {
-                return { then: function () {} };
-            });
+            AppraisalCycle = _AppraisalCycle_;
         }));
 
         describe('init', function () {
@@ -56,10 +55,6 @@ define([
 
             describe('grades chart data', function () {
                 beforeEach(function () {
-                    spyOn(AppraisalCycle, 'grades').and.callFake(function () {
-                        return { then: function () {} };
-                    });
-
                     initController();
                 });
 
@@ -196,19 +191,21 @@ define([
             });
 
             describe('when a new cycle is added', function () {
-                var newCycle = { id: '4567', name: 'The new cycle' };
+                var beforeTotal, newCycle;
+
+                newCycle = { id: '4567', name: 'The new cycle' };
 
                 beforeEach(function () {
-                    ctrl.cycles = [{ id: '1', name: '#1'}, { id: '2', name: '#2' }];
+                    $scope.$digest();
+                    beforeTotal = ctrl.cycles.length;
+
                     $rootScope.$emit('AppraisalCycle::new', newCycle);
                     $scope.$digest();
                 });
 
                 it('adds it to the top of cycles list', function () {
-                    expect(ctrl.cycles.length).toBe(3);
-                    expect(ctrl.cycles.map(function (cycle) {
-                        return cycle.name;
-                    })).toEqual(['The new cycle', '#1', '#2']);
+                    expect(ctrl.cycles.length).toBe(beforeTotal + 1);
+                    expect(ctrl.cycles[0].name).toEqual(newCycle.name);
                 });
             });
 
@@ -228,23 +225,24 @@ define([
             });
 
             describe('when a cycle had been edited', function () {
-                var editedCycle = { id: '3', name: 'foo', type: 'bar' };
+                var beforeTotal, newData;
+
+                newData = { name: 'foo', type: 'bar' };
 
                 beforeEach(function () {
-                    ctrl.cycles = [
-                        { id: '1', name: '#1'}, { id: '2', name: '#2' },
-                        { id: '3', name: '#3'}, { id: '4', name: '#4' },
-                        { id: '5', name: '#5'}, { id: '6', name: '#6' }
-                    ];
-                    $rootScope.$emit('AppraisalCycle::edit', editedCycle);
+                    $scope.$digest();
+                    beforeTotal = ctrl.cycles.length;
+                    angular.extend(newData, { id: ctrl.cycles[3].id });
+
+                    $rootScope.$emit('AppraisalCycle::edit', newData);
                     $scope.$digest();
                 });
 
                 it('updates the list', function () {
-                    expect(ctrl.cycles.length).toBe(6);
+                    expect(ctrl.cycles.length).toBe(beforeTotal);
                     expect(ctrl.cycles.filter(function (cycle) {
-                        return cycle.id == 3;
-                    })[0]).toEqual(editedCycle);
+                        return cycle.id == newData.id;
+                    })[0]).toEqual(newData);
                 });
             });
         });
