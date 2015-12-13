@@ -72,6 +72,17 @@ define([
             /**
              * # TO DO #
              */
+            find: function (id) {
+                $log.debug('grades');
+
+                return this.mockGET(mockedCycles().filter(function (cycle) {
+                    return cycle.id === id;
+                })[0]);
+            },
+
+            /**
+             * # TO DO #
+             */
             grades: function () {
                 $log.debug('grades');
 
