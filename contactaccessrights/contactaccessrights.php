@@ -136,3 +136,14 @@ function contactaccessrights_civicrm_preProcess($formName, &$form) {
 }
 
 */
+
+/**
+ * Implementation of hook_civicrm_entityTypes
+ */
+function contactaccessrights_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array(
+      'name'  => 'Rights',
+      'class' => 'CRM_Contactaccessrights_DAO_Rights',
+      'table' => 'civicrm_contactaccessrights_rights',
+  );
+}
