@@ -1,7 +1,8 @@
 define([
+    'common/lodash',
     'appraisals/modules/models',
     'common/services/api/appraisals'
-], function (models) {
+], function (_, models) {
     'use strict';
 
     models.factory('AppraisalCycle', ['api.appraisals', function (appraisalsAPI) {
@@ -68,7 +69,11 @@ define([
              * @return {Promise}
              */
             statuses: function () {
-                return appraisalsAPI.statuses();
+                return appraisalsAPI.statuses().then(function (statuses) {
+                    return statuses.map(function (status) {
+                        return _.pick(status, ['value', 'label']);
+                    });
+                });
             },
 
             /**
@@ -108,7 +113,11 @@ define([
              * @return {Promise}
              */
             types: function () {
-                return appraisalsAPI.types();
+                return appraisalsAPI.types().then(function (types) {
+                    return types.map(function (types) {
+                        return _.pick(types, ['value', 'label']);
+                    });
+                });
             },
         };
     }]);

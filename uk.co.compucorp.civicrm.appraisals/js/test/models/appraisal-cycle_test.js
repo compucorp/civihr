@@ -103,7 +103,11 @@ define([
 
         describe('types()', function () {
             beforeEach(function () {
-                resolveApiCallTo('types').with(['type 1', 'type 2', 'type 3']);
+                resolveApiCallTo('types').with([
+                    { id: '1', label: 'type 1', value: '1', weight: '1' },
+                    { id: '2', label: 'type 2', value: '2', weight: '2' },
+                    { id: '3', label: 'type 3', value: '3', weight: '3' }
+                ]);
             });
 
             it('returns the appraisal cycle types', function (done) {
@@ -111,7 +115,11 @@ define([
                     expect(appraisalsAPI.types).toHaveBeenCalled();
 
                     expect(types.length).toEqual(3);
-                    expect(types).toEqual(['type 1', 'type 2', 'type 3']);
+                    expect(types).toEqual([
+                        { label: 'type 1', value: '1' },
+                        { label: 'type 2', value: '2' },
+                        { label: 'type 3', value: '3' }
+                    ]);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -119,7 +127,10 @@ define([
 
         describe('statuses()', function () {
             beforeEach(function () {
-                resolveApiCallTo('statuses').with(['status 1', 'status 2']);
+                resolveApiCallTo('statuses').with([
+                    { id: '1', label: 'status 1', value: '1', weight: '1' },
+                    { id: '2', label: 'status 2', value: '2', weight: '2' }
+                ]);
             });
 
             it('returns the appraisal cycle statuses', function (done) {
@@ -127,7 +138,10 @@ define([
                     expect(appraisalsAPI.statuses).toHaveBeenCalled();
 
                     expect(statuses.length).toEqual(2);
-                    expect(statuses).toEqual(['status 1', 'status 2']);
+                    expect(statuses).toEqual([
+                        { label: 'status 1', value: '1' },
+                        { label: 'status 2', value: '2' }
+                    ]);
                 })
                 .finally(done) && $rootScope.$digest();
             });
