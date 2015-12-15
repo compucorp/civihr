@@ -137,6 +137,15 @@ define([
             /**
              * # TO DO #
              */
+            total: function (filters) {
+                $log.debug('total');
+
+                return mockedCycles().length;
+            },
+
+            /**
+             * # TO DO #
+             */
             types: function () {
                 $log.debug('types');
 
