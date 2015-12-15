@@ -107,17 +107,17 @@ describe('Unit: DateValidationService', function() {
             Service.validate('aa/bb/ccss', 'dd/MM/yyyy');
         }).toThrow();
 
-        expect(function(){
+        expect(function() {
             Service.validate('12/11/2009', '10/-1/2012');
-        }).toThrow(new Error('Neither Days nor Months can be negative or equal to 0.'));
+        }).toThrow();
 
         expect(function(){
             Service.validate('12/11/2009', '10/91/2012');
-        }).toThrow(new Error('This month doesn\'t exist.'));
+        }).toThrow();
 
         expect(function(){
             Service.validate('12/11/2009', '90/11/2012');
-        }).toThrow(new Error('Day of the month is invalid.'));
+        }).toThrow();
 
         expect(function(){
             Service.validate('12/111/013', '10/01/2009');

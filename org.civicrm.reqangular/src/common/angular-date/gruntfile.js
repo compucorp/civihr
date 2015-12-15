@@ -3,6 +3,12 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        html2js:{
+            main: {
+                src: ['src/directives/*.html'],
+                dest: 'src/directives/templates.js'
+            }
+        },
         browserify: {
             dist: {
                 files: {
@@ -27,7 +33,7 @@ module.exports = function (grunt) {
         },
         watch: {
             scripts: {
-                files: ['src/**/*.js', 'main.js'], tasks: ['browserify', 'test']
+                files: ['src/**/*.js', 'src/**/*.html', 'main.js'], tasks: ['html2js', 'browserify', 'test']
             },
             options: {
                 atBegin: true
@@ -66,6 +72,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-html2js');
 
     // Unit Test
     grunt.loadNpmTasks('grunt-karma');

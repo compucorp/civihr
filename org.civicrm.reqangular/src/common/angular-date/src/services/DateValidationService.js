@@ -56,7 +56,7 @@ function DateValidationService($filter) {
 
     me.validate = function validate(start_date, end_date) {
 
-        if(!me.start_date || !!start_date) me.setDates(start_date, end_date);
+        if(!me.start || !!start_date) me.setDates(start_date, end_date);
 
         me.checkIfFormatIsValid();
         me.checkIfStartDateIsLower(me.start_parts, me.end_parts, 2);
