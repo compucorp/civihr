@@ -135,12 +135,16 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Returns the total number of appraisal cycles
+             *
+             * @return {Promise} resolves to an integer
              */
-            total: function (filters) {
-                $log.debug('total');
+            total: function () {
+                $log.debug('api.appraisals.total');
 
-                return mockedCycles().length;
+                return this.sendGET('AppraisalCycle', 'getcount').then(function (data) {
+                    return data.result;
+                });
             },
 
             /**
