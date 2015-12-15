@@ -98,6 +98,15 @@ define([
              *
              * @return {Promise}
              */
+            total: function () {
+                return appraisalsAPI.total();
+            },
+
+            /**
+             * Returns the list of all possible appraisal cycle types
+             *
+             * @return {Promise}
+             */
             types: function () {
                 return appraisalsAPI.types();
             },

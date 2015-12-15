@@ -29,7 +29,7 @@ define([
         it('has the expected api', function () {
             expect(Object.keys(AppraisalCycle)).toEqual([
                 'active', 'all', 'create', 'find', 'grades', 'statuses',
-                'statusOverview', 'update', 'types'
+                'statusOverview', 'update', 'total', 'types'
             ]);
         });
 
@@ -249,6 +249,20 @@ define([
                     expect(cycle.name).toBe(newData.name);
                     expect(cycle.type).toBe(newData.type);
                     expect(cycle.status).toBe(newData.status);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+        });
+
+        describe('total()', function () {
+            beforeEach(function () {
+                resolveApiCallTo('total').with(cycles.length);
+            });
+
+            it('gets the total number of cycles', function (done) {
+                AppraisalCycle.total().then(function (total) {
+                    expect(appraisalsAPI.total).toHaveBeenCalled();
+                    expect(total).toBe(cycles.length);
                 })
                 .finally(done) && $rootScope.$digest();
             });
