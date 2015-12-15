@@ -95,12 +95,23 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Returns the list of all currently active status for an appraisal cycle
+             *
+             * @return {Promise}
              */
             statuses: function () {
-                $log.debug('statuses');
+                $log.debug('api.appraisals.statuses');
 
-                return this.mockGET(['Status #1', 'Status #2', 'Status #3']);
+                return this.optionGroupId('appraisal_status')
+                    .then(function (groupId) {
+                        return this.sendGET('OptionValue', 'get', {
+                            option_group_id: groupId,
+                            is_active: '1'
+                        });
+                    }.bind(this))
+                    .then(function (data) {
+                        return data.values;
+                    });
             },
 
             /**
@@ -148,12 +159,23 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Returns the list of all currently active types for an appraisal cycle
+             *
+             * @return {Promise}
              */
             types: function () {
-                $log.debug('types');
+                $log.debug('api.appraisals.types');
 
-                return this.mockGET(['Type #1', 'Type #2', 'Type #3', 'Type #4']);
+                return this.optionGroupId('appraisal_cycle_type')
+                    .then(function (groupId) {
+                        return this.sendGET('OptionValue', 'get', {
+                            option_group_id: groupId,
+                            is_active: '1'
+                        });
+                    }.bind(this))
+                    .then(function (data) {
+                        return data.values;
+                    });
             }
         });
 
