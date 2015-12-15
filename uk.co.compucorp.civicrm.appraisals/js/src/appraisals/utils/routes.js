@@ -19,6 +19,9 @@ define(function () {
                     activeCycles: ['AppraisalCycle', function (AppraisalCycle) {
                         return AppraisalCycle.active();
                     }],
+                    totalCycles: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.total();
+                    }],
                     statusOverview: ['AppraisalCycle', function (AppraisalCycle) {
                         return AppraisalCycle.statusOverview();
                     }],

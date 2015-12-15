@@ -35,6 +35,7 @@ define([
 
                 it('stores on scope the data passed by ui-router', function () {
                     expect(ctrl.activeCycles).toBeDefined();
+                    expect(ctrl.totalCycles).toBeDefined();
                     expect(ctrl.statusOverview).toBeDefined();
                     expect(ctrl.statuses).toBeDefined();
                     expect(ctrl.types).toBeDefined();
@@ -254,6 +255,7 @@ define([
             ctrl = $controller('AppraisalsDashboardCtrl', {
                 $scope: $scope,
                 activeCycles: [],
+                totalCycles: [],
                 statusOverview: [],
                 statuses: [],
                 types: []

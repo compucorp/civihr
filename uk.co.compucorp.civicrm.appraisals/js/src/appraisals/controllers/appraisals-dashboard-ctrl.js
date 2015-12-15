@@ -6,8 +6,10 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
+        ['$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout',
+        'AppraisalCycle', 'activeCycles', 'totalCycles', 'statusOverview',
+        'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, totalCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var pagination = { page: 1, size: 5 };
@@ -26,6 +28,7 @@ define([
             vm.loadingDone = false;
 
             vm.activeCycles = activeCycles;
+            vm.totalCycles = totalCycles;
             vm.statusOverview = statusOverview;
             vm.statuses = statuses;
             vm.types = types;
