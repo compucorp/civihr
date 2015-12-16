@@ -78,6 +78,10 @@
             border-radius: 0;
             height: 5px;
 
+            .tooltip {
+                z-index: 1000;
+            }
+
             .tooltip-arrow {
                 border-bottom-color: #dee7e8;
             }
