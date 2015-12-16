@@ -104,8 +104,8 @@
                                                         <div class="input-group" ng-hide="!editableForm.$visible">
                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
                                                                    name="start_date"
-                                                                   datepicker-popup="dd/MM/yyyy"
-                                                                   is-open="CalendarShow['start_date'] == true"
+                                                                   is-open="!!(CalendarShow.start_date)"
+                                                                   datepicker-popup
                                                                    min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['start_date']"
                                                                    ng-change="select('start_date')"
@@ -138,8 +138,8 @@
                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
                                                                    name="end_date"
                                                                    show-weeks="false"
-                                                                   datepicker-popup="dd/MM/yyyy"
-                                                                   is-open="CalendarShow['end_date'] == true"
+                                                                   is-open="!!(CalendarShow.end_date)"
+                                                                   datepicker-popup
                                                                    min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['end_date']"
                                                                    ng-change="select('end_date')"

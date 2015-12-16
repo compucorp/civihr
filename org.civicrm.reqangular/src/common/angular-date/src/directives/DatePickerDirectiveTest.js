@@ -40,10 +40,10 @@ describe('Unit: DateControllerTest', function () {
         var element = angular.element("<input type=\"text\" class=\"form-control\"\n" +
             "id=\"start_date\"\n" +
             "name=\"start_date\"\n" +
-            "datepicker-popup=\"dd/MM/yyyy\"\n" +
-            "is-open=\"CalendarShow['start_date'] == true\"\n" +
+            "datepicker-popup\n" +
+            "is-open=\"CalendarShow.start_date\"\n" +
             "min-date=\"minDate\"\n" +
-            "ng-model=\"edit_data[10]['start_date']\"\n" +
+            "ng-model=\"edit_data[10].start_date\"\n" +
             "ng-change=\"select('start_date')\"\n" +
             "ng-disabled=\"isDisabled\"\n" +
             "close-text=\"Close\"\n" +
