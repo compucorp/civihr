@@ -92,6 +92,10 @@ describe('Unit: DateValidationService', function() {
         }).not.toThrow();
 
         expect(function() {
+            Service.validate(new Date(2009, 3, 4), new Date(2013, 6, 10));
+        }).not.toThrow();
+
+        expect(function() {
             Service.validate('1/1/112013', '10/01/2009');
         }).toThrow();
 

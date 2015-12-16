@@ -21,7 +21,7 @@ function DatepickerPopupDirectiveDecorator($delegate) {
              * @type {string}
              */
             attrs.datepickerPopup = 'dd/MM/yyyy';
-            
+
             original_link(scope, element, attrs, ngModel);
         };
     };

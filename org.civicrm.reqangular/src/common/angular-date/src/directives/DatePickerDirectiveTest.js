@@ -67,8 +67,8 @@ describe('Unit: DateControllerTest', function () {
     });
 
     it('Should refresh input', function () {
-        scope.edit_data[10].start_date = new Date();
+        scope.edit_data[10].start_date = new Date(2014, 2, 2);
         scope.$digest();
-        expect(Element[0].value).toEqual('');
+        expect(Element[0].value).toEqual('02/03/2014');
     });
 });

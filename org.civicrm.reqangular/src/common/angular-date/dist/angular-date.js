@@ -5,6 +5,7 @@ _dereq_("./src/directives/templates");
 var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
 
 Module.service('DateValidationService', _dereq_('./src/services/DateValidationService'));
+
 Module.factory('DateFactory', _dereq_('./src/services/DateFactory'));
 
 Module.filter('CustomDate', _dereq_('./src/filters/CustomDateFilter'));
@@ -14,13 +15,17 @@ Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'))
 /* Overrides */
 Module.controller('DatePickerController', _dereq_('./src/controllers/DatePickerController'));
 
+/* Decorators */
 Module.config(function($provide) {
-
     $provide.decorator('datepickerPopupDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
 
-    $provide.decorator('datepickerDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
+    //$provide.decorator('datepickerDirective', require('./src/decorators/DatepickerDirectiveDecorator'));
+
+    $provide.decorator('daypickerDirective', _dereq_('./src/decorators/DaypickerDirectiveDecorator'));
+
+    $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
-},{"../vendor/angular/ui-bootstrap-tpls":9,"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/directives/CustomDateInput":4,"./src/directives/templates":5,"./src/filters/CustomDateFilter":6,"./src/services/DateFactory":7,"./src/services/DateValidationService":8}],2:[function(_dereq_,module,exports){
+},{"../vendor/angular/ui-bootstrap-tpls":11,"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/directives/templates":7,"./src/filters/CustomDateFilter":8,"./src/services/DateFactory":9,"./src/services/DateValidationService":10}],2:[function(_dereq_,module,exports){
 /**
  * @extends DatepickerController
  */
@@ -117,7 +122,7 @@ function DatepickerPopupDirectiveDecorator($delegate) {
              * @type {string}
              */
             attrs.datepickerPopup = 'dd/MM/yyyy';
-            
+
             original_link(scope, element, attrs, ngModel);
         };
     };
@@ -130,6 +135,27 @@ function DatepickerPopupDirectiveDecorator($delegate) {
 
 module.exports = DatepickerPopupDirectiveDecorator;
 },{}],4:[function(_dereq_,module,exports){
+function DatepickerPopupWrapDirectiveDecorator($delegate) {
+    var directive = $delegate[0];
+    var original_link = directive.link;
+
+    directive.templateUrl = 'directives/datepickerPopup.html';
+
+    return $delegate;
+}
+
+module.exports = DatepickerPopupWrapDirectiveDecorator;
+},{}],5:[function(_dereq_,module,exports){
+function DaypickerDirectiveDecorator($delegate) {
+    var directive = $delegate[0];
+
+    directive.templateUrl = "directives/day.html";
+
+    return $delegate;
+}
+
+module.exports = DaypickerDirectiveDecorator;
+},{}],6:[function(_dereq_,module,exports){
 module.exports = function CustomDateInput($filter) {
     return {
         require: 'ngModel',
@@ -148,14 +174,83 @@ module.exports = function CustomDateInput($filter) {
     };
 };
 
-},{}],5:[function(_dereq_,module,exports){
-angular.module('templates-main', []);
+},{}],7:[function(_dereq_,module,exports){
+angular.module('templates-main', ['directives/datepickerPopup.html', 'directives/day.html']);
 
+angular.module("directives/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("directives/datepickerPopup.html",
+    "<ul class=\"dropdown-menu\" ng-style=\"{display: (isOpen && 'block') || 'none', top: position.top+'px', left: position.left+'px'}\" ng-keydown=\"keydown($event)\">\n" +
+    "	<li ng-transclude></li>\n" +
+    "</ul>");
+}]);
 
-},{}],6:[function(_dereq_,module,exports){
+angular.module("directives/day.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("directives/day.html",
+    "<table role=\"grid\" aria-labelledby=\"{{uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
+    "    <thead>\n" +
+    "    <tr>\n" +
+    "        <th>\n" +
+    "            <style>\n" +
+    "                .text-muted{\n" +
+    "                    color: #666666;\n" +
+    "                }\n" +
+    "            </style>\n" +
+    "            <button type=\"button\" class=\"btn btn-default btn-sm pull-left\" ng-click=\"move(-1)\" tabindex=\"-1\"><i\n" +
+    "                    class=\"glyphicon glyphicon-chevron-left\"></i></button>\n" +
+    "        </th>\n" +
+    "        <th colspan=\"{{5 + showWeeks}}\">\n" +
+    "            <button id=\"{{uniqueId}}-title\" role=\"heading\" aria-live=\"assertive\" aria-atomic=\"true\" type=\"button\"\n" +
+    "                    class=\"btn btn-default btn-sm\" ng-click=\"toggleMode()\" tabindex=\"-1\" style=\"width:100%;\"><strong>{{title}}</strong>\n" +
+    "            </button>\n" +
+    "        </th>\n" +
+    "        <th>\n" +
+    "            <button type=\"button\" class=\"btn btn-default btn-sm pull-right\" ng-click=\"move(1)\" tabindex=\"-1\"><i\n" +
+    "                    class=\"glyphicon glyphicon-chevron-right\"></i></button>\n" +
+    "        </th>\n" +
+    "    </tr>\n" +
+    "\n" +
+    "    <tr>\n" +
+    "        <th ng-show=\"showWeeks\" class=\"text-center\"></th>\n" +
+    "        <th ng-repeat=\"label in labels track by $index\" class=\"text-center\">\n" +
+    "            <small aria-label=\"{{label.full}}\">{{label.abbr}}</small>\n" +
+    "        </th>\n" +
+    "    </tr>\n" +
+    "\n" +
+    "    </thead>\n" +
+    "\n" +
+    "    <tbody>\n" +
+    "    <tr ng-repeat=\"row in rows track by $index\">\n" +
+    "        <td ng-show=\"showWeeks\" class=\"text-center h6\"><em>{{ weekNumbers[$index] }}</em></td>\n" +
+    "        <td ng-repeat=\"dt in row track by dt.date\" class=\"text-center\" role=\"gridcell\" id=\"{{dt.uid}}\"\n" +
+    "            aria-disabled=\"{{!!dt.disabled}}\">\n" +
+    "            <button type=\"button\"\n" +
+    "                    style=\"width:100%;\"\n" +
+    "                    class=\"btn btn-default btn-sm\"\n" +
+    "                    ng-class=\"{\n" +
+    "                        'btn-info': dt.selected,\n" +
+    "                        active: isActive(dt)\n" +
+    "                    }\"\n" +
+    "                    ng-click=\"select(dt.date)\"\n" +
+    "                    ng-disabled=\"dt.disabled\"\n" +
+    "                    tabindex=\"-1\">\n" +
+    "\n" +
+    "                <span ng-class=\"{'text-muted': dt.secondary, 'text-info': dt.current}\">{{dt.label}}</span>\n" +
+    "            </button>\n" +
+    "        </td>\n" +
+    "    </tr>\n" +
+    "    </tbody>\n" +
+    "</table>\n" +
+    "");
+}]);
+
+},{}],8:[function(_dereq_,module,exports){
 module.exports = function ($filter, DateFactory) {
     return function (datetime) {
         var Date;
+
+        if(typeof datetime == 'object'){
+            datetime = $filter('date')(datetime, 'dd/MM/yyyy');
+        }
 
         Date = DateFactory.createDate(datetime, [
             'DD-MM-YYYY',
@@ -174,7 +269,7 @@ module.exports = function ($filter, DateFactory) {
         return 'Unspecified';
     };
 };
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
 function DateFactory(){
@@ -195,7 +290,7 @@ function DateFactory(){
 }
 
 module.exports = DateFactory;
-},{"../../../vendor/moment.min.js":10}],8:[function(_dereq_,module,exports){
+},{"../../../vendor/moment.min.js":12}],10:[function(_dereq_,module,exports){
 function DateValidationService($filter) {
     var me = this;
 
@@ -238,6 +333,7 @@ function DateValidationService($filter) {
 
     me.setDates = function(start_date, end_date){
         me._reset();
+        console.log(start_date, end_date);
         // We apply filter, so we have the same date format in both variables
         if(!!start_date) {
             me.start = $filter('CustomDate')(start_date);
@@ -340,7 +436,7 @@ function DateValidationService($filter) {
 }
 
 module.exports = DateValidationService;
-},{}],9:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -4561,7 +4657,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
