@@ -19,8 +19,6 @@ Module.controller('DatePickerController', _dereq_('./src/controllers/DatePickerC
 Module.config(function($provide) {
     $provide.decorator('datepickerPopupDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
 
-    //$provide.decorator('datepickerDirective', require('./src/decorators/DatepickerDirectiveDecorator'));
-
     $provide.decorator('daypickerDirective', _dereq_('./src/decorators/DaypickerDirectiveDecorator'));
 
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
