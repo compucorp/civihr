@@ -16,6 +16,15 @@
         }
     }
 
+    .panel-heading {
+
+        .fa-chevron-left,
+        .fa-chevron-right {
+            color: #ffffff;
+            font-size: em(12);
+        }
+    }
+
     [data-graph-section="data"] {
 
         .panel {
