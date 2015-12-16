@@ -68,6 +68,17 @@
             border: 0;
             border-radius: 0;
             height: 5px;
+
+            .tooltip-arrow {
+                border-bottom-color: #dee7e8;
+            }
+
+            .tooltip-inner {
+                background: #dee7e8;
+                color: $gray-darker;
+                font-size: 11px;
+                padding: 5px 15px;
+            }
         }
 
         .ui-slider-handle {
