@@ -1,4 +1,5 @@
-.page-civihr-reports {
+.page-civihr-reports,
+.page-civihr-reports-monthly {
 
     .form-inline {
 
@@ -12,6 +13,15 @@
         .control-label {
             font-size: em(14);
             margin-right: 5px;
+        }
+    }
+
+    .panel-heading {
+
+        .fa-chevron-left,
+        .fa-chevron-right {
+            color: #ffffff;
+            font-size: em(12);
         }
     }
 
@@ -50,6 +60,52 @@
                 font-size: 14px;
                 text-decoration: none !important;
             }
+        }
+    }
+
+    [data-graph-section="slider"] {
+        margin: 40px 0;
+
+        input {
+            background: transparent;
+            border: 0;
+            width: 100%;
+        }
+
+        .ui-slider {
+            background: #dee7e8;
+            border: 0;
+            border-radius: 0;
+            height: 5px;
+
+            .tooltip-arrow {
+                border-bottom-color: #dee7e8;
+            }
+
+            .tooltip-inner {
+                background: #dee7e8;
+                color: $gray-darker;
+                font-size: 11px;
+                padding: 5px 15px;
+            }
+        }
+
+        .ui-slider-handle {
+            background: #f4f7f8;
+            border-color: $brand-primary;
+            border-radius: 0;
+            cursor: pointer;
+            height: 15px;
+            top: -5px;
+            width: 12px;
+        }
+
+        .ui-slider-range {
+            background: $brand-primary;
+        }
+
+        .ui-slider-range-values {
+            line-height: 5px;
         }
     }
 
