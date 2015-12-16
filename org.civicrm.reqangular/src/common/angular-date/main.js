@@ -14,10 +14,8 @@ Module.directive('customDateInput', require('./src/directives/CustomDateInput'))
 Module.controller('DatePickerController', require('./src/controllers/DatePickerController'));
 
 Module.config(function($provide) {
-    $provide.decorator('datepickerDirective', function($delegate) {
-        var directive = $delegate[0];
 
-        directive.controller = "DatePickerController";
-        return $delegate;
-    });
+    $provide.decorator('datepickerPopupDirective', require('./src/decorators/DatepickerPopupDirectiveDecorator'));
+
+    $provide.decorator('datepickerDirective', require('./src/decorators/DatepickerPopupDirectiveDecorator'));
 });

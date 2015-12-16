@@ -25,7 +25,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');
 
         var newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
-
+        console.info('parseDate', date);
         return newDate.toDate();
     };
 
@@ -43,7 +43,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
             }
             ngModelCtrl.$setValidity('date', isValid);
 
-            console.log(ngModelCtrl.$modelValue, 'results in', date);
+            //console.log(ngModelCtrl.$modelValue, 'results in', date);
         }
 
         me.refreshView();
@@ -60,7 +60,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         }
     };
 
-    this.init = function(ngModelCtrl_) {
+    me.init = function(ngModelCtrl_) {
         ngModelCtrl = ngModelCtrl_;
 
         ngModelCtrl.$render = function() {

@@ -31,6 +31,7 @@ describe('Unit: DateControllerTest', function () {
                 'start_date': new Date()
             }
         };
+
         scope.select = function (name) {
             return 'selected ' + name;
         };
@@ -65,9 +66,9 @@ describe('Unit: DateControllerTest', function () {
         }).not.toThrow();
     });
 
-    it('Should be defined', function () {
-        var iso = Element.isolateScope();
-        expect(iso).toEqual('');
+    it('Should refresh input', function () {
+        scope.edit_data[10].start_date = new Date();
+        scope.$digest();
+        expect(Element[0].value).toEqual('');
     });
-})
-;
+});

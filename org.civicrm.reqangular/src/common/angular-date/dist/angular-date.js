@@ -15,14 +15,12 @@ Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'))
 Module.controller('DatePickerController', _dereq_('./src/controllers/DatePickerController'));
 
 Module.config(function($provide) {
-    $provide.decorator('datepickerDirective', function($delegate) {
-        var directive = $delegate[0];
 
-        directive.controller = "DatePickerController";
-        return $delegate;
-    });
+    $provide.decorator('datepickerPopupDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
+
+    $provide.decorator('datepickerDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
 });
-},{"../vendor/angular/ui-bootstrap-tpls":8,"./src/controllers/DatePickerController":2,"./src/directives/CustomDateInput":3,"./src/directives/templates":4,"./src/filters/CustomDateFilter":5,"./src/services/DateFactory":6,"./src/services/DateValidationService":7}],2:[function(_dereq_,module,exports){
+},{"../vendor/angular/ui-bootstrap-tpls":9,"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/directives/CustomDateInput":4,"./src/directives/templates":5,"./src/filters/CustomDateFilter":6,"./src/services/DateFactory":7,"./src/services/DateValidationService":8}],2:[function(_dereq_,module,exports){
 /**
  * @extends DatepickerController
  */
@@ -50,7 +48,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');
 
         var newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
-
+        console.info('parseDate', date);
         return newDate.toDate();
     };
 
@@ -68,7 +66,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
             }
             ngModelCtrl.$setValidity('date', isValid);
 
-            console.log(ngModelCtrl.$modelValue, 'results in', date);
+            //console.log(ngModelCtrl.$modelValue, 'results in', date);
         }
 
         me.refreshView();
@@ -85,7 +83,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         }
     };
 
-    this.init = function(ngModelCtrl_) {
+    me.init = function(ngModelCtrl_) {
         ngModelCtrl = ngModelCtrl_;
 
         ngModelCtrl.$render = function() {
@@ -96,6 +94,36 @@ function DatePickerController($scope, $controller, DateFactory, $log){
 
 module.exports = DatePickerController;
 },{}],3:[function(_dereq_,module,exports){
+function DatepickerPopupDirectiveDecorator($delegate) {
+    var directive = $delegate[0];
+    var original_link = directive.link;
+
+    /**
+     * Implements original link function
+     * @returns Function
+     */
+    directive.compile = function(){
+        return function(scope, element, attrs, ngModel){
+
+            // TODO fetch form civicrm settings
+            /**
+             * @override
+             * @type {string}
+             */
+            attrs.datepickerPopup = 'dd/MM/yyyy';
+
+            original_link(scope, element, attrs, ngModel);
+        };
+    };
+
+    // link function is called by compile
+    delete directive.link;
+
+    return $delegate;
+}
+
+module.exports = DatepickerPopupDirectiveDecorator;
+},{}],4:[function(_dereq_,module,exports){
 module.exports = function CustomDateInput($filter) {
     return {
         require: 'ngModel',
@@ -114,11 +142,11 @@ module.exports = function CustomDateInput($filter) {
     };
 };
 
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 angular.module('templates-main', []);
 
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 module.exports = function ($filter, DateFactory) {
     return function (datetime) {
         var Date;
@@ -140,7 +168,7 @@ module.exports = function ($filter, DateFactory) {
         return 'Unspecified';
     };
 };
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
 function DateFactory(){
@@ -161,7 +189,7 @@ function DateFactory(){
 }
 
 module.exports = DateFactory;
-},{"../../../vendor/moment.min.js":9}],7:[function(_dereq_,module,exports){
+},{"../../../vendor/moment.min.js":10}],8:[function(_dereq_,module,exports){
 function DateValidationService($filter) {
     var me = this;
 
@@ -306,7 +334,7 @@ function DateValidationService($filter) {
 }
 
 module.exports = DateValidationService;
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -4527,7 +4555,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "");
 }]);
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
