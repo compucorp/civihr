@@ -73,13 +73,17 @@
 
                             <div class="col-sm-4">
                                 <div class="input-group input-group-unstyled">
-                                    <input placeholder="dd-mm-yyyy" type="text" class="form-control" id="{{prefix}}period-start-date" name="detailsPeriodStartDate"
-                                           datepicker-popup="dd-MM-yyyy"
+                                    <input placeholder="dd/mm/yyyy"
+                                           type="text"
+                                           class="form-control"
+                                           id="{{prefix}}period-start-date"
+                                           name="detailsPeriodStartDate"
+                                           datepicker-popup
                                            is-open="dpDateStartOpen"
                                            max-date="dpDateStartMax"
                                            ng-model="entity.details.period_start_date"
                                            ng-disabled="isDisabled"
-                                           required>
+                                           required />
                                     <span class="input-group-btn">
                                         <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateStartOpen')"  ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
                                     </span>
@@ -91,8 +95,8 @@
 
                             <div class="col-sm-4">
                                 <div class="input-group input-group-unstyled">
-                                    <input placeholder="dd-mm-yyyy" type="text" class="form-control" id="{{prefix}}period-end-date"
-                                           datepicker-popup="dd-MM-yyyy"
+                                    <input placeholder="dd/mm/yyyy" type="text" class="form-control" id="{{prefix}}period-end-date"
+                                           datepicker-popup
                                            is-open="dpDateEndOpen"
                                            min-date="dpDateEndMin"
                                            ng-model="entity.details.period_end_date"
