@@ -40,7 +40,6 @@ function DateValidationService($filter) {
 
     me.setDates = function(start_date, end_date){
         me._reset();
-        console.log(start_date, end_date);
         // We apply filter, so we have the same date format in both variables
         if(!!start_date) {
             me.start = $filter('CustomDate')(start_date);

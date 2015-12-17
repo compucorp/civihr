@@ -6,7 +6,6 @@ function DatepickerPopupDirectiveDecorator($delegate) {
     // FIXME noassign error is caused by wrong binding - change it here
     // FIXME as for now i have no clue how to solve it
     //directive.scope.isOpen = '&';
-    //console.log(directive.scope);
 
     /**
      * Implements original link function

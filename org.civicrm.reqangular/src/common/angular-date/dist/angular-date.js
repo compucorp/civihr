@@ -18,11 +18,13 @@ Module.controller('DatePickerController', _dereq_('./src/controllers/DatePickerC
 Module.config(function($provide) {
     $provide.decorator('datepickerPopupDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
 
+    $provide.decorator('datepickerDirective', _dereq_('./src/decorators/DatepickerDirectiveDecorator'));
+
     $provide.decorator('daypickerDirective', _dereq_('./src/decorators/DaypickerDirectiveDecorator'));
 
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
-},{"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateValidationService":9,"./src/templates/templates":10}],2:[function(_dereq_,module,exports){
+},{"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerDirectiveDecorator":3,"./src/decorators/DatepickerPopupDirectiveDecorator":4,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":5,"./src/decorators/DaypickerDirectiveDecorator":6,"./src/directives/CustomDateInput":7,"./src/filters/CustomDateFilter":8,"./src/services/DateFactory":9,"./src/services/DateValidationService":10,"./src/templates/templates":11}],2:[function(_dereq_,module,exports){
 /**
  * @extends DatepickerController
  */
@@ -50,7 +52,6 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');
 
         var newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
-        console.info('parseDate', date);
         return newDate.toDate();
     };
 
@@ -67,8 +68,6 @@ function DatePickerController($scope, $controller, DateFactory, $log){
                 $log.error('Date is Invalid.');
             }
             ngModelCtrl.$setValidity('date', isValid);
-
-            //console.log(ngModelCtrl.$modelValue, 'results in', date);
         }
 
         me.refreshView();
@@ -96,6 +95,31 @@ function DatePickerController($scope, $controller, DateFactory, $log){
 
 module.exports = DatePickerController;
 },{}],3:[function(_dereq_,module,exports){
+function DatepickerDirectiveDecorator($delegate) {
+    var directive = $delegate[0];
+
+    var old_link = directive.link;
+
+    delete directive.link;
+
+    directive.compile = function(){
+        return function(scope, element, attrs, ctrls){
+
+            /**
+             * @override
+             * @type {number}
+             */
+            ctrls[0].startingDay = 1;
+
+            old_link(scope, element, attrs, ctrls);
+        };
+    };
+
+    return $delegate;
+}
+
+module.exports = DatepickerDirectiveDecorator;
+},{}],4:[function(_dereq_,module,exports){
 function DatepickerPopupDirectiveDecorator($delegate) {
     var directive = $delegate[0];
     var original_link = directive.link;
@@ -104,7 +128,6 @@ function DatepickerPopupDirectiveDecorator($delegate) {
     // FIXME noassign error is caused by wrong binding - change it here
     // FIXME as for now i have no clue how to solve it
     //directive.scope.isOpen = '&';
-    //console.log(directive.scope);
 
     /**
      * Implements original link function
@@ -131,7 +154,7 @@ function DatepickerPopupDirectiveDecorator($delegate) {
 }
 
 module.exports = DatepickerPopupDirectiveDecorator;
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 function DatepickerPopupWrapDirectiveDecorator($delegate) {
     var directive = $delegate[0];
 
@@ -141,7 +164,7 @@ function DatepickerPopupWrapDirectiveDecorator($delegate) {
 }
 
 module.exports = DatepickerPopupWrapDirectiveDecorator;
-},{}],5:[function(_dereq_,module,exports){
+},{}],6:[function(_dereq_,module,exports){
 function DaypickerDirectiveDecorator($delegate) {
     var directive = $delegate[0];
 
@@ -151,7 +174,7 @@ function DaypickerDirectiveDecorator($delegate) {
 }
 
 module.exports = DaypickerDirectiveDecorator;
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 module.exports = function CustomDateInput($filter) {
     return {
         require: 'ngModel',
@@ -170,7 +193,7 @@ module.exports = function CustomDateInput($filter) {
     };
 };
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 module.exports = function ($filter, DateFactory) {
     return function (datetime) {
         var Date;
@@ -196,7 +219,7 @@ module.exports = function ($filter, DateFactory) {
         return 'Unspecified';
     };
 };
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
 function DateFactory(){
@@ -217,7 +240,7 @@ function DateFactory(){
 }
 
 module.exports = DateFactory;
-},{"../../../vendor/moment.min.js":11}],9:[function(_dereq_,module,exports){
+},{"../../../vendor/moment.min.js":12}],10:[function(_dereq_,module,exports){
 function DateValidationService($filter) {
     var me = this;
 
@@ -260,7 +283,6 @@ function DateValidationService($filter) {
 
     me.setDates = function(start_date, end_date){
         me._reset();
-        console.log(start_date, end_date);
         // We apply filter, so we have the same date format in both variables
         if(!!start_date) {
             me.start = $filter('CustomDate')(start_date);
@@ -363,7 +385,7 @@ function DateValidationService($filter) {
 }
 
 module.exports = DateValidationService;
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 angular.module('templates-main', ['templates/datepickerPopup.html', 'templates/day.html']);
 
 angular.module("templates/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
@@ -432,7 +454,7 @@ angular.module("templates/day.html", []).run(["$templateCache", function($templa
     "");
 }]);
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
