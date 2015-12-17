@@ -1,14 +1,14 @@
-angular.module('templates-main', ['directives/datepickerPopup.html', 'directives/day.html']);
+angular.module('templates-main', ['templates/datepickerPopup.html', 'templates/day.html']);
 
-angular.module("directives/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("directives/datepickerPopup.html",
+angular.module("templates/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/datepickerPopup.html",
     "<ul class=\"dropdown-menu\" ng-style=\"{display: (isOpen && 'block') || 'none', top: position.top+'px', left: position.left+'px'}\" ng-keydown=\"keydown($event)\">\n" +
     "	<li ng-transclude></li>\n" +
     "</ul>");
 }]);
 
-angular.module("directives/day.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("directives/day.html",
+angular.module("templates/day.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/day.html",
     "<table role=\"grid\" aria-labelledby=\"{{uniqueId}}-title\" aria-activedescendant=\"{{activeDateId}}\">\n" +
     "    <thead>\n" +
     "    <tr>\n" +

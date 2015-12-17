@@ -1,7 +1,7 @@
 function DaypickerDirectiveDecorator($delegate) {
     var directive = $delegate[0];
 
-    directive.templateUrl = "directives/day.html";
+    directive.templateUrl = "templates/day.html";
 
     return $delegate;
 }

@@ -5,8 +5,8 @@ module.exports = function (grunt) {
 
         html2js:{
             main: {
-                src: ['src/directives/*.html'],
-                dest: 'src/directives/templates.js'
+                src: ['src/templates/*.html'],
+                dest: 'src/templates/templates.js'
             }
         },
         browserify: {
