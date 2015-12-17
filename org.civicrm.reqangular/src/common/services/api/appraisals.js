@@ -62,12 +62,10 @@ define([
             create: function (attributes) {
                 $log.debug('create');
 
-                var created = angular.copy(attributes);
-
-                created.id = '' + Math.ceil(Math.random() * 5000);
-                created.createdAt = Date.now();
-
-                return this.mockPOST(created);
+                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                    .then(function (data) {
+                        return data.values[0];
+                    });
             },
 
             /**
