@@ -2,13 +2,9 @@
     <thead>
     <tr>
         <th>
-            <style>
-                .text-muted{
-                    color: #666666;
-                }
-            </style>
-            <button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1"><i
-                    class="glyphicon glyphicon-chevron-left"></i></button>
+            <button type="button" class="btn btn-default btn-sm pull-left" ng-click="move(-1)" tabindex="-1">
+                <strong> < </strong>
+            </button>
         </th>
         <th colspan="{{5 + showWeeks}}">
             <button id="{{uniqueId}}-title" role="heading" aria-live="assertive" aria-atomic="true" type="button"
@@ -16,21 +12,25 @@
             </button>
         </th>
         <th>
-            <button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1"><i
-                    class="glyphicon glyphicon-chevron-right"></i></button>
+            <button type="button" class="btn btn-default btn-sm pull-right" ng-click="move(1)" tabindex="-1"><strong> > </strong></button>
         </th>
     </tr>
 
-    <tr>
+    <tr style="border-top: 1px solid #DDD">
         <th ng-show="showWeeks" class="text-center"></th>
         <th ng-repeat="label in labels track by $index" class="text-center">
-            <small aria-label="{{label.full}}">{{label.abbr}}</small>
+            <small aria-label="{{label.full}}">{{label.abbr[0]}}</small>
         </th>
     </tr>
 
     </thead>
 
     <tbody>
+    <style>
+        tr td.text-center span.out-of-scope{
+            color: #CCCCCC;
+        }
+    </style>
     <tr ng-repeat="row in rows track by $index">
         <td ng-show="showWeeks" class="text-center h6"><em>{{ weekNumbers[$index] }}</em></td>
         <td ng-repeat="dt in row track by dt.date" class="text-center" role="gridcell" id="{{dt.uid}}"
@@ -45,8 +45,8 @@
                     ng-click="select(dt.date)"
                     ng-disabled="dt.disabled"
                     tabindex="-1">
-
-                <span ng-class="{'text-muted': dt.secondary, 'text-info': dt.current}">{{dt.label}}</span>
+<!--'text-muted': dt.secondary, -->
+                <span ng-class="{'out-of-scope': dt.secondary, 'text-info': dt.current}">{{dt.label}}</span>
             </button>
         </td>
     </tr>
