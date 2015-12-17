@@ -1,11 +1,12 @@
 define([
     'common/angular',
     'common/modules/apis',
-    'common/services/api'
+    'common/services/api',
+    'common/services/api/option-group'
 ], function (angular, apis) {
     'use strict';
 
-    apis.factory('api.appraisals', ['$log', 'api', function ($log, api) {
+    apis.factory('api.appraisals', ['$log', 'api', 'api.optionGroup', function ($log, api, optionGroupAPI) {
         $log.debug('api.appraisals');
 
         // Draft
@@ -102,16 +103,7 @@ define([
             statuses: function () {
                 $log.debug('api.appraisals.statuses');
 
-                return this.optionGroupId('appraisal_status')
-                    .then(function (groupId) {
-                        return this.sendGET('OptionValue', 'get', {
-                            option_group_id: groupId,
-                            is_active: '1'
-                        });
-                    }.bind(this))
-                    .then(function (data) {
-                        return data.values;
-                    });
+                return optionGroupAPI.valuesOf('appraisal_status');
             },
 
             /**
@@ -166,16 +158,7 @@ define([
             types: function () {
                 $log.debug('api.appraisals.types');
 
-                return this.optionGroupId('appraisal_cycle_type')
-                    .then(function (groupId) {
-                        return this.sendGET('OptionValue', 'get', {
-                            option_group_id: groupId,
-                            is_active: '1'
-                        });
-                    }.bind(this))
-                    .then(function (data) {
-                        return data.values;
-                    });
+                return optionGroupAPI.valuesOf('appraisal_cycle_type');
             }
         });
 

@@ -48,21 +48,6 @@ define([
             },
 
             /**
-             * Returns the id of the Option Group with the given name
-             *
-             * @param {string} groupName
-             * @return {Promise} resolves to int
-             */
-            optionGroupId: function (groupName) {
-                return this.sendGET('OptionGroup', 'getvalue', {
-                    name: groupName,
-                    return: 'id'
-                }).then(function (data) {
-                    return data.result;
-                });
-            },
-
-            /**
              * Sends a GET request to the backend endpoint
              *
              * @param {string} entity - The entity the request is asking for (Contact, Appraisal, etc)
@@ -77,7 +62,7 @@ define([
                 return $http({
                     method: 'GET',
                     url: API_ENDPOINT,
-                    cache: cache || true,
+                    cache: (typeof cache !== 'undefined' ? !!cache : true),
                     params: angular.extend({
                         json: 1,
                         sequential: 1,
