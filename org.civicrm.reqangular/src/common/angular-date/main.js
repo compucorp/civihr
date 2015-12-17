@@ -1,4 +1,3 @@
-require("../vendor/angular/ui-bootstrap-tpls");
 require("./src/templates/templates");
 
 var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);

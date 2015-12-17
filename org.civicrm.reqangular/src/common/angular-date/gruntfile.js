@@ -49,6 +49,7 @@ module.exports = function (grunt) {
                         'node_modules/angular/angular.js',
                         'dist/angular-date.js',
                         'node_modules/angular-mocks/angular-mocks.js',
+                        '../vendor/angular/ui-bootstrap-tpls.js',
                         'src/**/*Test.js'
                     ],
                     reporters: ['progress', 'coverage'],
