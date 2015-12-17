@@ -11,6 +11,7 @@ define([
     'common/d3',
     'common/lodash',
     'common/moment',
+    'common/string'
 ], function () {
 
 });

@@ -18,6 +18,7 @@
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
         'common/moment': 'common/vendor/moment.min',
+        'common/string': 'common/vendor/underscore.string.min'
     },
     shim: {
         'common/angular': {
