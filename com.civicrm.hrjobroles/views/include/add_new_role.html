@@ -57,7 +57,7 @@
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newStartDate')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
-                                                        <div ng-show="errors.newStartDate" style="color:maroon" role="alert">
+                                                        <div ng-show="errors.newStartDate" style="display: block; color:maroon" role="alert">
                                                             <div> {{ errors.newStartDate[0] }}</div>
                                                         </div>
                                                     </p>
@@ -81,7 +81,7 @@
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
-                                                        <div ng-show="errors.newEndDate" style="color:maroon" role="alert">
+                                                        <div ng-show="errors.newEndDate" style="display: block; color:maroon" role="alert">
                                                             <div> {{ errors.newEndDate[0] }}</div>
                                                         </div>
                                                     </p>
