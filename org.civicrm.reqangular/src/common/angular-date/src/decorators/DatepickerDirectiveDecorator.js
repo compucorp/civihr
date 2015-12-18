@@ -1,11 +1,7 @@
 function DatepickerDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
+    var old_link = $delegate[0].link;
 
-    var old_link = directive.link;
-
-    delete directive.link;
-
-    directive.compile = function(){
+    $delegate[0].compile = function(){
         return function(scope, element, attrs, ctrls){
 
             /**
@@ -14,7 +10,7 @@ function DatepickerDirectiveDecorator($delegate) {
              */
             ctrls[0].startingDay = 1;
 
-            old_link(scope, element, attrs, ctrls);
+            old_link.apply(this, arguments);
         };
     };
 

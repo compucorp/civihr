@@ -4,14 +4,13 @@ function DateFactory(){
     return {
         moment: moment,
         /**
-         * Wrapper for moment.utc()
+         * Wrapper for moment()
          * @param dateString
          * @param format
          * @param strict
          * @returns Moment Object
          */
         createDate: function createDate(dateString, format, strict){
-
             return this.moment.apply(null, arguments);
         }
     };

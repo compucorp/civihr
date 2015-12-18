@@ -34,7 +34,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
     var me = this,
         ngModelCtrl = { $setViewValue: angular.noop };
 
-    angular.extend(this, $controller('DatepickerController', {
+    angular.extend(me, $controller('DatepickerController', {
         $scope: $scope,
         $attrs: {}
     }));
@@ -47,6 +47,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         }
         return false;
     };
+    
 
     me.parseDate = function(date){
         var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');
@@ -96,13 +97,9 @@ function DatePickerController($scope, $controller, DateFactory, $log){
 module.exports = DatePickerController;
 },{}],3:[function(_dereq_,module,exports){
 function DatepickerDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
+    var old_link = $delegate[0].link;
 
-    var old_link = directive.link;
-
-    delete directive.link;
-
-    directive.compile = function(){
+    $delegate[0].compile = function(){
         return function(scope, element, attrs, ctrls){
 
             /**
@@ -111,7 +108,7 @@ function DatepickerDirectiveDecorator($delegate) {
              */
             ctrls[0].startingDay = 1;
 
-            old_link(scope, element, attrs, ctrls);
+            old_link.apply(this, arguments);
         };
     };
 
@@ -121,19 +118,18 @@ function DatepickerDirectiveDecorator($delegate) {
 module.exports = DatepickerDirectiveDecorator;
 },{}],4:[function(_dereq_,module,exports){
 function DatepickerPopupDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
-    var original_link = directive.link;
+    var original_link = $delegate[0].link;
 
 
     // FIXME noassign error is caused by wrong binding - change it here
     // FIXME as for now i have no clue how to solve it
-    //directive.scope.isOpen = '&';
+    //$delegate[0].scope.isOpen = '&';
 
     /**
      * Implements original link function
      * @returns Function
      */
-    directive.compile = function(){
+    $delegate[0].compile = function(){
         return function(scope, element, attrs, ngModel){
 
             // TODO fetch form civicrm settings
@@ -143,12 +139,9 @@ function DatepickerPopupDirectiveDecorator($delegate) {
              */
             attrs.datepickerPopup = 'dd/MM/yyyy';
 
-            original_link(scope, element, attrs, ngModel);
+            original_link.apply(this, arguments);
         };
     };
-
-    // link function is called by compile
-    delete directive.link;
 
     return $delegate;
 }
@@ -156,9 +149,8 @@ function DatepickerPopupDirectiveDecorator($delegate) {
 module.exports = DatepickerPopupDirectiveDecorator;
 },{}],5:[function(_dereq_,module,exports){
 function DatepickerPopupWrapDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
 
-    directive.templateUrl = 'templates/datepickerPopup.html';
+    $delegate[0].templateUrl = 'templates/datepickerPopup.html';
 
     return $delegate;
 }
@@ -166,9 +158,8 @@ function DatepickerPopupWrapDirectiveDecorator($delegate) {
 module.exports = DatepickerPopupWrapDirectiveDecorator;
 },{}],6:[function(_dereq_,module,exports){
 function DaypickerDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
 
-    directive.templateUrl = "templates/day.html";
+    $delegate[0].templateUrl = "templates/day.html";
 
     return $delegate;
 }
@@ -226,14 +217,13 @@ function DateFactory(){
     return {
         moment: moment,
         /**
-         * Wrapper for moment.utc()
+         * Wrapper for moment()
          * @param dateString
          * @param format
          * @param strict
          * @returns Moment Object
          */
         createDate: function createDate(dateString, format, strict){
-
             return this.moment.apply(null, arguments);
         }
     };

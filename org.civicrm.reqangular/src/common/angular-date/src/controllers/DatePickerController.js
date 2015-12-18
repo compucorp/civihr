@@ -7,7 +7,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
     var me = this,
         ngModelCtrl = { $setViewValue: angular.noop };
 
-    angular.extend(this, $controller('DatepickerController', {
+    angular.extend(me, $controller('DatepickerController', {
         $scope: $scope,
         $attrs: {}
     }));
@@ -20,6 +20,7 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         }
         return false;
     };
+    
 
     me.parseDate = function(date){
         var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');

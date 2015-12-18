@@ -1,7 +1,6 @@
 function DatepickerPopupWrapDirectiveDecorator($delegate) {
-    var directive = $delegate[0];
 
-    directive.templateUrl = 'templates/datepickerPopup.html';
+    $delegate[0].templateUrl = 'templates/datepickerPopup.html';
 
     return $delegate;
 }
