@@ -1,12 +1,13 @@
 define([
     'common/angular',
+    'common/lodash',
     'common/angularMocks',
     'appraisals/app'
-], function (angular) {
+], function (angular, _) {
     'use strict';
 
     describe('AppraisalCycle', function () {
-        var $q, $rootScope, AppraisalCycle, appraisalsAPI, cycles;
+        var $q, $rootScope, AppraisalCycle, AppraisalCycleInstance, appraisalsAPI, cycles;
 
         cycles = [
             { id: '1', type: 'type 1' }, { id: '2', type: 'type 4' },
@@ -17,11 +18,12 @@ define([
         ];
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycle_, _appraisalsAPI_) {
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleInstance', 'api.appraisals',
+            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleInstance_, _appraisalsAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
                 AppraisalCycle = _AppraisalCycle_;
+                AppraisalCycleInstance = _AppraisalCycleInstance_;
                 appraisalsAPI = _appraisalsAPI_;
             }
         ]));
@@ -151,18 +153,33 @@ define([
             var newCycle = {
                 name: 'new cycle',
                 type: 'type 4',
-                period: '01/01/2014 - 01/01/2015'
+                cycle_start_date: '01/01/2014',
+                cycle_end_date: '01/01/2015'
             };
-            var newCycleSaved = angular.extend({}, newCycle, { id: '1234' });
 
             beforeEach(function () {
-                resolveApiCallTo('create').with(newCycleSaved);
+                resolveApiCallTo('create').with(null);
             });
 
             it('creates a new appraisal cycle', function (done) {
+                AppraisalCycle.create(newCycle).then(function () {
+                    expect(appraisalsAPI.create).toHaveBeenCalled();
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('sanitizes the data via instance before calling the api', function (done) {
+                var sanitizedData = AppraisalCycleInstance.init(newCycle).toAPI();
+
+                AppraisalCycle.create(newCycle).then(function () {
+                    expect(appraisalsAPI.create).toHaveBeenCalledWith(sanitizedData);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('returns an instance of the model', function (done) {
                 AppraisalCycle.create(newCycle).then(function (savedCycle) {
-                    expect(appraisalsAPI.create).toHaveBeenCalledWith(newCycle);
-                    expect(savedCycle).toEqual(newCycleSaved);
+                    expect(_.functions(savedCycle)).toEqual(_.functions(AppraisalCycleInstance));
                 })
                 .finally(done) && $rootScope.$digest();
             });

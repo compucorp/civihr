@@ -1,24 +1,12 @@
 define([
     'common/lodash',
-    'common/string',
     'common/moment',
     'appraisals/modules/models',
     'common/services/api/appraisals'
-], function (_, s, moment, models) {
+], function (_, moment, models) {
     'use strict';
 
-    models.factory('AppraisalCycle', ['api.appraisals', function (appraisalsAPI) {
-
-        function normalizeForAPI(attributes) {
-            Object.keys(attributes).filter(function (key) {
-                return s.endsWith(key, '_date') || s.endsWith(key, '_due');
-            })
-            .forEach(function (key) {
-                attributes[key] = moment(attributes[key]).format('YYYY-MM-DD');
-            });
-
-            return attributes;
-        }
+    models.factory('AppraisalCycle', ['api.appraisals', 'AppraisalCycleInstance', function (appraisalsAPI, instance) {
 
         // Draft
 
@@ -52,8 +40,10 @@ define([
              * @return {Promise} - Resolves with the new cycle
              */
             create: function (attributes) {
-                return appraisalsAPI.create(normalizeForAPI(attributes)).then(function (newCycle) {
-                    return newCycle;
+                var cycle = instance.init(attributes).toAPI();
+
+                return appraisalsAPI.create(cycle).then(function (newCycle) {
+                    return instance.init(newCycle, true);
                 });
             },
 
