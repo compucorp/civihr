@@ -61,7 +61,7 @@ function contactaccessrights_civicrm_disable() {
 /**
  * Implements hook_civicrm_upgrade().
  *
- * @param $op string, the type of operation being performed; 'check' or 'enqueue'
+ * @param $op    string, the type of operation being performed; 'check' or 'enqueue'
  * @param $queue CRM_Queue_Queue, (for 'enqueue') the modifiable list of pending up upgrade tasks
  *
  * @return mixed
@@ -110,7 +110,7 @@ function contactaccessrights_civicrm_caseTypes(&$caseTypes) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function contactaccessrights_civicrm_angularModules(&$angularModules) {
-_contactaccessrights_civix_civicrm_angularModules($angularModules);
+  _contactaccessrights_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -125,25 +125,25 @@ function contactaccessrights_civicrm_alterSettingsFolders(&$metaDataFolders = NU
 /**
  * Functions below this ship commented out. Uncomment as required.
  *
-
-/**
+ *
+ * /**
  * Implements hook_civicrm_preProcess().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
  *
-function contactaccessrights_civicrm_preProcess($formName, &$form) {
-
-}
-
-*/
+ * function contactaccessrights_civicrm_preProcess($formName, &$form) {
+ *
+ * }
+ */
 
 /**
  * Implementation of hook_civicrm_entityTypes
  */
 function contactaccessrights_civicrm_entityTypes(&$entityTypes) {
   $entityTypes['CRM_Contactaccessrights_DAO_Rights'] = array(
-      'name'  => 'Rights',
-      'class' => 'CRM_Contactaccessrights_DAO_Rights',
-      'table' => 'civicrm_contactaccessrights_rights',
+    'name'  => 'Rights',
+    'class' => 'CRM_Contactaccessrights_DAO_Rights',
+    'table' => 'civicrm_contactaccessrights_rights',
   );
 }
+
