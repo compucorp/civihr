@@ -330,7 +330,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <h3 class="panel-title panel-title-sm">
-                                        {{cycle.name}}
+                                        {{cycle.cycle_name}}
                                         <span ng-if="cycle.active">(Active)</span>
                                         <span ng-if="!cycle.active">(Inactive)</span>
                                     </h3>
@@ -338,10 +338,10 @@
                                 <div class="col-sm-6 text-right">
                                     <div class="chr_appraisal-cycle-summary__details">
                                         <span class="chr_appraisal-cycle-summary__meta">
-                                            {{cycle.appraisalsTotal}} Appraisals
+                                            {{cycle.appraisalsTotal || '0'}} Appraisals
                                         </span>
                                         <span class="chr_appraisal-cycle-summary__meta">
-                                            {{cycle.completionPercentage}}% complete</span>
+                                            {{cycle.completionPercentage || '0'}}% complete</span>
                                         <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                             <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                                 <i class="fa fa-ellipsis-v"></i>
@@ -369,7 +369,7 @@
                                 <dt>Cycle ID:</dt>
                                 <dd>{{cycle.id}}</dd>
                                 <dt>Period:</dt>
-                                <dd>{{cycle.period.start}} - {{cycle.period.end}}</dd>
+                                <dd>{{cycle.cycle_start_date}} - {{cycle.cycle_end_date}}</dd>
                                 <dt ng-if="cycle.nextDue">Next Due:</dt>
                                 <dd ng-if="cycle.nextDue">{{cycle.nextDue.type}} ({{cycle.nextDue.date}})</dd>
                             </dl>
