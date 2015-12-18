@@ -2,6 +2,8 @@ define([
     'common/angular',
     'appraisals/modules/controllers'
 ], function (angular, controllers) {
+    'use strict';
+
     controllers.controller('AppraisalCycleModalCtrl',
         ['$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle',
         function ($log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle) {
