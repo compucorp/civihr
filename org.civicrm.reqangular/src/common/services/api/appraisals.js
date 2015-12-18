@@ -69,14 +69,17 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Finds the appraisal cycle with the given id
+             *
+             * @param {string/int} id
+             * @return {Promise} resolves to the found cycle
              */
             find: function (id) {
-                $log.debug('grades');
+                $log.debug('api.appraisals.find');
 
-                return this.mockGET(mockedCycles().filter(function (cycle) {
-                    return cycle.id === id;
-                })[0]);
+                return this.sendGET('AppraisalCycle', 'get', { id: '' + id }).then(function (data) {
+                    return data.values[0];
+                });
             },
 
             /**
@@ -164,11 +167,12 @@ define([
             return [
                 {
                     id: '42131',
-                    name: 'Appraisal Cycle 1',
+                    cycle_name: 'Appraisal Cycle 1',
                     status: 'Status #3',
                     type: 'Type #2',
                     active: true,
-                    period: { start: '01/01/2014', end: '01/01/2015' },
+                    cycle_start_date: '01/01/2014',
+                    cycle_end_date: '01/01/2015',
                     nextDue: { type: 'Manager Appraisal', date: '01/01/2021' },
                     appraisalsTotal: 100,
                     completionPercentage: 45,
@@ -182,11 +186,12 @@ define([
                 },
                 {
                     id: '42132',
-                    name: 'Appraisal Cycle 2',
+                    cycle_name: 'Appraisal Cycle 2',
                     active: true,
                     status: 'Status #1',
                     type: 'Type #1',
-                    period: { start: '02/02/2014', end: '02/02/2015' },
+                    cycle_start_date: '02/02/2014',
+                    cycle_end_date: '02/02/2015',
                     nextDue: { type: 'Self Appraisal', date: '02/02/2022' },
                     appraisalsTotal: 100,
                     completionPercentage: 55,
@@ -200,11 +205,12 @@ define([
                 },
                 {
                     id: '42133',
-                    name: 'Appraisal Cycle 3',
+                    cycle_name: 'Appraisal Cycle 3',
                     active: true,
                     status: 'Status #1',
                     type: 'Type #2',
-                    period: { start: '03/03/2014', end: '03/03/2015' },
+                    cycle_start_date: '03/03/2014',
+                    cycle_end_date: '03/03/2015',
                     nextDue: { type: 'Awaiting Grade', date: '03/03/2023' },
                     appraisalsTotal: 100,
                     completionPercentage: 35,
@@ -218,11 +224,12 @@ define([
                 },
                 {
                     id: '42134',
-                    name: 'Appraisal Cycle 4',
+                    cycle_name: 'Appraisal Cycle 4',
                     active: true,
                     status: 'Status #3',
                     type: 'Type #3',
-                    period: { start: '04/04/2014', end: '04/04/2015' },
+                    cycle_start_date: '04/04/2014',
+                    cycle_end_date: '04/04/2015',
                     nextDue: { type: 'Manager Appraisal', date: '04/04/2024' },
                     appraisalsTotal: 100,
                     completionPercentage: 65,
@@ -236,11 +243,12 @@ define([
                 },
                 {
                     id: '42135',
-                    name: 'Appraisal Cycle 5',
+                    cycle_name: 'Appraisal Cycle 5',
                     active: true,
                     status: 'Status #1',
                     type: 'Type #3',
-                    period: { start: '05/05/2014', end: '05/05/2015' },
+                    cycle_start_date: '05/05/2014',
+                    cycle_end_date: '05/05/2015',
                     nextDue: { type: 'Self Appraisal', date: '05/05/2025' },
                     appraisalsTotal: 100,
                     completionPercentage: 5,
@@ -254,11 +262,12 @@ define([
                 },
                 {
                     id: '42136',
-                    name: 'Appraisal Cycle 6',
+                    cycle_name: 'Appraisal Cycle 6',
                     active: false,
                     status: 'Status #1',
                     type: 'Type #1',
-                    period: { start: '06/06/2014', end: '06/06/2015' },
+                    cycle_start_date: '06/06/2014',
+                    cycle_end_date: '06/06/2015',
                     nextDue: null,
                     appraisalsTotal: 100,
                     completionPercentage: 100,
@@ -272,11 +281,12 @@ define([
                 },
                 {
                     id: '4217',
-                    name: 'Appraisal Cycle 7',
+                    cycle_name: 'Appraisal Cycle 7',
                     active: false,
                     status: 'Status #2',
                     type: 'Type #2',
-                    period: { start: '07/07/2014', end: '07/07/2015' },
+                    cycle_start_date: '07/07/2014',
+                    cycle_end_date: '07/07/2015',
                     nextDue: null,
                     appraisalsTotal: 100,
                     completionPercentage: 100,
@@ -290,11 +300,12 @@ define([
                 },
                 {
                     id: '42138',
-                    name: 'Appraisal Cycle 8',
+                    cycle_name: 'Appraisal Cycle 8',
                     active: true,
                     status: 'Status #2',
                     type: 'Type #1',
-                    period: { start: '08/08/2014', end: '08/08/2015' },
+                    cycle_start_date: '08/08/2014',
+                    cycle_end_date: '08/08/2015',
                     nextDue: { type: 'Self Appraisal', date: '08/08/2028' },
                     appraisalsTotal: 100,
                     completionPercentage: 15,
@@ -308,11 +319,12 @@ define([
                 },
                 {
                     id: '42139',
-                    name: 'Appraisal Cycle 9',
+                    cycle_name: 'Appraisal Cycle 9',
                     active: true,
                     status: 'Status #3',
                     type: 'Type #1',
-                    period: { start: '09/09/2014', end: '09/09/2015' },
+                    cycle_start_date: '09/09/2014',
+                    cycle_end_date: '09/09/2015',
                     nextDue: { type: 'Self Appraisal', date: '09/09/2029' },
                     appraisalsTotal: 100,
                     completionPercentage: 10,
@@ -326,11 +338,12 @@ define([
                 },
                 {
                     id: '421310',
-                    name: 'Appraisal Cycle 10',
+                    cycle_name: 'Appraisal Cycle 10',
                     active: true,
                     status: 'Status #1',
                     type: 'Type #4',
-                    period: { start: '10/10/2014', end: '10/10/2015' },
+                    cycle_start_date: '10/10/2014',
+                    cycle_end_date: '10/10/2015',
                     nextDue: { type: 'Self Appraisal', date: '10/10/2030' },
                     appraisalsTotal: 100,
                     completionPercentage: 2,
