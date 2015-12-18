@@ -54,7 +54,9 @@ define([
              * @return {Promise} - Resolves with the new cycle
              */
             find: function (id) {
-                return appraisalsAPI.find(id);
+                return appraisalsAPI.find(id).then(function (cycle) {
+                    return instance.init(cycle, true);
+                });
             },
 
             /**

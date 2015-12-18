@@ -179,7 +179,7 @@ define([
 
             it('returns an instance of the model', function (done) {
                 AppraisalCycle.create(newCycle).then(function (savedCycle) {
-                    expect(_.functions(savedCycle)).toEqual(_.functions(AppraisalCycleInstance));
+                    expect(isModelInstance(savedCycle)).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -257,6 +257,13 @@ define([
                 })
                 .finally(done) && $rootScope.$digest();
             });
+
+            it('returns an instance of the model', function (done) {
+                AppraisalCycle.find(targetId).then(function (cycle) {
+                    expect(isModelInstance(cycle)).toBe(true);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
         });
 
         describe('update()', function () {
@@ -298,6 +305,16 @@ define([
                 .finally(done) && $rootScope.$digest();
             });
         });
+
+        /**
+         * Checks if the given object is a modal instance
+         *
+         * @param {object} object
+         * @return {boolean}
+         */
+        function isModelInstance(object) {
+            return _.isEqual(_.functions(object), _.functions(AppraisalCycleInstance));
+        }
 
         /**
          * Adds a `spyOn` on the given `appraisalsApi` method, and then returns
