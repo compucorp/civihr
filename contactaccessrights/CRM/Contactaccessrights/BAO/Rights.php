@@ -39,7 +39,7 @@ class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rig
     $contactId = $contactId ?: CRM_Core_Session::singleton()->get('userID');
 
     $sql = "
-    SELECT ov.label
+    SELECT ov.id, ov.label
     FROM `civicrm_contactaccessrights_rights` rights
 
     INNER JOIN civicrm_option_group og

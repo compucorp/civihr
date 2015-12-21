@@ -147,3 +147,25 @@ function contactaccessrights_civicrm_entityTypes(&$entityTypes) {
   );
 }
 
+/**
+ * Implementation of hook_civicrm_aclWhereClause.
+ *
+ * @param $type - Type of permission needed
+ * @param array $tables - (reference) Add the tables that are needed for the select clause
+ * @param array $whereTables - (reference) Add the tables that are needed for the where clause
+ * @param int $contactID - The contactID for whom the check is made
+ * @param string $where - The current where clause
+ */
+function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
+  if (!$contactID) {
+    return;
+  }
+
+  $aclUtil = new CRM_Contactaccessrights_Utils_ACL();
+
+  $whereTables = array_merge($whereTables, $aclUtil->getWhereTables());
+
+  $whereStr = implode(' AND ', $aclUtil->getWhereConditions());
+  $whereStr = '(' . ($whereStr ?: '1') . ')';
+  $where = trim($where) ? $where . " AND " . $whereStr : $whereStr;
+}
