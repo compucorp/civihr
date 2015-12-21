@@ -167,5 +167,5 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
 
   $whereStr = implode(' AND ', $aclUtil->getWhereConditions());
   $whereStr = '(' . ($whereStr ?: '1') . ')';
-  $where = trim($where) ? $where . " AND " . $whereStr : $whereStr;
+  $where = trim($where) ? $where . " OR " . $whereStr : $whereStr;
 }
