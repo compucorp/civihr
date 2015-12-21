@@ -161,7 +161,7 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
     return;
   }
 
-  $aclUtil = new CRM_Contactaccessrights_Utils_ACL();
+  $aclUtil = new CRM_Contactaccessrights_Utils_ACL($contactID);
 
   $whereTables = array_merge($whereTables, $aclUtil->getWhereTables());
 
