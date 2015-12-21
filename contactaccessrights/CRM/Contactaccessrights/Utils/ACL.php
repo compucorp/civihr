@@ -34,10 +34,7 @@ class CRM_Contactaccessrights_Utils_ACL {
   }
 
   private function addJobContractClause() {
-    $this->addWhereTable('1', "LEFT JOIN civicrm_hrjobcontract jc ON contact_a.id = jc.contact_id");
-
-    // Disabling the where condition as not sure if we need to limit access based on primary contracts only
-    // $this->addWhereCondition('jc.is_primary = 1');
+    $this->addWhereTable('1', "INNER JOIN civicrm_hrjobcontract jc ON contact_a.id = jc.contact_id");
 
     return $this;
   }
@@ -45,9 +42,8 @@ class CRM_Contactaccessrights_Utils_ACL {
   private function addJobContractRevClause() {
     $this->addWhereTable(
       '2',
-      "LEFT JOIN civicrm_hrjobcontract_revision jcr ON jc.id = jcr.jobcontract_id"
+      "INNER JOIN civicrm_hrjobcontract_revision jcr ON (jc.id = jcr.jobcontract_id AND jcr.effective_date <= NOW())"
     );
-    $this->addWhereCondition('jcr.effective_date <= NOW()');
 
     return $this;
   }
@@ -55,9 +51,10 @@ class CRM_Contactaccessrights_Utils_ACL {
   private function addJobContractDetailsClause() {
     $this->addWhereTable(
       '3',
-      'LEFT JOIN civicrm_hrjobcontract_details jcd ON jcr.id = jcd.jobcontract_revision_id'
+      'INNER JOIN civicrm_hrjobcontract_details jcd ON (
+        jcr.id = jcd.jobcontract_revision_id AND (jcd.period_end_date >= NOW() OR jcd.period_end_date IS NULL)
+      )'
     );
-    $this->addWhereCondition('(jcd.period_end_date >= NOW() OR jcd.period_end_date IS NULL)');
 
     return $this;
   }
@@ -68,9 +65,10 @@ class CRM_Contactaccessrights_Utils_ACL {
 
     $this->addWhereTable(
       '4',
-      'LEFT JOIN civicrm_hrjobroles jr ON jc.id = jr.job_contract_id'
+      'INNER JOIN civicrm_hrjobroles jr ON (
+        jc.id = jr.job_contract_id AND jr.location IN (' . implode(', ', $locationIds) . ')
+      )'
     );
-    $this->addWhereCondition('jr.location IN (' . implode(', ', $locationIds) . ')');
 
     return $this;
   }
