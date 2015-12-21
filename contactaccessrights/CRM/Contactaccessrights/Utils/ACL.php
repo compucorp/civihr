@@ -60,14 +60,13 @@ class CRM_Contactaccessrights_Utils_ACL {
   }
 
   private function addJobRolesClause() {
-    $locationIds = array_column($this->getLocations(), 'id') ?: [0];
-    $regionIds = array_column($this->getRegions(), 'id') ?: [0];
+    $locationIds = implode(', ', array_column($this->getLocations(), 'id') ?: [0]);
+    $regionIds = implode(', ', array_column($this->getRegions(), 'id') ?: [0]);
 
     $this->addWhereTable(
       '4',
-      'INNER JOIN civicrm_hrjobroles jr ON (
-        jc.id = jr.job_contract_id AND jr.location IN (' . implode(', ', $locationIds) . ')
-      )'
+      "INNER JOIN civicrm_hrjobroles jr ON (
+        jc.id = jr.job_contract_id AND (jr.location IN ({$locationIds}) OR jr.region IN ({$regionIds})))"
     );
 
     return $this;
