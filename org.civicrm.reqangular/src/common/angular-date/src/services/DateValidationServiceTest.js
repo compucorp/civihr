@@ -164,7 +164,7 @@ describe('Unit: DateValidationService', function() {
 
         expect(function(){
             Service.validate('13/11/2003', '13/11/2003');
-        }).toThrow(new Error('Start Date cannot be he same as End Date!'));
+        }).toThrow();
     });
 
     it('Function will break even if wont throw an exception', function(){
@@ -176,17 +176,14 @@ describe('Unit: DateValidationService', function() {
     });
 
     it('Start date is required while End date isnt ', function() {
+        expect(function () {
+            Service.setDates();
+        }).toThrow();
+
         /* Should pass */
         expect(function(){
             Service.setDates('12/11/2003');
         }).not.toThrow();
-        Service._reset();
-
-        expect(function () {
-            Service.setDates();
-        }).toThrow();
-        Service._reset();
-
     });
 
     it('Can run validate while only start date is entered', function() {

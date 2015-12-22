@@ -1,4 +1,4 @@
-function DateValidationService($filter) {
+function DateValidationService($filter, DateFactory) {
     var me = this;
 
     me.start = '';
@@ -6,24 +6,31 @@ function DateValidationService($filter) {
 
     me.start_parts = [];
     me.end_parts = [];
+    
+    me.maxDate = {};
+    me.minDate = {};
 
     me.options = {};
 
     me.setOptions = function setOptions(newOptions) {
         angular.extend(me.options, newOptions);
+        
+        if(me.options.minDate){
+            me.minDate = DateFactory.createDate(me.options.minDate);
+        }
     };
 
     me._error = function (error_msg, fields) {
         throw new Error(error_msg);
     };
 
-    me._reset = function(){
+    function reset(){
         me.start = '';
         me.end = '';
 
         me.start_parts = [];
         me.end_parts = [];
-    };
+    }
 
     /**
      *
@@ -39,7 +46,7 @@ function DateValidationService($filter) {
     };
 
     me.setDates = function(start_date, end_date){
-        me._reset();
+        reset();
         // We apply filter, so we have the same date format in both variables
         if(!!start_date) {
             me.start = $filter('CustomDate')(start_date);
@@ -56,17 +63,26 @@ function DateValidationService($filter) {
 
     me.validate = function validate(start_date, end_date) {
 
-        if(!me.start || !!start_date) me.setDates(start_date, end_date);
+        me.start = DateFactory.createDate(start_date);
+        me.end = DateFactory.createDate(end_date);
 
-        me.checkIfFormatIsValid();
-        me.checkIfStartDateIsLower(me.start_parts, me.end_parts, 2);
-        //Check for year, month and day
-        for (var index = 2; index > -1; index--) {
-            if(me.end) {
-                me.checkIfValuesAreValid(index, me.end_parts, ['end_date']);
-            }
-            me.checkIfValuesAreValid(index, me.start_parts, ['start_date']);
+        if(!start.isValid()){
+            me._error('Start Date is not valid!!', ['start_date']);
         }
+
+        if(!end.isValid()){
+            me._error('End Date is not valid!!', ['end_date']);
+        }
+        
+        //me.checkIfFormatIsValid();
+        //me.checkIfStartDateIsLower(me.start_parts, me.end_parts, 2);
+        ////Check for year, month and day
+        //for (var index = 2; index > -1; index--) {
+        //    if(me.end) {
+        //        me.checkIfValuesAreValid(index, me.end_parts, ['end_date']);
+        //    }
+        //    me.checkIfValuesAreValid(index, me.start_parts, ['start_date']);
+        //}
     };
 
     me.checkIfFormatIsValid = function () {

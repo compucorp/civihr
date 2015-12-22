@@ -20,12 +20,11 @@ function DatePickerController($scope, $controller, DateFactory, $log){
         }
         return false;
     };
-    
 
     me.parseDate = function(date){
-        var formatted = DateFactory.createDate(date).format('DD/MM/YYYY');
+        var formatted = DateFactory.createDate(date).format('DD/MM/YYYY'),
+            newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
 
-        var newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
         return newDate.toDate();
     };
 
