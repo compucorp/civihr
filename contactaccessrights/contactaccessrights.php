@@ -170,10 +170,6 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
   $where = trim($where) ? $where . " OR " . $whereStr : $whereStr;
 }
 
-function contactaccessrights_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.contactaccessrights', 'js/script.js', 1000);
-}
-
 /**
  * Implementation of `hook_civicrm_summaryActions`.
  *

@@ -37,6 +37,10 @@ class CRM_Contactaccessrights_Form_ManageRights extends CRM_Core_Form {
       ['type' => 'cancel', 'name' => ts('Cancel'), 'isDefault' => FALSE]
     ]);
 
+    CRM_Core_Resources::singleton()
+      ->addScriptFile('uk.co.compucorp.contactaccessrights', 'js/script.js', 50, 'page-footer')
+      ->addStyleFile('uk.co.compucorp.contactaccessrights', 'css/style.css', 50, 'page-header');
+
     parent::buildQuickForm();
   }
 
