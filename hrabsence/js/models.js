@@ -277,6 +277,22 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
       this.each(function(model) {
         var apiparamsget = model.get('api.HRJobLeave.get');
         _.each(apiparamsget.values, function(contractIds, contractVals) {
+          var isCurrentPeriod = true;
+          var periodStartDate = model.get('period_start_date');
+          var periodEndDate = model.get('period_end_date');
+
+          if (periodStartDate !== undefined && Date.parse(periodStartDate) > Date.now()) {
+            isCurrentPeriod = false;
+          }
+
+          if(periodEndDate !== undefined && Date.parse(periodEndDate) < Date.now()) {
+            isCurrentPeriod = false;
+          }
+
+          if(!isCurrentPeriod) {
+            return;
+          }
+
           var statsKey = model.get('id');
           if (!stats[statsKey]) {
             stats[statsKey] = {
