@@ -32,7 +32,7 @@ define([
         it('has the expected api', function () {
             expect(Object.keys(AppraisalCycle)).toEqual([
                 'active', 'all', 'create', 'find', 'grades', 'statuses',
-                'statusOverview', 'update', 'total', 'types'
+                'statusOverview', 'total', 'types'
             ]);
         });
 
@@ -262,32 +262,6 @@ define([
             it('returns an instance of the model', function (done) {
                 AppraisalCycle.find(targetId).then(function (cycle) {
                     expect(AppraisalCycleInstance.isInstance(cycle)).toBe(true);
-                })
-                .finally(done) && $rootScope.$digest();
-            });
-        });
-
-        describe('update()', function () {
-            var targetId = '5';
-            var newData = { name: 'foo', type: 'bar', status: 'baz' };
-
-            beforeEach(function () {
-                resolveApiCallTo('update').with((function () {
-                    var cycle = cycles.filter(function (cycle) {
-                        return cycle.id === targetId;
-                    })[0];
-
-                    return angular.extend({}, cycle, newData);
-                })());
-            });
-
-            it('updates a cycle', function (done) {
-                AppraisalCycle.update(targetId, newData).then(function (cycle) {
-                    expect(appraisalsAPI.update).toHaveBeenCalledWith(targetId, newData);
-                    expect(cycle.id).toBe('5');
-                    expect(cycle.name).toBe(newData.name);
-                    expect(cycle.type).toBe(newData.type);
-                    expect(cycle.status).toBe(newData.status);
                 })
                 .finally(done) && $rootScope.$digest();
             });
