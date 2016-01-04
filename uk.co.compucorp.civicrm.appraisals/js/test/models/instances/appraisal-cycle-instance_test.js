@@ -127,30 +127,32 @@ define([
                 name: 'newest cycle',
                 cycle_grade_due: '01/02/2016'
             };
-            var mergedData = _.assign(Object.create(null), oldData, newData);
 
             beforeEach(function () {
                 spyOn(appraisalsAPI, 'update').and.callFake(function () {
                     var deferred = $q.defer();
-                    deferred.resolve(mergedData);
+                    deferred.resolve();
 
                     return deferred.promise;
                 });
+
+                instance = AppraisalCycleInstance.init(oldData)
             });
 
             describe('when the instance has an id set', function () {
                 beforeEach(function () {
-                    instance = AppraisalCycleInstance.init(oldData)
-                    p = instance.update(newData);
+                    _.assign(instance, newData);
+
+                    p = instance.update();
                 });
 
                 it('calls the update method of the API', function () {
-                    expect(appraisalsAPI.update).toHaveBeenCalledWith('23', newData);
+                    expect(appraisalsAPI.update).toHaveBeenCalledWith(instance.toAPI());
                 });
 
                 it('reflects the updated data on its attributes', function (done) {
                     p.then(function () {
-                        expect(instance.attributes()).toEqual(mergedData);
+                        expect(instance.attributes()).toEqual(_.assign(Object.create(null), oldData, newData));
                     })
                     .finally(done) && $rootScope.$digest();
                 });
@@ -158,10 +160,9 @@ define([
 
             describe('when the instance does not have an id set', function () {
                 beforeEach(function () {
-                    oldData.id = null;
+                    _.assign(instance, newData, { id: null });
 
-                    instance = AppraisalCycleInstance.init(oldData);
-                    p = instance.update(newData);
+                    p = instance.update();
                 });
 
                 it('returns an error', function (done) {

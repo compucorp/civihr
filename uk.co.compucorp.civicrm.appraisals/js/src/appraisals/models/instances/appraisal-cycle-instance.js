@@ -83,7 +83,7 @@ define([
                     var deferred = $q.defer();
 
                     if (!!this.id) {
-                        deferred.resolve(appraisalsAPI.update(this.id, attributes).then(function (attributes) {
+                        deferred.resolve(appraisalsAPI.update(this.toAPI()).then(function (attributes) {
                             _.assign(this, attributes); // Updates own attributes
                         }.bind(this)));
                     } else {

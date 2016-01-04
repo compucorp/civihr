@@ -129,16 +129,13 @@ define([
             },
 
             /**
-             * Updates an appraisal cycle with the given id
+             * Updates an appraisal cycle
              *
-             * @param {string} id
              * @param {object} attributes - The new data of the cycle
              * @return {Promise} resolves to the amended cycle
              */
-            update: function (id, attributes) {
+            update: function (attributes) {
                 $log.debug('api.appraisals.update');
-
-                attributes = angular.extend({}, attributes, { id: id });
 
                 return this.sendPOST('AppraisalCycle', 'create', attributes)
                     .then(function (data) {
