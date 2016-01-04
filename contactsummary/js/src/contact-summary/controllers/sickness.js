@@ -20,6 +20,7 @@ define([
         this.takenPreviously = 0;
         this.staffAverage = 0;
         this.ready = false;
+        this.currentPeriod = '-';
 
         Leave.getStaffAverage('sick')
             .then(function (response) {
@@ -42,6 +43,11 @@ define([
                         self.takenPreviously = leave.taken;
                     }
                 });
+
+                return Leave.getCurrentPeriod();
+            })
+            .then(function (response) {
+                self.currentPeriod = response.name;
             })
             .finally(function () {
                 self.ready = true;
