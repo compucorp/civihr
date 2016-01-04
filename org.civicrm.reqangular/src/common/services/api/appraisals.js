@@ -57,10 +57,13 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Creates a new appraisal cycle
+             *
+             * @param {object} attributes - The data of the new cycle
+             * @return {Promise} resolves to the newly created cycle
              */
             create: function (attributes) {
-                $log.debug('create');
+                $log.debug('api.appraisals.create');
 
                 return this.sendPOST('AppraisalCycle', 'create', attributes)
                     .then(function (data) {
@@ -126,16 +129,21 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Updates an appraisal cycle with the given id
+             *
+             * @param {string} id
+             * @param {object} attributes - The new data of the cycle
+             * @return {Promise} resolves to the amended cycle
              */
             update: function (id, attributes) {
-                $log.debug('types');
+                $log.debug('api.appraisals.update');
 
-                var cycle = mockedCycles().filter(function (cycle) {
-                    return cycle.id === id;
-                })[0];
+                attributes = angular.extend({}, attributes, { id: id });
 
-                return this.mockPOST(angular.extend({}, cycle, attributes));
+                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                    .then(function (data) {
+                        return data.values[0];
+                    });
             },
 
             /**
