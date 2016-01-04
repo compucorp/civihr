@@ -6,14 +6,19 @@ define([
     'use strict';
 
     describe('AppraisalCycleInstance', function () {
-        var $rootScope, AppraisalCycleInstance;
-        var instanceInterface = ['init', 'attributes', 'fromAPI', 'toAPI'];
+        var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
+        var instanceInterface = ['init', 'attributes', 'fromAPI', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function (_$rootScope_, _AppraisalCycleInstance_) {
-            $rootScope = _$rootScope_;
-            AppraisalCycleInstance = _AppraisalCycleInstance_;
-        }));
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
+            function (_$q_, _$rootScope_, _AppraisalCycleInstance_, _appraisalsAPI_) {
+                $q = _$q_;
+                $rootScope = _$rootScope_;
+
+                AppraisalCycleInstance = _AppraisalCycleInstance_;
+                appraisalsAPI = _appraisalsAPI_;
+            }
+        ]));
 
         it('has the expected interface', function () {
             expect(_.functions(AppraisalCycleInstance)).toEqual(instanceInterface);
@@ -106,6 +111,65 @@ define([
             it('formats the dates in the YYYY-MM-DD format', function () {
                 expect(toAPIData.cycle_start_date).toBe('2015-09-23');
                 expect(toAPIData.cycle_grade_due).toBe('2015-11-22');
+            });
+        });
+
+        describe('update()', function () {
+            var instance, p;
+
+            var oldData = {
+                id: '23',
+                name: 'new cycle',
+                cycle_start_date: '12/11/2015',
+                cycle_grade_due: '01/01/2016'
+            };
+            var newData = {
+                name: 'newest cycle',
+                cycle_grade_due: '01/02/2016'
+            };
+            var mergedData = _.assign(Object.create(null), oldData, newData);
+
+            beforeEach(function () {
+                spyOn(appraisalsAPI, 'update').and.callFake(function () {
+                    var deferred = $q.defer();
+                    deferred.resolve(mergedData);
+
+                    return deferred.promise;
+                });
+            });
+
+            describe('when the instance has an id set', function () {
+                beforeEach(function () {
+                    instance = AppraisalCycleInstance.init(oldData)
+                    p = instance.update(newData);
+                });
+
+                it('calls the update method of the API', function () {
+                    expect(appraisalsAPI.update).toHaveBeenCalledWith('23', newData);
+                });
+
+                it('reflects the updated data on its attributes', function (done) {
+                    p.then(function () {
+                        expect(instance.attributes()).toEqual(mergedData);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+            });
+
+            describe('when the instance does not have an id set', function () {
+                beforeEach(function () {
+                    oldData.id = null;
+
+                    instance = AppraisalCycleInstance.init(oldData);
+                    p = instance.update(newData);
+                });
+
+                it('returns an error', function (done) {
+                    p.catch(function (err) {
+                        expect(err).toBe('ERR_UPDATE: ID_MISSING');
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
             });
         });
     });

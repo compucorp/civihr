@@ -6,8 +6,8 @@ define([
 ], function (_, moment, __, instances) {
     'use strict';
 
-    instances.factory('AppraisalCycleInstance', ['api.appraisals',
-        function (appraisalsAPI) {
+    instances.factory('AppraisalCycleInstance', ['$q', 'api.appraisals',
+        function ($q, appraisalsAPI) {
 
             return {
 
@@ -69,6 +69,28 @@ define([
                             result[key] = this[key];
                         }
                     }, Object.create(null), attributes);
+                },
+
+                /**
+                 * Updates the instance with the new data
+                 *
+                 * @param {object} attributes - The new data
+                 * @return {Promise}
+                 *   resolved with the appraisals api update's promise
+                 *   rejected if there is no id set on the instance
+                 */
+                update: function (attributes) {
+                    var deferred = $q.defer();
+
+                    if (!!this.id) {
+                        deferred.resolve(appraisalsAPI.update(this.id, attributes).then(function (attributes) {
+                            _.assign(this, attributes); // Updates own attributes
+                        }.bind(this)));
+                    } else {
+                        deferred.reject('ERR_UPDATE: ID_MISSING');
+                    }
+
+                    return deferred.promise;
                 }
             };
         }
