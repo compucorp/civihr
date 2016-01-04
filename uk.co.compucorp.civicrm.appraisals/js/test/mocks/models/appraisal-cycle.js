@@ -2,7 +2,9 @@ define([
     'common/angular',
     'mocks/module'
 ], function (angular, mocks) {
-    mocks.factory('AppraisalCycle', ['$q', function ($q) {
+    'use strict';
+
+    mocks.factory('AppraisalCycleMock', ['$q', function ($q) {
 
         return {
             all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {

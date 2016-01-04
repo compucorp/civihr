@@ -10,12 +10,12 @@ define([
         var $controller, $q, $modalInstance, $rootScope, AppraisalCycle, ctrl;
 
         beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycleMock_) {
             $controller = _$controller_;
             $q = _$q_;
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
             $rootScope = _$rootScope_;
-            AppraisalCycle = _AppraisalCycle_;
+            AppraisalCycle = _AppraisalCycleMock_;
 
             initController();
         }));
@@ -149,7 +149,8 @@ define([
         function initController(params) {
             ctrl = $controller('AppraisalCycleModalCtrl', angular.extend({}, {
                 $modalInstance: $modalInstance,
-                $scope: $rootScope.$new()
+                $scope: $rootScope.$new(),
+                AppraisalCycle: AppraisalCycle
             }, params));
         }
     });
