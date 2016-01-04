@@ -261,6 +261,7 @@ define([
                     return period;
                 });
         }
+        factory.getCurrentPeriod = getCurrentPeriod;
 
         function getPreviousPeriod() {
             var currentPeriod, previousPeriod = {};
