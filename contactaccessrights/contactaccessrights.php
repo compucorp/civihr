@@ -169,3 +169,35 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
   $whereStr = '(' . ($whereStr ?: '1') . ')';
   $where = trim($where) ? $where . " OR " . $whereStr : $whereStr;
 }
+
+function contactaccessrights_civicrm_pageRun($page) {
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.contactaccessrights', 'js/script.js', 1000);
+}
+
+/**
+ * Implementation of `hook_civicrm_summaryActions`.
+ *
+ * @param array $actions   Array of all Actions in context menu. Each action item is itself an array, that can contain
+ *                         the items below (not exhaustive):
+ *                         <ul>
+ *                         <li>title: the text that appears in the action menu</li>
+ *                         <li>weight: a number defining the "weight" - i.e where should the item sit in the action
+ *                         menu</li>
+ *                         <li>ref: this is appended to the string "crm-action-record-" and becomes the list items CSS
+ *                         class (each action is a li element)</li>
+ *                         <li>key: this is the array key that identifies the action</li>
+ *                         <li>href: a URL that you want the link to navigate to</li>
+ *                         <li>permissions: an array that contains permissions a user must have in order to use this
+ *                         action</li>
+ *                         </ul>
+ * @param int   $contactID ID of the contact whose summary page is being viewed.
+ */
+function contactaccessrights_civicrm_summaryActions(&$actions, $contactID) {
+  $actions['casework'] = array(
+    'title'  => 'Manage roles and teams',
+    'weight' => 999,
+    'ref'    => 'manage-contact-access-rights',
+    'key'    => 'manage-contact-access-rights',
+    'href'   => "/civicrm/admin/contact-access-rights/manage?"
+  );
+}

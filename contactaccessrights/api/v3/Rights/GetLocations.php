@@ -32,7 +32,7 @@ function civicrm_api3_rights_GetLocations($params) {
   try {
     $bao = new CRM_Contactaccessrights_BAO_Rights();
     $rightType = new CRM_Contactaccessrights_Utils_RightType_Location();
-    $locationRights = $bao->getRights($rightType, $params['contact_id']);
+    $locationRights = $bao->getRightsByType($rightType, $params['contact_id']);
 
     return civicrm_api3_create_success($locationRights, $params, 'Rights', 'GetLocations');
   } catch (CRM_Extension_Exception $e) {
