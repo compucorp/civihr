@@ -2,7 +2,8 @@ define([
     'common/angular',
     'common/lodash',
     'common/angularMocks',
-    'appraisals/app'
+    'appraisals/app',
+    'mocks/models/instances/appraisal-cycle-instance'
 ], function (angular, _) {
     'use strict';
 
@@ -17,13 +18,13 @@ define([
             { id: '9', type: 'type 2' }, { id: '10', type: 'type 4' }
         ];
 
-        beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleInstance', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleInstance_, _appraisalsAPI_) {
+        beforeEach(module('appraisals', 'appraisals.mocks'));
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleInstanceMock', 'api.appraisals',
+            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleInstanceMock_, _appraisalsAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
                 AppraisalCycle = _AppraisalCycle_;
-                AppraisalCycleInstance = _AppraisalCycleInstance_;
+                AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
                 appraisalsAPI = _appraisalsAPI_;
             }
         ]));
@@ -179,7 +180,7 @@ define([
 
             it('returns an instance of the model', function (done) {
                 AppraisalCycle.create(newCycle).then(function (savedCycle) {
-                    expect(isModelInstance(savedCycle)).toBe(true);
+                    expect(AppraisalCycleInstance.isInstance(savedCycle)).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -260,7 +261,7 @@ define([
 
             it('returns an instance of the model', function (done) {
                 AppraisalCycle.find(targetId).then(function (cycle) {
-                    expect(isModelInstance(cycle)).toBe(true);
+                    expect(AppraisalCycleInstance.isInstance(cycle)).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -305,16 +306,6 @@ define([
                 .finally(done) && $rootScope.$digest();
             });
         });
-
-        /**
-         * Checks if the given object is a modal instance
-         *
-         * @param {object} object
-         * @return {boolean}
-         */
-        function isModelInstance(object) {
-            return _.isEqual(_.functions(object), _.functions(AppraisalCycleInstance));
-        }
 
         /**
          * Adds a `spyOn` on the given `appraisalsApi` method, and then returns
