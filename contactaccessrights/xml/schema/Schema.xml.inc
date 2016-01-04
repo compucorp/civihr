@@ -1,0 +1,1 @@
+<xi:include href="CRM/Contactaccessrights/files.xml"         parse="xml" />

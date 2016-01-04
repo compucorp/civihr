@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Contactaccessrights</base>
+  <class>Rights</class>
+  <name>civicrm_contactaccessrights_rights</name>
+  <comment>Access rights for contacts</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Rights ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>entity_type</name>
+    <type>varchar</type>
+    <length>256</length>
+    <required>true</required>
+    <comment>Type of entity the permission grants access to (basically, option group name).</comment>
+  </field>
+
+  <field>
+    <name>entity_id</name>
+    <type>int</type>
+    <required>true</required>
+    <length>256</length>
+    <comment>ID of the entity the permission grants access to (basically, option value ID).</comment>
+  </field>
+
+</table>

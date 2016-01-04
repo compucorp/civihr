@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/contact-access-rights/manage</path>
+    <page_callback>CRM_Contactaccessrights_Form_ManageRights</page_callback>
+    <title>ManageRights</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
