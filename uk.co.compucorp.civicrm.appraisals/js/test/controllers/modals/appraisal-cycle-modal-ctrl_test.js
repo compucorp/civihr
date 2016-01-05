@@ -139,8 +139,14 @@ define([
                     expect(ctrl.cycle.update).toHaveBeenCalled();
                 });
 
-                it('emits an event', function () {
-                    expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
+                describe('event', function () {
+                    it('is emitted', function () {
+                        expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
+                    });
+
+                    it('gets the same cycle object passed as parameter', function () {
+                        expect($rootScope.$emit.calls.argsFor(0)[1]).toEqual(ctrl.cycle);
+                    });
                 });
 
                 it('closes the modal', function () {

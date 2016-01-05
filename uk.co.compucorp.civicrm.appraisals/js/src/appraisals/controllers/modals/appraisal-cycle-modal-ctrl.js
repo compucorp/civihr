@@ -51,8 +51,8 @@ define([
              * Edits the current cycle
              */
             function editCycle() {
-                vm.cycle.update().then(function (cycle) {
-                    $rootScope.$emit('AppraisalCycle::edit', cycle);
+                vm.cycle.update().then(function () {
+                    $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
                     $modalInstance.close();
                 });
             }
