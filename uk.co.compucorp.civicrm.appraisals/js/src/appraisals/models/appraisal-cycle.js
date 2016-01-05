@@ -22,7 +22,7 @@ define([
             },
 
             /**
-             * Returns the all the appraisal cycles
+             * Returns a list of appraisal cycles, each converted to a model instance
              *
              * @param {object} filters - Values the full list should be filtered by
              * @param {object} pagination
@@ -30,7 +30,13 @@ define([
              * @return {Promise}
              */
             all: function (filters, pagination) {
-                return appraisalsAPI.all(filters, pagination);
+                return appraisalsAPI.all(filters, pagination).then(function (response) {
+                    response.list = response.list.map(function (cycle) {
+                        return instance.init(cycle, true);
+                    });
+
+                    return response;
+                });
             },
 
             /**
