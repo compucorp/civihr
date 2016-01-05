@@ -1,12 +1,13 @@
 define([
     'common/angular',
+    'common/lodash',
     'common/modules/apis',
     'common/services/api',
     'common/services/api/option-group'
-], function (angular, apis) {
+], function (angular, _, apis) {
     'use strict';
 
-    apis.factory('api.appraisals', ['$log', 'api', 'api.optionGroup', function ($log, api, optionGroupAPI) {
+    apis.factory('api.appraisals', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {
         $log.debug('api.appraisals');
 
         // Draft
@@ -19,40 +20,43 @@ define([
             activeCycles: function () {
                 $log.debug('activeCycles');
 
-                return this.mockGET([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                return this.mockGET(mockedCycles().filter(function (cycle) {
+                    return !!cycle.active;
+                }));
             },
 
             /**
-             * # TO DO #
+             * Returns:
+             *   - the list of cycles, eventually filtered/paginated
+             *   - the total count of the cycles based on the filters,
+             *     independent of the pagination settings
+             *
+             * @param {object} filters - Values the full list should be filtered by
+             * @param {object} pagination
+             *   `page` for the current page, `size` for number of items per page
+             * @return {Promise} resolves to an object with `list` and `total`
              */
             all: function (filters, pagination) {
                 $log.debug('all');
 
-                // the filtering and pagination are done here only because
-                // the response is mocked otherwise they would be done by the backend
-                return this.mockGET(mockedCycles()).then(function (cycles) {
-                    var start, end, total;
+                var params = {};
 
-                    if (filters) {
-                        cycles = cycles.filter(function (cycle) {
-                            return Object.keys(filters).filter(function (key) {
-                                return filters[key] !== '' && filters[key] !== null
-                            }).every(function (key) {
-                                return cycle[key] === filters[key];
-                            });
-                        });
-                    }
+                if (pagination) {
+                    params.options = {
+                        offset: (pagination.page - 1) * pagination.size,
+                        limit: pagination.size
+                    };
+                }
 
-                    total = cycles.length;
-
-                    if (pagination) {
-                        start = (pagination.page - 1) * pagination.size;
-                        end = start + pagination.size;
-
-                        cycles = cycles.slice(start, end);
-                    }
-
-                    return { list: cycles, total: total };
+                return $q.all([
+                    this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
+                        return data.values;
+                    }),
+                    this.sendGET('AppraisalCycle', 'getcount', _.omit(params, 'options')).then(function (data) {
+                        return data.result;
+                    })
+                ]).then(function (results) {
+                    return { list: results[0], total: results[1] };
                 });
             },
 
