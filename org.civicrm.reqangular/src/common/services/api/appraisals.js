@@ -80,7 +80,7 @@ define([
             find: function (id) {
                 $log.debug('api.appraisals.find');
 
-                return this.sendGET('AppraisalCycle', 'get', { id: '' + id }).then(function (data) {
+                return this.sendGET('AppraisalCycle', 'get', { id: '' + id }, false).then(function (data) {
                     return data.values[0];
                 });
             },
