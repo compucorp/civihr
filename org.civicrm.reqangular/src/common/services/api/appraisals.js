@@ -41,6 +41,12 @@ define([
 
                 var params = {};
 
+                if (filters) {
+                    Object.keys(filters).forEach(function (key) {
+                        !!filters[key] && (params[key] = filters[key]);
+                    });
+                }
+
                 if (pagination) {
                     params.options = {
                         offset: (pagination.page - 1) * pagination.size,
