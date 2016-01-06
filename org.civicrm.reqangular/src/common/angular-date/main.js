@@ -1,3 +1,19 @@
+/**
+ * @name angular-date
+ *
+ * @author Krzysztof Kałamarski
+ *
+ * @extends ui.bootstrap
+ *
+ * @description Angular Module extending Date
+ *
+ * Temporally it's built as a CommonJs modules.
+ * TODO make sure that all extensions are compatible with common dependencies and merge angular-date's AMD version.
+ *
+ * Library consists of set of directives, filters, services, templates and decorators extending the angular bootstrap UI module.
+ *
+ */
+
 require("./src/templates/templates");
 
 var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
