@@ -42,7 +42,7 @@
                 </div>
                 <footer class="panel-footer">
                     <dl class="dl-horizontal dl-horizontal-inline">
-                        <dt>Total number of appraysals in all cycles:</dt>
+                        <dt>Total number of appraisals in all cycles:</dt>
                         <dd>{{dashboard.statusOverview.totalAppraisalsNumber}}</dd>
                     </dl>
                 </footer>
@@ -377,9 +377,9 @@
                         <footer class="panel-footer">
                             <ul class="list-unstyled chr_steps">
                                 <li class="chr_steps__step"
-                                    ng-repeat="step in cycle.appraisalsCountByStep"
+                                    ng-repeat="status in dashboard.statuses"
                                     ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
-                                    <span class="chr_steps__step__arrow">{{step.name}}: {{step.count}}</span>
+                                    <span class="chr_steps__step__arrow">{{status.label}}: 0</span>
                                 </li>
                             </ul>
                         </footer>
