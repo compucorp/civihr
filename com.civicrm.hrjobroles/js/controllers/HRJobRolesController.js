@@ -107,8 +107,6 @@ define(['controllers/controllers'], function(controllers){
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
-                console.log('Start:', data.start_date);
-                console.log('End:', data.end_date);
                 $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function(error, field){
                     errors++;
                     if(field.indexOf('start_date') > -1) {

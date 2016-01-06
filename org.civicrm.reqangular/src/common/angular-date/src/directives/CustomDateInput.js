@@ -19,13 +19,7 @@ function CustomDateInput($filter) {
 
             ngModelController.$formatters.push(convert);
 
-            function parse(data){
-                var output = data;
-                console.log(output);
-                return output;
-            }
-
-            ngModelController.$parsers = [parse];
+            ngModelController.$parsers = [];
         }
     };
 }
