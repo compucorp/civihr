@@ -9,11 +9,6 @@ describe('Unit: DateControllerTest', function () {
             compile = $compile;
             scope = $rootScope.$new();
             crtlScope = $rootScope.$new();
-
-            Controller = $controller('DatePickerController', {
-                $scope: crtlScope,
-                $attrs: {}
-            });
         });
 
         Element = getCompiledElement();
@@ -60,11 +55,6 @@ describe('Unit: DateControllerTest', function () {
         expect(Element).toBeDefined();
     });
 
-    it('Should be defined', function () {
-        expect(function () {
-            Controller.init(scope);
-        }).not.toThrow();
-    });
 
     it('Should refresh input', function () {
         scope.edit_data[10].start_date = new Date(2014, 2, 2);

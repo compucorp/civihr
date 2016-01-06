@@ -1,18 +1,28 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+/**
+ * @name angular-date
+ *
+ * @author Krzysztof Kałamarski
+ *
+ * @extends ui.bootstrap
+ *
+ * @description Angular Module extending Date
+ *
+ * Temporally it's built as a CommonJs modules.
+ * TODO make sure that all extensions are compatible with common dependencies and merge angular-date's AMD version.
+ *
+ * Library consists of set of directives, filters, services, templates and decorators extending the angular bootstrap UI module.
+ *
+ */
+
 _dereq_("./src/templates/templates");
 
 var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
 
 Module.service('DateValidationService', _dereq_('./src/services/DateValidationService'));
-
 Module.factory('DateFactory', _dereq_('./src/services/DateFactory'));
-
 Module.filter('CustomDate', _dereq_('./src/filters/CustomDateFilter'));
-
 Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'));
-
-/* Overrides */
-Module.controller('DatePickerController', _dereq_('./src/controllers/DatePickerController'));
 
 /* Decorators */
 Module.config(function($provide) {
@@ -24,86 +34,30 @@ Module.config(function($provide) {
 
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
-},{"./src/controllers/DatePickerController":2,"./src/decorators/DatepickerDirectiveDecorator":3,"./src/decorators/DatepickerPopupDirectiveDecorator":4,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":5,"./src/decorators/DaypickerDirectiveDecorator":6,"./src/directives/CustomDateInput":7,"./src/filters/CustomDateFilter":8,"./src/services/DateFactory":9,"./src/services/DateValidationService":10,"./src/templates/templates":11}],2:[function(_dereq_,module,exports){
+},{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateValidationService":9,"./src/templates/templates":10}],2:[function(_dereq_,module,exports){
 /**
- * @extends DatepickerController
+ * Decorates Datepicker directive, so that it uses monday as a first day of the week.
+ *
+ * TODO in the future: Create ability to change that through CiviHR settings
+ * @name DatepickerDirectiveDecorator
+ *
  */
-function DatePickerController($scope, $controller, DateFactory, $log){
-    $scope.implements = 'DatepickerController';
 
-    var me = this,
-        ngModelCtrl = { $setViewValue: angular.noop };
-
-    angular.extend(me, $controller('DatepickerController', {
-        $scope: $scope,
-        $attrs: {}
-    }));
-
-
-    $scope.isActive = function(dateObject) {
-        if (me.compare(dateObject.date, me.activeDate) === 0) {
-            $scope.activeDateId = dateObject.uid;
-            return true;
-        }
-        return false;
-    };
-
-    me.parseDate = function(date){
-        var formatted = DateFactory.createDate(date).format('DD/MM/YYYY'),
-            newDate = DateFactory.moment(formatted, 'DD/MM/YYYY');
-
-        return newDate.toDate();
-    };
-
-    /* Overriding Methods */
-    me.render = function() {
-        if ( ngModelCtrl.$modelValue ) {
-
-            var date = me.parseDate(ngModelCtrl.$modelValue),
-                isValid = !isNaN(date);
-
-            if ( isValid ) {
-                me.activeDate = date;
-            } else {
-                $log.error('Date is Invalid.');
-            }
-            ngModelCtrl.$setValidity('date', isValid);
-        }
-
-        me.refreshView();
-    };
-
-
-    me.refreshView = function() {
-        if (me.element) {
-            me._refreshView();
-
-            var date = ngModelCtrl.$modelValue ? me.parseDate(ngModelCtrl.$modelValue) : null;
-
-            ngModelCtrl.$setValidity('date-disabled', !date || (me.element && !me.isDisabled(date)));
-        }
-    };
-
-    me.init = function(ngModelCtrl_) {
-        ngModelCtrl = ngModelCtrl_;
-
-        ngModelCtrl.$render = function() {
-            me.render();
-        };
-    };
-}
-
-module.exports = DatePickerController;
-},{}],3:[function(_dereq_,module,exports){
 function DatepickerDirectiveDecorator($delegate) {
     var old_link = $delegate[0].link;
 
     $delegate[0].compile = function(){
+
+        /**
+         * Compile returns a link function.
+         * @override
+         */
         return function(scope, element, attrs, ctrls){
 
             /**
-             * @override
              * @type {number}
+             * @description Day of the week: 0 - Sunday, 1 - Monday ... 6 - Saturday
+             * @override
              */
             ctrls[0].startingDay = 1;
 
@@ -115,23 +69,27 @@ function DatepickerDirectiveDecorator($delegate) {
 }
 
 module.exports = DatepickerDirectiveDecorator;
-},{}],4:[function(_dereq_,module,exports){
+},{}],3:[function(_dereq_,module,exports){
+/**
+ * Decorates DatepickerPopup directive, so that it uses monday as a first day of the week.
+ *
+ * TODO: Fetch date format from CiviCRM settings
+ *
+ * @name DatepickerPopupDirectiveDecorator
+ *
+ */
+
 function DatepickerPopupDirectiveDecorator($delegate) {
     var original_link = $delegate[0].link;
 
-
-    // FIXME noassign error is caused by wrong binding - change it here
-    // FIXME as for now i have no clue how to solve it
-    //$delegate[0].scope.isOpen = '&';
-
-    /**
-     * Implements original link function
-     * @returns Function
-     */
     $delegate[0].compile = function(){
+
+        /**
+         * Compile returns a link function.
+         * @override
+         */
         return function(scope, element, attrs, ngModel){
 
-            // TODO fetch form civicrm settings
             /**
              * @override
              * @type {string}
@@ -146,26 +104,62 @@ function DatepickerPopupDirectiveDecorator($delegate) {
 }
 
 module.exports = DatepickerPopupDirectiveDecorator;
-},{}],5:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
+/**
+ * Decorates DatepickerPopupWrap directive, so that it uses custom template.
+ *
+ * TODO: Fetch date format from CiviCRM settings
+ *
+ * @name DatepickerPopupWrapDirectiveDecorator
+ *
+ */
+
 function DatepickerPopupWrapDirectiveDecorator($delegate) {
 
+    /**
+     * @override
+     *
+     * template path
+     * @type {string}
+     */
     $delegate[0].templateUrl = 'templates/datepickerPopup.html';
 
     return $delegate;
 }
 
 module.exports = DatepickerPopupWrapDirectiveDecorator;
-},{}],6:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
+/**
+ * Decorates Daypicker directive, so that it uses custom template.
+ *
+ * TODO: Fetch date format from CiviCRM settings
+ *
+ * @name DaypickerDirectiveDecorator
+ *
+ */
+
 function DaypickerDirectiveDecorator($delegate) {
 
+    /**
+     * @override
+     *
+     * template path
+     * @type {string}
+     */
     $delegate[0].templateUrl = "templates/day.html";
 
     return $delegate;
 }
 
 module.exports = DaypickerDirectiveDecorator;
-},{}],7:[function(_dereq_,module,exports){
-module.exports = function CustomDateInput($filter) {
+},{}],6:[function(_dereq_,module,exports){
+/**
+ *
+ * @param $filter
+ * @returns {{require: string, link: link}}
+ * @constructor
+ */
+function CustomDateInput($filter) {
     return {
         require: 'ngModel',
         link: function(scope, element, attrs, ngModelController) {
@@ -179,11 +173,20 @@ module.exports = function CustomDateInput($filter) {
             }
 
             ngModelController.$formatters.push(convert);
+
+            function parse(data){
+                var output = data;
+                console.log(output);
+                return output;
+            }
+
+            ngModelController.$parsers = [parse];
         }
     };
-};
+}
 
-},{}],8:[function(_dereq_,module,exports){
+module.exports = CustomDateInput;
+},{}],7:[function(_dereq_,module,exports){
 module.exports = function ($filter, DateFactory) {
     return function (datetime) {
         var Date;
@@ -209,10 +212,10 @@ module.exports = function ($filter, DateFactory) {
         return 'Unspecified';
     };
 };
-},{}],9:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
-function DateFactory(){
+function DateFactory() {
     return {
         moment: moment,
         /**
@@ -222,47 +225,52 @@ function DateFactory(){
          * @param strict
          * @returns Moment Object
          */
-        createDate: function createDate(dateString, format, strict){
-            return this.moment.apply(null, arguments);
+        createDate: function createDate(dateString, format, strict) {
+
+            if (!format) {
+                format = [
+                    'DD/MM/YYYY',
+                    'DD-MM-YYYY',
+                    'x'
+                ];
+            }
+
+            if(typeof strict === 'undefined'){
+                strict = true;
+            }
+
+            return moment(dateString, format, strict);
         }
     };
 }
 
 module.exports = DateFactory;
-},{"../../../vendor/moment.min.js":12}],10:[function(_dereq_,module,exports){
+},{"../../../vendor/moment.min.js":11}],9:[function(_dereq_,module,exports){
+/**
+ *
+ * @param $filter
+ * @param DateFactory
+ * @constructor
+ */
 function DateValidationService($filter, DateFactory) {
     var me = this;
-
-    me.start = '';
-    me.end = '';
-
-    me.start_parts = [];
-    me.end_parts = [];
     
     me.maxDate = {};
     me.minDate = {};
 
     me.options = {};
 
-    me.setOptions = function setOptions(newOptions) {
-        angular.extend(me.options, newOptions);
-        
-        if(me.options.minDate){
-            me.minDate = DateFactory.createDate(me.options.minDate);
-        }
+    me.setMinDate = function(date){
+        me.minDate = DateFactory.createDate(date);
+    };
+
+    me.setMaxDate = function(date){
+        me.maxDate = DateFactory.createDate(date);
     };
 
     me._error = function (error_msg, fields) {
         throw new Error(error_msg);
     };
-
-    function reset(){
-        me.start = '';
-        me.end = '';
-
-        me.start_parts = [];
-        me.end_parts = [];
-    }
 
     /**
      *
@@ -270,127 +278,71 @@ function DateValidationService($filter, DateFactory) {
      * @throws TypeError
      */
     me.setErrorCallback = function setErrorCallback(error) {
-        if (!!(error && error.constructor && error.call && error.apply)) {
+        if (typeof error === 'function') {
             me._error = error;
         } else {
             throw new TypeError('Error callback must be a function.');
         }
     };
 
-    me.setDates = function(start_date, end_date){
-        reset();
-        // We apply filter, so we have the same date format in both variables
-        if(!!start_date) {
-            me.start = $filter('CustomDate')(start_date);
-            me.start_parts = me.start.split('/');
-        } else {
-            me._error('Please enter valid Start Date!', ['start_date']);
+    me.validate = function validate(start, end) {
+
+        if(start instanceof Date){
+            start = start.getTime();
         }
 
-        if(!!end_date) {
-            me.end = $filter('CustomDate')(end_date);
-            me.end_parts = me.end.split('/');
+        if(end instanceof Date){
+            end = end.getTime();
+        }
+
+        var start_date = DateFactory.createDate(start);
+        var end_date = DateFactory.createDate(end);
+
+        checkIfValuesAreValid(start_date, ['start_date']);
+        checkIfValuesAreInRange(start_date, ['start_date']);
+
+        if(end !== '' && typeof end !== 'undefined'){
+            checkIfValuesAreValid(end_date, ['end_date']);
+            checkIfValuesAreInRange(end_date, ['end_date']);
+        }
+
+        if(start && end_date.isValid()){
+            checkIfStartDateIsLower(start_date, end_date);
         }
     };
 
-    me.validate = function validate(start_date, end_date) {
-
-        me.start = DateFactory.createDate(start_date);
-        me.end = DateFactory.createDate(end_date);
-
-        if(!start.isValid()){
-            me._error('Start Date is not valid!!', ['start_date']);
+    function checkIfValuesAreValid(date, fields){
+        if(!date.isValid()){
+            me._error('Date is not valid!!', fields);
         }
+    }
 
-        if(!end.isValid()){
-            me._error('End Date is not valid!!', ['end_date']);
-        }
-        
-        //me.checkIfFormatIsValid();
-        //me.checkIfStartDateIsLower(me.start_parts, me.end_parts, 2);
-        ////Check for year, month and day
-        //for (var index = 2; index > -1; index--) {
-        //    if(me.end) {
-        //        me.checkIfValuesAreValid(index, me.end_parts, ['end_date']);
-        //    }
-        //    me.checkIfValuesAreValid(index, me.start_parts, ['start_date']);
-        //}
-    };
-
-    me.checkIfFormatIsValid = function () {
-        if (me.start.length !== 10 || me.start_parts.length != 3 || me.checkFormat(me.start_parts)) {
-            me._error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['start_date']);
-        }
-
-        if(me.end) {
-            if (me.end.length !== 10 || me.end_parts.length != 3 || me.checkFormat(me.end_parts)) {
-                me._error('Date is invalid! Valid date format is: dd/mm/yyyy.', ['end_date']);
+     function checkIfValuesAreInRange(date, field_name) {
+        if (me.minDate.isAfter) {
+            if (me.minDate.isAfter(date)) {
+                me._error('Date cannot be lower than ' + me.minDate.format('DD/MM/YYYY') + '.', field_name);
             }
         }
-    };
-
-    /**
-     * @static
-     * @param {array} date_parts
-     * @returns {boolean}
-     */
-    me.checkFormat = function checkFormat(date_parts) {
-        return !(date_parts[0].length == 2 && date_parts[1].length == 2 && date_parts[2].length == 4);
-    };
-
-    me.checkIfValuesAreValid = function checkIfValuesAreValid(index, date, field_name) {
-        if (me.options.minDate) {
-            if (index == 2 && (parseInt(date[index], 10) < me.options.minDate.getFullYear())) {
-                me._error('Year cannot be lower than ' + me.options.minDate.getFullYear() + '.', field_name);
+        if (me.maxDate.isBefore) {
+            if (me.maxDate.isBefore(date)) {
+                me._error('Date cannot be higher than ' + me.maxDate.format('DD/MM/YYYY') + '.', field_name);
             }
         }
-        if (me.options.maxDate) {
-            if (index == 2 && (parseInt(date[index], 10) > me.options.maxDate.getFullYear())) {
-                me._error('Year cannot be higher than ' + me.options.maxDate.getFullYear() + '.', field_name);
-            }
+    }
+
+    function checkIfStartDateIsLower(start, end) {
+        if(start.isAfter(end)){
+            me._error('Start Date cannot be higher than End Date.', ['start_date', 'end_date']);
         }
 
-        if (parseInt(date[index], 10) < 1) {
-            me._error('Neither Days nor Months can be negative or equal to 0.', field_name);
+        if(start.isSame(end)){
+            me._error('Start Date and End Date cannot be the same.', ['start_date', 'end_date']);
         }
-
-        if (index == 1 && (parseInt(date[index], 10) > 12)) {
-            me._error('This month doesn\'t exist.', field_name);
-        }
-
-        if (index === 0 && (parseInt(date[index], 10) > 31)) {
-            me._error('Day of the month is invalid.', field_name);
-        }
-        if(isNaN(parseInt(date[index], 10))){
-            me._error('It\'s not a date!', field_name);
-        }
-    };
-
-    /**
-     * Recursive function checking if start date is lower than end date
-     * @static
-     * @param {array} start_parts
-     * @param {array} end_parts
-     * @param {int} index
-     * @returns {boolean}
-     */
-    me.checkIfStartDateIsLower = function checkIfStartDateIsLower(start_parts, end_parts, index) {
-        //Prevent endless iteration
-        if (index < 0){
-            me._error('Start Date cannot be he same as End Date!', ['start_date', 'end_date']);
-            return true;
-        }
-
-        if (parseInt(end_parts[index], 10) < parseInt(start_parts[index], 10)) {
-            me._error('Start Date cannot be higher than End Date!', ['start_date', 'end_date']);
-        } else if (parseInt(end_parts[index], 10) == parseInt(start_parts[index], 10)) {
-            return me.checkIfStartDateIsLower(start_parts, end_parts, index - 1);
-        }
-    };
+    }
 }
 
 module.exports = DateValidationService;
-},{}],11:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 angular.module('templates-main', ['templates/datepickerPopup.html', 'templates/day.html']);
 
 angular.module("templates/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
@@ -459,7 +411,7 @@ angular.module("templates/day.html", []).run(["$templateCache", function($templa
     "");
 }]);
 
-},{}],12:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors

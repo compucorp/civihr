@@ -94,10 +94,9 @@ define(['controllers/controllers'], function(controllers){
 
             $scope.validateDates = function(start, end, error) {
                 DateValidationService.setErrorCallback(error);
-                DateValidationService.setOptions({
-                    minDate: $scope.minDate,
-                    maxDate: $scope.maxDate
-                });
+
+                DateValidationService.setMinDate($scope.minDate.getTime());
+                DateValidationService.setMaxDate($scope.maxDate.getTime());
 
                 DateValidationService.validate(start, end);
             };
@@ -108,6 +107,8 @@ define(['controllers/controllers'], function(controllers){
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
+                console.log('Start:', data.start_date);
+                console.log('End:', data.end_date);
                 $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function(error, field){
                     errors++;
                     if(field.indexOf('start_date') > -1) {

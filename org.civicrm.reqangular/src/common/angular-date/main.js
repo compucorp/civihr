@@ -19,15 +19,9 @@ require("./src/templates/templates");
 var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
 
 Module.service('DateValidationService', require('./src/services/DateValidationService'));
-
 Module.factory('DateFactory', require('./src/services/DateFactory'));
-
 Module.filter('CustomDate', require('./src/filters/CustomDateFilter'));
-
 Module.directive('customDateInput', require('./src/directives/CustomDateInput'));
-
-/* Overrides */
-Module.controller('DatePickerController', require('./src/controllers/DatePickerController'));
 
 /* Decorators */
 Module.config(function($provide) {

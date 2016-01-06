@@ -1,6 +1,6 @@
 var moment = require('../../../vendor/moment.min.js');
 
-function DateFactory(){
+function DateFactory() {
     return {
         moment: moment,
         /**
@@ -10,8 +10,21 @@ function DateFactory(){
          * @param strict
          * @returns Moment Object
          */
-        createDate: function createDate(dateString, format, strict){
-            return this.moment.apply(null, arguments);
+        createDate: function createDate(dateString, format, strict) {
+
+            if (!format) {
+                format = [
+                    'DD/MM/YYYY',
+                    'DD-MM-YYYY',
+                    'x'
+                ];
+            }
+
+            if(typeof strict === 'undefined'){
+                strict = true;
+            }
+
+            return moment(dateString, format, strict);
         }
     };
 }
