@@ -58,3 +58,16 @@ function civicrm_api3_appraisal_tags($params) {
 function civicrm_api3_appraisal_filter($params) {
     return CRM_Appraisals_BAO_Appraisal::filter($params);
 }
+
+/*
+ * Appraisal Reminder on demand.
+ */
+function civicrm_api3_appraisal_sendreminder($params) {
+    
+    if (empty($params['id'])) {
+        throw new API_Exception(ts("Please specify Appraisal 'id' value."));
+    }
+    
+    $result = CRM_Appraisals_Reminder::sendReminder((int)$params['id'], isset($params['notes']) ? $params['notes'] : '', true);
+    return civicrm_api3_create_success($result, $params, 'appraisal', 'sendreminder');
+}

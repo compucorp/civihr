@@ -68,6 +68,156 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
     }
     
     /**
+     * Returns previous Cycle ID for given Manager ID
+     * 
+     * @param type $managerId
+     * 
+     * @return int
+     */
+    public static function getPreviousCycleId($managerId) {
+        $query = 'SELECT ac.id FROM `civicrm_appraisal_cycle` ac
+        INNER JOIN civicrm_appraisal a ON a.appraisal_cycle_id = ac.id
+        WHERE ac.cycle_end_date < NOW() AND a.manager_id = %1
+        ORDER BY ac.cycle_end_date DESC
+        LIMIT 1';
+        $params = array(
+            1 => array($managerId, 'Integer'),
+        );
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        if ($result->fetch()) {
+            return $result->id;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns current Cycle ID for given Manager ID
+     * 
+     * @param type $managerId
+     * 
+     * @return int
+     */
+    public static function getCurrentCycleId($managerId) {
+        $query = 'SELECT ac.id FROM `civicrm_appraisal_cycle` ac
+        INNER JOIN civicrm_appraisal a ON a.appraisal_cycle_id = ac.id
+        WHERE ac.cycle_end_date > NOW() AND ac.cycle_start_date < NOW() AND a.manager_id = %1
+        ORDER BY ac.cycle_start_date DESC
+        LIMIT 1';
+        $params = array(
+            1 => array($managerId, 'Integer'),
+        );
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        if ($result->fetch()) {
+            return $result->id;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns an array with all past and current Cycle IDs for given Manager ID and/or Contact ID
+     * 
+     * @param type $managerId
+     * 
+     * @return array
+     */
+    public static function getAllCycleIds($managerId = null, $contactId = null) {
+        $params = array();
+        $query = 'SELECT ac.id FROM `civicrm_appraisal_cycle` ac
+        INNER JOIN civicrm_appraisal a ON a.appraisal_cycle_id = ac.id
+        WHERE ac.cycle_start_date < NOW() ';
+        if ($managerId) {
+            $query .= ' AND a.manager_id = %1 ';
+            $params[1] = array($managerId, 'Integer');
+        }
+        if ($contactId) {
+            $query .= ' AND a.contact_id = %2 ';
+            $params[2] = array($contactId, 'Integer');
+        }
+        $query .= ' GROUP BY ac.id ORDER BY ac.cycle_start_date ASC ';
+
+        $data = array();
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        while ($result->fetch()) {
+            $data[] = $result->id;
+        }
+        return $data;
+    }
+    
+    /**
+     * Returns an array of current Cycle status counters
+     * 
+     * @param type $managerId
+     * 
+     * @return int
+     */
+    public static function getCurrentCycleStatus($managerId) {
+        $currentCycleId = self::getCurrentCycleId($managerId);
+        if (!$currentCycleId) { // No current Cycle for given Manager ID.
+            return null;
+        }
+
+        $data = array();
+        $query = 'SELECT COUNT(id) AS appraisals_count, status_id FROM `civicrm_appraisal` 
+        WHERE appraisal_cycle_id = %1 AND manager_id = %2 AND is_current = 1 
+        GROUP BY status_id';
+        $params = array(
+            1 => array($currentCycleId, 'Integer'),
+            2 => array($managerId, 'Integer'),
+        );
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        while ($result->fetch()) {
+            $data[$result->status_id] = $result->appraisals_count;
+        }
+        return $data;
+    }
+    
+    /**
+     * Returns average grade for for specific Cycle ID and optionally Manager ID
+     * 
+     * @param type $cycleId
+     * @param type $managerId
+     * @return type
+     */
+    public static function getCycleAverageGrade($cycleId, $managerId = null) {
+        if (!$cycleId) {
+            return null;
+        }
+        $params = array();
+        $query = 'SELECT SUM(grade) / COUNT(id) AS average_grade FROM `civicrm_appraisal` 
+        WHERE appraisal_cycle_id = %1 ';
+        $params[1] = array($cycleId, 'Integer');
+        if ($managerId) {
+            $query .= ' AND manager_id = %2 ';
+            $params[2] = array($managerId, 'Integer');
+        }
+        $query .= ' AND is_current = 1 AND grade IS NOT NULL';
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        if ($result->fetch()) {
+            return $result->average_grade;
+        }
+        return null;
+    }
+    
+    public static function getCurrentCycleAverageGrade($managerId) {
+        $currentCycleId = self::getCurrentCycleId($managerId);
+        return self::getCycleAverageGrade($currentCycleId, $managerId);
+    }
+    
+    public static function getPreviousCycleAverageGrade($managerId) {
+        $previousCycleId = self::getPreviousCycleId($managerId);
+        return self::getCycleAverageGrade($previousCycleId, $managerId);
+    }
+    
+    public static function getAllCyclesAverageGrade($managerId) {
+        $cycleIds = self::getAllCycleIds($managerId);
+        $averageGrades = array();
+        foreach ($cycleIds as $cycleId) {
+            $averageGrades[] = self::getCycleAverageGrade($cycleId, $managerId);
+        }
+        return array_sum($averageGrades) / count($averageGrades);
+    }
+    
+    /**
      * combine all the importable fields from the lower levels object
      *
      * The ordering is important, since currently we do not have a weight
