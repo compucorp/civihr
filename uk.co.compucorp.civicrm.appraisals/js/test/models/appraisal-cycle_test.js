@@ -3,32 +3,26 @@ define([
     'common/lodash',
     'common/angularMocks',
     'appraisals/app',
+    'mocks/models/appraisal-cycle',
     'mocks/models/instances/appraisal-cycle-instance'
 ], function (angular, _) {
     'use strict';
 
     describe('AppraisalCycle', function () {
-        var $q, $rootScope, AppraisalCycle, AppraisalCycleInstance, appraisalsAPI, cycles;
+        var $q, $rootScope, AppraisalCycle, AppraisalCycleMock, AppraisalCycleInstance, appraisalsAPI, cycles;
 
-        cycles = {
-            total: 10,
-            list: [
-                { id: '1', type: 'type 1' }, { id: '2', type: 'type 4' },
-                { id: '3', type: 'type 3' }, { id: '4', type: 'type 3' },
-                { id: '5', type: 'type 2' }, { id: '6', type: 'type 3' },
-                { id: '7', type: 'type 1' }, { id: '8', type: 'type 3' },
-                { id: '9', type: 'type 2' }, { id: '10', type: 'type 4' }
-            ],
-        };
 
         beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleInstanceMock', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleInstanceMock_, _appraisalsAPI_) {
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleMock', 'AppraisalCycleInstanceMock', 'api.appraisals',
+            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _appraisalsAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
                 AppraisalCycle = _AppraisalCycle_;
+                AppraisalCycleMock = _AppraisalCycleMock_;
                 AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
                 appraisalsAPI = _appraisalsAPI_;
+
+                cycles = AppraisalCycleMock.mockedCycles();
             }
         ]));
 
@@ -220,11 +214,12 @@ define([
             });
 
             describe('when called with filters', function () {
-                var typeFilter = 'type 3';
+                var typeFilter = 'Type #3';
+                var filtered = null;
 
                 beforeEach(function () {
                     resolveApiCallTo('all').with((function () {
-                        var filtered = cycles.list.filter(function (cycle) {
+                        filtered = cycles.list.filter(function (cycle) {
                             return cycle.type === typeFilter;
                         });
 
@@ -237,7 +232,7 @@ define([
                         type: typeFilter
                     }).then(function (cycles) {
                         expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
-                        expect(cycles.list.length).toEqual(4);
+                        expect(cycles.list.length).toEqual(filtered.length);
                     })
                     .finally(done) && $rootScope.$digest();
                 });
@@ -268,7 +263,7 @@ define([
         });
 
         describe('find()', function () {
-            var targetId = '7';
+            var targetId = '4217';
 
             beforeEach(function () {
                 resolveApiCallTo('find').with(cycles.list.filter(function (cycle) {
@@ -279,8 +274,8 @@ define([
             it('finds a cycle by id', function (done) {
                 AppraisalCycle.find(targetId).then(function (cycle) {
                     expect(appraisalsAPI.find).toHaveBeenCalledWith(targetId);
-                    expect(cycle.id).toBe('7');
-                    expect(cycle.type).toBe('type 1');
+                    expect(cycle.id).toBe('4217');
+                    expect(cycle.type).toBe('Type #2');
                 })
                 .finally(done) && $rootScope.$digest();
             });
