@@ -198,10 +198,10 @@ module.exports = function ($filter, DateFactory) {
             'x'
         ], true);
 
-        var beginningOfEra = DateFactory.createDate('01/01/1970');
-        var isHighEnough = !Date.isSame(beginningOfEra);
+        var beginningOfEra = DateFactory.createDate(0);
+        var notEmpty = !Date.isSame(beginningOfEra);
 
-        if(Date.isValid() && isHighEnough) return Date.format('DD/MM/YYYY');
+        if(Date.isValid() && notEmpty) return Date.format('DD/MM/YYYY');
 
         return 'Unspecified';
     };
