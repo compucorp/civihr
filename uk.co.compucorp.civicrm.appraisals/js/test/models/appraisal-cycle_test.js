@@ -214,27 +214,151 @@ define([
             });
 
             describe('when called with filters', function () {
-                var typeFilter = 'Type #3';
-                var filtered = null;
+                var p;
 
-                beforeEach(function () {
-                    resolveApiCallTo('all').with((function () {
-                        filtered = cycles.list.filter(function (cycle) {
-                            return cycle.type === typeFilter;
+                describe('falsey values', function () {
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with({
+                            list: cycles.list,
+                            total: cycles.count
                         });
+                    });
 
-                        return { list: filtered, total: filtered.length };
-                    })());
+                    beforeEach(function () {
+                        p = AppraisalCycle.all({
+                            filter_1: 'a non-empty string',
+                            filter_2: '',
+                            filter_3: 456,
+                            filter_4: 0,
+                            filter_5: undefined,
+                            filter_6: { foo: 'foo' },
+                            filter_7: null,
+                            filter_8: {}
+                        });
+                    });
+
+                    it('skips falsey (null, undefined, empty string), except for 0', function (done) {
+                        p.then(function () {
+                            expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                filter_1: 'a non-empty string',
+                                filter_3: 456,
+                                filter_4: 0,
+                                filter_6: { foo: 'foo' },
+                                filter_8: {}
+                            }, undefined);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
                 });
 
-                it('can filter the appraisal cycles list', function (done) {
-                    AppraisalCycle.all({
-                        type: typeFilter
-                    }).then(function (cycles) {
-                        expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
-                        expect(cycles.list.length).toEqual(filtered.length);
-                    })
-                    .finally(done) && $rootScope.$digest();
+                describe('simple filter', function () {
+                    var filtered = null;
+                    var typeFilter = 'Type #3';
+
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with((function () {
+                            filtered = cycles.list.filter(function (cycle) {
+                                return cycle.type === typeFilter;
+                            });
+
+                            return { list: filtered, total: filtered.length };
+                        })());
+                    });
+
+                    it('can filter the appraisal cycles list', function (done) {
+                        AppraisalCycle.all({
+                            type: typeFilter
+                        }).then(function (cycles) {
+                            expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
+                            expect(cycles.list.length).toEqual(filtered.length);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
+                });
+
+                describe('date filters', function () {
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with({
+                            list: cycles.list,
+                            total: cycles.count
+                        });
+                    });
+
+                    describe('filter names', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_start_date_from: jasmine.any(Date),
+                                cycle_self_appraisal_due_to: jasmine.any(Date),
+                                cycle_manager_appraisal_due_to: jasmine.any(Date),
+                                cycle_grade_due_from: jasmine.any(Date)
+                            });
+                        });
+
+                        it('converts the filter names to the correct api parameter names', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_start_date: jasmine.any(Object),
+                                    cycle_self_appraisal_due: jasmine.any(Object),
+                                    cycle_manager_appraisal_due: jasmine.any(Object),
+                                    cycle_grade_due: jasmine.any(Object)
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching only by "from" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_start_date_from: '01/09/2016'
+                            });
+                        });
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_start_date: { '>=': '2016-09-01' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching only by "to" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_grade_due_to: '22/10/2016'
+                            });
+                        })
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_grade_due: { '<=': '2016-10-22' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching both by "from" and "to" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_manager_appraisal_due_from: '01/09/2016',
+                                cycle_manager_appraisal_due_to: '22/10/2016'
+                            });
+                        })
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_manager_appraisal_due: { '>=': '2016-09-01' },
+                                    cycle_manager_appraisal_due: { '<=': '2016-10-22' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
                 });
             });
 

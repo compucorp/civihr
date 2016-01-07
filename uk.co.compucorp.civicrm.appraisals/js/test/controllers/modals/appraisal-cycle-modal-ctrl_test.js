@@ -145,7 +145,7 @@ define([
                     });
 
                     it('gets the same cycle object passed as parameter', function () {
-                        expect($rootScope.$emit.calls.argsFor(0)[1]).toEqual(ctrl.cycle);
+                        expect($rootScope.$emit.calls.argsFor(0)[1]).toBe(ctrl.cycle);
                     });
                 });
 
