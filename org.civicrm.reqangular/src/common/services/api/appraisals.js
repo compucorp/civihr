@@ -37,15 +37,9 @@ define([
              * @return {Promise} resolves to an object with `list` and `total`
              */
             all: function (filters, pagination) {
-                $log.debug('all');
+                $log.debug('api.appraisals.all');
 
-                var params = {};
-
-                if (filters) {
-                    Object.keys(filters).forEach(function (key) {
-                        !!filters[key] && (params[key] = filters[key]);
-                    });
-                }
+                var params = filters || {};
 
                 if (pagination) {
                     params.options = {
