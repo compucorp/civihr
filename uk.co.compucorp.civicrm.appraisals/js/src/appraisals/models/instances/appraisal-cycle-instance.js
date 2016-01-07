@@ -84,7 +84,7 @@ define([
 
                     if (!!this.id) {
                         deferred.resolve(appraisalsAPI.update(this.toAPI()).then(function (attributes) {
-                            _.assign(this, attributes); // Updates own attributes
+                            _.assign(this, this.fromAPI(attributes)); // Updates own attributes
                         }.bind(this)));
                     } else {
                         deferred.reject('ERR_UPDATE: ID_MISSING');

@@ -131,7 +131,12 @@ define([
             beforeEach(function () {
                 spyOn(appraisalsAPI, 'update').and.callFake(function () {
                     var deferred = $q.defer();
-                    deferred.resolve();
+                    deferred.resolve({
+                        id: '23',
+                        name: 'newest cycle',
+                        cycle_start_date: '2015-11-12',
+                        cycle_grade_due: '2016-02-01'
+                    });
 
                     return deferred.promise;
                 });
@@ -151,8 +156,10 @@ define([
                 });
 
                 it('reflects the updated data on its attributes', function (done) {
+                    var updated = _.assign(Object.create(null), oldData, newData);
+
                     p.then(function () {
-                        expect(instance.attributes()).toEqual(_.assign(Object.create(null), oldData, newData));
+                        expect(instance.attributes()).toEqual(updated);
                     })
                     .finally(done) && $rootScope.$digest();
                 });
