@@ -37,6 +37,11 @@ CRM.HRAbsenceApp.module('Models', function(Models, HRAbsenceApp, Backbone, Mario
         else {
           var val = parseInt(this.get('absence_range').duration);
         }
+        // return 0 if the status = cancelled
+        if(this.get('status_id') == 3) {
+          return 0;
+        }
+
         return CRM.HRAbsenceApp.formatDuration(val * CRM.HRAbsenceApp.absenceTypeCollection.findDirection(this.get('activity_type_id')));
       } else {
         return '';
