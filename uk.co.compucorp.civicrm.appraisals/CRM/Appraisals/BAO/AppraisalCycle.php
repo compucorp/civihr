@@ -218,6 +218,87 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
     }
     
     /**
+     * Returns the Appraisal Cycle status overview
+     * 
+     * @param type $managerId
+     * 
+     * @return int
+     */
+    public static function getStatusOverview($managerId) {
+        $statuses = CRM_Core_OptionGroup::values('appraisal_status');
+        $data = array();
+        foreach ($statuses as $key => $value) {
+            $data[$key] = array(
+                'status_id' => $key,
+                'status_name' => $value,
+                'contacts_count' => array(
+                    'due' => 0,
+                    'overdue' => 0,
+                ),
+            );
+        }
+        $query = 'SELECT status_id, SUM(total) AS total, SUM(overdue) AS overdue FROM
+        (
+            SELECT a.status_id, COUNT(a.id) AS total,
+            (
+            SELECT COUNT(a_overdue.id) FROM civicrm_appraisal a_overdue
+            WHERE
+            (
+                (a_overdue.status_id = 1 AND a_overdue.self_appraisal_due < NOW()) OR 
+                (a_overdue.status_id = 2 AND a_overdue.manager_appraisal_due < NOW()) OR 
+                (a_overdue.status_id = 3 AND a_overdue.grade_due < NOW())
+            ) AND
+                a_overdue.appraisal_cycle_id = a.appraisal_cycle_id AND
+                a_overdue.status_id = a.status_id
+            )
+            AS overdue FROM civicrm_appraisal a
+            INNER JOIN civicrm_appraisal_cycle ac ON ac.id = a.appraisal_cycle_id
+            WHERE ac.cycle_is_active = 1
+            GROUP BY a.status_id, a.appraisal_cycle_id
+            ORDER BY a.status_id ASC
+        ) r
+        GROUP BY status_id';
+        $params = array();
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        while ($result->fetch()) {
+            $data[$result->status_id]['contacts_count']['due'] = (int)$result->total - (int)$result->overdue;
+            $data[$result->status_id]['contacts_count']['overdue'] = (int)$result->overdue;
+        }
+        return $data;
+    }
+    
+    public static function getAppraisalsPerStep($appraisalCycleId, $includeAppraisals = false) {
+        $statuses = CRM_Core_OptionGroup::values('appraisal_status');
+        $data = array();
+        $query = 'SELECT a.status_id, COUNT(a.id) AS counter FROM civicrm_appraisal a
+        WHERE a.appraisal_cycle_id = %1
+        AND a.is_current = 1
+        GROUP BY a.status_id
+        ORDER BY a.status_id';
+        $params = array(
+            1 => array($appraisalCycleId, 'Integer'),
+        );
+        $result = CRM_Core_DAO::executeQuery($query, $params);
+        while ($result->fetch()) {
+            $data[$result->status_id] = array(
+                'status_id' => $result->status_id,
+                'status_name' => $statuses[$result->status_id],
+                'appraisals_count' => $result->counter,
+            );
+            if ($includeAppraisals) {
+                $appraisalsResult = civicrm_api3('Appraisal', 'get', array(
+                    'sequential' => 1,
+                    'appraisal_cycle_id' => $appraisalCycleId,
+                    'status_id' => $result->status_id,
+                    'is_current' => 1,
+                ));
+                $data[$result->status_id]['appraisals'] = $appraisalsResult['values'];
+            }
+        }
+        return $data;
+    }
+    
+    /**
      * combine all the importable fields from the lower levels object
      *
      * The ordering is important, since currently we do not have a weight

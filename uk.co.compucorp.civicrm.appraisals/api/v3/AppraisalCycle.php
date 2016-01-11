@@ -165,3 +165,30 @@ function civicrm_api3_appraisal_cycle_getallcyclesaveragegrade($params) {
   $values = CRM_Appraisals_BAO_AppraisalCycle::getAllCyclesAverageGrade((int)$params['manager_id']);
   return civicrm_api3_create_success($values, $params, 'AppraisalCycle', 'getallcyclesaveragegrade');
 }
+
+/**
+ * AppraisalCycle.getstatusoverview API
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_appraisal_cycle_getstatusoverview($params) {
+  $values = CRM_Appraisals_BAO_AppraisalCycle::getStatusOverview();
+  return civicrm_api3_create_success($values, $params, 'AppraisalCycle', 'getstatusoverview');
+}
+
+/**
+ * AppraisalCycle.getappraisalsperstep API
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_appraisal_cycle_getappraisalsperstep($params) {
+  if (empty($params['appraisal_cycle_id'])) {
+    throw new API_Exception(ts("Please specify 'appraisal_cycle_id' value."));
+  }
+  $values = CRM_Appraisals_BAO_AppraisalCycle::getAppraisalsPerStep($params['appraisal_cycle_id'], !empty($params['include_appraisals']) ? $params['include_appraisals'] : false);
+  return civicrm_api3_create_success($values, $params, 'AppraisalCycle', 'getappraisalsperstep');
+}
