@@ -10,8 +10,7 @@ define([
         var $controller, $log, $modal, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
 
         beforeEach(module('appraisals', 'appraisals.mocks'));
-
-        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycleMock_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
@@ -20,7 +19,7 @@ define([
             $scope = $rootScope.$new();
             $timeout = _$timeout_;
 
-            AppraisalCycle = _AppraisalCycle_;
+            AppraisalCycle = _AppraisalCycleMock_;
         }));
 
         describe('init', function () {
@@ -35,6 +34,7 @@ define([
 
                 it('stores on scope the data passed by ui-router', function () {
                     expect(ctrl.activeCycles).toBeDefined();
+                    expect(ctrl.totalCycles).toBeDefined();
                     expect(ctrl.statusOverview).toBeDefined();
                     expect(ctrl.statuses).toBeDefined();
                     expect(ctrl.types).toBeDefined();
@@ -253,7 +253,9 @@ define([
         function initController() {
             ctrl = $controller('AppraisalsDashboardCtrl', {
                 $scope: $scope,
+                AppraisalCycle: AppraisalCycle,
                 activeCycles: [],
+                totalCycles: [],
                 statusOverview: [],
                 statuses: [],
                 types: []

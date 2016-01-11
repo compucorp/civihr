@@ -9,6 +9,7 @@ define([
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
     'appraisals/models/appraisal-cycle',
+    'appraisals/models/instances/appraisal-cycle-instance',
     'appraisals/vendor/ui-router',
 ], function (angular, _, routes) {
     angular.module('appraisals', [

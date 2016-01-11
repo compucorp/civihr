@@ -15,7 +15,7 @@
                         Cycle Name
                     </label>
                     <div class="col-sm-9">
-                        <input type="text" ng-model="modal.cycle.name" class="form-control" id="cycle-name">
+                        <input type="text" ng-model="modal.cycle.cycle_name" class="form-control" id="cycle-name">
                     </div>
                 </div>
                 <div class="form-group">
@@ -26,8 +26,8 @@
                         <select
                             class="form-control"
                             id="cycle-type"
-                            ng-model="modal.cycle.type"
-                            ng-options="type for type in modal.types">
+                            ng-model="modal.cycle.cycle_type_id"
+                            ng-options="type.value as type.label for type in modal.types">
                             <option value="">- select -</option>
                         </select>
                     </div>
@@ -45,11 +45,11 @@
                                 type="text"
                                 class="form-control"
                                 id="start-date"
-                                datepicker-popup
-                                ng-model="modal.cycle.period.start"
-                                ng-init="modal.calendars.periodFrom = false"
-                                ng-click="modal.calendars.periodFrom = !modal.calendars.periodFrom"
-                                is-open="modal.calendars.periodFrom">
+                                datepicker-popup="dd/MM/yyyy"
+                                ng-model="modal.cycle.cycle_start_date"
+                                ng-init="modal.calendars.startDate = false"
+                                ng-click="modal.calendars.startDate = !modal.calendars.startDate"
+                                is-open="modal.calendars.startDate">
                             <span class="input-group-addon fa fa-calendar"></span>
                         </div>
                     </div>
@@ -62,11 +62,11 @@
                                 type="text"
                                 class="form-control"
                                 id="end-date"
-                                datepicker-popup
-                                ng-model="modal.cycle.period.end"
-                                ng-init="modal.calendars.periodTo = false"
-                                ng-click="modal.calendars.periodTo = !modal.calendars.periodTo"
-                                is-open="modal.calendars.periodTo">
+                                datepicker-popup="dd/MM/yyyy"
+                                ng-model="modal.cycle.cycle_end_date"
+                                ng-init="modal.calendars.endDate = false"
+                                ng-click="modal.calendars.endDate = !modal.calendars.endDate"
+                                is-open="modal.calendars.endDate">
                             <span class="input-group-addon fa fa-calendar"></span>
                         </div>
                     </div>
@@ -83,8 +83,8 @@
                                 type="text"
                                 class="form-control"
                                 id="self-appraisal-due"
-                                datepicker-popup
-                                ng-model="modal.cycle.selfDue"
+                                datepicker-popup="dd/MM/yyyy"
+                                ng-model="modal.cycle.cycle_self_appraisal_due"
                                 ng-init="modal.calendars.self = false"
                                 ng-click="modal.calendars.self = !modal.calendars.self"
                                 is-open="modal.calendars.self">
@@ -102,8 +102,8 @@
                                 type="text"
                                 class="form-control"
                                 id="manager-appraisal-due"
-                                datepicker-popup
-                                ng-model="modal.cycle.managerDue"
+                                datepicker-popup="dd/MM/yyyy"
+                                ng-model="modal.cycle.cycle_manager_appraisal_due"
                                 ng-init="modal.calendars.manager = false"
                                 ng-click="modal.calendars.manager = !modal.calendars.manager"
                                 is-open="modal.calendars.manager">
@@ -121,8 +121,8 @@
                                 type="text"
                                 class="form-control"
                                 id="grade-due"
-                                datepicker-popup
-                                ng-model="modal.cycle.gradeDue"
+                                datepicker-popup="dd/MM/yyyy"
+                                ng-model="modal.cycle.cycle_grade_due"
                                 ng-init="modal.calendars.grade = false"
                                 ng-click="modal.calendars.grade = !modal.calendars.grade"
                                 is-open="modal.calendars.grade">

@@ -2,20 +2,23 @@ define([
     'common/angular',
     'common/angularMocks',
     'appraisals/app',
-    'mocks/models/appraisal-cycle'
+    'mocks/models/appraisal-cycle',
+    'mocks/models/instances/appraisal-cycle-instance'
 ], function (angular) {
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
-        var $controller, $q, $modalInstance, $rootScope, AppraisalCycle, ctrl;
+        var $controller, $q, $modalInstance, $rootScope, AppraisalCycle, AppraisalCycleInstance, ctrl;
 
         beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_) {
             $controller = _$controller_;
             $q = _$q_;
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
             $rootScope = _$rootScope_;
-            AppraisalCycle = _AppraisalCycle_;
+
+            AppraisalCycle = _AppraisalCycleMock_;
+            AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
 
             initController();
         }));
@@ -126,18 +129,24 @@ define([
 
                 beforeEach(function () {
                     ctrl.edit = true;
-                    ctrl.cycle = editedCycle;
+                    ctrl.cycle = AppraisalCycleInstance.init(editedCycle);
                     ctrl.submit();
 
                     $rootScope.$digest();
                 });
 
-                it('sends a request to the api with the amended cycle data', function () {
-                    expect(AppraisalCycle.update).toHaveBeenCalledWith(editedCycle.id, editedCycle);
+                it('triggers the update on the model instance', function () {
+                    expect(ctrl.cycle.update).toHaveBeenCalled();
                 });
 
-                it('emits an event', function () {
-                    expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
+                describe('event', function () {
+                    it('is emitted', function () {
+                        expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
+                    });
+
+                    it('gets the same cycle object passed as parameter', function () {
+                        expect($rootScope.$emit.calls.argsFor(0)[1]).toBe(ctrl.cycle);
+                    });
                 });
 
                 it('closes the modal', function () {
@@ -149,7 +158,8 @@ define([
         function initController(params) {
             ctrl = $controller('AppraisalCycleModalCtrl', angular.extend({}, {
                 $modalInstance: $modalInstance,
-                $scope: $rootScope.$new()
+                $scope: $rootScope.$new(),
+                AppraisalCycle: AppraisalCycle
             }, params));
         }
     });

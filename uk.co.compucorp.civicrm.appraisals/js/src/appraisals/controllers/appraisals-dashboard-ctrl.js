@@ -6,8 +6,10 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout', 'AppraisalCycle', 'activeCycles', 'statusOverview', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, statusOverview, statuses, types) {
+        ['$filter', '$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout',
+        'AppraisalCycle', 'activeCycles', 'totalCycles', 'statusOverview',
+        'statuses', 'types',
+        function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, totalCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var pagination = { page: 1, size: 5 };
@@ -26,6 +28,7 @@ define([
             vm.loadingDone = false;
 
             vm.activeCycles = activeCycles;
+            vm.totalCycles = totalCycles;
             vm.statusOverview = statusOverview;
             vm.statuses = statuses;
             vm.types = types;
@@ -128,6 +131,12 @@ define([
                 if (filters.active === null) {
                     delete filters.active;
                 }
+
+                Object.keys(filters).filter(function (key) {
+                    return _.endsWith(key, '_date') || _.endsWith(key, '_from') || _.endsWith(key, '_to');
+                }).forEach(function (key) {
+                    filters[key] = $filter('date')(filters[key], 'dd/MM/yyyy');
+                });
 
                 return filters;
             }

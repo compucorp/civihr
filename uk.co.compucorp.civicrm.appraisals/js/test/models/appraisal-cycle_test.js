@@ -1,35 +1,35 @@
 define([
     'common/angular',
+    'common/lodash',
     'common/angularMocks',
-    'appraisals/app'
-], function (angular) {
+    'appraisals/app',
+    'mocks/models/appraisal-cycle',
+    'mocks/models/instances/appraisal-cycle-instance'
+], function (angular, _) {
     'use strict';
 
     describe('AppraisalCycle', function () {
-        var $q, $rootScope, AppraisalCycle, appraisalsAPI, cycles;
+        var $q, $rootScope, AppraisalCycle, AppraisalCycleMock, AppraisalCycleInstance, appraisalsAPI, cycles;
 
-        cycles = [
-            { id: '1', type: 'type 1' }, { id: '2', type: 'type 4' },
-            { id: '3', type: 'type 3' }, { id: '4', type: 'type 3' },
-            { id: '5', type: 'type 2' }, { id: '6', type: 'type 3' },
-            { id: '7', type: 'type 1' }, { id: '8', type: 'type 3' },
-            { id: '9', type: 'type 2' }, { id: '10', type: 'type 4' }
-        ];
 
-        beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycle_, _appraisalsAPI_) {
+        beforeEach(module('appraisals', 'appraisals.mocks'));
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleMock', 'AppraisalCycleInstanceMock', 'api.appraisals',
+            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _appraisalsAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
                 AppraisalCycle = _AppraisalCycle_;
+                AppraisalCycleMock = _AppraisalCycleMock_;
+                AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
                 appraisalsAPI = _appraisalsAPI_;
+
+                cycles = AppraisalCycleMock.mockedCycles();
             }
         ]));
 
         it('has the expected api', function () {
             expect(Object.keys(AppraisalCycle)).toEqual([
                 'active', 'all', 'create', 'find', 'grades', 'statuses',
-                'statusOverview', 'update', 'types'
+                'statusOverview', 'total', 'types'
             ]);
         });
 
@@ -103,7 +103,11 @@ define([
 
         describe('types()', function () {
             beforeEach(function () {
-                resolveApiCallTo('types').with(['type 1', 'type 2', 'type 3']);
+                resolveApiCallTo('types').with([
+                    { id: '1', label: 'type 1', value: '1', weight: '1' },
+                    { id: '2', label: 'type 2', value: '2', weight: '2' },
+                    { id: '3', label: 'type 3', value: '3', weight: '3' }
+                ]);
             });
 
             it('returns the appraisal cycle types', function (done) {
@@ -111,7 +115,11 @@ define([
                     expect(appraisalsAPI.types).toHaveBeenCalled();
 
                     expect(types.length).toEqual(3);
-                    expect(types).toEqual(['type 1', 'type 2', 'type 3']);
+                    expect(types).toEqual([
+                        { label: 'type 1', value: '1' },
+                        { label: 'type 2', value: '2' },
+                        { label: 'type 3', value: '3' }
+                    ]);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -119,7 +127,10 @@ define([
 
         describe('statuses()', function () {
             beforeEach(function () {
-                resolveApiCallTo('statuses').with(['status 1', 'status 2']);
+                resolveApiCallTo('statuses').with([
+                    { id: '1', label: 'status 1', value: '1', weight: '1' },
+                    { id: '2', label: 'status 2', value: '2', weight: '2' }
+                ]);
             });
 
             it('returns the appraisal cycle statuses', function (done) {
@@ -127,7 +138,10 @@ define([
                     expect(appraisalsAPI.statuses).toHaveBeenCalled();
 
                     expect(statuses.length).toEqual(2);
-                    expect(statuses).toEqual(['status 1', 'status 2']);
+                    expect(statuses).toEqual([
+                        { label: 'status 1', value: '1' },
+                        { label: 'status 2', value: '2' }
+                    ]);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -137,24 +151,54 @@ define([
             var newCycle = {
                 name: 'new cycle',
                 type: 'type 4',
-                period: '01/01/2014 - 01/01/2015'
+                cycle_start_date: '01/01/2014',
+                cycle_end_date: '01/01/2015'
             };
-            var newCycleSaved = angular.extend({}, newCycle, { id: '1234' });
 
             beforeEach(function () {
-                resolveApiCallTo('create').with(newCycleSaved);
+                resolveApiCallTo('create').with(null);
             });
 
             it('creates a new appraisal cycle', function (done) {
+                AppraisalCycle.create(newCycle).then(function () {
+                    expect(appraisalsAPI.create).toHaveBeenCalled();
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('sanitizes the data via instance before calling the api', function (done) {
+                var sanitizedData = AppraisalCycleInstance.init(newCycle).toAPI();
+
+                AppraisalCycle.create(newCycle).then(function () {
+                    expect(appraisalsAPI.create).toHaveBeenCalledWith(sanitizedData);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('returns an instance of the model', function (done) {
                 AppraisalCycle.create(newCycle).then(function (savedCycle) {
-                    expect(appraisalsAPI.create).toHaveBeenCalledWith(newCycle);
-                    expect(savedCycle).toEqual(newCycleSaved);
+                    expect(AppraisalCycleInstance.isInstance(savedCycle)).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });
         });
 
         describe('all()', function () {
+            describe('instances', function () {
+                beforeEach(function () {
+                    resolveApiCallTo('all').with(cycles);
+                });
+
+                it('returns a list of model instances', function (done) {
+                    AppraisalCycle.all().then(function (cycles) {
+                        expect(cycles.list.every(function (cycle) {
+                            return AppraisalCycleInstance.isInstance(cycle);
+                        })).toBe(true);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+            });
+
             describe('when called without arguments', function () {
                 beforeEach(function () {
                     resolveApiCallTo('all').with(cycles);
@@ -163,29 +207,158 @@ define([
                 it('returns all appraisal cycles', function (done) {
                     AppraisalCycle.all().then(function (cycles) {
                         expect(appraisalsAPI.all).toHaveBeenCalled();
-                        expect(cycles.length).toEqual(10);
+                        expect(cycles.list.length).toEqual(10);
                     })
                     .finally(done) && $rootScope.$digest();
                 });
             });
 
             describe('when called with filters', function () {
-                var typeFilter = 'type 3';
+                var p;
 
-                beforeEach(function () {
-                    resolveApiCallTo('all').with(cycles.filter(function (cycle) {
-                        return cycle.type === typeFilter;
-                    }));
+                describe('falsey values', function () {
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with({
+                            list: cycles.list,
+                            total: cycles.count
+                        });
+                    });
+
+                    beforeEach(function () {
+                        p = AppraisalCycle.all({
+                            filter_1: 'a non-empty string',
+                            filter_2: '',
+                            filter_3: 456,
+                            filter_4: 0,
+                            filter_5: undefined,
+                            filter_6: { foo: 'foo' },
+                            filter_7: null,
+                            filter_8: {}
+                        });
+                    });
+
+                    it('skips falsey (null, undefined, empty string), except for 0', function (done) {
+                        p.then(function () {
+                            expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                filter_1: 'a non-empty string',
+                                filter_3: 456,
+                                filter_4: 0,
+                                filter_6: { foo: 'foo' },
+                                filter_8: {}
+                            }, undefined);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
                 });
 
-                it('can filter the appraisal cycles list', function (done) {
-                    AppraisalCycle.all({
-                        type: typeFilter
-                    }).then(function (cycles) {
-                        expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
-                        expect(cycles.length).toEqual(4);
-                    })
-                    .finally(done) && $rootScope.$digest();
+                describe('simple filter', function () {
+                    var filtered = null;
+                    var typeFilter = 'Type #3';
+
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with((function () {
+                            filtered = cycles.list.filter(function (cycle) {
+                                return cycle.type === typeFilter;
+                            });
+
+                            return { list: filtered, total: filtered.length };
+                        })());
+                    });
+
+                    it('can filter the appraisal cycles list', function (done) {
+                        AppraisalCycle.all({
+                            type: typeFilter
+                        }).then(function (cycles) {
+                            expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
+                            expect(cycles.list.length).toEqual(filtered.length);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
+                });
+
+                describe('date filters', function () {
+                    beforeEach(function () {
+                        resolveApiCallTo('all').with({
+                            list: cycles.list,
+                            total: cycles.count
+                        });
+                    });
+
+                    describe('filter names', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_start_date_from: jasmine.any(Date),
+                                cycle_self_appraisal_due_to: jasmine.any(Date),
+                                cycle_manager_appraisal_due_to: jasmine.any(Date),
+                                cycle_grade_due_from: jasmine.any(Date)
+                            });
+                        });
+
+                        it('converts the filter names to the correct api parameter names', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_start_date: jasmine.any(Object),
+                                    cycle_self_appraisal_due: jasmine.any(Object),
+                                    cycle_manager_appraisal_due: jasmine.any(Object),
+                                    cycle_grade_due: jasmine.any(Object)
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching only by "from" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_start_date_from: '01/09/2016'
+                            });
+                        });
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_start_date: { '>=': '2016-09-01' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching only by "to" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_grade_due_to: '22/10/2016'
+                            });
+                        })
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_grade_due: { '<=': '2016-10-22' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when searching both by "from" and "to" date', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.all({
+                                cycle_manager_appraisal_due_from: '01/09/2016',
+                                cycle_manager_appraisal_due_to: '22/10/2016'
+                            });
+                        })
+
+                        it('provides the API with the correct filter values', function (done) {
+                            p.then(function () {
+                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                    cycle_manager_appraisal_due: { '>=': '2016-09-01' },
+                                    cycle_manager_appraisal_due: { '<=': '2016-10-22' }
+                                }, undefined);
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
                 });
             });
 
@@ -196,13 +369,17 @@ define([
                     var start = pagination.page * pagination.size;
                     var end = start + pagination.size;
 
-                    resolveApiCallTo('all').with(cycles.slice(start, end));
+                    resolveApiCallTo('all').with((function () {
+                        var paginated = cycles.list.slice(start, end);
+
+                        return { list: paginated, total: paginated.length };
+                    })());
                 });
 
                 it('can paginate the appraisla cycles list', function (done) {
                     AppraisalCycle.all(null, pagination).then(function (cycles) {
                         expect(appraisalsAPI.all).toHaveBeenCalledWith(null, pagination);
-                        expect(cycles.length).toEqual(2);
+                        expect(cycles.list.length).toEqual(2);
                     })
                     .finally(done) && $rootScope.$digest();
                 });
@@ -210,10 +387,10 @@ define([
         });
 
         describe('find()', function () {
-            var targetId = '7';
+            var targetId = '4217';
 
             beforeEach(function () {
-                resolveApiCallTo('find').with(cycles.filter(function (cycle) {
+                resolveApiCallTo('find').with(cycles.list.filter(function (cycle) {
                     return cycle.id === targetId;
                 })[0]);
             });
@@ -221,34 +398,29 @@ define([
             it('finds a cycle by id', function (done) {
                 AppraisalCycle.find(targetId).then(function (cycle) {
                     expect(appraisalsAPI.find).toHaveBeenCalledWith(targetId);
-                    expect(cycle.id).toBe('7');
-                    expect(cycle.type).toBe('type 1');
+                    expect(cycle.id).toBe('4217');
+                    expect(cycle.type).toBe('Type #2');
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('returns an instance of the model', function (done) {
+                AppraisalCycle.find(targetId).then(function (cycle) {
+                    expect(AppraisalCycleInstance.isInstance(cycle)).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });
         });
 
-        describe('update()', function () {
-            var targetId = '5';
-            var newData = { name: 'foo', type: 'bar', status: 'baz' };
-
+        describe('total()', function () {
             beforeEach(function () {
-                resolveApiCallTo('update').with((function () {
-                    var cycle = cycles.filter(function (cycle) {
-                        return cycle.id === targetId;
-                    })[0];
-
-                    return angular.extend({}, cycle, newData);
-                })());
+                resolveApiCallTo('total').with(cycles.list.length);
             });
 
-            it('updates a cycle', function (done) {
-                AppraisalCycle.update(targetId, newData).then(function (cycle) {
-                    expect(appraisalsAPI.update).toHaveBeenCalledWith(targetId, newData);
-                    expect(cycle.id).toBe('5');
-                    expect(cycle.name).toBe(newData.name);
-                    expect(cycle.type).toBe(newData.type);
-                    expect(cycle.status).toBe(newData.status);
+            it('gets the total number of cycles', function (done) {
+                AppraisalCycle.total().then(function (total) {
+                    expect(appraisalsAPI.total).toHaveBeenCalled();
+                    expect(total).toBe(cycles.list.length);
                 })
                 .finally(done) && $rootScope.$digest();
             });

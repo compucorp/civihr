@@ -1,10 +1,12 @@
 define([
-    'common/angular',
+    'common/lodash',
     'appraisals/modules/controllers'
-], function (angular, controllers) {
+], function (_, controllers) {
+    'use strict';
+
     controllers.controller('AppraisalCycleModalCtrl',
-        ['$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle',
-        function ($log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle) {
+        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle) {
             $log.debug('AppraisalCycleModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
@@ -24,6 +26,8 @@ define([
              * Adds the new cycle and on complete emits an event, closes the modal
              */
             vm.submit = function () {
+                formatDates();
+
                 if (vm.edit) {
                     editCycle();
                 } else {
@@ -47,10 +51,21 @@ define([
              * Edits the current cycle
              */
             function editCycle() {
-                AppraisalCycle.update(vm.cycle.id, vm.cycle).then(function (cycle) {
-                    $rootScope.$emit('AppraisalCycle::edit', cycle);
+                vm.cycle.update().then(function () {
+                    $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
                     $modalInstance.close();
                 });
+            }
+
+            /**
+             * Formats all the selecte dates in the correct date format
+             */
+            function formatDates() {
+                for (var key in vm.cycle) {
+                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
+                        vm.cycle[key] = $filter('date')(vm.cycle[key], 'dd/MM/yyyy');
+                    }
+                }
             }
 
             /**
