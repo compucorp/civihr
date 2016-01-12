@@ -69,7 +69,15 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
   public function preProcess() {
     $this->_mapperFields = $this->get('fields');
     $this->_entity = $this->get('_entity');
-    $this->_highlightedFields = array();
+    $this->_highlightedFields = array(
+      'contact_id',
+      'position',
+      'contract_type',
+      'period_start_date',
+      'email',
+      'external_identifier',
+      'title'
+    );
     $v = $this->_mapperFields;
     asort($this->_mapperFields);
     $this->_columnCount = $this->get('columnCount');
@@ -297,10 +305,10 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         $importKeys[] = $mapperPart[0];
       }
       $requiredFields = array(
-        //'contact_id' => ts('Contact ID'),
-        //'title' => ts('Job Title'),
-        //'position' => ts('Job Position'),
-        //'contract_type' => ts('Job Contract Type'),
+        'title' => ts('Job Title'),
+        'position' => ts('Job Position'),
+        'contract_type' => ts('Job Contract Type'),
+        'period_start_date' => ts('Contract Start Date')
       );
 
       $missingNames = array();
@@ -316,6 +324,14 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       }
       if ($errorRequired) {
         $errors['_qf_default'] = ts('Missing required fields:') . ' ' . implode(ts(' and '), $missingNames);
+      }
+
+      if(
+        !in_array('contact_id', $importKeys)
+        && !in_array('email', $importKeys)
+        && !in_array('external_identifier', $importKeys)
+      ) {
+        $errors['_qf_default'] = ts('Contact ID, Email or External Identifier is required.');
       }
     }
 
