@@ -362,6 +362,15 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         $mappedParams[$value] = $params[$key];
       }
     }
+
+    // disable validation of pseudoconstant values
+    // if they don't exist, they'll be ignored later
+    foreach($fields as &$field) {
+      if(isset($field['pseudoconstant'])) {
+        unset($field['pseudoconstant']);
+      }
+    }
+
     _civicrm_api3_validate_fields($entity, $action, $mappedParams, $fields);
     foreach ($fieldKeys as $key => $value) {
       if (!empty($mappedParams[$value])) {
