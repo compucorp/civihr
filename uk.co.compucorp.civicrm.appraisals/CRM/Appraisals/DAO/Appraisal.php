@@ -167,7 +167,7 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
   /**
    * Is current?
    *
-   * @var int
+   * @var boolean
    */
   public $is_current;
 
@@ -447,7 +447,7 @@ class CRM_Appraisals_DAO_Appraisal extends CRM_Core_DAO
         ) ,
         'is_current' => array(
           'name' => 'is_current',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Is Current') ,
           'required' => true,
           'import' => true,

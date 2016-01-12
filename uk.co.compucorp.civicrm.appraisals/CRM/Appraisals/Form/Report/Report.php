@@ -84,6 +84,9 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
             'cycle_type_id' => array(
                 'name' => 'cycle_type_id',
             ),
+            'cycle_is_active' => array(
+                'name' => 'cycle_is_active',
+            ),
         ),
         'filters' => array(
           //'id' => array(),
