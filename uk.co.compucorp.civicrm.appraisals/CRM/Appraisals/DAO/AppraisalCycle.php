@@ -107,7 +107,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
   /**
    * Is Appraisal Cycle active?
    *
-   * @var int
+   * @var boolean
    */
   public $is_active;
 
@@ -256,7 +256,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         ) ,
         'cycle_is_active' => array(
           'name' => 'cycle_is_active',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Cycle Is Active') ,
           'required' => true,
           'import' => true,
