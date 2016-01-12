@@ -34,7 +34,11 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
             // date is 4 & time is 8. Together they make 12 - in theory a binary operator makes sense here but as it's not a common pattern it doesn't seem worth the confusion
             if (CRM_Utils_Array::value('type', $field) == 12
                || CRM_Utils_Array::value('type', $field) == 4) {
-              $this->_dateFields[$entity] = $key;
+              if(!isset($this->_dateFields[$entity])) {
+                $this->_dateFields[$entity] = array();
+              }
+
+              $this->_dateFields[$entity][] = $key;
             }
           }
           $allFields = array_merge($entityFields[$entity], $allFields);
@@ -124,7 +128,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     );
     $ei = CRM_Hrjobcontract_ExportImportValuesConverter::singleton();
     $response = $this->summary($values);
-    $this->formatDateParams();
+
     $this->_params['skipRecentView'] = TRUE;
     $this->_params['check_permissions'] = TRUE;
     
@@ -261,7 +265,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         foreach ($params as $key => $value) {
             $params[$key] = $ei->import($tableName, $key, $value);
         }
-        
+
+        $params = $this->formatDateParams($entity, $params);
         $params = $this->validateFields($entity, $params);
         $params['import'] = 1;
         if ($revisionParams[$tableName . '_revision_id'] === $revisionId) {
@@ -310,16 +315,22 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
    *
    * Although the api will accept any strtotime valid string CiviCRM accepts at least one date format
    * not supported by strtotime so we should run this through a conversion
-   * @param unknown $params
+   * @param array $params
    */
-  function formatDateParams() {
+  function formatDateParams($entity, $params) {
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
-    $setDateFields = array_intersect_key($this->_params, array_flip($this->_dateFields));
-    foreach ($setDateFields as $key => $value) {
-      CRM_Utils_Date::convertToDefaultDate($this->_params, $dateType, $key);
-      $this->_params[$key] = CRM_Utils_Date::processDate($this->_params[$key]);
+    $dateFields = $this->_dateFields[$entity];
+
+    foreach ($params as $key => $value) {
+      if(!in_array($key, $dateFields)) {
+        continue;
+      }
+      CRM_Utils_Date::convertToDefaultDate($params, $dateType, $key);
+      $params[$key] = CRM_Utils_Date::processDate($params[$key]);
     }
+
+    return $params;
   }
 
   function formatData(&$params) {
