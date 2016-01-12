@@ -103,9 +103,10 @@
                                                     <div class="col-xs-8">
                                                         <div class="input-group" ng-hide="!editableForm.$visible">
                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
+                                                                   placeholder="dd/mm/yyyy"
                                                                    name="start_date"
-                                                                   datepicker-popup="dd/MM/yyyy"
-                                                                   is-open="CalendarShow['start_date'] == true"
+                                                                   is-open="!!(CalendarShow.start_date)"
+                                                                   datepicker-popup
                                                                    min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['start_date']"
                                                                    ng-change="select('start_date')"
@@ -117,9 +118,10 @@
                                                             <span class="input-group-btn">
                                                                 <button type="button" class="btn btn-default" ng-click="open('start_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                             </span>
-                                                            <div ng-show="editableForm.start_date.$error.custom" style="color:maroon" role="alert">
-                                                                <div ng-repeat="error in editableForm.start_date.$error.custom">{{error}}</div>
-                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="editableForm.start_date.$error.custom" style="display: block; color:maroon" role="alert">
+                                                            <div ng-repeat="error in editableForm.start_date.$error.custom">{{error}}</div>
                                                         </div>
 
                                                         <p class="form-control-static" ng-show="!editableForm.$visible">
@@ -136,10 +138,11 @@
                                                     <div class="col-xs-8">
                                                         <div class="input-group" ng-hide="!editableForm.$visible">
                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
+                                                                   placeholder="dd/mm/yyyy"
                                                                    name="end_date"
                                                                    show-weeks="false"
-                                                                   datepicker-popup="dd/MM/yyyy"
-                                                                   is-open="CalendarShow['end_date'] == true"
+                                                                   is-open="!!(CalendarShow.end_date)"
+                                                                   datepicker-popup
                                                                    min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['end_date']"
                                                                    ng-change="select('end_date')"
@@ -150,9 +153,10 @@
                                                             <span class="input-group-btn">
                                                                 <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                             </span>
-                                                            <div ng-show="editableForm.end_date.$error.custom" style="color:maroon" role="alert">
-                                                                <div ng-repeat="error in editableForm.end_date.$error.custom">{{error}}</div>
-                                                            </div>
+                                                        </div>
+
+                                                        <div ng-show="editableForm.end_date.$error.custom" style="display: block; color:maroon" role="alert">
+                                                            <div ng-repeat="error in editableForm.end_date.$error.custom">{{error}}</div>
                                                         </div>
 
                                                         <p class="form-control-static" ng-show="!editableForm.$visible">

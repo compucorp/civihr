@@ -1,11 +1,12 @@
 describe('Unit: CustomDateFilter', function() {
 
-    var Filter;
+    var Filter, Factory;
 
     beforeEach(module('angular-date'));
 
-    beforeEach(inject(function(CustomDateFilter) {
+    beforeEach(inject(function(CustomDateFilter, DateFactory) {
         Filter = CustomDateFilter;
+        Factory = DateFactory;
     }));
 
     it('Should be defined.', function() {
@@ -16,28 +17,25 @@ describe('Unit: CustomDateFilter', function() {
         expect(Filter('12/11/2013')).toEqual('12/11/2013');
     });
 
-    it('Should convert Date object.', function() {
-        expect(Filter(new Date(2013, 10, 12))).toEqual('12/11/2013');
-    });
 
     it('Should convert other formats.', function() {
         expect(Filter('12-11-2013')).toEqual('12/11/2013');
+        expect(Filter('12-11-2013 00:00:00')).toEqual('12/11/2013');
         expect(Filter('2013-11-12')).toEqual('12/11/2013');
         expect(Filter(1448031278000)).toEqual('20/11/2015');
     });
 
     it('Invalid date Should return null.', function() {
-        expect(Filter(undefined)).toEqual(null);
-        expect(Filter(null)).toEqual(null);
+        expect(Filter('10/91/2012')).toEqual('Unspecified');
+
+        expect(Filter(undefined)).toEqual('Unspecified');
+        expect(Filter(null)).toEqual('Unspecified');
     });
 
     it('Empty date Should return "Unspecified".', function() {
         expect(Filter('')).toEqual('Unspecified');
         expect(Filter('0000-00-00 00:00:00')).toEqual('Unspecified');
-    });
-
-    it('Invalid string should not be modified.', function() {
-        expect(Filter('testString')).toEqual('testString');
+        expect(Filter('testString')).toEqual('Unspecified');
     });
 
 });
