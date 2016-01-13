@@ -1,3 +1,8 @@
+/**
+ * Resets css rules that are applied by the CiviCRM style
+ *
+ * (`initial` was used at first, but there is no support by IE for it)
+ */
 @at-root {
 
     #{$bootstrap-namespace} {
