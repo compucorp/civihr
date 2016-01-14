@@ -53,20 +53,6 @@ define([
                 });
             });
 
-            describe('grades chart data', function () {
-                beforeEach(function () {
-                    initController();
-                });
-
-                it('starts as an empty array', function () {
-                    expect(ctrl.chartData).toEqual([]);
-                });
-
-                it('is requested on init', function () {
-                    expect(AppraisalCycle.grades).toHaveBeenCalled();
-                });
-            });
-
             describe('cycles list', function () {
                 beforeEach(function () {
                     initController();

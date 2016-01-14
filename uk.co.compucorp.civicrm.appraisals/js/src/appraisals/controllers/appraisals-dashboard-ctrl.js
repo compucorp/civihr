@@ -22,7 +22,6 @@ define([
             ];
 
             vm.cycles = [];
-            vm.chartData = [];
             vm.filtersCollapsed = true;
             vm.filters = { active: vm.activeFilters[0].value };
             vm.loadingDone = false;
@@ -149,10 +148,6 @@ define([
                 watchFilters();
 
                 vm.requestCycles();
-
-                AppraisalCycle.grades().then(function (grades) {
-                    vm.chartData = grades;
-                });
             }
 
 
