@@ -9,6 +9,28 @@ define([
     instances.factory('AppraisalCycleInstance', ['$q', 'api.appraisals',
         function ($q, appraisalsAPI) {
 
+            /**
+             * Calculates total number of appraisals and completion percentage
+             *
+             * @param {Array} steps
+             *   A list of every step with appraisals, each containing
+             *   its id and the number of appraisals in it
+             */
+            function calculateAppraisalsFigures(steps) {
+                var completedStep;
+
+                this.completion_percentage = 0;
+                this.appraisals_count = steps.reduce(function (total, status) {
+                    (status.status_id === '5') && (completedStep = status);
+
+                    return total + +status.appraisals_count;
+                }, 0);
+
+                if (completedStep) {
+                    this.completion_percentage = Math.round(completedStep.appraisals_count * 100 / this.appraisals_count);
+                }
+            }
+
             return {
 
                 /**
@@ -48,8 +70,8 @@ define([
                     return _.transform(attributes, function (result, __, key) {
                         if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
                             result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
-                        } else if (key === 'api.Appraisal.getcount') {
-                            result.appraisals_count = this[key];
+                        } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
+                            calculateAppraisalsFigures.call(result, this[key].values);
                         } else if (key === 'cycle_is_active') {
                             // must be able to convert '0' to false
                             result.cycle_is_active = !!(+this[key]);
@@ -66,7 +88,7 @@ define([
                  */
                 toAPI: function () {
                     var attributes = this.attributes();
-                    var blacklist = ['appraisals_count'];
+                    var blacklist = ['appraisals_count', 'completion_percentage'];
 
                     return _.transform(attributes, function (result, __, key) {
                         if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {

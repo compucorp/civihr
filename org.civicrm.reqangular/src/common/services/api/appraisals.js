@@ -31,7 +31,7 @@ define([
 
                 var params = _.assign((filters || {}), {
                     options: { sort: sort || 'id DESC' },
-                    'api.Appraisal.getcount': {}
+                    'api.AppraisalCycle.getappraisalsperstep': {}
                 });
 
                 if (pagination) {
@@ -79,7 +79,7 @@ define([
 
                 var params = {
                     id: '' + id,
-                    'api.Appraisal.getcount': {}
+                    'api.AppraisalCycle.getappraisalsperstep': {}
                 };
 
                 return this.sendGET('AppraisalCycle', 'get', params, false).then(function (data) {

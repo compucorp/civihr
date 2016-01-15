@@ -53,7 +53,20 @@ define([
                     cycle_start_date: '2015-09-23',
                     cycle_grade_due: '2015-11-22',
                     cycle_is_active: '0',
-                    'api.Appraisal.getcount': '4'
+                    'api.AppraisalCycle.getappraisalsperstep': {
+                        values: [
+                            {
+                                appraisals_count: '7',
+                                status_id: '1',
+                                status_name: 'Awaiting self appraisal'
+                            },
+                            {
+                                appraisals_count: '2',
+                                status_id: '5',
+                                status_name: 'Complete'
+                            }
+                        ]
+                    }
                 };
 
                 beforeEach(function () {
@@ -65,9 +78,11 @@ define([
                     expect(instance.cycle_start_date).toBe('23/09/2015');
                     expect(instance.cycle_grade_due).toBe('22/11/2015');
                     expect(instance.cycle_is_active).toBe(false);
-                    expect(instance['api.Appraisal.getcount']).not.toBeDefined();
+                    expect(instance['api.AppraisalCycle.getappraisalsperstep']).not.toBeDefined();
                     expect(instance.appraisals_count).toBeDefined();
-                    expect(instance.appraisals_count).toBe('4');
+                    expect(instance.completion_percentage).toBeDefined();
+                    expect(instance.appraisals_count).toBe(9);
+                    expect(instance.completion_percentage).toBe(22)
                 });
             });
         });
