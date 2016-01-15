@@ -239,7 +239,8 @@ define([
                             filter_5: undefined,
                             filter_6: { foo: 'foo' },
                             filter_7: null,
-                            filter_8: {}
+                            filter_8: {},
+                            filter_9: false
                         });
                     });
 
@@ -250,7 +251,8 @@ define([
                                 filter_3: 456,
                                 filter_4: 0,
                                 filter_6: { foo: 'foo' },
-                                filter_8: {}
+                                filter_8: {},
+                                filter_9: false
                             }, undefined);
                         })
                         .finally(done) && $rootScope.$digest();

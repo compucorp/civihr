@@ -32,7 +32,7 @@ define([
         }
 
         /**
-         * Processes the filters provided, removing falsey values (except 0)
+         * Processes the filters provided, removing falsey values (except 0 or false)
          * And applying filter-specific transformations if needed
          *
          * @param {object} rawFilters - The unprocessed filters
@@ -45,7 +45,7 @@ define([
 
             return _.chain(rawFilters)
                 .pick(function (value) {
-                    return value === 0 || !!value;
+                    return value === 0 || value === false || !!value;
                 })
                 .transform(function (filters, __, key) {
                     if (_.endsWith(key, '_from') || _.endsWith(key, '_to')) {
