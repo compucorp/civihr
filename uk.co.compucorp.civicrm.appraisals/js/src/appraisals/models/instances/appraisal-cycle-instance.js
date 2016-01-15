@@ -19,15 +19,31 @@ define([
             function calculateAppraisalsFigures(steps) {
                 var completedStep;
 
+                this.appraisals_count = {};
                 this.completion_percentage = 0;
-                this.appraisals_count = steps.reduce(function (total, status) {
+
+                _.chain(steps)
+                // Count by step
+                .map(function (step) {
+                    return _.pick(step, ['status_id', 'appraisals_count', 'appraisals']);
+                })
+                .tap(function (data) {
+                    this.appraisals_count.steps = data;
+                }.bind(this))
+                // Total count
+                .reduce(function (total, status) {
                     (status.status_id === '5') && (completedStep = status);
 
                     return total + +status.appraisals_count;
-                }, 0);
+                }, 0)
+                .tap(function (data) {
+                    this.appraisals_count.total = data;
+                }.bind(this))
+                // Execute chain
+                .value();
 
                 if (completedStep) {
-                    this.completion_percentage = Math.round(completedStep.appraisals_count * 100 / this.appraisals_count);
+                    this.completion_percentage = Math.round(completedStep.appraisals_count * 100 / this.appraisals_count.total);
                 }
             }
 
@@ -46,6 +62,20 @@ define([
                     }
 
                     return _.assign(Object.create(this), attributes);
+                },
+
+                /**
+                 * Returns the number of appraisals for a given status
+                 *
+                 * @param {string} id - The status id
+                 * @return {integer}
+                 */
+                appraisalsCountForStatus: function (id) {
+                    var step = _.find(this.appraisals_count.steps, function (step) {
+                        return step.status_id === id;
+                    });
+
+                    return step ? step.appraisals_count : 0;
                 },
 
                 /**
