@@ -320,10 +320,10 @@
                         <header class="panel-heading">
                             <div class="row">
                                 <div class="col-sm-6">
-                                    <h3 class="panel-title panel-title-sm">
-                                        {{cycle.cycle_name}}
-                                        <span ng-if="cycle.active">(Active)</span>
-                                        <span ng-if="!cycle.active">(Inactive)</span>
+                                    <h3 class="panel-title panel-title-sm" ng-switch="cycle.cycle_is_active">
+                                        {{cycle.cycle_name}}&nbsp;
+                                        <span ng-switch-when="true">(Active)</span>
+                                        <span ng-switch-when="false">(Inactive)</span>
                                     </h3>
                                 </div>
                                 <div class="col-sm-6 text-right">

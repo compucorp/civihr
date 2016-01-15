@@ -50,6 +50,9 @@ define([
                             result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
                         } else if (key === 'api.Appraisal.getcount') {
                             result.appraisals_count = this[key];
+                        } else if (key === 'cycle_is_active') {
+                            // must be able to convert '0' to false
+                            result.cycle_is_active = !!(+this[key]);
                         } else {
                             result[key] = this[key];
                         }

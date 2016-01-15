@@ -52,6 +52,7 @@ define([
                     foo: 'foo',
                     cycle_start_date: '2015-09-23',
                     cycle_grade_due: '2015-11-22',
+                    cycle_is_active: '0',
                     'api.Appraisal.getcount': '4'
                 };
 
@@ -63,6 +64,7 @@ define([
                     expect(instance.foo).toBe(attributes.foo);
                     expect(instance.cycle_start_date).toBe('23/09/2015');
                     expect(instance.cycle_grade_due).toBe('22/11/2015');
+                    expect(instance.cycle_is_active).toBe(false);
                     expect(instance['api.Appraisal.getcount']).not.toBeDefined();
                     expect(instance.appraisals_count).toBeDefined();
                     expect(instance.appraisals_count).toBe('4');
