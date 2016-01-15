@@ -32,18 +32,21 @@ define([
              * @param {object} filters - Values the full list should be filtered by
              * @param {object} pagination
              *   `page` for the current page, `size` for number of items per page
+             * @param {string} sort - The field and direction to order by
              * @return {Promise} resolves to an object with `list` and `total`
              */
-            all: function (filters, pagination) {
+            all: function (filters, pagination, sort) {
                 $log.debug('api.appraisals.all');
 
-                var params = filters || {};
+                var params = _.assign((filters || {}), {
+                    options: { sort: sort || 'id DESC' }
+                });
 
                 if (pagination) {
-                    params.options = {
+                    _.assign(params.options, {
                         offset: (pagination.page - 1) * pagination.size,
                         limit: pagination.size
-                    };
+                    });
                 }
 
                 return $q.all([
