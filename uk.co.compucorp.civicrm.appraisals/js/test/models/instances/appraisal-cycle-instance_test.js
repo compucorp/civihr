@@ -51,7 +51,8 @@ define([
                 var attributes = {
                     foo: 'foo',
                     cycle_start_date: '2015-09-23',
-                    cycle_grade_due: '2015-11-22'
+                    cycle_grade_due: '2015-11-22',
+                    'api.Appraisal.getcount': '4'
                 };
 
                 beforeEach(function () {
@@ -62,6 +63,9 @@ define([
                     expect(instance.foo).toBe(attributes.foo);
                     expect(instance.cycle_start_date).toBe('23/09/2015');
                     expect(instance.cycle_grade_due).toBe('22/11/2015');
+                    expect(instance['api.Appraisal.getcount']).not.toBeDefined();
+                    expect(instance.appraisals_count).toBeDefined();
+                    expect(instance.appraisals_count).toBe('4');
                 });
             });
         });
@@ -95,7 +99,8 @@ define([
                 instance = AppraisalCycleInstance.init({
                     foo: 'foo',
                     cycle_start_date: '23/09/2015',
-                    cycle_grade_due: '22/11/2015'
+                    cycle_grade_due: '22/11/2015',
+                    appraisals_count: '4'
                 });
                 toAPIData = instance.toAPI();
             });
@@ -104,8 +109,8 @@ define([
                 expect(Object.getPrototypeOf(toAPIData)).toBe(null);
             });
 
-            it('returns all the attributes of the instance', function () {
-                expect(Object.keys(toAPIData)).toEqual(Object.keys(instance.attributes()));
+            it('filters out the appraisals_count field', function () {
+                expect(Object.keys(toAPIData)).toEqual(_.without(Object.keys(instance.attributes()), 'appraisals_count'));
             });
 
             it('formats the dates in the YYYY-MM-DD format', function () {

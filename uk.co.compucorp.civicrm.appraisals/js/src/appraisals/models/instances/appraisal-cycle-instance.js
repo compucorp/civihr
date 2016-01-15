@@ -48,6 +48,8 @@ define([
                     return _.transform(attributes, function (result, __, key) {
                         if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
                             result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
+                        } else if (key === 'api.Appraisal.getcount') {
+                            result.appraisals_count = this[key];
                         } else {
                             result[key] = this[key];
                         }
@@ -61,10 +63,13 @@ define([
                  */
                 toAPI: function () {
                     var attributes = this.attributes();
+                    var blacklist = ['appraisals_count'];
 
                     return _.transform(attributes, function (result, __, key) {
                         if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
                             result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        } else if (_.includes(blacklist, key)) {
+                            return;
                         } else {
                             result[key] = this[key];
                         }

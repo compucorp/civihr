@@ -329,7 +329,14 @@
                                 <div class="col-sm-6 text-right">
                                     <div class="chr_appraisal-cycle-summary__details">
                                         <span class="chr_appraisal-cycle-summary__meta">
-                                            {{cycle.appraisalsTotal || '0'}} Appraisals
+                                            <span
+                                                ng-pluralize
+                                                count="cycle.appraisals_count"
+                                                when="{
+                                                    '0': '{} Appraisal',
+                                                    'other': '{} Appraisals'
+                                                }">
+                                            </span>
                                         </span>
                                         <span class="chr_appraisal-cycle-summary__meta">
                                             {{cycle.completionPercentage || '0'}}% complete</span>
