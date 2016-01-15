@@ -23,7 +23,7 @@ define([
 
             vm.cycles = [];
             vm.filtersCollapsed = true;
-            vm.filters = { active: vm.activeFilters[0].value };
+            vm.filters = { cycle_is_active: vm.activeFilters[0].value };
             vm.loadingDone = false;
 
             vm.activeCycles = activeCycles;
@@ -42,8 +42,8 @@ define([
                     return filter.label === newValue;
                 })[0];
 
-                if (typeof newValue !== 'undefined' && vm.filters.active !== newValue.value) {
-                    vm.filters.active = newValue.value;
+                if (typeof newValue !== 'undefined' && vm.filters.cycle_is_active !== newValue.value) {
+                    vm.filters.cycle_is_active = newValue.value;
                     vm.requestCycles();
                 }
             };
@@ -127,8 +127,8 @@ define([
             function filters() {
                 var filters = angular.copy(vm.filters);
 
-                if (filters.active === null) {
-                    delete filters.active;
+                if (filters.cycle_is_active === null) {
+                    delete filters.cycle_is_active;
                 }
 
                 Object.keys(filters).filter(function (key) {

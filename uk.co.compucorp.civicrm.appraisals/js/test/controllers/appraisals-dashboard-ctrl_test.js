@@ -49,7 +49,7 @@ define([
                 });
 
                 it('has the cycle active filter set to "active"', function () {
-                    expect(ctrl.filters.active).toBe(true);
+                    expect(ctrl.filters.cycle_is_active).toBe(true);
                 });
             });
 
@@ -63,7 +63,7 @@ define([
                 });
 
                 it('requires the first page of active cycles', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
+                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
                 });
             });
         });
@@ -81,11 +81,11 @@ define([
                     });
 
                     it('sets the filter to the new value', function () {
-                        expect(ctrl.filters.active).toBe(false);
+                        expect(ctrl.filters.cycle_is_active).toBe(false);
                     });
 
                     it('makes a new request to the api', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false }, jasmine.any(Object));
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: false }, jasmine.any(Object));
                     });
 
                     describe('when changing to "all"', function () {
@@ -106,7 +106,7 @@ define([
                     });
 
                     it('keeps the old value set', function () {
-                        expect(ctrl.filters.active).toBe(true);
+                        expect(ctrl.filters.cycle_is_active).toBe(true);
                     });
 
                     it('does not make a new request to the api', function () {
@@ -130,7 +130,7 @@ define([
 
             describe('filters', function () {
                 var selectedFilters = {
-                    active: true,
+                    cycle_is_active: true,
                     name: 'foo',
                     status: 'bar',
                     type: 'baz'
@@ -155,7 +155,7 @@ define([
                     });
 
                     it('can request the next page', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 2, size: 5 });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 2, size: 5 });
                     });
                 });
 
@@ -171,7 +171,7 @@ define([
 
                     it('can request the first page again', function () {
                         ctrl.requestCycles();
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
                     });
                 });
             });

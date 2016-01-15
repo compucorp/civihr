@@ -65,7 +65,7 @@
                                     class="btn btn-secondary-outline text-capitalize"
                                     ng-repeat="filter in dashboard.activeFilters"
                                     ng-click="dashboard.changeActiveFilter(filter.label)"
-                                    ng-class="{ active: dashboard.filters.active === filter.value }">
+                                    ng-class="{ active: dashboard.filters.cycle_is_active === filter.value }">
                                     {{filter.label}}
                                 </button>
                             </div>
@@ -333,13 +333,14 @@
                                                 ng-pluralize
                                                 count="cycle.appraisals_count"
                                                 when="{
-                                                    '0': '{} Appraisal',
+                                                    '1': '{} Appraisal',
                                                     'other': '{} Appraisals'
                                                 }">
                                             </span>
                                         </span>
                                         <span class="chr_appraisal-cycle-summary__meta">
-                                            {{cycle.completionPercentage || '0'}}% complete</span>
+                                            {{cycle.completionPercentage || '0'}}% complete
+                                        </span>
                                         <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
                                             <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
                                                 <i class="fa fa-ellipsis-v"></i>
