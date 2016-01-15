@@ -65,7 +65,7 @@ define([
              * @return {Promise}
              */
             active: function () {
-                return appraisalsAPI.activeCycles();
+                return appraisalsAPI.total({ cycle_is_active: true });
             },
 
             /**

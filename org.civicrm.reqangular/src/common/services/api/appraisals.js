@@ -15,15 +15,6 @@ define([
         return api.extend({
 
             /**
-             * # TO DO #
-             */
-            activeCycles: function () {
-                $log.debug('activeCycles');
-
-                return this.mockGET([1, 2, 3, 4, 5, 6, 7, 8]);
-            },
-
-            /**
              * Returns:
              *   - the list of cycles, eventually filtered/paginated
              *   - the total count of the cycles based on the filters,
@@ -157,12 +148,13 @@ define([
             /**
              * Returns the total number of appraisal cycles
              *
+             * @param {object} filters - The filters to apply to the count
              * @return {Promise} resolves to an integer
              */
-            total: function () {
+            total: function (filters) {
                 $log.debug('api.appraisals.total');
 
-                return this.sendGET('AppraisalCycle', 'getcount').then(function (data) {
+                return this.sendGET('AppraisalCycle', 'getcount', filters || {}).then(function (data) {
                     return data.result;
                 });
             },

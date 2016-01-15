@@ -7,6 +7,11 @@ define([
     mocks.factory('AppraisalCycleMock', ['$q', function ($q) {
 
         return {
+            active: jasmine.createSpy('active').and.callFake(function () {
+                return promiseResolvedWith(this.mockedCycles.list.filter(function (cycle) {
+                    return cycle.cycle_is_active;
+                }));
+            }),
             all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {
                 var list = value || this.mockedCycles().list;
 
@@ -61,7 +66,7 @@ define([
                             name: 'Appraisal Cycle 1',
                             status: 'Status #3',
                             type: 'Type #2',
-                            active: true,
+                            cycle_is_active: true,
                             period: { start: '01/01/2014', end: '01/01/2015' },
                             nextDue: { type: 'Manager Appraisal', date: '01/01/2021' },
                             appraisalsTotal: 100,
@@ -77,7 +82,7 @@ define([
                         {
                             id: '42132',
                             name: 'Appraisal Cycle 2',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #1',
                             type: 'Type #1',
                             period: { start: '02/02/2014', end: '02/02/2015' },
@@ -95,7 +100,7 @@ define([
                         {
                             id: '42133',
                             name: 'Appraisal Cycle 3',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #1',
                             type: 'Type #2',
                             period: { start: '03/03/2014', end: '03/03/2015' },
@@ -113,7 +118,7 @@ define([
                         {
                             id: '42134',
                             name: 'Appraisal Cycle 4',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #3',
                             type: 'Type #3',
                             period: { start: '04/04/2014', end: '04/04/2015' },
@@ -131,7 +136,7 @@ define([
                         {
                             id: '42135',
                             name: 'Appraisal Cycle 5',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #1',
                             type: 'Type #3',
                             period: { start: '05/05/2014', end: '05/05/2015' },
@@ -149,7 +154,7 @@ define([
                         {
                             id: '42136',
                             name: 'Appraisal Cycle 6',
-                            active: false,
+                            cycle_is_active: false,
                             status: 'Status #1',
                             type: 'Type #1',
                             period: { start: '06/06/2014', end: '06/06/2015' },
@@ -167,7 +172,7 @@ define([
                         {
                             id: '4217',
                             name: 'Appraisal Cycle 7',
-                            active: false,
+                            cycle_is_active: false,
                             status: 'Status #2',
                             type: 'Type #2',
                             period: { start: '07/07/2014', end: '07/07/2015' },
@@ -185,7 +190,7 @@ define([
                         {
                             id: '42138',
                             name: 'Appraisal Cycle 8',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #2',
                             type: 'Type #1',
                             period: { start: '08/08/2014', end: '08/08/2015' },
@@ -203,7 +208,7 @@ define([
                         {
                             id: '42139',
                             name: 'Appraisal Cycle 9',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #3',
                             type: 'Type #1',
                             period: { start: '09/09/2014', end: '09/09/2015' },
@@ -221,7 +226,7 @@ define([
                         {
                             id: '421310',
                             name: 'Appraisal Cycle 10',
-                            active: true,
+                            cycle_is_active: true,
                             status: 'Status #1',
                             type: 'Type #4',
                             period: { start: '10/10/2014', end: '10/10/2015' },

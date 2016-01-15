@@ -34,14 +34,20 @@ define([
         });
 
         describe('active()', function () {
+            var activeCount;
+
             beforeEach(function () {
-                resolveApiCallTo('activeCycles').with([1, 2, 3, 4, 5]);
+                activeCount = cycles.list.filter(function (cycle) {
+                    return cycle.cycle_is_active;
+                }).length;
+
+                resolveApiCallTo('total').with(activeCount);
             });
 
             it('returns the active cycles', function (done) {
-                AppraisalCycle.active().then(function (activeCycles) {
-                    expect(appraisalsAPI.activeCycles).toHaveBeenCalled();
-                    expect(activeCycles.length).toEqual(5);
+                AppraisalCycle.active().then(function (count) {
+                    expect(appraisalsAPI.total).toHaveBeenCalledWith({ cycle_is_active: true });
+                    expect(count).toEqual(activeCount);
                 })
                 .finally(done) && $rootScope.$digest();
             });
