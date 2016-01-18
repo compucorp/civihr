@@ -26,6 +26,10 @@ define([
                 return Contract.getPrimary();
             }.bind(this))
             .then(function (response) {
+                if (_.isEmpty(response)) {
+                    return;
+                }
+
                 this.primaryContract = response;
                 this.primaryContract.lengthOfService = getLengthOfService(response.start_date, response.end_date);
             }.bind(this))
