@@ -8,7 +8,7 @@ define([
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
         var instanceInterface = ['init', 'appraisalsCountForStatus', 'attributes',
-        'fromAPI', 'toAPI', 'update'];
+        'defaultCustomData', 'fromAPI', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -44,7 +44,17 @@ define([
                 });
 
                 it('contains the attributes passed to it', function () {
-                    expect(_.values(instance)).toEqual(_.values(attributes));
+                    expect(instance.foo).toBeDefined();
+                    expect(instance.bar).toBeDefined();
+                    expect(instance.foo).toEqual(attributes.foo);
+                    expect(instance.bar).toEqual(attributes.bar);
+                });
+
+                it('contains the default custom data', function () {
+                    expect(instance.appraisals_count).toBeDefined();
+                    expect(instance.completion_percentage).toBeDefined();
+                    expect(instance.appraisals_count).toEqual({ steps: [], total: 0 });
+                    expect(instance.completion_percentage).toBe(0);
                 });
             });
 
@@ -154,7 +164,14 @@ define([
                     foo: 'foo',
                     cycle_start_date: '23/09/2015',
                     cycle_grade_due: '22/11/2015',
-                    appraisals_count: '4'
+                    completion_percentage: 20,
+                    appraisals_count: {
+                        steps: [
+                            { status_id: '4', appraisals_count: 5 },
+                            { status_id: '2', appraisals_count: 7 },
+                        ],
+                        total: 12
+                    }
                 });
                 toAPIData = instance.toAPI();
             });
@@ -163,8 +180,12 @@ define([
                 expect(Object.getPrototypeOf(toAPIData)).toBe(null);
             });
 
-            it('filters out the appraisals_count field', function () {
-                expect(Object.keys(toAPIData)).toEqual(_.without(Object.keys(instance.attributes()), 'appraisals_count'));
+            it('filters out the custom data field', function () {
+                expect(Object.keys(toAPIData)).toEqual(_.without(
+                    Object.keys(instance.attributes()),
+                    'appraisals_count',
+                    'completion_percentage'
+                ));
             });
 
             it('formats the dates in the YYYY-MM-DD format', function () {
@@ -218,7 +239,7 @@ define([
                     var updated = _.assign(Object.create(null), oldData, newData);
 
                     p.then(function () {
-                        expect(instance.attributes()).toEqual(updated);
+                        expect(instance.attributes()).toEqual(jasmine.objectContaining(updated));
                     })
                     .finally(done) && $rootScope.$digest();
                 });

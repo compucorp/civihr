@@ -19,9 +19,6 @@ define([
             function calculateAppraisalsFigures(steps) {
                 var completedStep;
 
-                this.appraisals_count = {};
-                this.completion_percentage = 0;
-
                 _.chain(steps)
                 // Count by step
                 .map(function (step) {
@@ -57,6 +54,8 @@ define([
                  * @return {object}
                  */
                 init: function (attributes, fromAPI) {
+                    attributes = _.assign(this.defaultCustomData(), attributes);
+
                     if (typeof fromAPI !== 'undefined' && fromAPI) {
                         attributes = this.fromAPI(attributes);
                     }
@@ -91,6 +90,17 @@ define([
                 },
 
                 /**
+                 *
+                 *
+                 */
+                defaultCustomData: function () {
+                    return {
+                        appraisals_count: { steps: [], total: 0 },
+                        completion_percentage: 0
+                    };
+                },
+
+                /**
                  * Normalizes the given data in the direction API -> Model
                  *
                  * @param {object} attributes
@@ -104,7 +114,7 @@ define([
                             calculateAppraisalsFigures.call(result, this[key].values);
                         } else if (key === 'cycle_is_active') {
                             // must be able to convert '0' to false
-                            result.cycle_is_active = !!(+this[key]);
+                            result[key] = !!(+this[key]);
                         } else {
                             result[key] = this[key];
                         }
