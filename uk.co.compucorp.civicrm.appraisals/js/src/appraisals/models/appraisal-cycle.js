@@ -137,10 +137,28 @@ define([
             /**
              * Returns the full appraisal cycles status overview
              *
+             * The overview is an object containing the individual steps overview
+             * and the total of all the appraisals in the cycles
+             *
              * @return {Promise}
              */
             statusOverview: function () {
-                return appraisalsAPI.statusOverview();
+                return appraisalsAPI.statusOverview().then(function (status) {
+                    return {
+                        steps: _.reduce(status, function (accumulator, step) {
+                            accumulator[step.status_id] = {
+                                name: step.status_name,
+                                due: step.contacts_count.due,
+                                overdue: step.contacts_count.overdue
+                            };
+
+                            return accumulator;
+                        }, {}),
+                        totalAppraisalsNumber: _.reduce(status, function (accumulator, step) {
+                            return accumulator + step.contacts_count.due + step.contacts_count.overdue;
+                        }, 0)
+                    };
+                });
             },
 
             /**

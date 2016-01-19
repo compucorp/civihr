@@ -113,21 +113,17 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Returns the status overview re distribution of appraisals by step
+             *
+             * @return {Promise}
              */
             statusOverview: function () {
-                $log.debug('statusOverview');
+                $log.debug('api.appraisals.statusOverview');
 
-                return this.mockGET({
-                    steps: [
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 40, overdue: 2 },
-                        { contacts: 36, overdue: 0 },
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 0, overdue: 0 }
-                    ],
-                    totalAppraisalsNumber: 248
-                });
+                return this.sendGET('AppraisalCycle', 'getstatusoverview')
+                    .then(function (data) {
+                        return data.values;
+                    });
             },
 
             /**

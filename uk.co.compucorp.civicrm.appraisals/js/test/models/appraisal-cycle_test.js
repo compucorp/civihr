@@ -55,29 +55,63 @@ define([
 
         describe('statusOverview()', function () {
             beforeEach(function () {
-                resolveApiCallTo('statusOverview').with({
-                    steps: [
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 40, overdue: 2 },
-                        { contacts: 36, overdue: 0 },
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 0, overdue: 0 }
-                    ],
-                    totalAppraisalsNumber: 248
-                });
+                resolveApiCallTo('statusOverview').with([
+                    {
+                        status_id: 1,
+                        status_name: "Awaiting self appraisal",
+                        contacts_count: { due: 4, overdue: 2 }
+                    },
+                    {
+                        status_id: 2,
+                        status_name: "Awaiting manager appraisal",
+                        contacts_count: { due: 10, overdue: 6 }
+                    },
+                    {
+                        status_id: 3,
+                        status_name: "Awaiting grade",
+                        contacts_count: { due: 20, overdue: 12 }
+                    },
+                    {
+                        status_id: 4,
+                        status_name: "Awaiting HR approval",
+                        contacts_count: { due: 7, overdue: 3 }
+                    },
+                    {
+                        status_id: 5,
+                        status_name: "Complete",
+                        contacts_count: { due: 13, overdue: 8 }
+                    }
+                ]);
             });
 
             it('returns the status overview', function (done) {
                 AppraisalCycle.statusOverview().then(function (overview) {
                     expect(appraisalsAPI.statusOverview).toHaveBeenCalled();
+                })
+                .finally(done) && $rootScope.$digest();
+            });
 
+            it('contains the list of steps and the total number of appraisals', function (done) {
+                AppraisalCycle.statusOverview().then(function (overview) {
                     expect(Object.keys(overview)).toEqual(['steps', 'totalAppraisalsNumber']);
-                    expect(overview.steps.length).toEqual(5);
-                    expect(overview.totalAppraisalsNumber).toEqual(248);
+                    expect(Object.keys(overview.steps).length).toEqual(5);
+                    expect(overview.totalAppraisalsNumber).toEqual(85);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
 
-                    expect(Object.keys(overview.steps[0])).toEqual(['contacts', 'overdue']);
-                    expect(overview.steps[1].contacts).toEqual(40);
-                    expect(overview.steps[1].overdue).toEqual(2);
+            it('normalizes the steps list', function (done) {
+                AppraisalCycle.statusOverview().then(function (overview) {
+                    expect(Object.keys(overview.steps)).toEqual(['1', '2', '3', '4', '5'])
+                    expect(Object.keys(overview.steps['1'])).toEqual(['name', 'due', 'overdue']);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('retains the data for each step', function (done) {
+                AppraisalCycle.statusOverview().then(function (overview) {
+                    expect(overview.steps['2'].due).toEqual(10);
+                    expect(overview.steps['2'].overdue).toEqual(6);
                 })
                 .finally(done) && $rootScope.$digest();
             });
