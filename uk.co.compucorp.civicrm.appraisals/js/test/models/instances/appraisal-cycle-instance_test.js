@@ -8,7 +8,7 @@ define([
 
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
-        var instanceInterface = ['init', 'appraisalsCountForStatus', 'attributes',
+        var instanceInterface = ['init', 'attributes',
         'defaultCustomData', 'fromAPI', 'nextDueDate', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
@@ -54,8 +54,10 @@ define([
                 it('contains the default custom data', function () {
                     expect(instance.appraisals_count).toBeDefined();
                     expect(instance.completion_percentage).toBeDefined();
-                    expect(instance.appraisals_count).toEqual({ steps: [], total: 0 });
+                    expect(instance.statuses).toBeDefined();
+                    expect(instance.appraisals_count).toEqual(0);
                     expect(instance.completion_percentage).toBe(0);
+                    expect(instance.statuses).toEqual({});
                 });
             });
 
@@ -91,47 +93,22 @@ define([
                     expect(instance.cycle_grade_due).toBe('22/11/2015');
                     expect(instance.cycle_is_active).toBe(false);
                     expect(instance['api.AppraisalCycle.getappraisalsperstep']).not.toBeDefined();
+                    expect(instance.appraisals_count).toBeDefined();
                     expect(instance.completion_percentage).toBeDefined();
-                    expect(instance.appraisals_count.steps).toBeDefined();
-                    expect(instance.appraisals_count.total).toBeDefined();
+                    expect(instance.statuses).toBeDefined();
+                    expect(instance.appraisals_count).toBe(9);
                     expect(instance.completion_percentage).toBe(22)
-                    expect(instance.appraisals_count.total).toBe(9);
-                    expect(instance.appraisals_count.steps).toEqual([{
-                        status_id: '1',
-                        appraisals_count: '7'
-                    }, {
-                        status_id: '5',
-                        appraisals_count: '2'
-                    }]);
+                    expect(instance.statuses).toEqual({
+                        '1': {
+                            name: 'Awaiting self appraisal',
+                            appraisals_count: '7'
+                        },
+                        '5': {
+                            name: 'Complete',
+                            appraisals_count: '2'
+                        }
+                    });
                 });
-            });
-        });
-
-        describe('appraisalsCountForStatus()', function () {
-            var instance;
-
-            beforeEach(function () {
-                instance = AppraisalCycleInstance.init({
-                    'api.AppraisalCycle.getappraisalsperstep': {
-                        values: [
-                            {
-                                appraisals_count: '7',
-                                status_id: '1',
-                                status_name: 'Awaiting self appraisal'
-                            },
-                            {
-                                appraisals_count: '2',
-                                status_id: '5',
-                                status_name: 'Complete'
-                            }
-                        ]
-                    }
-                }, true);
-            });
-
-            it('returns the number of appraisals in a status', function () {
-                expect(instance.appraisalsCountForStatus('1')).toBe('7');
-                expect(instance.appraisalsCountForStatus('5')).toBe('2');
             });
         });
 

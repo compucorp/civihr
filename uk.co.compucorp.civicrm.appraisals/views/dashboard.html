@@ -343,7 +343,7 @@
                                             <span class="chr_appraisal-cycle-summary__meta">
                                                 <span
                                                     ng-pluralize
-                                                    count="cycle.appraisals_count.total"
+                                                    count="cycle.appraisals_count"
                                                     when="{
                                                         '1': '{} Appraisal',
                                                         'other': '{} Appraisals'
@@ -388,10 +388,10 @@
                             <footer class="panel-footer">
                                 <ul class="list-unstyled chr_steps">
                                     <li class="chr_steps__step"
-                                        ng-repeat="status in dashboard.statuses"
+                                        ng-repeat="status in cycle.statuses"
                                         ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
                                         <span class="chr_steps__step__arrow">
-                                            {{status.label}}: {{cycle.appraisalsCountForStatus(status.value)}}
+                                            {{status.name}}: {{status.appraisals_count}}
                                         </span>
                                     </li>
                                 </ul>

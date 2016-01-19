@@ -12,36 +12,27 @@ define([
             /**
              * Calculates total number of appraisals and completion percentage
              *
-             * @param {Array} steps
+             * @param {Array} status
              *   A list of every step with appraisals, each containing
              *   its id and the number of appraisals in it
              */
-            function calculateAppraisalsFigures(steps) {
-                var completedStep;
+            function calculateAppraisalsFigures(status) {
+                this.statuses = _.reduce(status, function (accumulator, step) {
+                    accumulator[step.status_id] = {
+                        name: step.status_name,
+                        appraisals_count: step.appraisals_count,
+                    };
 
-                _.chain(steps)
-                // Count by step
-                .map(function (step) {
-                    return _.pick(step, ['status_id', 'appraisals_count', 'appraisals']);
-                })
-                .tap(function (data) {
-                    this.appraisals_count.steps = data;
-                }.bind(this))
-                // Total count
-                .reduce(function (total, status) {
-                    (status.status_id === '5') && (completedStep = status);
+                    if (step.appraisals) {
+                        accumulator[step.status_id].appraisals = step.appraisals;
+                    }
 
-                    return total + +status.appraisals_count;
-                }, 0)
-                .tap(function (data) {
-                    this.appraisals_count.total = data;
-                }.bind(this))
-                // Execute chain
-                .value();
+                    this.appraisals_count += +step.appraisals_count;
 
-                if (completedStep) {
-                    this.completion_percentage = Math.round(completedStep.appraisals_count * 100 / this.appraisals_count.total);
-                }
+                    return accumulator;
+                }, {}, this);
+
+                this.completion_percentage = Math.round(this.statuses['5'].appraisals_count * 100 / this.appraisals_count);
             }
 
             return {
@@ -64,20 +55,6 @@ define([
                 },
 
                 /**
-                 * Returns the number of appraisals for a given status
-                 *
-                 * @param {string} id - The status id
-                 * @return {integer}
-                 */
-                appraisalsCountForStatus: function (id) {
-                    var step = _.find(this.appraisals_count.steps, function (step) {
-                        return step.status_id === id;
-                    });
-
-                    return step ? step.appraisals_count : 0;
-                },
-
-                /**
                  * Creates a plain object (w/o prototype) containing
                  * only the attributes of this instance
                  *
@@ -97,8 +74,9 @@ define([
                  */
                 defaultCustomData: function () {
                     return {
-                        appraisals_count: { steps: [], total: 0 },
-                        completion_percentage: 0
+                        appraisals_count: 0,
+                        completion_percentage: 0,
+                        statuses: {}
                     };
                 },
 
