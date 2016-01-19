@@ -268,7 +268,7 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
         }
         return $data;
     }
-    
+
     public static function getAppraisalsPerStep($appraisalCycleId, $includeAppraisals = false) {
         $statuses = CRM_Core_OptionGroup::values('appraisal_status');
         $data = array();
@@ -281,12 +281,25 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
             1 => array($appraisalCycleId, 'Integer'),
         );
         $result = CRM_Core_DAO::executeQuery($query, $params);
+
+        // Sets up default values for each available step
+        foreach ($statuses as $id => $name) {
+            $data[$id] = array(
+              'status_id' => (string)$id,
+              'status_name' => $name,
+              'appraisals_count' => 0,
+              'appraisals' => array()
+            );
+        }
+
         while ($result->fetch()) {
-            $data[$result->status_id] = array(
+            // Merges actual values to override default ones
+            $data[$result->status_id] = array_merge($data[$result->status_id], array(
                 'status_id' => $result->status_id,
                 'status_name' => $statuses[$result->status_id],
                 'appraisals_count' => $result->counter,
-            );
+            ));
+
             if ($includeAppraisals) {
                 $appraisalsResult = civicrm_api3('Appraisal', 'get', array(
                     'sequential' => 1,
@@ -299,7 +312,7 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
         }
         return $data;
     }
-    
+
     /**
      * combine all the importable fields from the lower levels object
      *
