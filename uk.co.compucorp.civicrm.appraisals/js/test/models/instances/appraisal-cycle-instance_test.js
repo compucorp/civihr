@@ -1,5 +1,6 @@
 define([
     'common/lodash',
+    'common/moment',
     'common/angularMocks',
     'appraisals/app'
 ], function (_) {
@@ -8,7 +9,7 @@ define([
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
         var instanceInterface = ['init', 'appraisalsCountForStatus', 'attributes',
-        'defaultCustomData', 'fromAPI', 'toAPI', 'update'];
+        'defaultCustomData', 'fromAPI', 'nextDueDate', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -153,6 +154,38 @@ define([
 
             it('returns a plain object w/o prototype', function () {
                 expect(Object.getPrototypeOf(attributes)).toBe(null);
+            });
+        });
+
+        describe('nextDueDate()', function () {
+            var instance;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_self_appraisal_due: '01/02/2016',
+                    cycle_manager_appraisal_due: '01/03/2016',
+                    cycle_grade_due: '01/04/2016'
+                });
+            });
+
+            describe('when there are still due date', function () {
+                beforeEach(function () {
+                    jasmine.clock().mockDate(new Date(2016, 1, 1));
+                });
+
+                it('returns the next to come', function () {
+                    expect(instance.nextDueDate()).toBe('01/03/2016');
+                });
+            });
+
+            describe('when there are no more due dates', function () {
+                beforeEach(function () {
+                    jasmine.clock().mockDate(new Date(2016, 5, 3));
+                });
+
+                it('returns nothing', function () {
+                    expect(instance.nextDueDate()).toBe(null);
+                });
             });
         });
 

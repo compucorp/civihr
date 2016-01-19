@@ -90,8 +90,10 @@ define([
                 },
 
                 /**
+                 * Returns the default custom data (as in, not given by the API)
+                 * with its default values
                  *
-                 *
+                 * @return {object}
                  */
                 defaultCustomData: function () {
                     return {
@@ -119,6 +121,33 @@ define([
                             result[key] = this[key];
                         }
                     }, Object.create(null), attributes);
+                },
+
+                /**
+                 * Returns the next available due date based on the current date,
+                 * or `null` if there are no more due dates left
+                 *
+                 * @return {null/string}
+                 */
+                nextDueDate: function () {
+                    var today = moment();
+                    var nextDueDates = _.chain(this.attributes())
+                        .filter(function (value, key) {
+                            return _.endsWith(key, '_due');
+                        })
+                        .map(function (date) {
+                            return moment(date, 'DD/MM/YYYY')
+                        })
+                        .filter(function (date) {
+                            return moment(date).isAfter(today);
+                        })
+                        .value();
+
+                    if (nextDueDates.length === 0) {
+                        return null;
+                    }
+
+                    return moment.min.apply(moment, nextDueDates).format('DD/MM/YYYY');
                 },
 
                 /**

@@ -381,8 +381,8 @@
                                     <dd>{{cycle.id}}</dd>
                                     <dt>Period:</dt>
                                     <dd>{{cycle.cycle_start_date}} - {{cycle.cycle_end_date}}</dd>
-                                    <dt ng-if="cycle.nextDue">Next Due:</dt>
-                                    <dd ng-if="cycle.nextDue">{{cycle.nextDue.type}} ({{cycle.nextDue.date}})</dd>
+                                    <dt>Next Due:</dt>
+                                    <dd>{{cycle.nextDueDate() || '-'}}</dd>
                                 </dl>
                             </div>
                             <footer class="panel-footer">
