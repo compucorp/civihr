@@ -174,7 +174,7 @@ function civicrm_api3_appraisal_cycle_getallcyclesaveragegrade($params) {
  * @throws API_Exception
  */
 function civicrm_api3_appraisal_cycle_getstatusoverview($params) {
-  $values = CRM_Appraisals_BAO_AppraisalCycle::getStatusOverview();
+  $values = CRM_Appraisals_BAO_AppraisalCycle::getStatusOverview(!empty($params['current_date']) ? $params['current_date'] : false);
   return civicrm_api3_create_success($values, $params, 'AppraisalCycle', 'getstatusoverview');
 }
 

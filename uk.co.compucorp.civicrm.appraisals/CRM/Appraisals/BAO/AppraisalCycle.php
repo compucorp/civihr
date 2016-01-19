@@ -224,7 +224,7 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
      * 
      * @return int
      */
-    public static function getStatusOverview($managerId) {
+    public static function getStatusOverview($currentDate, $managerId) {
         $statuses = CRM_Core_OptionGroup::values('appraisal_status');
         $data = array();
         foreach ($statuses as $key => $value) {
@@ -244,9 +244,9 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
             SELECT COUNT(a_overdue.id) FROM civicrm_appraisal a_overdue
             WHERE
             (
-                (a_overdue.status_id = 1 AND a_overdue.self_appraisal_due < NOW()) OR 
-                (a_overdue.status_id = 2 AND a_overdue.manager_appraisal_due < NOW()) OR 
-                (a_overdue.status_id = 3 AND a_overdue.grade_due < NOW())
+                (a_overdue.status_id = 1 AND a_overdue.self_appraisal_due < %1) OR 
+                (a_overdue.status_id = 2 AND a_overdue.manager_appraisal_due < %1) OR 
+                (a_overdue.status_id = 3 AND a_overdue.grade_due < %1)
             ) AND
                 a_overdue.appraisal_cycle_id = a.appraisal_cycle_id AND
                 a_overdue.status_id = a.status_id
@@ -258,7 +258,9 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
             ORDER BY a.status_id ASC
         ) r
         GROUP BY status_id';
-        $params = array();
+        $params = array(
+            1 => array($currentDate ? $currentDate : 'NOW()', $currentDate ? 'String': 'Text'),
+        );
         $result = CRM_Core_DAO::executeQuery($query, $params);
         while ($result->fetch()) {
             $data[$result->status_id]['contacts_count']['due'] = (int)$result->total - (int)$result->overdue;
