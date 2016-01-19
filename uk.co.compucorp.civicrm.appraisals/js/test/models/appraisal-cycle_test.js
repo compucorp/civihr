@@ -1,11 +1,12 @@
 define([
     'common/angular',
     'common/lodash',
+    'common/moment',
     'common/angularMocks',
     'appraisals/app',
     'mocks/models/appraisal-cycle',
     'mocks/models/instances/appraisal-cycle-instance'
-], function (angular, _) {
+], function (angular, _, moment) {
     'use strict';
 
     describe('AppraisalCycle', function () {
@@ -84,9 +85,18 @@ define([
                 ]);
             });
 
-            it('returns the status overview', function (done) {
+            it('calls the correct API method', function (done) {
                 AppraisalCycle.statusOverview().then(function (overview) {
                     expect(appraisalsAPI.statusOverview).toHaveBeenCalled();
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('passes a date to the API method', function (done) {
+                AppraisalCycle.statusOverview().then(function (overview) {
+                    var date = appraisalsAPI.statusOverview.calls.argsFor(0)[0];
+
+                    expect(moment(date, 'YYYY-MM-DD').isValid()).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });

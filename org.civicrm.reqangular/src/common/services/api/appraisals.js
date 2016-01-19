@@ -117,10 +117,12 @@ define([
              *
              * @return {Promise}
              */
-            statusOverview: function () {
+            statusOverview: function (currentDate) {
                 $log.debug('api.appraisals.statusOverview');
 
-                return this.sendGET('AppraisalCycle', 'getstatusoverview')
+                return this.sendGET('AppraisalCycle', 'getstatusoverview', {
+                        current_date: currentDate
+                    })
                     .then(function (data) {
                         return data.values;
                     });

@@ -143,22 +143,23 @@ define([
              * @return {Promise}
              */
             statusOverview: function () {
-                return appraisalsAPI.statusOverview().then(function (status) {
-                    return {
-                        steps: _.reduce(status, function (accumulator, step) {
-                            accumulator[step.status_id] = {
-                                name: step.status_name,
-                                due: step.contacts_count.due,
-                                overdue: step.contacts_count.overdue
-                            };
+                return appraisalsAPI.statusOverview(moment().format('YYYY-MM-DD'))
+                    .then(function (status) {
+                        return {
+                            steps: _.reduce(status, function (accumulator, step) {
+                                accumulator[step.status_id] = {
+                                    name: step.status_name,
+                                    due: step.contacts_count.due,
+                                    overdue: step.contacts_count.overdue
+                                };
 
-                            return accumulator;
-                        }, {}),
-                        totalAppraisalsNumber: _.reduce(status, function (accumulator, step) {
-                            return accumulator + step.contacts_count.due + step.contacts_count.overdue;
-                        }, 0)
-                    };
-                });
+                                return accumulator;
+                            }, {}),
+                            totalAppraisalsNumber: _.reduce(status, function (accumulator, step) {
+                                return accumulator + step.contacts_count.due + step.contacts_count.overdue;
+                            }, 0)
+                        };
+                    });
             },
 
             /**
