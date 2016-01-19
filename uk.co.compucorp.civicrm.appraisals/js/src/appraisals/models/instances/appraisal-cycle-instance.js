@@ -9,6 +9,12 @@ define([
     instances.factory('AppraisalCycleInstance', ['$q', 'api.appraisals',
         function ($q, appraisalsAPI) {
 
+            var DUE_DATE_FIELD_TO_STATUS_ID = {
+                cycle_self_appraisal_due:    '1',
+                cycle_manager_appraisal_due: '2',
+                cycle_grade_due:             '3'
+            };
+
             /**
              * Calculates total number of appraisals and completion percentage
              *
@@ -32,7 +38,9 @@ define([
                     return accumulator;
                 }, {}, this);
 
-                this.completion_percentage = Math.round(this.statuses['5'].appraisals_count * 100 / this.appraisals_count);
+                if (this.appraisals_count > 0) {
+                    this.completion_percentage = Math.round(this.statuses['5'].appraisals_count * 100 / this.appraisals_count);
+                }
             }
 
             return {
@@ -105,27 +113,39 @@ define([
                  * Returns the next available due date based on the current date,
                  * or `null` if there are no more due dates left
                  *
+                 * The date is an object containing the actual date and the
+                 * id of the status it belongs to
+                 *
                  * @return {null/string}
                  */
                 nextDueDate: function () {
-                    var today = moment();
-                    var nextDueDates = _.chain(this.attributes())
-                        .filter(function (value, key) {
+                    var today, nextDueDate, nextDueDates;
+
+                    today = moment();
+                    nextDueDates = _.chain(this.attributes())
+                        .pick(function (value, key) {
                             return _.endsWith(key, '_due');
                         })
-                        .map(function (date) {
-                            return moment(date, 'DD/MM/YYYY')
+                        .transform(function (result, date, key) {
+                            result[key] = moment(date, 'DD/MM/YYYY');
                         })
-                        .filter(function (date) {
+                        .pick(function (date) {
                             return moment(date).isAfter(today);
                         })
                         .value();
 
-                    if (nextDueDates.length === 0) {
+                    if (_.isEmpty(nextDueDates)) {
                         return null;
                     }
 
-                    return moment.min.apply(moment, nextDueDates).format('DD/MM/YYYY');
+                    nextDueDate = moment.min.apply(moment, _.values(nextDueDates));
+
+                    return {
+                        date: nextDueDate.format('DD/MM/YYYY'),
+                        status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(nextDueDates, function (date) {
+                            return date === nextDueDate;
+                        })]
+                    };
                 },
 
                 /**

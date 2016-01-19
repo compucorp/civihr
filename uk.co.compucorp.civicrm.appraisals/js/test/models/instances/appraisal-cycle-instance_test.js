@@ -135,7 +135,7 @@ define([
         });
 
         describe('nextDueDate()', function () {
-            var instance;
+            var instance, nextDueDate;
 
             beforeEach(function () {
                 instance = AppraisalCycleInstance.init({
@@ -148,20 +148,23 @@ define([
             describe('when there are still due date', function () {
                 beforeEach(function () {
                     jasmine.clock().mockDate(new Date(2016, 1, 1));
+                    nextDueDate = instance.nextDueDate();
                 });
 
                 it('returns the next to come', function () {
-                    expect(instance.nextDueDate()).toBe('01/03/2016');
+                    expect(nextDueDate.status_id).toBe('2');
+                    expect(nextDueDate.date).toBe('01/03/2016');
                 });
             });
 
             describe('when there are no more due dates', function () {
                 beforeEach(function () {
                     jasmine.clock().mockDate(new Date(2016, 5, 3));
+                    nextDueDate = instance.nextDueDate();
                 });
 
                 it('returns nothing', function () {
-                    expect(instance.nextDueDate()).toBe(null);
+                    expect(nextDueDate).toBe(null);
                 });
             });
         });

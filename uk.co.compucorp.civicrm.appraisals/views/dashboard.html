@@ -382,7 +382,12 @@
                                     <dt>Period:</dt>
                                     <dd>{{cycle.cycle_start_date}} - {{cycle.cycle_end_date}}</dd>
                                     <dt>Next Due:</dt>
-                                    <dd>{{cycle.nextDueDate() || '-'}}</dd>
+                                    <dd ng-switch="!!cycle.nextDueDate()">
+                                        <span ng-switch-when="true">
+                                            {{cycle.statuses[cycle.nextDueDate().status_id].name}} ({{cycle.nextDueDate().date}})
+                                        </span>
+                                        <span ng-switch-default>-</span>
+                                    </dd>
                                 </dl>
                             </div>
                             <footer class="panel-footer">
