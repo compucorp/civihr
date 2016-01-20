@@ -16,6 +16,40 @@ define([
             };
 
             /**
+             * Memoized version of the nextDueDate() method
+             *
+             * @param {string} id - A unique identifier to retrieve the memoized result
+             * @param {object} dueDates - The due dates field/value pairs
+             * @return {null/object}
+             */
+            var nextDueDate = _.memoize(function nextDueDates(id, dueDates) {
+                var today, dates, date;
+
+                today = moment();
+                dates = _.chain(dueDates)
+                    .transform(function (result, date, key) {
+                        result[key] = moment(date, 'DD/MM/YYYY');
+                    })
+                    .pick(function (date) {
+                        return date.isSameOrAfter(today, 'day');
+                    })
+                    .value();
+
+                if (_.isEmpty(dates)) {
+                    return null;
+                }
+
+                date = moment.min.apply(moment, _.values(dates));
+
+                return {
+                    date: date.format('DD/MM/YYYY'),
+                    status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(dates, function (date) {
+                        return date === date;
+                    })]
+                };
+            });
+
+            /**
              * Calculates total number of appraisals and completion percentage
              *
              * @param {Array} status
@@ -41,6 +75,17 @@ define([
                 if (this.appraisals_count > 0) {
                     this.completion_percentage = Math.round(this.statuses['5'].appraisals_count * 100 / this.appraisals_count);
                 }
+            }
+
+            /**
+             * Returns an object made of only the due dates properties
+             *
+             * @return {object}
+             */
+            function dueDates() {
+                return _.pick(this.attributes(), function (value, key) {
+                    return _.endsWith(key, '_due');
+                });
             }
 
             return {
@@ -128,36 +173,15 @@ define([
                  * The date is an object containing the actual date and the
                  * id of the status it belongs to
                  *
-                 * @return {null/string}
+                 * @return {null/object}
                  */
                 nextDueDate: function () {
-                    var today, nextDueDate, nextDueDates;
+                    var dates = dueDates.call(this);
+                    // In case the id is not present, use the name as parth of
+                    // the identifier for the memoized function
+                    var id = (this.id || this.name) + _.values(dates).join('');
 
-                    today = moment();
-                    nextDueDates = _.chain(this.attributes())
-                        .pick(function (value, key) {
-                            return _.endsWith(key, '_due');
-                        })
-                        .transform(function (result, date, key) {
-                            result[key] = moment(date, 'DD/MM/YYYY');
-                        })
-                        .pick(function (date) {
-                            return moment(date).isSameOrAfter(today);
-                        })
-                        .value();
-
-                    if (_.isEmpty(nextDueDates)) {
-                        return null;
-                    }
-
-                    nextDueDate = moment.min.apply(moment, _.values(nextDueDates));
-
-                    return {
-                        date: nextDueDate.format('DD/MM/YYYY'),
-                        status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(nextDueDates, function (date) {
-                            return date === nextDueDate;
-                        })]
-                    };
+                    return nextDueDate(id, dates);
                 },
 
                 /**
