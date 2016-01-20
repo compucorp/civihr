@@ -393,8 +393,11 @@
                             <footer class="panel-footer">
                                 <ul class="list-unstyled chr_steps">
                                     <li class="chr_steps__step"
-                                        ng-repeat="status in cycle.statuses"
-                                        ng-class="{'chr_steps__step--danger' : $index === 0, 'chr_steps__step--primary' : $index === 1 }">
+                                        ng-repeat="(id, status) in cycle.statuses"
+                                        ng-class="{
+                                            'chr_steps__step--danger': cycle.isStatusOverdue(id),
+                                            'chr_steps__step--primary': cycle.nextDueDate().status_id === id
+                                        }">
                                         <span class="chr_steps__step__arrow">
                                             {{status.name}}: {{status.appraisals_count}}
                                         </span>
