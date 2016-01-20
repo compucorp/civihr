@@ -62,7 +62,9 @@ define([
             create: function (attributes) {
                 $log.debug('api.appraisals.create');
 
-                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
+                        'api.AppraisalCycle.getappraisalsperstep': {}
+                    }))
                     .then(function (data) {
                         return data.values[0];
                     });
@@ -137,7 +139,9 @@ define([
             update: function (attributes) {
                 $log.debug('api.appraisals.update');
 
-                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
+                        'api.AppraisalCycle.getappraisalsperstep': {}
+                    }))
                     .then(function (data) {
                         return data.values[0];
                     });
