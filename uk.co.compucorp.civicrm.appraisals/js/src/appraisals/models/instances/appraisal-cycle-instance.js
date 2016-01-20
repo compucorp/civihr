@@ -110,6 +110,18 @@ define([
                 },
 
                 /**
+                 * Checks if the status with the given id is overdue
+                 *
+                 * @param {int/string} id
+                 * @return {boolean}
+                 */
+                isStatusOverdue: function (id) {
+                    var field = _.invert(DUE_DATE_FIELD_TO_STATUS_ID)[id];
+
+                    return moment(this[field], 'DD/MM/YYYY').isBefore(moment());
+                },
+
+                /**
                  * Returns the next available due date based on the current date,
                  * or `null` if there are no more due dates left
                  *

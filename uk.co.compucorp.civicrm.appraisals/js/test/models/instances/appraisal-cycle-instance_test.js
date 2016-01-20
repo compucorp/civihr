@@ -8,8 +8,8 @@ define([
 
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
-        var instanceInterface = ['init', 'attributes',
-        'defaultCustomData', 'fromAPI', 'nextDueDate', 'toAPI', 'update'];
+        var instanceInterface = ['init', 'attributes', 'defaultCustomData',
+        'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -131,6 +131,26 @@ define([
 
             it('returns a plain object w/o prototype', function () {
                 expect(Object.getPrototypeOf(attributes)).toBe(null);
+            });
+        });
+
+        describe('isStatusOverdue()', function () {
+            var instance;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_self_appraisal_due: '01/02/2016',
+                    cycle_manager_appraisal_due: '01/03/2016',
+                    cycle_grade_due: '01/04/2016'
+                });
+
+                jasmine.clock().mockDate(new Date(2016, 2, 1));
+            });
+
+            it('checks if a status is overdue given the current date', function () {
+                expect(instance.isStatusOverdue('1')).toBe(true);
+                expect(instance.isStatusOverdue('2')).toBe(false);
+                expect(instance.isStatusOverdue('3')).toBe(false);
             });
         });
 
