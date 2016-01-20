@@ -130,7 +130,7 @@ define([
                             result[key] = moment(date, 'DD/MM/YYYY');
                         })
                         .pick(function (date) {
-                            return moment(date).isAfter(today);
+                            return moment(date).isSameOrAfter(today);
                         })
                         .value();
 

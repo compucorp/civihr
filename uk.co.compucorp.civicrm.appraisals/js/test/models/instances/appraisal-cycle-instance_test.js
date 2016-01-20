@@ -146,14 +146,29 @@ define([
             });
 
             describe('when there are still due date', function () {
-                beforeEach(function () {
-                    jasmine.clock().mockDate(new Date(2016, 1, 1));
-                    nextDueDate = instance.nextDueDate();
+
+                describe('when today is a due date', function () {
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 1, 1));
+                        nextDueDate = instance.nextDueDate();
+                    });
+
+                    it('returns today', function () {
+                        expect(nextDueDate.status_id).toBe('1');
+                        expect(nextDueDate.date).toBe('01/02/2016');
+                    });
                 });
 
-                it('returns the next to come', function () {
-                    expect(nextDueDate.status_id).toBe('2');
-                    expect(nextDueDate.date).toBe('01/03/2016');
+                describe('when today is not a due date', function () {
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 1, 2));
+                        nextDueDate = instance.nextDueDate();
+                    });
+
+                    it('returns the next to come', function () {
+                        expect(nextDueDate.status_id).toBe('2');
+                        expect(nextDueDate.date).toBe('01/03/2016');
+                    });
                 });
             });
 
