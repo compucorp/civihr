@@ -79,7 +79,7 @@ define([
          */
         factory.getPrimary = function () {
             return this.get().then(function (response) {
-                var sortedContracts = _.sortBy(response, function(o) {
+                var sortedContracts = _.sortBy(response, function (o) {
                     return [o.end_date, +o.is_primary];
                 });
 
