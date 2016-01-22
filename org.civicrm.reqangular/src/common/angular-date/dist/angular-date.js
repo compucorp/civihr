@@ -233,12 +233,13 @@ function DateFactory() {
                 strict = true;
             }
 
-            return moment(dateString, format, strict);
+            return moment.utc(dateString, format, strict);
         }
     };
 }
 
 module.exports = DateFactory;
+
 },{"../../../vendor/moment.min.js":11}],9:[function(_dereq_,module,exports){
 /**
  *
@@ -295,7 +296,7 @@ function DateValidationService($filter, DateFactory) {
         checkIfValuesAreValid(start_date, ['start_date']);
         checkIfValuesAreInRange(start_date, ['start_date']);
 
-        if(end !== '' && typeof end !== 'undefined'){
+        if(end !== '' && typeof end !== 'undefined' && end !== null){
             checkIfValuesAreValid(end_date, ['end_date']);
             checkIfValuesAreInRange(end_date, ['end_date']);
         }
@@ -336,6 +337,7 @@ function DateValidationService($filter, DateFactory) {
 }
 
 module.exports = DateValidationService;
+
 },{}],10:[function(_dereq_,module,exports){
 angular.module('templates-main', ['templates/datepickerPopup.html', 'templates/day.html']);
 
