@@ -330,10 +330,36 @@ define(['controllers/controllers'], function(controllers){
             $scope.checkNewRole = function checkNewRole() {
 
                 return (typeof $scope.edit_data['new_role_id'] === 'undefined'
-                    || typeof $scope.edit_data['new_role_id']['title'] === 'undefined'
-                    || $scope.edit_data['new_role_id']['title'] == ''
-                    || typeof $scope.edit_data['new_role_id']['job_contract_id'] === 'undefined'
-                    || $scope.edit_data['new_role_id']['job_contract_id'] == '');
+                || typeof $scope.edit_data['new_role_id']['title'] === 'undefined'
+                || $scope.edit_data['new_role_id']['title'] == ''
+                || typeof $scope.edit_data['new_role_id']['job_contract_id'] === 'undefined'
+                || $scope.edit_data['new_role_id']['job_contract_id'] == '');
+            };
+
+            /**
+             * @description Parse dates so they can be correctly read by server.
+             * Use od DateFactory.CreateDate() takes care of timezone issue.
+             * @param date {string|timestamp|Date}
+             * @returns {Date}
+             */
+            $scope.parseDate = function (date) {
+                var parsed, offset;
+
+                // If it's a Date object we need to manually adjust timezone offset
+                if(date instanceof Date){
+                    // get offset in hours
+                    offset = date.getTimezoneOffset() / -60;
+                    date = date.getTime();
+                }
+
+                parsed = DateFactory.createDate(date);
+
+                // We need to manually add lost hours
+                if(offset && parsed.hour() !== 0){
+                    parsed.add(offset, 'h');
+                }
+
+                return parsed.toDate();
             };
 
             // Saves the new Job Role
@@ -346,23 +372,28 @@ define(['controllers/controllers'], function(controllers){
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
 
-                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function(error, field){
+                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function (error, field) {
                     errors++;
-                    if(field.indexOf('start_date') > -1) {
+                    if (field.indexOf('start_date') > -1) {
                         $scope.errors.newStartDate.push(error);
                     }
-                    if(field.indexOf('end_date') > -1){
+                    if (field.indexOf('end_date') > -1) {
                         $scope.errors.newEndDate.push(error);
                     }
                 });
 
-                if(!errors){
+                if (!errors) {
 
-                    if($scope.edit_data.new_role_id.newEndDate === null){
+                    $scope.edit_data.new_role_id.newStartDate = $scope.parseDate($scope.edit_data.new_role_id.newStartDate);
+
+                    if ($scope.edit_data.new_role_id.newEndDate) {
+                        $scope.edit_data.new_role_id.newEndDate = $scope.parseDate($scope.edit_data.new_role_id.newEndDate);
+                    } else {
                         delete $scope.edit_data.new_role_id.newEndDate;
                     }
+
                     // Create the new job role
-                    createJobRole($scope.edit_data.new_role_id).then(function(){
+                    createJobRole($scope.edit_data.new_role_id).then(function () {
 
                         // Get job roles based on the passed Contact ID (refresh part of the page)
                         getJobRolesList($scope.$parent.contactId);
