@@ -93,8 +93,6 @@ define(['controllers/controllers'], function (controllers) {
             };
 
             $scope.validateDates = function (start, end, error) {
-                console.info('Start:', start);
-                console.info('End:', end);
                 DateValidationService.setErrorCallback(error);
 
                 DateValidationService.setMinDate($scope.minDate.getTime());
