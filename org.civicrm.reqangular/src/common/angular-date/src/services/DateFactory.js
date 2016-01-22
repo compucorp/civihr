@@ -1,8 +1,12 @@
 var moment = require('../../../vendor/moment.min.js');
 
-function DateFactory() {
+function DateFactory($q) {
     return {
-        moment: moment,
+        /**
+         * Default Format
+         */
+        dateFormat: 'DD-MM-YYYY',
+
         /**
          * Wrapper for moment()
          * @param dateString
@@ -11,7 +15,6 @@ function DateFactory() {
          * @returns Moment Object
          */
         createDate: function createDate(dateString, format, strict) {
-
             if (!format) {
                 format = [
                     'DD/MM/YYYY',
@@ -20,11 +23,31 @@ function DateFactory() {
                 ];
             }
 
-            if(typeof strict === 'undefined'){
+            if (typeof strict === 'undefined') {
                 strict = true;
             }
 
             return moment(dateString, format, strict);
+        },
+
+        /**
+         * @description Returns Current Date Format
+         * @returns {string}
+         */
+        getDateFormat: function () {
+            return this.dateFormat;
+        },
+
+        /**
+         * @description Fetches date format setting from
+         * @returns {Promise}
+         */
+        fetchDateFormatFromSettings: function(){
+            var me = this;
+            return $q.when('DD/MM/YYYY').then(function(result){
+                me.dateFormat = result;
+                return result;
+            });
         }
     };
 }

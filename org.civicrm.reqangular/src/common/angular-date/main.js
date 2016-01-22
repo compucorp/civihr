@@ -33,3 +33,7 @@ Module.config(function($provide) {
 
     $provide.decorator('datepickerPopupWrapDirective', require('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
+
+Module.run(function(DateFactory){
+    DateFactory.fetchDateFormatFromSettings();
+});

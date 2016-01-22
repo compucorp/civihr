@@ -34,6 +34,11 @@ Module.config(function($provide) {
 
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
+
+Module.run(function(DateFactory){
+    DateFactory.fetchDateFormatFromSettings();
+});
+
 },{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateValidationService":9,"./src/templates/templates":10}],2:[function(_dereq_,module,exports){
 /**
  * Decorates Datepicker directive, so that it uses monday as a first day of the week.
@@ -182,7 +187,8 @@ function CustomDateInput($filter) {
 module.exports = CustomDateInput;
 },{}],7:[function(_dereq_,module,exports){
 module.exports = function ($filter, DateFactory) {
-    return function (datetime) {
+
+    var filter = function (datetime) {
         var Date;
 
         if(typeof datetime == 'object'){
@@ -201,17 +207,26 @@ module.exports = function ($filter, DateFactory) {
         var beginningOfEra = DateFactory.createDate(0);
         var notEmpty = !Date.isSame(beginningOfEra);
 
-        if(Date.isValid() && notEmpty) return Date.format('DD/MM/YYYY');
+        if(Date.isValid() && notEmpty) return Date.format(DateFactory.getDateFormat());
 
         return 'Unspecified';
     };
+
+    filter.$stateful = true;
+
+    return filter;
 };
+
 },{}],8:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
-function DateFactory() {
+function DateFactory($q) {
     return {
-        moment: moment,
+        /**
+         * Default Format
+         */
+        dateFormat: 'DD-MM-YYYY',
+
         /**
          * Wrapper for moment()
          * @param dateString
@@ -220,7 +235,6 @@ function DateFactory() {
          * @returns Moment Object
          */
         createDate: function createDate(dateString, format, strict) {
-
             if (!format) {
                 format = [
                     'DD/MM/YYYY',
@@ -229,16 +243,37 @@ function DateFactory() {
                 ];
             }
 
-            if(typeof strict === 'undefined'){
+            if (typeof strict === 'undefined') {
                 strict = true;
             }
 
             return moment(dateString, format, strict);
+        },
+
+        /**
+         * @description Returns Current Date Format
+         * @returns {string}
+         */
+        getDateFormat: function () {
+            return this.dateFormat;
+        },
+
+        /**
+         * @description Fetches date format setting from
+         * @returns {Promise}
+         */
+        fetchDateFormatFromSettings: function(){
+            var me = this;
+            return $q.when('DD/MM/YYYY').then(function(result){
+                me.dateFormat = result;
+                return result;
+            });
         }
     };
 }
 
 module.exports = DateFactory;
+
 },{"../../../vendor/moment.min.js":11}],9:[function(_dereq_,module,exports){
 /**
  *
