@@ -1,7 +1,7 @@
-define(['controllers/controllers'], function(controllers){
+define(['controllers/controllers'], function (controllers) {
 
-    controllers.controller('HRJobRolesController',['$scope', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService',
-        function($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService){
+    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
+        function ($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
             $log.debug('Controller: HRJobRolesController');
 
             var me = this;
@@ -9,7 +9,7 @@ define(['controllers/controllers'], function(controllers){
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
 
-            $scope.dpOpen = function($event){
+            $scope.dpOpen = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
 
@@ -17,14 +17,14 @@ define(['controllers/controllers'], function(controllers){
 
             };
 
-            $scope.onContractSelected = function(){
+            $scope.onContractSelected = function () {
                 var id = $scope.edit_data['new_role_id']['job_contract_id'];
 
                 var contract = me.contractsData[id];
 
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
 
-                if(!areDatesCustom) {
+                if (!areDatesCustom) {
                     if (!!contract.start_date) {
                         $scope.edit_data['new_role_id']['newStartDate'] = new Date(contract.start_date);
                     } else {
@@ -40,36 +40,36 @@ define(['controllers/controllers'], function(controllers){
 
             };
 
-            $scope.checkIfDatesAreCustom = function(start, end){
-                if(start == '0000-00-00 00:00:00') start = null;
-                if(end == '0000-00-00 00:00:00') end = null;
+            $scope.checkIfDatesAreCustom = function (start, end) {
+                if (start == '0000-00-00 00:00:00') start = null;
+                if (end == '0000-00-00 00:00:00') end = null;
 
                 var custom = true;
 
-                if(!start) return false;
+                if (!start) return false;
 
 
-                angular.forEach(me.contractsData, function(value){
-                    if($filter('CustomDate')(start) == $filter('CustomDate')(value.start_date)
+                angular.forEach(me.contractsData, function (value) {
+                    if ($filter('CustomDate')(start) == $filter('CustomDate')(value.start_date)
                         && $filter('CustomDate')(end) == $filter('CustomDate')(value.end_date))
-                    custom = false;
+                        custom = false;
                 });
 
-                if(custom){
+                if (custom) {
                     console.info('Leaving old JobRole Dates.');
                 }
 
                 return custom;
             };
 
-            $scope.onContractEdited = function(jobContractId, role_id){
+            $scope.onContractEdited = function (jobContractId, role_id) {
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
 
                 var contract = me.contractsData[id];
 
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
 
-                if(!areDatesCustom) {
+                if (!areDatesCustom) {
                     if (!!contract.start_date) {
                         $scope.edit_data[role_id]['start_date'] = new Date(contract.start_date);
                     } else {
@@ -86,13 +86,15 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Validate fields
-            $scope.validateTitle = function(data) {
+            $scope.validateTitle = function (data) {
                 if (data == 'title' || data == ' ') {
                     return "Title cannot be title!";
                 }
             };
 
-            $scope.validateDates = function(start, end, error) {
+            $scope.validateDates = function (start, end, error) {
+                console.info('Start:', start);
+                console.info('End:', end);
                 DateValidationService.setErrorCallback(error);
 
                 DateValidationService.setMinDate($scope.minDate.getTime());
@@ -101,33 +103,33 @@ define(['controllers/controllers'], function(controllers){
                 DateValidationService.validate(start, end);
             };
 
-            $scope.validateRole = function(data) {
+            $scope.validateRole = function (data) {
                 var errors = 0;
                 // Reset Error Messages
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
-                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function(error, field){
+                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function (error, field) {
                     errors++;
-                    if(field.indexOf('start_date') > -1) {
+                    if (field.indexOf('start_date') > -1) {
                         data.start_date.$error.custom.push(error);
                     }
-                    if(field.indexOf('end_date') > -1){
+                    if (field.indexOf('end_date') > -1) {
                         data.end_date.$error.custom.push(error);
                     }
                 });
 
-                return errors > 0? 'Error' : true;
+                return errors > 0 ? 'Error' : true;
             };
 
-            $scope.today = function() {
+            $scope.today = function () {
                 $scope.CalendarShow['newStartDate'] = false;
                 $scope.CalendarShow['newEndDate'] = false;
                 $scope.CalendarShow['start_date'] = false;
                 $scope.CalendarShow['end_date'] = false;
             };
 
-            $scope.isOpen = function(name){
+            $scope.isOpen = function (name) {
                 return !!($scope.CalendarShow[name]);
             };
 
@@ -138,17 +140,17 @@ define(['controllers/controllers'], function(controllers){
             $scope.today();
 
             // Set required min date
-            $scope.toggleMin = function() {
+            $scope.toggleMin = function () {
                 $scope.minDate = $scope.minDate ? null : new Date(2000, 0, 1);
             };
             $scope.toggleMin();
             $scope.maxDate = new Date(2020, 5, 22);
 
-            $scope.open = function(event) {
+            $scope.open = function (event) {
                 $scope.CalendarShow[event] = true;
             };
 
-            $scope.select = function(event) {
+            $scope.select = function (event) {
                 $scope.CalendarShow[event] = false;
             };
 
@@ -187,27 +189,27 @@ define(['controllers/controllers'], function(controllers){
             $scope.contactListObject = {};
 
             // Implement angular tabs
-            $scope.changeTab = function(row_id, tab_id) {
+            $scope.changeTab = function (row_id, tab_id) {
                 $scope.view_tab[row_id] = tab_id;
             };
 
             // Check if current tab
-            $scope.isTab = function(row_id, tab_id) {
+            $scope.isTab = function (row_id, tab_id) {
                 return ($scope.view_tab[row_id] == tab_id);
             };
 
             // Check for collapsed rows
-            $scope.isRowCollapsed = function(row_id) {
+            $scope.isRowCollapsed = function (row_id) {
                 return !!($scope.collapsedRows[row_id]);
             };
 
             // Collapse the row or Expand when clicked
-            $scope.collapseRow = function(row_id) {
+            $scope.collapseRow = function (row_id) {
                 $scope.collapsedRows[row_id] = !$scope.collapsedRows[row_id];
             };
 
             // Set the data from the webservice call
-            $scope.initData = function(role_id, form_id, data) {
+            $scope.initData = function (role_id, form_id, data) {
 
                 // Check if we have the array already
                 if (typeof $scope.edit_data[role_id] == "undefined") {
@@ -249,9 +251,7 @@ define(['controllers/controllers'], function(controllers){
                     }
                 }
                 // If we have funders or cost centers, we have a special way to init our data
-                else if (form_id == 'cost_centers')
-                {
-
+                else if (form_id == 'cost_centers') {
                     // Init empty array for funder default values
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
@@ -288,12 +288,12 @@ define(['controllers/controllers'], function(controllers){
                 } else {
 
                     var bothJustSet = (typeof $scope.edit_data[role_id].start_date == 'undefined'
-                                    || typeof $scope.edit_data[role_id].job_contract_id == 'undefined');
+                    || typeof $scope.edit_data[role_id].job_contract_id == 'undefined');
 
                     // Default data init
                     $scope.edit_data[role_id][form_id] = data;
 
-                    if(!!$scope.edit_data[role_id].start_date) {
+                    if (!!$scope.edit_data[role_id].start_date) {
                         var date = new Date($scope.edit_data[role_id].start_date.replace(' ', 'T'));
                         /* If dates are not set, we programatically set them here. */
                         var invalidDate = (isNaN(date) && typeof $scope.edit_data[role_id].start_date != 'undefined');
@@ -312,13 +312,13 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Check if the data are changed in the form (based on job role ID)
-            $scope.isChanged = function(row_id) {
+            $scope.isChanged = function (row_id) {
                 // If there are data it means we edited the form
                 return !!($scope.edit_data[row_id]['is_edit']);
             };
 
             // Set the is_edit value
-            $scope.showSave = function(row_id) {
+            $scope.showSave = function (row_id) {
                 $scope.edit_data[row_id]['is_edit'] = true;
             };
 
@@ -411,12 +411,12 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Sets the add new job role form visibility
-            $scope.add_new_role = function() {
+            $scope.add_new_role = function () {
                 $scope.add_new = true;
             };
 
             // Hides the add new job role form
-            $scope.cancelNewRole = function() {
+            $scope.cancelNewRole = function () {
                 $scope.add_new = false;
 
                 // Remove if any data are added / Reset form
@@ -424,7 +424,7 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Removes the Role based on Role ID
-            $scope.removeRole = function(row_id) {
+            $scope.removeRole = function (row_id) {
 
                 $log.debug('Remove Role');
 
@@ -435,12 +435,12 @@ define(['controllers/controllers'], function(controllers){
                 getJobRolesList($scope.$parent.contactId);
             };
 
-            $scope.updateRole = function(role_id) {
+            $scope.updateRole = function (role_id) {
                 $log.debug('Update Role');
 
                 var end = $scope.edit_data[role_id].end_date;
 
-                if(end === null || end === '0000-00-00 00:00:00'){
+                if (end === null || end === '0000-00-00 00:00:00') {
                     delete $scope.edit_data[role_id].end_date;
                 }
 
@@ -453,16 +453,16 @@ define(['controllers/controllers'], function(controllers){
 
             // Select list for Row Types (used for Funders and Cost Centers)
             $scope.rowTypes = {};
-            $scope.rowTypes[0] = {id: 0, name: 'Fixed'};
-            $scope.rowTypes[1] = {id: 1, name: '%'};
+            $scope.rowTypes[0] = { id: 0, name: 'Fixed' };
+            $scope.rowTypes[1] = { id: 1, name: '%' };
 
             //$scope.rowTypes = [ {id: 0, name: 'Fixed'}, {id: 1, name: '%'}];
 
             // Show Row Type default value
-            $scope.showRowType = function(object) {
+            $scope.showRowType = function (object) {
                 var selected = '';
 
-                if(typeof object.type !== "undefined") {
+                if (typeof object.type !== "undefined") {
 
                     // Get the human readable Type Value
                     selected = $scope.rowTypes[object.type];
@@ -473,10 +473,10 @@ define(['controllers/controllers'], function(controllers){
                 return 'Not set';
             };
 
-            $scope.getCostLabel = function(id) {
+            $scope.getCostLabel = function (id) {
                 var label = '';
-                angular.forEach($scope.CostCentreList, function(v, k){
-                    if(v.id == id){
+                angular.forEach($scope.CostCentreList, function (v, k) {
+                    if (v.id == id) {
                         label = v.title;
                     }
                 });
@@ -485,7 +485,7 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Update funder type scope on request
-            $scope.updateAdditionalRowType = function(role_id, row_type, key, data) {
+            $scope.updateAdditionalRowType = function (role_id, row_type, key, data) {
                 if (row_type == 'cost_centre') {
                     // Update cost centers row
                     $scope.edit_data[role_id]['cost_centers'][key]['type'] = data;
@@ -496,7 +496,7 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Add additional rows (funder or cost centres)
-            $scope.addAdditionalRow = function(role_id, row_type) {
+            $scope.addAdditionalRow = function (role_id, row_type) {
 
                 // Check if we have the array already
                 if (typeof $scope.edit_data[role_id] == "undefined") {
@@ -538,7 +538,7 @@ define(['controllers/controllers'], function(controllers){
             };
 
             // Delete Additional rows (funder or cost centres)
-            $scope.deleteAdditionalRow = function(role_id, row_type, row_id) {
+            $scope.deleteAdditionalRow = function (role_id, row_type, row_id) {
 
                 if (row_type == 'cost_centre') {
 
@@ -565,7 +565,7 @@ define(['controllers/controllers'], function(controllers){
 
             function getContactList() {
 
-                HRJobRolesService.getContactList().then(function(data){
+                HRJobRolesService.getContactList().then(function (data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -580,8 +580,11 @@ define(['controllers/controllers'], function(controllers){
                             for (var i = 0; i < data.count; i++) {
 
                                 // Build the contact list
-                                contactList.push( {id: data.values[i]['id'], sort_name: data.values[i]['sort_name']} );
-                                contactListObject[data.values[i]['id']] = { id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] };
+                                contactList.push({ id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] });
+                                contactListObject[data.values[i]['id']] = {
+                                    id: data.values[i]['id'],
+                                    sort_name: data.values[i]['sort_name']
+                                };
                             }
 
                             // Store the ContactList as Array as typeahead needs array what we can reuse later
@@ -595,11 +598,11 @@ define(['controllers/controllers'], function(controllers){
                         }
 
                         // Hide the message after some seconds
-                        $timeout(function() {
+                        $timeout(function () {
                             job_roles.message = null;
                         }, 3000);
                     },
-                    function(errorMessage){
+                    function (errorMessage) {
                         $scope.error = errorMessage;
                     });
             }
@@ -609,7 +612,7 @@ define(['controllers/controllers'], function(controllers){
                 // Set the option groups for which we want to get the values
                 var option_groups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
 
-                HRJobRolesService.getOptionValues(option_groups).then(function(data) {
+                HRJobRolesService.getOptionValues(option_groups).then(function (data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -636,12 +639,15 @@ define(['controllers/controllers'], function(controllers){
 
                                 for (var i = 0; i < data.count; i++) {
 
-                                    switch(option_group_name) {
+                                    switch (option_group_name) {
                                         case 'hrjc_department':
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the department list
-                                                DepartmentList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                DepartmentList[data.values[i]['id']] = {
+                                                    id: data.values[i]['id'],
+                                                    title: data.values[i]['label']
+                                                };
                                             }
 
                                             break;
@@ -649,7 +655,10 @@ define(['controllers/controllers'], function(controllers){
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the region list
-                                                RegionList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                RegionList[data.values[i]['id']] = {
+                                                    id: data.values[i]['id'],
+                                                    title: data.values[i]['label']
+                                                };
                                             }
 
                                             break;
@@ -657,7 +666,10 @@ define(['controllers/controllers'], function(controllers){
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                LocationList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                LocationList[data.values[i]['id']] = {
+                                                    id: data.values[i]['id'],
+                                                    title: data.values[i]['label']
+                                                };
                                             }
 
                                             break;
@@ -665,7 +677,10 @@ define(['controllers/controllers'], function(controllers){
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                LevelList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                LevelList[data.values[i]['id']] = {
+                                                    id: data.values[i]['id'],
+                                                    title: data.values[i]['label']
+                                                };
 
                                             }
 
@@ -674,13 +689,15 @@ define(['controllers/controllers'], function(controllers){
 
                                             if (option_group_id == data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                CostCentreList[data.values[i]['id']] = { id: data.values[i]['id'], title: data.values[i]['label'] };
+                                                CostCentreList[data.values[i]['id']] = {
+                                                    id: data.values[i]['id'],
+                                                    title: data.values[i]['label']
+                                                };
 
                                             }
 
                                             break;
                                     }
-
 
 
                                 }
@@ -708,11 +725,11 @@ define(['controllers/controllers'], function(controllers){
                         }
 
                         // Hide the message after some seconds
-                        $timeout(function() {
+                        $timeout(function () {
                             job_roles.message = null;
                         }, 3000);
                     },
-                    function(errorMessage){
+                    function (errorMessage) {
                         $scope.error = errorMessage;
                     });
             }
@@ -721,79 +738,79 @@ define(['controllers/controllers'], function(controllers){
             function getJobRolesList(contact_id) {
 
                 // Get the job contracts for the contact
-                HRJobRolesService.getContracts(contact_id).then(function(data) {
+                HRJobRolesService.getContracts(contact_id).then(function (data) {
 
-                    var job_contract_ids = [];
-                    var contractsData = {};
+                        var job_contract_ids = [];
+                        var contractsData = {};
 
-                    // If we have job contracts, try to get the job roles for the contract
-                    if (data.count != 0) {
-                        for (var i = 0; i < data.count; i++) {
+                        // If we have job contracts, try to get the job roles for the contract
+                        if (data.count != 0) {
+                            for (var i = 0; i < data.count; i++) {
 
-                            // Job contract IDs which will be passed to the "getAllJobRoles" service
-                            job_contract_ids.push(data.values[i]['id']);
+                                // Job contract IDs which will be passed to the "getAllJobRoles" service
+                                job_contract_ids.push(data.values[i]['id']);
 
-                            var contract = {
-                                id: data.values[i]['id'],
-                                title: data.values[i]['title'],
-                                start_date: data.values[i]['period_start_date'],
-                                end_date: data.values[i]['period_end_date'],
-                                status: status
-                            };
+                                var contract = {
+                                    id: data.values[i]['id'],
+                                    title: data.values[i]['title'],
+                                    start_date: data.values[i]['period_start_date'],
+                                    end_date: data.values[i]['period_end_date'],
+                                    status: status
+                                };
 
-                            var optionalEndDate = $filter('CustomDate')(contract.end_date) || 'Unspecified';
-                            contract.label = contract.title + ' (' + $filter('CustomDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
+                                var optionalEndDate = $filter('CustomDate')(contract.end_date) || 'Unspecified';
+                                contract.label = contract.title + ' (' + $filter('CustomDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
 
-                            contractsData[data.values[i]['id']] = contract;
-                        }
-
-                        // Store the ContractsData what we can reuse later
-                        job_roles.contractsData = contractsData;
-
-                        HRJobRolesService.getAllJobRoles(job_contract_ids).then(function(data) {
-
-                            // Assign data
-                            job_roles.present_job_roles = [];
-                            job_roles.past_job_roles = [];
-
-                            angular.forEach(data.values, function(object_data) {
-                                var end_date = new Date(object_data.end_date.replace(' ', 'T'));
-
-                                if (end_date > new Date() || isNaN(end_date)) {
-                                    job_roles.present_job_roles.push(object_data);
-                                } else {
-                                    job_roles.past_job_roles.push(object_data);
-                                }
-                            });
-
-                            if (data.is_error == 1) {
-                                job_roles.error = 'Data load failure';
-                            } else {
-
-                                if (data.count == 0) {
-                                    job_roles.empty = 'No Job Roles found!';
-                                } else {
-                                    job_roles.empty = null;
-                                }
-
-                                job_roles.status = 'Data load OK';
+                                contractsData[data.values[i]['id']] = contract;
                             }
-                        }, function(errorMessage){
-                            $scope.error = errorMessage;
-                        });
-                    } else {
-                        job_roles.empty = 'No Job Contracts found for this Contact!';
-                    }
-                },
-                function(errorMessage){
-                    $scope.error = errorMessage;
-                });
+
+                            // Store the ContractsData what we can reuse later
+                            job_roles.contractsData = contractsData;
+
+                            HRJobRolesService.getAllJobRoles(job_contract_ids).then(function (data) {
+
+                                // Assign data
+                                job_roles.present_job_roles = [];
+                                job_roles.past_job_roles = [];
+
+                                angular.forEach(data.values, function (object_data) {
+                                    var end_date = new Date(object_data.end_date.replace(' ', 'T'));
+
+                                    if (end_date > new Date() || isNaN(end_date)) {
+                                        job_roles.present_job_roles.push(object_data);
+                                    } else {
+                                        job_roles.past_job_roles.push(object_data);
+                                    }
+                                });
+
+                                if (data.is_error == 1) {
+                                    job_roles.error = 'Data load failure';
+                                } else {
+
+                                    if (data.count == 0) {
+                                        job_roles.empty = 'No Job Roles found!';
+                                    } else {
+                                        job_roles.empty = null;
+                                    }
+
+                                    job_roles.status = 'Data load OK';
+                                }
+                            }, function (errorMessage) {
+                                $scope.error = errorMessage;
+                            });
+                        } else {
+                            job_roles.empty = 'No Job Contracts found for this Contact!';
+                        }
+                    },
+                    function (errorMessage) {
+                        $scope.error = errorMessage;
+                    });
             }
 
             // Implements the "deleteJobRole" service
             function deleteJobRole(job_role_id) {
 
-                HRJobRolesService.deleteJobRole(job_role_id).then(function(data) {
+                HRJobRolesService.deleteJobRole(job_role_id).then(function (data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -805,11 +822,11 @@ define(['controllers/controllers'], function(controllers){
                         }
 
                         // Hide the message after some seconds
-                        $timeout(function() {
+                        $timeout(function () {
                             job_roles.message = null;
                         }, 3000);
                     },
-                    function(errorMessage){
+                    function (errorMessage) {
                         $scope.error = errorMessage;
                     });
 
@@ -819,32 +836,32 @@ define(['controllers/controllers'], function(controllers){
             function createJobRole(job_roles_data) {
 
                 return HRJobRolesService.createJobRole(job_roles_data)
-                    .then(function(data) {
+                    .then(function (data) {
 
-                        if (data.is_error == 1) {
-                            job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Role creation failed!';
-                        } else {
-                            job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Role added successfully!';
+                            if (data.is_error == 1) {
+                                job_roles.message_type = 'alert-danger';
+                                job_roles.message = 'Role creation failed!';
+                            } else {
+                                job_roles.message_type = 'alert-success';
+                                job_roles.message = 'Role added successfully!';
+                            }
+
+                            // Hide the message after some seconds
+                            $timeout(function () {
+                                job_roles.message = null;
+                            }, 3000);
+                        },
+                        function (errorMessage) {
+                            $scope.error = errorMessage;
                         }
-
-                        // Hide the message after some seconds
-                        $timeout(function() {
-                            job_roles.message = null;
-                        }, 3000);
-                    },
-                    function(errorMessage){
-                        $scope.error = errorMessage;
-                    }
-                );
+                    );
 
             }
 
             // Implements the "updateJobRole" service
             function updateJobRole(role_id, job_roles_data) {
 
-                HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function(data){
+                HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
 
                         if (data.is_error == 1) {
                             job_roles.message_type = 'alert-danger';
@@ -856,11 +873,11 @@ define(['controllers/controllers'], function(controllers){
                         }
 
                         // Hide the message after some seconds
-                        $timeout(function() {
+                        $timeout(function () {
                             job_roles.message = null;
                         }, 3000);
                     },
-                    function(errorMessage){
+                    function (errorMessage) {
                         $scope.error = errorMessage;
                     });
 
