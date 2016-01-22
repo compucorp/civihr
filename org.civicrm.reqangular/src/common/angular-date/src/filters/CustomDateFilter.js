@@ -1,5 +1,6 @@
 module.exports = function ($filter, DateFactory) {
-    return function (datetime) {
+
+    var filter = function (datetime) {
         var Date;
 
         if(typeof datetime == 'object'){
@@ -18,8 +19,12 @@ module.exports = function ($filter, DateFactory) {
         var beginningOfEra = DateFactory.createDate(0);
         var notEmpty = !Date.isSame(beginningOfEra);
 
-        if(Date.isValid() && notEmpty) return Date.format('DD/MM/YYYY');
+        if(Date.isValid() && notEmpty) return Date.format(DateFactory.getDateFormat());
 
         return 'Unspecified';
     };
+
+    filter.$stateful = true;
+
+    return filter;
 };
