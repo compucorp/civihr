@@ -29,27 +29,37 @@ define([
             all: function (filters, pagination, sort) {
                 $log.debug('api.appraisals.all');
 
-                var params = _.assign((filters || {}), {
-                    options: { sort: sort || 'id DESC' },
-                    'api.AppraisalCycle.getappraisalsperstep': {}
-                });
-
-                if (pagination) {
-                    _.assign(params.options, {
-                        offset: (pagination.page - 1) * pagination.size,
-                        limit: pagination.size
-                    });
-                }
+                filters = filters || {};
 
                 return $q.all([
-                    this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
-                        return data.values;
-                    }),
-                    this.sendGET('AppraisalCycle', 'getcount', _.omit(params, 'options')).then(function (data) {
-                        return data.result;
-                    })
+                    (function () {
+                        var params = _.assign({}, filters, {
+                            'api.AppraisalCycle.getappraisalsperstep': {},
+                            options: { sort: sort || 'id DESC' }
+                        });
+
+                        if (pagination) {
+                            params.options.offset = (pagination.page - 1) * pagination.size;
+                            params.options.limit = pagination.size;
+                        }
+
+                        return this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
+                            return data.values;
+                        });
+                    }.bind(this))(),
+                    (function () {
+                        var params = _.assign({}, filters, { 'return': 'id' });
+
+                        return this.sendGET('AppraisalCycle', 'get', params);
+                    }.bind(this))()
                 ]).then(function (results) {
-                    return { list: results[0], total: results[1] };
+                    return {
+                        list: results[0],
+                        total: results[1].count,
+                        allIds: results[1].values.map(function (cycle) {
+                            return cycle.id;
+                        })
+                    };
                 });
             },
 
