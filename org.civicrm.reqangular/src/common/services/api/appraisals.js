@@ -127,14 +127,13 @@ define([
             /**
              * Returns the status overview re distribution of appraisals by step
              *
+             * @param {object} params
              * @return {Promise}
              */
-            statusOverview: function (currentDate) {
+            statusOverview: function (params) {
                 $log.debug('api.appraisals.statusOverview');
 
-                return this.sendGET('AppraisalCycle', 'getstatusoverview', {
-                        current_date: currentDate
-                    })
+                return this.sendGET('AppraisalCycle', 'getstatusoverview', params)
                     .then(function (data) {
                         return data.values;
                     });
