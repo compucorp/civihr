@@ -58,7 +58,7 @@ define([
                         total: results[1].count,
                         allIds: results[1].values.map(function (cycle) {
                             return cycle.id;
-                        })
+                        }).join(',')
                     };
                 });
             },
