@@ -85,20 +85,127 @@ define([
                 ]);
             });
 
-            it('calls the correct API method', function (done) {
-                AppraisalCycle.statusOverview().then(function (overview) {
-                    expect(appraisalsAPI.statusOverview).toHaveBeenCalled();
-                })
-                .finally(done) && $rootScope.$digest();
-            });
+            describe('API call', function () {
+                it('calls the correct API method', function (done) {
+                    AppraisalCycle.statusOverview().then(function (overview) {
+                        expect(appraisalsAPI.statusOverview).toHaveBeenCalled();
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
 
-            it('passes a date to the API method', function (done) {
-                AppraisalCycle.statusOverview().then(function (overview) {
-                    var date = appraisalsAPI.statusOverview.calls.argsFor(0)[0];
+                it('passes a date to the API method', function (done) {
+                    AppraisalCycle.statusOverview().then(function (overview) {
+                        var date = appraisalsAPI.statusOverview.calls.argsFor(0)[0].current_date;
 
-                    expect(moment(date, 'YYYY-MM-DD').isValid()).toBe(true);
-                })
-                .finally(done) && $rootScope.$digest();
+                        expect(moment(date, 'YYYY-MM-DD').isValid()).toBe(true);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                describe('current_date argument', function () {
+                    var p;
+
+                    describe('when it is not passed', function () {
+                        beforeEach(function () {
+                            jasmine.clock().mockDate(new Date(2016, 11, 2));
+
+                            p = AppraisalCycle.statusOverview();
+                        })
+
+                        it('calls the API method with the actual current date', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2016-12-02' });
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when it is passed', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.statusOverview({ current_date: '2015-10-11' });
+                        })
+
+                        it('calls the API method with it', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2015-10-11' });
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+                });
+
+                describe('start_date and end_date arguments', function () {
+                    var p;
+
+                    describe('when they are not passed', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.statusOverview();
+                        })
+
+                        it('calls the API method without them', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
+                                    start_date: jasmine.any(String),
+                                    end_date: jasmine.any(String)
+                                }));
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when they are passed', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.statusOverview({
+                                start_date: '2016-03-25',
+                                end_date: '2016-05-25',
+                            });
+                        })
+
+                        it('calls the API method with them', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                    start_date: '2016-03-25',
+                                    end_date: '2016-05-25'
+                                }));
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+                });
+
+                describe('cycles_ids argument', function () {
+                    var p;
+
+                    describe('when it is not passed', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.statusOverview();
+                        })
+
+                        it('calls the API method without it', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
+                                    cycles_ids: jasmine.any(String)
+                                }));
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+
+                    describe('when it is passed', function () {
+                        beforeEach(function () {
+                            p = AppraisalCycle.statusOverview({ cycles_ids: '3543,7654,6363,4534' });
+                        })
+
+                        it('calls the API method with it', function (done) {
+                            p.then(function (overview) {
+                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                    cycles_ids: '3543,7654,6363,4534'
+                                }));
+                            })
+                            .finally(done) && $rootScope.$digest();
+                        });
+                    });
+                });
             });
 
             it('contains the list of steps and the total number of appraisals', function (done) {

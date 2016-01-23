@@ -140,10 +140,13 @@ define([
              * The overview is an object containing the individual steps overview
              * and the total of all the appraisals in the cycles
              *
+             * @param {object} currentDate - The date to pass as current to the api method
              * @return {Promise}
              */
-            statusOverview: function () {
-                return appraisalsAPI.statusOverview(moment().format('YYYY-MM-DD'))
+            statusOverview: function (params) {
+                return appraisalsAPI.statusOverview(_.defaults(params || {}, {
+                        current_date: moment().format('YYYY-MM-DD')
+                    }))
                     .then(function (status) {
                         return {
                             steps: _.reduce(status, function (accumulator, step) {
