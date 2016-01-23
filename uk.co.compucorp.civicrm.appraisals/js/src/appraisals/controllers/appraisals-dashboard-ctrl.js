@@ -21,7 +21,7 @@ define([
                 { label: 'all', value: null }
             ];
 
-            vm.cycles = [];
+            vm.cycles = { list: [], total: 0 };
             vm.filtersCollapsed = true;
             vm.filters = { cycle_is_active: vm.activeFilters[0].value };
             vm.loadingDone = false;
@@ -85,13 +85,14 @@ define([
                 AppraisalCycle.all(filters(), pagination).then(function (cycles) {
                     if (addPage) {
                         cycles.list.forEach(function (cycle) {
-                            vm.cycles.push(cycle);
+                            vm.cycles.list.push(cycle);
                         });
                     } else {
-                        vm.cycles = cycles.list;
+                        vm.cycles.list = cycles.list;
                     }
 
-                    vm.loadingDone = vm.cycles.length === cycles.total;
+                    vm.cycles.total = cycles.total;
+                    vm.loadingDone = vm.cycles.list.length === cycles.total;
                 });
             };
 
@@ -103,19 +104,19 @@ define([
              */
             function addListeners() {
                 $rootScope.$on('AppraisalCycle::new', function (event, newCycle) {
-                    vm.cycles.unshift(newCycle);
+                    vm.cycles.list.unshift(newCycle);
                 });
 
                 $rootScope.$on('AppraisalCycle::edit', function (event, editedCycle) {
                     var i, len;
 
-                    for (i = 0, len = vm.cycles.length; i < len; i++) {
-                        if (vm.cycles[i].id === editedCycle.id) {
+                    for (i = 0, len = vm.cycles.list.length; i < len; i++) {
+                        if (vm.cycles.list[i].id === editedCycle.id) {
                             break;
                         }
                     }
 
-                    vm.cycles.splice(i, 1, editedCycle);
+                    vm.cycles.list.splice(i, 1, editedCycle);
                 });
             }
 

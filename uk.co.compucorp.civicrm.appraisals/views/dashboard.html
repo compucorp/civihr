@@ -311,10 +311,10 @@
         <div class="col-sm-12">
             <section
                 class="panel panel-primary panel--dashboard-appraisals"
-                ng-switch="dashboard.loadingDone && dashboard.cycles.length === 0">
+                ng-switch="dashboard.loadingDone && dashboard.cycles.list.length === 0">
                 <header class="panel-heading">
                     <h2 class="panel-title">
-                        10 Overdue Appraisals and 80 Due this week
+                        {{dashboard.cycles.total}} Appraisal Cycles (10 overdue Appraisals and 80 due this week)
                     </h2>
                 </header>
                 <article ng-switch-when="true" class="panel panel-default">
@@ -328,7 +328,7 @@
                         done="dashboard.loadingDone">
                         <article
                             class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary"
-                            ng-repeat="cycle in dashboard.cycles">
+                            ng-repeat="cycle in dashboard.cycles.list">
                             <header class="panel-heading">
                                 <div class="row">
                                     <div class="col-sm-6">

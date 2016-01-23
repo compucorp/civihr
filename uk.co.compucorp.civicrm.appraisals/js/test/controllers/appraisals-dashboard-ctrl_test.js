@@ -53,13 +53,23 @@ define([
                 });
             });
 
-            describe('cycles list', function () {
+            describe('cycles', function () {
                 beforeEach(function () {
                     initController();
                 });
 
-                it('has appraisal cycles list as an empty array', function () {
-                    expect(ctrl.cycles).toEqual([]);
+                it('it is as an object', function () {
+                    expect(ctrl.cycles).toEqual(jasmine.any(Object));
+                });
+
+                it('it contains an array as the cycles list', function () {
+                    expect(ctrl.cycles.list).toBeDefined();
+                    expect(ctrl.cycles.list).toEqual([]);
+                });
+
+                it('it contains the total number of found cycles', function () {
+                    expect(ctrl.cycles.total).toBeDefined();
+                    expect(ctrl.cycles.total).toEqual(0);
                 });
 
                 it('requires the first page of active cycles', function () {
@@ -183,15 +193,15 @@ define([
 
                 beforeEach(function () {
                     $scope.$digest();
-                    beforeTotal = ctrl.cycles.length;
+                    beforeTotal = ctrl.cycles.list.length;
 
                     $rootScope.$emit('AppraisalCycle::new', newCycle);
                     $scope.$digest();
                 });
 
                 it('adds it to the top of cycles list', function () {
-                    expect(ctrl.cycles.length).toBe(beforeTotal + 1);
-                    expect(ctrl.cycles[0].name).toEqual(newCycle.name);
+                    expect(ctrl.cycles.list.length).toBe(beforeTotal + 1);
+                    expect(ctrl.cycles.list[0].name).toEqual(newCycle.name);
                 });
             });
 
@@ -217,16 +227,16 @@ define([
 
                 beforeEach(function () {
                     $scope.$digest();
-                    beforeTotal = ctrl.cycles.length;
-                    angular.extend(newData, { id: ctrl.cycles[3].id });
+                    beforeTotal = ctrl.cycles.list.length;
+                    angular.extend(newData, { id: ctrl.cycles.list[3].id });
 
                     $rootScope.$emit('AppraisalCycle::edit', newData);
                     $scope.$digest();
                 });
 
                 it('updates the list', function () {
-                    expect(ctrl.cycles.length).toBe(beforeTotal);
-                    expect(ctrl.cycles.filter(function (cycle) {
+                    expect(ctrl.cycles.list.length).toBe(beforeTotal);
+                    expect(ctrl.cycles.list.filter(function (cycle) {
                         return cycle.id == newData.id;
                     })[0]).toEqual(newData);
                 });
