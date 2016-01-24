@@ -224,9 +224,10 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
      * 
      * @return int
      */
-    public static function getStatusOverview($currentDate, $managerId) {
+    public static function getStatusOverview($currentDate, $cyclesIds, $startDate, $endDate) {
         $statuses = CRM_Core_OptionGroup::values('appraisal_status');
         $data = array();
+
         foreach ($statuses as $key => $value) {
             $data[$key] = array(
                 'status_id' => $key,
@@ -240,33 +241,104 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
         $query = 'SELECT status_id, SUM(total) AS total, SUM(overdue) AS overdue FROM
         (
             SELECT a.status_id, COUNT(a.id) AS total,
-            (
-            SELECT COUNT(a_overdue.id) FROM civicrm_appraisal a_overdue
+                (
+                    SELECT COUNT(a_overdue.id)
+                    FROM civicrm_appraisal a_overdue
+                    WHERE
+                        a_overdue.appraisal_cycle_id = a.appraisal_cycle_id
+                        AND a_overdue.status_id = a.status_id
+                        %overdue_criteria
+                ) AS overdue
+            FROM civicrm_appraisal a
+                INNER JOIN civicrm_appraisal_cycle ac ON ac.id = a.appraisal_cycle_id
             WHERE
-            (
-                (a_overdue.status_id = 1 AND a_overdue.self_appraisal_due < %1) OR 
-                (a_overdue.status_id = 2 AND a_overdue.manager_appraisal_due < %1) OR 
-                (a_overdue.status_id = 3 AND a_overdue.grade_due < %1)
-            ) AND
-                a_overdue.appraisal_cycle_id = a.appraisal_cycle_id AND
-                a_overdue.status_id = a.status_id
-            )
-            AS overdue FROM civicrm_appraisal a
-            INNER JOIN civicrm_appraisal_cycle ac ON ac.id = a.appraisal_cycle_id
-            WHERE ac.cycle_is_active = 1
+                ac.cycle_is_active = 1
+                %cycles_ids
+                %period_criteria
             GROUP BY a.status_id, a.appraisal_cycle_id
             ORDER BY a.status_id ASC
         ) r
         GROUP BY status_id';
-        $params = array(
-            1 => array($currentDate ? $currentDate : 'NOW()', $currentDate ? 'String': 'Text'),
-        );
+
+        $params = array();
+
+        self::fillQueryPlaceholder($query, $params, array(
+            'name' => 'cycles_ids',
+            'type' => 'Text',
+            'string' => 'AND ac.id IN (%paramIndex_1)',
+            'values' => array($cyclesIds)
+        ));
+        self::fillQueryPlaceholder($query, $params, array(
+            'name' => 'overdue_criteria',
+            'type' => $currentDate === 'NOW()' ? 'Text' : 'String',
+            'string' => self::dueDatesClause('a_overdue', $currentDate, '< %paramIndex_1'),
+            'values' => array($currentDate)
+        ));
+        self::fillQueryPlaceholder($query, $params, array(
+            'name' => 'period_criteria',
+            'type' => 'String',
+            'string' => self::dueDatesClause('a', $startDate, 'BETWEEN %paramIndex_1 AND %paramIndex_2'),
+            'values' => array($startDate, $endDate)
+        ));
+
         $result = CRM_Core_DAO::executeQuery($query, $params);
+
         while ($result->fetch()) {
             $data[$result->status_id]['contacts_count']['due'] = (int)$result->total - (int)$result->overdue;
             $data[$result->status_id]['contacts_count']['overdue'] = (int)$result->overdue;
         }
+
         return $data;
+    }
+
+    /**
+     * Fills a placeholder in the given query string using the options passed
+     *
+     * @param {string} $query - The query containing the placeholder
+     * @param {Array} $params - The array used by CRM_Core_DAO::executeQuery to
+     *     interpolate the values in the query before executing it
+     * @param {Array} $options - An array with following properties:
+     *     name - The name of the placeholder that needs to be replaced
+     *     string - The string that replaces the placeholder. The string must
+     *       contain a placeholder %paramIndex_<index> (i.e.: $paramIndex_1)
+     *       that will be used by CRM_Core_DAO::executeQuery to fill in the real value
+     *     values - An array of value that CRM_Core_DAO::executeQuery will
+     *       use in the final query
+     *     type - The type of the values used by CRM_Core_DAO::executeQuery
+     */
+    private function fillQueryPlaceholder(&$query, &$params, $options) {
+        $replacement = '';
+
+        if (!empty(array_filter($options['values']))) {
+            $replacement = $options['string'];
+
+            foreach ($options['values'] as $key => $value) {
+                $paramIndex = count($params) + 1;
+                $params[$paramIndex] = array($value, $options['type']);
+
+                $replacement = str_replace("%paramIndex_" . ($key + 1), "%$paramIndex", $replacement);
+            }
+        }
+
+        $query = str_replace("%$options[name]", $replacement, $query);
+    }
+
+    /**
+     * Returns a string with the WHERE clause related to all due dates
+     *
+     * @param {string} $appraisalAlias - The alias to use for the appraisals column
+     * @param {string} $targetDate - The date to use for the clause. If null, no clause is returned
+     * @param {string} $comparison - The comparison to do against the $targetDate
+     * @return {string}
+     */
+    private function dueDatesClause($appraisalAlias, $targetDate, $comparison) {
+        if (!$targetDate) {
+            return null;
+        }
+
+        return "AND (($appraisalAlias.status_id = 1 AND $appraisalAlias.self_appraisal_due $comparison) OR " .
+          "($appraisalAlias.status_id = 2 AND $appraisalAlias.manager_appraisal_due $comparison) OR " .
+          "($appraisalAlias.status_id = 3 AND $appraisalAlias.grade_due $comparison))";
     }
 
     public static function getAppraisalsPerStep($appraisalCycleId, $includeAppraisals = false) {

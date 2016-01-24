@@ -174,7 +174,12 @@ function civicrm_api3_appraisal_cycle_getallcyclesaveragegrade($params) {
  * @throws API_Exception
  */
 function civicrm_api3_appraisal_cycle_getstatusoverview($params) {
-  $values = CRM_Appraisals_BAO_AppraisalCycle::getStatusOverview(!empty($params['current_date']) ? $params['current_date'] : false);
+  $current_date = !empty($params['current_date']) ? $params['current_date'] : false;
+  $cycles_ids   = !empty($params['cycles_ids'])   ? $params['cycles_ids']   : false;
+  $start_date   = !empty($params['start_date'])   ? $params['start_date']   : false;
+  $end_date     = !empty($params['end_date'])     ? $params['end_date']     : false;
+
+  $values = CRM_Appraisals_BAO_AppraisalCycle::getStatusOverview($current_date, $cycles_ids, $start_date, $end_date);
   return civicrm_api3_create_success($values, $params, 'AppraisalCycle', 'getstatusoverview');
 }
 
