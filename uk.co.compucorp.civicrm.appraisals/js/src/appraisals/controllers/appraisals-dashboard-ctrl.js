@@ -22,6 +22,7 @@ define([
                 { label: 'all', value: null }
             ];
 
+            vm.appraisalsWeeklyFigures = { due: 0, overdue: 0 };
             vm.cycles = { list: [], total: 0 };
             vm.filtersCollapsed = true;
             vm.filters = { cycle_is_active: vm.activeFilters[0].value };
@@ -75,7 +76,7 @@ define([
              * or it can reset the entire list (in case new filters have been chosen)
              *
              * After retrieving the list of cycles, it also requests the status
-             * overview for those cycles in the current week
+             * overview for those cycles in the current week (ONLY for first page)
              *
              * @param {boolean} addPage - If it's to request the next page
              */
@@ -92,9 +93,10 @@ define([
                     .then(function (result) {
                         cycles = result;
 
-                        return getStatusOverviewFor(cycles.allIds);
+                        return !addPage ? getStatusOverviewFor(cycles.allIds) : null;
                     })
                     .then(function (statusOverview) {
+                        !!statusOverview && processWeeklyFigures(statusOverview);
                         processLoadedCycles(cycles, addPage);
                     });
             };
@@ -193,6 +195,20 @@ define([
                 vm.loadingDone = vm.cycles.list.length === cycles.total;
             }
 
+            /**
+             * Stores in the scope the weekly figures of due/overdue appraisals
+             * from the status overview returned by the API
+             *
+             * @param {object} statusOverview
+             */
+            function processWeeklyFigures(statusOverview) {
+                vm.appraisalsWeeklyFigures = _.reduce(statusOverview.steps, function (figures, status) {
+                    figures.due += status.due;
+                    figures.overdue += status.overdue;
+
+                    return figures;
+                }, { due: 0, overdue: 0 });
+            }
 
             /**
              * Checks when the filter values change, then wait for a delay

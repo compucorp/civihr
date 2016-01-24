@@ -52,6 +52,12 @@ define([
                     expect(ctrl.filters.cycle_is_active).toBe(true);
                 });
 
+                it('has the appraisals weekly figures set to 0', function () {
+                    expect(ctrl.appraisalsWeeklyFigures).toBeDefined();
+                    expect(ctrl.appraisalsWeeklyFigures.due).toBe(0);
+                    expect(ctrl.appraisalsWeeklyFigures.overdue).toBe(0);
+                });
+
                 describe('cycles', function () {
                     it('it is as an object', function () {
                         expect(ctrl.cycles).toEqual(jasmine.any(Object));
@@ -76,44 +82,85 @@ define([
 
         describe('after init', function () {
             beforeEach(function () {
+                AppraisalCycle.statusOverview.and.callFake(function () {
+                    return fakeStatusOverviewResponse()
+                });
+
                 initController();
 
                 AppraisalCycle.all.calls.reset();
-                AppraisalCycle.statusOverview.calls.reset();
             });
 
             describe('when requesting cycles', function () {
                 beforeEach(function () {
-                    jasmine.clock().mockDate(new Date(2016, 0, 5));
-
-                    ctrl.requestCycles();
                     $scope.$digest();
+
+                    AppraisalCycle.statusOverview.calls.reset();
                 });
 
-                it('uses the AppraisalCycle model', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalled();
+                describe('model call', function () {
+                    beforeEach(function () {
+                        ctrl.requestCycles();
+                    });
+
+                    it('uses the AppraisalCycle model', function () {
+                        expect(AppraisalCycle.all).toHaveBeenCalled();
+                    });
                 });
 
-                describe('status overview', function () {
-                    it('requests also a status overview', function () {
-                        expect(AppraisalCycle.statusOverview).toHaveBeenCalled();
+                describe('when requesting the first page', function ( ){
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 0, 5));
+
+                        ctrl.requestCycles();
+                        $scope.$digest();
                     });
 
-                    it('request it limited to the current week', function () {
-                        expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
-                            start_date: '2016-01-04',
-                            end_date: '2016-01-10',
-                        }));
+                    describe('status overview', function () {
+                        it('requests also a status overview', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalled();
+                        });
+
+                        it('request it limited to the current week', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                start_date: '2016-01-04',
+                                end_date: '2016-01-10',
+                            }));
+                        });
+
+                        it('requests it limited to the returned cycles', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                cycles_ids: ctrl.cycles.list.map(function (cycle) {
+                                    return cycle.id;
+                                }).join(',')
+                            }));
+                        });
+
+                        it('updates the weekly figures', function () {
+                            var weeklyFigures = _.reduce(fakeStatusOverviewResponse().steps, function (figures, status) {
+                                figures.due += status.due;
+                                figures.overdue += status.overdue;
+
+                                return figures;
+                            }, { due: 0, overdue: 0 });
+
+                            expect(ctrl.appraisalsWeeklyFigures).toEqual(weeklyFigures)
+                        });
+                    });
+                });
+
+                describe('when requesting the next page', function () {
+                    beforeEach(function () {
+                        ctrl.requestCycles(true);
+                        $scope.$digest();
                     });
 
-                    it('requests it limited to the returned cycles', function () {
-                        expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
-                            cycles_ids: ctrl.cycles.list.map(function (cycle) {
-                                return cycle.id;
-                            }).join(',')
-                        }));
+                    describe('status overview', function () {
+                        it('does not request a status overview', function () {
+                            expect(AppraisalCycle.statusOverview).not.toHaveBeenCalled();
+                        });
                     });
-                })
+                });
             });
 
             describe('active filter', function () {
@@ -274,6 +321,24 @@ define([
                 });
             });
         });
+
+        /**
+         * Fake data to simulate a response from AppraisalCycle.statusOverview()
+         *
+         * @return {object}
+         */
+        function fakeStatusOverviewResponse() {
+            return {
+                steps: {
+                    1: { name: 'Step #1', due: 2, overdue: 12 },
+                    3: { name: 'Step #2', due: 12, overdue: 3 },
+                    4: { name: 'Step #3', due: 7, overdue: 0 },
+                    5: { name: 'Step #4', due: 0, overdue: 18 },
+                    6: { name: 'Step #5', due: 9, overdue: 9 }
+                },
+                totalAppraisalNumber: 78
+            };
+        }
 
         /**
          * Initializes the controllers with its dependencies injected
