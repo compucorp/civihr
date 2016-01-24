@@ -23,11 +23,11 @@ define([
         }));
 
         describe('init', function () {
-            describe('general initial state', function () {
-                beforeEach(function () {
-                    initController();
-                });
+            beforeEach(function () {
+                initController();
+            });
 
+            describe('general initial state', function () {
                 it('is initialized', function () {
                     expect($log.debug).toHaveBeenCalled();
                 });
@@ -51,37 +51,69 @@ define([
                 it('has the cycle active filter set to "active"', function () {
                     expect(ctrl.filters.cycle_is_active).toBe(true);
                 });
+
+                describe('cycles', function () {
+                    it('it is as an object', function () {
+                        expect(ctrl.cycles).toEqual(jasmine.any(Object));
+                    });
+
+                    it('it contains an array as the cycles list', function () {
+                        expect(ctrl.cycles.list).toBeDefined();
+                        expect(ctrl.cycles.list).toEqual([]);
+                    });
+
+                    it('it contains the total number of found cycles', function () {
+                        expect(ctrl.cycles.total).toBeDefined();
+                        expect(ctrl.cycles.total).toEqual(0);
+                    });
+                });
             });
 
-            describe('cycles', function () {
-                beforeEach(function () {
-                    initController();
-                });
-
-                it('it is as an object', function () {
-                    expect(ctrl.cycles).toEqual(jasmine.any(Object));
-                });
-
-                it('it contains an array as the cycles list', function () {
-                    expect(ctrl.cycles.list).toBeDefined();
-                    expect(ctrl.cycles.list).toEqual([]);
-                });
-
-                it('it contains the total number of found cycles', function () {
-                    expect(ctrl.cycles.total).toBeDefined();
-                    expect(ctrl.cycles.total).toEqual(0);
-                });
-
-                it('requires the first page of active cycles', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
-                });
+            it('requires the first page of active cycles', function () {
+                expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
             });
         });
 
         describe('after init', function () {
             beforeEach(function () {
                 initController();
+
                 AppraisalCycle.all.calls.reset();
+                AppraisalCycle.statusOverview.calls.reset();
+            });
+
+            describe('when requesting cycles', function () {
+                beforeEach(function () {
+                    jasmine.clock().mockDate(new Date(2016, 0, 5));
+
+                    ctrl.requestCycles();
+                    $scope.$digest();
+                });
+
+                it('uses the AppraisalCycle model', function () {
+                    expect(AppraisalCycle.all).toHaveBeenCalled();
+                });
+
+                describe('status overview', function () {
+                    it('requests also a status overview', function () {
+                        expect(AppraisalCycle.statusOverview).toHaveBeenCalled();
+                    });
+
+                    it('request it limited to the current week', function () {
+                        expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                            start_date: '2016-01-04',
+                            end_date: '2016-01-10',
+                        }));
+                    });
+
+                    it('requests it limited to the returned cycles', function () {
+                        expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                            cycles_ids: ctrl.cycles.list.map(function (cycle) {
+                                return cycle.id;
+                            }).join(',')
+                        }));
+                    });
+                })
             });
 
             describe('active filter', function () {

@@ -15,7 +15,13 @@ define([
             all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {
                 var list = value || this.mockedCycles().list;
 
-                return promiseResolvedWith({ list: list, total: list.length })
+                return promiseResolvedWith({
+                    list: list,
+                    total: list.length,
+                    allIds: list.map(function (cycle) {
+                        return cycle.id;
+                    }).join(',')
+                })
             }),
             grades: jasmine.createSpy('grades').and.callFake(function (value) {
                 return promiseResolvedWith(value);
@@ -52,6 +58,9 @@ define([
                 }.bind(this))();
 
                 return promiseResolvedWith(cycle);
+            }),
+            statusOverview: jasmine.createSpy('statusOverview').and.callFake(function (params) {
+                return promiseResolvedWith(jasmine.any(Array));
             }),
 
             /**

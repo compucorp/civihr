@@ -1,8 +1,9 @@
 define([
     'common/angular',
+    'common/moment',
     'appraisals/modules/controllers',
     'appraisals/models/appraisal-cycle'
-], function (angular, controllers) {
+], function (angular, moment, controllers) {
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
@@ -73,34 +74,35 @@ define([
              * It can either add a new page worth of cycles to the existing list
              * or it can reset the entire list (in case new filters have been chosen)
              *
+             * After retrieving the list of cycles, it also requests the status
+             * overview for those cycles in the current week
+             *
              * @param {boolean} addPage - If it's to request the next page
              */
             vm.requestCycles = function (addPage) {
+                var cycles;
+
                 if (addPage && vm.loadingDone) {
                     return;
                 }
 
                 pagination.page = !!addPage ? pagination.page + 1 : 1;
 
-                AppraisalCycle.all(filters(), pagination).then(function (cycles) {
-                    if (addPage) {
-                        cycles.list.forEach(function (cycle) {
-                            vm.cycles.list.push(cycle);
-                        });
-                    } else {
-                        vm.cycles.list = cycles.list;
-                    }
+                AppraisalCycle.all(filters(), pagination)
+                    .then(function (result) {
+                        cycles = result;
 
-                    vm.cycles.total = cycles.total;
-                    vm.loadingDone = vm.cycles.list.length === cycles.total;
-                });
+                        return getStatusOverviewFor(cycles.allIds);
+                    })
+                    .then(function (statusOverview) {
+                        processLoadedCycles(cycles, addPage);
+                    });
             };
 
             init();
 
-
             /**
-             * Attachs the listeners to the $rootScope
+             * Attaches the listeners to the $rootScope
              */
             function addListeners() {
                 $rootScope.$on('AppraisalCycle::new', function (event, newCycle) {
@@ -142,6 +144,23 @@ define([
             }
 
             /**
+             * Fetches the status overview limited to the given cycle ids
+             * and the current week
+             *
+             * @param {string} cycleIds - A com
+             * @return {Promise}
+             */
+            function getStatusOverviewFor(cycleIds) {
+                var today = moment();
+
+                return AppraisalCycle.statusOverview({
+                    cycles_ids: cycleIds,
+                    start_date: today.startOf('isoWeek').format('YYYY-MM-DD'),
+                    end_date: today.endOf('isoWeek').format('YYYY-MM-DD')
+                });
+            }
+
+            /**
              * Initialization code
              */
             function init() {
@@ -149,6 +168,29 @@ define([
                 watchFilters();
 
                 vm.requestCycles();
+            }
+
+            /**
+             * Stores in the scope the returned cycles and checks if all the
+             * cycles in the DB (that match the filters) have been loaded
+             *
+             * @param {object}
+             *   The returned cycles' object comprised of the paginated list and
+             *   the total number of cycles that match the filters
+             * @param {boolean} add - If the list is to be added to the current
+             *   list of cycles or it should overwrite it
+             */
+            function processLoadedCycles(cycles, add) {
+                if (add) {
+                    cycles.list.forEach(function (cycle) {
+                        vm.cycles.list.push(cycle);
+                    });
+                } else {
+                    vm.cycles.list = cycles.list;
+                }
+
+                vm.cycles.total = cycles.total;
+                vm.loadingDone = vm.cycles.list.length === cycles.total;
             }
 
 
