@@ -140,8 +140,22 @@ define([
              * The overview is an object containing the individual steps overview
              * and the total of all the appraisals in the cycles
              *
-             * @param {object} currentDate - The date to pass as current to the api method
-             * @return {Promise}
+             * @param {object} params
+             *   `current_date`: the date used to check if an appraisal is overdue
+             *     or not (defaults to current date if not passed)
+             *   `start_date`  : limits the status overview from this date on
+             *   `end_date`    : limits the status overview up to this date
+             *   `cycles_ids`  : comma-separated string of ids of the cycles the
+             *     overview must be limited on
+             * @return {Promise} resolves to an object structured like this:
+             *   {
+             *       steps: [
+             *           { '21': { name: 'Step 1', due: 20, overdue: 2 } },
+             *           ...
+             *           { '42': { name: 'Step 5', due: 2, overdue: 33 } },
+             *       ],
+             *       totalAppraisalNumber: 78
+             *   }
              */
             statusOverview: function (params) {
                 return appraisalsAPI.statusOverview(_.defaults(params || {}, {
