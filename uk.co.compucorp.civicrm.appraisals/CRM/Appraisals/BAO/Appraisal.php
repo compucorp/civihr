@@ -14,6 +14,7 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
         $className = 'CRM_Appraisals_DAO_Appraisal';
         $entityName = 'Appraisal';
         $hook = empty($params['id']) ? 'create' : 'edit';
+        $now = CRM_Utils_Date::currentDBDate();
         
         if ($hook === 'create') {
             if (empty($params['appraisal_cycle_id'])) {
@@ -50,6 +51,10 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
             
             $instance->fetch();
             
+            $copy = CRM_Appraisals_DAO_Appraisal::copyGeneric($className, array('id' => (int)$params['id']));
+            $copy->is_current = 0;
+            $copy->save();
+            
             $dueChanged = false;
             if (!empty($params['self_appraisal_due']) && $params['self_appraisal_due'] != $instance->self_appraisal_due) {
                 $dueChanged = true;
@@ -70,6 +75,13 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
         CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
         $instance = new $className();
         $instance->copyValues($params);
+        $instance->save();
+        if (empty($params['original_id'])) {
+            $instance->original_id = $instance->id;
+        }
+        if (empty($params['created_date'])) {
+            $instance->created_date = $now;
+        }
         $instance->save();
         CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
         ////TODO: trigger on post: CRM_Tasksassignments_Reminder::sendReminder((int)$instance->id);
@@ -186,11 +198,10 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
               . "INNER JOIN civicrm_hrjobcontract hrjc ON hrjc.contact_id = c.id "
               . "INNER JOIN civicrm_hrjobroles r ON r.job_contract_id = hrjc.id "
               . "WHERE " . implode(" AND ", $rolesContactsWhere);
-            echo 'query: ' . $rolesContactsQuery;
+            
             $rolesContactsResult = CRM_Core_DAO::executeQuery($rolesContactsQuery);
 
             while ($rolesContactsResult->fetch()) {
-                echo $rolesContactsResult->id . ', ' . $rolesContactsResult->sort_name . '<br/>';
                 $roleContactsIds[] = $rolesContactsResult->id;
             }
             

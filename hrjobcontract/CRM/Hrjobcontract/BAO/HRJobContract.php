@@ -132,6 +132,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
           CRM_Utils_Array::value('title', $extIdentifier) . ' (match to contact)';
       }
 
+      $contactId = CRM_Utils_Array::value('contact_id', $fields);
+      if($contactId) {
+        $fields['contact_id'] = $contactId;
+        $fields['contact_id']['title'] = CRM_Utils_Array::value('title', $contactId) . ' (match to contact)';
+      }
+
       $fields = array_merge($fields, $tmpContactField);
 
       self::$_importableFields = $fields;

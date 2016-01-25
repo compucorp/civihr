@@ -49,6 +49,24 @@ define([
             return this.collection.get();
         };
 
+        factory.getCurrentPeriod = function () {
+            return getPeriods()
+                .then(function (response) {
+                    var period = {}, now = moment();
+
+                    for (var i = 0; i < response.length; i++) {
+                        var start = moment(response[i].start_date, 'YYYY-MM-DD HH:mm:ss'),
+                            end = moment(response[i].end_date, 'YYYY-MM-DD HH:mm:ss');
+
+                        if (now.diff(start) >= 0 && now.diff(end) <= 0) {
+                            period = response[i];
+                        }
+                    }
+
+                    return period;
+                });
+        };
+
 
         /**
          * @ngdoc method
@@ -70,7 +88,7 @@ define([
             var self = this;
             var deferred = $q.defer(), periodId;
 
-            getCurrentPeriod()
+            factory.getCurrentPeriod()
                 .then(function (response) {
                     if (response.hasOwnProperty('id')) {
                         periodId = response.id;
@@ -210,7 +228,7 @@ define([
         factory.getStaffAverage = function (type) {
             var deferred = $q.defer(), days = 0;
 
-            getCurrentPeriod()
+            factory.getCurrentPeriod()
                 .then(function (response) {
                     if (response.hasOwnProperty('id')) {
                         var periodId = response.id;
@@ -244,28 +262,10 @@ define([
 
         var absenceTypes = [], absences, entitlements, periods;
 
-        function getCurrentPeriod() {
-            return getPeriods()
-                .then(function (response) {
-                    var period = {}, now = moment();
-
-                    for (var i = 0; i < response.length; i++) {
-                        var start = moment(response[i].start_date, 'YYYY-MM-DD HH:mm:ss'),
-                        end = moment(response[i].end_date, 'YYYY-MM-DD HH:mm:ss');
-
-                        if (now.diff(start) >= 0 && now.diff(end) <= 0) {
-                            period = response[i];
-                        }
-                    }
-
-                    return period;
-                });
-        }
-
         function getPreviousPeriod() {
             var currentPeriod, previousPeriod = {};
 
-            return getCurrentPeriod()
+            return factory.getCurrentPeriod()
                 .then(function (response) {
                     currentPeriod = response;
 

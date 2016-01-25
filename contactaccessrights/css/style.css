@@ -1,0 +1,23 @@
+.crm-container #ManageRights .crm-section {
+  margin: 1.5rem 0;
+}
+
+.crm-container #ManageRights .crm-section .label {
+  float: none;
+  width: 100%;
+  text-align: left;
+}
+
+.crm-container #ManageRights .crm-section .label label {
+  display: block;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.crm-container #ManageRights .crm-section .content {
+  margin: 1rem 0;
+}
+
+.crm-container #ManageRights .crm-section .content .select2-container .select2-choices {
+  border-radius: 3px;
+}

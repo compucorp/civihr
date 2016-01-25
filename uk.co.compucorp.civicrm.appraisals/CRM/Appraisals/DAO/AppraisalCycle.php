@@ -104,6 +104,12 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
    * @var int
    */
   public $type_id;
+  /**
+   * Is Appraisal Cycle active?
+   *
+   * @var boolean
+   */
+  public $is_active;
 
   /**
    * class constructor
@@ -248,6 +254,18 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
             'optionGroupName' => 'appraisal_cycle_type',
           )
         ) ,
+        'cycle_is_active' => array(
+          'name' => 'cycle_is_active',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'title' => ts('Cycle Is Active') ,
+          'required' => true,
+          'import' => true,
+          'where' => 'civicrm_appraisal.cycle_is_active',
+          'headerPattern' => '/^cycle\s?is\s?active/i',
+          'dataPattern' => '',
+          'export' => true,
+          'default' => true,
+        ) ,
       );
     }
     return self::$_fields;
@@ -271,6 +289,7 @@ class CRM_Appraisals_DAO_AppraisalCycle extends CRM_Core_DAO
         'cycle_manager_appraisal_due' => 'cycle_manager_appraisal_due',
         'cycle_grade_due' => 'cycle_grade_due',
         'cycle_type_id' => 'cycle_type_id',
+        'cycle_is_active' => 'cycle_is_active',
       );
     }
     return self::$_fieldKeys;

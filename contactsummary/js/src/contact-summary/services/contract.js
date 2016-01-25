@@ -69,21 +69,21 @@ define([
         };
 
         /**
+         * A primary contract is:
+         * 1. (If exists) a contract with is_primary=1 that is active, or
+         * 2. The most recent contract that is active
+         *
          * @ngdoc method
          * @name getPrimary
          * @methodOf ContractService
          */
         factory.getPrimary = function () {
             return this.get().then(function (response) {
-                var primary = {};
-
-                angular.forEach(response, function (contract) {
-                    if (contract.is_primary === '1' && contract.is_current === '1') {
-                        primary = contract;
-                    }
+                var sortedContracts = _.sortBy(response, function (o) {
+                    return [o.end_date, +o.is_primary];
                 });
 
-                return primary;
+                return _.last(sortedContracts) || {};
             });
         };
 

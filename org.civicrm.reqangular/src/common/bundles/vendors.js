@@ -10,7 +10,7 @@ define([
     'common/angularRoute',
     'common/d3',
     'common/lodash',
-    'common/moment',
+    'common/moment'
 ], function () {
 
 });

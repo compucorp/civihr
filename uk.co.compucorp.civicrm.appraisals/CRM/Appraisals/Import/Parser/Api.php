@@ -8,6 +8,7 @@ class CRM_Appraisals_Import_Parser_Api extends CRM_Appraisals_Import_Parser_Base
   protected $_entityFields = array();
   protected $_allFields = array();
   protected $_appraisalCycleIds = array();
+  protected $_originalAppraisalIds = array();
   protected $_appraisalCycleIdIncremental = 1;
 
   /**
@@ -188,15 +189,30 @@ class CRM_Appraisals_Import_Parser_Api extends CRM_Appraisals_Import_Parser_Base
     
     if (!empty($params['contact_id']) && (int)$params['contact_id']) {
         try {
+            $originalId = $rowParams['Appraisal']['original_id'];
+            if (!empty($this->_originalAppraisalIds[$originalId])) {
+                $rowParams['Appraisal']['original_id'] = $this->_originalAppraisalIds[$originalId];
+            }
             unset($rowParams['Appraisal']['id']);
             unset($rowParams['Appraisal']['external_identifier']);
             unset($rowParams['Appraisal']['email']);
             $rowParams['Appraisal']['appraisal_cycle_id'] = $localAppraisalCycleId;
-            civicrm_api3('Appraisal', 'create', $rowParams['Appraisal']);
+            $appraisalCreated = civicrm_api3('Appraisal', 'create', $rowParams['Appraisal']);
+            $appraisalCreatedValues = CRM_Utils_Array::first($appraisalCreated['values']);
+            if ($rowParams['Appraisal']['is_current']) {
+                $this->_originalAppraisalIds[$originalId] = $appraisalCreatedValues['id'];
+                CRM_Appraisals_DAO_Appraisal::executeQuery("UPDATE civicrm_appraisal SET original_id = %1 WHERE id = %2",
+                    array(
+                        1 => array($appraisalCreatedValues['id'], 'Integer'),
+                        2 => array($appraisalCreatedValues['id'], 'Integer'),
+                    )
+                );
+            }
         } catch(CiviCRM_API3_Exception $e) {
           $error = $e->getMessage();
           array_unshift($values, $error);
           return CRM_Import_Parser::ERROR;
+          ////TODO: handle onDuplicate three cases
         }
     }
   }

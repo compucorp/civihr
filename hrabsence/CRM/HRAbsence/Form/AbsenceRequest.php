@@ -411,8 +411,16 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         ));
         $start_date = date_create($result['values'][0]['activity_date_time']);
         $end_date = date_create($result['values'][$result['count'] - 1]['activity_date_time']);
-        $this->assign('fromDate', date_format($start_date, 'm/d/Y'));
-        $this->assign('toDate', date_format($end_date, 'm/d/Y'));
+        $phpEquivalentDateFormats = array(
+            'dd' => 'd',
+            'mm' => 'm',
+            'yy' => 'Y',
+            'MM' => 'F',
+            'DD' => 'l',
+        );
+        $dateFormat = strtr(CRM_Core_Config::singleton()->dateInputFormat, $phpEquivalentDateFormats);
+        $this->assign('fromDate', date_format($start_date, $dateFormat));
+        $this->assign('toDate', date_format($end_date, $dateFormat));
 
         global $user;
         $today = time();

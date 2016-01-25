@@ -24,17 +24,15 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
           'sort_name' => array(
             'title' => ts('Contact Name'),
             'default' => TRUE,
-            'no_repeat' => TRUE,
+            'no_repeat' => FALSE,
           ),
           'first_name' => array(
             'title' => ts('First Name'),
             'default' => true,
-            'no_repeat' => TRUE,
           ),
           'last_name' => array(
             'title' => ts('Last Name'),
             'default' => true,
-            'no_repeat' => TRUE,
           ),
         ),
         'filters' => array(
@@ -86,6 +84,9 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
             'cycle_type_id' => array(
                 'name' => 'cycle_type_id',
             ),
+            'cycle_is_active' => array(
+                'name' => 'cycle_is_active',
+            ),
         ),
         'filters' => array(
           //'id' => array(),
@@ -97,8 +98,6 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
         'dao' => 'CRM_Appraisals_DAO_Appraisal',
         'fields' => array(
             'id' => array(),
-            //'appraisal_cycle_id' => array(),
-            //'contact_id' => array(),
             'manager_id' => array(),
             'self_appraisal_file_id' => array(),
             'manager_appraisal_file_id' => array(),
@@ -112,6 +111,9 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
             'grade' => array(),
             'notes' => array(),
             'status_id' => array(),
+            'original_id' => array(),
+            'created_date' => array(),
+            'is_current' => array(),
         ),
         'filters' => array(
           'id' => array('default' => null),
@@ -221,11 +223,10 @@ class CRM_Appraisals_Form_Report_Report extends CRM_Report_Form {
   }
 
   function groupBy() {
-    //$this->_groupBy = " GROUP BY {$this->_aliases['civicrm_contact']}.id ";
   }
 
   function orderBy() {
-    $this->_orderBy = " ORDER BY {$this->_aliases['civicrm_contact']}.sort_name, {$this->_aliases['civicrm_contact']}.id ";
+    $this->_orderBy = " ORDER BY {$this->_aliases['civicrm_appraisal']}.original_id, {$this->_aliases['civicrm_appraisal']}.is_current DESC, {$this->_aliases['civicrm_appraisal']}.created_date ";
   }
 
   function postProcess() {

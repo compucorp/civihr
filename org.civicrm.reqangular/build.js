@@ -17,7 +17,7 @@
         'common/require': 'common/vendor/require.min',
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
-        'common/moment': 'common/vendor/moment.min',
+        'common/moment': 'common/vendor/moment.min'
     },
     shim: {
         'common/angular': {
@@ -43,6 +43,7 @@
         },
     },
     include: [
-        'common/modules/vendor'
+        'common/bundles/vendors',
+        'common/bundles/apis'
     ]
 })

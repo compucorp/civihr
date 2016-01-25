@@ -1,22 +1,27 @@
+/**
+ * Resets css rules that are applied by the CiviCRM style
+ *
+ * (`initial` was used at first, but there is no support by IE for it)
+ */
 @at-root {
 
     #{$bootstrap-namespace} {
 
         h3 {
-            background-color: initial;
-            font-family: initial;
-            font-size: initial;
-            font-weight: initial;
-            padding: initial;
-            margin: initial;
+            background-color: transparent;
+            font-family: $font-family-base;
+            font-size: $font-size-h3;
+            font-weight: 400;
+            padding: 0;
+            margin: 0;
         }
 
         .panel {
             display: block;
-            position: initial;
-            padding: initial;
-            width: initial;
-            z-index: initial;
+            position: static;
+            padding: 0;
+            width: auto;
+            z-index: auto;
         }
     }
 }
