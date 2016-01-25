@@ -307,10 +307,10 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       }
 
       $requiredFields = array(
-        'HRJobDetails.title' => ts('Job Title'),
-        'HRJobDetails.position' => ts('Job Position'),
-        'HRJobDetails.contract_type' => ts('Job Contract Type'),
-        'HRJobDetails.period_start_date' => ts('Contract Start Date')
+        'HRJobDetails-title' => ts('Job Title'),
+        'HRJobDetails-position' => ts('Job Position'),
+        'HRJobDetails-contract_type' => ts('Job Contract Type'),
+        'HRJobDetails-period_start_date' => ts('Contract Start Date')
       );
 
       $missingNames = array();
@@ -329,9 +329,9 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       }
 
       if(
-        !in_array('HRJobContract.contact_id', $importKeys)
-        && !in_array('HRJobContract.email', $importKeys)
-        && !in_array('HRJobContract.external_identifier', $importKeys)
+        !in_array('HRJobContract-contact_id', $importKeys)
+        && !in_array('HRJobContract-email', $importKeys)
+        && !in_array('HRJobContract-external_identifier', $importKeys)
       ) {
         $errors['_qf_default'] = ts('Contact ID, Email or External Identifier is required.');
       }

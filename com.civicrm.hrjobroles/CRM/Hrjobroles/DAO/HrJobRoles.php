@@ -476,7 +476,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         ) ,
         'hrjc_role_start_date' => array(
           'name' => 'start_date',
-          'type' => CRM_Utils_Type::T_TIMESTAMP,
+          'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
           'title' => ts('start_date') ,
           'import' => true,
           'where' => 'civicrm_hrjobroles.start_date',
@@ -487,7 +487,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         ) ,
         'hrjc_role_end_date' => array(
           'name' => 'end_date',
-          'type' => CRM_Utils_Type::T_TIMESTAMP,
+          'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
           'title' => ts('end_date') ,
           'import' => true,
           'where' => 'civicrm_hrjobroles.end_date',

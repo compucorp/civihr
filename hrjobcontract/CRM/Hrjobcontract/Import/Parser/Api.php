@@ -25,15 +25,20 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $entityFields = array();
 
     foreach ($this->_entity as $entity) {
-      $entityName = "CRM_Hrjobcontract_BAO_{$entity}";
+      if($entity === 'HRJobRole') {
+        $entityName = 'CRM_Hrjobroles_BAO_HrJobRoles';
+      } else {
+        $entityName = "CRM_Hrjobcontract_BAO_{$entity}";
+      }
       $entityFields[$entity] = array();
       $importableFields = call_user_func(array($entityName, 'importableFields'), $entity, NULL);
+
       foreach ($importableFields as $key => $field) {
         if($key === 'do_not_import') {
           continue;
         }
 
-        $entityFields[$entity][$entity . '-' . $key] = $field;
+        $entityFields[$entity][$entity . '-' . $field['name']] = $field;
       }
 
       foreach ($entityFields[$entity] as $key => $field) {
@@ -43,12 +48,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         // date is 4 & time is 8. Together they make 12 - in theory a binary operator makes sense here but as it's not a common pattern it doesn't seem worth the confusion
         if (CRM_Utils_Array::value('type', $field) == 12
           || CRM_Utils_Array::value('type', $field) == 4
+          || CRM_Utils_Array::value('type', $field) == 256
         ) {
-          if (!isset($this->_dateFields[$entity])) {
-            $this->_dateFields[$entity] = array();
-          }
-
-          $this->_dateFields[$entity][] = $key;
+          $this->_dateFields[] = $key;
         }
       }
 
@@ -162,21 +164,20 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       $contactId = $this->determineContactId($params, $formatValues);
       list($revisionParams, $revisionId) = $this->getRevisionData($entityNames);
       $localJobContractId = $this->createJobContract($importedJobContractId, $contactId, $entityNames);
-      $newRevisionInstance = $this->createContractRevison($revisionId, $revisionParams, $entityNames, $localJobContractId);
-      $value = $this->importRelatedEntities($revisionParams, $localJobContractId, $ei, $revisionId, $newRevisionInstance);
+      $contractRevison = $this->createContractRevison($revisionId, $revisionParams, $entityNames, $localJobContractId);
+      $value = $this->importRelatedEntities($revisionParams, $localJobContractId, $ei, $revisionId, $contractRevison);
     } catch(\RuntimeException $e) {
       array_unshift($values, $e->getMessage());
 
       return CRM_Import_Parser::ERROR;
     }
-    
-    if (!empty($newRevisionInstance)) {
-        foreach ($entityNames as $value) {
-            $field = $value . '_revision_id';
-            $newRevisionInstance->$field = $this->_previousRevision['local'][$value];
-        }
-        $newRevisionInstance->save();
+
+    foreach ($entityNames as $value) {
+        $field = $value . '_revision_id';
+        $contractRevison->$field = $this->_previousRevision['local'][$value];
     }
+    $contractRevison->save();
+
     $this->_previousRevision['imported']['id'] = $revisionId;
   }
 
@@ -190,10 +191,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   function formatDateParams($entity, $params) {
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
-    $dateFields = isset($this->_dateFields[$entity]) ? $this->_dateFields[$entity] : array();
 
     foreach ($params as $key => $value) {
-      if(!in_array($key, $dateFields)) {
+      if(!in_array($key, $this->_dateFields)) {
         continue;
       }
       CRM_Utils_Date::convertToDefaultDate($params, $dateType, $key);
@@ -416,19 +416,23 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
   /**
    * @param $revisionParams
-   * @param $localJobContractId
+   * @param $jobContractId
    * @param $ei
    * @param $revisionId
-   * @param $newRevisionInstance
+   * @param $contractRevision
    * @return mixed
    */
-  private function importRelatedEntities($revisionParams, $localJobContractId, $ei, $revisionId, $newRevisionInstance) {
+  private function importRelatedEntities($revisionParams, $jobContractId, $ei, $revisionId, $contractRevision) {
     foreach ($this->_entity as $entity) {
       if (in_array($entity, array('HRJobContract', 'HRJobContractRevision'))) {
         continue;
       }
 
-      $entityClass = 'CRM_Hrjobcontract_BAO_' . $entity;
+      if($entity === 'HRJobRole') {
+        $entityClass = 'CRM_HRjobroles_BAO_HrJobRoles';
+      } else {
+        $entityClass = 'CRM_Hrjobcontract_BAO_' . $entity;
+      }
       $tableName = _civicrm_get_table_name($entity);
 
       if (empty($revisionParams[$tableName . '_revision_id'])) {
@@ -436,24 +440,27 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       }
 
       $params = $this->getEntityParams($entity);
-      $params['HRJobContract-jobcontract_id'] = $localJobContractId;
+      $params['HRJobContract-jobcontract_id'] = $jobContractId;
 
       foreach ($params as $key => $value) {
         $params[$key] = $ei->import($tableName, str_replace($entity . '-', '', $key), $value);
       }
 
+      if(!isset($params['HRJobRole-start_date'])) {
+        $params['HRJobRole-start_date'] = $params['HRJobDetails-period_start_date'];
+      }
+
       $params = $this->formatDateParams($entity, $params);
       $params = $this->validateFields($entity, $params);
-
 
       $entityInstance = null;
       if ($revisionParams[$tableName . '_revision_id'] === $revisionId) {
         if ($tableName === 'leave' || ($this->_previousRevision['imported'][$tableName] !== $revisionId)) {
-          if (!empty($newRevisionInstance)) {
-            $params['HRJobContract-jobcontract_revision_id'] = $newRevisionInstance->id;
+          if (!empty($contractRevision)) {
+            $params['HRJobContract-jobcontract_revision_id'] = $contractRevision->id;
           }
           else {
-            $params['HRJobContract-jobcontract_revision_id'] = $this->_previousRevision['local'][$tableName];
+            throw new API_Exception('JobContract revision has not been created.');
           }
           if ($tableName === 'leave') {
             if(!isset($params['HrJobLeave-leave_amount'])) {
@@ -468,8 +475,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
                 $entityParams[str_replace('HrJobLeave-', '', $key)] = $value;
               }
               $entityParams['import'] = 1;
-              $entityParams['jobcontract_id'] = $localJobContractId;
-              $entityParams['jobcontract_revision_id'] = $newRevisionInstance->id;
+              $entityParams['jobcontract_id'] = $jobContractId;
+              $entityParams['jobcontract_revision_id'] = $contractRevision->id;
               $entityInstance = CRM_Hrjobcontract_BAO_HRJobLeave::create($entityParams);
             }
           }
@@ -489,12 +496,18 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
             }
 
             $entityParams['import'] = 1;
-            $entityParams['jobcontract_id'] = $localJobContractId;
-            $entityParams['jobcontract_revision_id'] = $newRevisionInstance->id;
+            if($entity === 'HRJobRole') {
+              $entityParams['job_contract_id'] = $jobContractId;
+            }
+            else {
+              $entityParams['jobcontract_id'] = $jobContractId;
+              $entityParams['jobcontract_revision_id'] = $contractRevision->id;
+            }
 
             $entityInstance = call_user_func(array($entityClass, 'create'), $entityParams);
           }
-          $this->_previousRevision['local'][$tableName] = $entityInstance->jobcontract_revision_id;
+
+          $this->_previousRevision['local'][$tableName] = $entityInstance->id;
         }
       }
       $this->_previousRevision['imported'][$tableName] = $revisionParams[$tableName . '_revision_id'];
