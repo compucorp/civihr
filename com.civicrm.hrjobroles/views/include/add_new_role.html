@@ -49,15 +49,17 @@
                                                                is-open="!!(CalendarShow.newStartDate)"
                                                                datepicker-popup
                                                                min-date="minDate"
-                                                               show-weeks="false"
                                                                ng-model="edit_data['new_role_id']['newStartDate']"
                                                                ng-change="select('newStartDate')"
                                                                ng-disabled="isDisabled"
                                                                close-text="Close"
-                                                               required />
+                                                               required
+                                                               custom-date-input/>
 
                                                         <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default" ng-click="open('newStartDate')"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                            <button type="button" class="btn btn-default" ng-click="open('newStartDate')">
+                                                                <i class="glyphicon glyphicon-calendar"></i>
+                                                            </button>
                                                         </span>
                                                         <div ng-show="errors.newStartDate" style="display: block; color:maroon" role="alert">
                                                             <div> {{ errors.newStartDate[0] }}</div>
@@ -71,15 +73,15 @@
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group input-group-unstyled">
                                                         <input type="text" class="form-control" id="{{prefix}}newEndDate"
-                                                               placeholder="dd/mm/yyyy"
-                                                               datepicker-popup
-                                                               show-weeks="false"
-                                                               is-open="!!(CalendarShow.newEndDate)"
-                                                               min-date="minDate"
-                                                               ng-model="edit_data['new_role_id']['newEndDate']"
-                                                               ng-change="select('newEndDate')"
-                                                               ng-disabled="isDisabled"
-                                                               close-text="Close" >
+                                                           placeholder="dd/mm/yyyy"
+                                                           datepicker-popup
+                                                           is-open="!!(CalendarShow.newEndDate)"
+                                                           min-date="minDate"
+                                                           ng-model="edit_data['new_role_id']['newEndDate']"
+                                                           ng-change="select('newEndDate')"
+                                                           ng-disabled="isDisabled"
+                                                           close-text="Close"
+                                                           custom-date-input />
 
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
