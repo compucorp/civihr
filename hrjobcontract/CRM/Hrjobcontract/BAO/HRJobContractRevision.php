@@ -8,7 +8,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * Create a new HRJobContractRevision based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobContractRevision|NULL
+   * @return CRM_HRJobContract_DAO_HRJobContractRevision|NULL
    *
    */
   public static function create($params) {
