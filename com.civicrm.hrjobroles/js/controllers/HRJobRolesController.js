@@ -336,28 +336,19 @@ define(['controllers/controllers'], function (controllers) {
 
             /**
              * Parse dates so they can be correctly read by server.
-             * Use od DateFactory.CreateDate() takes care of timezone issue.
+             *
              * @param {string|Date} date
-             * @returns {Date}
+             * @returns {string}
              */
             $scope.parseDate = function (date) {
-                var parsed, offset;
 
-                // If it's a Date object we need to manually adjust timezone offset
+                // If it's a Date object created by the date-picker directive we need to manually adjust timezone offset
                 if(date instanceof Date){
-                    // get offset in hours
-                    offset = date.getTimezoneOffset() / -60;
+                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
                     date = date.getTime();
                 }
 
-                parsed = DateFactory.createDate(date);
-
-                // We need to manually add lost hours
-                if(offset && parsed.hour() !== 0){
-                    parsed.add(offset, 'h');
-                }
-
-                return parsed.format('YYYY-MM-DD');
+                return DateFactory.createDate(date).format('YYYY-MM-DD');
             };
 
             // Saves the new Job Role
