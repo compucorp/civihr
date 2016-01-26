@@ -286,37 +286,17 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     }
   }
   
-  /**
-   * @param $name
-   * @param $title
-   * @param int $type
-   * @param string $headerPattern
-   * @param string $dataPattern
-   */
-  function addField2222($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
-    if (empty($name)) {
-      $this->_fields['doNotImport'] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
-    }
-    else {
-      $tempField = CRM_Contact_BAO_Contact::importableFields('All', NULL);
-      if (array_key_exists($name, $tempField)) {
-        $this->_fields[$name] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern,
-          CRM_Utils_Array::value('hasLocationType', $tempField[$name])
-        );
-        $this->_activeEntityFields[$this->_entity][$name] = $this->_fields[$name];
-      }
-    }
-  }
-  
   function addField($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
     if (empty($name) || $name == "do_not_import") {
       $this->_fields['doNotImport'] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
     }
     else {
       foreach($this->_entity as $entity) {
+        $entityFieldName = str_replace($entity.'-', '',$name);
+
         $entityName = "CRM_Hrjobcontract_BAO_{$entity}";
         $tempField = $entityName::importableFields($entity, NULL);
-        if (array_key_exists("$name", $tempField)) {
+        if (array_key_exists($entityFieldName, $tempField)) {
           $this->_fields[$name] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
           $this->_activeEntityFields[$entity][$name] = $this->_fields[$name];
         }

@@ -70,14 +70,16 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     $this->_mapperFields = $this->get('fields');
     $this->_entity = $this->get('_entity');
     $this->_highlightedFields = array(
-      'contact_id',
-      'position',
-      'contract_type',
-      'period_start_date',
-      'email',
-      'external_identifier',
-      'title'
+      'HRJobContract-contact_id',
+      'HRJobContract-email',
+      'HRJobContract-external_identifier',
+
+      'HRJobDetails-position',
+      'HRJobDetails-contract_type',
+      'HRJobDetails-period_start_date',
+      'HRJobDetails-title'
     );
+
     $v = $this->_mapperFields;
     asort($this->_mapperFields);
     $this->_columnCount = $this->get('columnCount');
@@ -92,8 +94,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       $this->assign('rowDisplayCount', 3);
       /* if we had a column header to skip, stash it for later */
       $this->_columnHeaders = $this->_dataValues[0];
-    }
-    else {
+    } else {
       $this->assign('rowDisplayCount', 2);
     }
     $this->doDuplicateOptionHandling();
@@ -304,11 +305,12 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       foreach ($fields['mapper'] as $mapperPart) {
         $importKeys[] = $mapperPart[0];
       }
+
       $requiredFields = array(
-        'title' => ts('Job Title'),
-        'position' => ts('Job Position'),
-        'contract_type' => ts('Job Contract Type'),
-        'period_start_date' => ts('Contract Start Date')
+        'HRJobDetails-title' => ts('Job Title'),
+        'HRJobDetails-position' => ts('Job Position'),
+        'HRJobDetails-contract_type' => ts('Job Contract Type'),
+        'HRJobDetails-period_start_date' => ts('Contract Start Date')
       );
 
       $missingNames = array();
@@ -327,9 +329,9 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       }
 
       if(
-        !in_array('contact_id', $importKeys)
-        && !in_array('email', $importKeys)
-        && !in_array('external_identifier', $importKeys)
+        !in_array('HRJobContract-contact_id', $importKeys)
+        && !in_array('HRJobContract-email', $importKeys)
+        && !in_array('HRJobContract-external_identifier', $importKeys)
       ) {
         $errors['_qf_default'] = ts('Contact ID, Email or External Identifier is required.');
       }
