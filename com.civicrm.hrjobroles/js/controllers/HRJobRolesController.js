@@ -335,9 +335,9 @@ define(['controllers/controllers'], function (controllers) {
             };
 
             /**
-             * @description Parse dates so they can be correctly read by server.
+             * Parse dates so they can be correctly read by server.
              * Use od DateFactory.CreateDate() takes care of timezone issue.
-             * @param date {string|timestamp|Date}
+             * @param {string|Date} date
              * @returns {Date}
              */
             $scope.parseDate = function (date) {
@@ -357,7 +357,7 @@ define(['controllers/controllers'], function (controllers) {
                     parsed.add(offset, 'h');
                 }
 
-                return parsed.toDate();
+                return parsed.format('YYYY-MM-DD');
             };
 
             // Saves the new Job Role
@@ -858,6 +858,9 @@ define(['controllers/controllers'], function (controllers) {
 
             // Implements the "updateJobRole" service
             function updateJobRole(role_id, job_roles_data) {
+
+                job_roles_data.end_date = $scope.parseDate(job_roles_data.end_date);
+                job_roles_data.start_date = $scope.parseDate(job_roles_data.start_date);
 
                 HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
 
