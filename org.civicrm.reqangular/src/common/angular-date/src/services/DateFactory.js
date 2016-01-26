@@ -24,7 +24,7 @@ function DateFactory() {
                 strict = true;
             }
 
-            return moment.utc(dateString, format, strict);
+            return moment(dateString, format, strict);
         }
     };
 }

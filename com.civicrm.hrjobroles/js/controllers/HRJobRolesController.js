@@ -342,9 +342,7 @@ define(['controllers/controllers'], function (controllers) {
              */
             $scope.parseDate = function (date) {
 
-                // If it's a Date object created by the date-picker directive we need to manually adjust timezone offset
-                if(date instanceof Date){
-                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                if (date instanceof Date) {
                     date = date.getTime();
                 }
 
