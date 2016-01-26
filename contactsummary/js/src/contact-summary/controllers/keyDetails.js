@@ -42,27 +42,6 @@ define([
     // Private Members //
     /////////////////////
 
-    function formatDuration(duration) {
-        var texts = [],
-            days = duration.days(),
-            months = duration.months(),
-            years = duration.years();
-
-        if (years > 0) {
-            texts.push(years + " years");
-        }
-
-        if (months > 0) {
-            texts.push(months + " months");
-        }
-
-        if (texts.length === 0) {
-            texts.push(days + " days");
-        }
-
-        return texts.join(' ');
-    }
-
     function getLengthOfService(start, end) {
         var now = moment();
 
@@ -73,7 +52,13 @@ define([
             end = now;
         }
 
-        return formatDuration(moment.duration(end.diff(start)));
+        var lengthOfService = moment.duration(end.diff(start));
+
+        return {
+            days: lengthOfService.days(),
+            months: lengthOfService.months(),
+            years: lengthOfService.years()
+        };
     }
 
     controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', KeyDetailsCtrl]);
