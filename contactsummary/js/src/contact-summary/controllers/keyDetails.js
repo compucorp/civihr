@@ -42,11 +42,38 @@ define([
     // Private Members //
     /////////////////////
 
-    function getLengthOfService(start, end) {
-        start = moment(start, 'YYYY-MM-DD');
-        end = end ? moment(end, 'YYYY-MM-DD') : moment();
+    function formatDuration(duration) {
+        var texts = [],
+            days = duration.days(),
+            months = duration.months(),
+            years = duration.years();
 
-        return moment.duration(end.diff(start)).humanize();
+        if (years > 0) {
+            texts.push(years + " years");
+        }
+
+        if (months > 0) {
+            texts.push(months + " months");
+        }
+
+        if (texts.length === 0) {
+            texts.push(days + " days");
+        }
+
+        return texts.join(' ');
+    }
+
+    function getLengthOfService(start, end) {
+        var now = moment();
+
+        start = moment(start, 'YYYY-MM-DD');
+        end = end ? moment(end, 'YYYY-MM-DD') : now;
+
+        if(end.isAfter(now)) {
+            end = now;
+        }
+
+        return formatDuration(moment.duration(end.diff(start)));
     }
 
     controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', KeyDetailsCtrl]);
