@@ -150,18 +150,6 @@ define([
                 });
             });
 
-            describe('start date', function () {
-                beforeEach(function () {
-                    prepFormWith(_.assign({}, validCycle, { cycle_start_date: '01/01/2016' }));
-                });
-
-                it('start date must be before end date', function () {
-                    expect(ctrl.form.$valid).toBe(false);
-                    expect(ctrl.form.cycle_start_date.$error.startBeforeEnd).toBe(true);
-                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
-                });
-            });
-
             describe('end date', function () {
                 beforeEach(function () {
                     prepFormWith(_.assign({}, validCycle, { cycle_end_date: '31/12/2014' }));
@@ -169,7 +157,7 @@ define([
 
                 it('end date must be after end date', function () {
                     expect(ctrl.form.$valid).toBe(false);
-                    expect(ctrl.form.cycle_end_date.$error.endAfterStart).toBe(true);
+                    expect(ctrl.form.cycle_end_date.$error.isAfter).toBe(true);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
             });
@@ -181,7 +169,7 @@ define([
 
                 it('manager appraisal due date must be after self appraisal due date', function () {
                     expect(ctrl.form.$valid).toBe(false);
-                    expect(ctrl.form.cycle_manager_appraisal_due.$error.managerAfterDue).toBe(true);
+                    expect(ctrl.form.cycle_manager_appraisal_due.$error.isAfter).toBe(true);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
             });
@@ -193,7 +181,7 @@ define([
 
                 it('grade due date must be after manager appraisal due date', function () {
                     expect(ctrl.form.$valid).toBe(false);
-                    expect(ctrl.form.cycle_grade_due.$error.gradeAfterManager).toBe(true);
+                    expect(ctrl.form.cycle_grade_due.$error.isAfter).toBe(true);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
             });
@@ -215,10 +203,9 @@ define([
             it('returns the list of fields, each with its own errors', function () {
                 expect(ctrl.formErrors).toEqual({
                     cycle_name: { required: true },
-                    cycle_start_date: { startBeforeEnd: true },
-                    cycle_end_date: { endAfterStart: true },
-                    cycle_grade_due: { required: true, gradeAfterManager: true },
-                    cycle_manager_appraisal_due: { managerAfterDue: true }
+                    cycle_end_date: { isAfter: true },
+                    cycle_grade_due: { required: true, isAfter: true },
+                    cycle_manager_appraisal_due: { isAfter: true }
                 })
             });
         });

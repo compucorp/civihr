@@ -142,10 +142,9 @@ define([
                 var managerDue = moment(vm.cycle.cycle_manager_appraisal_due, 'DD/MM/YYYY');
                 var gradeDue = moment(vm.cycle.cycle_grade_due, 'DD/MM/YYYY');
 
-                vm.form.cycle_start_date.$setValidity('startBeforeEnd', startDate.isBefore(endDate));
-                vm.form.cycle_end_date.$setValidity('endAfterStart', endDate.isAfter(startDate));
-                vm.form.cycle_manager_appraisal_due.$setValidity('managerAfterDue', managerDue.isAfter(selfDue));
-                vm.form.cycle_grade_due.$setValidity('gradeAfterManager', gradeDue.isAfter(managerDue));
+                vm.form.cycle_end_date.$setValidity('isAfter', endDate.isAfter(startDate));
+                vm.form.cycle_manager_appraisal_due.$setValidity('isAfter', managerDue.isAfter(selfDue));
+                vm.form.cycle_grade_due.$setValidity('isAfter', gradeDue.isAfter(managerDue));
 
                 return vm.form.$valid;
             }

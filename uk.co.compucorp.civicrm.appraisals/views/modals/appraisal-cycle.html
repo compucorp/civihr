@@ -20,13 +20,10 @@
                     <li ng-if="modal.formErrors.cycle_start_date.required">
                         Please specify the start date
                     </li>
-                    <li ng-if="!modal.formErrors.cycle_end_date.required && modal.formErrors.cycle_start_date.startBeforeEnd">
-                        The start date cannot be after the end date
-                    </li>
                     <li ng-if="modal.formErrors.cycle_end_date.required">
                         Please specify the end date
                     </li>
-                    <li ng-if="!modal.formErrors.cycle_end_date.required && modal.formErrors.cycle_end_date.endAfterStart">
+                    <li ng-if="!modal.formErrors.cycle_end_date.required && modal.formErrors.cycle_end_date.isAfter">
                         The end date cannot be before the start date
                     </li>
                     <li ng-if="modal.formErrors.cycle_self_appraisal_due.required">
@@ -35,13 +32,13 @@
                     <li ng-if="modal.formErrors.cycle_manager_appraisal_due.required">
                         Please specify the manager appraisal due date
                     </li>
-                    <li ng-if="!modal.formErrors.cycle_manager_appraisal_due.required && modal.formErrors.cycle_manager_appraisal_due.managerAfterDue">
+                    <li ng-if="!modal.formErrors.cycle_manager_appraisal_due.required && modal.formErrors.cycle_manager_appraisal_due.isAfter">
                         The manager appraisal due date cannot be before the self appraisal due date
                     </li>
                     <li ng-if="modal.formErrors.cycle_grade_due.required">
                         Please specify the grade due date
                     </li>
-                    <li ng-if="!modal.formErrors.cycle_grade_due.required && modal.formErrors.cycle_grade_due.gradeAfterManager">
+                    <li ng-if="!modal.formErrors.cycle_grade_due.required && modal.formErrors.cycle_grade_due.isAfter">
                         The grade due date cannot be before the manager appraisal due date
                     </li>
                 </ul>
