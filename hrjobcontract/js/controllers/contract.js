@@ -108,12 +108,14 @@ define(['controllers/controllers',
                 pension: ContractPensionService.getOne({ jobcontract_id: contractId})
             })
             .then(function(results){
-                return ContractHealthService.getOne({ jobcontract_revision_id: results.details.jobcontract_revision_id })
-                    .then(function(health) {
-                        results.health = health;
+                return ContractHealthService.getOne({
+                    jobcontract_revision_id: results.details.jobcontract_revision_id
+                })
+                .then(function(health) {
+                    results.health = health;
 
-                        return results;
-                    });
+                    return results;
+                });
             })
             .then(function(results){
 
