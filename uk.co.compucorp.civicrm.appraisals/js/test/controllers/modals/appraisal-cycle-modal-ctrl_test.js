@@ -50,6 +50,10 @@ define([
                 expect(ctrl.formSubmitted).toBe(false);
             });
 
+            it('has an empty list of form errors', function () {
+                expect(ctrl.formErrors).toEqual({});
+            });
+
             describe('cycle types list', function () {
                 it('waits for data to be loaded', function () {
                     expect(ctrl.loaded.types).toBe(false);
@@ -192,6 +196,30 @@ define([
                     expect(ctrl.form.cycle_grade_due.$error.gradeAfterManager).toBe(true);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
+            });
+        });
+
+        describe('form errors', function () {
+            var cycleWithErrors = _.assign({}, validCycle, {
+                cycle_name: '',
+                cycle_end_date: '31/12/2014',
+                cycle_grade_due: '',
+                cycle_manager_appraisal_due: '20/01/2016'
+            });
+
+            beforeEach(function () {
+                initForm();
+                prepFormWith(cycleWithErrors);
+            });
+
+            it('returns the list of fields, each with its own errors', function () {
+                expect(ctrl.formErrors).toEqual({
+                    cycle_name: { required: true },
+                    cycle_start_date: { startBeforeEnd: true },
+                    cycle_end_date: { endAfterStart: true },
+                    cycle_grade_due: { required: true, gradeAfterManager: true },
+                    cycle_manager_appraisal_due: { managerAfterDue: true }
+                })
             });
         });
 

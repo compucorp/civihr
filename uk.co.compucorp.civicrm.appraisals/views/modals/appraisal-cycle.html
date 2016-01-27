@@ -9,6 +9,43 @@
     </div>
     <div ng-show="modal.loaded.types && modal.loaded.cycle">
         <div class="modal-body">
+            <div class="alert alert-danger" ng-if="modal.formSubmitted && modal.form.$invalid">
+                <ul>
+                    <li ng-if="modal.formErrors.cycle_name.required">
+                        Please specify the cycle name
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_type_id.required">
+                        Please specify the cycle type
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_start_date.required">
+                        Please specify the start date
+                    </li>
+                    <li ng-if="!modal.formErrors.cycle_end_date.required && modal.formErrors.cycle_start_date.startBeforeEnd">
+                        The start date cannot be after the end date
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_end_date.required">
+                        Please specify the end date
+                    </li>
+                    <li ng-if="!modal.formErrors.cycle_end_date.required && modal.formErrors.cycle_end_date.endAfterStart">
+                        The end date cannot be before the start date
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_self_appraisal_due.required">
+                        Please specify the self appraisal due date
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_manager_appraisal_due.required">
+                        Please specify the manager appraisal due date
+                    </li>
+                    <li ng-if="!modal.formErrors.cycle_manager_appraisal_due.required && modal.formErrors.cycle_manager_appraisal_due.managerAfterDue">
+                        The manager appraisal due date cannot be before the self appraisal due date
+                    </li>
+                    <li ng-if="modal.formErrors.cycle_grade_due.required">
+                        Please specify the grade due date
+                    </li>
+                    <li ng-if="!modal.formErrors.cycle_grade_due.required && modal.formErrors.cycle_grade_due.gradeAfterManager">
+                        The grade due date cannot be before the manager appraisal due date
+                    </li>
+                </ul>
+            </div>
             <form
                 novalidate
                 name="modal.form"

@@ -18,6 +18,7 @@ define([
             vm.types = [];
 
             vm.edit = false;
+            vm.formErrors = {};
             vm.formSubmitted = false;
             vm.loaded = {
                 types: false,
@@ -25,7 +26,10 @@ define([
             };
 
             /**
-             * Adds the new cycle and on complete emits an event, closes the modal
+             * If the form is valid, it creates/edit the cycle and on
+             * complete emits an event, closes the modal
+             *
+             * If the form is not valid, it fetches the form errors to display
              */
             vm.submit = function () {
                 vm.formSubmitted = true;
@@ -34,6 +38,8 @@ define([
 
                 if (isFormValid()) {
                     vm.edit ? editCycle() : createCycle();
+                } else {
+                    vm.formErrors = formErrors();
                 }
             };
 
@@ -72,6 +78,37 @@ define([
                     }
                 }
             }
+
+            /**
+             * Extracts from the AngularJS form object all the current errors
+             * for each field
+             *
+             * @return {object} contains the errors grouped by field:
+             *   {
+             *     field_1: { error_1: true, error_2: true },
+             *     // ..
+             *     field_N: { error_1: true }
+             *   }
+             */
+            function formErrors() {
+                return _(vm.form)
+                    // filters out internal properties of the form object
+                    .omit(function (value, key) {
+                        return _.startsWith(key, '$');
+                    })
+                    // creates an object which groups the errors by field
+                    .transform(function (result, value, key) {
+                        result[key] = _.omit(value.$error, function (value) {
+                            return !value
+                        });
+                        return result;
+                    }, {})
+                    // filters out fields with no errors
+                    .omit(function (value) {
+                        return _.isEmpty(value);
+                    })
+                    .value()
+            };
 
             /**
              * Initialization code
