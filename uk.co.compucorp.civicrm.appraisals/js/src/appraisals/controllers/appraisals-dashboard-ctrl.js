@@ -60,7 +60,7 @@ define([
                 modalScope.cycleId = id;
 
                 $modal.open({
-                    targetDomEl: $rootElement,
+                    targetDomEl: $rootElement.children().eq(0),
                     controller: 'AppraisalCycleModalCtrl',
                     controllerAs: 'modal',
                     bindToController: true,
