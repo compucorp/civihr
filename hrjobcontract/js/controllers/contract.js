@@ -105,9 +105,19 @@ define(['controllers/controllers',
                 hour: ContractHourService.getOne({ jobcontract_id: contractId}),
                 pay: ContractPayService.getOne({ jobcontract_id: contractId}),
                 leave: ContractLeaveService.get({ jobcontract_id: contractId}),
-                health: ContractHealthService.getOne({ jobcontract_id: contractId}),
                 pension: ContractPensionService.getOne({ jobcontract_id: contractId})
-            }).then(function(results){
+            })
+            .then(function(results){
+                return ContractHealthService.getOne({
+                    jobcontract_revision_id: results.details.jobcontract_revision_id
+                })
+                .then(function(health) {
+                    results.health = health;
+
+                    return results;
+                });
+            })
+            .then(function(results){
 
                 updateContractView(results);
 
