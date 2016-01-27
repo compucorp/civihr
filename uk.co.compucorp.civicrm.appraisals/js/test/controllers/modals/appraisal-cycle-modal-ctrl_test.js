@@ -1,21 +1,37 @@
 define([
     'common/angular',
+    'common/lodash',
     'common/angularMocks',
     'appraisals/app',
     'mocks/models/appraisal-cycle',
     'mocks/models/instances/appraisal-cycle-instance'
-], function (angular) {
+], function (angular, _) {
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
-        var $controller, $q, $modalInstance, $rootScope, AppraisalCycle, AppraisalCycleInstance, ctrl;
+        var $compile, $controller, $q, $modalInstance, $rootScope, $scope, $templateCache,
+            AppraisalCycle, AppraisalCycleInstance, ctrl, validCycle;
 
-        beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(function (_$controller_, _$q_, _$rootScope_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_) {
+        validCycle = {
+            cycle_name: 'Appraisal Cycle #1',
+            cycle_type_id: '1',
+            cycle_is_active: true,
+            cycle_start_date: '01/01/2015',
+            cycle_end_date: '31/12/2015',
+            cycle_self_appraisal_due: '31/01/2016',
+            cycle_manager_appraisal_due: '28/02/2016',
+            cycle_grade_due: '30/03/2016'
+        };
+
+        beforeEach(module('appraisals', 'appraisals.mocks', 'appraisals.templates'));
+        beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_) {
+            $compile = _$compile_;
             $controller = _$controller_;
             $q = _$q_;
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
             $rootScope = _$rootScope_;
+            $scope = $rootScope.$new();
+            $templateCache = _$templateCache_;
 
             AppraisalCycle = _AppraisalCycleMock_;
             AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
@@ -30,6 +46,10 @@ define([
         });
 
         describe('init', function () {
+            it('marks the form as not submitted', function () {
+                expect(ctrl.formSubmitted).toBe(false);
+            });
+
             describe('cycle types list', function () {
                 it('waits for data to be loaded', function () {
                     expect(ctrl.loaded.types).toBe(false);
@@ -96,23 +116,108 @@ define([
             })
         });
 
+        describe('form validation', function () {
+            beforeEach(function () {
+                initForm();
+            });
+
+            describe('valid data', function () {
+                beforeEach(function () {
+                    prepFormWith(validCycle);
+                });
+
+                it('submits the form when validation is passed', function () {
+                    expect(ctrl.form.$valid).toBe(true);
+                    expect(AppraisalCycle.create).toHaveBeenCalled();
+                });
+            });
+
+            describe('mandatory fields', function () {
+                beforeEach(function () {
+                    prepFormWith(_.omit(validCycle, ['cycle_name', 'cycle_grade_due']));
+                });
+
+                it('must be present', function () {
+                    expect(ctrl.form.$valid).toBe(false);
+                    expect(ctrl.form.cycle_name.$error.required).toBe(true);
+                    expect(ctrl.form.cycle_grade_due.$error.required).toBe(true);
+                    expect(ctrl.form.cycle_type_id.$error.required).toBe(false);
+                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
+                });
+            });
+
+            describe('start date', function () {
+                beforeEach(function () {
+                    prepFormWith(_.assign({}, validCycle, { cycle_start_date: '01/01/2016' }));
+                });
+
+                it('start date must be before end date', function () {
+                    expect(ctrl.form.$valid).toBe(false);
+                    expect(ctrl.form.cycle_start_date.$error.startBeforeEnd).toBe(true);
+                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
+                });
+            });
+
+            describe('end date', function () {
+                beforeEach(function () {
+                    prepFormWith(_.assign({}, validCycle, { cycle_end_date: '31/12/2014' }));
+                });
+
+                it('end date must be after end date', function () {
+                    expect(ctrl.form.$valid).toBe(false);
+                    expect(ctrl.form.cycle_end_date.$error.endAfterStart).toBe(true);
+                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
+                });
+            });
+
+            describe('manager appraisal due date', function () {
+                beforeEach(function () {
+                    prepFormWith(_.assign({}, validCycle, { cycle_manager_appraisal_due: '05/01/2016' }));
+                });
+
+                it('manager appraisal due date must be after self appraisal due date', function () {
+                    expect(ctrl.form.$valid).toBe(false);
+                    expect(ctrl.form.cycle_manager_appraisal_due.$error.managerAfterDue).toBe(true);
+                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
+                });
+            });
+
+            describe('grade due date', function () {
+                beforeEach(function () {
+                    prepFormWith(_.assign({}, validCycle, { cycle_grade_due: '10/02/2016' }));
+                });
+
+                it('grade due date must be after manager appraisal due date', function () {
+                    expect(ctrl.form.$valid).toBe(false);
+                    expect(ctrl.form.cycle_grade_due.$error.gradeAfterManager).toBe(true);
+                    expect(AppraisalCycle.create).not.toHaveBeenCalled();
+                });
+            });
+        });
+
         describe('form submit', function () {
             beforeEach(function () {
+                initForm();
                 spyOn($rootScope, '$emit');
             });
 
-            describe('when in "create mode', function () {
-                var newCycle = { name: 'The new cycle' };
-
+            describe('submit status', function () {
                 beforeEach(function () {
-                    ctrl.cycle = newCycle;
-                    ctrl.submit();
+                    prepFormWith(validCycle);
+                });
 
-                    $rootScope.$digest();
+                it('marks the form as submitted', function () {
+                    expect(ctrl.formSubmitted).toBe(true);
+                });
+            });
+
+            describe('when in "create mode', function () {
+                beforeEach(function () {
+                    prepFormWith(validCycle);
                 });
 
                 it('sends a request to the api with the new cycle data', function () {
-                    expect(AppraisalCycle.create).toHaveBeenCalledWith(newCycle);
+                    expect(AppraisalCycle.create).toHaveBeenCalledWith(validCycle);
                 });
 
                 it('emits an event', function () {
@@ -125,14 +230,11 @@ define([
             });
 
             describe('when in "edit mode"', function () {
-                var editedCycle = { id: '657', name: 'Amended name', type: 'Amended type' };
+                var editedCycle = _.assign({}, validCycle, { id: '657', cycle_name: 'Amended name', cycle_type_id: '2' });
 
                 beforeEach(function () {
                     ctrl.edit = true;
-                    ctrl.cycle = AppraisalCycleInstance.init(editedCycle);
-                    ctrl.submit();
-
-                    $rootScope.$digest();
+                    prepFormWith(_.omit(editedCycle, 'id'), AppraisalCycleInstance.init(editedCycle));
                 });
 
                 it('triggers the update on the model instance', function () {
@@ -155,12 +257,55 @@ define([
             });
         });
 
+        /**
+         * Prepares the form with the given values and then runs the digest
+         * cycles
+         *
+         * @param {object} formValues
+         * @param {object} cycleInScope - If specified, this object will be used
+         *   as the cycle in the ctrl's scope instead of the form values
+         */
+        function prepFormWith(formValues, cycleInScope) {
+            _.forEach(formValues, function (value, field) {
+                ctrl.form[field].$setViewValue(value);
+            }) && $rootScope.$digest();
+
+            ctrl.cycle = cycleInScope || formValues;
+            ctrl.submit();
+
+            $rootScope.$digest();
+        }
+
+        /**
+         * Initializes the controller with additional injected values
+         *
+         * @param {object} params - The values to inject in the controller
+         */
         function initController(params) {
             ctrl = $controller('AppraisalCycleModalCtrl', angular.extend({}, {
                 $modalInstance: $modalInstance,
-                $scope: $rootScope.$new(),
+                $scope: $scope,
                 AppraisalCycle: AppraisalCycle
             }, params));
+        }
+
+        /**
+         * Initializes the form the modal controller is tied to.
+         *
+         * It is necessary to remove the reference to the datepicker directive
+         * otherwise it will interfere with the direct insertions of values
+         * in the fields the directive it is applied to
+         *
+         * It compiles it against a scope and then assigns it to the
+         * internal `form` property (because of the "controller as" syntax)
+         */
+        function initForm() {
+            var template = $templateCache.get(CRM.vars.appraisals.baseURL + '/views/modals/appraisal-cycle.html');
+            template = template.replace(/datepicker-popup=(.+) ?/g, '');
+
+            $compile(angular.element(template))($rootScope);
+
+            ctrl.form = $rootScope.modal.form;
         }
     });
 });
