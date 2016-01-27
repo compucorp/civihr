@@ -36,7 +36,7 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobHealth extends CRM_Hrjobcontra
    */
   private function normaliseContactReference($entityParams, $fieldName) {
     if (!is_numeric($entityParams[$fieldName]) && !is_null($entityParams[$fieldName])) {
-      $entityParams['provider'] = (int) $this->getContactIdByDisplayName($entityParams[$fieldName]);
+      $entityParams[$fieldName] = (int) $this->getContactIdByDisplayName($entityParams[$fieldName]);
     }
 
     return $entityParams;
