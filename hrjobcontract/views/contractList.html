@@ -29,7 +29,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Dates:</label>
                         <div class="col-sm-9">
-                            <p class="form-control-static" ng-bind="(details.period_start_date | formatPeriod) + ' - ' + (details.period_end_date | formatPeriod)" ng-show="details.period_start_date"></p>
+                            <p class="form-control-static" ng-bind="(details.period_start_date | CustomDate) + ' - ' + (details.period_end_date | CustomDate)" ng-show="details.period_start_date"></p>
                         </div>
                     </div>
                 </div>

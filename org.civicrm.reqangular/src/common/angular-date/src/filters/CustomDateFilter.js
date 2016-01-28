@@ -1,33 +1,25 @@
-module.exports = function ($filter) {
+module.exports = function ($filter, DateFactory) {
     return function (datetime) {
-        if(typeof datetime === 'string') {
-            var match, match2, date;
+        var Date;
 
-            match = datetime.match(/^(\d{2})-(\d{2})-(\d{4})/);
-            match2 = datetime.match(/^(\d{4})-(\d{2})-(\d{2})/);
-
-            if(match){
-                date = new Date(match[3], match[2] - 1, match[1]).getTime();
-            } else if(match2){
-                date = new Date(match2[1], match2[2] - 1, match2[3]).getTime();
-            } else {
-                date = datetime;
-            }
-
-            if(date < 0 || datetime.length < 10){
-                return 'Unspecified';
-            } else {
-                return $filter('date')(date, 'dd/MM/yyyy');
-            }
-
-        } else if(typeof datetime === 'object' && datetime !== null ){
-            if(datetime.getTime){
-                return $filter('date')(datetime.getTime(), 'dd/MM/yyyy');
-            }
-        } else if(typeof datetime === 'number'){
-            return $filter('date')(datetime, 'dd/MM/yyyy');
+        if(typeof datetime == 'object'){
+            datetime = $filter('date')(datetime, 'dd/MM/yyyy');
         }
 
-        return null;
+        Date = DateFactory.createDate(datetime, [
+            'DD-MM-YYYY',
+            'DD-MM-YYYY HH:mm:ss',
+            'YYYY-MM-DD',
+            'YYYY-MM-DD HH:mm:ss',
+            'DD/MM/YYYY',
+            'x'
+        ], true);
+
+        var beginningOfEra = DateFactory.createDate(0);
+        var notEmpty = !Date.isSame(beginningOfEra);
+
+        if(Date.isValid() && notEmpty) return Date.format('DD/MM/YYYY');
+
+        return 'Unspecified';
     };
 };

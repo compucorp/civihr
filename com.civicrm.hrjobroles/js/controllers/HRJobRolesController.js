@@ -94,10 +94,9 @@ define(['controllers/controllers'], function(controllers){
 
             $scope.validateDates = function(start, end, error) {
                 DateValidationService.setErrorCallback(error);
-                DateValidationService.setOptions({
-                    minDate: $scope.minDate,
-                    maxDate: $scope.maxDate
-                });
+
+                DateValidationService.setMinDate($scope.minDate.getTime());
+                DateValidationService.setMaxDate($scope.maxDate.getTime());
 
                 DateValidationService.validate(start, end);
             };
@@ -124,6 +123,12 @@ define(['controllers/controllers'], function(controllers){
             $scope.today = function() {
                 $scope.CalendarShow['newStartDate'] = false;
                 $scope.CalendarShow['newEndDate'] = false;
+                $scope.CalendarShow['start_date'] = false;
+                $scope.CalendarShow['end_date'] = false;
+            };
+
+            $scope.isOpen = function(name){
+                return !!($scope.CalendarShow[name]);
             };
 
             // As default hide the datepickers

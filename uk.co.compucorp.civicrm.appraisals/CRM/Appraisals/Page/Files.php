@@ -185,7 +185,7 @@ class CRM_Appraisals_Page_Files extends CRM_Core_Page {
           CRM_Utils_System::civiExit();
       }
       
-      $zipname = 'appraisal_' . (int)$params['entityID'] . '_files';
+      $zipname =  $params['entityTable'] . '_' . (int)$params['entityID'];
       $contactQuery = 'SELECT c.sort_name, ov.label FROM civicrm_activity a
         LEFT JOIN civicrm_activity_contact ac ON a.id = ac.activity_id
         LEFT JOIN civicrm_contact c ON ac.contact_id = c.id

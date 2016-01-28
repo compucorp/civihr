@@ -73,6 +73,7 @@ abstract class CRM_Appraisals_Import_Parser extends CRM_Import_Parser {
     &$mapper,
     $skipColumnHeader = FALSE,
     $mode = self::MODE_PREVIEW,
+    $type = null,
     $onDuplicate = self::DUPLICATE_SKIP
   ) {
     if (!is_array($fileName)) {

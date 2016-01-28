@@ -6,7 +6,6 @@
 .chr_steps__step {
     display: table;
     float: left;
-    margin-right: $steps-gutter;
 
     &:not(:first-child) {
 
@@ -16,6 +15,7 @@
     }
 
     &:not(:last-child) {
+        margin-right: $steps-gutter;
 
         .chr_steps__step__arrow {
 

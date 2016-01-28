@@ -253,6 +253,28 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         return TRUE;
     }
     
+    /**
+     * Create additional Appraisal database fields for tracking Appraisal history
+     * 
+     * @return boolean
+     */
+    public function upgrade_0008() {
+        CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_appraisal` ADD `original_id` INT(10) UNSIGNED NULL DEFAULT NULL AFTER `status_id`, ADD `created_date` DATETIME NULL DEFAULT NULL AFTER `original_id`, ADD `is_current` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1' AFTER `created_date`");
+        
+        return TRUE;
+    }
+    
+    /**
+     * Add 'cycle_is_active' field for AppraisalCycle entity
+     * 
+     * @return boolean
+     */
+    public function upgrade_0009() {
+        CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_appraisal_cycle` ADD `cycle_is_active` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1'");
+        
+        return TRUE;
+    }
+    
     public function enable() {
         $this->setIsActive(1);
         
