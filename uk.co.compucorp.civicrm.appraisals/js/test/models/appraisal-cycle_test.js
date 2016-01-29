@@ -558,7 +558,7 @@ define([
                 AppraisalCycle.find(targetId).then(function (cycle) {
                     expect(appraisalsAPI.find).toHaveBeenCalledWith(targetId);
                     expect(cycle.id).toBe('4217');
-                    expect(cycle.type).toBe('Type #2');
+                    expect(cycle.cycle_type_id).toBe('2');
                 })
                 .finally(done) && $rootScope.$digest();
             });

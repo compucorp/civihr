@@ -75,183 +75,113 @@ define([
                     list: [
                         {
                             id: '42131',
-                            name: 'Appraisal Cycle 1',
-                            status: 'Status #3',
-                            type: 'Type #2',
+                            cycle_name: 'Appraisal Cycle 1',
                             cycle_is_active: true,
-                            period: { start: '01/01/2014', end: '01/01/2015' },
-                            nextDue: { type: 'Manager Appraisal', date: '01/01/2021' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 45,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 30 },
-                                { name: 'Assigned to Manager', count: 22 },
-                                { name: 'Awaiting Grade', count: 2 },
-                                { name: 'Awaiting HR Approval', count: 1 },
-                                { name: 'Complete', count: 45 }
-                            ]
+                            cycle_type_id: '2',
+                            cycle_start_date: '01/01/2014',
+                            cycle_end_date: '01/01/2015',
+                            cycle_self_appraisal_due: '01/01/2016',
+                            cycle_manager_appraisal_due: '02/01/2016',
+                            cycle_grade_due: '03/01/2016'
                         },
                         {
                             id: '42132',
-                            name: 'Appraisal Cycle 2',
+                            cycle_name: 'Appraisal Cycle 2',
                             cycle_is_active: true,
-                            status: 'Status #1',
-                            type: 'Type #1',
-                            period: { start: '02/02/2014', end: '02/02/2015' },
-                            nextDue: { type: 'Self Appraisal', date: '02/02/2022' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 55,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 30 },
-                                { name: 'Assigned to Manager', count: 12 },
-                                { name: 'Awaiting Grade', count: 2 },
-                                { name: 'Awaiting HR Approval', count: 1 },
-                                { name: 'Complete', count: 55 }
-                            ]
+                            cycle_type_id: '1',
+                            cycle_start_date: '02/02/2014',
+                            cycle_end_date: '02/02/2015',
+                            cycle_self_appraisal_due: '02/02/2016',
+                            cycle_manager_appraisal_due: '04/02/2016',
+                            cycle_grade_due: '05/02/2016'
                         },
                         {
                             id: '42133',
-                            name: 'Appraisal Cycle 3',
+                            cycle_name: 'Appraisal Cycle 3',
                             cycle_is_active: true,
-                            status: 'Status #1',
-                            type: 'Type #2',
-                            period: { start: '03/03/2014', end: '03/03/2015' },
-                            nextDue: { type: 'Awaiting Grade', date: '03/03/2023' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 35,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 40 },
-                                { name: 'Assigned to Manager', count: 22 },
-                                { name: 'Awaiting Grade', count: 2 },
-                                { name: 'Awaiting HR Approval', count: 1 },
-                                { name: 'Complete', count: 35 }
-                            ]
+                            cycle_type_id: '2',
+                            cycle_start_date: '03/03/2014',
+                            cycle_end_date: '03/03/2015',
+                            cycle_self_appraisal_due: '06/03/2016',
+                            cycle_manager_appraisal_due: '07/03/2016',
+                            cycle_grade_due: '08/03/2016'
                         },
                         {
                             id: '42134',
-                            name: 'Appraisal Cycle 4',
+                            cycle_name: 'Appraisal Cycle 4',
                             cycle_is_active: true,
-                            status: 'Status #3',
-                            type: 'Type #3',
-                            period: { start: '04/04/2014', end: '04/04/2015' },
-                            nextDue: { type: 'Manager Appraisal', date: '04/04/2024' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 65,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 20 },
-                                { name: 'Assigned to Manager', count: 12 },
-                                { name: 'Awaiting Grade', count: 2 },
-                                { name: 'Awaiting HR Approval', count: 1 },
-                                { name: 'Complete', count: 65 }
-                            ]
+                            cycle_type_id: '3',
+                            cycle_start_date: '04/04/2014',
+                            cycle_end_date: '04/04/2015',
+                            cycle_self_appraisal_due: '09/04/2016',
+                            cycle_manager_appraisal_due: '10/04/2016',
+                            cycle_grade_due: '11/04/2016'
                         },
                         {
                             id: '42135',
-                            name: 'Appraisal Cycle 5',
+                            cycle_name: 'Appraisal Cycle 5',
                             cycle_is_active: true,
-                            status: 'Status #1',
-                            type: 'Type #3',
-                            period: { start: '05/05/2014', end: '05/05/2015' },
-                            nextDue: { type: 'Self Appraisal', date: '05/05/2025' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 5,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 40 },
-                                { name: 'Assigned to Manager', count: 22 },
-                                { name: 'Awaiting Grade', count: 22 },
-                                { name: 'Awaiting HR Approval', count: 11 },
-                                { name: 'Complete', count: 5 }
-                            ]
+                            cycle_type_id: '3',
+                            cycle_start_date: '05/05/2014',
+                            cycle_end_date: '05/05/2015',
+                            cycle_self_appraisal_due: '12/05/2016',
+                            cycle_manager_appraisal_due: '13/05/2016',
+                            cycle_grade_due: '14/05/2016'
                         },
                         {
                             id: '42136',
-                            name: 'Appraisal Cycle 6',
+                            cycle_name: 'Appraisal Cycle 6',
                             cycle_is_active: false,
-                            status: 'Status #1',
-                            type: 'Type #1',
-                            period: { start: '06/06/2014', end: '06/06/2015' },
-                            nextDue: null,
-                            appraisalsTotal: 100,
-                            completionPercentage: 100,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 0 },
-                                { name: 'Assigned to Manager', count: 0 },
-                                { name: 'Awaiting Grade', count: 0 },
-                                { name: 'Awaiting HR Approval', count: 0 },
-                                { name: 'Complete', count: 100 }
-                            ]
+                            cycle_type_id: '1',
+                            cycle_start_date: '06/06/2014',
+                            cycle_end_date: '06/06/2015',
+                            cycle_self_appraisal_due: '15/06/2016',
+                            cycle_manager_appraisal_due: '16/06/2016',
+                            cycle_grade_due: '17/06/2016'
                         },
                         {
                             id: '4217',
-                            name: 'Appraisal Cycle 7',
+                            cycle_name: 'Appraisal Cycle 7',
                             cycle_is_active: false,
-                            status: 'Status #2',
-                            type: 'Type #2',
-                            period: { start: '07/07/2014', end: '07/07/2015' },
-                            nextDue: null,
-                            appraisalsTotal: 100,
-                            completionPercentage: 100,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 0 },
-                                { name: 'Assigned to Manager', count: 0 },
-                                { name: 'Awaiting Grade', count: 0 },
-                                { name: 'Awaiting HR Approval', count: 0 },
-                                { name: 'Complete', count: 100 }
-                            ]
+                            cycle_type_id: '2',
+                            cycle_start_date: '07/07/2014',
+                            cycle_end_date: '07/07/2015',
+                            cycle_self_appraisal_due: '18/07/2016',
+                            cycle_manager_appraisal_due: '19/07/2016',
+                            cycle_grade_due: '20/07/2016'
                         },
                         {
                             id: '42138',
-                            name: 'Appraisal Cycle 8',
+                            cycle_name: 'Appraisal Cycle 8',
                             cycle_is_active: true,
-                            status: 'Status #2',
-                            type: 'Type #1',
-                            period: { start: '08/08/2014', end: '08/08/2015' },
-                            nextDue: { type: 'Self Appraisal', date: '08/08/2028' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 15,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 40 },
-                                { name: 'Assigned to Manager', count: 22 },
-                                { name: 'Awaiting Grade', count: 12 },
-                                { name: 'Awaiting HR Approval', count: 11 },
-                                { name: 'Complete', count: 15 }
-                            ]
+                            cycle_type_id: '1',
+                            cycle_start_date: '08/08/2014',
+                            cycle_end_date: '08/08/2015',
+                            cycle_self_appraisal_due: '21/08/2016',
+                            cycle_manager_appraisal_due: '22/08/2016',
+                            cycle_grade_due: '23/08/2016'
                         },
                         {
                             id: '42139',
-                            name: 'Appraisal Cycle 9',
+                            cycle_name: 'Appraisal Cycle 9',
                             cycle_is_active: true,
-                            status: 'Status #3',
-                            type: 'Type #1',
-                            period: { start: '09/09/2014', end: '09/09/2015' },
-                            nextDue: { type: 'Self Appraisal', date: '09/09/2029' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 10,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 40 },
-                                { name: 'Assigned to Manager', count: 22 },
-                                { name: 'Awaiting Grade', count: 22 },
-                                { name: 'Awaiting HR Approval', count: 16 },
-                                { name: 'Complete', count: 10 }
-                            ]
+                            cycle_type_id: '1',
+                            cycle_start_date: '09/09/2014',
+                            cycle_end_date: '09/09/2015',
+                            cycle_self_appraisal_due: '24/09/2016',
+                            cycle_manager_appraisal_due: '25/09/2016',
+                            cycle_grade_due: '26/09/2016'
                         },
                         {
                             id: '421310',
-                            name: 'Appraisal Cycle 10',
+                            cycle_name: 'Appraisal Cycle 10',
                             cycle_is_active: true,
-                            status: 'Status #1',
-                            type: 'Type #4',
-                            period: { start: '10/10/2014', end: '10/10/2015' },
-                            nextDue: { type: 'Self Appraisal', date: '10/10/2030' },
-                            appraisalsTotal: 100,
-                            completionPercentage: 2,
-                            appraisalsCountByStep: [
-                                { name: 'Self Appraisal', count: 40 },
-                                { name: 'Assigned to Manager', count: 24 },
-                                { name: 'Awaiting Grade', count: 22 },
-                                { name: 'Awaiting HR Approval', count: 11 },
-                                { name: 'Complete', count: 2 }
-                            ]
+                            cycle_type_id: '4',
+                            cycle_start_date: '10/10/2014',
+                            cycle_end_date: '10/10/2015',
+                            cycle_self_appraisal_due: '27/10/2016',
+                            cycle_manager_appraisal_due: '28/10/2016',
+                            cycle_grade_due: '29/10/2016'
                         }
                     ]
                 }
