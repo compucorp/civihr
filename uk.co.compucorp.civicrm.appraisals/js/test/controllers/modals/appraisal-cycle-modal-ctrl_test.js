@@ -9,8 +9,9 @@ define([
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
-        var $compile, $controller, $q, $modalInstance, $rootScope, $scope, $templateCache,
-            AppraisalCycle, AppraisalCycleInstance, ctrl, validCycle;
+        var $compile, $controller, $q, $modalInstance, $rootScope, $scope,
+            $templateCache, AppraisalCycle, AppraisalCycleInstance, ctrl, dialog,
+            validCycle;
 
         validCycle = {
             cycle_name: 'Appraisal Cycle #1',
@@ -24,7 +25,7 @@ define([
         };
 
         beforeEach(module('appraisals', 'appraisals.mocks', 'appraisals.templates'));
-        beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_) {
+        beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _dialog_) {
             $compile = _$compile_;
             $controller = _$controller_;
             $q = _$q_;
@@ -35,6 +36,7 @@ define([
 
             AppraisalCycle = _AppraisalCycleMock_;
             AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
+            dialog = _dialog_;
 
             initController();
         }));
@@ -100,7 +102,7 @@ define([
                     expect(ctrl.edit).toBe(true);
                 });
 
-                it('waits for the data to be loaded', function () {
+                it('waits for the cycle to be loaded', function () {
                     expect(ctrl.loaded.cycle).toBe(false);
                 });
 
@@ -113,7 +115,7 @@ define([
                         $rootScope.$digest();
                     });
 
-                    it('marks the list as loaded', function () {
+                    it('marks the cycle as loaded', function () {
                         expect(ctrl.loaded.cycle).toBe(true);
                     });
                 });
@@ -127,7 +129,7 @@ define([
 
             describe('valid data', function () {
                 beforeEach(function () {
-                    prepFormWith(validCycle);
+                    submitFormWith(validCycle);
                 });
 
                 it('submits the form when validation is passed', function () {
@@ -138,7 +140,7 @@ define([
 
             describe('mandatory fields', function () {
                 beforeEach(function () {
-                    prepFormWith(_.omit(validCycle, ['cycle_name', 'cycle_grade_due']));
+                    submitFormWith(_.omit(validCycle, ['cycle_name', 'cycle_grade_due']));
                 });
 
                 it('must be present', function () {
@@ -152,7 +154,7 @@ define([
 
             describe('end date', function () {
                 beforeEach(function () {
-                    prepFormWith(_.assign({}, validCycle, { cycle_end_date: '31/12/2014' }));
+                    submitFormWith(_.assign({}, validCycle, { cycle_end_date: '31/12/2014' }));
                 });
 
                 it('end date must be after end date', function () {
@@ -164,7 +166,7 @@ define([
 
             describe('manager appraisal due date', function () {
                 beforeEach(function () {
-                    prepFormWith(_.assign({}, validCycle, { cycle_manager_appraisal_due: '05/01/2016' }));
+                    submitFormWith(_.assign({}, validCycle, { cycle_manager_appraisal_due: '05/01/2016' }));
                 });
 
                 it('manager appraisal due date must be after self appraisal due date', function () {
@@ -176,7 +178,7 @@ define([
 
             describe('grade due date', function () {
                 beforeEach(function () {
-                    prepFormWith(_.assign({}, validCycle, { cycle_grade_due: '10/02/2016' }));
+                    submitFormWith(_.assign({}, validCycle, { cycle_grade_due: '10/02/2016' }));
                 });
 
                 it('grade due date must be after manager appraisal due date', function () {
@@ -197,7 +199,7 @@ define([
 
             beforeEach(function () {
                 initForm();
-                prepFormWith(cycleWithErrors);
+                submitFormWith(cycleWithErrors);
             });
 
             it('returns the list of fields, each with its own errors', function () {
@@ -218,7 +220,7 @@ define([
 
             describe('submit status', function () {
                 beforeEach(function () {
-                    prepFormWith(validCycle);
+                    submitFormWith(validCycle);
                 });
 
                 it('marks the form as submitted', function () {
@@ -228,7 +230,7 @@ define([
 
             describe('when in "create mode', function () {
                 beforeEach(function () {
-                    prepFormWith(validCycle);
+                    submitFormWith(validCycle);
                 });
 
                 it('sends a request to the api with the new cycle data', function () {
@@ -245,51 +247,108 @@ define([
             });
 
             describe('when in "edit mode"', function () {
-                var editedCycle = _.assign({}, validCycle, { id: '657', cycle_name: 'Amended name', cycle_type_id: '2' });
+                var editedCycle;
+
+                beforeEach(function () {
+                    $scope = $rootScope.$new();
+                    $scope.cycleId = '4217';
+
+                    initController({ $scope: $scope });
+                    initForm();
+                });
 
                 beforeEach(function () {
                     ctrl.edit = true;
-                    prepFormWith(_.omit(editedCycle, 'id'), AppraisalCycleInstance.init(editedCycle));
-                });
 
-                it('triggers the update on the model instance', function () {
-                    expect(ctrl.cycle.update).toHaveBeenCalled();
-                });
-
-                describe('event', function () {
-                    it('is emitted', function () {
-                        expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
-                    });
-
-                    it('gets the same cycle object passed as parameter', function () {
-                        expect($rootScope.$emit.calls.argsFor(0)[1]).toBe(ctrl.cycle);
+                    editedCycle = _.assign({}, _.find(AppraisalCycle.mockedCycles().list, function (cycle) {
+                        return cycle.id === '4217';
+                    }), {
+                        cycle_name: 'Amended name',
+                        cycle_type_id: '2'
                     });
                 });
 
-                it('closes the modal', function () {
-                    expect($modalInstance.close).toHaveBeenCalled();
+                describe('basic tests', function () {
+                    beforeEach(function () {
+                        submitFormWith(editedCycle);
+                    });
+
+                    it('triggers the update on the model instance', function () {
+                        expect(ctrl.cycle.update).toHaveBeenCalled();
+                    });
+
+                    it('closes the modal', function () {
+                        expect($modalInstance.close).toHaveBeenCalled();
+                    });
+
+                    describe('event', function () {
+                        it('is emitted', function () {
+                            expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', jasmine.any(Object));
+                        });
+
+                        it('gets the same cycle object passed as parameter', function () {
+                            expect($rootScope.$emit.calls.argsFor(0)[1]).toBe(ctrl.cycle);
+                        });
+                    });
+                });
+
+                describe('dialog for due dates change', function () {
+                    var editedWithNewDueDates;
+
+                    beforeEach(function () {
+                        editedWithNewDueDates = _.assign({}, editedCycle, {
+                            cycle_grade_due: '11/08/2016'
+                        });
+                    });
+
+                    describe('when leaving the due dates unchanged', function () {
+                        beforeEach(function () {
+                            resolveDialogWith(null);
+                            submitFormWith(editedCycle);
+                        });
+
+                        it('does not show a confirmation dialog', function () {
+                            expect(dialog.open).not.toHaveBeenCalled();
+                        });
+                    });
+
+                    describe('when changing the due dates', function () {
+                        describe('basic tests', function () {
+                            beforeEach(function () {
+                                resolveDialogWith(null);
+                                submitFormWith(editedWithNewDueDates);
+                            });
+
+                            it('shows a confirmation dialog', function () {
+                                expect(dialog.open).toHaveBeenCalled();
+                            });
+                        });
+
+                        describe('when the dialog is dismissed', function () {
+                            beforeEach(function () {
+                                resolveDialogWith(false);
+                                submitFormWith(editedWithNewDueDates);
+                            });
+
+                            it('does not perform the update', function () {
+                                expect(ctrl.cycle.update).not.toHaveBeenCalled();
+                            });
+                        });
+
+                        describe('when the dialog is confirmed', function () {
+                            beforeEach(function () {
+                                resolveDialogWith(true);
+                                submitFormWith(editedWithNewDueDates);
+                            });
+
+                            it('performs the update', function () {
+                                expect(ctrl.cycle.update).toHaveBeenCalled();
+                            });
+                        });
+                    });
                 });
             });
         });
-
-        /**
-         * Prepares the form with the given values and then runs the digest
-         * cycles
-         *
-         * @param {object} formValues
-         * @param {object} cycleInScope - If specified, this object will be used
-         *   as the cycle in the ctrl's scope instead of the form values
-         */
-        function prepFormWith(formValues, cycleInScope) {
-            _.forEach(formValues, function (value, field) {
-                ctrl.form[field].$setViewValue(value);
-            }) && $rootScope.$digest();
-
-            ctrl.cycle = cycleInScope || formValues;
-            ctrl.submit();
-
-            $rootScope.$digest();
-        }
 
         /**
          * Initializes the controller with additional injected values
@@ -321,6 +380,49 @@ define([
             $compile(angular.element(template))($rootScope);
 
             ctrl.form = $rootScope.modal.form;
+        }
+
+        /**
+         * Spyes on dialog.open() method and resolves it with the given value
+         *
+         * @param {any} value
+         */
+        function resolveDialogWith(value) {
+            var spy;
+
+            if (typeof dialog.open.calls !== 'undefined') {
+                spy = dialog.open;
+            } else {
+                spy = spyOn(dialog, 'open');
+            }
+
+            spy.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve(value);
+
+                return deferred.promise;
+            });;
+        }
+
+        /**
+         * Prepares the form with the given values and then runs the digest
+         * cycles
+         *
+         * @param {object} formValues
+         */
+        function submitFormWith(formValues) {
+            _.forEach(_.omit(formValues, 'id'), function (value, field) {
+                ctrl.form[field].$setViewValue(value);
+            }) && $rootScope.$digest();
+
+            if (!ctrl.edit) {
+                ctrl.cycle = formValues;
+            } else {
+                ctrl.cycle = _.assign(ctrl.cycle, formValues);
+            }
+
+            ctrl.submit();
+            $rootScope.$digest();
         }
     });
 });

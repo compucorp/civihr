@@ -6,13 +6,14 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleModalCtrl',
-        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle',
-        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle) {
+        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle', 'dialog',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle, dialog) {
             $log.debug('AppraisalCycleModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
                 $modalInstance: $modalInstance
             }));
+            var oldDueDates = {};
 
             vm.cycle = {};
             vm.types = [];
@@ -36,10 +37,23 @@ define([
 
                 formatDates();
 
-                if (isFormValid()) {
-                    vm.edit ? editCycle() : createCycle();
-                } else {
+                if (!isFormValid()) {
                     vm.formErrors = formErrors();
+                    return;
+                }
+
+                if (vm.edit) {
+                    // If the due dates have been changed, it wait for
+                    // user's manual confirmation before performing the edit
+                    if (haveDueDatesChanged()) {
+                        showDueDatesChangedDialog().then(function (response) {
+                            !!response && editCycle();
+                        });
+                    } else {
+                        editCycle();
+                    }
+                } else {
+                    createCycle();
                 }
             };
 
@@ -108,10 +122,27 @@ define([
                         return _.isEmpty(value);
                     })
                     .value()
-            };
+            }
+
+            /**
+             * Compares the old due dates with the new due dates
+             *
+             * @return {boolean}
+             */
+            function haveDueDatesChanged() {
+                var newDueDates = vm.cycle.dueDates();
+
+                return Object.keys(newDueDates).some(function (key) {
+                    return oldDueDates[key] !== newDueDates[key]
+                });
+            }
 
             /**
              * Initialization code
+             *
+             * If there is a cycle id passed in the scope, it sets the modal
+             * in edit mode and retrieves the data of the cycle, storing
+             * its due dates for future comparison on submit
              */
             function init() {
                 AppraisalCycle.types().then(function (types) {
@@ -123,6 +154,8 @@ define([
                     vm.edit = true;
 
                     AppraisalCycle.find($scope.cycleId).then(function (cycle) {
+                        oldDueDates = cycle.dueDates();
+
                         vm.cycle = cycle;
                         vm.loaded.cycle = true;
                     });
@@ -147,6 +180,20 @@ define([
                 vm.form.cycle_grade_due.$setValidity('isAfter', gradeDue.isAfter(managerDue));
 
                 return vm.form.$valid;
+            }
+
+            /**
+             * Shows the dialog warning the user that due dates have changed
+             *
+             * @return {Promise}
+             */
+            function showDueDatesChangedDialog() {
+                return dialog.open({
+                    title: 'Confirm Change Dates',
+                    copyCancel: 'Cancel',
+                    copyConfirm: 'Proceed',
+                    msg: 'This will update the due dates for all appraisals in the cycle'
+                });
             }
 
             return vm;
