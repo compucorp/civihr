@@ -377,9 +377,12 @@ define([
             var template = $templateCache.get(CRM.vars.appraisals.baseURL + '/views/modals/appraisal-cycle.html');
             template = template.replace(/datepicker-popup=(.+) ?/g, '');
 
-            $compile(angular.element(template))($rootScope);
+            var $scope = $rootScope.$new();
+            $scope.modal = { loaded: { types: true, cycle: true } };
 
-            ctrl.form = $rootScope.modal.form;
+            $compile(angular.element(template))($scope);
+
+            ctrl.form = $scope.modal.form;
         }
 
         /**

@@ -40,8 +40,12 @@ define([
                     expect(ctrl.types).toBeDefined();
                 });
 
-                it('it does not consider the full list of cycles loaded', function () {
-                    expect(ctrl.loadingDone).toBe(false);
+                it('does not consider the full list of cycles loaded', function () {
+                    expect(ctrl.loading.done).toBe(false);
+                });
+
+                it('is loading cycles', function () {
+                    expect(ctrl.loading.inProgress).toBe(true);
                 });
 
                 it('has the filters form collapsed', function () {
@@ -101,7 +105,12 @@ define([
                 describe('model call', function () {
                     beforeEach(function () {
                         ctrl.requestCycles();
+                        $scope.$digest();
                     });
+
+                    it('sets the loading in progress flag to false', function () {
+                        expect(ctrl.loading.inProgress).toBe(false);
+                    })
 
                     it('uses the AppraisalCycle model', function () {
                         expect(AppraisalCycle.all).toHaveBeenCalled();
@@ -250,7 +259,7 @@ define([
 
                 describe('when full list has been loaded', function () {
                     beforeEach(function () {
-                        ctrl.loadingDone = true;
+                        ctrl.loading.done = true;
                     });
 
                     it('cannot request a next page', function () {

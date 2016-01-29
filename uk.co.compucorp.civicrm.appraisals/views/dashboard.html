@@ -308,123 +308,127 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-12">
-            <section
-                class="panel panel-primary panel--dashboard-appraisals"
-                ng-switch="dashboard.loadingDone && dashboard.cycles.list.length === 0">
-                <header class="panel-heading">
-                    <h2 class="panel-title">
-                        <span
-                            ng-pluralize
-                            count="dashboard.cycles.total"
-                            when="{
-                                '1': '{} Appraisal Cycle',
-                                'other': '{} Appraisal Cycles'
-                            }">
-                        </span>
-                        (
-                        <span
-                            ng-pluralize
-                            count="dashboard.appraisalsWeeklyFigures.overdue"
-                            when="{
-                                '1': '{} overdue Appraisal',
-                                'other': '{} overdue Appraisals'
-                            }">
-                        </span>
-                        and {{dashboard.appraisalsWeeklyFigures.due}} due this week)
-                    </h2>
-                </header>
-                <article ng-switch-when="true" class="panel panel-default">
-                    <div class="panel-body text-center">
-                        No appraisal cycle found
-                    </div>
-                </article>
-                <div ng-switch-default>
-                    <div
-                        crm-show-more callback="dashboard.requestCycles(true)"
-                        done="dashboard.loadingDone">
-                        <article
-                            class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary"
-                            ng-repeat="cycle in dashboard.cycles.list">
-                            <header class="panel-heading">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <h3 class="panel-title panel-title-sm" ng-switch="cycle.cycle_is_active">
-                                            {{cycle.cycle_name}}&nbsp;
-                                            <span ng-switch-when="true">(Active)</span>
-                                            <span ng-switch-when="false">(Inactive)</span>
-                                        </h3>
-                                    </div>
-                                    <div class="col-sm-6 text-right">
-                                        <div class="chr_appraisal-cycle-summary__details">
-                                            <span class="chr_appraisal-cycle-summary__meta">
-                                                <span
-                                                    ng-pluralize
-                                                    count="cycle.appraisals_count"
-                                                    when="{
-                                                        '1': '{} Appraisal',
-                                                        'other': '{} Appraisals'
-                                                    }">
+        <crm-loading show="!dashboard.loading.inProgress || dashboard.pagination.page > 1">
+            <div class="col-sm-12">
+                <section
+                    class="panel panel-primary panel--dashboard-appraisals"
+                    ng-switch="dashboard.loading.done && dashboard.cycles.list.length === 0">
+                    <header class="panel-heading">
+                        <h2 class="panel-title">
+                            <span
+                                ng-pluralize
+                                count="dashboard.cycles.total"
+                                when="{
+                                    '1': '{} Appraisal Cycle',
+                                    'other': '{} Appraisal Cycles'
+                                }">
+                            </span>
+                            (
+                            <span
+                                ng-pluralize
+                                count="dashboard.appraisalsWeeklyFigures.overdue"
+                                when="{
+                                    '1': '{} overdue Appraisal',
+                                    'other': '{} overdue Appraisals'
+                                }">
+                            </span>
+                            and {{dashboard.appraisalsWeeklyFigures.due}} due this week)
+                        </h2>
+                    </header>
+                    <article ng-switch-when="true" class="panel panel-default">
+                        <div class="panel-body text-center">
+                            No appraisal cycle found
+                        </div>
+                    </article>
+                    <div ng-switch-default>
+                        <div
+                            crm-show-more callback="dashboard.requestCycles(true)"
+                            done="dashboard.loading.done">
+                            <article
+                                class="panel panel-default panel-default-plain-inverted chr_appraisal-cycle-summary"
+                                ng-repeat="cycle in dashboard.cycles.list">
+                                <header class="panel-heading">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <h3 class="panel-title panel-title-sm" ng-switch="cycle.cycle_is_active">
+                                                {{cycle.cycle_name}}&nbsp;
+                                                <span ng-switch-when="true">(Active)</span>
+                                                <span ng-switch-when="false">(Inactive)</span>
+                                            </h3>
+                                        </div>
+                                        <div class="col-sm-6 text-right">
+                                            <div class="chr_appraisal-cycle-summary__details">
+                                                <span class="chr_appraisal-cycle-summary__meta">
+                                                    <span
+                                                        ng-pluralize
+                                                        count="cycle.appraisals_count"
+                                                        when="{
+                                                            '1': '{} Appraisal',
+                                                            'other': '{} Appraisals'
+                                                        }">
+                                                    </span>
                                                 </span>
-                                            </span>
-                                            <span class="chr_appraisal-cycle-summary__meta">
-                                                {{cycle.completion_percentage}}% complete
-                                            </span>
-                                            <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
-                                                <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
-                                                    <i class="fa fa-ellipsis-v"></i>
-                                                </a>
-                                                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
-                                                    <li>
-                                                        <a href="#">
-                                                            <i class="fa fa-chain"></i> View Cycle
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="" ng-click="dashboard.editCycle(cycle.id)">
-                                                            <i class="fa fa-pencil"></i> Edit Cycle
-                                                        </a>
-                                                    </li>
-                                                </ul>
+                                                <span class="chr_appraisal-cycle-summary__meta">
+                                                    {{cycle.completion_percentage}}% complete
+                                                </span>
+                                                <div class="chr_appraisal-cycle-summary__actions dropdown" dropdown>
+                                                    <a href class="chr_appraisal-cycle-summary__actions__toggle" id="appraisal-xx-actions" dropdown-toggle>
+                                                        <i class="fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="appraisal-xx-actions">
+                                                        <li>
+                                                            <a href="#">
+                                                                <i class="fa fa-chain"></i> View Cycle
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="" ng-click="dashboard.editCycle(cycle.id)">
+                                                                <i class="fa fa-pencil"></i> Edit Cycle
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <hr>
+                                </header>
+                                <div class="panel-body">
+                                    <dl class="dl-inline">
+                                        <dt>Cycle ID:</dt>
+                                        <dd>{{cycle.id}}</dd>
+                                        <dt>Period:</dt>
+                                        <dd>{{cycle.cycle_start_date}} - {{cycle.cycle_end_date}}</dd>
+                                        <dt>Next Due:</dt>
+                                        <dd ng-switch="!!cycle.nextDueDate()">
+                                            <span ng-switch-when="true">
+                                                {{cycle.statuses[cycle.nextDueDate().status_id].name}} ({{cycle.nextDueDate().date}})
+                                            </span>
+                                            <span ng-switch-default>-</span>
+                                        </dd>
+                                    </dl>
                                 </div>
-                                <hr>
-                            </header>
-                            <div class="panel-body">
-                                <dl class="dl-inline">
-                                    <dt>Cycle ID:</dt>
-                                    <dd>{{cycle.id}}</dd>
-                                    <dt>Period:</dt>
-                                    <dd>{{cycle.cycle_start_date}} - {{cycle.cycle_end_date}}</dd>
-                                    <dt>Next Due:</dt>
-                                    <dd ng-switch="!!cycle.nextDueDate()">
-                                        <span ng-switch-when="true">
-                                            {{cycle.statuses[cycle.nextDueDate().status_id].name}} ({{cycle.nextDueDate().date}})
-                                        </span>
-                                        <span ng-switch-default>-</span>
-                                    </dd>
-                                </dl>
-                            </div>
-                            <footer class="panel-footer">
-                                <ul class="list-unstyled chr_steps">
-                                    <li class="chr_steps__step"
-                                        ng-repeat="(id, status) in cycle.statuses"
-                                        ng-class="{
-                                            'chr_steps__step--danger': cycle.isStatusOverdue(id),
-                                            'chr_steps__step--primary': cycle.nextDueDate().status_id === id
-                                        }">
-                                        <span class="chr_steps__step__arrow">
-                                            {{status.name}}: {{status.appraisals_count}}
-                                        </span>
-                                    </li>
-                                </ul>
-                            </footer>
-                        </article>
+                                <footer class="panel-footer">
+                                    <ul class="list-unstyled chr_steps">
+                                        <li class="chr_steps__step"
+                                            ng-repeat="(id, status) in cycle.statuses"
+                                            ng-class="{
+                                                'chr_steps__step--danger': cycle.isStatusOverdue(id),
+                                                'chr_steps__step--primary': cycle.nextDueDate().status_id === id
+                                            }">
+                                            <span class="chr_steps__step__arrow">
+                                                {{status.name}}: {{status.appraisals_count}}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </footer>
+                            </article>
+                            <crm-loading show="!dashboard.loading.inProgress">
+                            </crm-loading>
+                        </div>
                     </div>
-                </div>
-            </section>
-        </div>
+                </section>
+            </div>
+        </crm-loading>
     </div>
 </section>

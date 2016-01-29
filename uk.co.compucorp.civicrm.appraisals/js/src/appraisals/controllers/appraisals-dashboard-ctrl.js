@@ -13,7 +13,6 @@ define([
         function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, totalCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
-            var pagination = { page: 1, size: 5 };
             var vm = {};
 
             vm.activeFilters = [
@@ -26,7 +25,8 @@ define([
             vm.cycles = { list: [], total: 0 };
             vm.filtersCollapsed = true;
             vm.filters = { cycle_is_active: vm.activeFilters[0].value };
-            vm.loadingDone = false;
+            vm.loading = { done: false, inProgress: false };
+            vm.pagination = { page: 1, size: 5 };
 
             vm.activeCycles = activeCycles;
             vm.totalCycles = totalCycles;
@@ -83,13 +83,14 @@ define([
             vm.requestCycles = function (addPage) {
                 var cycles;
 
-                if (addPage && vm.loadingDone) {
+                if (addPage && vm.loading.done) {
                     return;
                 }
 
-                pagination.page = !!addPage ? pagination.page + 1 : 1;
+                vm.loading.inProgress = true;
+                vm.pagination.page = !!addPage ? vm.pagination.page + 1 : 1;
 
-                AppraisalCycle.all(filters(), pagination)
+                AppraisalCycle.all(filters(), vm.pagination)
                     .then(function (result) {
                         cycles = result;
 
@@ -98,6 +99,9 @@ define([
                     .then(function (statusOverview) {
                         !!statusOverview && processWeeklyFigures(statusOverview);
                         processLoadedCycles(cycles, addPage);
+                    })
+                    .then(function () {
+                        vm.loading.inProgress = false;
                     });
             };
 
@@ -192,7 +196,7 @@ define([
                 }
 
                 vm.cycles.total = cycles.total;
-                vm.loadingDone = vm.cycles.list.length === cycles.total;
+                vm.loading.done = vm.cycles.list.length === cycles.total;
             }
 
             /**
