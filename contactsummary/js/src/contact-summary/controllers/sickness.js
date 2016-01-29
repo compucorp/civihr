@@ -47,7 +47,7 @@ define([
                 return Leave.getCurrentPeriod();
             })
             .then(function (response) {
-                self.currentPeriod = response.name;
+                self.currentPeriod = response.title;
             })
             .finally(function () {
                 self.ready = true;

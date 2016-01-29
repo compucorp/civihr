@@ -26,6 +26,10 @@ define([
                 return Contract.getPrimary();
             }.bind(this))
             .then(function (response) {
+                if (_.isEmpty(response)) {
+                    return;
+                }
+
                 this.primaryContract = response;
                 this.primaryContract.lengthOfService = getLengthOfService(response.start_date, response.end_date);
             }.bind(this))
@@ -39,10 +43,22 @@ define([
     /////////////////////
 
     function getLengthOfService(start, end) {
-        start = moment(start, 'YYYY-MM-DD');
-        end = end ? moment(end, 'YYYY-MM-DD') : moment();
+        var now = moment();
 
-        return moment.duration(end.diff(start)).humanize();
+        start = moment(start, 'YYYY-MM-DD');
+        end = end ? moment(end, 'YYYY-MM-DD') : now;
+
+        if(end.isAfter(now)) {
+            end = now;
+        }
+
+        var lengthOfService = moment.duration(end.diff(start));
+
+        return {
+            days: lengthOfService.days(),
+            months: lengthOfService.months(),
+            years: lengthOfService.years()
+        };
     }
 
     controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', KeyDetailsCtrl]);
