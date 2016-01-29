@@ -11,6 +11,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
 
   // Shared state
   var absenceCriteria; // List of filter criteria
+  var calendarAbsenceCriteria;
+  var calendarAbsenceCollection;
   var absenceCollection; // List of matching absences
   var entitlementCriteria; // HRAbsenceEntitlement filter criteria
 
@@ -34,8 +36,8 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     },
     showCalendar: function() {
       HRAbsenceApp.contentRegion.show(new HRAbsenceApp.Calendar.CalendarView({
-        criteria: absenceCriteria,
-        collection: absenceCollection
+        criteria: calendarAbsenceCriteria,
+        collection: calendarAbsenceCollection
       }));
     },
     showStatistics: function() {
@@ -83,8 +85,17 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       target_contact_id: CRM.absenceApp.contactId,
       options: {'absence-range': 1}
     });
+    calendarAbsenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria({
+      target_contact_id: CRM.absenceApp.contactId,
+      options: {'absence-range': 1},
+      status_id:{'!=':3}
+    });
     absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
       crmCriteriaModel: absenceCriteria,
+      crmActions: {"get": "getabsences"}
+    });
+    calendarAbsenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
+      crmCriteriaModel: calendarAbsenceCriteria,
       crmActions: {"get": "getabsences"}
     });
     entitlementCriteria = new HRAbsenceApp.Models.EntitlementCriteria({
