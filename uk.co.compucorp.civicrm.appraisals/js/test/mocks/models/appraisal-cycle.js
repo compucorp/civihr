@@ -1,10 +1,11 @@
 define([
     'common/angular',
-    'mocks/module'
-], function (angular, mocks) {
+    'mocks/module',
+    'mocks/models/instances/appraisal-cycle-instance'
+], function (angular, mocks, AppraisalCycleInstanceMock) {
     'use strict';
 
-    mocks.factory('AppraisalCycleMock', ['$q', function ($q) {
+    mocks.factory('AppraisalCycleMock', ['$q', 'AppraisalCycleInstanceMock', function ($q, AppraisalCycleInstanceMock) {
 
         return {
             active: jasmine.createSpy('active').and.callFake(function () {
@@ -16,7 +17,9 @@ define([
                 var list = value || this.mockedCycles().list;
 
                 return promiseResolvedWith({
-                    list: list,
+                    list: list.map(function (cycle) {
+                        return AppraisalCycleInstanceMock.init(cycle);
+                    }),
                     total: list.length,
                     allIds: list.map(function (cycle) {
                         return cycle.id;
@@ -34,7 +37,7 @@ define([
                     return cycle.id === id;
                 })[0];
 
-                return promiseResolvedWith(cycle);
+                return promiseResolvedWith(AppraisalCycleInstanceMock.init(cycle));
             }),
             create: jasmine.createSpy('create').and.callFake(function (attributes, value) {
                 var created = value || (function () {
@@ -54,7 +57,7 @@ define([
                         return cycle.id === id;
                     })[0];
 
-                    return angular.extend({}, cycle, attributes);
+                    return AppraisalCycleInstanceMock(angular.extend({}, cycle, attributes));
                 }.bind(this))();
 
                 return promiseResolvedWith(cycle);
