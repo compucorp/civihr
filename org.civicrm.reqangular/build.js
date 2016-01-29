@@ -46,6 +46,7 @@
         'common/bundles/vendors',
         'common/bundles/apis',
         'common/modules/templates',
+        'common/directives/loading',
         'common/services/dialog'
     ]
 })
