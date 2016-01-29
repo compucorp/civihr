@@ -9,7 +9,7 @@ define([
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
         var instanceInterface = ['init', 'attributes', 'defaultCustomData',
-        'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
+        'dueDates', 'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -132,6 +132,28 @@ define([
             it('returns a plain object w/o prototype', function () {
                 expect(Object.getPrototypeOf(attributes)).toBe(null);
             });
+        });
+
+        describe('dueDates()', function () {
+            var instance;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_start_date: '01/01/2015',
+                    cycle_end_date: '31/12/2015',
+                    cycle_self_appraisal_due: '31/01/2016',
+                    cycle_manager_appraisal_due: '28/02/2016',
+                    cycle_grade_due: '30/03/2016'
+                });
+            });
+
+            it('returns only the due dates', function () {
+                expect(instance.dueDates()).toEqual({
+                    cycle_self_appraisal_due: '31/01/2016',
+                    cycle_manager_appraisal_due: '28/02/2016',
+                    cycle_grade_due: '30/03/2016'
+                });
+            })
         });
 
         describe('isStatusOverdue()', function () {

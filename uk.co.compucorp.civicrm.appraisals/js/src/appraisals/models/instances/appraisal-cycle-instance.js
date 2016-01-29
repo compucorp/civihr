@@ -77,17 +77,6 @@ define([
                 }
             }
 
-            /**
-             * Returns an object made of only the due dates properties
-             *
-             * @return {object}
-             */
-            function dueDates() {
-                return _.pick(this.attributes(), function (value, key) {
-                    return _.endsWith(key, '_due');
-                });
-            }
-
             return {
 
                 /**
@@ -134,6 +123,17 @@ define([
                 },
 
                 /**
+                 * Returns an object made of only the due dates properties
+                 *
+                 * @return {object}
+                 */
+                dueDates: function () {
+                    return _.pick(this.attributes(), function (value, key) {
+                        return _.endsWith(key, '_due');
+                    });
+                },
+
+                /**
                  * Normalizes the given data in the direction API -> Model
                  *
                  * @param {object} attributes
@@ -176,8 +176,8 @@ define([
                  * @return {null/object}
                  */
                 nextDueDate: function () {
-                    var dates = dueDates.call(this);
-                    // In case the id is not present, use the name as parth of
+                    var dates = this.dueDates();
+                    // In case the id is not present, use the name as part of
                     // the identifier for the memoized function
                     var id = (this.id || this.name) + _.values(dates).join('');
 
