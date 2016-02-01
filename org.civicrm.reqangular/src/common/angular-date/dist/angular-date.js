@@ -21,11 +21,12 @@ var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
 
 Module.service('DateValidationService', _dereq_('./src/services/DateValidationService'));
 Module.factory('DateFactory', _dereq_('./src/services/DateFactory'));
+Module.factory('DateFormatFactory', _dereq_('./src/services/DateFormatFactory'));
 Module.filter('CustomDate', _dereq_('./src/filters/CustomDateFilter'));
 Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'));
 
 /* Decorators */
-Module.config(function($provide) {
+Module.config(function ($provide) {
     $provide.decorator('datepickerPopupDirective', _dereq_('./src/decorators/DatepickerPopupDirectiveDecorator'));
 
     $provide.decorator('datepickerDirective', _dereq_('./src/decorators/DatepickerDirectiveDecorator'));
@@ -35,11 +36,7 @@ Module.config(function($provide) {
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
 
-Module.run(function(DateFactory){
-    DateFactory.fetchDateFormatFromSettings();
-});
-
-},{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateValidationService":9,"./src/templates/templates":10}],2:[function(_dereq_,module,exports){
+},{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateFormatFactory":9,"./src/services/DateValidationService":10,"./src/templates/templates":11}],2:[function(_dereq_,module,exports){
 /**
  * Decorates Datepicker directive, so that it uses monday as a first day of the week.
  *
@@ -186,12 +183,13 @@ function CustomDateInput($filter) {
 
 module.exports = CustomDateInput;
 },{}],7:[function(_dereq_,module,exports){
-module.exports = function ($filter, DateFactory) {
-
-    var filter = function (datetime) {
+module.exports = function ($filter, DateFactory, DateFormatFactory) {
+    var dateFormat = null;
+    var filter = function (datetime, format) {
         var Date;
+        dateFormat = format || dateFormat;
 
-        if(typeof datetime == 'object'){
+        if (typeof datetime == 'object') {
             datetime = $filter('date')(datetime, 'dd/MM/yyyy');
         }
 
@@ -207,7 +205,13 @@ module.exports = function ($filter, DateFactory) {
         var beginningOfEra = DateFactory.createDate(0);
         var notEmpty = !Date.isSame(beginningOfEra);
 
-        if(Date.isValid() && notEmpty) return Date.format(DateFactory.getDateFormat());
+        if (!dateFormat) {
+            DateFormatFactory.getDateFormat().then(function (result) {
+                dateFormat = result;
+            });
+        }
+
+        if (Date.isValid() && notEmpty) return Date.format(dateFormat);
 
         return 'Unspecified';
     };
@@ -220,13 +224,8 @@ module.exports = function ($filter, DateFactory) {
 },{}],8:[function(_dereq_,module,exports){
 var moment = _dereq_('../../../vendor/moment.min.js');
 
-function DateFactory($q) {
+function DateFactory() {
     return {
-        /**
-         * Default Format
-         */
-        dateFormat: 'DD-MM-YYYY',
-
         /**
          * Wrapper for moment()
          * @param dateString
@@ -248,33 +247,51 @@ function DateFactory($q) {
             }
 
             return moment(dateString, format, strict);
-        },
-
-        /**
-         * @description Returns Current Date Format
-         * @returns {string}
-         */
-        getDateFormat: function () {
-            return this.dateFormat;
-        },
-
-        /**
-         * @description Fetches date format setting from
-         * @returns {Promise}
-         */
-        fetchDateFormatFromSettings: function(){
-            var me = this;
-            return $q.when('DD/MM/YYYY').then(function(result){
-                me.dateFormat = result;
-                return result;
-            });
         }
     };
 }
 
 module.exports = DateFactory;
 
-},{"../../../vendor/moment.min.js":11}],9:[function(_dereq_,module,exports){
+},{"../../../vendor/moment.min.js":12}],9:[function(_dereq_,module,exports){
+/**
+ * This factory provides access to date format from CRM settings
+ * @param $q
+ * @returns {{dateFormat: null, getDateFormat: getDateFormat}}
+ * @constructor
+ */
+function DateFormatFactory($q) {
+    return {
+        /**
+         * keeps information about date format
+         */
+        dateFormat: null,
+        /**
+         * @description Fetches date format setting from TODO where?
+         * @returns {Promise}
+         */
+        getDateFormat: function () {
+            if (this.dateFormat) {
+                return $q.when(this.dateFormat);
+            } else {
+                return $q.when('DD/MM/YYYY')
+                    .then(function (result) {
+                        this.dateFormat = result;
+                        return result;
+                    }.bind(this))
+                    .catch(function (error) {
+                        // Fallback to default format
+                        this.dateFormat = 'YYYY-MM-DD';
+                        return error;
+                    }.bind(this));
+            }
+        }
+    };
+}
+
+module.exports = DateFormatFactory;
+
+},{}],10:[function(_dereq_,module,exports){
 /**
  *
  * @param $filter
@@ -372,7 +389,7 @@ function DateValidationService($filter, DateFactory) {
 
 module.exports = DateValidationService;
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 angular.module('templates-main', ['templates/datepickerPopup.html', 'templates/day.html']);
 
 angular.module("templates/datepickerPopup.html", []).run(["$templateCache", function($templateCache) {
@@ -441,7 +458,7 @@ angular.module("templates/day.html", []).run(["$templateCache", function($templa
     "");
 }]);
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
