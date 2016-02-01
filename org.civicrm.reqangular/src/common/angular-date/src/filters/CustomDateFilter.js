@@ -1,9 +1,10 @@
-module.exports = function ($filter, DateFactory) {
-
-    var filter = function (datetime) {
+module.exports = function ($filter, DateFactory, DateFormatFactory) {
+    var dateFormat = null;
+    var filter = function (datetime, format) {
         var Date;
+        dateFormat = format || dateFormat;
 
-        if(typeof datetime == 'object'){
+        if (typeof datetime == 'object') {
             datetime = $filter('date')(datetime, 'dd/MM/yyyy');
         }
 
@@ -19,7 +20,13 @@ module.exports = function ($filter, DateFactory) {
         var beginningOfEra = DateFactory.createDate(0);
         var notEmpty = !Date.isSame(beginningOfEra);
 
-        if(Date.isValid() && notEmpty) return Date.format(DateFactory.getDateFormat());
+        if (!dateFormat) {
+            DateFormatFactory.getDateFormat().then(function (result) {
+                dateFormat = result;
+            });
+        }
+
+        if (Date.isValid() && notEmpty) return Date.format(dateFormat);
 
         return 'Unspecified';
     };
