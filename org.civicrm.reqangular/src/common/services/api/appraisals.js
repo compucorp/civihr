@@ -15,15 +15,6 @@ define([
         return api.extend({
 
             /**
-             * # TO DO #
-             */
-            activeCycles: function () {
-                $log.debug('activeCycles');
-
-                return this.mockGET([1, 2, 3, 4, 5, 6, 7, 8]);
-            },
-
-            /**
              * Returns:
              *   - the list of cycles, eventually filtered/paginated
              *   - the total count of the cycles based on the filters,
@@ -32,29 +23,43 @@ define([
              * @param {object} filters - Values the full list should be filtered by
              * @param {object} pagination
              *   `page` for the current page, `size` for number of items per page
+             * @param {string} sort - The field and direction to order by
              * @return {Promise} resolves to an object with `list` and `total`
              */
-            all: function (filters, pagination) {
+            all: function (filters, pagination, sort) {
                 $log.debug('api.appraisals.all');
 
-                var params = filters || {};
-
-                if (pagination) {
-                    params.options = {
-                        offset: (pagination.page - 1) * pagination.size,
-                        limit: pagination.size
-                    };
-                }
+                filters = filters || {};
 
                 return $q.all([
-                    this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
-                        return data.values;
-                    }),
-                    this.sendGET('AppraisalCycle', 'getcount', _.omit(params, 'options')).then(function (data) {
-                        return data.result;
-                    })
+                    (function () {
+                        var params = _.assign({}, filters, {
+                            'api.AppraisalCycle.getappraisalsperstep': {},
+                            options: { sort: sort || 'id DESC' }
+                        });
+
+                        if (pagination) {
+                            params.options.offset = (pagination.page - 1) * pagination.size;
+                            params.options.limit = pagination.size;
+                        }
+
+                        return this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
+                            return data.values;
+                        });
+                    }.bind(this))(),
+                    (function () {
+                        var params = _.assign({}, filters, { 'return': 'id' });
+
+                        return this.sendGET('AppraisalCycle', 'get', params);
+                    }.bind(this))()
                 ]).then(function (results) {
-                    return { list: results[0], total: results[1] };
+                    return {
+                        list: results[0],
+                        total: results[1].count,
+                        allIds: results[1].values.map(function (cycle) {
+                            return cycle.id;
+                        }).join(',')
+                    };
                 });
             },
 
@@ -67,7 +72,9 @@ define([
             create: function (attributes) {
                 $log.debug('api.appraisals.create');
 
-                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
+                        'api.AppraisalCycle.getappraisalsperstep': {}
+                    }))
                     .then(function (data) {
                         return data.values[0];
                     });
@@ -82,7 +89,12 @@ define([
             find: function (id) {
                 $log.debug('api.appraisals.find');
 
-                return this.sendGET('AppraisalCycle', 'get', { id: '' + id }, false).then(function (data) {
+                var params = {
+                    id: '' + id,
+                    'api.AppraisalCycle.getappraisalsperstep': {}
+                };
+
+                return this.sendGET('AppraisalCycle', 'get', params, false).then(function (data) {
                     return data.values[0];
                 });
             },
@@ -113,21 +125,18 @@ define([
             },
 
             /**
-             * # TO DO #
+             * Returns the status overview re distribution of appraisals by step
+             *
+             * @param {object} params
+             * @return {Promise}
              */
-            statusOverview: function () {
-                $log.debug('statusOverview');
+            statusOverview: function (params) {
+                $log.debug('api.appraisals.statusOverview');
 
-                return this.mockGET({
-                    steps: [
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 40, overdue: 2 },
-                        { contacts: 36, overdue: 0 },
-                        { contacts: 28, overdue: 0 },
-                        { contacts: 0, overdue: 0 }
-                    ],
-                    totalAppraisalsNumber: 248
-                });
+                return this.sendGET('AppraisalCycle', 'getstatusoverview', params)
+                    .then(function (data) {
+                        return data.values;
+                    });
             },
 
             /**
@@ -139,7 +148,9 @@ define([
             update: function (attributes) {
                 $log.debug('api.appraisals.update');
 
-                return this.sendPOST('AppraisalCycle', 'create', attributes)
+                return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
+                        'api.AppraisalCycle.getappraisalsperstep': {}
+                    }))
                     .then(function (data) {
                         return data.values[0];
                     });
@@ -148,12 +159,13 @@ define([
             /**
              * Returns the total number of appraisal cycles
              *
+             * @param {object} filters - The filters to apply to the count
              * @return {Promise} resolves to an integer
              */
-            total: function () {
+            total: function (filters) {
                 $log.debug('api.appraisals.total');
 
-                return this.sendGET('AppraisalCycle', 'getcount').then(function (data) {
+                return this.sendGET('AppraisalCycle', 'getcount', filters || {}).then(function (data) {
                     return data.result;
                 });
             },

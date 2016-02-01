@@ -23,11 +23,11 @@ define([
         }));
 
         describe('init', function () {
-            describe('general initial state', function () {
-                beforeEach(function () {
-                    initController();
-                });
+            beforeEach(function () {
+                initController();
+            });
 
+            describe('general initial state', function () {
                 it('is initialized', function () {
                     expect($log.debug).toHaveBeenCalled();
                 });
@@ -40,8 +40,12 @@ define([
                     expect(ctrl.types).toBeDefined();
                 });
 
-                it('it does not consider the full list of cycles loaded', function () {
-                    expect(ctrl.loadingDone).toBe(false);
+                it('does not consider the full list of cycles loaded', function () {
+                    expect(ctrl.loading.done).toBe(false);
+                });
+
+                it('is loading cycles', function () {
+                    expect(ctrl.loading.inProgress).toBe(true);
                 });
 
                 it('has the filters form collapsed', function () {
@@ -49,43 +53,123 @@ define([
                 });
 
                 it('has the cycle active filter set to "active"', function () {
-                    expect(ctrl.filters.active).toBe(true);
+                    expect(ctrl.filters.cycle_is_active).toBe(true);
+                });
+
+                it('has the appraisals weekly figures set to 0', function () {
+                    expect(ctrl.appraisalsWeeklyFigures).toBeDefined();
+                    expect(ctrl.appraisalsWeeklyFigures.due).toBe(0);
+                    expect(ctrl.appraisalsWeeklyFigures.overdue).toBe(0);
+                });
+
+                describe('cycles', function () {
+                    it('it is as an object', function () {
+                        expect(ctrl.cycles).toEqual(jasmine.any(Object));
+                    });
+
+                    it('it contains an array as the cycles list', function () {
+                        expect(ctrl.cycles.list).toBeDefined();
+                        expect(ctrl.cycles.list).toEqual([]);
+                    });
+
+                    it('it contains the total number of found cycles', function () {
+                        expect(ctrl.cycles.total).toBeDefined();
+                        expect(ctrl.cycles.total).toEqual(0);
+                    });
                 });
             });
 
-            describe('grades chart data', function () {
-                beforeEach(function () {
-                    initController();
-                });
-
-                it('starts as an empty array', function () {
-                    expect(ctrl.chartData).toEqual([]);
-                });
-
-                it('is requested on init', function () {
-                    expect(AppraisalCycle.grades).toHaveBeenCalled();
-                });
-            });
-
-            describe('cycles list', function () {
-                beforeEach(function () {
-                    initController();
-                });
-
-                it('has appraisal cycles list as an empty array', function () {
-                    expect(ctrl.cycles).toEqual([]);
-                });
-
-                it('requires the first page of active cycles', function () {
-                    expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
-                });
+            it('requires the first page of active cycles', function () {
+                expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
             });
         });
 
         describe('after init', function () {
             beforeEach(function () {
+                AppraisalCycle.statusOverview.and.callFake(function () {
+                    return fakeStatusOverviewResponse()
+                });
+
                 initController();
+
                 AppraisalCycle.all.calls.reset();
+            });
+
+            describe('when requesting cycles', function () {
+                beforeEach(function () {
+                    $scope.$digest();
+
+                    AppraisalCycle.statusOverview.calls.reset();
+                });
+
+                describe('model call', function () {
+                    beforeEach(function () {
+                        ctrl.requestCycles();
+                        $scope.$digest();
+                    });
+
+                    it('sets the loading in progress flag to false', function () {
+                        expect(ctrl.loading.inProgress).toBe(false);
+                    })
+
+                    it('uses the AppraisalCycle model', function () {
+                        expect(AppraisalCycle.all).toHaveBeenCalled();
+                    });
+                });
+
+                describe('when requesting the first page', function ( ){
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 0, 5));
+
+                        ctrl.requestCycles();
+                        $scope.$digest();
+                    });
+
+                    describe('status overview', function () {
+                        it('requests also a status overview', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalled();
+                        });
+
+                        it('request it limited to the current week', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                start_date: '2016-01-04',
+                                end_date: '2016-01-10',
+                            }));
+                        });
+
+                        it('requests it limited to the returned cycles', function () {
+                            expect(AppraisalCycle.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                cycles_ids: ctrl.cycles.list.map(function (cycle) {
+                                    return cycle.id;
+                                }).join(',')
+                            }));
+                        });
+
+                        it('updates the weekly figures', function () {
+                            var weeklyFigures = _.reduce(fakeStatusOverviewResponse().steps, function (figures, status) {
+                                figures.due += status.due;
+                                figures.overdue += status.overdue;
+
+                                return figures;
+                            }, { due: 0, overdue: 0 });
+
+                            expect(ctrl.appraisalsWeeklyFigures).toEqual(weeklyFigures)
+                        });
+                    });
+                });
+
+                describe('when requesting the next page', function () {
+                    beforeEach(function () {
+                        ctrl.requestCycles(true);
+                        $scope.$digest();
+                    });
+
+                    describe('status overview', function () {
+                        it('does not request a status overview', function () {
+                            expect(AppraisalCycle.statusOverview).not.toHaveBeenCalled();
+                        });
+                    });
+                });
             });
 
             describe('active filter', function () {
@@ -95,11 +179,11 @@ define([
                     });
 
                     it('sets the filter to the new value', function () {
-                        expect(ctrl.filters.active).toBe(false);
+                        expect(ctrl.filters.cycle_is_active).toBe(false);
                     });
 
                     it('makes a new request to the api', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: false }, jasmine.any(Object));
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: false }, jasmine.any(Object));
                     });
 
                     describe('when changing to "all"', function () {
@@ -120,7 +204,7 @@ define([
                     });
 
                     it('keeps the old value set', function () {
-                        expect(ctrl.filters.active).toBe(true);
+                        expect(ctrl.filters.cycle_is_active).toBe(true);
                     });
 
                     it('does not make a new request to the api', function () {
@@ -144,7 +228,7 @@ define([
 
             describe('filters', function () {
                 var selectedFilters = {
-                    active: true,
+                    cycle_is_active: true,
                     name: 'foo',
                     status: 'bar',
                     type: 'baz'
@@ -169,13 +253,13 @@ define([
                     });
 
                     it('can request the next page', function () {
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 2, size: 5 });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 2, size: 5 });
                     });
                 });
 
                 describe('when full list has been loaded', function () {
                     beforeEach(function () {
-                        ctrl.loadingDone = true;
+                        ctrl.loading.done = true;
                     });
 
                     it('cannot request a next page', function () {
@@ -185,7 +269,7 @@ define([
 
                     it('can request the first page again', function () {
                         ctrl.requestCycles();
-                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ active: true }, { page: 1, size: 5 });
+                        expect(AppraisalCycle.all).toHaveBeenCalledWith({ cycle_is_active: true }, { page: 1, size: 5 });
                     });
                 });
             });
@@ -197,15 +281,15 @@ define([
 
                 beforeEach(function () {
                     $scope.$digest();
-                    beforeTotal = ctrl.cycles.length;
+                    beforeTotal = ctrl.cycles.list.length;
 
                     $rootScope.$emit('AppraisalCycle::new', newCycle);
                     $scope.$digest();
                 });
 
                 it('adds it to the top of cycles list', function () {
-                    expect(ctrl.cycles.length).toBe(beforeTotal + 1);
-                    expect(ctrl.cycles[0].name).toEqual(newCycle.name);
+                    expect(ctrl.cycles.list.length).toBe(beforeTotal + 1);
+                    expect(ctrl.cycles.list[0].name).toEqual(newCycle.name);
                 });
             });
 
@@ -231,21 +315,39 @@ define([
 
                 beforeEach(function () {
                     $scope.$digest();
-                    beforeTotal = ctrl.cycles.length;
-                    angular.extend(newData, { id: ctrl.cycles[3].id });
+                    beforeTotal = ctrl.cycles.list.length;
+                    angular.extend(newData, { id: ctrl.cycles.list[3].id });
 
                     $rootScope.$emit('AppraisalCycle::edit', newData);
                     $scope.$digest();
                 });
 
                 it('updates the list', function () {
-                    expect(ctrl.cycles.length).toBe(beforeTotal);
-                    expect(ctrl.cycles.filter(function (cycle) {
+                    expect(ctrl.cycles.list.length).toBe(beforeTotal);
+                    expect(ctrl.cycles.list.filter(function (cycle) {
                         return cycle.id == newData.id;
                     })[0]).toEqual(newData);
                 });
             });
         });
+
+        /**
+         * Fake data to simulate a response from AppraisalCycle.statusOverview()
+         *
+         * @return {object}
+         */
+        function fakeStatusOverviewResponse() {
+            return {
+                steps: {
+                    1: { name: 'Step #1', due: 2, overdue: 12 },
+                    3: { name: 'Step #2', due: 12, overdue: 3 },
+                    4: { name: 'Step #3', due: 7, overdue: 0 },
+                    5: { name: 'Step #4', due: 0, overdue: 18 },
+                    6: { name: 'Step #5', due: 9, overdue: 9 }
+                },
+                totalAppraisalNumber: 78
+            };
+        }
 
         /**
          * Initializes the controllers with its dependencies injected

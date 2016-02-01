@@ -9,7 +9,7 @@ define([
             return {
                 openAppraisalCycleModal: function () {
                     $modal.open({
-                        targetDomEl: $rootElement,
+                        targetDomEl: $rootElement.children().eq(0),
                         controller: 'AppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,
