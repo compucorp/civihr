@@ -300,19 +300,20 @@ class CRM_Appraisals_BAO_AppraisalCycle extends CRM_Appraisals_DAO_AppraisalCycl
      * @param {Array} $options - An array with following properties:
      *     name - The name of the placeholder that needs to be replaced
      *     string - The string that replaces the placeholder. The string must
-     *       contain a placeholder %paramIndex_<index> (i.e.: $paramIndex_1)
-     *       that will be used by CRM_Core_DAO::executeQuery to fill in the real value
-     *     values - An array of value that CRM_Core_DAO::executeQuery will
+     *       contain at least one placeholder %paramIndex_<index> (i.e.: $paramIndex_1)
+     *       that will be used by CRM_Core_DAO::executeQuery to fill in the real values
+     *     values - An array of values that CRM_Core_DAO::executeQuery will
      *       use in the final query
      *     type - The type of the values used by CRM_Core_DAO::executeQuery
      */
     private function fillQueryPlaceholder(&$query, &$params, $options) {
         $replacement = '';
+        $values = array_filter($options['values']);
 
-        if (!empty(array_filter($options['values']))) {
+        if (!empty($values)) {
             $replacement = $options['string'];
 
-            foreach ($options['values'] as $key => $value) {
+            foreach ($values as $key => $value) {
                 $paramIndex = count($params) + 1;
                 $params[$paramIndex] = array($value, $options['type']);
 
