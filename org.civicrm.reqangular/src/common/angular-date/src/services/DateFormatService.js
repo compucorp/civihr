@@ -4,7 +4,7 @@
  * @returns {{dateFormat: null, getDateFormat: getDateFormat}}
  * @constructor
  */
-function DateFormatFactory($q) {
+function DateFormatService($q) {
     return {
         /**
          * keeps information about date format
@@ -33,4 +33,4 @@ function DateFormatFactory($q) {
     };
 }
 
-module.exports = DateFormatFactory;
+module.exports = DateFormatService;

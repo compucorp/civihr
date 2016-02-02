@@ -21,7 +21,7 @@ var Module = angular.module('angular-date', ['templates-main', 'ui.bootstrap']);
 
 Module.service('DateValidationService', _dereq_('./src/services/DateValidationService'));
 Module.factory('DateFactory', _dereq_('./src/services/DateFactory'));
-Module.factory('DateFormatFactory', _dereq_('./src/services/DateFormatFactory'));
+Module.factory('DateFormatService', _dereq_('./src/services/DateFormatService'));
 Module.filter('CustomDate', _dereq_('./src/filters/CustomDateFilter'));
 Module.directive('customDateInput', _dereq_('./src/directives/CustomDateInput'));
 
@@ -36,7 +36,7 @@ Module.config(function ($provide) {
     $provide.decorator('datepickerPopupWrapDirective', _dereq_('./src/decorators/DatepickerPopupWrapDirectiveDecorator'));
 });
 
-},{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateFormatFactory":9,"./src/services/DateValidationService":10,"./src/templates/templates":11}],2:[function(_dereq_,module,exports){
+},{"./src/decorators/DatepickerDirectiveDecorator":2,"./src/decorators/DatepickerPopupDirectiveDecorator":3,"./src/decorators/DatepickerPopupWrapDirectiveDecorator":4,"./src/decorators/DaypickerDirectiveDecorator":5,"./src/directives/CustomDateInput":6,"./src/filters/CustomDateFilter":7,"./src/services/DateFactory":8,"./src/services/DateFormatService":9,"./src/services/DateValidationService":10,"./src/templates/templates":11}],2:[function(_dereq_,module,exports){
 /**
  * Decorates Datepicker directive, so that it uses monday as a first day of the week.
  *
@@ -260,7 +260,7 @@ module.exports = DateFactory;
  * @returns {{dateFormat: null, getDateFormat: getDateFormat}}
  * @constructor
  */
-function DateFormatFactory($q) {
+function DateFormatService($q) {
     return {
         /**
          * keeps information about date format
@@ -289,7 +289,7 @@ function DateFormatFactory($q) {
     };
 }
 
-module.exports = DateFormatFactory;
+module.exports = DateFormatService;
 
 },{}],10:[function(_dereq_,module,exports){
 /**
