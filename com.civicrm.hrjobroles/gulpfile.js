@@ -75,7 +75,7 @@ var test = (function () {
          * of the source file in `src/job-roles/`
          *   i.e. src/job-roles/models/model.js -> test/models/model_test.js
          *
-         * @throw {Error}
+         * @param {string} srcFile
          */
         for: function (srcFile) {
             var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
@@ -83,13 +83,7 @@ var test = (function () {
                 .replace('src/job-roles/', 'test/')
                 .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
 
-            try {
-                var stats = fs.statSync(testFile);
-
-                stats.isFile() && this.single(testFile);
-            } catch (ex) {
-                throw ex;
-            }
+            fs.statSync(testFile).isFile() && this.single(testFile);
         },
 
         /**
