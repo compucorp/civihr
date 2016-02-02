@@ -43,10 +43,10 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   }
 
   /**
-   * @param $entityFields
-   * @param $entity
+   * @param array $entityFields
+   * @param string $entity
    */
-  private function handleSpecialFields($entityFields, $entity) {
+  private function handleSpecialFields(array $entityFields, $entity) {
     foreach ($entityFields[$entity] as $key => $field) {
       if (!empty($field['required'])) {
         $this->_requiredFields[$entity] = $field;

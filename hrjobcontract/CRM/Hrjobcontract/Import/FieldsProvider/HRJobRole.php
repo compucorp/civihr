@@ -5,6 +5,11 @@ class CRM_Hrjobcontract_Import_FieldsProvider_HRJobRole extends CRM_Hrjobcontrac
     parent::__construct('HRJobRole');
   }
 
+  /**
+   * Get available fields
+   *
+   * @return array
+   */
   public function provide() {
     $importableFields = CRM_Hrjobroles_BAO_HrJobRoles::importableFields();
 
