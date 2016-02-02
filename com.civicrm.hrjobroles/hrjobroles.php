@@ -132,7 +132,7 @@ function hrjobroles_civicrm_pageRun($page) {
             'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('com.civicrm.hrjobroles')
         ));
 
-        CRM_Core_Resources::singleton()->addScriptFile('com.civicrm.hrjobroles', CRM_Core_Config::singleton()->debug ? 'js/hrjobroles-main.js' : 'dist/hrjobroles-main.js',1010);
+        CRM_Core_Resources::singleton()->addScriptFile('com.civicrm.hrjobroles', CRM_Core_Config::singleton()->debug ? 'js/src/job-roles.js' : 'js/dist/job-roles.min.js', 1010);
 
         CRM_Core_Resources::singleton()
             ->addStyleFile('com.civicrm.hrjobroles', 'css/hrjobroles.css');

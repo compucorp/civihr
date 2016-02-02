@@ -1,4 +1,7 @@
-define(['controllers/controllers'], function (controllers) {
+define([
+    'job-roles/controllers/controllers'
+], function (controllers) {
+    'use strict';
 
     controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
         function ($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
