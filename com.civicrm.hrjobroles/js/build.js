@@ -20,7 +20,7 @@
 
 ({
     baseUrl : 'src',
-    out: 'dist/contact-summary.min.js',
+    out: 'dist/job-roles.min.js',
     name: 'job-roles',
     skipModuleInsertion: true,
     paths: {
