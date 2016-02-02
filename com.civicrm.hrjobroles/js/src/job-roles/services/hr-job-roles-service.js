@@ -1,6 +1,9 @@
-define(['services/services'], function (services) {
+define([
+    'job-roles/services/services'
+], function (services) {
+    'use strict';
 
-    services.factory('HRJobRolesService',['settings', '$log' , '$q', function(settings, $log, $q) {
+    services.factory('HRJobRolesService',['settings', '$log' , '$q', function (settings, $log, $q) {
 
         return {
 

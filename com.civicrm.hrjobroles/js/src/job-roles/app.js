@@ -1,4 +1,13 @@
-define(['angularEditable', 'angularFilter','controllers/controllers', 'directives/directives', 'filters/filters', 'services/services'], function(){
+define([
+    'job-roles/vendor/angular-editable',
+    'job-roles/vendor/angular-filter',
+    'job-roles/controllers/controllers',
+    'job-roles/directives/directives',
+    'job-roles/filters/filters',
+    'job-roles/services/services'
+], function () {
+    'use strict';
+
     return angular.module('hrjobroles',
         [
             'ngAnimate',
