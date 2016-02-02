@@ -1,7 +1,6 @@
 <?php
 class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parser_BaseClass {
   protected $_entity;
-  protected $_fields = array();
   protected $_requiredFields = array();
   protected $_dateFields = array();
   protected $_entityFields = array();
@@ -21,45 +20,44 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   
   function setFields() {
     $this->_fields = array();
-    $allFields = array();
+    $this->_allFields = array();
     $entityFields = array();
+    /** @var CRM_Hrjobcontract_Import_FieldsProvider[] $fieldProviders */
+    $fieldProviders = array(
+      'HRJobRole' => new CRM_Hrjobcontract_Import_FieldsProvider_HRJobRole()
+    );
 
     foreach ($this->_entity as $entity) {
-      if($entity === 'HRJobRole') {
-        $entityName = 'CRM_Hrjobroles_BAO_HrJobRoles';
-      } else {
-        $entityName = "CRM_Hrjobcontract_BAO_{$entity}";
+      if(!isset($fieldProviders[$entity])) {
+        $fieldProviders[$entity] = new CRM_Hrjobcontract_Import_FieldsProvider_Generic($entity);
       }
-      $entityFields[$entity] = array();
-      $importableFields = call_user_func(array($entityName, 'importableFields'), $entity, NULL);
+      $entityFields[$entity] = $fieldProviders[$entity]->provide();
 
-      foreach ($importableFields as $key => $field) {
-        if($key === 'do_not_import') {
-          continue;
-        }
+      $this->handleSpecialFields($entityFields, $entity);
 
-        $entityFields[$entity][$entity . '-' . $field['name']] = $field;
-      }
-
-      foreach ($entityFields[$entity] as $key => $field) {
-        if (!empty($field['required'])) {
-          $this->_requiredFields[$entity] = $field;
-        }
-        // date is 4 & time is 8. Together they make 12 - in theory a binary operator makes sense here but as it's not a common pattern it doesn't seem worth the confusion
-        if (CRM_Utils_Array::value('type', $field) == 12
-          || CRM_Utils_Array::value('type', $field) == 4
-        ) {
-          $this->_dateFields[] = $key;
-        }
-      }
-
-      $allFields = array_merge($entityFields[$entity], $allFields);
+      $this->_allFields = array_merge($entityFields[$entity], $this->_allFields);
     }
 
     $this->_entityFields = $entityFields;
-    $this->_allFields = $allFields;
+    $this->_fields = array_merge(array('do_not_import' => array('title' => ts('- do not import -'))), $this->_allFields);
+  }
 
-    $this->_fields = array_merge(array('do_not_import' => array('title' => ts('- do not import -'))), $allFields);
+  /**
+   * @param array $entityFields
+   * @param string $entity
+   */
+  private function handleSpecialFields(array $entityFields, $entity) {
+    foreach ($entityFields[$entity] as $key => $field) {
+      if (!empty($field['required'])) {
+        $this->_requiredFields[$entity] = $field;
+      }
+
+      if (CRM_Utils_Array::value('type', $field) == CRM_Utils_Type::T_TIME | CRM_Utils_Type::T_DATE
+        || CRM_Utils_Array::value('type', $field) == CRM_Utils_Type::T_DATE
+      ) {
+        $this->_dateFields[] = $key;
+      }
+    }
   }
 
 
