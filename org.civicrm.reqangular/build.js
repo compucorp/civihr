@@ -49,6 +49,7 @@
         'common/bundles/routes',
         'common/modules/templates',
         'common/directives/loading',
-        'common/services/dialog'
+        'common/services/dialog',
+        'common/bundles/angularDate'
     ]
 })

@@ -1,4 +1,4 @@
-module.exports = function ($filter, DateFactory, DateFormatFactory) {
+module.exports = function ($filter, DateFactory) {
     var dateFormat = null;
     var filter = function (datetime, format) {
         var Date;
