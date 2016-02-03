@@ -1,24 +1,3 @@
-
-// var reqHrjr = require.config({
-//     context: 'hrjobroles',
-//     baseUrl: CRM.vars.hrjobroles.baseURL + '/js',
-//     urlArgs: 'bust=' + (new Date()).getTime(),
-//     paths: {
-//         angularEditable: 'vendor/angular/xeditable.min',
-//         angularFilter: 'vendor/angular/angular-filter.min',
-//         requireLib: CRM.vars.reqAngular.requireLib
-//     }
-// });
-
-// reqHrjr([
-//     'app',
-//     'controllers/HRJobRolesController',
-//     'services/HRJobRolesService',
-//     'directives/example'
-// ],function(app){
-    
-// });
-
 (function () {
     var extPath = CRM.vars.hrjobroles.baseURL + '/js/src/job-roles';
 
