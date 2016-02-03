@@ -19,8 +19,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   protected $_params = array();
   
   function setFields() {
-    $this->_fields = array();
     $this->_allFields = array();
+
     $entityFields = array();
     /** @var CRM_Hrjobcontract_Import_FieldsProvider[] $fieldProviders */
     $fieldProviders = array(
@@ -49,7 +49,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   private function handleSpecialFields(array $entityFields, $entity) {
     foreach ($entityFields[$entity] as $key => $field) {
       if (!empty($field['required'])) {
-        $this->_requiredFields[$entity] = $field;
+        $this->_requiredFields[] = $key;
       }
 
       if (CRM_Utils_Array::value('type', $field) == CRM_Utils_Type::T_TIME | CRM_Utils_Type::T_DATE
@@ -79,7 +79,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $missingField = '';
     $errorMessage = NULL;
     $errorMessages = array();
-    
+
     return CRM_Import_Parser::VALID;///TODO!
 
     foreach ($this->_entity as $entity) {
@@ -148,6 +148,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $params = $this->getActiveFieldParams();
     $formatValues = array();
     foreach ($params as $key => $field) {
+
       if ($field == NULL || $field === '') {
         continue;
       }
@@ -227,17 +228,28 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       }
     }
   }
+
+  private function getBAOName($entity) {
+    if($entity === 'HRJobRole') {
+      return 'CRM_Hrjobroles_BAO_HrJobRoles';
+    }
+
+    return 'CRM_Hrjobcontract_BAO_' . $entity;
+  }
   
   function validateFields($entity, $params, $action = 'create') {
-    $bao = 'CRM_Hrjobcontract_BAO_' . $entity;
-    $fields = $bao::fields();
-    $fieldKeys = $bao::fieldKeys();
-    
+    $BAOName = $this->getBAOName($entity);
+    $fields = call_user_func(array($BAOName, 'fields'));
+    $fieldKeys = call_user_func(array($BAOName, 'fieldKeys'));
+
+    $relationKeys = array('jobcontract_id', 'job_contract_id', 'jobcontract_revision_id', 'id');
     $mappedParams = array();
     foreach ($fieldKeys as $key => $value) {
-      $key = str_replace($entity.'-', '', $key);
-      if (!empty($params[$key])) {
-        $mappedParams[$value] = $params[$key];
+      $fieldName = $entity . '-' . $key;
+      if (!empty($params[$fieldName])) {
+        $mappedParams[$value] = $params[$fieldName];
+      } else if(!in_array($key, $relationKeys) && array_search($fieldName, $this->_requiredFields) !== false) {
+        throw new \RuntimeException(sprintf('The field %s is required.', !empty($fields[$key]['title']) ? $fields[$key]['title'] : $key));
       }
     }
 
@@ -251,8 +263,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     _civicrm_api3_validate_fields($entity, $action, $mappedParams, $fields);
     foreach ($fieldKeys as $key => $value) {
+      $fieldName = $entity . '-' . $key;
       if (!empty($mappedParams[$value])) {
-        $params[$key] = $mappedParams[$value];
+        $params[$fieldName] = $mappedParams[$value];
       }
     }
     
