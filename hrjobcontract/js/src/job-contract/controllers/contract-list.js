@@ -145,6 +145,21 @@ define([
 
             $scope.delete = function(contractId) {
 
+                function removeContractById(contractArray, id){
+                    var i = 0,
+                        len = contractArray.length;
+
+                    for (i; i < len; i++){
+                        if (+contractArray[i].id == id) {
+                            $scope.$emit('hrjc-loader-hide');
+                            contractArray.splice(i,1);
+                            return id;
+                        }
+                    }
+
+                    return null;
+                }
+
                 var modalInstance = $modal.open({
                     targetDomEl: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalDialog.html',
@@ -165,22 +180,6 @@ define([
                         ContractService.delete(contractId).then(function(result){
 
                             if (!result.is_error) {
-                                function removeContractById(contractArray, id){
-
-                                    var i = 0,
-                                        len = contractArray.length;
-
-                                    for (i; i < len; i++){
-                                        if (+contractArray[i].id == id) {
-                                            $scope.$emit('hrjc-loader-hide');
-                                            contractArray.splice(i,1);
-                                            return id;
-                                        }
-                                    }
-
-                                    return null;
-                                }
-
                                 removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
                             }
                         });
