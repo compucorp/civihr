@@ -44,6 +44,8 @@
     },
     include: [
         'common/bundles/vendors',
-        'common/bundles/apis'
+        'common/bundles/apis',
+        'common/bundles/settings',
+        'common/bundles/routes'
     ]
 })
