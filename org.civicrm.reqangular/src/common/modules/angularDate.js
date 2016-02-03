@@ -1,5 +1,8 @@
-define(['common/angular'], function (angular) {
+define([
+    'common/angular',
+    'common/modules/settings'
+], function (angular) {
     'use strict';
-    return angular.module("common.angularDate", []);
+    return angular.module("common.angularDate", ['common.settings']);
 });
 

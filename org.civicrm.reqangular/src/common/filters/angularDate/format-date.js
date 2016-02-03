@@ -1,13 +1,13 @@
 define([
-    'common/modules/angularDate'
+    'common/modules/angularDate',
+    'common/services/settings/HR_settings'
 ], function (directives) {
     'use strict';
 
-    directives.filter('formatDate', ['$filter', 'DateFactory', 'HR_settings', function ($filter, DateFactory, HR_settings   ) {
-        var dateFormat = null;
-        var filter = function (datetime, format) {
+    directives.filter('formatDate', ['$filter', 'DateFactory', 'HR_settings', function ($filter, DateFactory, HR_settings) {
+        return function (datetime, format) {
             var Date;
-            dateFormat = format || dateFormat;
+            var dateFormat = format || HR_settings.DATE_FORMAT;
 
             if (typeof datetime == 'object') {
                 datetime = $filter('date')(datetime, 'dd/MM/yyyy');
@@ -25,19 +25,9 @@ define([
             var beginningOfEra = DateFactory.createDate(0);
             var notEmpty = !Date.isSame(beginningOfEra);
 
-            if (!dateFormat) {
-                DateFormatFactory.getDateFormat().then(function (result) {
-                    dateFormat = result;
-                });
-            }
-
             if (Date.isValid() && notEmpty) return Date.format(dateFormat);
 
             return 'Unspecified';
         };
-
-        filter.$stateful = true;
-
-        return filter;
     }]);
 });
