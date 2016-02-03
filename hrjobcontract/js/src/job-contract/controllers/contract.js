@@ -105,10 +105,10 @@ define([
             }
 
             $q.all({
-                details: ContractDetailsService.getOne({ jobcontract_id: contractId}),
-                hour: ContractHourService.getOne({ jobcontract_id: contractId}),
-                leave: ContractLeaveService.get({ jobcontract_id: contractId}),
-                pension: ContractPensionService.getOne({ jobcontract_id: contractId})
+                details: ContractDetailsService.getOne({ jobcontract_id: contractId }),
+                hour: ContractHourService.getOne({ jobcontract_id: contractId }),
+                leave: ContractLeaveService.get({ jobcontract_id: contractId }),
+                pension: ContractPensionService.getOne({ jobcontract_id: contractId })
             })
             .then(function(results){
                 var promiseHealth = ContractHealthService.getOne({
@@ -120,15 +120,15 @@ define([
                 });
 
                 return $q.all({
-                        pay: promisePay,
-                        health: promiseHealth
-                    })
-                    .then(function(additionalResults) {
-                        results.pay = additionalResults.pay;
-                        results.health = additionalResults.health;
+                    pay: promisePay,
+                    health: promiseHealth
+                })
+                .then(function (additionalResults) {
+                    results.pay = additionalResults.pay;
+                    results.health = additionalResults.health;
 
-                        return results;
-                    });
+                    return results;
+                });
             })
             .then(function(results){
 
