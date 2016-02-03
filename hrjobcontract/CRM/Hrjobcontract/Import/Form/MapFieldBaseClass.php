@@ -80,8 +80,6 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       'HRJobDetails-title'
     );
 
-    $v = $this->_mapperFields;
-    asort($this->_mapperFields);
     $this->_columnCount = $this->get('columnCount');
     $this->assign('columnCount', $this->_columnCount);
     $this->_dataValues = $this->get('dataValues');

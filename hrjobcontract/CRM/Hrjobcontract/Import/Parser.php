@@ -292,14 +292,8 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     }
     else {
       foreach($this->_entity as $entity) {
-        $entityFieldName = str_replace($entity.'-', '',$name);
-
-        $entityName = "CRM_Hrjobcontract_BAO_{$entity}";
-        $tempField = $entityName::importableFields($entity, NULL);
-        if (array_key_exists($entityFieldName, $tempField)) {
-          $this->_fields[$name] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
-          $this->_activeEntityFields[$entity][$name] = $this->_fields[$name];
-        }
+        $this->_fields[$name] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
+        $this->_activeEntityFields[$entity][$name] = $this->_fields[$name];
       }
     }
   }

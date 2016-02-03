@@ -1,0 +1,1 @@
+define([    'job-contract/controllers/controllers',    'job-contract/services/contact'], function (controllers) {    'use strict';    controllers.controller('FormPensionCtrl',['$scope','settings','$log',        function ($scope, settings, $log) {            $log.debug('Controller: FormPensionCtrl');        }]);});

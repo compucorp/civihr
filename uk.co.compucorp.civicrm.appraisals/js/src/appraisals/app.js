@@ -1,7 +1,9 @@
 define([
+    'appraisals/utils/routes',
     'common/angular',
     'common/angularBootstrap',
-    'appraisals/utils/routes',
+    'common/services/dialog',
+    'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
     'appraisals/controllers/modals/basic-modal-ctrl',
@@ -11,11 +13,13 @@ define([
     'appraisals/models/appraisal-cycle',
     'appraisals/models/instances/appraisal-cycle-instance',
     'appraisals/vendor/ui-router',
-], function (angular, _, routes) {
+], function (routes, angular) {
     angular.module('appraisals', [
         'ngResource',
         'ui.router',
         'ui.bootstrap',
+        'common.dialog',
+        'common.directives',
         'appraisals.controllers',
         'appraisals.directives',
         'appraisals.models'

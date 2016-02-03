@@ -32,7 +32,7 @@ define([
         }
 
         /**
-         * Processes the filters provided, removing falsey values (except 0)
+         * Processes the filters provided, removing falsey values (except 0 or false)
          * And applying filter-specific transformations if needed
          *
          * @param {object} rawFilters - The unprocessed filters
@@ -45,7 +45,7 @@ define([
 
             return _.chain(rawFilters)
                 .pick(function (value) {
-                    return value === 0 || !!value;
+                    return value === 0 || value === false || !!value;
                 })
                 .transform(function (filters, __, key) {
                     if (_.endsWith(key, '_from') || _.endsWith(key, '_to')) {
@@ -65,7 +65,7 @@ define([
              * @return {Promise}
              */
             active: function () {
-                return appraisalsAPI.activeCycles();
+                return appraisalsAPI.total({ cycle_is_active: true });
             },
 
             /**
@@ -137,10 +137,46 @@ define([
             /**
              * Returns the full appraisal cycles status overview
              *
-             * @return {Promise}
+             * The overview is an object containing the individual steps overview
+             * and the total of all the appraisals in the cycles
+             *
+             * @param {object} params
+             *   `current_date`: the date used to check if an appraisal is overdue
+             *     or not (defaults to current date if not passed)
+             *   `start_date`  : limits the status overview from this date on
+             *   `end_date`    : limits the status overview up to this date
+             *   `cycles_ids`  : comma-separated string of ids of the cycles the
+             *     overview must be limited on
+             * @return {Promise} resolves to an object structured like this:
+             *   {
+             *       steps: [
+             *           { '21': { name: 'Step 1', due: 20, overdue: 2 } },
+             *           ...
+             *           { '42': { name: 'Step 5', due: 2, overdue: 33 } },
+             *       ],
+             *       totalAppraisalNumber: 78
+             *   }
              */
-            statusOverview: function () {
-                return appraisalsAPI.statusOverview();
+            statusOverview: function (params) {
+                return appraisalsAPI.statusOverview(_.defaults(params || {}, {
+                        current_date: moment().format('YYYY-MM-DD')
+                    }))
+                    .then(function (status) {
+                        return {
+                            steps: _.reduce(status, function (accumulator, step) {
+                                accumulator[step.status_id] = {
+                                    name: step.status_name,
+                                    due: step.contacts_count.due,
+                                    overdue: step.contacts_count.overdue
+                                };
+
+                                return accumulator;
+                            }, {}),
+                            totalAppraisalsNumber: _.reduce(status, function (accumulator, step) {
+                                return accumulator + step.contacts_count.due + step.contacts_count.overdue;
+                            }, 0)
+                        };
+                    });
             },
 
             /**

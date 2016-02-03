@@ -1,0 +1,49 @@
+define([
+    'job-contract/controllers/controllers',
+    'job-contract/controllers/contract-list',
+    'job-contract/controllers/contract',
+    'job-contract/controllers/revision-list',
+    'job-contract/controllers/modal/modal-change-reason',
+    'job-contract/controllers/modal/modal-contract',
+    'job-contract/controllers/modal/modal-contract-new',
+    'job-contract/controllers/modal/modal-dialog',
+    'job-contract/controllers/modal/modal-progress',
+    'job-contract/controllers/modal/modal-revision',
+    'job-contract/controllers/form/form-general',
+    'job-contract/controllers/form/form-hour',
+    'job-contract/controllers/form/form-health',
+    'job-contract/controllers/form/form-pay',
+    'job-contract/controllers/form/form-pension',
+    'job-contract/directives/directives',
+    'job-contract/directives/contact',
+    'job-contract/directives/directives',
+    'job-contract/directives/loader',
+    'job-contract/directives/number',
+    'job-contract/directives/validate',
+    'job-contract/filters/filters',
+    'job-contract/filters/capitalize',
+    'job-contract/filters/get-obj-by-id',
+    'job-contract/filters/format-amount',
+    'job-contract/filters/format-period',
+    'job-contract/filters/parse-int',
+    'job-contract/services/services',
+    'job-contract/services/contract',
+    'job-contract/vendor/angular-select',
+    'job-contract/vendor/job-summary'
+], function () {
+    'use strict';
+
+    return angular.module('hrjc', [
+        'ngAnimate',
+        'ngRoute',
+        'ngResource',
+        'ui.bootstrap',
+        'ui.select',
+        'angular-date',
+        'angularFileUpload',
+        'hrjc.controllers',
+        'hrjc.directives',
+        'hrjc.filters',
+        'hrjc.services'
+    ]);
+});

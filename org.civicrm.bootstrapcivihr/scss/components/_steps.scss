@@ -104,6 +104,27 @@
     }
 }
 
+// A version that uses flexbox to strech proportionally in the available space
+.chr_steps--flex {
+    display: flex;
+
+    .chr_steps__step {
+        display: block;
+        flex-grow: 1;
+        float: none;
+    }
+
+    .chr_steps__step__arrow {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+
+    .chr_steps__step__legend {
+        display: block;
+    }
+}
+
 
 // Contextual variations
 .chr_steps__step--danger {
