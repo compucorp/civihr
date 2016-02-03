@@ -110,24 +110,17 @@ define([
                 leave: ContractLeaveService.get({ jobcontract_id: contractId }),
                 pension: ContractPensionService.getOne({ jobcontract_id: contractId })
             })
-            .then(function(results){
-                var promiseHealth = ContractHealthService.getOne({
-                    jobcontract_revision_id: results.details.jobcontract_revision_id
-                });
-
-                var promisePay = ContractPayService.getOne({
-                    jobcontract_revision_id: results.details.jobcontract_revision_id
-                });
-
+            .then(function (results) {
                 return $q.all({
-                    pay: promisePay,
-                    health: promiseHealth
+                    pay: ContractPayService.getOne({
+                        jobcontract_revision_id: results.details.jobcontract_revision_id
+                    }),
+                    health: ContractHealthService.getOne({
+                        jobcontract_revision_id: results.details.jobcontract_revision_id
+                    })
                 })
                 .then(function (additionalResults) {
-                    results.pay = additionalResults.pay;
-                    results.health = additionalResults.health;
-
-                    return results;
+                    return angular.extend(results, additionalResults);
                 });
             })
             .then(function(results){
