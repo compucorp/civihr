@@ -139,6 +139,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
       jobLeavesCollection.fetch({reset: true});
     }
     absenceCollection.fetch({reset: true});
+    calendarAbsenceCollection.fetch({reset: true});
     entitlementCollection.fetch({reset: true});
   });
 
