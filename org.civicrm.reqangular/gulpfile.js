@@ -32,11 +32,9 @@ gulp.task('requirejs-bundle', function (done) {
 });
 
 gulp.task('watch', function () {
-    gulp.watch('src/**/*.js', ['requirejs-bundle', 'test']);
+    gulp.watch('src/common/**/*.js', ['requirejs-bundle', 'test']);
     gulp.watch('src/common/templates/**/*.html', ['cache-templates', 'requirejs-bundle']);
-    gulp.watch(['src/test/**/*.js', '!src/test/mocks/**/*.js', '!src/test/test-main.js']).on('change', function (file) {
-        test.single(file.path);
-    });
+    gulp.watch(['src/tests/**/*.js', '!src/tests/mocks/**/*.js', '!src/tests/test-main.js'], ['test']);
 });
 
 gulp.task('default', ['cache-templates', 'requirejs-bundle', 'watch']);
@@ -104,7 +102,7 @@ var test = (function () {
          * @param {string} testFile - The full path of a test file
          */
         single: function (testFile) {
-            var configFile = 'karma.' + path.basename(testFile, path.extname(testFile))  + '.conf.temp.js';
+            var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
             gulp.src(__dirname + '/js/karma.conf.js')
                 .pipe(replace('*_test.js', path.basename(testFile)))
