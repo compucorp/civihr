@@ -35,12 +35,17 @@ require.config({
         'common/angularRoute': {
             deps: ['common/angular']
         },
+        'common/angularUiRouter': {
+            deps: ['common/angular']
+        },
     },
     paths: {
         'common': srcPath,
         'mocks': mocksPath,
         'common/angular': srcPath + '/vendor/angular/angular.min',
         'common/moment': srcPath + '/vendor/moment.min',
+        'common/angularRoute': srcPath + '/vendor/angular/angular-route.min',
+        'common/angularUiRouter': srcPath + '/vendor/angular/angular-ui-router.min',
         'common/angularMocks': srcPath + '/vendor/angular/angular-mocks'
     },
     callback: function () {

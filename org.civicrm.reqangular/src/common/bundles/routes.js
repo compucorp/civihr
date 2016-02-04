@@ -1,5 +1,5 @@
 define([
-    'common/services/compuRoute/routerSettings'
+    'common/services/compuRoute/route-decorator'
 ], function () {
 
 });
