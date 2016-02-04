@@ -40,6 +40,7 @@ require.config({
         'common': srcPath,
         'mocks': mocksPath,
         'common/angular': srcPath + '/vendor/angular/angular.min',
+        'common/moment': srcPath + '/vendor/moment.min',
         'common/angularMocks': srcPath + '/vendor/angular/angular-mocks'
     },
     callback: function () {

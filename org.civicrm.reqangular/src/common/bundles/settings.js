@@ -1,5 +1,5 @@
 define([
-    'common/services/settings/HR_settings'
+    'common/services/settings/hr-settings'
 ], function () {
 
 });
