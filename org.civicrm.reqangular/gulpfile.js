@@ -40,7 +40,7 @@ gulp.task('watch', function () {
 gulp.task('default', ['cache-templates', 'requirejs-bundle', 'watch']);
 
 gulp.task('test', function (done) {
-    test.all();
+    test.all(done);
 });
 
 var test = (function () {
@@ -64,9 +64,10 @@ var test = (function () {
 
         /**
          * Runs all the tests
+         * @param {Function} cb - The callback to call when the server closes
          */
-        all: function () {
-            runServer('karma.conf.js');
+        all: function (cb) {
+            runServer('karma.conf.js', cb);
         },
 
         /**
