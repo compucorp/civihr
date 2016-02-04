@@ -55,7 +55,7 @@ var test = (function () {
      */
     function runServer(configFile, cb) {
         new karma.Server({
-            configFile: __dirname + '/src/' + configFile,
+            configFile: __dirname + '/src/tests/' + configFile,
             singleRun: true
         }, function () {
             cb && cb();

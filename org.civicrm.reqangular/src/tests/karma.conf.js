@@ -17,38 +17,23 @@ module.exports = function (config) {
             'js/Common.js',
 
             // manual loading of requirejs as to avoid interference with the global dependencies above
-            civihrPath + 'uk.co.compucorp.civicrm.appraisals/node_modules/requirejs/require.js',
-            civihrPath + 'uk.co.compucorp.civicrm.appraisals/node_modules/karma-requirejs/lib/adapter.js',
-
-            // all the common/ dependencies
-            civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
-
-            // the application modules
-            { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/src/appraisals/**/*.js', included: false },
-
-            // the mocked components files
-            { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/mocks/**/*.js', included: false },
-
-            // the test files
-            { pattern: civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/**/*_test.js', included: false },
-
-            // angular templates
-            civihrPath + 'uk.co.compucorp.civicrm.appraisals/views/**/*.html',
+            civihrPath + 'org.civicrm.reqangular/node_modules/requirejs/require.js',
+            civihrPath + 'org.civicrm.reqangular/node_modules/karma-requirejs/lib/adapter.js',
 
             // the requireJS config file that bootstraps the whole test suite
-            civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/test/test-main.js'
+            civihrPath + 'org.civicrm.reqangular/src/tests/test-main.js',
+
+            // load vendor libraries
+            { pattern: civihrPath + 'org.civicrm.reqangular/src/common/vendor/*.min.js', included: false },
+
+            // load modules
+            { pattern: civihrPath + 'org.civicrm.reqangular/src/common/**/*.js', included: false },
+
+            // load tests
+            { pattern: civihrPath + 'org.civicrm.reqangular/src/tests/**/*_test.js', included: false }
         ],
         exclude: [
-            civihrPath + 'uk.co.compucorp.civicrm.appraisals/js/src/appraisals.js'
-        ],
-        // Used to transform angular templates in JS strings
-        preprocessors: (function (obj) {
-            obj[civihrPath + 'uk.co.compucorp.civicrm.appraisals/views/**/*.html'] = ['ng-html2js'];
-            return obj;
-        })({}),
-        ngHtml2JsPreprocessor: {
-            prependPrefix: '/base/',
-            moduleName: 'appraisals.templates'
-        }
+            civihrPath + 'org.civicrm.reqangular/src/common/angular-date/**/*.js'
+        ]
     });
 };

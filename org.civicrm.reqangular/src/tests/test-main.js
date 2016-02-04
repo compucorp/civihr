@@ -1,8 +1,8 @@
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
-var extPath = '/base/tools/extensions/civihr/uk.co.compucorp.civicrm.appraisals';
-var mocksPath = extPath + '/js/test/mocks';
-var srcPath = extPath + '/js/src/appraisals';
+var extPath = '/base/tools/extensions/civihr/org.civicrm.reqangular';
+var mocksPath = extPath + '/src/tests/mocks';
+var srcPath = extPath + '/src/common';
 
 Object.keys(window.__karma__.files).forEach(function(file) {
     if (TEST_REGEXP.test(file)) {
@@ -13,13 +13,38 @@ Object.keys(window.__karma__.files).forEach(function(file) {
 require.config({
     deps: allTestFiles,
     waitSeconds: 60,
+    shim: {
+        'common/angular': {
+            exports: 'angular'
+        },
+        'common/angularAnimate': {
+            deps: ['common/angular']
+        },
+        'common/angular-date': {
+            deps: ['common/angular']
+        },
+        'common/angularBootstrap': {
+            deps: ['common/angular']
+        },
+        'common/angularMocks': {
+            deps: ['common/angular']
+        },
+        'common/angularResource': {
+            deps: ['common/angular']
+        },
+        'common/angularRoute': {
+            deps: ['common/angular']
+        },
+    },
     paths: {
-        'appraisals': srcPath,
-        'mocks': mocksPath
+        'common': srcPath,
+        'mocks': mocksPath,
+        'common/angular': srcPath + '/vendor/angular/angular.min',
+        'common/angularMocks': srcPath + '/vendor/angular/angular-mocks'
     },
     callback: function () {
-        // Simple hack to provide value to CRM.vars.appraisals.baseURL
-        CRM.vars = { appraisals: { baseURL: extPath } };
+        // Simple hack to provide value to CRM.vars.reqangular.baseURL
+        CRM.vars = { reqangular: { baseURL: extPath } };
 
         window.__karma__.start();
     }
