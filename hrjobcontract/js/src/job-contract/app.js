@@ -1,4 +1,5 @@
 define([
+    'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/controllers/contract-list',
     'job-contract/controllers/contract',
@@ -30,7 +31,7 @@ define([
     'job-contract/services/contract',
     'job-contract/vendor/angular-select',
     'job-contract/vendor/job-summary'
-], function () {
+], function (angular) {
     'use strict';
 
     return angular.module('hrjc', [

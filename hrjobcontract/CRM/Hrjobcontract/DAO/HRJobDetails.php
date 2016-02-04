@@ -224,7 +224,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'title' => ts('Title') ,
                   'maxlength' => 127,
                   'size' => CRM_Utils_Type::HUGE,
-                  'required' => false,
+                  'required' => true,
                   'export' => true,
                   'import' => true,
                   'where' => 'civicrm_hrjobcontract_details.title',
