@@ -1,5 +1,5 @@
 define([
-    'contact-summary/modules/mocks'
+    'mocks/module'
 ], function (mocks) {
     'use strict';
 

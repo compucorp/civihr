@@ -2,8 +2,8 @@ define([
     'common/lodash',
     'common/angularMocks',
     'contact-summary/app',
-    'contact-summary/mocks/services',
-    'contact-summary/services/contract'
+    'contact-summary/services/contract',
+    'mocks/services'
 ], function () {
     'use strict';
 
