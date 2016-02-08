@@ -2,9 +2,9 @@ define([
     'common/angular',
     'common/moment',
     'common/angularMocks',
-    'common/filters/angularDate/format-date',
-    'common/services/angularDate/date-format',
-    'common/services/settings/hr-settings'
+    'common/filters/angular-date/format-date',
+    'common/services/angular-date/date-format',
+    'common/services/hr-settings'
 ], function (angular, moment) {
     'use strict';
 

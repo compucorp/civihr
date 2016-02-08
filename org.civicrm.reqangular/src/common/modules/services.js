@@ -3,5 +3,5 @@ define([
 ], function (angular) {
     'use strict';
 
-    return angular.module('common.settings', []);
+    return angular.module('common.services', []);
 });

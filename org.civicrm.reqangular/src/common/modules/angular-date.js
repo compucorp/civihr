@@ -1,8 +1,8 @@
 define([
     'common/angular',
-    'common/modules/settings'
+    'common/modules/services'
 ], function (angular) {
     'use strict';
-    return angular.module("common.angularDate", ['common.settings']);
+    return angular.module("common.angularDate", ['common.services']);
 });
 

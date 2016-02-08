@@ -49,11 +49,10 @@
     include: [
         'common/bundles/vendors',
         'common/bundles/apis',
-        'common/bundles/settings',
-        'common/bundles/routes',
+        'common/bundles/services',
+        'common/bundles/directives',
         'common/modules/templates',
-        'common/directives/loading',
-        'common/services/dialog',
-        'common/bundles/angularDate'
+        'common/bundles/angular-date',
+        'common/bundles/routers'
     ]
 })

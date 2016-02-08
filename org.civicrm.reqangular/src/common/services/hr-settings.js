@@ -1,6 +1,6 @@
 define([
     'common/angular',
-    'common/modules/settings'
+    'common/modules/services'
 ], function (angular, module) {
     'use strict';
 

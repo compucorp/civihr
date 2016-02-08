@@ -1,7 +1,7 @@
 define([
     'common/moment',
     'common/modules/angular-date',
-    'common/services/settings/hr-settings'
+    'common/services/hr-settings'
 ], function (moment, module) {
     'use strict';
 
