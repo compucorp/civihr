@@ -6,6 +6,7 @@ define([
     'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
+    'appraisals/controllers/appraisal-cycle-ctrl',
     'appraisals/controllers/modals/basic-modal-ctrl',
     'appraisals/controllers/modals/appraisal-cycle-modal-ctrl',
     'appraisals/directives/show-more',
