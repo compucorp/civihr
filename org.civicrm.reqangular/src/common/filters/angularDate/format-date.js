@@ -1,6 +1,6 @@
 define([
     'common/moment',
-    'common/modules/angularDate',
+    'common/modules/angular-date',
     'common/services/settings/hr-settings'
 ], function (moment, module) {
     'use strict';

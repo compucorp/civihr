@@ -74,15 +74,15 @@ var test = (function () {
          * Runs the tests for a specific source file
          *
          * Looks for a test file (*_test.js) in `test/`, using the same path
-         * of the source file in `src/appraisals/`
-         *   i.e. src/appraisals/models/model.js -> test/models/model_test.js
+         * of the source file in `org.civicrm.reqangular/src/`
+         *   i.e. common/models/model.js -> test/models/model_test.js
          *
          * @throw {Error}
          */
         for: function (srcFile) {
             var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
             var testFile = srcFile
-                .replace('src/appraisals/', 'test/')
+                .replace('common/', 'test/')
                 .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
 
             try {

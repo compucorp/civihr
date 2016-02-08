@@ -9,13 +9,13 @@ define([
     'use strict';
 
     describe('angularDate: FormatDateFilter Unit Test', function () {
-        var DateFormatService, HR_settings, $filter;
+        var DateFormat, HR_settings, $filter;
 
         beforeEach(module('common.angularDate'));
 
-        beforeEach(inject(['DateFormatService', 'HR_settings', '$filter',
-            function (_DateFormatService, _HR_settings, _$filter) {
-                DateFormatService = _DateFormatService;
+        beforeEach(inject(['DateFormat', 'HR_settings', '$filter',
+            function (_DateFormat, _HR_settings, _$filter) {
+                DateFormat = _DateFormat;
                 HR_settings = _HR_settings;
                 $filter = _$filter;
             }
@@ -58,7 +58,7 @@ define([
         describe('Async Behaviour', function () {
             beforeEach(function () {
                 // Imitate route resolve
-                spyOn(DateFormatService, 'getDateFormat').and.callFake(function () {
+                spyOn(DateFormat, 'getDateFormat').and.callFake(function () {
                     return {
                         then: function (callback) {
                             return callback('DD/MM/YYYY');
@@ -66,13 +66,13 @@ define([
                     };
                 });
 
-                DateFormatService.getDateFormat().then(function (result) {
+                DateFormat.getDateFormat().then(function (result) {
                     HR_settings.DATE_FORMAT = result;
                 });
             });
 
             it('Async call finished', function(){
-                expect(DateFormatService.getDateFormat).toHaveBeenCalled();
+                expect(DateFormat.getDateFormat).toHaveBeenCalled();
             });
 
             it('Date Format is correctly saved to HR_settings service', function(){

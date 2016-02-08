@@ -1,13 +1,13 @@
 define([
     'common/angular',
-    'common/modules/angularDate'
+    'common/modules/angular-date'
 ], function (angular, module) {
     'use strict';
 
     /**
      * This service provides access to date format from CRM settings
      */
-    module.factory('DateFormatService', ['$q', function ($q) {
+    module.factory('DateFormat', ['$q', function ($q) {
         return {
             /**
              * keeps information about date format

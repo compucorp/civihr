@@ -1,5 +1,5 @@
 define([
-    'common/services/angularDate/date-format'
+    'common/services/angular-date/date-format'
 ], function () {
 
 });
