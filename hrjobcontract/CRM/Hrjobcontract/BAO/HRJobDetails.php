@@ -35,7 +35,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
         ));
         if (!empty($revision['values'][0])) {
             $revisionData = array_shift($revision['values']);
-            if (!$revisionData['effective_date']) {
+            if (empty($revisionData['effective_date'])) {
                 civicrm_api3('HRJobContractRevision', 'create', array(
                     'id' => $revisionData['id'],
                     'effective_date' => $instance->period_start_date,

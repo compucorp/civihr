@@ -52,9 +52,12 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         $this->_requiredFields[] = $key;
       }
 
-      if (CRM_Utils_Array::value('type', $field) == CRM_Utils_Type::T_TIME | CRM_Utils_Type::T_DATE
-        || CRM_Utils_Array::value('type', $field) == CRM_Utils_Type::T_DATE
-      ) {
+      $fieldType = CRM_Utils_Array::value('type', $field);
+      $dateFieldTypes = array(
+        CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
+        CRM_Utils_Type::T_DATE
+      );
+      if ($fieldType !== null && in_array($fieldType, $dateFieldTypes)) {
         $this->_dateFields[] = $key;
       }
     }
@@ -193,6 +196,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if(!in_array($key, $this->_dateFields)) {
         continue;
       }
+
       CRM_Utils_Date::convertToDefaultDate($params, $dateType, $key);
       $params[$key] = CRM_Utils_Date::processDate($params[$key]);
     }
