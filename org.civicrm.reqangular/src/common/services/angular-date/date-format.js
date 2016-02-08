@@ -1,13 +1,14 @@
 define([
     'common/angular',
-    'common/modules/angular-date'
+    'common/modules/angular-date',
+    'common/services/hr-settings'
 ], function (angular, module) {
     'use strict';
 
     /**
      * This service provides access to date format from CRM settings
      */
-    module.factory('DateFormat', ['$q', function ($q) {
+    module.factory('DateFormat', ['$q', 'HR_settings', function ($q, HR_settings) {
         return {
             /**
              * keeps information about date format
@@ -22,14 +23,16 @@ define([
                     return $q.when(this.dateFormat);
                 } else {
                     return $q.when('DD/MM/YYYY')
-                        .then(function (result) {
-                            this.dateFormat = result;
-                            return result;
-                        }.bind(this))
                         .catch(function () {
                             // Fallback to default format
-                            this.dateFormat = 'YYYY-MM-DD';
-                            return this.dateFormat;
+                            return 'YYYY-MM-DD';
+                        })
+                        .then(function(result){
+                            // Save the current value in HR_settings
+                            HR_settings.DATE_FORMAT = result;
+                            this.dateFormat = result;
+
+                            return result;
                         }.bind(this));
                 }
             }
