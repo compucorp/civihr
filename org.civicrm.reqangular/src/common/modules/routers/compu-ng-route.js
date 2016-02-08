@@ -6,6 +6,7 @@ define([
 
     return angular.module("compuNgRoute", ['ngRoute']).config(['$routeProvider', function($routeProvider){
         var originalWhen = $routeProvider.when;
+
         /**
          * Share resolve across all states
          * @param {object} _commonResolve
@@ -16,7 +17,6 @@ define([
             return $routeProvider;
         };
 
-        // check if it's a ngRoute
         $routeProvider.when = function (state, options) {
             // Injects the common resolves in the route's `resolve` object
             angular.extend(options.resolve || {}, $routeProvider.commonResolve || {});

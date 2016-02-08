@@ -16,9 +16,8 @@ define([
             return $stateProvider;
         };
 
-        // check if it's a ngRoute
         $stateProvider.state = function (state, options) {
-            // Injects the common resolves in the route's `resolve` object
+            // Injects the common resolves in the states' `resolve` object
             angular.extend(options.resolve || {}, $stateProvider.commonResolve || {});
 
             // calls the original method

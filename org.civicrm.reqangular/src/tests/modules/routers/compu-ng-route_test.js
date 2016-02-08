@@ -9,10 +9,10 @@ define([
         var $routeProvider, $route;
 
         beforeEach(function () {
-            var testNgRoute = angular.module('testNgRoute', ['compuNgRoute']);
-            testNgRoute.config(['$routeProvider', function (_$routeProvider) {
-                $routeProvider = _$routeProvider;
-            }]);
+            var testNgRoute = angular.module('testNgRoute', ['compuNgRoute'])
+                .config(['$routeProvider', function (_$routeProvider) {
+                    $routeProvider = _$routeProvider;
+                }]);
 
             // Initialize test.app injector
             module('testNgRoute');

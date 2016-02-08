@@ -7,14 +7,14 @@ define([
 
     module.filter('formatDate', ['$filter', 'HR_settings', function ($filter, HR_settings) {
         return function (datetime, format) {
-            var Date;
+            var date;
             var dateFormat = format || HR_settings.DATE_FORMAT || 'YYYY-MM-DD';
 
             if (typeof datetime == 'object') {
                 datetime = $filter('date')(datetime, 'dd/MM/yyyy');
             }
 
-            Date = moment(datetime, [
+            date = moment(datetime, [
                 'DD-MM-YYYY',
                 'DD-MM-YYYY HH:mm:ss',
                 'YYYY-MM-DD',
@@ -24,9 +24,9 @@ define([
             ], true);
 
             var beginningOfEra = moment(0);
-            var notEmpty = !Date.isSame(beginningOfEra);
+            var notEmpty = !date.isSame(beginningOfEra);
 
-            if (Date.isValid() && notEmpty) return Date.format(dateFormat);
+            if (date.isValid() && notEmpty) return date.format(dateFormat);
 
             return 'Unspecified';
         };
