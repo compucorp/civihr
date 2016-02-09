@@ -20,17 +20,16 @@
         padding-top: 25px;
 
         .chr_steps--appraisals-status__contacts {
-            color: $brand-primary;
+            font-weight: 600;
         }
 
         .chr_steps--appraisals-status__count {
-            font-size: em(12, 10);
             font-weight: 600;
             display: block;
         }
 
         .chr_steps--appraisals-status__overdue {
-            color: $brand-danger;
+            font-weight: 600;
         }
 
 
