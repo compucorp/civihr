@@ -11,6 +11,7 @@ define([
     'appraisals/controllers/modals/appraisal-cycle-modal-ctrl',
     'appraisals/controllers/modals/access-settings-modal-ctrl',
     'appraisals/controllers/modals/edit-dates-modal-ctrl',
+    'appraisals/controllers/modals/add-contacts-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
     'appraisals/models/appraisal-cycle',

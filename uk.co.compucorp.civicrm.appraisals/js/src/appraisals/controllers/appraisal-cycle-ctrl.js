@@ -32,6 +32,19 @@ define([
             };
 
             /**
+             * Opens the Add Contacts modal
+             */
+            vm.openAddContactsModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'AddContactsModalCtrl',
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-contacts.html'
+                });
+            };
+
+            /**
              * Opens the Edit Dates modal
              */
             vm.openEditDatesModal = function () {

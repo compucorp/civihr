@@ -44,5 +44,15 @@ define([
                 expect($modal.open).toHaveBeenCalled();
             });
         });
+
+        describe('Add Contacts modal', function () {
+            beforeEach(function () {
+                ctrl.openAddContactsModal();
+            });
+
+            it('opens a modal', function () {
+                expect($modal.open).toHaveBeenCalled();
+            });
+        });
     });
 });
