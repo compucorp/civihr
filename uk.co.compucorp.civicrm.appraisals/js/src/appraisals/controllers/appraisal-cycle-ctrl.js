@@ -4,8 +4,8 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log',
-        function ($log) {
+        '$log', '$modal', '$rootElement',
+        function ($log, $modal, $rootElement) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -17,6 +17,19 @@ define([
                 { label: "Value #3", value: 30 },
                 { label: "Value #4", value: 40 }
             ];
+
+            /**
+             * Opens the Edit Dates modal
+             */
+            vm.openEditDatesModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'EditDatesModalCtrl',
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/edit-dates.html'
+                });
+            };
 
             return vm;
         }
