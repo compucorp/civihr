@@ -1,11 +1,14 @@
 define([
-    'job-roles/controllers/controllers'
+    'job-roles/controllers/controllers',
+    'common/filters/angular-date/format-date'
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
-        function ($scope, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
+    controllers.controller('HRJobRolesController', ['$scope', 'format', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
+        function ($scope, format, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
             $log.debug('Controller: HRJobRolesController');
+
+            $scope.format = format;
 
             var me = this;
 
@@ -17,7 +20,6 @@ define([
                 $event.stopPropagation();
 
                 $scope.picker.opened = true;
-
             };
 
             $scope.onContractSelected = function () {
@@ -53,8 +55,8 @@ define([
 
 
                 angular.forEach(me.contractsData, function (value) {
-                    if ($filter('CustomDate')(start) == $filter('CustomDate')(value.start_date)
-                        && $filter('CustomDate')(end) == $filter('CustomDate')(value.end_date))
+                    if ($filter('formatDate')(start) == $filter('formatDate')(value.start_date)
+                        && $filter('formatDate')(end) == $filter('formatDate')(value.end_date))
                         custom = false;
                 });
 
@@ -748,8 +750,8 @@ define([
                                     status: status
                                 };
 
-                                var optionalEndDate = $filter('CustomDate')(contract.end_date) || 'Unspecified';
-                                contract.label = contract.title + ' (' + $filter('CustomDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
+                                var optionalEndDate = $filter('formatDate')(contract.end_date) || 'Unspecified';
+                                contract.label = contract.title + ' (' + $filter('formatDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
 
                                 contractsData[data.values[i]['id']] = contract;
                             }

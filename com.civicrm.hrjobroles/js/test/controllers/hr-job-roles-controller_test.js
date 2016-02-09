@@ -9,7 +9,7 @@ define([
 
         beforeEach(module('hrjobroles'));
         beforeEach(inject(function ($controller, $rootScope) {
-            ctrl = $controller('HRJobRolesController', { $scope: $rootScope.$new() });
+            ctrl = $controller('HRJobRolesController', { $scope: $rootScope.$new(), format: 'DD/MM/YYYY' });
         }));
 
         it('example', function () {
