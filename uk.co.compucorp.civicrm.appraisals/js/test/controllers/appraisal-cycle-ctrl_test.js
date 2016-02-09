@@ -5,10 +5,11 @@ define([
     'use strict';
 
     describe('AppraisalsCtrl', function () {
-        var $log, ctrl;
+        var $log, $modal, ctrl;
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function (_$log_, $controller, $rootScope) {
+        beforeEach(inject(function (_$log_, _$modal_, $controller, $rootScope) {
+            ($modal = _$modal_) && spyOn($modal, 'open');
             ($log = _$log_) && spyOn($log, 'debug');
 
             ctrl = $controller('AppraisalCycleCtrl', { $scope: $rootScope.$new() });
@@ -25,14 +26,21 @@ define([
         });
 
         describe('Edit Dates modal', function () {
-            var $modal;
-
-            beforeEach(inject(function (_$modal_) {
-                ($modal = _$modal_) && spyOn($modal, 'open');
-            }));
+            beforeEach(function () {
+                ctrl.openEditDatesModal();
+            });
 
             it('opens the modal', function () {
-                ctrl.openEditDatesModal();
+                expect($modal.open).toHaveBeenCalled();
+            });
+        });
+
+        describe('Access Settings modal', function () {
+            beforeEach(function () {
+                ctrl.openAccessSettingsModal();
+            });
+
+            it('opens the modal', function () {
                 expect($modal.open).toHaveBeenCalled();
             });
         });

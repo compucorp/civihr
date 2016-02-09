@@ -3,9 +3,9 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('EditDatesModalCtrl', ['$log', '$controller', '$modalInstance',
+    controllers.controller('AccessSettingsModalCtrl', ['$log', '$controller', '$modalInstance',
         function ($log, $controller, $modalInstance) {
-            $log.debug('EditDatesModalCtrl');
+            $log.debug('AccessSettingsModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
                 $modalInstance: $modalInstance

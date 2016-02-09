@@ -19,6 +19,19 @@ define([
             ];
 
             /**
+             * Opens the Access Settings modal
+             */
+            vm.openAccessSettingsModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'AccessSettingsModalCtrl',
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/access-settings.html'
+                });
+            };
+
+            /**
              * Opens the Edit Dates modal
              */
             vm.openEditDatesModal = function () {
