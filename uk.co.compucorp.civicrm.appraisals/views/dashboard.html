@@ -27,11 +27,11 @@
                             <span class="chr_steps__step__arrow chart-color-{{$index}}">Step {{$index + 1}}</span>
                             <div class="chr_steps__step__legend">
                                 <div class="chr_steps__step__legend__content chart-color-border-{{$index}} text-center">
-                                    <p class="chr_steps--appraisals-status__contacts">
+                                    <p class="text-primary">
                                         <span class="chr_steps--appraisals-status__count">{{step.due}}</span>
                                         Contacts
                                     </p>
-                                    <p class="chr_steps--appraisals-status__overdue">
+                                    <p class="text-danger">
                                         <span class="chr_steps--appraisals-status__count">{{step.overdue}}</span>
                                         Overdue
                                     </p>
@@ -351,7 +351,10 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <h3 class="panel-title panel-title-sm" ng-switch="cycle.cycle_is_active">
-                                                {{cycle.cycle_name}}&nbsp;
+                                                <a ui-sref="appraisal-cycle({ cycleId: cycle.id })">
+                                                    {{cycle.cycle_name}}
+                                                </a>
+                                                &nbsp;
                                                 <span ng-switch-when="true">(Active)</span>
                                                 <span ng-switch-when="false">(Inactive)</span>
                                             </h3>

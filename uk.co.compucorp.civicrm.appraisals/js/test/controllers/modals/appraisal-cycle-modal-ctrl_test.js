@@ -147,7 +147,6 @@ define([
                     expect(ctrl.form.$valid).toBe(false);
                     expect(ctrl.form.cycle_name.$error.required).toBe(true);
                     expect(ctrl.form.cycle_grade_due.$error.required).toBe(true);
-                    expect(ctrl.form.cycle_type_id.$error.required).toBe(false);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
             });
