@@ -23,8 +23,6 @@ Module.factory('DateFactory', require('./src/services/DateFactory'));
 
 /* Decorators */
 Module.config(function ($provide) {
-    $provide.decorator('datepickerPopupDirective', require('./src/decorators/DatepickerPopupDirectiveDecorator'));
-
     $provide.decorator('datepickerDirective', require('./src/decorators/DatepickerDirectiveDecorator'));
 
     $provide.decorator('daypickerDirective', require('./src/decorators/DaypickerDirectiveDecorator'));
