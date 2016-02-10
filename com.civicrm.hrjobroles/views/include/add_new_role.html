@@ -45,7 +45,7 @@
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group input-group-unstyled">
                                                         <input type="text" class="form-control" id="{{prefix}}newStartDate"
-                                                               placeholder="dd/mm/yyyy"
+                                                               placeholder="{{format}}"
                                                                is-open="!!(CalendarShow.newStartDate)"
                                                                datepicker-popup
                                                                min-date="minDate"
@@ -54,7 +54,7 @@
                                                                ng-disabled="isDisabled"
                                                                close-text="Close"
                                                                required
-                                                               custom-date-input/>
+                                                               date-input/>
 
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newStartDate')">
@@ -73,7 +73,7 @@
                                                 <div class="col-xs-6 control-label">
                                                     <p class="input-group input-group-unstyled">
                                                         <input type="text" class="form-control" id="{{prefix}}newEndDate"
-                                                           placeholder="dd/mm/yyyy"
+                                                           placeholder="{{format}}"
                                                            datepicker-popup
                                                            is-open="!!(CalendarShow.newEndDate)"
                                                            min-date="minDate"
@@ -81,7 +81,7 @@
                                                            ng-change="select('newEndDate')"
                                                            ng-disabled="isDisabled"
                                                            close-text="Close"
-                                                           custom-date-input />
+                                                           date-input />
 
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>

@@ -26,7 +26,7 @@ define([
             var beginningOfEra = moment(0);
             var notEmpty = !date.isSame(beginningOfEra);
 
-            if (date.isValid() && notEmpty) return date.format(dateFormat);
+            if (date.isValid() && notEmpty) return date.format(dateFormat.toUpperCase());
 
             return 'Unspecified';
         };

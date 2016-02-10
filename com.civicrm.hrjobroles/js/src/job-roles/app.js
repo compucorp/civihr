@@ -7,14 +7,18 @@ define([
     'job-roles/services/services',
     'job-roles/controllers/hr-job-roles-controller',
     'job-roles/services/hr-job-roles-service',
-    'job-roles/directives/example'
+    'job-roles/directives/example',
+    'common/services/angular-date/date-format',
+    'common/modules/routers/compu-ng-route',
+    'common/directives/angular-date/date-input'
 ], function () {
     'use strict';
 
     angular.module('hrjobroles', [
         'ngAnimate',
         'angular-date',
-        'ngRoute',
+        'common.angularDate',
+        'compuNgRoute',
         'xeditable',
         'angular.filter',
         'ngResource',
@@ -38,12 +42,19 @@ define([
         function(settings, $routeProvider, $resourceProvider, $httpProvider, $logProvider){
             $logProvider.debugEnabled(settings.debug);
 
-            $routeProvider.
-                when('/', {
+            $routeProvider
+                .resolveForAll({
+                    format: ['DateFormat', function(DateFormat){
+                        return DateFormat.getDateFormat();
+                    }]
+                })
+                .when('/', {
                     templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html?v=1',
-                    resolve: {}
-                }).
-                otherwise({redirectTo:'/'});
+                    resolve: {},
+                    controller: 'HRJobRolesController',
+                    controllerAs: 'jobroles'
+                })
+                .otherwise({redirectTo:'/'});
 
             $resourceProvider.defaults.stripTrailingSlashes = false;
 

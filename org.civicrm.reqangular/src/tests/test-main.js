@@ -46,7 +46,8 @@ require.config({
         'common/moment': srcPath + '/vendor/moment.min',
         'common/angularRoute': srcPath + '/vendor/angular/angular-route.min',
         'common/angularUiRouter': srcPath + '/vendor/angular/angular-ui-router.min',
-        'common/angularMocks': srcPath + '/vendor/angular/angular-mocks'
+        'common/angularMocks': srcPath + '/vendor/angular/angular-mocks',
+        'common/angularBootstrap': srcPath + '/vendor/angular/ui-bootstrap-tpls'
     },
     callback: function () {
         // Simple hack to provide value to CRM.vars.reqangular.baseURL

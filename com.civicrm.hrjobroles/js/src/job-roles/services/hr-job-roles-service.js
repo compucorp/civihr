@@ -98,8 +98,6 @@ define([
 
             createJobRole: function(job_roles_data) {
 
-                console.log(job_roles_data);
-
                 // Define funder IDs string
                 var funders = "|";
 

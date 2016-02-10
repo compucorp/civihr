@@ -7,7 +7,8 @@ define([
     'job-contract/services/contract-pension',
     'job-contract/services/contract-health',
     'job-contract/services/contact',
-    'job-contract/services/utils'
+    'job-contract/services/utils',
+    'common/filters/angular-date/format-date'
 ], function (controllers) {
     'use strict';
 
