@@ -1,5 +1,5 @@
 define([], function () {
-    return ['$delegate', function ($delegate) {
+    return ['$delegate', 'HR_settings', function ($delegate, HR_settings) {
         var original_link = $delegate[0].link;
 
         $delegate[0].compile = function () {
@@ -8,8 +8,7 @@ define([], function () {
              * Compile returns a link function.
              * @override
              */
-            return ['scope', 'element', 'attrs', 'ngModel', 'HR_settings',
-                function (scope, element, attrs, ngModel, HR_settings) {
+            return function (scope, element, attrs, ngModel) {
 
                 /**
                  * @override
@@ -18,7 +17,7 @@ define([], function () {
                 attrs.datepickerPopup = HR_settings.DATE_FORMAT;
 
                 original_link.apply(this, arguments);
-            }];
+            };
         };
 
         return $delegate;

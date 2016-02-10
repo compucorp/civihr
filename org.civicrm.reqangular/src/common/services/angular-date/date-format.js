@@ -22,10 +22,10 @@ define([
                 if (this.dateFormat) {
                     return $q.when(this.dateFormat);
                 } else {
-                    return $q.when('DD/MM/YYYY')
+                    return $q.when('dd/MM/yyyy')
                         .catch(function () {
                             // Fallback to default format
-                            return 'YYYY-MM-DD';
+                            return 'yyyy-MM-dd';
                         })
                         .then(function(result){
                             // Save the current value in HR_settings

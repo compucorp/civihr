@@ -1,21 +1,24 @@
 define([
     'common/moment',
-    'job-contract/controllers/controllers'
+    'job-contract/controllers/controllers',
+    'common/filters/angular-date/format-date'
 ], function (moment, controllers){
     'use strict';
 
-    controllers.controller('FormGeneralCtrl',['$scope','$log','$timeout',
-        function ($scope, $log) {
+    controllers.controller('FormGeneralCtrl',['$scope','$log', 'HR_settings',
+        function ($scope, $log, HR_settings) {
             $log.debug('Controller: FormGeneralCtrl');
 
             var entityDetails = $scope.entity.details;
 
+            $scope.format = HR_settings.DATE_FORMAT;
+
             $scope.dpOpen = function($event, opened){
                 $event.preventDefault();
                 $event.stopPropagation();
-
+                console.info(opened);
                 $scope[opened] = true;
-            }
+            };
 
             function duration(dateStart, dateEnd){
 
