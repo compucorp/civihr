@@ -62,16 +62,16 @@
         <section class="panel panel-primary">
             <header class="panel-heading">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li>
+                    <li class="active">
                         <a href data-target="#summary" data-toggle="tab">Cycle Summary</a>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href data-target="#appraisals" data-toggle="tab">Appraisals in Cycle</a>
                     </li>
                 </ul>
             </header>
             <div class="tab-content">
-                <div class="tab-pane" id="summary">
+                <div class="tab-pane active" id="summary">
                     <div class="row">
                         <div class="col-sm-8">
                             <section class="panel panel-default panel--breakdown">
@@ -263,7 +263,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane active" id="appraisals">
+                <div class="tab-pane" id="appraisals">
                     <div class="row">
                         <div class="col-sm-12">
                             <section class="panel panel-default panel--appraisals-in-cycle">
@@ -276,14 +276,18 @@
                                                 </h2>
                                             </div>
                                             <div class="col-sm-4 text-right">
-                                                <span style="cursor: pointer;">
-                                                    <i class="fa fa-fw fa-0_5x fa-angle-right"></i>
+                                                <span style="cursor: pointer;" ng-click="cycle.filtersCollapsed = !cycle.filtersCollapsed">
+                                                    <i
+                                                        class="fa fa-fw fa-0_5x"
+                                                        ng-class="{ 'fa-angle-right': cycle.filtersCollapsed, 'fa-angle-down': !cycle.filtersCollapsed }">
+                                                    </i>
                                                     Filter Appraisals
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="panel--appraisals-in-cycle__filters">
-                                            <form class="form-horizontal">
+                                            <div collapse="cycle.filtersCollapsed">
+                                            <form class="panel--appraisals-in-cycle__filters__form form-horizontal">
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <div class="form-group has-feedback">
@@ -561,8 +565,9 @@
                                                 </div>
                                             </form>
                                         </div>
+                                        </div>
                                     </header>
-                                    <hr>
+                                    <hr ng-show="cycle.filtersCollapsed">
                                     <div class="row form-horizontal form-horizontal-inline">
                                         <div class="col-sm-6">
                                             <div class="form-group">

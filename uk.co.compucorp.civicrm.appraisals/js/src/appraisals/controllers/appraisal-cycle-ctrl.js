@@ -10,6 +10,8 @@ define([
 
             var vm = {};
 
+            vm.filtersCollapsed = true;
+
             // dummy data
             vm.grades = [
                 { label: "Value #1", value: 10 },

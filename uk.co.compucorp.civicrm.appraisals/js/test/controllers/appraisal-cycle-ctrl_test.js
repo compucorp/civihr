@@ -23,6 +23,10 @@ define([
             it('contains grades', function () {
                 expect(ctrl.grades).toBeDefined();
             });
+
+            it('has the filters form collapsed', function () {
+                expect(ctrl.filtersCollapsed).toBe(true);
+            });
         });
 
         describe('Edit Dates modal', function () {
