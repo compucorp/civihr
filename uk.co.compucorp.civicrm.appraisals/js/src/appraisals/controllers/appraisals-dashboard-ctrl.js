@@ -1,8 +1,9 @@
 define([
     'common/angular',
+    'common/moment',
     'appraisals/modules/controllers',
     'appraisals/models/appraisal-cycle'
-], function (angular, controllers) {
+], function (angular, moment, controllers) {
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
@@ -12,7 +13,6 @@ define([
         function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, totalCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
-            var pagination = { page: 1, size: 5 };
             var vm = {};
 
             vm.activeFilters = [
@@ -21,11 +21,12 @@ define([
                 { label: 'all', value: null }
             ];
 
-            vm.cycles = [];
-            vm.chartData = [];
+            vm.appraisalsWeeklyFigures = { due: 0, overdue: 0 };
+            vm.cycles = { list: [], total: 0 };
             vm.filtersCollapsed = true;
-            vm.filters = { active: vm.activeFilters[0].value };
-            vm.loadingDone = false;
+            vm.filters = { cycle_is_active: vm.activeFilters[0].value };
+            vm.loading = { done: false, inProgress: false };
+            vm.pagination = { page: 1, size: 5 };
 
             vm.activeCycles = activeCycles;
             vm.totalCycles = totalCycles;
@@ -43,8 +44,8 @@ define([
                     return filter.label === newValue;
                 })[0];
 
-                if (typeof newValue !== 'undefined' && vm.filters.active !== newValue.value) {
-                    vm.filters.active = newValue.value;
+                if (typeof newValue !== 'undefined' && vm.filters.cycle_is_active !== newValue.value) {
+                    vm.filters.cycle_is_active = newValue.value;
                     vm.requestCycles();
                 }
             };
@@ -59,7 +60,7 @@ define([
                 modalScope.cycleId = id;
 
                 $modal.open({
-                    targetDomEl: $rootElement,
+                    targetDomEl: $rootElement.children().eq(0),
                     controller: 'AppraisalCycleModalCtrl',
                     controllerAs: 'modal',
                     bindToController: true,
@@ -74,49 +75,56 @@ define([
              * It can either add a new page worth of cycles to the existing list
              * or it can reset the entire list (in case new filters have been chosen)
              *
+             * After retrieving the list of cycles, it also requests the status
+             * overview for those cycles in the current week (ONLY for first page)
+             *
              * @param {boolean} addPage - If it's to request the next page
              */
             vm.requestCycles = function (addPage) {
-                if (addPage && vm.loadingDone) {
+                var cycles;
+
+                if (addPage && vm.loading.done) {
                     return;
                 }
 
-                pagination.page = !!addPage ? pagination.page + 1 : 1;
+                vm.loading.inProgress = true;
+                vm.pagination.page = !!addPage ? vm.pagination.page + 1 : 1;
 
-                AppraisalCycle.all(filters(), pagination).then(function (cycles) {
-                    if (addPage) {
-                        cycles.list.forEach(function (cycle) {
-                            vm.cycles.push(cycle);
-                        });
-                    } else {
-                        vm.cycles = cycles.list;
-                    }
+                AppraisalCycle.all(filters(), vm.pagination)
+                    .then(function (result) {
+                        cycles = result;
 
-                    vm.loadingDone = vm.cycles.length === cycles.total;
-                });
+                        return !addPage ? getStatusOverviewFor(cycles.allIds) : null;
+                    })
+                    .then(function (statusOverview) {
+                        !!statusOverview && processWeeklyFigures(statusOverview);
+                        processLoadedCycles(cycles, addPage);
+                    })
+                    .then(function () {
+                        vm.loading.inProgress = false;
+                    });
             };
 
             init();
 
-
             /**
-             * Attachs the listeners to the $rootScope
+             * Attaches the listeners to the $rootScope
              */
             function addListeners() {
                 $rootScope.$on('AppraisalCycle::new', function (event, newCycle) {
-                    vm.cycles.unshift(newCycle);
+                    vm.cycles.list.unshift(newCycle);
                 });
 
                 $rootScope.$on('AppraisalCycle::edit', function (event, editedCycle) {
                     var i, len;
 
-                    for (i = 0, len = vm.cycles.length; i < len; i++) {
-                        if (vm.cycles[i].id === editedCycle.id) {
+                    for (i = 0, len = vm.cycles.list.length; i < len; i++) {
+                        if (vm.cycles.list[i].id === editedCycle.id) {
                             break;
                         }
                     }
 
-                    vm.cycles.splice(i, 1, editedCycle);
+                    vm.cycles.list.splice(i, 1, editedCycle);
                 });
             }
 
@@ -128,8 +136,8 @@ define([
             function filters() {
                 var filters = angular.copy(vm.filters);
 
-                if (filters.active === null) {
-                    delete filters.active;
+                if (filters.cycle_is_active === null) {
+                    delete filters.cycle_is_active;
                 }
 
                 Object.keys(filters).filter(function (key) {
@@ -142,6 +150,23 @@ define([
             }
 
             /**
+             * Fetches the status overview limited to the given cycle ids
+             * and the current week
+             *
+             * @param {string} cycleIds - A com
+             * @return {Promise}
+             */
+            function getStatusOverviewFor(cycleIds) {
+                var today = moment();
+
+                return AppraisalCycle.statusOverview({
+                    cycles_ids: cycleIds,
+                    start_date: today.startOf('isoWeek').format('YYYY-MM-DD'),
+                    end_date: today.endOf('isoWeek').format('YYYY-MM-DD')
+                });
+            }
+
+            /**
              * Initialization code
              */
             function init() {
@@ -149,12 +174,45 @@ define([
                 watchFilters();
 
                 vm.requestCycles();
-
-                AppraisalCycle.grades().then(function (grades) {
-                    vm.chartData = grades;
-                });
             }
 
+            /**
+             * Stores in the scope the returned cycles and checks if all the
+             * cycles in the DB (that match the filters) have been loaded
+             *
+             * @param {object}
+             *   The returned cycles' object comprised of the paginated list and
+             *   the total number of cycles that match the filters
+             * @param {boolean} add - If the list is to be added to the current
+             *   list of cycles or it should overwrite it
+             */
+            function processLoadedCycles(cycles, add) {
+                if (add) {
+                    cycles.list.forEach(function (cycle) {
+                        vm.cycles.list.push(cycle);
+                    });
+                } else {
+                    vm.cycles.list = cycles.list;
+                }
+
+                vm.cycles.total = cycles.total;
+                vm.loading.done = vm.cycles.list.length === cycles.total;
+            }
+
+            /**
+             * Stores in the scope the weekly figures of due/overdue appraisals
+             * from the status overview returned by the API
+             *
+             * @param {object} statusOverview
+             */
+            function processWeeklyFigures(statusOverview) {
+                vm.appraisalsWeeklyFigures = _.reduce(statusOverview.steps, function (figures, status) {
+                    figures.due += status.due;
+                    figures.overdue += status.overdue;
+
+                    return figures;
+                }, { due: 0, overdue: 0 });
+            }
 
             /**
              * Checks when the filter values change, then wait for a delay

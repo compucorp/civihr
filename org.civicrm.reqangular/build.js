@@ -13,6 +13,7 @@
         'common/angularMocks': 'common/vendor/angular/angular-mocks',
         'common/angularResource': 'common/vendor/angular/angular-resource.min',
         'common/angularRoute': 'common/vendor/angular/angular-route.min',
+        'common/angularUiRouter': 'common/vendor/angular/angular-ui-router.min',
         'common/angular-date': 'common/angular-date/dist/angular-date',
         'common/require': 'common/vendor/require.min',
         'common/d3': 'common/vendor/d3.min',
@@ -41,9 +42,17 @@
         'common/angularRoute': {
             deps: ['common/angular']
         },
+        'common/angularUiRouter': {
+            deps: ['common/angular']
+        },
     },
     include: [
         'common/bundles/vendors',
-        'common/bundles/apis'
+        'common/bundles/apis',
+        'common/bundles/services',
+        'common/bundles/directives',
+        'common/modules/templates',
+        'common/bundles/angular-date',
+        'common/bundles/routers'
     ]
 })

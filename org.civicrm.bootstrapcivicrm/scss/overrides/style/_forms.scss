@@ -3,11 +3,26 @@ label {
     font-weight: 600;
 }
 
+.checkbox {
+
+    > label {
+        color: $text-color;
+    }
+}
+
 .form-control {
     @include box-shadow(none);
 
     &:focus {
         @include box-shadow(none);
+    }
+}
+
+.form-group.form-required {
+
+    > .control-label:after {
+        content:"*";
+        color: $brand-danger;
     }
 }
 
@@ -18,6 +33,14 @@ label {
         // Labels should always be aligned to the left
         .control-label {
             text-align: left;
+        }
+
+        // Checkbox must be vertically aligned when in a form group
+        .form-group {
+
+            input[type="checkbox"] {
+                margin-top: 8px;
+            }
         }
 
         // Label size is always the same also with small size input fields
@@ -40,5 +63,14 @@ label {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+    }
+}
+
+
+// AngularJS CSS classes
+.form-submitted {
+
+    .ng-invalid {
+        border: 1px solid $brand-danger;
     }
 }

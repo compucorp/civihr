@@ -33,6 +33,12 @@ define(function () {
                     }]
                 }
             })
+            .state('appraisal-cycle', {
+                url: '/appraisal-cycle/:cycleId',
+                controller: 'AppraisalCycleCtrl',
+                controllerAs: 'cycle',
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
+            })
             .state('profile', {
                 url: '/profile',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/profile.html'

@@ -16,12 +16,6 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     $this->installCostCentreTypes();
   }
 
-  public function upgrade_1002(){
-    $this->installCostCentreTypes();
-
-    return TRUE;
-  }
-
   /**
    * Example: Run an external SQL script when the module is uninstalled
    *
@@ -54,6 +48,19 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     $this->ctx->log->info('Applying update for job role start and end dates');
     CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `start_date` timestamp DEFAULT 0 COMMENT 'Start Date of the job role'");
     CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrjobroles` ADD COLUMN  `end_date` timestamp DEFAULT 0 COMMENT 'End Date of the job role'");
+    return TRUE;
+  }
+
+  public function upgrade_1002(){
+    $this->installCostCentreTypes();
+
+    return TRUE;
+  }
+
+  public function upgrade_1003() {
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `start_date` DATETIME DEFAULT 0');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `end_date` DATETIME DEFAULT 0');
+
     return TRUE;
   }
 

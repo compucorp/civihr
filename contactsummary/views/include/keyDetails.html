@@ -11,7 +11,14 @@
             <dt>Date of Birth</dt>
             <dd>{{ KeyDetails.contactDetails.dateOfBirth }}</dd>
             <dt>Length of Service</dt>
-            <dd>{{ KeyDetails.primaryContract.lengthOfService }}</dd>
+            <dd>
+                <span ng-if="KeyDetails.primaryContract.lengthOfService.years > 0">{{KeyDetails.primaryContract.lengthOfService.years}} years</span>
+                <span ng-if="KeyDetails.primaryContract.lengthOfService.months > 0">{{KeyDetails.primaryContract.lengthOfService.months}} months</span>
+                <span ng-if="
+                    KeyDetails.primaryContract.lengthOfService.days > 0
+                    && KeyDetails.primaryContract.lengthOfService.months == 0
+                    && KeyDetails.primaryContract.lengthOfService.years == 0">{{KeyDetails.primaryContract.lengthOfService.days}} days</span>
+            </dd>
             <dt>Contract Type</dt>
             <dd>{{ KeyDetails.primaryContract.type }}</dd>
             <dt>Gross Annual Pay</dt>

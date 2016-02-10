@@ -175,37 +175,11 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     }
     public function details_location_import($value)
     {
-        return $this->_locationOptionsFlipped[$value];
-    }
-    
-    public function health_provider_import($value)
-    {
-        if (empty($value))
-        {
+        if(!isset($this->_locationOptionsFlipped[$value])) {
             return null;
         }
-        
-        $contactLookup = array();
-        $keys = preg_split("/(InternalID: |, Email: |, ExternalID: |\))/", $value);
-        if (isset($keys[1]))
-        {
-            $contactLookup['id'] = $keys[1];
-        }
-        if (isset($keys[2]))
-        {
-            $contactLookup['email'] = $keys[2];
-        }
-        if (isset($keys[3]))
-        {
-            $contactLookup['external_identifier'] = (int)$keys[3];
-        }
-        
-        return $this->getContactByLookup($contactLookup);
-    }
-    
-    public function health_provider_life_insurance_import($value)
-    {
-        return $this->health_provider_import($value);
+
+        return $this->_locationOptionsFlipped[$value];
     }
     
     public function hour_hours_type_export($value)

@@ -16,6 +16,18 @@
             margin: 0;
         }
 
+        table {
+            border: 0;
+
+            td {
+                color: inherit;
+            }
+
+            th {
+                border: 0;
+            }
+        }
+
         .panel {
             display: block;
             position: static;

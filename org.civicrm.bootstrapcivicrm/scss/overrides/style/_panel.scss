@@ -26,6 +26,10 @@
     }
 }
 
+.panel-body-small {
+    padding: $panel-heading-padding;
+}
+
 .panel-footer {
     border: 0;
 }
@@ -99,5 +103,13 @@
 
     > .panel-heading {
         margin-bottom: 15px;
+    }
+}
+
+// Panel heading with buttons, aligned vertically
+.panel-heading-w-buttons {
+
+    .btn {
+        margin: -8px 0 -8px 10px;
     }
 }

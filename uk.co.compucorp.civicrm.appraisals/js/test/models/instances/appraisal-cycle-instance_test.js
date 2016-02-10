@@ -1,5 +1,6 @@
 define([
     'common/lodash',
+    'common/moment',
     'common/angularMocks',
     'appraisals/app'
 ], function (_) {
@@ -7,7 +8,8 @@ define([
 
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
-        var instanceInterface = ['init', 'attributes', 'fromAPI', 'toAPI', 'update'];
+        var instanceInterface = ['init', 'attributes', 'defaultCustomData',
+        'dueDates', 'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -43,7 +45,19 @@ define([
                 });
 
                 it('contains the attributes passed to it', function () {
-                    expect(_.values(instance)).toEqual(_.values(attributes));
+                    expect(instance.foo).toBeDefined();
+                    expect(instance.bar).toBeDefined();
+                    expect(instance.foo).toEqual(attributes.foo);
+                    expect(instance.bar).toEqual(attributes.bar);
+                });
+
+                it('contains the default custom data', function () {
+                    expect(instance.appraisals_count).toBeDefined();
+                    expect(instance.completion_percentage).toBeDefined();
+                    expect(instance.statuses).toBeDefined();
+                    expect(instance.appraisals_count).toEqual(0);
+                    expect(instance.completion_percentage).toBe(0);
+                    expect(instance.statuses).toEqual({});
                 });
             });
 
@@ -51,7 +65,22 @@ define([
                 var attributes = {
                     foo: 'foo',
                     cycle_start_date: '2015-09-23',
-                    cycle_grade_due: '2015-11-22'
+                    cycle_grade_due: '2015-11-22',
+                    cycle_is_active: '0',
+                    'api.AppraisalCycle.getappraisalsperstep': {
+                        values: [
+                            {
+                                appraisals_count: '7',
+                                status_id: '1',
+                                status_name: 'Awaiting self appraisal'
+                            },
+                            {
+                                appraisals_count: '2',
+                                status_id: '5',
+                                status_name: 'Complete'
+                            }
+                        ]
+                    }
                 };
 
                 beforeEach(function () {
@@ -62,6 +91,23 @@ define([
                     expect(instance.foo).toBe(attributes.foo);
                     expect(instance.cycle_start_date).toBe('23/09/2015');
                     expect(instance.cycle_grade_due).toBe('22/11/2015');
+                    expect(instance.cycle_is_active).toBe(false);
+                    expect(instance['api.AppraisalCycle.getappraisalsperstep']).not.toBeDefined();
+                    expect(instance.appraisals_count).toBeDefined();
+                    expect(instance.completion_percentage).toBeDefined();
+                    expect(instance.statuses).toBeDefined();
+                    expect(instance.appraisals_count).toBe(9);
+                    expect(instance.completion_percentage).toBe(22)
+                    expect(instance.statuses).toEqual({
+                        '1': {
+                            name: 'Awaiting self appraisal',
+                            appraisals_count: '7'
+                        },
+                        '5': {
+                            name: 'Complete',
+                            appraisals_count: '2'
+                        }
+                    });
                 });
             });
         });
@@ -88,6 +134,98 @@ define([
             });
         });
 
+        describe('dueDates()', function () {
+            var instance;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_start_date: '01/01/2015',
+                    cycle_end_date: '31/12/2015',
+                    cycle_self_appraisal_due: '31/01/2016',
+                    cycle_manager_appraisal_due: '28/02/2016',
+                    cycle_grade_due: '30/03/2016'
+                });
+            });
+
+            it('returns only the due dates', function () {
+                expect(instance.dueDates()).toEqual({
+                    cycle_self_appraisal_due: '31/01/2016',
+                    cycle_manager_appraisal_due: '28/02/2016',
+                    cycle_grade_due: '30/03/2016'
+                });
+            })
+        });
+
+        describe('isStatusOverdue()', function () {
+            var instance;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_self_appraisal_due: '01/02/2016',
+                    cycle_manager_appraisal_due: '01/03/2016',
+                    cycle_grade_due: '01/04/2016'
+                });
+
+                jasmine.clock().mockDate(new Date(2016, 2, 1));
+            });
+
+            it('checks if a status is overdue given the current date', function () {
+                expect(instance.isStatusOverdue('1')).toBe(true);
+                expect(instance.isStatusOverdue('2')).toBe(false);
+                expect(instance.isStatusOverdue('3')).toBe(false);
+            });
+        });
+
+        describe('nextDueDate()', function () {
+            var instance, nextDueDate;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    cycle_self_appraisal_due: '01/02/2016',
+                    cycle_manager_appraisal_due: '01/03/2016',
+                    cycle_grade_due: '01/04/2016'
+                });
+            });
+
+            describe('when there are still due date', function () {
+
+                describe('when today is a due date', function () {
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 1, 1));
+                        nextDueDate = instance.nextDueDate();
+                    });
+
+                    it('returns today', function () {
+                        expect(nextDueDate.status_id).toBe('1');
+                        expect(nextDueDate.date).toBe('01/02/2016');
+                    });
+                });
+
+                describe('when today is not a due date', function () {
+                    beforeEach(function () {
+                        jasmine.clock().mockDate(new Date(2016, 1, 2));
+                        nextDueDate = instance.nextDueDate();
+                    });
+
+                    it('returns the next to come', function () {
+                        expect(nextDueDate.status_id).toBe('2');
+                        expect(nextDueDate.date).toBe('01/03/2016');
+                    });
+                });
+            });
+
+            describe('when there are no more due dates', function () {
+                beforeEach(function () {
+                    jasmine.clock().mockDate(new Date(2016, 5, 3));
+                    nextDueDate = instance.nextDueDate();
+                });
+
+                it('returns nothing', function () {
+                    expect(nextDueDate).toBe(null);
+                });
+            });
+        });
+
         describe('toAPI()', function () {
             var instance, toAPIData;
 
@@ -95,7 +233,15 @@ define([
                 instance = AppraisalCycleInstance.init({
                     foo: 'foo',
                     cycle_start_date: '23/09/2015',
-                    cycle_grade_due: '22/11/2015'
+                    cycle_grade_due: '22/11/2015',
+                    completion_percentage: 20,
+                    appraisals_count: {
+                        steps: [
+                            { status_id: '4', appraisals_count: 5 },
+                            { status_id: '2', appraisals_count: 7 },
+                        ],
+                        total: 12
+                    }
                 });
                 toAPIData = instance.toAPI();
             });
@@ -104,8 +250,12 @@ define([
                 expect(Object.getPrototypeOf(toAPIData)).toBe(null);
             });
 
-            it('returns all the attributes of the instance', function () {
-                expect(Object.keys(toAPIData)).toEqual(Object.keys(instance.attributes()));
+            it('filters out the custom data field', function () {
+                expect(Object.keys(toAPIData)).toEqual(_.without(
+                    Object.keys(instance.attributes()),
+                    'appraisals_count',
+                    'completion_percentage'
+                ));
             });
 
             it('formats the dates in the YYYY-MM-DD format', function () {
@@ -159,7 +309,7 @@ define([
                     var updated = _.assign(Object.create(null), oldData, newData);
 
                     p.then(function () {
-                        expect(instance.attributes()).toEqual(updated);
+                        expect(instance.attributes()).toEqual(jasmine.objectContaining(updated));
                     })
                     .finally(done) && $rootScope.$digest();
                 });
