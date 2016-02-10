@@ -10,7 +10,7 @@
                     </span>
                 </h2>
                 <a
-                    href=""
+                    href
                     class="btn btn-secondary-outline text-uppercase pull-right"
                     ng-click="cycle.openAddContactsModal()">
                     <i class="fa fa-plus fa-fw"></i>
@@ -19,7 +19,7 @@
                 <div class="clearfix"></div>
             </header>
             <div class="panel-body panel-body-small">
-                <div class="row form-horizontal">
+                <div class="row form-horizontal form-horizontal-inline">
                     <div class="col-sm-6">
                         <div class="form-group">
                             <label for="cycle-type" class="col-sm-3 control-label">Cycle Type:</label>
@@ -46,7 +46,7 @@
                     <div class="col-sm-2 text-right">
                         <div class="form-control-static">
                             <a
-                                href=""
+                                href
                                 class="panel--appraisal-cycle-header__settings"
                                 ng-click="cycle.openAccessSettingsModal()">
                                 <i class="fa fa-gear fa-fw"></i>
@@ -62,202 +62,495 @@
         <section class="panel panel-primary">
             <header class="panel-heading">
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#summary" aria-controls="summary" role="tab" data-toggle="tab">Cycle Summary</a>
+                    <li class="active">
+                        <a href data-target="#summary" data-toggle="tab">Cycle Summary</a>
                     </li>
-                    <li role="presentation">
-                        <a href="#appraisals" aria-controls="appraisals" role="tab" data-toggle="tab">Appraisals in Cycle</a>
+                    <li>
+                        <a href data-target="#appraisals" data-toggle="tab">Appraisals in Cycle</a>
                     </li>
                 </ul>
             </header>
-            <div class="row">
-                <div class="col-sm-8">
-                    <section class="panel panel-default panel--breakdown">
-                        <header class="panel-heading">
-                            <h2 class="panel-title">Breakdown</h2>
-                        </header>
-                        <div class="panel-body">
-                            <ul class="list-unstyled chr_steps chr_steps--flex chr_steps--compact">
-                                <li class="chr_steps__step">
-                                    <span class="chr_steps__step__arrow chart-color-0">Step 1</span>
-                                    <div class="chr_steps__step__legend">
-                                        <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
-                                            <p>
-                                                Awaiting Self<br>Appraisal
-                                            </p>
-                                            <p class="text-danger">
-                                                <strong>30 Overdue</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="chr_steps__step">
-                                    <span class="chr_steps__step__arrow chart-color-1">Step 2</span>
-                                    <div class="chr_steps__step__legend">
-                                        <div class="chr_steps__step__legend__content chart-color-border-1 text-center">
-                                            <p>
-                                                Awaiting Manager<br>Appraisal
-                                            </p>
-                                            <p class="text-primary">
-                                                <strong>22 Contacts</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="chr_steps__step">
-                                    <span class="chr_steps__step__arrow chart-color-2">Step 3</span>
-                                    <div class="chr_steps__step__legend">
-                                        <div class="chr_steps__step__legend__content chart-color-border-2 text-center">
-                                            <p>Awaiting<br>Grade</p>
-                                            <p class="text-primary">
-                                                <strong>3 Contacts</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="chr_steps__step">
-                                    <span class="chr_steps__step__arrow chart-color-3">Step 4</span>
-                                    <div class="chr_steps__step__legend">
-                                        <div class="chr_steps__step__legend__content chart-color-border-3 text-center">
-                                            <p>
-                                                Awaiting HR<br>Approval
-                                            </p>
-                                            <p class="text-primary">
-                                                <strong>45 Contacts</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="chr_steps__step">
-                                    <span class="chr_steps__step__arrow chart-color-4">Step 5</span>
-                                    <div class="chr_steps__step__legend">
-                                        <div class="chr_steps__step__legend__content chart-color-border-4 text-center">
-                                            <p>Complete</p>
-                                            <br>
-                                            <p class="text-primary">
-                                                <strong>0 Contacts</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="summary">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <section class="panel panel-default panel--breakdown">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">Breakdown</h2>
+                                </header>
+                                <div class="panel-body">
+                                    <ul class="list-unstyled chr_steps chr_steps--flex chr_steps--compact">
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-0">Step 1</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
+                                                    <p>
+                                                        Awaiting Self<br>Appraisal
+                                                    </p>
+                                                    <p class="text-danger">
+                                                        <strong>30 Overdue</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-1">Step 2</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-1 text-center">
+                                                    <p>
+                                                        Awaiting Manager<br>Appraisal
+                                                    </p>
+                                                    <p class="text-primary">
+                                                        <strong>22 Contacts</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-2">Step 3</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-2 text-center">
+                                                    <p>Awaiting<br>Grade</p>
+                                                    <p class="text-primary">
+                                                        <strong>3 Contacts</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-3">Step 4</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-3 text-center">
+                                                    <p>
+                                                        Awaiting HR<br>Approval
+                                                    </p>
+                                                    <p class="text-primary">
+                                                        <strong>45 Contacts</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="chr_steps__step">
+                                            <span class="chr_steps__step__arrow chart-color-4">Step 5</span>
+                                            <div class="chr_steps__step__legend">
+                                                <div class="chr_steps__step__legend__content chart-color-border-4 text-center">
+                                                    <p>Complete</p>
+                                                    <br>
+                                                    <p class="text-primary">
+                                                        <strong>0 Contacts</strong>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <footer class="panel-footer">
+                                    <dl class="dl-horizontal dl-horizontal-inline">
+                                        <dt>Total number of appraisals in this cycles:</dt>
+                                        <dd>100</dd>
+                                    </dl>
+                                </footer>
+                            </section>
                         </div>
-                        <footer class="panel-footer">
-                            <dl class="dl-horizontal dl-horizontal-inline">
-                                <dt>Total number of appraisals in this cycles:</dt>
-                                <dd>100</dd>
-                            </dl>
-                        </footer>
-                    </section>
+                        <div class="col-sm-4">
+                            <section class="panel panel-default panel--grades">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title">Grades</h2>
+                                </header>
+                                <div class="panel-body" crm-grades-chart chart-data="cycle.grades">
+                                </div>
+                                <footer class="panel-footer">
+                                    <dl class="dl-horizontal dl-horizontal-inline">
+                                        <dt>Average Grade:</dt>
+                                        <dd>2.6 (Meet Expectation)</dd>
+                                    </dl>
+                                </footer>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <section class="panel panel-default panel-default-plain-inverted">
+                                <header class="panel-heading panel-heading-w-buttons">
+                                    <h2 class="panel-title pull-left">Due Dates</h2>
+                                    <a href
+                                        class="btn btn-secondary-outline text-uppercase pull-right"
+                                        ng-click="cycle.openEditDatesModal()">
+                                        edit
+                                    </a>
+                                    <div class="clearfix"></div>
+                                    <hr>
+                                </header>
+                                <div class="panel-body">
+                                    <dl class="dl-inline">
+                                        <dt>Self Appraisal Due:</dt>
+                                        <dd>dd/mm/yyyy</dd>
+                                        <dt>Manager Appraisal Due:</dt>
+                                        <dd>dd/mm/yyyy</dd>
+                                        <dt>Grade Due:</dt>
+                                        <dd>dd/mm/yyyy</dd>
+                                    </dl>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <section class="panel panel-default">
+                                <header class="panel-heading">
+                                    <h2 class="panel-title pull-left">
+                                        <span class="text-danger">
+                                            Overdue appraisals in this cycle
+                                        </span>
+                                    </h2>
+                                    <a href class="pull-right">View in Search</a>
+                                    <div class="clearfix"></div>
+                                </header>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Employee</th>
+                                                <th>Appraisal Type</th>
+                                                <th>Status</th>
+                                                <th>Due Date</th>
+                                                <th>Self Appraisal</th>
+                                                <th>Manager Appraisal</th>
+                                                <th>Grade</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Amy Anderson</td>
+                                                <td>Annual Appraisal</td>
+                                                <td>Assigned to Manager</td>
+                                                <td>dd/mm/yyyy</td>
+                                                <td><a href>View Self Appraisal</a></td>
+                                                <td><a href>View Manager Appraisal</a></td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Lauren Ipsum</td>
+                                                <td>Annual Appraisal</td>
+                                                <td>Assigned to Manager</td>
+                                                <td>dd/mm/yyyy</td>
+                                                <td><a href>View Self Appraisal</a></td>
+                                                <td><a href>View Manager Appraisal</a></td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Amy Anderson</td>
+                                                <td>Annual Appraisal</td>
+                                                <td>Assigned to Manager</td>
+                                                <td>dd/mm/yyyy</td>
+                                                <td><a href>View Self Appraisal</a></td>
+                                                <td><a href>View Manager Appraisal</a></td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Amy Anderson</td>
+                                                <td>Annual Appraisal</td>
+                                                <td>Assigned to Manager</td>
+                                                <td>dd/mm/yyyy</td>
+                                                <td><a href>View Self Appraisal</a></td>
+                                                <td><a href>View Manager Appraisal</a></td>
+                                                <td class="text-center">-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-4">
-                    <section class="panel panel-default panel--grades">
-                        <header class="panel-heading">
-                            <h2 class="panel-title">Grades</h2>
-                        </header>
-                        <div class="panel-body" crm-grades-chart chart-data="cycle.grades">
+                <div class="tab-pane" id="appraisals">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <section class="panel panel-default panel--appraisals-in-cycle">
+                                <div class="panel-heading">
+                                    <header class="row">
+                                        <div class="col-sm-8">
+                                            <h2 class="panel-title">
+                                                Appraisals in Cycle
+                                            </h2>
+                                        </div>
+                                        <div class="col-sm-4 text-right">
+                                            <span style="cursor: pointer;">
+                                                <i class="fa fa-fw fa-0_5x fa-angle-right"></i>
+                                                Filter Appraisals
+                                            </span>
+                                        </div>
+                                    </header>
+                                    <hr>
+                                    <div class="row form-horizontal form-horizontal-inline">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label for="action" class="control-label col-sm-3">
+                                                    Actions:
+                                                </label>
+                                                <div class="col-sm-9">
+                                                    <select id="action" class="form-control">
+                                                        <option value="">---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="radio text-right pull-right">
+                                                <label>
+                                                    <input name="bulk-selected" type="radio">
+                                                    <strong>3 selected appraisals only</strong>
+                                                </label>
+                                            </div>
+                                            <div class="radio text-right pull-right" style="margin-right: 20px;">
+                                                <label>
+                                                    <input name="bulk-selected" type="radio">
+                                                    <strong>All 100 appraisals</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox">
+                                                </th>
+                                                <th>Contact</th>
+                                                <th>Role</th>
+                                                <th>Level</th>
+                                                <th>Location</th>
+                                                <th>Line Manager</th>
+                                                <th>Status</th>
+                                                <th>Grade</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 1</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 1</td>
+                                                <td>Manager Name 1</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">1</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 2</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 2</td>
+                                                <td>Manager Name 2</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">2</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 3</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 3</td>
+                                                <td>Manager Name 3</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">3</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 4</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 4</td>
+                                                <td>Manager Name 4</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">4</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 5</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 5</td>
+                                                <td>Manager Name 5</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">1</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 6</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 6</td>
+                                                <td>Manager Name 6</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">2</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 7</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 7</td>
+                                                <td>Manager Name 7</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">3</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 8</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 8</td>
+                                                <td>Manager Name 8</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">4</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 9</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 9</td>
+                                                <td>Manager Name 9</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">1</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox">
+                                                </td>
+                                                <td>Contact Name 10</td>
+                                                <td>Role Lorem Ipsum</td>
+                                                <td>Level Ipsum</td>
+                                                <td>Location 10</td>
+                                                <td>Manager Name 10</td>
+                                                <td>Status Lorem Ipusm</td>
+                                                <td class="text-center">2</td>
+                                                <td>
+                                                    <a href>
+                                                        <i class="panel--appraisals-in-cycle__actions fa fa-ellipsis-v"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <footer class="panel-footer text-center">
+                                    <nav>
+                                        <ul class="pagination">
+                                            <li class="active">
+                                                <a href>1</a>
+                                            </li>
+                                            <li>
+                                                <a href>2</a>
+                                            </li>
+                                            <li>
+                                                <a href>3</a>
+                                            </li>
+                                            <li>
+                                                <a href>4</a>
+                                            </li>
+                                            <li>
+                                                <a href>5</a>
+                                            </li>
+                                            <li>
+                                                <a href>6</a>
+                                            </li>
+                                            <li>
+                                                <a href>7</a>
+                                            </li>
+                                            <li>
+                                                <a href>8</a>
+                                            </li>
+                                            <li>
+                                                <a href>9</a>
+                                            </li>
+                                            <li>
+                                                <a href>10</a>
+                                            </li>
+                                            <li>
+                                                <a href>
+                                                    <strong>Next &rsaquo;</strong>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href>
+                                                    <strong>Last &raquo;</strong>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </footer>
+                            </section>
                         </div>
-                        <footer class="panel-footer">
-                            <dl class="dl-horizontal dl-horizontal-inline">
-                                <dt>Average Grade:</dt>
-                                <dd>2.6 (Meet Expectation)</dd>
-                            </dl>
-                        </footer>
-                    </section>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <section class="panel panel-default panel-default-plain-inverted">
-                        <header class="panel-heading panel-heading-w-buttons">
-                            <h2 class="panel-title pull-left">Due Dates</h2>
-                            <a href=""
-                                class="btn btn-secondary-outline text-uppercase pull-right"
-                                ng-click="cycle.openEditDatesModal()">
-                                edit
-                            </a>
-                            <div class="clearfix"></div>
-                            <hr>
-                        </header>
-                        <div class="panel-body">
-                            <dl class="dl-inline">
-                                <dt>Self Appraisal Due:</dt>
-                                <dd>dd/mm/yyyy</dd>
-                                <dt>Manager Appraisal Due:</dt>
-                                <dd>dd/mm/yyyy</dd>
-                                <dt>Grade Due:</dt>
-                                <dd>dd/mm/yyyy</dd>
-                            </dl>
-                        </div>
-                    </section>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <section class="panel panel-default">
-                        <header class="panel-heading">
-                            <h2 class="panel-title pull-left">
-                                <span class="text-danger">
-                                    Overdue appraisals in this cycle
-                                </span>
-                            </h2>
-                            <a href="" class="pull-right">View in Search</a>
-                            <div class="clearfix"></div>
-                        </header>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Employee</th>
-                                        <th>Appraisal Type</th>
-                                        <th>Status</th>
-                                        <th>Due Date</th>
-                                        <th>Self Appraisal</th>
-                                        <th>Manager Appraisal</th>
-                                        <th>Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Amy Anderson</td>
-                                        <td>Annual Appraisal</td>
-                                        <td>Assigned to Manager</td>
-                                        <td>dd/mm/yyyy</td>
-                                        <td><a href="">View Self Appraisal</a></td>
-                                        <td><a href="">View Manager Appraisal</a></td>
-                                        <td class="text-center">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Lauren Ipsum</td>
-                                        <td>Annual Appraisal</td>
-                                        <td>Assigned to Manager</td>
-                                        <td>dd/mm/yyyy</td>
-                                        <td><a href="">View Self Appraisal</a></td>
-                                        <td><a href="">View Manager Appraisal</a></td>
-                                        <td class="text-center">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Amy Anderson</td>
-                                        <td>Annual Appraisal</td>
-                                        <td>Assigned to Manager</td>
-                                        <td>dd/mm/yyyy</td>
-                                        <td><a href="">View Self Appraisal</a></td>
-                                        <td><a href="">View Manager Appraisal</a></td>
-                                        <td class="text-center">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Amy Anderson</td>
-                                        <td>Annual Appraisal</td>
-                                        <td>Assigned to Manager</td>
-                                        <td>dd/mm/yyyy</td>
-                                        <td><a href="">View Self Appraisal</a></td>
-                                        <td><a href="">View Manager Appraisal</a></td>
-                                        <td class="text-center">-</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
+                    </div>
                 </div>
             </div>
         </section>

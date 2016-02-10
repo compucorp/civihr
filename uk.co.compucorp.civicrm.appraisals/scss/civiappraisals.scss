@@ -60,6 +60,22 @@
 
 #{$bootstrap-namespace} {
 
+    .panel--appraisals-in-cycle {
+
+        > .panel-heading {
+
+            > hr {
+                margin-bottom: 15px;
+                margin-top: 15px;
+            }
+        }
+    }
+
+    .panel--appraisals-in-cycle__actions {
+        color: $gray-darker;
+    }
+
+
     .panel--appraisal-cycle-header__title {
 
         .panel--appraisal-cycle-header__title__cycle-id {
