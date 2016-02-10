@@ -16,7 +16,7 @@ define([
             $scope.dpOpen = function($event, opened){
                 $event.preventDefault();
                 $event.stopPropagation();
-                console.info(opened);
+
                 $scope[opened] = true;
             };
 

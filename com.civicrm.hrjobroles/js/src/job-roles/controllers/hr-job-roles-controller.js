@@ -4,11 +4,11 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', 'format', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
-        function ($scope, format, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
+    controllers.controller('HRJobRolesController', ['$scope', 'HR_settings', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
+        function ($scope, HR_settings, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
             $log.debug('Controller: HRJobRolesController');
 
-            $scope.format = format;
+            $scope.format = HR_settings.DATE_FORMAT;
 
             var me = this;
 

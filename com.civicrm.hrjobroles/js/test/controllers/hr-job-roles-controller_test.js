@@ -17,10 +17,5 @@ define([
             expect(true).toBe(true);
         });
 
-        it('Date Format should be already defined', function () {
-            expect(scope.format).toBe('DD/MM/YYYY');
-        });
-
-
     });
 });
