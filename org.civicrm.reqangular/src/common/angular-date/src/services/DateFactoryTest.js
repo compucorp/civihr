@@ -11,9 +11,4 @@ describe('Unit: DateFactory', function() {
     it('Should be defined.', function() {
         expect(Factory).toBeDefined();
     });
-
-    it('Moment.js should be included', function() {
-        expect(Factory.moment).toBeDefined();
-    });
-
 });
