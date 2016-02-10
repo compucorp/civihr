@@ -50,7 +50,7 @@
                     <label class="col-sm-4 control-label">Contract Dates</label>
                     <div class="col-sm-6">
                         <p class="form-control-static">
-                            <span class="subfield">({{details.period_start_date | CustomDate}} - {{details.period_end_date | CustomDate}})</span>
+                            <span class="subfield">({{details.period_start_date | formatDate}} - {{details.period_end_date | formatDate}})</span>
                             <span ng-if="details.notice_amount" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
                             <span ng-if="details.notice_amount_employee" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
                         </p>
