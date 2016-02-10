@@ -75,6 +75,11 @@
         color: $gray-darker;
     }
 
+    .panel--appraisals-in-cycle__filters {
+        background: $brand-primary-light;
+        margin: 15px -20px;
+        padding: $panel-body-padding;
+    }
 
     .panel--appraisal-cycle-header__title {
 
