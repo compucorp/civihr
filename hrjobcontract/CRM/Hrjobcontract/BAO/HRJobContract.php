@@ -66,6 +66,10 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     return $dao->count();
   }
 
+  /**
+   * Change primary contract, update all other contracts for given contract to not be primary
+   * @param int $id
+   */
   public static function changePrimary($id) {
     $bao = static::findById($id);
     $otherContracts = new static();
@@ -80,12 +84,23 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $bao->save();
   }
 
+  /**
+   * Set given contract as primary, without checking other contracts for the contact
+   *
+   * @param int $id
+   */
   private static function setPrimary($id) {
     $bao = static::findById($id);
     $bao->is_primary = 0;
     $bao->save();
   }
 
+  /**
+   * Find a contract by ID
+   *
+   * @param int $id
+   * @return \CRM_Hrjobcontract_BAO_HRJobContract
+   */
   public static function findById($id) {
     $bao = new CRM_Hrjobcontract_BAO_HRJobContract();
     $bao->id = $id;

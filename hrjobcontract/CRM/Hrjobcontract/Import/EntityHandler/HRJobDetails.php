@@ -5,6 +5,9 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobDetails extends CRM_Hrjobcontr
     parent::__construct('HRJobDetails');
   }
 
+  /**
+   * @inheritdoc
+   */
   public function handle(array $params, CRM_Hrjobcontract_DAO_HRJobContractRevision $contractRevision, array &$previousRevision) {
     $entityParams = $this->extractFields($params);
 
@@ -23,6 +26,9 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobDetails extends CRM_Hrjobcontr
     return array($detailsInstance);
   }
 
+  /**
+   * Check if the contract is current
+   */
   private function isCurrent($entityParams) {
     $now = new DateTime();
     $startDate = DateTime::createFromFormat('YmdHis', $entityParams['period_start_date']);
