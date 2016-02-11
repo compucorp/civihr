@@ -65,7 +65,35 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $dao->copyValues($params);
     return $dao->count();
   }
-  
+
+  public static function changePrimary($id) {
+    $bao = static::findById($id);
+    $otherContracts = new static();
+    $otherContracts->contact_id = $bao->contact_id;
+
+    $otherContracts->find();
+    while($otherContracts->fetch()) {
+      static::setPrimary($otherContracts->id);
+    }
+
+    $bao->is_primary = 1;
+    $bao->save();
+  }
+
+  private static function setPrimary($id) {
+    $bao = static::findById($id);
+    $bao->is_primary = 0;
+    $bao->save();
+  }
+
+  public static function findById($id) {
+    $bao = new CRM_Hrjobcontract_BAO_HRJobContract();
+    $bao->id = $id;
+    $bao->find(TRUE);
+
+    return $bao;
+  }
+
   /**
    * combine all the importable fields from the lower levels object
    *
