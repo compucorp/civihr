@@ -28,8 +28,11 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobDetails extends CRM_Hrjobcontr
 
   /**
    * Check if the contract is current
+   *
+   * @param array $entityParams
+   * @return bool
    */
-  private function isCurrent($entityParams) {
+  private function isCurrent(array $entityParams) {
     $now = new DateTime();
     $startDate = DateTime::createFromFormat('YmdHis', $entityParams['period_start_date']);
     $endDate = null;
