@@ -77,7 +77,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
     $otherContracts->find();
     while($otherContracts->fetch()) {
-      static::setPrimary($otherContracts->id);
+      static::setAsNotPrimary($otherContracts->id);
     }
 
     $bao->is_primary = 1;
@@ -85,11 +85,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Set given contract as primary, without checking other contracts for the contact
+   * Set given contract as NOT primary, without checking other contracts for the contact
    *
    * @param int $id
    */
-  private static function setPrimary($id) {
+  private static function setAsNotPrimary($id) {
     $bao = static::findById($id);
     $bao->is_primary = 0;
     $bao->save();
