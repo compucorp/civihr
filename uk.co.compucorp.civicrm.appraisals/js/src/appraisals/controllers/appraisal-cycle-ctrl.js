@@ -28,6 +28,7 @@ define([
                     title: 'Confirm Delete Appraisal',
                     copyCancel: 'Cancel',
                     copyConfirm: 'Delete',
+                    classConfirm: 'btn-danger-outline',
                     msg: 'This cannot be undone'
                 });
             };
