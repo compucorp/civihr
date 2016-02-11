@@ -5,13 +5,14 @@ define([
     'use strict';
 
     describe('AppraisalsCtrl', function () {
-        var $log, $modal, ctrl;
+        var $log, $modal, ctrl, dialog;
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function (_$log_, _$modal_, $controller, $rootScope) {
+        beforeEach(inject(function (_$log_, _$modal_, $controller, $rootScope, _dialog_) {
             ($modal = _$modal_) && spyOn($modal, 'open');
             ($log = _$log_) && spyOn($log, 'debug');
 
+            dialog = _dialog_;
             ctrl = $controller('AppraisalCycleCtrl', { $scope: $rootScope.$new() });
         }));
 
@@ -26,6 +27,17 @@ define([
 
             it('has the filters form collapsed', function () {
                 expect(ctrl.filtersCollapsed).toBe(true);
+            });
+        });
+
+        describe('delete()', function () {
+            beforeEach(function () {
+                spyOn(dialog, 'open');
+                ctrl.delete();
+            });
+
+            it('opens a dialog', function () {
+                expect(dialog.open).toHaveBeenCalled();
             });
         });
 

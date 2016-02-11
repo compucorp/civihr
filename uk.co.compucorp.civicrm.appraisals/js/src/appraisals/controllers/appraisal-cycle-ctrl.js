@@ -4,8 +4,8 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement',
-        function ($log, $modal, $rootElement) {
+        '$log', '$modal', '$rootElement', 'dialog',
+        function ($log, $modal, $rootElement, dialog) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -19,6 +19,18 @@ define([
                 { label: "Value #3", value: 30 },
                 { label: "Value #4", value: 40 }
             ];
+
+            /**
+             * Deletes a cycle (via a dialog modal)
+             */
+            vm.delete = function () {
+                dialog.open({
+                    title: 'Confirm Delete Appraisal',
+                    copyCancel: 'Cancel',
+                    copyConfirm: 'Delete',
+                    msg: 'This cannot be undone'
+                });
+            };
 
             /**
              * Opens the Access Settings modal
