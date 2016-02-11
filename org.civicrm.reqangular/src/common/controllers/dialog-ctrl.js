@@ -9,6 +9,7 @@ define([
             $scope.msg = content.msg || '';
             $scope.copyConfirm = content.copyConfirm || 'Yes';
             $scope.copyCancel = content.copyCancel || 'Cancel';
+            $scope.classConfirm = content.classConfirm || 'btn-primary';
 
             $scope.confirm = function (action) {
                 $modalInstance.close(action || true);
