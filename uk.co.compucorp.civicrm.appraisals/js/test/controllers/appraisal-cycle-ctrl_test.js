@@ -58,5 +58,15 @@ define([
                 expect($modal.open).toHaveBeenCalled();
             });
         });
+
+        describe('View Cycle modal', function () {
+            beforeEach(function () {
+                ctrl.openViewCycleModal();
+            });
+
+            it('opens a modal', function () {
+                expect($modal.open).toHaveBeenCalled();
+            });
+        });
     });
 });

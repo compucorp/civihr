@@ -59,6 +59,19 @@ define([
                 });
             };
 
+            /**
+             * Opens the View Cycle modal
+             */
+            vm.openViewCycleModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'ViewCycleModalCtrl',
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/view-cycle.html'
+                });
+            };
+
             return vm;
         }
     ]);
