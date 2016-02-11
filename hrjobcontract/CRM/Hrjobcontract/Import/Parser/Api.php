@@ -440,7 +440,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $entityHandlers = array(
       'HRJobRole' => new CRM_Hrjobcontract_Import_EntityHandler_HRJobRole(),
       'HRJobLeave' => new CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave(),
-      'HRJobHealth' => new CRM_Hrjobcontract_Import_EntityHandler_HRJobHealth()
+      'HRJobHealth' => new CRM_Hrjobcontract_Import_EntityHandler_HRJobHealth(),
+      'HRJobDetails' => new CRM_Hrjobcontract_Import_EntityHandler_HRJobDetails()
     );
     $ei = CRM_Hrjobcontract_ExportImportValuesConverter::singleton();
 
