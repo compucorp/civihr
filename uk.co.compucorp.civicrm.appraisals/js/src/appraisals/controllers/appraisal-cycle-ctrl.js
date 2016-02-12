@@ -1,6 +1,7 @@
 define([
+    'common/lodash',
     'appraisals/modules/controllers'
-], function (controllers) {
+], function (_, controllers) {
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
@@ -37,12 +38,9 @@ define([
              * Opens the Access Settings modal
              */
             vm.openAccessSettingsModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'AccessSettingsModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/access-settings.html'
+                    templateFile: 'access-settings.html'
                 });
             };
 
@@ -50,12 +48,9 @@ define([
              * Opens the Add Contacts modal
              */
             vm.openAddContactsModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'AddContactsModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-contacts.html'
+                    templateFile: 'add-contacts.html'
                 });
             };
 
@@ -63,12 +58,9 @@ define([
              * Opens the Edit Dates modal
              */
             vm.openEditDatesModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'EditDatesModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/edit-dates.html'
+                    templateFile: 'edit-dates.html'
                 });
             };
 
@@ -76,12 +68,9 @@ define([
              * Opens the View Cycle modal
              */
             vm.openViewCycleModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'ViewCycleModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/view-cycle.html'
+                    templateFile: 'view-cycle.html'
                 });
             };
 
@@ -89,15 +78,29 @@ define([
              * Opens the Send Notification Reminder modal
              */
             vm.openSendNotificationReminderModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'SendNotificationReminderModalCtrl',
-                    controllerAs: 'modal',
                     windowClass: 'modal--send-notification-reminder',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/send-notification-reminder.html'
+                    templateFile: 'send-notification-reminder.html',
                 });
             };
+
+            /**
+             * Opens a modal
+             *
+             * @param {object} options - Parameter for the modal
+             * @return {Promise}
+             */
+            function openModal(options) {
+                return $modal.open(_.assign({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: options.controller,
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    windowClass: options.windowClass || null,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/' + options.templateFile
+                }));
+            }
 
             return vm;
         }
