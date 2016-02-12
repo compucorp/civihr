@@ -37,7 +37,12 @@ define(function () {
                 url: '/appraisal-cycle/:cycleId',
                 controller: 'AppraisalCycleCtrl',
                 controllerAs: 'cycle',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html',
+                resolve: {
+                    types: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.types();
+                    }]
+                }
             })
             .state('profile', {
                 url: '/profile',

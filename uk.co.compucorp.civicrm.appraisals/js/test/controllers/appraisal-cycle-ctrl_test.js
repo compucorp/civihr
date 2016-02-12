@@ -31,6 +31,10 @@ define([
                 expect($log.debug).toHaveBeenCalled();
             });
 
+            it('stores on scope the data passed by ui-router', function () {
+                expect(ctrl.types).toBeDefined();
+            });
+
             it('has no cycle data loaded', function () {
                 expect(ctrl.cycle).toBeDefined();
                 expect(ctrl.cycle).toEqual(jasmine.any(Object));
@@ -135,7 +139,8 @@ define([
                 $stateParams: {
                     cycleId: cycle.id
                 },
-                AppraisalCycle: AppraisalCycle
+                AppraisalCycle: AppraisalCycle,
+                types: []
             });
         }
     });
