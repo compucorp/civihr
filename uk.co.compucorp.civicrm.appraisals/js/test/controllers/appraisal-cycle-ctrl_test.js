@@ -64,7 +64,7 @@ define([
                 });
 
                 it('stores the data internally', function () {
-                    expect(ctrl.cycle.name).toBe(cycle.name);
+                    expect(ctrl.cycle.cycle_name).toBe(cycle.cycle_name);
                 })
             });
         });
