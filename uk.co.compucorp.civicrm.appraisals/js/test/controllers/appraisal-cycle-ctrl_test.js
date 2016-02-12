@@ -80,5 +80,15 @@ define([
                 expect($modal.open).toHaveBeenCalled();
             });
         });
+
+        describe('Send Notification/Reminder Modal', function () {
+            beforeEach(function () {
+                ctrl.openSendNotificationReminderModal();
+            });
+
+            it('opens a modal', function () {
+                expect($modal.open).toHaveBeenCalled();
+            });
+        });
     });
 });

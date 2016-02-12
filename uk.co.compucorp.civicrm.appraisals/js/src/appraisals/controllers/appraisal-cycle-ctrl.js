@@ -85,6 +85,20 @@ define([
                 });
             };
 
+            /**
+             * Opens the Send Notification Reminder modal
+             */
+            vm.openSendNotificationReminderModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'SendNotificationReminderModalCtrl',
+                    controllerAs: 'modal',
+                    windowClass: 'modal--send-notification-reminder',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/send-notification-reminder.html'
+                });
+            };
+
             return vm;
         }
     ]);

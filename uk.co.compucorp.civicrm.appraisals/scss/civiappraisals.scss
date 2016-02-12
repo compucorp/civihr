@@ -60,6 +60,11 @@
 
 #{$bootstrap-namespace} {
 
+    .modal--send-notification-reminder__view-recipient {
+        display: inline-block;
+        margin-top: 15px;
+    }
+
     .panel--appraisals-in-cycle {
 
         > .panel-heading {
