@@ -1,17 +1,20 @@
 define([
     'common/lodash',
-    'appraisals/modules/controllers'
+    'appraisals/modules/controllers',
+    'appraisals/models/appraisal-cycle'
 ], function (_, controllers) {
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', 'dialog',
-        function ($log, $modal, $rootElement, dialog) {
+        '$log', '$modal', '$rootElement', '$stateParams', 'AppraisalCycle', 'dialog',
+        function ($log, $modal, $rootElement, $stateParams, AppraisalCycle, dialog) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
 
+            vm.cycle = {};
             vm.filtersCollapsed = true;
+            vm.loading = { cycle: true };
 
             // dummy data
             vm.grades = [
@@ -84,6 +87,18 @@ define([
                     templateFile: 'send-notification-reminder.html',
                 });
             };
+
+            init();
+
+            /**
+             * Loads the cycle
+             */
+            function init() {
+                AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
+                    vm.cycle = cycle;
+                    vm.loading.cycle = false;
+                });
+            }
 
             /**
              * Opens a modal
