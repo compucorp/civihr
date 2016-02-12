@@ -541,3 +541,38 @@ function hrjobcontract_civicrm_merge($type, &$data, $mainId = NULL, $otherId = N
       break;
   }
 }
+
+/**
+ * Implementation of hook_civicrm_searchColumns
+ *
+ * @return void
+ */
+function hrjobcontract_civicrm_searchColumns( $objectName, &$headers, &$rows, &$selector ) {
+  $options = getWorkLocationOptions();
+
+  // replace location options values with label
+  foreach($rows as &$row){
+    $location = $row['hrjobcontract_details_location'];
+    if(!empty($location)){
+      $row['hrjobcontract_details_location'] = $options[$location];
+    }
+  }
+}
+
+/**
+ * Get all options for group hrjc_location
+ *
+ * @return array
+ */
+function getWorkLocationOptions(){
+  // get option group ID
+  $optionGroup = civicrm_api3('OptionGroup', 'get', array(
+    'sequential' => 1,
+    'return' => "id",
+    'name' => "hrjc_location",
+  ));
+  $optionGroupId = $optionGroup['values'][0]['id'];
+
+  // fetch options for hrjc_location
+  return CRM_Core_BAO_OptionValue::getOptionValuesAssocArray($optionGroupId);
+}
