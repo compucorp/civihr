@@ -33,6 +33,7 @@ define([
                                 return {
                                     copyCancel: options.copyCancel || '',
                                     copyConfirm: options.copyConfirm || '',
+                                    classConfirm: options.classConfirm || '',
                                     title: options.title || '',
                                     msg: options.msg || ''
                                 };

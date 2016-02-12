@@ -172,6 +172,7 @@ function appraisals_civicrm_pageRun($page) {
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.appraisals', 'css/civiappraisals.css');
 
         if ($page instanceof CRM_Appraisals_Page_Dashboard) {
+            CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrap', 'js/tab.js', 1009);
             CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.appraisals', CRM_Core_Config::singleton()->debug ? 'js/src/appraisals.js' : 'js/dist/appraisals.min.js', 1010);
         }
     }

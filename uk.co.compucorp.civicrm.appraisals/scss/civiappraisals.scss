@@ -60,12 +60,31 @@
 
 #{$bootstrap-namespace} {
 
-    .panel--appraisal-cycle-header {
+    .modal--send-notification-reminder__view-recipient {
+        display: inline-block;
+        margin-top: 15px;
+    }
 
-        .form-group {
-            margin-bottom: 0;
+    .panel--appraisals-in-cycle {
+
+        > .panel-heading {
+
+            > hr {
+                margin-bottom: 15px;
+                margin-top: 15px;
+            }
         }
     }
+
+    .panel--appraisals-in-cycle__filters {
+        background: $brand-primary-light;
+        margin: 15px -20px;
+    }
+
+    .panel--appraisals-in-cycle__filters__form {
+        padding: $panel-body-padding;
+    }
+
 
     .panel--appraisal-cycle-header__title {
 

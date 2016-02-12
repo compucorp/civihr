@@ -4,11 +4,13 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement',
-        function ($log, $modal, $rootElement) {
+        '$log', '$modal', '$rootElement', 'dialog',
+        function ($log, $modal, $rootElement, dialog) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
+
+            vm.filtersCollapsed = true;
 
             // dummy data
             vm.grades = [
@@ -17,6 +19,19 @@ define([
                 { label: "Value #3", value: 30 },
                 { label: "Value #4", value: 40 }
             ];
+
+            /**
+             * Deletes a cycle (via a dialog modal)
+             */
+            vm.delete = function () {
+                dialog.open({
+                    title: 'Confirm Delete Appraisal',
+                    copyCancel: 'Cancel',
+                    copyConfirm: 'Delete',
+                    classConfirm: 'btn-danger-outline',
+                    msg: 'This cannot be undone'
+                });
+            };
 
             /**
              * Opens the Access Settings modal
@@ -54,6 +69,33 @@ define([
                     controllerAs: 'modal',
                     bindToController: true,
                     templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/edit-dates.html'
+                });
+            };
+
+            /**
+             * Opens the View Cycle modal
+             */
+            vm.openViewCycleModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'ViewCycleModalCtrl',
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/view-cycle.html'
+                });
+            };
+
+            /**
+             * Opens the Send Notification Reminder modal
+             */
+            vm.openSendNotificationReminderModal = function () {
+                $modal.open({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: 'SendNotificationReminderModalCtrl',
+                    controllerAs: 'modal',
+                    windowClass: 'modal--send-notification-reminder',
+                    bindToController: true,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/send-notification-reminder.html'
                 });
             };
 
