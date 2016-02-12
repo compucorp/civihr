@@ -23,17 +23,17 @@
                     <aside class="crm_page__sidebar">
                         <ul class="nav nav-pills nav-stacked nav-pills-stacked-sidebar">
                             <li class="active">
-                                <a ui-sref="dashboard">
+                                <a ui-sref="appraisals.dashboard">
                                     <i class="fa fa-list"></i> &nbsp; Dashboard
                                 </a>
                             </li>
                             <li>
-                                <a ui-sref="profile">
+                                <a ui-sref="appraisals.profile">
                                     <i class="fa fa-search"></i>&nbsp; Profile
                                 </a>
                             </li>
                             <li>
-                                <a ui-sref="import">
+                                <a ui-sref="appraisals.import">
                                     <i class="fa fa-sign-in fa-flip-horizontal"></i> &nbsp; Import
                                 </a>
                             </li>
