@@ -31,7 +31,12 @@
                     <select id="recipients" class="form-control">
                         <option value="">---</option>
                     </select>
-                    <a class="modal--send-notification-reminder__view-recipient" href>View Recipients</a>
+                    <a
+                        href
+                        ng-click="modal.openNotificationRecipientsModal()"
+                        class="modal--send-notification-reminder__view-recipient">
+                        View Recipients
+                    </a>
                 </div>
             </div>
         </div>

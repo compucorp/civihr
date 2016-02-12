@@ -14,6 +14,7 @@ define([
     'appraisals/controllers/modals/add-contacts-modal-ctrl',
     'appraisals/controllers/modals/view-cycle-modal-ctrl',
     'appraisals/controllers/modals/send-notification-reminder-modal-ctrl',
+    'appraisals/controllers/modals/notification-recipients-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
     'appraisals/models/appraisal-cycle',
