@@ -1,11 +1,12 @@
 define([
     'job-roles/controllers/controllers',
+    'common/moment',
     'common/filters/angular-date/format-date'
-], function (controllers) {
+], function (controllers, moment) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', 'HR_settings', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidationService', 'DateFactory',
-        function ($scope, HR_settings, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidationService, DateFactory) {
+    controllers.controller('HRJobRolesController', ['$scope', 'HR_settings', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidation',
+        function ($scope, HR_settings, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidation) {
             $log.debug('Controller: HRJobRolesController');
 
             $scope.format = HR_settings.DATE_FORMAT;
@@ -14,6 +15,7 @@ define([
 
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
+
 
             $scope.dpOpen = function ($event) {
                 $event.preventDefault();
@@ -26,18 +28,17 @@ define([
                 var id = $scope.edit_data['new_role_id']['job_contract_id'];
 
                 var contract = me.contractsData[id];
-
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
 
                 if (!areDatesCustom) {
                     if (!!contract.start_date) {
-                        $scope.edit_data['new_role_id']['newStartDate'] = new Date(contract.start_date);
+                        $scope.edit_data['new_role_id']['newStartDate'] = contract.start_date;
                     } else {
                         $scope.edit_data['new_role_id']['newStartDate'] = null;
                     }
 
                     if (!!contract.end_date) {
-                        $scope.edit_data['new_role_id']['newEndDate'] = new Date(contract.end_date);
+                        $scope.edit_data['new_role_id']['newEndDate'] = contract.end_date;
                     } else {
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
                     }
@@ -98,12 +99,9 @@ define([
             };
 
             $scope.validateDates = function (start, end, error) {
-                DateValidationService.setErrorCallback(error);
+                DateValidation.setErrorCallback(error);
 
-                DateValidationService.setMinDate($scope.minDate.getTime());
-                DateValidationService.setMaxDate($scope.maxDate.getTime());
-
-                DateValidationService.validate(start, end);
+                DateValidation.validate(start, end);
             };
 
             $scope.validateRole = function (data) {
@@ -343,7 +341,7 @@ define([
              * Parse dates so they can be correctly read by server.
              *
              * @param {string|Date} date
-             * @returns {string}
+             * @returns {string|null}
              */
             $scope.parseDate = function (date) {
 
@@ -351,7 +349,13 @@ define([
                     date = date.getTime();
                 }
 
-                return DateFactory.createDate(date).format('YYYY-MM-DD');
+                var formated = moment(date, [
+                    'DD/MM/YYYY',
+                    'x',
+                    'YYYY-MM-DD'
+                ]);
+
+                return (formated.isValid())? formated.format('YYYY-MM-DD') : null;
             };
 
             // Saves the new Job Role
@@ -405,6 +409,7 @@ define([
             // Sets the add new job role form visibility
             $scope.add_new_role = function () {
                 $scope.add_new = true;
+                console.log($scope.edit_data['new_role_id']);
             };
 
             // Hides the add new job role form
