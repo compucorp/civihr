@@ -799,7 +799,7 @@ define([
                 });
             }
 
-// Implements the "deleteJobRole" service
+            // Implements the "deleteJobRole" service
             function deleteJobRole(job_role_id) {
 
                 HRJobRolesService.deleteJobRole(job_role_id).then(function (data) {
@@ -824,33 +824,28 @@ define([
 
             }
 
-// Implements the "createJobRole" service
+            // Implements the "createJobRole" service
             function createJobRole(job_roles_data) {
 
-                return HRJobRolesService.createJobRole(job_roles_data)
-                    .then(function (data) {
+                return HRJobRolesService.createJobRole(job_roles_data).then(function (data) {
+                    if (data.is_error == 1) {
+                        job_roles.message_type = 'alert-danger';
+                        job_roles.message = 'Role creation failed!';
+                    } else {
+                        job_roles.message_type = 'alert-success';
+                        job_roles.message = 'Role added successfully!';
+                    }
 
-                            if (data.is_error == 1) {
-                                job_roles.message_type = 'alert-danger';
-                                job_roles.message = 'Role creation failed!';
-                            } else {
-                                job_roles.message_type = 'alert-success';
-                                job_roles.message = 'Role added successfully!';
-                            }
-
-                            // Hide the message after some seconds
-                            $timeout(function () {
-                                job_roles.message = null;
-                            }, 3000);
-                        },
-                        function (errorMessage) {
-                            $scope.error = errorMessage;
-                        }
-                    );
-
+                    // Hide the message after some seconds
+                    $timeout(function () {
+                        job_roles.message = null;
+                    }, 3000);
+                }, function (errorMessage) {
+                    $scope.error = errorMessage;
+                });
             }
 
-// Implements the "updateJobRole" service
+            // Implements the "updateJobRole" service
             function updateJobRole(role_id, job_roles_data) {
 
                 job_roles_data.end_date = $scope.parseDate(job_roles_data.end_date);
@@ -858,27 +853,22 @@ define([
 
                 HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
 
-                        if (data.is_error == 1) {
-                            job_roles.message_type = 'alert-danger';
-                            job_roles.message = 'Role update failed!';
-                        }
-                        else {
-                            job_roles.message_type = 'alert-success';
-                            job_roles.message = 'Role updated successfully!';
-                        }
+                    if (data.is_error == 1) {
+                        job_roles.message_type = 'alert-danger';
+                        job_roles.message = 'Role update failed!';
+                    }
+                    else {
+                        job_roles.message_type = 'alert-success';
+                        job_roles.message = 'Role updated successfully!';
+                    }
 
-                        // Hide the message after some seconds
-                        $timeout(function () {
-                            job_roles.message = null;
-                        }, 3000);
-                    },
-                    function (errorMessage) {
-                        $scope.error = errorMessage;
-                    });
-
+                    // Hide the message after some seconds
+                    $timeout(function () {
+                        job_roles.message = null;
+                    }, 3000);
+                }, function (errorMessage) {
+                    $scope.error = errorMessage;
+                });
             }
-
-        }])
-    ;
-})
-;
+        }]);
+});
