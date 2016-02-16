@@ -1,5 +1,5 @@
 module.exports = function (config) {
-    var civicrmPath = '../../../../../../';
+    var civicrmPath = '../../../../';
     var civihrPath = 'tools/extensions/civihr/';
 
     config.set({
@@ -21,7 +21,7 @@ module.exports = function (config) {
             civihrPath + 'org.civicrm.reqangular/node_modules/karma-requirejs/lib/adapter.js',
 
             // the requireJS config file that bootstraps the whole test suite
-            civihrPath + 'org.civicrm.reqangular/src/tests/test-main.js',
+            civihrPath + 'org.civicrm.reqangular/test/test-main.js',
 
             // load vendor libraries
             { pattern: civihrPath + 'org.civicrm.reqangular/src/common/vendor/*.min.js', included: false },
@@ -30,7 +30,7 @@ module.exports = function (config) {
             { pattern: civihrPath + 'org.civicrm.reqangular/src/common/**/*.js', included: false },
 
             // load tests
-            { pattern: civihrPath + 'org.civicrm.reqangular/src/tests/**/*_test.js', included: false }
+            { pattern: civihrPath + 'org.civicrm.reqangular/test/**/*_test.js', included: false }
         ],
         exclude: [
             civihrPath + 'org.civicrm.reqangular/src/common/angular-date/**/*.js'
