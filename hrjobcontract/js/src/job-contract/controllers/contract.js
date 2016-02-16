@@ -145,7 +145,7 @@ define([
                     options = {
                         controller: 'ModalContractCtrl',
                         targetDomEl: $rootElement.find('div').eq(0),
-                        templateUrl: settings.pathApp+'views/modalForm.html?v=4444',
+                        templateUrl: settings.pathApp+'views/modalForm.html?v=4448',
                         windowClass: 'modal-contract',
                         size: 'lg',
                         resolve: {

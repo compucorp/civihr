@@ -130,7 +130,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
   /**
    * Job Contract End reason
    * 
-   * @var date
+   * @var int
    */
   public $end_reason;
   /**

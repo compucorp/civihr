@@ -118,6 +118,20 @@
                                     <p class="form-control-static">{{duration}}</p>
                                 </div>
                             </div>
+                            <div class="form-group required" hrjc-validate ng-show="!!entity.details.period_end_date">
+                                <label for="{{prefix}}end-reason" class="col-sm-4 control-label">Contract End Reason</label>
+
+                                <div class="col-sm-5">
+                                    <div class="chr_custom-select chr_custom-select--full">
+                                        <select id="{{prefix}}end-reason" class="form-control" name="detailsEndReason"
+                                                ng-model="entity.details.end_reason"
+                                                ng-options="key as value for (key, value) in options.details.end_reason"
+                                                ng-disabled="isDisabled" ng-required="!!entity.details.period_end_date">
+                                            <option value="">- select -</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-group" hrjc-validate>
                                 <label for="{{prefix}}notice-amount" class="col-sm-4 control-label">Notice Period from Employer</label>
 
