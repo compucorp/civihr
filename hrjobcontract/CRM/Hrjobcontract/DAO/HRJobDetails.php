@@ -128,6 +128,12 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
    */
   public $period_end_date;
   /**
+   * Job Contract End reason
+   * 
+   * @var date
+   */
+  public $end_reason;
+  /**
    * Amount of time allocated for notice period. Number part without the unit e.g 3 in 3 Weeks.
    *
    * @var float
@@ -279,6 +285,18 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'headerPattern' => '/^contract\s?end\s?date/i',
                 ) ,
+                'hrjobcontract_details_end_reason' => array(
+                  'name' => 'end_reason',
+                  'type' => CRM_Utils_Type::T_INT,
+                  'title' => ts('End reason') ,
+                  'required' => false,
+                  'export' => true,
+                  'import' => true,
+                  'pseudoconstant' => array(
+                    'optionGroupName' => 'hrjc_contract_end_reason',
+                  ),
+                  'headerPattern' => '/^end\s?reason/i',
+                ) ,
                 'hrjobcontract_details_notice_amount' => array(
                   'name' => 'notice_amount',
                   'type' => CRM_Utils_Type::T_FLOAT,
@@ -373,6 +391,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                 'contract_type' => 'hrjobcontract_details_contract_type',
                 'period_start_date' => 'hrjobcontract_details_period_start_date',
                 'period_end_date' => 'hrjobcontract_details_period_end_date',
+                'end_reason' => 'hrjobcontract_details_end_reason',
                 'notice_amount' => 'hrjobcontract_details_notice_amount',
                 'notice_unit' => 'hrjobcontract_details_notice_unit',
                 'notice_amount_employee' => 'hrjobcontract_details_notice_amount_employee',
