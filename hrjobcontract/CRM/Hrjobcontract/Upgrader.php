@@ -1128,9 +1128,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         );
         civicrm_api3('OptionGroup', 'create', $params);
         $optionsValue = array(
-            1 => 'End Reason 1',
-            2 => 'End Reason 2',
-            3 => 'End Reason 3',
+            1 => 'Voluntary',
+            2 => 'Involuntary',
+            3 => 'Planned',
         );
         foreach ($optionsValue as $key => $value) {
           $opValueParams = array(
