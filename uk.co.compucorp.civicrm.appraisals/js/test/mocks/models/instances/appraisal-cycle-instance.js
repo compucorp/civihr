@@ -1,13 +1,12 @@
 define([
-    'common/angular',
     'common/lodash',
     'mocks/module'
-], function (angular, _, mocks) {
+], function (_, mocks) {
     'use strict';
 
     mocks.factory('AppraisalCycleInstanceMock', ['$q', 'AppraisalCycleInstance', function ($q, instance) {
 
-        return angular.extend({}, instance, {
+        return _.assign(Object.create(instance), {
 
             update: jasmine.createSpy('update').and.callFake(function (value) {
                 return promiseResolvedWith(instance.toAPI());

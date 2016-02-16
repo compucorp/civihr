@@ -2,12 +2,13 @@ define([
     'common/lodash',
     'common/moment',
     'common/services/api/appraisals',
-    'appraisals/modules/models-instances'
-], function (_, moment, __, instances) {
+    'common/models/instances/instance',
+    'appraisals/modules/models-instances',
+], function (_, moment, __, ___, instances) {
     'use strict';
 
-    instances.factory('AppraisalCycleInstance', ['$q', 'api.appraisals',
-        function ($q, appraisalsAPI) {
+    instances.factory('AppraisalCycleInstance', ['$q', 'ModelInstance', 'api.appraisals',
+        function ($q, ModelInstance, appraisalsAPI) {
 
             var DUE_DATE_FIELD_TO_STATUS_ID = {
                 cycle_self_appraisal_due:    '1',
@@ -77,36 +78,7 @@ define([
                 }
             }
 
-            return {
-
-                /**
-                 * Creates a new instance, optionally with its data normalized
-                 *
-                 * @param {object} attributes - The instance data
-                 * @param {boolean} fromAPI - If the data comes from the API and needs to be normalized
-                 * @return {object}
-                 */
-                init: function (attributes, fromAPI) {
-                    attributes = _.assign(this.defaultCustomData(), attributes);
-
-                    if (typeof fromAPI !== 'undefined' && fromAPI) {
-                        attributes = this.fromAPI(attributes);
-                    }
-
-                    return _.assign(Object.create(this), attributes);
-                },
-
-                /**
-                 * Creates a plain object (w/o prototype) containing
-                 * only the attributes of this instance
-                 *
-                 * @return {object}
-                 */
-                attributes: function () {
-                    return _.transform(this, function (result, __, key) {
-                        !_.isFunction(this[key]) && (result[key] = this[key]);
-                    }, Object.create(null), this);
-                },
+            return ModelInstance.extend({
 
                 /**
                  * Returns the default custom data (as in, not given by the API)
@@ -134,24 +106,20 @@ define([
                 },
 
                 /**
-                 * Normalizes the given data in the direction API -> Model
                  *
-                 * @param {object} attributes
-                 * @return {object}
+                 *
                  */
-                fromAPI: function (attributes) {
-                    return _.transform(attributes, function (result, __, key) {
-                        if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                            result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
-                        } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
-                            calculateAppraisalsFigures.call(result, this[key].values);
-                        } else if (key === 'cycle_is_active') {
-                            // must be able to convert '0' to false
-                            result[key] = !!(+this[key]);
-                        } else {
-                            result[key] = this[key];
-                        }
-                    }, Object.create(null), attributes);
+                fromAPIFilter: function (result, __, key) {
+                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
+                        result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
+                    } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
+                        calculateAppraisalsFigures.call(result, this[key].values);
+                    } else if (key === 'cycle_is_active') {
+                        // must be able to convert '0' to false
+                        result[key] = !!(+this[key]);
+                    } else {
+                        result[key] = this[key];
+                    }
                 },
 
                 /**
@@ -185,23 +153,19 @@ define([
                 },
 
                 /**
-                 * Normalizes the instance data in the direction Model -> API
                  *
-                 * @return {object}
+                 *
                  */
-                toAPI: function () {
-                    var attributes = this.attributes();
+                toAPIFilter: function (result, __, key) {
                     var blacklist = ['appraisals_count', 'completion_percentage'];
 
-                    return _.transform(attributes, function (result, __, key) {
-                        if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                            result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        } else if (_.includes(blacklist, key)) {
-                            return;
-                        } else {
-                            result[key] = this[key];
-                        }
-                    }, Object.create(null), attributes);
+                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
+                        result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                    } else if (_.includes(blacklist, key)) {
+                        return;
+                    } else {
+                        result[key] = this[key];
+                    }
                 },
 
                 /**
@@ -225,7 +189,7 @@ define([
 
                     return deferred.promise;
                 }
-            };
+            });
         }
     ]);
 });

@@ -8,8 +8,8 @@ define([
 
     describe('AppraisalCycleInstance', function () {
         var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
-        var instanceInterface = ['init', 'attributes', 'defaultCustomData',
-        'dueDates', 'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
+        var instanceInterface = ['defaultCustomData', 'dueDates', 'fromAPIFilter',
+        'isStatusOverdue', 'nextDueDate', 'toAPIFilter', 'update'];
 
         beforeEach(module('appraisals'));
         beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
@@ -23,32 +23,15 @@ define([
         ]));
 
         it('has the expected interface', function () {
-            expect(_.functions(AppraisalCycleInstance)).toEqual(instanceInterface);
+            expect(_.functions(AppraisalCycleInstance)).toEqual(jasmine.arrayContaining(instanceInterface));
         });
 
         describe('init()', function () {
             var instance;
 
             describe('simple initialization', function () {
-                var attributes = { foo: 'foo', bar: 'bar' };
-
                 beforeEach(function () {
-                    instance = AppraisalCycleInstance.init(attributes);
-                });
-
-                it('create a new instance', function () {
-                    expect(instance).toEqual(jasmine.any(Object));
-                });
-
-                it('retains the same interface', function () {
-                    expect(_.functions(instance)).toEqual(instanceInterface);
-                });
-
-                it('contains the attributes passed to it', function () {
-                    expect(instance.foo).toBeDefined();
-                    expect(instance.bar).toBeDefined();
-                    expect(instance.foo).toEqual(attributes.foo);
-                    expect(instance.bar).toEqual(attributes.bar);
+                    instance = AppraisalCycleInstance.init({});
                 });
 
                 it('contains the default custom data', function () {
@@ -112,28 +95,6 @@ define([
             });
         });
 
-        describe('attributes()', function () {
-            var attributes;
-
-            beforeEach(function () {
-                attributes = AppraisalCycleInstance.init({
-                    foo: 'foo',
-                    bar: 'bar',
-                    fn: function () {}
-                })
-                .attributes();
-            });
-
-            it('returns only the attributes, without the methods', function () {
-                expect(attributes).toEqual(jasmine.objectContaining({ foo: 'foo', bar: 'bar' }));
-                expect(attributes).not.toEqual(jasmine.objectContaining({ fn: jasmine.any(Function) }));
-            });
-
-            it('returns a plain object w/o prototype', function () {
-                expect(Object.getPrototypeOf(attributes)).toBe(null);
-            });
-        });
-
         describe('dueDates()', function () {
             var instance;
 
@@ -188,7 +149,6 @@ define([
             });
 
             describe('when there are still due date', function () {
-
                 describe('when today is a due date', function () {
                     beforeEach(function () {
                         jasmine.clock().mockDate(new Date(2016, 1, 1));
@@ -244,10 +204,6 @@ define([
                     }
                 });
                 toAPIData = instance.toAPI();
-            });
-
-            it('returns a plain object w/o prototype', function () {
-                expect(Object.getPrototypeOf(toAPIData)).toBe(null);
             });
 
             it('filters out the custom data field', function () {
