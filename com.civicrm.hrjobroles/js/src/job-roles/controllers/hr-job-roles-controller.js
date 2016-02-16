@@ -78,18 +78,17 @@ define([
 
                 if (!areDatesCustom) {
                     if (!!contract.start_date) {
-                        $scope.edit_data[role_id]['start_date'] = new Date(contract.start_date);
+                        $scope.edit_data[role_id]['start_date'] = contract.start_date;
                     } else {
                         $scope.edit_data[role_id]['start_date'] = null;
                     }
 
                     if (!!contract.end_date) {
-                        $scope.edit_data[role_id]['end_date'] = new Date(contract.end_date);
+                        $scope.edit_data[role_id]['end_date'] = contract.end_date;
                     } else {
                         $scope.edit_data[role_id]['end_date'] = null;
                     }
                 }
-
             };
 
             // Validate fields
@@ -107,6 +106,7 @@ define([
 
             $scope.validateRole = function (data) {
                 var errors = 0;
+
                 // Reset Error Messages
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
@@ -120,6 +120,8 @@ define([
                         data.end_date.$error.custom.push(error);
                     }
                 });
+
+                console.log(errors > 0 ? 'Error' : true);
 
                 return errors > 0 ? 'Error' : true;
             };
@@ -350,13 +352,13 @@ define([
                     date = date.getTime();
                 }
 
-                var formated = moment(date, [
+                var formatted = moment(date, [
                     'DD/MM/YYYY',
                     'x',
                     'YYYY-MM-DD'
                 ]);
 
-                return (formated.isValid()) ? formated.format('YYYY-MM-DD') : null;
+                return (formatted.isValid()) ? formatted.format('YYYY-MM-DD') : null;
             };
 
             // Saves the new Job Role
@@ -436,9 +438,11 @@ define([
             $scope.updateRole = function (role_id) {
                 $log.debug('Update Role');
 
-                var end = $scope.edit_data[role_id].end_date;
+                $scope.edit_data[role_id].start_date = $scope.parseDate($scope.edit_data[role_id].start_date);
 
-                if (end === null || end === '0000-00-00 00:00:00') {
+                if ($scope.edit_data[role_id].end_date) {
+                    $scope.edit_data[role_id].end_date = $scope.parseDate($scope.edit_data[role_id].end_date);
+                } else {
                     delete $scope.edit_data[role_id].end_date;
                 }
 

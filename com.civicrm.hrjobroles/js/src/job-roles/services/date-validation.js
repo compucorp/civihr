@@ -13,6 +13,8 @@ define([
             throw new Error(error_msg, fields[0]);
         };
 
+        me.defaultFormat = HR_settings.DATE_FORMAT;
+
         /**
          *
          * @param {function} error
@@ -27,10 +29,11 @@ define([
         };
 
         me.dateFormats = [
-            HR_settings.DATE_FORMAT || 'DD/MM/YYYY',
             'x',
             'YYYY-MM-DD'
         ];
+
+        me.defaultFormat && me.dateFormats.push(me.defaultFormat.toUpperCase());
 
         me.validate = function validate(start, end) {
 

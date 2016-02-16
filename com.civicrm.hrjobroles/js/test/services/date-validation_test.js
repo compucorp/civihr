@@ -12,6 +12,7 @@ define([
         beforeEach(module('hrjobroles'));
         beforeEach(inject(function (_DateValidation_) {
             DateValidation = _DateValidation_;
+            DateValidation.dateFormats.push('DD/MM/YYYY');
         }));
 
         it('should be defined', function () {

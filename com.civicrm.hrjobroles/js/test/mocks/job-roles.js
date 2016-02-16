@@ -37,6 +37,38 @@ define(function () {
                 status: "",
                 title: "Test Contract 3"
             }
+        },
+        form_data: {
+            "start_date": {
+                $error: []
+            },
+            "end_date": {
+                $error: []
+            },
+            "title": {},
+            "contract": {},
+            "newLocation": {},
+            "newRegion": {},
+            "newDepartment": {},
+            "newLevel": {},
+            "description": {}
+        },
+        roles_data: {
+            "0": {
+                "title": "Test",
+                "job_contract_id": "1",
+                "start_date": "2015-12-30 00:00:00",
+                "funders": [],
+                "cost_centers": []
+            },
+            "1": {
+                "title": "Test",
+                "job_contract_id": "1",
+                "start_date": "2005-05-05 00:00:00",
+                "end_date": "2006-05-05 00:00:00",
+                "funders": [],
+                "cost_centers": []
+            }
         }
     };
 });
