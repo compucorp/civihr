@@ -319,7 +319,16 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
   private function determineContactId($params, $formatValues) {
     if(!empty($params['HRJobContract-contact_id'])) {
-      return $params['HRJobContract-contact_id'];
+      $contactId = $params['HRJobContract-contact_id'];
+      $user = new CRM_Contact_BAO_Contact();
+      $user->id = $contactId;
+      $user->find();
+
+      if(!$user->fetch()) {
+        throw new \RuntimeException(sprintf('Contact with ID %d does not exist.', $contactId));
+      }
+
+      return $contactId;
     }
 
     if (!empty($params['HRJobContract-email'])) {
@@ -327,10 +336,12 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       $checkEmail->email = $params['HRJobContract-email'];
       $checkEmail->find(TRUE);
 
-      if (!empty($checkEmail->contact_id))
+      if (empty($checkEmail->contact_id))
       {
-        return $checkEmail->contact_id;
+        throw new \RuntimeException(sprintf('Contact with email %s does not exist.', $params['HRJobContract-email']));
       }
+
+      return $checkEmail->contact_id;
     }
 
     if (!empty($formatValues['HRJobContract-external_identifier'])) {
@@ -342,9 +353,10 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         throw new \RuntimeException('Mismatch of External identifier :' . $formatValues['external_identifier'] . ' and Contact Id:' . $params['contact_id']);
       }
 
-      if (!empty($checkCid->id)) {
-        return $checkCid->id;
+      if (empty($checkCid->id)) {
+        throw new \RuntimeException(sprintf('Contact with external identifier %s does not exist.', $formatValues['HRJobContract-external_identifier']));
       }
+      return $checkCid->id;
     }
 
     if (empty($params['HRJobContract-contact_id'])) {
