@@ -17,6 +17,7 @@ define([
     'appraisals/controllers/modals/notification-recipients-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
+    'appraisals/models/appraisal',
     'appraisals/models/appraisal-cycle',
     'appraisals/models/instances/appraisal-cycle-instance',
     'appraisals/vendor/ui-router',
