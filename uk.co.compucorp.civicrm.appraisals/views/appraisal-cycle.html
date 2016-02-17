@@ -5,7 +5,6 @@
                 <header class="panel-heading panel-heading-w-buttons">
                     <h2 class="panel-title pull-left panel--appraisal-cycle-header__title">
                         {{cycle.cycle.cycle_name}}
-
                         <span class="panel--appraisal-cycle-header__title__cycle-id">
                             (Cycle ID: <span>{{cycle.cycle.id}}</span>)
                         </span>
@@ -25,12 +24,15 @@
                             <div class="form-group">
                                 <label for="cycle-type" class="col-sm-3 control-label">Cycle Type:</label>
                                 <div class="col-sm-9">
-                                    <select
-                                        id="cycle-type"
-                                        class="form-control"
-                                        ng-model="cycle.cycle.cycle_type_id"
-                                        ng-options="type.value as type.label for type in cycle.types">
-                                    </select>
+                                    <div class="crm_custom-select crm_custom-select--full">
+                                        <select
+                                            id="cycle-type"
+                                            class="form-control"
+                                            ng-model="cycle.cycle.cycle_type_id"
+                                            ng-options="type.value as type.label for type in cycle.types">
+                                        </select>
+                                        <span class="crm_custom-select__arrow"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -93,9 +95,9 @@
                                                     'chr_steps__step--danger': cycle.cycle.isStatusOverdue(id),
                                                     'chr_steps__step--primary': cycle.cycle.nextDueDate().status_id === id
                                                 }">
-                                                <span class="chr_steps__step__arrow chart-color-{{$index}}">Step {{id}}</span>
+                                                <span class="chr_steps__step__arrow">Step {{id}}</span>
                                                 <div class="chr_steps__step__legend">
-                                                    <div class="chr_steps__step__legend__content chart-color-border-0 text-center">
+                                                    <div class="chr_steps__step__legend__content text-center">
                                                         <p>
                                                             {{status.name}}
                                                         </p>
