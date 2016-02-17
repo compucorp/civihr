@@ -10,18 +10,18 @@ define([
     'use strict';
 
     describe('AppraisalCycle', function () {
-        var $q, $rootScope, AppraisalCycle, AppraisalCycleMock, AppraisalCycleInstance, appraisalsAPI, cycles;
+        var $q, $rootScope, AppraisalCycle, AppraisalCycleMock, AppraisalCycleInstance, appraisalCycleAPI, cycles;
 
 
         beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleMock', 'AppraisalCycleInstanceMock', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _appraisalsAPI_) {
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycle', 'AppraisalCycleMock', 'AppraisalCycleInstanceMock', 'api.appraisal-cycle',
+            function (_$q_, _$rootScope_, _AppraisalCycle_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _appraisalCycleAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
                 AppraisalCycle = _AppraisalCycle_;
                 AppraisalCycleMock = _AppraisalCycleMock_;
                 AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
-                appraisalsAPI = _appraisalsAPI_;
+                appraisalCycleAPI = _appraisalCycleAPI_;
 
                 cycles = AppraisalCycleMock.mockedCycles();
             }
@@ -47,7 +47,7 @@ define([
 
             it('returns the active cycles', function (done) {
                 AppraisalCycle.active().then(function (count) {
-                    expect(appraisalsAPI.total).toHaveBeenCalledWith({ cycle_is_active: true });
+                    expect(appraisalCycleAPI.total).toHaveBeenCalledWith({ cycle_is_active: true });
                     expect(count).toEqual(activeCount);
                 })
                 .finally(done) && $rootScope.$digest();
@@ -88,14 +88,14 @@ define([
             describe('API call', function () {
                 it('calls the correct API method', function (done) {
                     AppraisalCycle.statusOverview().then(function (overview) {
-                        expect(appraisalsAPI.statusOverview).toHaveBeenCalled();
+                        expect(appraisalCycleAPI.statusOverview).toHaveBeenCalled();
                     })
                     .finally(done) && $rootScope.$digest();
                 });
 
                 it('passes a date to the API method', function (done) {
                     AppraisalCycle.statusOverview().then(function (overview) {
-                        var date = appraisalsAPI.statusOverview.calls.argsFor(0)[0].current_date;
+                        var date = appraisalCycleAPI.statusOverview.calls.argsFor(0)[0].current_date;
 
                         expect(moment(date, 'YYYY-MM-DD').isValid()).toBe(true);
                     })
@@ -114,7 +114,7 @@ define([
 
                         it('calls the API method with the actual current date', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2016-12-02' });
+                                expect(appraisalCycleAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2016-12-02' });
                             })
                             .finally(done) && $rootScope.$digest();
                         });
@@ -127,7 +127,7 @@ define([
 
                         it('calls the API method with it', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2015-10-11' });
+                                expect(appraisalCycleAPI.statusOverview).toHaveBeenCalledWith({ current_date: '2015-10-11' });
                             })
                             .finally(done) && $rootScope.$digest();
                         });
@@ -144,7 +144,7 @@ define([
 
                         it('calls the API method without them', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
+                                expect(appraisalCycleAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
                                     start_date: jasmine.any(String),
                                     end_date: jasmine.any(String)
                                 }));
@@ -163,7 +163,7 @@ define([
 
                         it('calls the API method with them', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                expect(appraisalCycleAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
                                     start_date: '2016-03-25',
                                     end_date: '2016-05-25'
                                 }));
@@ -183,7 +183,7 @@ define([
 
                         it('calls the API method without it', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
+                                expect(appraisalCycleAPI.statusOverview).not.toHaveBeenCalledWith(jasmine.objectContaining({
                                     cycles_ids: jasmine.any(String)
                                 }));
                             })
@@ -198,7 +198,7 @@ define([
 
                         it('calls the API method with it', function (done) {
                             p.then(function (overview) {
-                                expect(appraisalsAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
+                                expect(appraisalCycleAPI.statusOverview).toHaveBeenCalledWith(jasmine.objectContaining({
                                     cycles_ids: '3543,7654,6363,4534'
                                 }));
                             })
@@ -247,7 +247,7 @@ define([
 
             it('returns the grades data', function (done) {
                 AppraisalCycle.grades().then(function (grades) {
-                    expect(appraisalsAPI.grades).toHaveBeenCalled();
+                    expect(appraisalCycleAPI.grades).toHaveBeenCalled();
 
                     expect(grades.length).toEqual(5);
                     expect(Object.keys(grades[0])).toEqual(['label', 'value']);
@@ -269,7 +269,7 @@ define([
 
             it('returns the appraisal cycle types', function (done) {
                 AppraisalCycle.types().then(function (types) {
-                    expect(appraisalsAPI.types).toHaveBeenCalled();
+                    expect(appraisalCycleAPI.types).toHaveBeenCalled();
 
                     expect(types.length).toEqual(3);
                     expect(types).toEqual([
@@ -292,7 +292,7 @@ define([
 
             it('returns the appraisal cycle statuses', function (done) {
                 AppraisalCycle.statuses().then(function (statuses) {
-                    expect(appraisalsAPI.statuses).toHaveBeenCalled();
+                    expect(appraisalCycleAPI.statuses).toHaveBeenCalled();
 
                     expect(statuses.length).toEqual(2);
                     expect(statuses).toEqual([
@@ -318,7 +318,7 @@ define([
 
             it('creates a new appraisal cycle', function (done) {
                 AppraisalCycle.create(newCycle).then(function () {
-                    expect(appraisalsAPI.create).toHaveBeenCalled();
+                    expect(appraisalCycleAPI.create).toHaveBeenCalled();
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -327,7 +327,7 @@ define([
                 var sanitizedData = AppraisalCycleInstance.init(newCycle).toAPI();
 
                 AppraisalCycle.create(newCycle).then(function () {
-                    expect(appraisalsAPI.create).toHaveBeenCalledWith(sanitizedData);
+                    expect(appraisalCycleAPI.create).toHaveBeenCalledWith(sanitizedData);
                 })
                 .finally(done) && $rootScope.$digest();
             });
@@ -363,7 +363,7 @@ define([
 
                 it('returns all appraisal cycles', function (done) {
                     AppraisalCycle.all().then(function (cycles) {
-                        expect(appraisalsAPI.all).toHaveBeenCalled();
+                        expect(appraisalCycleAPI.all).toHaveBeenCalled();
                         expect(cycles.list.length).toEqual(10);
                     })
                     .finally(done) && $rootScope.$digest();
@@ -397,7 +397,7 @@ define([
 
                     it('skips falsey (null, undefined, empty string), except for 0', function (done) {
                         p.then(function () {
-                            expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                            expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                 filter_1: 'a non-empty string',
                                 filter_3: 456,
                                 filter_4: 0,
@@ -428,7 +428,7 @@ define([
                         AppraisalCycle.all({
                             type: typeFilter
                         }).then(function (cycles) {
-                            expect(appraisalsAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
+                            expect(appraisalCycleAPI.all).toHaveBeenCalledWith({ type: typeFilter }, undefined);
                             expect(cycles.list.length).toEqual(filtered.length);
                         })
                         .finally(done) && $rootScope.$digest();
@@ -455,7 +455,7 @@ define([
 
                         it('converts the filter names to the correct api parameter names', function (done) {
                             p.then(function () {
-                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                     cycle_start_date: jasmine.any(Object),
                                     cycle_self_appraisal_due: jasmine.any(Object),
                                     cycle_manager_appraisal_due: jasmine.any(Object),
@@ -475,7 +475,7 @@ define([
 
                         it('provides the API with the correct filter values', function (done) {
                             p.then(function () {
-                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                     cycle_start_date: { '>=': '2016-09-01' }
                                 }, undefined);
                             })
@@ -492,7 +492,7 @@ define([
 
                         it('provides the API with the correct filter values', function (done) {
                             p.then(function () {
-                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                     cycle_grade_due: { '<=': '2016-10-22' }
                                 }, undefined);
                             })
@@ -510,7 +510,7 @@ define([
 
                         it('provides the API with the correct filter values', function (done) {
                             p.then(function () {
-                                expect(appraisalsAPI.all).toHaveBeenCalledWith({
+                                expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                     cycle_manager_appraisal_due: { '>=': '2016-09-01' },
                                     cycle_manager_appraisal_due: { '<=': '2016-10-22' }
                                 }, undefined);
@@ -537,7 +537,7 @@ define([
 
                 it('can paginate the appraisla cycles list', function (done) {
                     AppraisalCycle.all(null, pagination).then(function (cycles) {
-                        expect(appraisalsAPI.all).toHaveBeenCalledWith(null, pagination);
+                        expect(appraisalCycleAPI.all).toHaveBeenCalledWith(null, pagination);
                         expect(cycles.list.length).toEqual(2);
                     })
                     .finally(done) && $rootScope.$digest();
@@ -556,7 +556,7 @@ define([
 
             it('finds a cycle by id', function (done) {
                 AppraisalCycle.find(targetId).then(function (cycle) {
-                    expect(appraisalsAPI.find).toHaveBeenCalledWith(targetId);
+                    expect(appraisalCycleAPI.find).toHaveBeenCalledWith(targetId);
                     expect(cycle.id).toBe('4217');
                     expect(cycle.cycle_type_id).toBe('2');
                 })
@@ -578,7 +578,7 @@ define([
 
             it('gets the total number of cycles', function (done) {
                 AppraisalCycle.total().then(function (total) {
-                    expect(appraisalsAPI.total).toHaveBeenCalled();
+                    expect(appraisalCycleAPI.total).toHaveBeenCalled();
                     expect(total).toBe(cycles.list.length);
                 })
                 .finally(done) && $rootScope.$digest();
@@ -586,7 +586,7 @@ define([
         });
 
         /**
-         * Adds a `spyOn` on the given `appraisalsApi` method, and then returns
+         * Adds a `spyOn` on the given `appraisalCycleApi` method, and then returns
          * an object with a `.with()` method, which receives the value the
          * stubbed method must respond with
          *
@@ -594,7 +594,7 @@ define([
          * @return {object}
          */
         function resolveApiCallTo(method) {
-            var spy = spyOn(appraisalsAPI, method);
+            var spy = spyOn(appraisalCycleAPI, method);
 
             return {
 

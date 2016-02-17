@@ -1,14 +1,14 @@
 define([
     'common/lodash',
     'common/moment',
-    'common/services/api/appraisals',
+    'common/services/api/appraisal-cycle',
     'common/models/instances/instance',
     'appraisals/modules/models-instances',
 ], function (_, moment, __, ___, instances) {
     'use strict';
 
-    instances.factory('AppraisalCycleInstance', ['$q', 'ModelInstance', 'api.appraisals',
-        function ($q, ModelInstance, appraisalsAPI) {
+    instances.factory('AppraisalCycleInstance', ['$q', 'ModelInstance', 'api.appraisal-cycle',
+        function ($q, ModelInstance, appraisalCycleAPI) {
 
             var DUE_DATE_FIELD_TO_STATUS_ID = {
                 cycle_self_appraisal_due:    '1',
@@ -180,7 +180,7 @@ define([
                     var deferred = $q.defer();
 
                     if (!!this.id) {
-                        deferred.resolve(appraisalsAPI.update(this.toAPI()).then(function (attributes) {
+                        deferred.resolve(appraisalCycleAPI.update(this.toAPI()).then(function (attributes) {
                             _.assign(this, this.fromAPI(attributes)); // Updates own attributes
                         }.bind(this)));
                     } else {

@@ -7,10 +7,8 @@ define([
 ], function (angular, _, apis) {
     'use strict';
 
-    apis.factory('api.appraisals', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {
-        $log.debug('api.appraisals');
-
-        // Draft
+    apis.factory('api.appraisal-cycle', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {
+        $log.debug('api.appraisal-cycle');
 
         return api.extend({
 
@@ -27,7 +25,7 @@ define([
              * @return {Promise} resolves to an object with `list` and `total`
              */
             all: function (filters, pagination, sort) {
-                $log.debug('api.appraisals.all');
+                $log.debug('api.appraisal-cycle.all');
 
                 filters = filters || {};
 
@@ -70,7 +68,7 @@ define([
              * @return {Promise} resolves to the newly created cycle
              */
             create: function (attributes) {
-                $log.debug('api.appraisals.create');
+                $log.debug('api.appraisal-cycle.create');
 
                 return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
                         'api.AppraisalCycle.getappraisalsperstep': {}
@@ -87,7 +85,7 @@ define([
              * @return {Promise} resolves to the found cycle
              */
             find: function (id) {
-                $log.debug('api.appraisals.find');
+                $log.debug('api.appraisal-cycle.find');
 
                 var params = {
                     id: '' + id,
@@ -119,7 +117,7 @@ define([
              * @return {Promise}
              */
             statuses: function () {
-                $log.debug('api.appraisals.statuses');
+                $log.debug('api.appraisal-cycle.statuses');
 
                 return optionGroupAPI.valuesOf('appraisal_status');
             },
@@ -131,7 +129,7 @@ define([
              * @return {Promise}
              */
             statusOverview: function (params) {
-                $log.debug('api.appraisals.statusOverview');
+                $log.debug('api.appraisal-cycle.statusOverview');
 
                 return this.sendGET('AppraisalCycle', 'getstatusoverview', params)
                     .then(function (data) {
@@ -146,7 +144,7 @@ define([
              * @return {Promise} resolves to the amended cycle
              */
             update: function (attributes) {
-                $log.debug('api.appraisals.update');
+                $log.debug('api.appraisal-cycle.update');
 
                 return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
                         'api.AppraisalCycle.getappraisalsperstep': {}
@@ -163,7 +161,7 @@ define([
              * @return {Promise} resolves to an integer
              */
             total: function (filters) {
-                $log.debug('api.appraisals.total');
+                $log.debug('api.appraisal-cycle.total');
 
                 return this.sendGET('AppraisalCycle', 'getcount', filters || {}).then(function (data) {
                     return data.result;
@@ -176,7 +174,7 @@ define([
              * @return {Promise}
              */
             types: function () {
-                $log.debug('api.appraisals.types');
+                $log.debug('api.appraisal-cycle.types');
 
                 return optionGroupAPI.valuesOf('appraisal_cycle_type');
             }

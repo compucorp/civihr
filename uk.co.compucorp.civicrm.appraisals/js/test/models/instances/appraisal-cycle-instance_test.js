@@ -7,18 +7,18 @@ define([
     'use strict';
 
     describe('AppraisalCycleInstance', function () {
-        var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
+        var $q, $rootScope, AppraisalCycleInstance, appraisalCycleAPI;
         var instanceInterface = ['defaultCustomData', 'dueDates', 'fromAPIFilter',
         'isStatusOverdue', 'nextDueDate', 'toAPIFilter', 'update'];
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycleInstance_, _appraisalsAPI_) {
+        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisal-cycle',
+            function (_$q_, _$rootScope_, _AppraisalCycleInstance_, _appraisalCycleAPI_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
 
                 AppraisalCycleInstance = _AppraisalCycleInstance_;
-                appraisalsAPI = _appraisalsAPI_;
+                appraisalCycleAPI = _appraisalCycleAPI_;
             }
         ]));
 
@@ -237,7 +237,7 @@ define([
             };
 
             beforeEach(function () {
-                spyOn(appraisalsAPI, 'update').and.callFake(function () {
+                spyOn(appraisalCycleAPI, 'update').and.callFake(function () {
                     var deferred = $q.defer();
                     deferred.resolve({
                         id: '23',
@@ -260,7 +260,7 @@ define([
                 });
 
                 it('calls the update method of the API', function () {
-                    expect(appraisalsAPI.update).toHaveBeenCalledWith(instance.toAPI());
+                    expect(appraisalCycleAPI.update).toHaveBeenCalledWith(instance.toAPI());
                 });
 
                 it('reflects the updated data on its attributes', function (done) {
