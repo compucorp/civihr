@@ -1117,7 +1117,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return boolean TRUE
    */
   function upgrade_1011() {
+    // Adding 'end_reason' field into the 'civicrm_hrjobcontract_details' db table.
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_details` ADD `end_reason` INT(3) NULL DEFAULT NULL AFTER `period_end_date`");
+
+    // Creating Option Group named 'hrjc_contract_end_reason' for storing Contract End reason values.
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_contract_end_reason', 'id', 'name');
     if (!$optionGroupID) {
         $params = array(
@@ -1127,11 +1130,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'is_reserved' => 1,
         );
         civicrm_api3('OptionGroup', 'create', $params);
+        // An array with three detault Contract End reasons:
         $optionsValue = array(
             1 => 'Voluntary',
             2 => 'Involuntary',
             3 => 'Planned',
         );
+        // Attaching the Option Values to the Option Group.
         foreach ($optionsValue as $key => $value) {
           $opValueParams = array(
             'option_group_id' => 'hrjc_contract_end_reason',
@@ -1143,6 +1148,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         }
     }
 
+    // Adding newly created Option Group into the Administration Menu (Dropdown Options).
     $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
     $jobContractOptionsMenuTree = array();
     $result = civicrm_api3('OptionGroup', 'get', array(
@@ -1162,6 +1168,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $menuItems['is_active'] = 1;
       CRM_Core_BAO_Navigation::add($menuItems);
     }
+
+    // Refreshing the Navigation menu.
     CRM_Core_BAO_Navigation::resetNavigation();
 
     return TRUE;
