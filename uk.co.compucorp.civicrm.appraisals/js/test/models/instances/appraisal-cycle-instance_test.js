@@ -23,7 +23,9 @@ define([
         ]));
 
         it('has the expected interface', function () {
-            expect(_.functions(AppraisalCycleInstance)).toEqual(jasmine.arrayContaining(instanceInterface));
+            expect(_.keys(AppraisalCycleInstance).filter(function (property) {
+                return _.isFunction(AppraisalCycleInstance[property]);
+            })).toEqual(instanceInterface);
         });
 
         describe('init()', function () {

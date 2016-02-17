@@ -15,6 +15,14 @@ define([
             ModelInstance = _ModelInstance_;
         }));
 
+        describe('abstract-like functions', function () {
+            it('has them defined', function () {
+                expect(ModelInstance.defaultCustomData).toBeDefined();
+                expect(ModelInstance.fromAPIFilter).toBeDefined();
+                expect(ModelInstance.toAPIFilter).toBeDefined();
+            });
+        });
+
         describe('init()', function () {
             var instance;
 
@@ -83,9 +91,11 @@ define([
                 expect(newInstance.bar).toEqual(jasmine.any(Function));
             });
 
-            // it('keeps own functions separated the the basic type functions', function () {
-            //     expect(_.functions(newInstance)).toEqual(['bar']);
-            // });
+            it('keeps the new type functions separated from the basic type ones', function () {
+                expect(_.keys(newInstance).filter(function (property) {
+                    return _.isFunction(newInstance[property]);
+                })).toEqual(['bar']);
+            });
         });
 
         describe('toAPI()', function () {
