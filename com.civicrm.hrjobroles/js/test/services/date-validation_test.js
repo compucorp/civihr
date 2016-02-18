@@ -19,21 +19,13 @@ define([
             expect(DateValidation).toBeDefined();
         });
 
-        it('_error() should throw error if custom function is not appiled', function () {
-            var shouldThrow = function () {
-                DateValidation._error('Test', ['1', '2']);
-            };
-
-            expect(shouldThrow).toThrow(new Error('Test'));
-        });
-
         it('Custom function can be assigned to _error()', function () {
             function customError(error_msg, fields) {
             }
 
-            DateValidation.setErrorCallback(customError);
-
-            expect(DateValidation._error).toEqual(customError);
+            expect(function(){
+                DateValidation.setErrorCallback(customError);
+            }).not.toThrow();
 
             expect(function () {
                 DateValidation.setErrorCallback();

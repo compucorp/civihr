@@ -3,10 +3,14 @@ define([
 ], function (services) {
     'use strict';
 
-    services.factory('HRJobRolesService', ['settings', '$log', '$q', '$filter', function (settings, $log, $q, $filter) {
+    services.factory('HRJobRolesService', ['$log', '$q', '$filter', function ($log, $q, $filter) {
 
         return {
-
+            /**
+             * Gets all contracts and revisions
+             * @param contact_id
+             * @returns {promise}
+             */
             getContracts: function (contact_id) {
                 var deferred = $q.defer();
 
@@ -33,7 +37,6 @@ define([
                             });
                         });
                     });
-
 
                     $q.all(revisions).then(function (response) {
                         // Flatten the array of revisions
@@ -73,7 +76,6 @@ define([
                         // Passing data to deferred's resolve function on successful completion
                         deferred.resolve(contracts);
                     });
-
                 }).error(function (result) {
 
                     // Sending a friendly error message in case of failure
@@ -83,7 +85,6 @@ define([
 
                 // Returning the promise object
                 return deferred.promise;
-
             },
 
             getContractDetails: function getContractDetails(id) {

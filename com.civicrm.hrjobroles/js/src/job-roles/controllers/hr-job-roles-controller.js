@@ -363,13 +363,13 @@ define([
                     var contract = me.contractsData[contract_id];
 
                     // search for revision containing these dates
-                    var revision = contract.revisions.filter(function (rev) {
+                    var revision = contract.revisions.some(function (rev) {
                         return rev.period_start_date === $filter('formatDate')($scope.edit_data[role_id]['start_date'])
                             && rev.period_end_date === $filter('formatDate')($scope.edit_data[role_id]['end_date']);
                     });
 
                     // check if dates match with revision
-                    if (revision.length) {
+                    if (revision) {
                         $scope.edit_data[role_id]['start_date'] = contract.start_date;
                         $scope.edit_data[role_id]['end_date'] = contract.end_date;
 
@@ -644,7 +644,7 @@ define([
 
                 HRJobRolesService.getContactList().then(function (data) {
 
-                        if (data.is_error == 1) {
+                        if (data.is_error === 1) {
                             job_roles.message_type = 'alert-danger';
                             job_roles.message = 'Cannot get contact lit!';
                         }
@@ -691,7 +691,7 @@ define([
 
                 HRJobRolesService.getOptionValues(option_groups).then(function (data) {
 
-                        if (data.is_error == 1) {
+                        if (data.is_error === 1) {
                             job_roles.message_type = 'alert-danger';
                             job_roles.message = 'Cannot get option values!';
                         }
@@ -719,7 +719,7 @@ define([
                                     switch (option_group_name) {
                                         case 'hrjc_department':
 
-                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                            if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the department list
                                                 DepartmentList[data.values[i]['id']] = {
                                                     id: data.values[i]['id'],
@@ -730,7 +730,7 @@ define([
                                             break;
                                         case 'hrjc_region':
 
-                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                            if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the region list
                                                 RegionList[data.values[i]['id']] = {
                                                     id: data.values[i]['id'],
@@ -741,7 +741,7 @@ define([
                                             break;
                                         case 'hrjc_location':
 
-                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                            if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the contact list
                                                 LocationList[data.values[i]['id']] = {
                                                     id: data.values[i]['id'],
@@ -752,7 +752,7 @@ define([
                                             break;
                                         case 'hrjc_level_type':
 
-                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                            if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the contact list
                                                 LevelList[data.values[i]['id']] = {
                                                     id: data.values[i]['id'],
@@ -764,7 +764,7 @@ define([
                                             break;
                                         case 'cost_centres':
 
-                                            if (option_group_id == data.values[i]['option_group_id']) {
+                                            if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the contact list
                                                 CostCentreList[data.values[i]['id']] = {
                                                     id: data.values[i]['id'],
@@ -811,7 +811,11 @@ define([
                     });
             }
 
-            // Implements the "getAllJobRoles" service
+            /**
+             * Get job roles based on the passed Contact ID (refresh part of the page)
+             * @param contact_id
+             * @returns {promise}
+             */
             function getJobRolesList(contact_id) {
                 var contractsPromise;
                 if (!job_roles.job_contract_ids) {
@@ -859,32 +863,32 @@ define([
                 }
 
                 return contractsPromise.then(function (result) {
-                    return HRJobRolesService.getAllJobRoles(result).then(function (data) {
-                        // Assign data
-                        job_roles.present_job_roles = [];
-                        job_roles.past_job_roles = [];
+                    return HRJobRolesService.getAllJobRoles(result);
+                }).then(function (data) {
+                    // Assign data
+                    job_roles.present_job_roles = [];
+                    job_roles.past_job_roles = [];
 
-                        angular.forEach(data.values, function (object_data) {
-                            if (!object_data.end_date || moment(object_data.end_date).isAfter(moment())) {
-                                job_roles.present_job_roles.push(object_data);
-                            } else {
-                                job_roles.past_job_roles.push(object_data);
-                            }
-                        });
-
-                        if (data.is_error == 1) {
-                            job_roles.error = 'Data load failure';
-                        } else if (data.count == 0) {
-                            job_roles.empty = 'No Job Roles found!';
+                    data.values.forEach(function (object_data) {
+                        if (!object_data.end_date || moment(object_data.end_date).isAfter(moment())) {
+                            job_roles.present_job_roles.push(object_data);
                         } else {
-                            job_roles.empty = null;
+                            job_roles.past_job_roles.push(object_data);
                         }
-
-                        job_roles.status = 'Data load OK';
-
-                    }, function (errorMessage) {
-                        $scope.error = errorMessage;
                     });
+
+                    if (data.is_error === 1) {
+                        job_roles.error = 'Data load failure';
+                    } else if (data.count === 0) {
+                        job_roles.empty = 'No Job Roles found!';
+                    } else {
+                        job_roles.empty = null;
+                    }
+
+                    job_roles.status = 'Data load OK';
+
+                }, function (errorMessage) {
+                    $scope.error = errorMessage;
                 });
             }
 
@@ -892,7 +896,7 @@ define([
             function deleteJobRole(job_role_id) {
 
                 return HRJobRolesService.deleteJobRole(job_role_id).then(function (data) {
-                        if (data.is_error == 1) {
+                        if (data.is_error === 1) {
                             job_roles.message_type = 'alert-danger';
                             job_roles.message = 'Role delete failure!';
                         }
@@ -915,7 +919,7 @@ define([
             // Implements the "createJobRole" service
             function createJobRole(job_roles_data) {
                 return HRJobRolesService.createJobRole(job_roles_data).then(function (data) {
-                    if (data.is_error == 1) {
+                    if (data.is_error === 1) {
                         job_roles.message_type = 'alert-danger';
                         job_roles.message = 'Role creation failed!';
                     } else {
@@ -940,7 +944,7 @@ define([
 
                 return HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
 
-                    if (data.is_error == 1) {
+                    if (data.is_error === 1) {
                         job_roles.message_type = 'alert-danger';
                         job_roles.message = 'Role update failed!';
                     }
