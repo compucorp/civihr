@@ -27,6 +27,10 @@ define([
                 expect(scope.checkIfDatesAreCustom(Mock.contracts_data[0].start_date + ' 00:00:00', Mock.contracts_data[0].end_date)).toBe(false);
             });
 
+            it('should successfully compare dates to contract without end date', function(){
+                expect(scope.checkIfDatesAreCustom(Mock.contracts_data[2].start_date, null)).toBe(false);
+            });
+
             it('should successfully compare date object', function(){
                 expect(scope.checkIfDatesAreCustom(new Date(2016, 0, 1), new Date(2016, 0, 31))).toBe(false);
             });
@@ -96,59 +100,72 @@ define([
             });
         });
 
-        //describe('Existing Job Role', function () {
-        //    beforeEach(function () {
-        //        scope.edit_data = angular.copy(Mock.roles_data);
-        //        ctrl.contractsData = angular.copy(Mock.contracts_data);
-        //    });
-        //
-        //    it('should set dates', function(){
-        //        console.info(scope.edit_data[0]);
-        //        scope.edit_data[0].job_contract_id = 0;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[0].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[0].end_date);
-        //    });
-        //
-        //    it('should not modify if dates were edited manually', function(){
-        //        scope.edit_data[0].newStartDate = '2005-01-01';
-        //        scope.edit_data[0].job_contract_id = 1;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe('2005-01-01');
-        //        expect(scope.edit_data[0].end_date).toBe(null);
-        //    });
-        //
-        //    it('should set only start date if contract has no end date', function(){
-        //        scope.edit_data[0].job_contract_id = 2;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[2].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(null);
-        //    });
-        //
-        //    it('should change dates whenever contract change', function(){
-        //        scope.edit_data[0].job_contract_id = 0;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[0].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[0].end_date);
-        //
-        //        // change contract
-        //        scope.edit_data[0].job_contract_id = 1;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[1].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[1].end_date);
-        //
-        //        // change contract
-        //        scope.edit_data[0].job_contract_id = 2;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[2].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(null);
-        //
-        //        // change contract
-        //        scope.edit_data[0].job_contract_id = 0;
-        //        scope.onContractEdited(null, 0);
-        //        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[0].start_date);
-        //        expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[0].end_date);
-        //    });
-        //});
+        describe('Existing Job Role', function () {
+            beforeEach(function () {
+                scope.edit_data = angular.copy(Mock.roles_data);
+                ctrl.contractsData = angular.copy(Mock.contracts_data);
+            });
+
+            it('should set dates', function(){
+                scope.edit_data[0].start_date = null;
+                scope.edit_data[0].end_date = null;
+                scope.edit_data[0].job_contract_id = 0;
+                scope.onContractEdited(0, 0);
+
+                expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[0].start_date);
+                expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[0].end_date);
+            });
+
+            it('should not modify if dates were edited manually', function(){
+                scope.edit_data[2].start_date = '2005-01-01';
+                scope.edit_data[2].job_contract_id = 1;
+                scope.onContractEdited(1, 2);
+
+                expect(scope.edit_data[2].start_date).toBe('2005-01-01');
+                expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[3].end_date);
+            });
+
+            it('should set only start date if contract has no end date', function(){
+                scope.edit_data[2].start_date = Mock.contracts_data[1].start_date;
+                scope.edit_data[2].end_date = Mock.contracts_data[1].end_date;
+
+                scope.edit_data[2].job_contract_id = 2;
+                scope.onContractEdited(2, 2);
+                expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[2].start_date);
+                expect(scope.edit_data[2].end_date).toBe(null);
+            });
+
+            it('should change dates whenever contract change', function(){
+                scope.edit_data[2].start_date = Mock.contracts_data[1].start_date;
+                scope.edit_data[2].end_date = Mock.contracts_data[1].end_date;
+
+                scope.edit_data[2].job_contract_id = 0;
+                scope.onContractEdited(0, 2);
+                expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[0].start_date);
+                expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[0].end_date);
+
+                // change contract
+                scope.edit_data[2].job_contract_id = 1;
+                scope.onContractEdited(1, 2);
+                expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[1].start_date);
+                expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[1].end_date);
+
+                // change contract
+                scope.edit_data[2].job_contract_id = 2;
+                scope.onContractEdited(2, 2);
+                expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[2].start_date);
+                expect(scope.edit_data[2].end_date).toBe(null);
+
+                // change contract
+                scope.edit_data[2].job_contract_id = 0;
+                scope.onContractEdited(0, 2);
+                expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[0].start_date);
+                expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[0].end_date);
+            });
+        });
+
+        describe('Updating old revision dates', function(){
+
+        });
     });
 });

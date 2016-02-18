@@ -36,6 +36,17 @@ define(function () {
                 start_date: "2016-02-01",
                 status: "",
                 title: "Test Contract 3"
+            },
+            3: {
+                end_date: "2016-01-31",
+                id: "3",
+                label: "Test Contract 3 (01/01/2016 - 31/01/2016)",
+                start_date: "2016-01-01",
+                status: "",
+                title: "Test Contract 3"
+            },
+            revisions: {
+
             }
         },
         form_data: {
@@ -66,6 +77,14 @@ define(function () {
                 "job_contract_id": "1",
                 "start_date": "2005-05-05 00:00:00",
                 "end_date": "2006-05-05 00:00:00",
+                "funders": [],
+                "cost_centers": []
+            },
+            "2": {
+                "title": "Contract Dates",
+                "job_contract_id": "3",
+                "start_date": "2016-01-01",
+                "end_date": "2016-01-31",
                 "funders": [],
                 "cost_centers": []
             }

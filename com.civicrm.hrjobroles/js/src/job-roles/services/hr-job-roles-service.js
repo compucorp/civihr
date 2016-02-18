@@ -3,12 +3,11 @@ define([
 ], function (services) {
     'use strict';
 
-    services.factory('HRJobRolesService', ['settings', '$log', '$q', function (settings, $log, $q) {
+    services.factory('HRJobRolesService', ['settings', '$log', '$q', '$filter', function (settings, $log, $q, $filter) {
 
         return {
 
             getContracts: function (contact_id) {
-
                 var deferred = $q.defer();
 
                 // Return only the non deleted contracts
@@ -18,9 +17,61 @@ define([
                     "deleted": 0,
                     "return": "title,period_end_date,period_start_date"
                 }).done(function (result) {
+                    //get revisions
+                    var revisions = [];
+                    result.values.forEach(function (contract) {
+                        revisions.push(CRM.api3('HRJobContractRevision', 'get', {
+                            "sequential": 1,
+                            "jobcontract_id": contract.id
+                        }).then(function (response) {
+                            return response.values.map(function (item) {
+                                return {
+                                    id: item.id,
+                                    contract_id: item.jobcontract_id
+                                }
+                            });
+                        }));
+                    });
 
-                    // Passing data to deferred's resolve function on successful completion
-                    deferred.resolve(result);
+
+                    $q.all(revisions).then(function (response) {
+                        return [].concat.apply([], response);
+                    }).then(function (response) {
+
+                        response = response.map(function (item) {
+                            return CRM.api3('HRJobDetails', 'get', {
+                                "sequential": 1,
+                                "jobcontract_revision_id": item.id
+                            }).then(function (result) {
+                                result.job_contract_id = item.contract_id;
+                                return result;
+                            });
+                        });
+
+                        return $q.all(response);
+                    }).then(function (response) {
+
+                        result.values.map(function (contract) {
+                            contract.revisions = response.filter(function (revision) {
+                                var isCurrent = (revision.values[0].period_start_date == contract.period_start_date
+                                && revision.values[0].period_end_date == contract.period_end_date);
+
+                                return !isCurrent && revision.job_contract_id == contract.id;
+                            });
+
+                            contract.revisions = contract.revisions.map(function (revisions) {
+                                var revision = revisions.values[0];
+                                revision.period_start_date = $filter('formatDate')(revision.period_start_date);
+                                revision.period_end_date = $filter('formatDate')(revision.period_end_date);
+                                return revision;
+                            });
+
+                            return contract;
+                        });
+
+                        // Passing data to deferred's resolve function on successful completion
+                        deferred.resolve(result);
+                    });
 
                 }).error(function (result) {
 
@@ -154,8 +205,9 @@ define([
 
                 var deferred = $q.defer();
                 //FIXME 'solution' to the bug failing saving correct dates to DB a first save
-                this.getNewJobRole(job_roles_data.job_contract_id).done(function (result) {
-                    return CRM.api3('HrJobRoles', 'create', {
+                this.getNewJobRole(job_roles_data.job_contract_id).then(function (result) {
+
+                    return CRM.api3('HrJobRoles', 'update', {
                         "id": result.id,
                         "sequential": 1,
                         "job_contract_id": job_roles_data.job_contract_id,
@@ -176,10 +228,10 @@ define([
                         "start_date": job_roles_data.newStartDate,
                         "end_date": job_roles_data.newEndDate || 0
                     });
-                }).done(function (response) {
+                }).then(function (response) {
                     // Passing data to deferred's resolve function on successful completion
                     deferred.resolve(response);
-                }).error(function (result) {
+                }, function (result) {
                     // Sending a friendly error message in case of failure
                     deferred.reject("An error occured while adding items");
                 });
