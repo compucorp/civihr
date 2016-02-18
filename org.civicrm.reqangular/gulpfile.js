@@ -31,17 +31,24 @@ gulp.task('requirejs-bundle', function (done) {
     });
 });
 
+gulp.task('requirejs-bundle-mock', function (done) {
+    exec('r.js -o build.mocks.js', function (_, stdout, stderr) {
+        done();
+    });
+});
+
 gulp.task('watch', function () {
     gulp.watch('src/common/**/*.js', ['requirejs-bundle']).on('change', function (file) {
         try { test.for(file.path); } catch (ex) { test.all(); };
     });
+    gulp.watch('test/mocks/**/*.js', ['requirejs-bundle-mock']);
     gulp.watch('src/common/templates/**/*.html', ['cache-templates', 'requirejs-bundle']);
     gulp.watch(['test/**/*.js', '!test/mocks/**/*.js', '!test/test-main.js']).on('change', function (file) {
         test.single(file.path);
     });
 });
 
-gulp.task('default', ['cache-templates', 'requirejs-bundle', 'test', 'watch']);
+gulp.task('default', ['cache-templates', 'requirejs-bundle', 'requirejs-bundle-mock', 'test', 'watch']);
 
 gulp.task('test', function (done) {
     test.all(done);
