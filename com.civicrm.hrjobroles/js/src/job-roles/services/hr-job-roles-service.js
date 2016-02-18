@@ -10,17 +10,18 @@ define([
             getContracts: function (contact_id) {
                 var deferred = $q.defer();
 
-                // Return only the non deleted contracts
+                /**
+                 * Get contracts for given contact.
+                 */
                 CRM.api3('HRJobContract', 'get', {
                     "sequential": 1,
                     "contact_id": contact_id,
                     "deleted": 0,
                     "return": "title,period_end_date,period_start_date"
-                }).done(function (result) {
-                    //get revisions
-                    var revisions = [];
-                    result.values.forEach(function (contract) {
-                        revisions.push(CRM.api3('HRJobContractRevision', 'get', {
+                }).done(function (contracts) {
+                    // get revisions for each contract
+                    var revisions = contracts.values.map(function (contract) {
+                        return CRM.api3('HRJobContractRevision', 'get', {
                             "sequential": 1,
                             "jobcontract_id": contract.id
                         }).then(function (response) {
@@ -30,15 +31,16 @@ define([
                                     contract_id: item.jobcontract_id
                                 }
                             });
-                        }));
+                        });
                     });
 
 
                     $q.all(revisions).then(function (response) {
+                        // Flatten the array of revisions
                         return [].concat.apply([], response);
                     }).then(function (response) {
-
-                        response = response.map(function (item) {
+                        // get details for each revision
+                        return $q.all(response.map(function (item) {
                             return CRM.api3('HRJobDetails', 'get', {
                                 "sequential": 1,
                                 "jobcontract_revision_id": item.id
@@ -46,31 +48,30 @@ define([
                                 result.job_contract_id = item.contract_id;
                                 return result;
                             });
-                        });
+                        }));
+                    }).then(function (revisions) {
+                        // for each contract
+                        contracts.values.forEach(function (contract) {
 
-                        return $q.all(response);
-                    }).then(function (response) {
+                            // filter revisions by contract.id and remove current
+                            contract.revisions = revisions.filter(function (revision) {
+                                var isCurrent = (revision.values[0].period_start_date === contract.period_start_date
+                                && revision.values[0].period_end_date === contract.period_end_date);
 
-                        result.values.map(function (contract) {
-                            contract.revisions = response.filter(function (revision) {
-                                var isCurrent = (revision.values[0].period_start_date == contract.period_start_date
-                                && revision.values[0].period_end_date == contract.period_end_date);
-
-                                return !isCurrent && revision.job_contract_id == contract.id;
+                                return !isCurrent && revision.job_contract_id === contract.id;
                             });
 
+                            // save revisions in contract.revisions with properly formatted dates
                             contract.revisions = contract.revisions.map(function (revisions) {
                                 var revision = revisions.values[0];
                                 revision.period_start_date = $filter('formatDate')(revision.period_start_date);
                                 revision.period_end_date = $filter('formatDate')(revision.period_end_date);
                                 return revision;
                             });
-
-                            return contract;
                         });
 
                         // Passing data to deferred's resolve function on successful completion
-                        deferred.resolve(result);
+                        deferred.resolve(contracts);
                     });
 
                 }).error(function (result) {

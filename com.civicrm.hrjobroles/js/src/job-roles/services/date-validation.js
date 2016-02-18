@@ -65,13 +65,9 @@ define([
             }
         }
 
-        function checkIfStartDateIsLower(start, end) {
-            if (start.isAfter(end)) {
-                me._error('Start Date cannot be higher than End Date.', ['start_date', 'end_date']);
-            }
-
-            if (start.isSame(end)) {
-                me._error('Start Date and End Date cannot be the same.', ['start_date', 'end_date']);
+        function checkIfStartDateIsLower (start, end) {
+            if (start.isSameOrAfter(end)) {
+                me._error('Start Date cannot be the same as or after the End Date.', ['start_date', 'end_date']);
             }
         }
     }]);

@@ -6,8 +6,8 @@ define([
 ], function (angular, controllers, moment) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', 'HR_settings', '$log', '$routeParams', 'HRJobRolesService', '$route', '$timeout', '$filter', 'DateValidation', '$q',
-        function ($scope, HR_settings, $log, $routeParams, HRJobRolesService, $route, $timeout, $filter, DateValidation, $q) {
+    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation',
+        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation) {
             $log.debug('Controller: HRJobRolesController');
 
             $scope.format = HR_settings.DATE_FORMAT;
@@ -17,7 +17,6 @@ define([
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
 
-
             $scope.dpOpen = function ($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -25,6 +24,9 @@ define([
                 $scope.picker.opened = true;
             };
 
+            /**
+             * Method responsible for updating new JobRole with dates from Contract
+             */
             $scope.onContractSelected = function () {
                 var id = $scope.edit_data['new_role_id']['job_contract_id'];
 
@@ -44,12 +46,17 @@ define([
                         $scope.edit_data['new_role_id']['newEndDate'] = null;
                     }
                 }
-
             };
 
+            /**
+             * Checks if dates don't exist in any of contracts
+             * @param start
+             * @param end
+             * @returns {boolean}
+             */
             $scope.checkIfDatesAreCustom = function (start, end) {
-                if (start == '0000-00-00 00:00:00') start = null;
-                if (end == '0000-00-00 00:00:00') end = null;
+                if (start === '0000-00-00 00:00:00') start = null;
+                if (end === '0000-00-00 00:00:00') end = null;
 
                 var custom = true;
 
@@ -57,8 +64,8 @@ define([
 
 
                 angular.forEach(me.contractsData, function (value) {
-                    if ($filter('formatDate')(start) == $filter('formatDate')(value.start_date)
-                        && $filter('formatDate')(end) == $filter('formatDate')(value.end_date))
+                    if ($filter('formatDate')(start) === $filter('formatDate')(value.start_date)
+                        && $filter('formatDate')(end) === $filter('formatDate')(value.end_date))
                         custom = false;
                 });
 
@@ -69,6 +76,11 @@ define([
                 return custom;
             };
 
+            /**
+             * Method responsible for updating existing JobRole with dates from Contract
+             * @param jobContractId
+             * @param role_id
+             */
             $scope.onContractEdited = function (jobContractId, role_id) {
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
 
@@ -91,19 +103,35 @@ define([
                 }
             };
 
-            // Validate fields
-            $scope.validateTitle = function (data) {
-                if (data == 'title' || data == ' ') {
+            /**
+             *
+             * @param title
+             * @returns {string|undefined}
+             */
+            $scope.validateTitle = function (title) {
+                if (title === 'title' || title === ' ') {
                     return "Title cannot be title!";
                 }
             };
 
+            /**
+             * Trigger validation on JobRole Dates + attach error callback
+             * @param start
+             * @param end
+             * @param {function} error
+             */
             $scope.validateDates = function (start, end, error) {
                 DateValidation.setErrorCallback(error);
 
                 DateValidation.validate(start, end);
             };
 
+            /**
+             * Validation method for JobRole data.
+             * If string is returned form is not submitted.
+             * @param data
+             * @returns {boolean|string}
+             */
             $scope.validateRole = function (data) {
                 var errors = 0;
 
@@ -214,11 +242,11 @@ define([
             $scope.initData = function (role_id, form_id, data) {
 
                 // Check if we have the array already
-                if (typeof $scope.edit_data[role_id] == "undefined") {
+                if (typeof $scope.edit_data[role_id] === "undefined") {
                     $scope.edit_data[role_id] = {};
                 }
                 // If we have funders or cost centers, we have a special way to init our data
-                if (form_id == 'funders') {
+                if (form_id === 'funders') {
 
                     // Init empty array for funder default values
                     $scope.edit_data[role_id]['funders'] = [];
@@ -253,7 +281,7 @@ define([
                     }
                 }
                 // If we have funders or cost centers, we have a special way to init our data
-                else if (form_id == 'cost_centers') {
+                else if (form_id === 'cost_centers') {
                     // Init empty array for funder default values
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
@@ -289,8 +317,8 @@ define([
 
                 } else {
 
-                    var bothJustSet = (typeof $scope.edit_data[role_id].start_date == 'undefined'
-                    || typeof $scope.edit_data[role_id].job_contract_id == 'undefined');
+                    var bothJustSet = (typeof $scope.edit_data[role_id].start_date === 'undefined'
+                    || typeof $scope.edit_data[role_id].job_contract_id === 'undefined');
 
                     // Default data init
                     $scope.edit_data[role_id][form_id] = data;
@@ -311,20 +339,24 @@ define([
                     }
                 }
 
-                if(form_id == 'end_date' && !$scope.edit_data[role_id].end_date){
+                if(form_id === 'end_date' && !$scope.edit_data[role_id].end_date){
                     $scope.edit_data[role_id].end_date = null;
                 }
 
                 if ($scope.edit_data[role_id].job_contract_id
                     && $scope.edit_data[role_id].start_date
                     && typeof $scope.edit_data[role_id].end_date != 'undefined'
-                    && (form_id == 'start_date' || form_id == 'job_contract_id' || form_id == 'end_date')) {
+                    && (form_id === 'start_date' || form_id === 'job_contract_id' || form_id === 'end_date')) {
 
-                    $scope.updateRolesWithContractData(role_id);
+                    updateRolesWithContractData(role_id);
                 }
             };
 
-            $scope.updateRolesWithContractData = function (role_id) {
+            /**
+             * Checks if JobRole dates are actual, if not checks if they exist in any of contract's revisions.
+             * @param role_id
+             */
+            function updateRolesWithContractData(role_id) {
                 var contract_id = $scope.edit_data[role_id].job_contract_id;
 
                 if ($scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date'])) {
@@ -332,8 +364,8 @@ define([
 
                     // search for revision containing these dates
                     var revision = contract.revisions.filter(function (rev) {
-                        return rev.period_start_date == $filter('formatDate')($scope.edit_data[role_id]['start_date'])
-                            && rev.period_end_date == $filter('formatDate')($scope.edit_data[role_id]['end_date']);
+                        return rev.period_start_date === $filter('formatDate')($scope.edit_data[role_id]['start_date'])
+                            && rev.period_end_date === $filter('formatDate')($scope.edit_data[role_id]['end_date']);
                     });
 
                     // check if dates match with revision
@@ -344,15 +376,22 @@ define([
                         $scope.updateRole(role_id);
                     }
                 }
-            };
+            }
 
-            // Check if the data are changed in the form (based on job role ID)
+            /**
+             * Check if the data are changed in the form (based on job role ID)
+             * @param row_id
+             * @returns {boolean}
+             */
             $scope.isChanged = function (row_id) {
                 // If there are data it means we edited the form
                 return !!($scope.edit_data[row_id]['is_edit']);
             };
 
-            // Set the is_edit value
+            /**
+             * Set the is_edit value
+             * @param row_id
+             */
             $scope.showSave = function (row_id) {
                 $scope.edit_data[row_id]['is_edit'] = true;
             };
@@ -366,9 +405,9 @@ define([
 
                 return (typeof $scope.edit_data['new_role_id'] === 'undefined'
                 || typeof $scope.edit_data['new_role_id']['title'] === 'undefined'
-                || $scope.edit_data['new_role_id']['title'] == ''
+                || $scope.edit_data['new_role_id']['title'] === ''
                 || typeof $scope.edit_data['new_role_id']['job_contract_id'] === 'undefined'
-                || $scope.edit_data['new_role_id']['job_contract_id'] == '');
+                || $scope.edit_data['new_role_id']['job_contract_id'] === '');
             };
 
             /**
@@ -392,7 +431,9 @@ define([
                 return (formatted.isValid()) ? formatted.format('YYYY-MM-DD') : null;
             };
 
-            // Saves the new Job Role
+            /**
+             * Validates Dates and saves the new Job Role
+             */
             $scope.saveNewRole = function saveNewRole() {
                 $log.debug('Add New Role');
 
@@ -438,20 +479,25 @@ define([
                 }
             };
 
-            // Sets the add new job role form visibility
+            /**
+             * Sets the add new job role form visibility
+             */
             $scope.add_new_role = function () {
                 $scope.add_new = true;
             };
 
-            // Hides the add new job role form
+            /**
+             * Hides the add new job role form and removes any data added.
+             */
             $scope.cancelNewRole = function () {
                 $scope.add_new = false;
-
-                // Remove if any data are added / Reset form
                 delete $scope.edit_data['new_role_id'];
             };
 
-            // Removes the Role based on Role ID
+            /**
+             * Removes the Role based on Role ID
+             * @param row_id
+             */
             $scope.removeRole = function (row_id) {
                 $log.debug('Remove Role');
 
@@ -461,6 +507,10 @@ define([
                 });
             };
 
+            /**
+             * Prepares data and updates existing role
+             * @param role_id
+             */
             $scope.updateRole = function (role_id) {
                 $log.debug('Update Role');
 
@@ -476,9 +526,6 @@ define([
                 updateJobRole(role_id, $scope.edit_data[role_id]).then(function () {
                     return getJobRolesList($scope.$parent.contactId);
                 });
-
-                // Get job roles based on the passed Contact ID (refresh part of the page)
-
             };
 
             // Select list for Row Types (used for Funders and Cost Centers)
@@ -488,7 +535,11 @@ define([
 
             //$scope.rowTypes = [ {id: 0, name: 'Fixed'}, {id: 1, name: '%'}];
 
-            // Show Row Type default value
+            /**
+             * Show Row Type default value
+             * @param object
+             * @returns {string}
+             */
             $scope.showRowType = function (object) {
                 var selected = '';
 
@@ -499,7 +550,6 @@ define([
 
                     return selected.name;
                 }
-
                 return 'Not set';
             };
 
@@ -516,7 +566,7 @@ define([
 
             // Update funder type scope on request
             $scope.updateAdditionalRowType = function (role_id, row_type, key, data) {
-                if (row_type == 'cost_centre') {
+                if (row_type === 'cost_centre') {
                     // Update cost centers row
                     $scope.edit_data[role_id]['cost_centers'][key]['type'] = data;
                 } else {
@@ -529,15 +579,15 @@ define([
             $scope.addAdditionalRow = function (role_id, row_type) {
 
                 // Check if we have the array already
-                if (typeof $scope.edit_data[role_id] == "undefined") {
+                if (typeof $scope.edit_data[role_id] === "undefined") {
                     $scope.edit_data[role_id] = {};
                 }
 
-                if (row_type == 'cost_centre') {
+                if (row_type === 'cost_centre') {
 
                     // Add cost centres
                     // Check if we have the array already
-                    if (typeof $scope.edit_data[role_id]['cost_centers'] == "undefined" || !($scope.edit_data[role_id]['cost_centers'] instanceof Array)) {
+                    if (typeof $scope.edit_data[role_id]['cost_centers'] === "undefined" || !($scope.edit_data[role_id]['cost_centers'] instanceof Array)) {
                         $scope.edit_data[role_id]['cost_centers'] = [];
                     }
 
@@ -553,7 +603,7 @@ define([
 
                     // As default add funder rows
                     // Check if we have the array already
-                    if (typeof $scope.edit_data[role_id]['funders'] == "undefined" || !($scope.edit_data[role_id]['funders'] instanceof Array)) {
+                    if (typeof $scope.edit_data[role_id]['funders'] === "undefined" || !($scope.edit_data[role_id]['funders'] instanceof Array)) {
                         $scope.edit_data[role_id]['funders'] = [];
                     }
 
@@ -569,13 +619,10 @@ define([
 
             // Delete Additional rows (funder or cost centres)
             $scope.deleteAdditionalRow = function (role_id, row_type, row_id) {
-
-                if (row_type == 'cost_centre') {
-
+                if (row_type === 'cost_centre') {
                     // Remove the cost centre row
                     $scope.edit_data[role_id]['cost_centers'].splice(row_id, 1);
                 } else {
-
                     // Remove the funder row as default
                     $scope.edit_data[role_id]['funders'].splice(row_id, 1);
                 }
@@ -910,5 +957,6 @@ define([
                     $scope.error = errorMessage;
                 });
             }
-        }]);
+        }
+    ]);
 });
