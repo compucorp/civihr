@@ -1108,6 +1108,72 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       CRM_Hrjobcontract_JobContractDates::rewriteContactIds();
       return TRUE;
   }
+  
+  /**
+   * Adding 'end_reason' field for Job Contract Details,
+   * 'hrjc_contract_end_reason' Option Group with three Option Values 
+   * and Administration Menu entry for managing the Option Group values.
+   * 
+   * @return boolean TRUE
+   */
+  function upgrade_1011() {
+    // Adding 'end_reason' field into the 'civicrm_hrjobcontract_details' db table.
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_details` ADD `end_reason` INT(3) NULL DEFAULT NULL AFTER `period_end_date`");
+
+    // Creating Option Group named 'hrjc_contract_end_reason' for storing Contract End reason values.
+    $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_contract_end_reason', 'id', 'name');
+    if (!$optionGroupID) {
+        $params = array(
+          'name' => 'hrjc_contract_end_reason',
+          'title' => 'Job Contract End Reason',
+          'is_active' => 1,
+          'is_reserved' => 1,
+        );
+        civicrm_api3('OptionGroup', 'create', $params);
+        // An array with three detault Contract End reasons:
+        $optionsValue = array(
+            1 => 'Voluntary',
+            2 => 'Involuntary',
+            3 => 'Planned',
+        );
+        // Attaching the Option Values to the Option Group.
+        foreach ($optionsValue as $key => $value) {
+          $opValueParams = array(
+            'option_group_id' => 'hrjc_contract_end_reason',
+            'name' => $value,
+            'label' => $value,
+            'value' => $key,
+          );
+          civicrm_api3('OptionValue', 'create', $opValueParams);
+        }
+    }
+
+    // Adding newly created Option Group into the Administration Menu (Dropdown Options).
+    $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
+    $jobContractOptionsMenuTree = array();
+    $result = civicrm_api3('OptionGroup', 'get', array(
+      'sequential' => 1,
+      'name' => "hrjc_contract_end_reason",
+    ));
+    if (!empty($result['id'])) {
+      $jobContractOptionsMenuTree[] = array(
+        'label'      => ts('Reason for Job Contract end'),
+        'name'       => 'hrjc_contract_end_reason',
+        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
+        'permission' => 'administer CiviCRM',
+        'parent_id'  => $administerNavId,
+      );
+    }
+    foreach ($jobContractOptionsMenuTree as $key => $menuItems) {
+      $menuItems['is_active'] = 1;
+      CRM_Core_BAO_Navigation::add($menuItems);
+    }
+
+    // Refreshing the Navigation menu.
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
           
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
