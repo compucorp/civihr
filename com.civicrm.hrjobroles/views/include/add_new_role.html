@@ -48,7 +48,6 @@
                                                                placeholder="{{format}}"
                                                                is-open="!!(CalendarShow.newStartDate)"
                                                                datepicker-popup
-                                                               min-date="minDate"
                                                                ng-model="edit_data['new_role_id']['newStartDate']"
                                                                ng-change="select('newStartDate')"
                                                                ng-disabled="isDisabled"
@@ -76,7 +75,6 @@
                                                            placeholder="{{format}}"
                                                            datepicker-popup
                                                            is-open="!!(CalendarShow.newEndDate)"
-                                                           min-date="minDate"
                                                            ng-model="edit_data['new_role_id']['newEndDate']"
                                                            ng-change="select('newEndDate')"
                                                            ng-disabled="isDisabled"
