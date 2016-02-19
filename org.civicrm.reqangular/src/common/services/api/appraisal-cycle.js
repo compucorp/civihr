@@ -1,10 +1,9 @@
 define([
-    'common/angular',
     'common/lodash',
     'common/modules/apis',
     'common/services/api',
     'common/services/api/option-group'
-], function (angular, _, apis) {
+], function (_, apis) {
     'use strict';
 
     apis.factory('api.appraisal-cycle', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {

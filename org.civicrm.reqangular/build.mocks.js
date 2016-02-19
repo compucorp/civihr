@@ -10,6 +10,7 @@
         'common/mocks': 'mocks/'
     },
     include: [
+        'common/mocks/services/api/appraisal-mock',
         'common/mocks/services/api/appraisal-cycle-mock'
     ]
 })
