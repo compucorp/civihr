@@ -169,13 +169,6 @@ define([
             // Init values
             $scope.today();
 
-            // Set required min date
-            $scope.toggleMin = function () {
-                $scope.minDate = $scope.minDate ? null : new Date(2000, 0, 1);
-            };
-            $scope.toggleMin();
-            $scope.maxDate = new Date(2020, 5, 22);
-
             $scope.open = function (event) {
                 $scope.CalendarShow[event] = true;
             };
@@ -899,8 +892,7 @@ define([
                         if (data.is_error === 1) {
                             job_roles.message_type = 'alert-danger';
                             job_roles.message = 'Role delete failure!';
-                        }
-                        else {
+                        } else {
                             job_roles.message_type = 'alert-success';
                             job_roles.message = 'Role deleted successfully!';
                         }
