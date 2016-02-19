@@ -22,7 +22,7 @@ define([
          * @param {moment} date
          * @param {string[]} fields
          */
-        var checkIfValuesAreValid = function (date, fields) {
+        function checkIfValuesAreValid(date, fields) {
             if (!date.isValid()) {
                 _error('Date is not valid!!', fields);
             }
@@ -33,13 +33,13 @@ define([
          * @param {moment} start
          * @param {moment} end
          */
-        var checkIfStartDateIsLower = function (start, end) {
+        function checkIfStartDateIsLower (start, end) {
             if (start.isSameOrAfter(end)) {
                 _error('Start Date cannot be the same as or after the End Date.', ['start_date', 'end_date']);
             }
-        };
+        }
 
-        return {
+        var Validation = {
             dateFormats: [
                 'x',
                 'YYYY-MM-DD'
@@ -63,8 +63,6 @@ define([
              * @param {Date|string|int} end
              */
             validate: function validate(start, end) {
-                HR_settings.DATE_FORMAT && this.dateFormats.push(HR_settings.DATE_FORMAT.toUpperCase());
-
                 if (start instanceof Date) {
                     start = start.getTime();
                 }
@@ -87,5 +85,8 @@ define([
                 }
             }
         };
+        HR_settings.DATE_FORMAT && Validation.dateFormats.push(HR_settings.DATE_FORMAT.toUpperCase());
+
+        return Validation;
     }]);
 });
