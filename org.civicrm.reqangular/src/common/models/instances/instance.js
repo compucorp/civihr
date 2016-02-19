@@ -59,11 +59,13 @@ define([
              * Function that filters data coming from the API, being called in
              * as the iteratee of a _.transform() call
              *
-             * @abstract
+             * Can be overriden by children api for custom filtering
+             *
              * @param {object} result - The accumulator object
              * @param {string} key - The property name
              */
             fromAPIFilter: function (result, __, key) {
+                result[key] = this[key];
             },
 
             /**
@@ -102,11 +104,13 @@ define([
              * Function that filters data meant to be sent to the API, being
              * called in as the iteratee of a _.transform() call
              *
-             * @abstract
+             * Can be overriden by children api for custom filtering
+             *
              * @param {object} result - The accumulator object
              * @param {string} key - The property name
              */
             toAPIFilter: function (result, __, key) {
+                result[key] = this[key];
             }
         }
     });
