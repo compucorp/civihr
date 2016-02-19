@@ -1,5 +1,5 @@
 define([
     'common/angular'
 ], function (angular) {
-    return angular.module('appraisals.mocks', []);
+    return angular.module('appraisals.mocks', ['common.mocks']);
 });
