@@ -1,18 +1,37 @@
 define([
     'common/angularMocks',
+    'common/mocks/services/api/appraisal-mock',
     'appraisals/app',
-    'mocks/models/appraisal',
+    'mocks/models/instances/appraisal-instance'
 ], function () {
     'use strict';
 
     describe('Appraisal', function () {
-        var Appraisal, AppraisalMock;
+        var $provide, $rootScope, Appraisal, AppraisalMock, AppraisalInstanceMock,
+            appraisalAPI, appraisals;
 
-        beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(function (_Appraisal_, _AppraisalMock_) {
-            Appraisal = _Appraisal_;
-            AppraisalMock = _AppraisalMock_;
-        }));
+        beforeEach(function () {
+            module('appraisals', 'appraisals.mocks', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            // Override api.appraisal-cycle with the mocked version
+            inject(['api.appraisal.mock', function (_appraisalAPIMock_) {
+                $provide.value('api.appraisal', _appraisalAPIMock_);
+            }]);
+        });
+
+        beforeEach(inject([
+            '$rootScope', 'Appraisal', 'AppraisalInstanceMock', 'api.appraisal',
+            function (_$rootScope_, _Appraisal_, _AppraisalInstanceMock_, _appraisalAPI_) {
+                $rootScope = _$rootScope_;
+
+                Appraisal = _Appraisal_;
+                AppraisalInstanceMock = _AppraisalInstanceMock_;
+                appraisalAPI = _appraisalAPI_;
+
+                appraisals = _appraisalAPI_.mockedAppraisals();
+            }
+        ]));
 
         describe('all()', function () {
             describe('instances', function () {
@@ -41,12 +60,27 @@ define([
         });
 
         describe('find()', function () {
-            it('finds an appraisal by id', function () {
+            var promise, appraisal;
 
+            beforeEach(function () {
+                appraisal = appraisals.list[1];
+                promise = Appraisal.find(appraisal.id);
             });
 
-            it('returns a model instance', function () {
+            it('finds an appraisal by id', function (done) {
+                promise.then(function (found) {
+                    expect(appraisalAPI.find).toHaveBeenCalledWith(appraisal.id);
+                    expect(found.id).toEqual(appraisal.id);
+                    expect(found.appraisal_cycle_id).toEqual(found.appraisal_cycle_id);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
 
+            it('returns a model instance', function (done) {
+                promise.then(function (found) {
+                    expect(AppraisalInstanceMock.isInstance(found)).toBe(true);
+                })
+                .finally(done) && $rootScope.$digest();
             });
         });
     });
