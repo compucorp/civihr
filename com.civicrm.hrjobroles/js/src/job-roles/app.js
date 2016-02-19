@@ -7,6 +7,7 @@ define([
     'job-roles/services/services',
     'job-roles/controllers/hr-job-roles-controller',
     'job-roles/services/hr-job-roles-service',
+    'job-roles/services/date-validation',
     'job-roles/directives/example',
     'common/services/angular-date/date-format',
     'common/modules/routers/compu-ng-route',
