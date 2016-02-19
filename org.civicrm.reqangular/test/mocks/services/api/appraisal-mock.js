@@ -7,7 +7,24 @@ define([
 
         return {
             all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {
-                var list = value || this.mockedAppraisals();
+                var list, start, end;
+
+                list = value || this.mockedAppraisals().list;
+
+                if (filters) {
+                    list = list.filter(function (appraisal) {
+                        return Object.keys(filters).every(function (key) {
+                            return appraisal[key] === filters[key];
+                        });
+                    });
+                }
+
+                if (pagination) {
+                    start = (pagination.page - 1) * pagination.size;
+                    end = start + pagination.size;
+
+                    list = list.slice(start, end);
+                }
 
                 return promiseResolvedWith({
                     list: list,

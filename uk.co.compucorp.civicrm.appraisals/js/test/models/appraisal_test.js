@@ -35,26 +35,39 @@ define([
 
         describe('all()', function () {
             describe('instances', function () {
-                it('returns a list of model instances', function () {
-
+                it('returns a list of model instances', function (done) {
+                    Appraisal.all().then(function (response) {
+                        expect(response.list.every(function (appraisal) {
+                            return AppraisalInstanceMock.isInstance(appraisal);
+                        })).toBe(true);
+                    })
+                    .finally(done) && $rootScope.$digest();
                 });
             });
 
             describe('when called without arguments', function () {
-                it('returns all appraisals', function () {
-
+                it('returns all appraisals', function (done) {
+                    Appraisal.all().then(function (response) {
+                        expect(appraisalAPI.all).toHaveBeenCalled();
+                        expect(response.list.length).toEqual(appraisals.list.length);
+                    })
+                    .finally(done) && $rootScope.$digest();
                 });
             });
 
-            describe('when called with filters', function () {
-                it('returns only the appraisals that match the filters', function () {
-
-                });
+            xdescribe('when called with filters', function () {
+                // TO DO
             });
 
             describe('when called with pagination', function () {
-                it('can paginate the list', function () {
+                var pagination = { page: 3, size: 2 };
 
+                it('can paginate the appraisals list', function (done) {
+                    Appraisal.all(null, pagination).then(function (response) {
+                        expect(appraisalAPI.all).toHaveBeenCalledWith(null, pagination);
+                        expect(response.list.length).toEqual(2);
+                    })
+                    .finally(done) && $rootScope.$digest();
                 });
             });
         });
