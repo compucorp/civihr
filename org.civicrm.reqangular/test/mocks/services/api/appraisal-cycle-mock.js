@@ -19,7 +19,7 @@ define([
                 }
 
                 if (pagination) {
-                    start = pagination.page * pagination.size;
+                    start = (pagination.page - 1) * pagination.size;
                     end = start + pagination.size;
 
                     list = list.slice(start, end);
@@ -106,7 +106,7 @@ define([
                         return cycle.id === id;
                     })[0];
 
-                    return AppraisalCycleInstanceMock(angular.extend({}, cycle, attributes));
+                    return angular.extend({}, cycle, attributes);
                 }.bind(this))();
 
                 return promiseResolvedWith(cycle);
@@ -148,9 +148,9 @@ define([
                             cycle_type_id: '2',
                             cycle_start_date: '01/01/2014',
                             cycle_end_date: '01/01/2015',
-                            cycle_self_appraisal_due: '01/01/2016',
-                            cycle_manager_appraisal_due: '02/01/2016',
-                            cycle_grade_due: '03/01/2016'
+                            cycle_self_appraisal_due: '2016-01-01',
+                            cycle_manager_appraisal_due: '2016-01-02',
+                            cycle_grade_due: '2016-01-03'
                         },
                         {
                             id: '42132',
@@ -159,9 +159,9 @@ define([
                             cycle_type_id: '1',
                             cycle_start_date: '02/02/2014',
                             cycle_end_date: '02/02/2015',
-                            cycle_self_appraisal_due: '02/02/2016',
-                            cycle_manager_appraisal_due: '04/02/2016',
-                            cycle_grade_due: '05/02/2016'
+                            cycle_self_appraisal_due: '2016-02-02',
+                            cycle_manager_appraisal_due: '2016-02-04',
+                            cycle_grade_due: '2016-02-05'
                         },
                         {
                             id: '42133',
@@ -170,9 +170,9 @@ define([
                             cycle_type_id: '2',
                             cycle_start_date: '03/03/2014',
                             cycle_end_date: '03/03/2015',
-                            cycle_self_appraisal_due: '06/03/2016',
-                            cycle_manager_appraisal_due: '07/03/2016',
-                            cycle_grade_due: '08/03/2016'
+                            cycle_self_appraisal_due: '2016-03-06',
+                            cycle_manager_appraisal_due: '2016-03-07',
+                            cycle_grade_due: '2016-03-08'
                         },
                         {
                             id: '42134',
@@ -181,9 +181,9 @@ define([
                             cycle_type_id: '3',
                             cycle_start_date: '04/04/2014',
                             cycle_end_date: '04/04/2015',
-                            cycle_self_appraisal_due: '09/04/2016',
-                            cycle_manager_appraisal_due: '10/04/2016',
-                            cycle_grade_due: '11/04/2016'
+                            cycle_self_appraisal_due: '2016-04-09',
+                            cycle_manager_appraisal_due: '2016-04-10',
+                            cycle_grade_due: '2016-04-11'
                         },
                         {
                             id: '42135',
@@ -192,9 +192,9 @@ define([
                             cycle_type_id: '3',
                             cycle_start_date: '05/05/2014',
                             cycle_end_date: '05/05/2015',
-                            cycle_self_appraisal_due: '12/05/2016',
-                            cycle_manager_appraisal_due: '13/05/2016',
-                            cycle_grade_due: '14/05/2016'
+                            cycle_self_appraisal_due: '2016-05-12',
+                            cycle_manager_appraisal_due: '2016-05-13',
+                            cycle_grade_due: '2016-05-14'
                         },
                         {
                             id: '42136',
@@ -203,9 +203,9 @@ define([
                             cycle_type_id: '1',
                             cycle_start_date: '06/06/2014',
                             cycle_end_date: '06/06/2015',
-                            cycle_self_appraisal_due: '15/06/2016',
-                            cycle_manager_appraisal_due: '16/06/2016',
-                            cycle_grade_due: '17/06/2016'
+                            cycle_self_appraisal_due: '2016-06-15',
+                            cycle_manager_appraisal_due: '2016-06-16',
+                            cycle_grade_due: '2016-06-17'
                         },
                         {
                             id: '4217',
@@ -214,9 +214,9 @@ define([
                             cycle_type_id: '2',
                             cycle_start_date: '07/07/2014',
                             cycle_end_date: '07/07/2015',
-                            cycle_self_appraisal_due: '18/07/2016',
-                            cycle_manager_appraisal_due: '19/07/2016',
-                            cycle_grade_due: '20/07/2016'
+                            cycle_self_appraisal_due: '2016-07-18',
+                            cycle_manager_appraisal_due: '2016-07-19',
+                            cycle_grade_due: '2016-07-20'
                         },
                         {
                             id: '42138',
@@ -225,9 +225,9 @@ define([
                             cycle_type_id: '1',
                             cycle_start_date: '08/08/2014',
                             cycle_end_date: '08/08/2015',
-                            cycle_self_appraisal_due: '21/08/2016',
-                            cycle_manager_appraisal_due: '22/08/2016',
-                            cycle_grade_due: '23/08/2016'
+                            cycle_self_appraisal_due: '2016-08-21',
+                            cycle_manager_appraisal_due: '2016-08-22',
+                            cycle_grade_due: '2016-08-23'
                         },
                         {
                             id: '42139',
@@ -236,9 +236,9 @@ define([
                             cycle_type_id: '1',
                             cycle_start_date: '09/09/2014',
                             cycle_end_date: '09/09/2015',
-                            cycle_self_appraisal_due: '24/09/2016',
-                            cycle_manager_appraisal_due: '25/09/2016',
-                            cycle_grade_due: '26/09/2016'
+                            cycle_self_appraisal_due: '2016-09-24',
+                            cycle_manager_appraisal_due: '2016-09-25',
+                            cycle_grade_due: '2016-09-26'
                         },
                         {
                             id: '421310',
@@ -247,9 +247,9 @@ define([
                             cycle_type_id: '4',
                             cycle_start_date: '10/10/2014',
                             cycle_end_date: '10/10/2015',
-                            cycle_self_appraisal_due: '27/10/2016',
-                            cycle_manager_appraisal_due: '28/10/2016',
-                            cycle_grade_due: '29/10/2016'
+                            cycle_self_appraisal_due: '2016-10-27',
+                            cycle_manager_appraisal_due: '2016-10-28',
+                            cycle_grade_due: '2016-10-29'
                         }
                     ]
                 }
