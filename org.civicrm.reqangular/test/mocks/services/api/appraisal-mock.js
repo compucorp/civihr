@@ -41,6 +41,18 @@ define([
 
                 return promiseResolvedWith(appraisal);
             }),
+            overdue: jasmine.createSpy('overdue').and.callFake(function () {
+                // Just take the first 5 appraisals
+                var list = this.mockedAppraisals().list.slice(0, 5);
+
+                return promiseResolvedWith({
+                    list: list,
+                    total: list.length,
+                    allIds: list.map(function (appraisal) {
+                        return appraisal.id;
+                    }).join(',')
+                })
+            }),
 
             /**
              * # DRAFT #
