@@ -12,52 +12,23 @@ define([
         return api.extend({
 
             /**
-             * Returns:
-             *   - the list of cycles, eventually filtered/paginated
-             *   - the total count of the cycles based on the filters,
-             *     independent of the pagination settings
+             * Returns the list of appraisals
              *
-             * @param {object} filters - Values the full list should be filtered by
+             * @param {object} filters
              * @param {object} pagination
-             *   `page` for the current page, `size` for number of items per page
-             * @param {string} sort - The field and direction to order by
-             * @return {Promise} resolves to an object with `list` and `total`
+             * @param {string} sort
+             * @return {Promise}
              */
             all: function (filters, pagination, sort) {
                 $log.debug('api.appraisal-cycle.all');
 
-                filters = filters || {};
-
-                return $q.all([
-                    (function () {
-                        var params = _.assign({}, filters, {
-                            'api.AppraisalCycle.getappraisalsperstep': {},
-                            options: { sort: sort || 'id DESC' }
-                        });
-
-                        if (pagination) {
-                            params.options.offset = (pagination.page - 1) * pagination.size;
-                            params.options.limit = pagination.size;
-                        }
-
-                        return this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
-                            return data.values;
-                        });
-                    }.bind(this))(),
-                    (function () {
-                        var params = _.assign({}, filters, { 'return': 'id' });
-
-                        return this.sendGET('AppraisalCycle', 'get', params);
-                    }.bind(this))()
-                ]).then(function (results) {
-                    return {
-                        list: results[0],
-                        total: results[1].count,
-                        allIds: results[1].values.map(function (cycle) {
-                            return cycle.id;
-                        }).join(',')
-                    };
-                });
+                return this.getAll(
+                    'AppraisalCycle',
+                    filters,
+                    pagination,
+                    sort,
+                    { 'api.AppraisalCycle.getappraisalsperstep': {} }
+                );
             },
 
             /**
