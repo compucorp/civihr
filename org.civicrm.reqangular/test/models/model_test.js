@@ -86,20 +86,6 @@ define([
                     it('keep the names unchanged', function () {
                         expect(Object.keys(filters)).toEqual(['filter_1', 'filter_2']);
                     });
-                })
-
-                describe('period-related filters', function () {
-                    beforeEach(function () {
-                        filters = Model.processFilters({
-                            filter_1_from: jasmine.any(String),
-                            filter_1_to: jasmine.any(String),
-                            filter_2_from: jasmine.any(String)
-                        });
-                    });
-
-                    it('converts the names to the correct api parameter names', function () {
-                        expect(Object.keys(filters)).toEqual(['filter_1', 'filter_2']);
-                    });
                 });
             });
 
@@ -123,32 +109,27 @@ define([
                 describe('period-related filters', function () {
                     beforeEach(function () {
                         filters = Model.processFilters({
-                            filter_1_from: '20/01/2006',
-                            filter_1_to: '16/02/2006',
-                            filter_2_from: '31/12/2016',
-                            filter_3_to: '02/07/2016'
+                            filter_1: { from: '20/01/2006', to: '16/02/2006' },
+                            filter_2: { from: '31/12/2016' },
+                            filter_3: { to: '02/07/2016' }
                         });
                     });
 
                     it('uses the correct operator depending on the filter name', function () {
                         expect(filters).toEqual({
                             filter_1: {
-                                '>=' : jasmine.any(String),
-                                '<=' : jasmine.any(String)
+                                'BETWEEN': [jasmine.any(String), jasmine.any(String)]
                             },
-                            filter_2: { '>=' : jasmine.any(String) },
-                            filter_3: { '<=' : jasmine.any(String) }
+                            filter_2: { '>=': jasmine.any(String) },
+                            filter_3: { '<=': jasmine.any(String) }
                         });
                     });
 
                     it('converts the filter values to the expected date format', function () {
                         expect(filters).toEqual({
-                            filter_1: {
-                                '>=' : '2006-01-20',
-                                '<=' : '2006-02-16'
-                            },
-                            filter_2: { '>=' : '2016-12-31' },
-                            filter_3: { '<=' : '2016-07-02' }
+                            filter_1: { 'BETWEEN': ['2006-01-20', '2006-02-16'] },
+                            filter_2: { '>=': '2016-12-31' },
+                            filter_3: { '<=': '2016-07-02' }
                         });
                     });
                 });

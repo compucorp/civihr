@@ -365,33 +365,10 @@ define([
                 });
 
                 describe('date filters', function () {
-                    describe('filter names', function () {
-                        beforeEach(function () {
-                            p = AppraisalCycle.all({
-                                cycle_start_date_from: jasmine.any(Date),
-                                cycle_self_appraisal_due_to: jasmine.any(Date),
-                                cycle_manager_appraisal_due_to: jasmine.any(Date),
-                                cycle_grade_due_from: jasmine.any(Date)
-                            });
-                        });
-
-                        it('converts the filter names to the correct api parameter names', function (done) {
-                            p.then(function () {
-                                expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
-                                    cycle_start_date: jasmine.any(Object),
-                                    cycle_self_appraisal_due: jasmine.any(Object),
-                                    cycle_manager_appraisal_due: jasmine.any(Object),
-                                    cycle_grade_due: jasmine.any(Object)
-                                }, undefined);
-                            })
-                            .finally(done) && $rootScope.$digest();
-                        });
-                    });
-
                     describe('when searching only by "from" date', function () {
                         beforeEach(function () {
                             p = AppraisalCycle.all({
-                                cycle_start_date_from: '01/09/2016'
+                                cycle_start_date: { from: '01/09/2016' }
                             });
                         });
 
@@ -408,7 +385,7 @@ define([
                     describe('when searching only by "to" date', function () {
                         beforeEach(function () {
                             p = AppraisalCycle.all({
-                                cycle_grade_due_to: '22/10/2016'
+                                cycle_grade_due: { to: '22/10/2016' }
                             });
                         })
 
@@ -425,8 +402,10 @@ define([
                     describe('when searching both by "from" and "to" date', function () {
                         beforeEach(function () {
                             p = AppraisalCycle.all({
-                                cycle_manager_appraisal_due_from: '01/09/2016',
-                                cycle_manager_appraisal_due_to: '22/10/2016'
+                                cycle_manager_appraisal_due: {
+                                    from: '01/09/2016',
+                                    to: '22/10/2016'
+                                }
                             });
                         })
 
@@ -434,8 +413,7 @@ define([
                             p.then(function () {
                                 expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
                                     cycle_manager_appraisal_due: {
-                                        '>=': '2016-09-01',
-                                        '<=': '2016-10-22'
+                                        'BETWEEN': ['2016-09-01', '2016-10-22']
                                     }
                                 }, undefined);
                             })

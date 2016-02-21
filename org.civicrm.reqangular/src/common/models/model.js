@@ -8,24 +8,29 @@ define([
     models.factory('Model', function () {
 
         /**
+         * Uses the date format the API expects
+         *
+         * @param {string} date
+         * @return {string}
+         */
+        function apiDateFormat(date) {
+            return moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        }
+
+        /**
          * Transforms date range filters to values the API can use
          *
-         * Date range filters come in the `a_date_from` and `a_date_to` format
-         * The suffix gets stripped from the filter name and, depending on its value,
-         * the correct operator is applied to the filter
-         *
-         * @param {string} key
          * @param {string} value
-         * @param {object} filters (by reference)
-         *   The current collection of processed filters
+         * @return {object}
          */
-        function processDateRangeFilter(key, value, filters) {
-            var suffix = _.last(key.split('_'));
-            var field = key.replace('_' + suffix, '');
-            var operator = suffix === 'from' ? '>=' : '<=';
-
-            filters[field] = filters[field] || {};
-            filters[field][operator] = moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD');;
+        function processDateRangeFilter(value) {
+            if (value.from && value.to) {
+                return { 'BETWEEN': [ apiDateFormat(value.from), apiDateFormat(value.to) ] };
+            } else if (value.from) {
+                return { '>=': apiDateFormat(value.from) };
+            } else {
+                return { '<=': apiDateFormat(value.to) };
+            }
         }
 
         return {
@@ -56,11 +61,11 @@ define([
                     .pick(function (value) {
                         return value === 0 || value === false || !!value;
                     })
-                    .transform(function (filters, __, key) {
-                        if (_.endsWith(key, '_from') || _.endsWith(key, '_to')) {
-                            processDateRangeFilter(key, rawFilters[key], filters);
+                    .transform(function (filters, value, key) {
+                        if (value.from || value.to) {
+                            filters[key] = processDateRangeFilter(value);
                         } else {
-                            filters[key] = rawFilters[key];
+                            filters[key] = value;
                         }
                     }, {})
                     .value();
