@@ -33,6 +33,10 @@ define([
             }
         ]));
 
+        it('has the expected api', function () {
+            expect(Object.keys(Appraisal)).toEqual(['all', 'find', 'overdue']);
+        });
+
         describe('all()', function () {
             describe('instances', function () {
                 it('returns a list of model instances', function (done) {
@@ -92,6 +96,30 @@ define([
             it('returns a model instance', function (done) {
                 promise.then(function (found) {
                     expect(AppraisalInstanceMock.isInstance(found)).toBe(true);
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+        });
+
+        describe('overdue()', function () {
+            var promise;
+
+            beforeEach(function () {
+                promise = Appraisal.overdue();
+            });
+
+            it('calls the equivalent api method', function (done) {
+                promise.then(function (response) {
+                    expect(appraisalAPI.overdue).toHaveBeenCalled();
+                })
+                .finally(done) && $rootScope.$digest();
+            });
+
+            it('returns a list of model instances', function (done) {
+                promise.then(function (response) {
+                    expect(response.list.every(function (appraisal) {
+                        return AppraisalInstanceMock.isInstance(appraisal);
+                    })).toBe(true);
                 })
                 .finally(done) && $rootScope.$digest();
             });

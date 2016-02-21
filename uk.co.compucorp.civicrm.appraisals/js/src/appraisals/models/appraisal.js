@@ -39,6 +39,21 @@ define([
                     return appraisalAPI.find(id).then(function (appraisal) {
                         return instance.init(appraisal, true);
                     });
+                },
+
+                /**
+                 * Returns all the overdue appraisals
+                 *
+                 * @param {Promise}
+                 */
+                overdue: function () {
+                    return appraisalAPI.overdue().then(function (response) {
+                        response.list = response.list.map(function (appraisal) {
+                            return instance.init(appraisal, true);
+                        });
+
+                        return response;
+                    });
                 }
             });
         }
