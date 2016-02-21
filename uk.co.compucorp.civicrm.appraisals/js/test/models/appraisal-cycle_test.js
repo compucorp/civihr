@@ -433,8 +433,10 @@ define([
                         it('provides the API with the correct filter values', function (done) {
                             p.then(function () {
                                 expect(appraisalCycleAPI.all).toHaveBeenCalledWith({
-                                    cycle_manager_appraisal_due: { '>=': '2016-09-01' },
-                                    cycle_manager_appraisal_due: { '<=': '2016-10-22' }
+                                    cycle_manager_appraisal_due: {
+                                        '>=': '2016-09-01',
+                                        '<=': '2016-10-22'
+                                    }
                                 }, undefined);
                             })
                             .finally(done) && $rootScope.$digest();
