@@ -43,17 +43,8 @@ define([
                 return promiseResolvedWith(appraisal);
             },
             overdue: function (filters) {
-                var list = this.mockedAppraisals().list;
-
-                // The only filter supported for now is the cycle id
-                if (typeof filters !== 'undefined' && filters.appraisal_cycle_id) {
-                    list = list.filter(function (appraisal) {
-                        return appraisal.appraisal_cycle_id === filters.appraisal_cycle_id
-                    });
-                }
-
-                // Just take the first 2 appraisals
-                list = list.slice(0, 2);
+                // Just take the first 5 appraisals, independent from the cycle id
+                var list = this.mockedAppraisals().list.slice(0, 5);
 
                 return promiseResolvedWith({
                     list: list,

@@ -1,12 +1,12 @@
 define([
     'appraisals/modules/models',
     'common/models/model',
-    'common/services/api/appraisal'
+    'common/mocks/services/api/appraisal-mock' // Temporary, necessary to use the mocked API data
 ], function (models) {
     'use strict';
 
     models.factory('Appraisal', [
-        'Model', 'api.appraisal', 'AppraisalInstance',
+        'Model', 'api.appraisal.mock', 'AppraisalInstance',
         function (Model, appraisalAPI, instance) {
 
             return Model.extend({
