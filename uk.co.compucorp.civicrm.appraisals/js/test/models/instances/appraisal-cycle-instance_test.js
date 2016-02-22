@@ -2,23 +2,47 @@ define([
     'common/lodash',
     'common/moment',
     'common/angularMocks',
-    'appraisals/app'
+    'common/mocks/services/api/appraisal-mock',
+    'common/mocks/services/api/appraisal-cycle-mock',
+    'appraisals/app',
+    'mocks/models/instances/appraisal-instance'
 ], function (_) {
     'use strict';
 
     describe('AppraisalCycleInstance', function () {
-        var $q, $rootScope, AppraisalCycleInstance, appraisalCycleAPI;
+        var $q, $provide, $rootScope, Appraisal, AppraisalCycleInstance, AppraisalInstanceMock,
+            appraisalAPI, appraisalCycleAPI;
         var instanceInterface = ['defaultCustomData', 'dueDates', 'fromAPIFilter',
-        'isStatusOverdue', 'nextDueDate', 'toAPIFilter', 'update'];
+            'isStatusOverdue', 'loadAppraisals', 'nextDueDate', 'toAPIFilter',
+            'update'];
 
-        beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisal-cycle',
-            function (_$q_, _$rootScope_, _AppraisalCycleInstance_, _appraisalCycleAPI_) {
+        beforeEach(function () {
+            module('appraisals', 'appraisals.mocks', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            // Override apis with the mocked versions
+            inject([
+                'api.appraisal.mock', 'api.appraisal-cycle.mock',
+                function (_appraisalAPIMock_, _appraisalCycleAPIMock_) {
+                    appraisalAPI = _appraisalAPIMock_;
+                    appraisalCycleAPI = _appraisalCycleAPIMock_;
+
+                    $provide.value('api.appraisal', appraisalAPI);
+                    $provide.value('api.appraisal-cycle', appraisalCycleAPI);
+                }
+            ]);
+        });
+
+        beforeEach(inject([
+            '$q', '$rootScope', 'Appraisal', 'AppraisalCycleInstance',
+            'AppraisalInstanceMock',
+            function (_$q_, _$rootScope_, _Appraisal_, _AppraisalCycleInstance_, _AppraisalInstanceMock_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
 
+                Appraisal = _Appraisal_;
+                AppraisalInstanceMock = _AppraisalInstanceMock_;
                 AppraisalCycleInstance = _AppraisalCycleInstance_;
-                appraisalCycleAPI = _appraisalCycleAPI_;
             }
         ]));
 
@@ -37,6 +61,7 @@ define([
                 });
 
                 it('contains the default custom data', function () {
+                    expect(instance.appraisals).toBeDefined();
                     expect(instance.appraisals_count).toBeDefined();
                     expect(instance.completion_percentage).toBeDefined();
                     expect(instance.statuses).toBeDefined();
@@ -93,6 +118,70 @@ define([
                             appraisals_count: '2'
                         }
                     });
+                });
+            });
+        });
+
+        describe('loadAppraisals()', function () {
+            var instance, promise;
+
+            beforeEach(function () {
+                instance = AppraisalCycleInstance.init({
+                    id: '1'
+                });
+            });
+
+            describe('all appraisals', function () {
+                var expectedList;
+
+                beforeEach(function () {
+                    spyOn(Appraisal, 'all').and.callThrough();
+                    promise = instance.loadAppraisals();
+
+                    expectedList = appraisalAPI.mockedAppraisals().list.filter(function (appraisal) {
+                        return appraisal.appraisal_cycle_id === '1';
+                    });
+                });
+
+                it('calls Appraisal.all() with the cycle id', function (done) {
+                    promise.then(function () {
+                        expect(Appraisal.all).toHaveBeenCalledWith({
+                            appraisal_cycle_id: instance.id
+                        });
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                it('stores the appraisals in an internal property', function (done) {
+                    promise.then(function (appraisals) {
+                        expect(instance.appraisals.length).toBe(expectedList.length);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                it('returns appraisals instances', function (done) {
+                    promise.then(function () {
+                        expect(instance.appraisals.every(function (appraisal) {
+                            return AppraisalInstanceMock.isInstance(appraisal);
+                        })).toBe(true);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+            });
+
+            describe('only overdue appraisals', function () {
+                beforeEach(function () {
+                    spyOn(Appraisal, 'overdue').and.callThrough();
+                    promise = instance.loadAppraisals({ overdue: true });
+                });
+
+                it('calls Appraisals.overdue() with the cycle id', function (done) {
+                    promise.then(function () {
+                        expect(Appraisal.overdue).toHaveBeenCalledWith({
+                            appraisal_cycle_id: instance.id
+                        });
+                    })
+                    .finally(done) && $rootScope.$digest();
                 });
             });
         });
@@ -211,6 +300,7 @@ define([
             it('filters out the custom data field', function () {
                 expect(Object.keys(toAPIData)).toEqual(_.without(
                     Object.keys(instance.attributes()),
+                    'appraisals',
                     'appraisals_count',
                     'completion_percentage'
                 ));
@@ -237,18 +327,6 @@ define([
             };
 
             beforeEach(function () {
-                spyOn(appraisalCycleAPI, 'update').and.callFake(function () {
-                    var deferred = $q.defer();
-                    deferred.resolve({
-                        id: '23',
-                        name: 'newest cycle',
-                        cycle_start_date: '2015-11-12',
-                        cycle_grade_due: '2016-02-01'
-                    });
-
-                    return deferred.promise;
-                });
-
                 instance = AppraisalCycleInstance.init(oldData)
             });
 

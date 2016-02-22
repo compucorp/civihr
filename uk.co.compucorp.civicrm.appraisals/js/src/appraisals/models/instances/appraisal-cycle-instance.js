@@ -1,14 +1,16 @@
 define([
     'common/lodash',
     'common/moment',
+    'appraisals/modules/models-instances',
     'common/services/api/appraisal-cycle',
     'common/models/instances/instance',
-    'appraisals/modules/models-instances',
-], function (_, moment, __, ___, instances) {
+    'appraisals/models/appraisal'
+], function (_, moment, instances) {
     'use strict';
 
-    instances.factory('AppraisalCycleInstance', ['$q', 'ModelInstance', 'api.appraisal-cycle',
-        function ($q, ModelInstance, appraisalCycleAPI) {
+    instances.factory('AppraisalCycleInstance', ['$q', 'Appraisal', 'ModelInstance',
+        'api.appraisal-cycle',
+        function ($q, Appraisal, ModelInstance, appraisalCycleAPI) {
 
             var DUE_DATE_FIELD_TO_STATUS_ID = {
                 cycle_self_appraisal_due:    '1',
@@ -88,6 +90,7 @@ define([
                  */
                 defaultCustomData: function () {
                     return {
+                        appraisals: [],
                         appraisals_count: 0,
                         completion_percentage: 0,
                         statuses: {}
@@ -135,6 +138,27 @@ define([
                 },
 
                 /**
+                 * Stores internally its own appraisals
+                 *
+                 * @param {object} options
+                 *   The only supported option is the special "overdue" one, which
+                 *   if passed sets the method to return only the overdue appraisals
+                 * @return {Promise}
+                 */
+                loadAppraisals: function (options) {
+                    var method = 'all';
+
+                    if (typeof options !== 'undefined' && options.overdue === true) {
+                        method = 'overdue';
+                    }
+
+                    return Appraisal[method]({ appraisal_cycle_id: this.id })
+                        .then(function (appraisals) {
+                            this.appraisals = appraisals.list;
+                        }.bind(this));
+                },
+
+                /**
                  * Returns the next available due date based on the current date,
                  * or `null` if there are no more due dates left
                  *
@@ -157,7 +181,8 @@ define([
                  *
                  */
                 toAPIFilter: function (result, __, key) {
-                    var blacklist = ['appraisals_count', 'completion_percentage'];
+                    var blacklist = ['appraisals', 'appraisals_count',
+                        'completion_percentage'];
 
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
                         result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
