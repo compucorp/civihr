@@ -17,7 +17,7 @@ define([
              * @param {string} sort
              * @return {Promise}
              */
-            all: function (filter, pagination, sort) {
+            all: function (filters, pagination, sort) {
                 $log.debug('api.appraisal.api');
 
                 return this.getAll('Appraisal', filters, pagination, sort);
