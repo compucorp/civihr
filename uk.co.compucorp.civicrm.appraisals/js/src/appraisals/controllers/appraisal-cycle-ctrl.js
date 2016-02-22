@@ -14,7 +14,7 @@ define([
 
             vm.cycle = {};
             vm.filtersCollapsed = true;
-            vm.loading = { cycle: true };
+            vm.loading = { cycle: true, appraisals: true };
 
             vm.types = types;
 
@@ -99,6 +99,11 @@ define([
                 AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
                     vm.cycle = cycle;
                     vm.loading.cycle = false;
+
+                    return vm.cycle.loadAppraisals({ overdue: true });
+                })
+                .then(function () {
+                    vm.loading.appraisals = false;
                 });
             }
 

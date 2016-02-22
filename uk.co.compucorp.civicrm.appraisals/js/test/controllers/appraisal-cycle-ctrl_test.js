@@ -1,5 +1,6 @@
 define([
     'common/angularMocks',
+    'common/mocks/services/api/appraisal-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app'
 ], function () {
@@ -7,18 +8,22 @@ define([
 
     describe('AppraisalCycleCtrl', function () {
         var $controller, $log, $modal, $provide, $rootScope, $scope, ctrl, dialog,
-            AppraisalCycle, appraisalCycleAPIMock, cycle;
+            Appraisal, AppraisalCycle, appraisalAPI, appraisalCycleAPI, cycle;
 
         beforeEach(function () {
             module('appraisals', 'common.mocks', function (_$provide_) {
                 $provide = _$provide_;
             });
             // Override api.appraisal-cycle with the mocked version
-            inject(['api.appraisal-cycle.mock', function (_appraisalCycleAPIMock_) {
-                appraisalCycleAPIMock = _appraisalCycleAPIMock_;
+            inject(['api.appraisal.mock', 'api.appraisal-cycle.mock',
+                function (_appraisalAPIMock_, _appraisalCycleAPIMock_) {
+                    appraisalAPI = _appraisalAPIMock_;
+                    appraisalCycleAPI = _appraisalCycleAPIMock_;
 
-                $provide.value('api.appraisal-cycle', appraisalCycleAPIMock);
-            }]);
+                    $provide.value('api.appraisal', appraisalAPI);
+                    $provide.value('api.appraisal-cycle', appraisalCycleAPI);
+                }
+            ]);
         });
 
         beforeEach(inject(function (_$log_, _$modal_, _$rootScope_, _$controller_, _dialog_, _AppraisalCycle_) {
@@ -32,7 +37,7 @@ define([
             dialog = _dialog_;
             AppraisalCycle = _AppraisalCycle_;
 
-            cycle = appraisalCycleAPIMock.mockedCycles().list[0];
+            cycle = appraisalCycleAPI.mockedCycles().list[0];
 
             spyOn(AppraisalCycle, 'find').and.callThrough();
             initController();
@@ -61,8 +66,12 @@ define([
                 expect(ctrl.filtersCollapsed).toBe(true);
             });
 
-            it('is loading the cycle data', function () {
+            it('is loading the data', function () {
                 expect(ctrl.loading.cycle).toBe(true);
+                expect(ctrl.loading.appraisals).toBe(true);
+            });
+
+            it('requests the cycle data', function () {
                 expect(AppraisalCycle.find).toHaveBeenCalledWith(cycle.id);
             });
 
@@ -73,11 +82,12 @@ define([
 
                 it('marks the data as loaded', function () {
                     expect(ctrl.loading.cycle).toBe(false);
+                    expect(ctrl.loading.appraisals).toBe(false);
                 });
 
                 it('stores the data internally', function () {
                     expect(ctrl.cycle.cycle_name).toBe(cycle.cycle_name);
-                })
+                });
             });
         });
 
