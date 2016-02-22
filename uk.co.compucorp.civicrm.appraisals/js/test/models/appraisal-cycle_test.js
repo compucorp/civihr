@@ -32,6 +32,8 @@ define([
                 AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
                 appraisalCycleAPI = _appraisalCycleAPI_;
 
+                appraisalCycleAPI.spyOnMethods();
+
                 cycles = appraisalCycleAPI.mockedCycles();
             }
         ]));

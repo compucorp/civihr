@@ -29,6 +29,7 @@ define([
                 AppraisalInstanceMock = _AppraisalInstanceMock_;
                 appraisalAPI = _appraisalAPI_;
 
+                appraisalAPI.spyOnMethods();
                 appraisals = _appraisalAPI_.mockedAppraisals();
             }
         ]));

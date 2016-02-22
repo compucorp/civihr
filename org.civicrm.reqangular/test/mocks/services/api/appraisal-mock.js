@@ -1,12 +1,13 @@
 define([
+    'common/lodash',
     'common/mocks/module'
-], function (mocks) {
+], function (_, mocks) {
     'use strict';
 
     mocks.factory('api.appraisal.mock', ['$q', function ($q) {
 
         return {
-            all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {
+            all: function (filters, pagination, value) {
                 var list, start, end;
 
                 list = value || this.mockedAppraisals().list;
@@ -33,15 +34,15 @@ define([
                         return appraisal.id;
                     }).join(',')
                 })
-            }),
-            find: jasmine.createSpy('find').and.callFake(function (id, value) {
+            },
+            find: function (id, value) {
                 var appraisal = value || this.mockedAppraisals().list.filter(function (appraisal) {
                     return appraisal.id === id;
                 })[0];
 
                 return promiseResolvedWith(appraisal);
-            }),
-            overdue: jasmine.createSpy('overdue').and.callFake(function (filters) {
+            },
+            overdue: function (filters) {
                 var list = this.mockedAppraisals().list;
 
                 // The only filter supported for now is the cycle id
@@ -61,7 +62,16 @@ define([
                         return appraisal.id;
                     }).join(',')
                 })
-            }),
+            },
+
+            /**
+             * Adds a spy on every method for testing purposes
+             */
+            spyOnMethods: function () {
+                _.functions(this).forEach(function (method) {
+                    spyOn(this, method).and.callThrough();
+                }.bind(this));
+            },
 
             /**
              * # DRAFT #

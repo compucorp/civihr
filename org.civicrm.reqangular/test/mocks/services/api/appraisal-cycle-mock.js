@@ -1,11 +1,12 @@
 define([
+    'common/lodash',
     'common/mocks/module'
-], function (mocks) {
+], function (_, mocks) {
     'use strict';
 
     mocks.factory('api.appraisal-cycle.mock', ['$q', function ($q) {
         return {
-            all: jasmine.createSpy('all').and.callFake(function (filters, pagination, value) {
+            all: function (filters, pagination, value) {
                 var list, start, end;
 
                 list = value || this.mockedCycles().list;
@@ -32,8 +33,8 @@ define([
                         return cycle.id;
                     }).join(',')
                 })
-            }),
-            create: jasmine.createSpy('create').and.callFake(function (attributes, value) {
+            },
+            create: function (attributes, value) {
                 var created = value || (function () {
                     var created = angular.copy(attributes);
 
@@ -44,15 +45,15 @@ define([
                 })();
 
                 return promiseResolvedWith(created);
-            }),
-            find: jasmine.createSpy('find').and.callFake(function (id, value) {
+            },
+            find: function (id, value) {
                 var cycle = value || this.mockedCycles().list.filter(function (cycle) {
                     return cycle.id === id;
                 })[0];
 
                 return promiseResolvedWith(cycle);
-            }),
-            grades: jasmine.createSpy('grades').and.callFake(function (value) {
+            },
+            grades: function (value) {
                 var defaults = [
                     { label: '1', value: 30 },
                     { label: '2', value: 10 },
@@ -62,16 +63,16 @@ define([
                 ];
 
                 return promiseResolvedWith(value || defaults);
-            }),
-            statuses: jasmine.createSpy('statuses').and.callFake(function (value) {
+            },
+            statuses: function (value) {
                 var defaults = [
                     { id: '1', label: 'status 1', value: '1', weight: '1' },
                     { id: '2', label: 'status 2', value: '2', weight: '2' }
                 ];
 
                 return promiseResolvedWith(value || defaults);
-            }),
-            statusOverview: jasmine.createSpy('statusOverview').and.callFake(function (params) {
+            },
+            statusOverview: function (params) {
                 return promiseResolvedWith([
                     {
                         status_id: 1,
@@ -99,8 +100,8 @@ define([
                         contacts_count: { due: 13, overdue: 8 }
                     }
                 ]);
-            }),
-            update: jasmine.createSpy('update').and.callFake(function (id, attributes, value) {
+            },
+            update: function (id, attributes, value) {
                 var cycle = value || (function () {
                     var cycle = this.mockedCycles().list.filter(function (cycle) {
                         return cycle.id === id;
@@ -110,8 +111,8 @@ define([
                 }.bind(this))();
 
                 return promiseResolvedWith(cycle);
-            }),
-            total: jasmine.createSpy('total').and.callFake(function (filters, value) {
+            },
+            total: function (filters, value) {
                 var list = this.mockedCycles().list;
 
                 if (filters) {
@@ -123,8 +124,8 @@ define([
                 }
 
                 return promiseResolvedWith(list.length);
-            }),
-            types: jasmine.createSpy('types').and.callFake(function (value) {
+            },
+            types: function (value) {
                 var defaults = [
                     { id: '1', label: 'type 1', value: '1', weight: '1' },
                     { id: '2', label: 'type 2', value: '2', weight: '2' },
@@ -132,7 +133,16 @@ define([
                 ];
 
                 return promiseResolvedWith(value || defaults);
-            }),
+            },
+
+            /**
+             * Adds a spy on every method for testing purposes
+             */
+            spyOnMethods: function () {
+                _.functions(this).forEach(function (method) {
+                    spyOn(this, method).and.callThrough();
+                }.bind(this));
+            },
 
             /**
              * Mocked cycles
