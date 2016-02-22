@@ -44,16 +44,18 @@ define([
                 /**
                  * Returns all the overdue appraisals
                  *
-                 * @param {Promise}
+                 * @param {object} filters - Values the full list should be filtered by
+                 * @return {Promise}
                  */
-                overdue: function () {
-                    return appraisalAPI.overdue().then(function (response) {
-                        response.list = response.list.map(function (appraisal) {
-                            return instance.init(appraisal, true);
-                        });
+                overdue: function (filters) {
+                    return appraisalAPI.overdue(filters)
+                        .then(function (response) {
+                            response.list = response.list.map(function (appraisal) {
+                                return instance.init(appraisal, true);
+                            });
 
-                        return response;
-                    });
+                            return response;
+                        });
                 }
             });
         }

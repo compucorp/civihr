@@ -41,9 +41,18 @@ define([
 
                 return promiseResolvedWith(appraisal);
             }),
-            overdue: jasmine.createSpy('overdue').and.callFake(function () {
-                // Just take the first 5 appraisals
-                var list = this.mockedAppraisals().list.slice(0, 5);
+            overdue: jasmine.createSpy('overdue').and.callFake(function (filters) {
+                var list = this.mockedAppraisals().list;
+
+                // The only filter supported for now is the cycle id
+                if (typeof filters !== 'undefined' && filters.appraisal_cycle_id) {
+                    list = list.filter(function (appraisal) {
+                        return appraisal.appraisal_cycle_id === filters.appraisal_cycle_id
+                    });
+                }
+
+                // Just take the first 2 appraisals
+                list = list.slice(0, 2);
 
                 return promiseResolvedWith({
                     list: list,
@@ -87,7 +96,7 @@ define([
                         },
                         {
                             id: '3452',
-                            appraisal_cycle_id: '2',
+                            appraisal_cycle_id: '1',
                             self_appraisal_due: '2016-02-02',
                             manager_appraisal_due: '2016-03-03',
                             grade_due: '2016-04-04',
@@ -109,7 +118,7 @@ define([
                         },
                         {
                             id: '3453',
-                            appraisal_cycle_id: '3',
+                            appraisal_cycle_id: '1',
                             self_appraisal_due: '2016-03-03',
                             manager_appraisal_due: '2016-04-04',
                             grade_due: '2016-05-05',
@@ -131,7 +140,7 @@ define([
                         },
                         {
                             id: '3454',
-                            appraisal_cycle_id: '4',
+                            appraisal_cycle_id: '2',
                             self_appraisal_due: '2016-04-04',
                             manager_appraisal_due: '2016-05-05',
                             grade_due: '2016-06-06',
@@ -153,7 +162,7 @@ define([
                         },
                         {
                             id: '3455',
-                            appraisal_cycle_id: '5',
+                            appraisal_cycle_id: '2',
                             self_appraisal_due: '2016-05-05',
                             manager_appraisal_due: '2016-06-06',
                             grade_due: '2016-07-07',
@@ -175,7 +184,7 @@ define([
                         },
                         {
                             id: '3456',
-                            appraisal_cycle_id: '6',
+                            appraisal_cycle_id: '2',
                             self_appraisal_due: '2016-06-06',
                             manager_appraisal_due: '2016-07-07',
                             grade_due: '2016-08-08',
@@ -197,7 +206,7 @@ define([
                         },
                         {
                             id: '3457',
-                            appraisal_cycle_id: '7',
+                            appraisal_cycle_id: '2',
                             self_appraisal_due: '2016-07-07',
                             manager_appraisal_due: '2016-08-08',
                             grade_due: '2016-09-09',
@@ -219,7 +228,7 @@ define([
                         },
                         {
                             id: '3458',
-                            appraisal_cycle_id: '8',
+                            appraisal_cycle_id: '1',
                             self_appraisal_due: '2016-08-08',
                             manager_appraisal_due: '2016-09-09',
                             grade_due: '2016-10-10',
@@ -241,7 +250,7 @@ define([
                         },
                         {
                             id: '3459',
-                            appraisal_cycle_id: '9',
+                            appraisal_cycle_id: '1',
                             self_appraisal_due: '2016-09-09',
                             manager_appraisal_due: '2016-10-10',
                             grade_due: '2016-11-11',
@@ -263,7 +272,7 @@ define([
                         },
                         {
                             id: '3460',
-                            appraisal_cycle_id: '10',
+                            appraisal_cycle_id: '3',
                             self_appraisal_due: '2016-10-10',
                             manager_appraisal_due: '2016-11-11',
                             grade_due: '2016-12-12',
