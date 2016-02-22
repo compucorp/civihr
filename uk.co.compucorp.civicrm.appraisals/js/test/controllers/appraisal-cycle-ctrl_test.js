@@ -49,6 +49,7 @@ define([
             });
 
             it('stores on scope the data passed by ui-router', function () {
+                expect(ctrl.statuses).toBeDefined();
                 expect(ctrl.types).toBeDefined();
             });
 
@@ -162,6 +163,7 @@ define([
                     cycleId: cycle.id
                 },
                 AppraisalCycle: AppraisalCycle,
+                statuses: [],
                 types: []
             });
         }

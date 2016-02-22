@@ -6,8 +6,8 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', '$stateParams', 'AppraisalCycle', 'dialog', 'types',
-        function ($log, $modal, $rootElement, $stateParams, AppraisalCycle, dialog, types) {
+        '$log', '$modal', '$rootElement', '$stateParams', 'AppraisalCycle', 'dialog', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $stateParams, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -16,6 +16,7 @@ define([
             vm.filtersCollapsed = true;
             vm.loading = { cycle: true, appraisals: true };
 
+            vm.statuses = statuses;
             vm.types = types;
 
             // dummy data
