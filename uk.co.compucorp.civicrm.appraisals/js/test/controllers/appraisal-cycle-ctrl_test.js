@@ -7,8 +7,9 @@ define([
     'use strict';
 
     describe('AppraisalCycleCtrl', function () {
-        var $controller, $log, $modal, $provide, $rootScope, $scope, ctrl, dialog,
-            Appraisal, AppraisalCycle, appraisalAPI, appraisalCycleAPI, cycle;
+        var $controller, $log, $modal, $provide, $q, $rootScope, $scope, ctrl,
+            dialog, Appraisal, AppraisalCycle, appraisalAPI, appraisalCycleAPI,
+            cycle;
 
         beforeEach(function () {
             module('appraisals', 'common.mocks', function (_$provide_) {
@@ -26,11 +27,12 @@ define([
             ]);
         });
 
-        beforeEach(inject(function (_$log_, _$modal_, _$rootScope_, _$controller_, _dialog_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$log_, _$modal_, _$q_, _$rootScope_, _$controller_, _dialog_, _AppraisalCycle_) {
             ($modal = _$modal_) && spyOn($modal, 'open');
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
+            $q = _$q_;
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
 
@@ -103,6 +105,59 @@ define([
             });
         });
 
+        describe('update()', function () {
+            beforeEach(function () {
+                $scope.$digest();
+                spyOn(ctrl.cycle, 'update');
+
+                ctrl.cycle.cycle_name = 'foo';
+            });
+
+            describe('dialog', function () {
+                beforeEach(function () {
+                    resolveDialogWith(null);
+                    ctrl.update();
+
+                    $scope.$digest();
+                });
+
+                it('shows a confirmation dialog', function () {
+                    expect(dialog.open).toHaveBeenCalled();
+                });
+            });
+
+            describe('when dialog is confirmed', function () {
+                beforeEach(function () {
+                    resolveDialogWith(true);
+
+                    ctrl.update();
+                    $scope.$digest();
+                });
+
+                it('updates the cycle', function () {
+                    expect(ctrl.cycle.update).toHaveBeenCalled();
+                    expect(ctrl.cycle.cycle_name).toBe('foo');
+                });
+            });
+
+            describe('when dialog is rejected', function () {
+                beforeEach(function () {
+                    resolveDialogWith(false);
+
+                    ctrl.update();
+                    $scope.$digest();
+                });
+
+                it('does not do anything', function () {
+                    expect(ctrl.cycle.update).not.toHaveBeenCalled();
+                });
+
+                it('reverts back to the original values', function () {
+                    expect(ctrl.cycle.cycle_name).not.toBe('foo');
+                });
+            });
+        });
+
         describe('Edit Dates modal', function () {
             beforeEach(function () {
                 ctrl.openEditDatesModal();
@@ -166,6 +221,28 @@ define([
                 statuses: [],
                 types: []
             });
+        }
+
+        /**
+         * Spyes on dialog.open() method and resolves it with the given value
+         *
+         * @param {any} value
+         */
+        function resolveDialogWith(value) {
+            var spy;
+
+            if (typeof dialog.open.calls !== 'undefined') {
+                spy = dialog.open;
+            } else {
+                spy = spyOn(dialog, 'open');
+            }
+
+            spy.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve(value);
+
+                return deferred.promise;
+            });;
         }
     });
 });

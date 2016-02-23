@@ -12,6 +12,7 @@ define([
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
+            var cachedAttributes = {};
 
             vm.cycle = {};
             vm.filtersCollapsed = true;
@@ -95,7 +96,36 @@ define([
                 });
             };
 
+            /**
+             * Shows a confirmation dialog
+             * If confirmed, updates the cycle. If rejected, restores the old values
+             */
+            vm.update = function () {
+                dialog.open({
+                    title: 'Confirm Cycle Update',
+                    copyCancel: null,
+                    copyConfirm: 'Proceed',
+                    msg: 'This will update the data of the cycle'
+                })
+                .then(function (response) {
+                    if (response) {
+                        vm.cycle.update();
+                        cacheAttributes();
+                    } else {
+                        _.assign(vm.cycle, cachedAttributes);
+                    }
+                });
+            }
+
             init();
+
+            /**
+             * Caches the cycle attributes so that they can be restored
+             * in case the user won't confirm a future cycle's data update
+             */
+            function cacheAttributes() {
+                cachedAttributes = vm.cycle.attributes();
+            }
 
             /**
              * Loads the cycle
@@ -104,6 +134,8 @@ define([
                 AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
                     vm.cycle = cycle;
                     vm.loading.cycle = false;
+
+                    cacheAttributes();
 
                     return vm.cycle.loadAppraisals({ overdue: true });
                 })
