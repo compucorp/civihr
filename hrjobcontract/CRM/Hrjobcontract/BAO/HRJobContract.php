@@ -110,12 +110,13 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Get 'length_of_service' in days for given Contact ID, and optionally
+   * Return 'length_of_service' in days for given Contact ID, and optionally
    * Date and Break (allowed number of days between Contracts).
    * 
-   * @param int $contactId
-   * @param string $date
-   * @param int $break
+   * @param int     $contactId  CiviCRM Contact ID
+   * @param string  $date       Y-m-d format of a date for which we calculate the result
+   * @param int     $break      Allowed number of days between Contracts
+   * 
    * @throws Exception
    * @return int
    */
@@ -124,9 +125,6 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     {
       throw new Exception("Cannot update Length of Service: no Contact ID provided.");
     }
-    $dates = array();
-    $serviceStartDate = null;
-    $serviceEndDate = null;
 
     // Setting $date to today if it's not specified.
     if (!$date) {
@@ -141,7 +139,26 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       'options' => array('limit' => 0),
     ));
 
-    // Now we fill $dates array with the Contract Start and End dates
+    return self::calculateLength(
+      self::getServiceDates(
+        self::getContractDates($contracts),
+        $break
+      ),
+      $date,
+      $break
+    );
+  }
+
+  /**
+   * Return an assotiative array with Contracts dates.
+   * 
+   * @param array $contracts
+   * 
+   * @return array
+   */
+  protected static function getContractDates($contracts) {
+    $dates = array();
+    // Fill $dates array with the Contract Start and End dates
     // to get the data structure as below:
     // $dates = [
     //   'start_date1' => 'end_date1',
@@ -171,6 +188,20 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     // Sorting $dates array by keys.
     ksort($dates);
 
+    return $dates;
+  }
+
+  /**
+   * Return an array with calculated Service Start Date and Service End Date.
+   * 
+   * @param array   $dates
+   * @param int     $break  Number of Break days
+   * 
+   * @return array
+   */
+  protected static function getServiceDates($dates, $break) {
+    $serviceStartDate = null;
+    $serviceEndDate = null;
     // Calculate Service Start Date and Service End Date.
     foreach ($dates as $startDate => $endDate) {
       if (!$serviceStartDate) {
@@ -190,30 +221,46 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       }
     }
 
-    // Restrict $serviceEndDate to date defined at the top,
-    // so we won't get an infinite Service length.
-    if (!$serviceEndDate ||  $serviceEndDate > $date) {
-      $serviceEndDate = $date;
-    }
+    return array(
+      'startDate' => $serviceStartDate,
+      'endDate' => $serviceEndDate,
+    );
+  }
 
+  /**
+   * Return a difference of Service dates in days (including break days).
+   * 
+   * @param array   $serviceDates   Array containing 'startDate' and 'endDate' keys
+   * @param string   $date          Date in Y-m-d format for which we calculate the result
+   * @param int      $break         Allowed number of days between Contracts
+   * 
+   * @return int
+   */
+  protected static function calculateLength($serviceDates, $date, $break) {
+    // Restrict $serviceEndDate to the specified date,
+    // so we won't get an infinite Service length.
+    if (!$serviceDates['endDate'] || $serviceDates['endDate'] > $date) {
+      $serviceDates['endDate'] = $date;
+    }
     // If the latest Contract has ended more than $break days ago, we return 0.
-    if ($date > self::sumDateAndBreak($serviceEndDate, $break)) {
+    if ($date > self::sumDateAndBreak($serviceDates['endDate'], $break)) {
       return 0;
     }
 
-    // Final Length of Service calculations by difference of both dates.
-    $dStart = new DateTime($serviceStartDate);
-    $dEnd  = new DateTime($serviceEndDate);
-    $dDiff = $dStart->diff($dEnd);
-    return $dDiff->days;
+    $dateTimeStart = new DateTime($serviceDates['startDate']);
+    $dateTimeEnd  = new DateTime($serviceDates['endDate']);
+    $diff = $dateTimeStart->diff($dateTimeEnd);
+    return $diff->days;
   }
 
-  /** Calculate a new Date which is sum of given Date and number of Break days.
+  /**
+   * Calculate a new Date which is sum of given Date and number of Break days.
    * Returns null if given date is null.
    * 
-   * @param string $date
-   * @param int $break
-   * @return string
+   * @param string  $date   Date in Y-m-d format
+   * @param int     $break  Number of Break days
+   * 
+   * @return string|null
    */
   protected static function sumDateAndBreak($date, $break) {
     if (!$date) {
@@ -231,15 +278,22 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    */
   public static function updateLengthOfService($contactId) {
     // Get Length of Service's Custom Field ID.
-    $cgID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Contact_Length_Of_Service', 'id', 'name');
-    $cf = civicrm_api3('CustomField', 'getsingle', array('custom_group_id' => $cgID, 'name' => 'Length_Of_Service'));
-    $cfID = $cf['id'];
+    $customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'Contact_Length_Of_Service', 'id', 'name');
+    $customField = civicrm_api3(
+      'CustomField',
+      'getsingle',
+      array(
+        'custom_group_id' => $customGroupID,
+        'name' => 'Length_Of_Service'
+      )
+    );
+    $customFieldID = $customField['id'];
     // Get Length of Service for the Contact.
     $lengthOfService = self::getLengthOfService($contactId);
     // Update the Length of Service for the Contact.
     civicrm_api3('Contact', 'create', array(
       'id' => $contactId,
-      'custom_' . $cfID => $lengthOfService,
+      'custom_' . $customFieldID => $lengthOfService,
     ));
     return TRUE;
   }
