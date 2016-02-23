@@ -63,6 +63,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
         $contract->id = $revision['jobcontract_id'];
         $contract->find(true);
         CRM_Hrjobcontract_JobContractDates::setDates($contract->contact_id, $revision['jobcontract_id'], $instance->period_start_date, $instance->period_end_date);
+        CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfService($contract->contact_id);
         
         return $instance;
     }
