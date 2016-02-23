@@ -1,19 +1,44 @@
 define([
-    'common/lodash',
+    'common/angular',
     'appraisals/modules/controllers'
-], function (_, controllers) {
+], function (angular, controllers) {
     'use strict';
 
-    controllers.controller('EditDatesModalCtrl', ['$log', '$scope', '$controller', '$modalInstance',
-        function ($log, $scope, $controller, $modalInstance) {
+    controllers.controller('EditDatesModalCtrl', [
+        '$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance) {
             $log.debug('EditDatesModalCtrl');
 
-            var vm = _.assign(Object.create($controller('BasicModalCtrl', {
+            var vm = Object.create($controller('BasicModalCtrl', {
                 $modalInstance: $modalInstance,
                 $scope: $scope
-            })), {
-                cycle: $scope.cycle
-            });
+            }));
+
+            vm.cycle = angular.copy($scope.cycle);
+
+            /**
+             * Submits the form
+             */
+            vm.submit = function () {
+                formatDates();
+
+                vm.cycle.update().then(function () {
+                    $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
+                    $modalInstance.close();
+                });
+            };
+
+            /**
+             * Formats all the dates in the current date format
+             *
+             * (Necessary because the date picker directives always return
+             * a Date object instead of simply a string in the specified format)
+             */
+            function formatDates() {
+                Object.keys(vm.cycle.dueDates()).forEach(function (key) {
+                    vm.cycle[key] = $filter('date')(vm.cycle[key], 'dd/MM/yyyy');
+                });
+            }
 
             return vm;
     }]);
