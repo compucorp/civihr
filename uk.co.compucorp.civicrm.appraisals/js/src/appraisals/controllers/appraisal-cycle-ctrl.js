@@ -120,6 +120,16 @@ define([
             init();
 
             /**
+             * Attaches the listeners to the $rootScope
+             */
+            function addListeners() {
+                $rootScope.$on('AppraisalCycle::edit', function (event, editedCycle) {
+                    _.assign(vm.cycle, editedCycle);
+                    cacheAttributes();
+                });
+            }
+
+            /**
              * Caches the cycle attributes so that they can be restored
              * in case the user won't confirm a future cycle's data update
              */
@@ -128,20 +138,11 @@ define([
             }
 
             /**
-             * Loads the cycle
+             * Initializes the listeners and cycle data
              */
             function init() {
-                AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
-                    vm.cycle = cycle;
-                    vm.loading.cycle = false;
-
-                    cacheAttributes();
-
-                    return vm.cycle.loadAppraisals({ overdue: true });
-                })
-                .then(function () {
-                    vm.loading.appraisals = false;
-                });
+                addListeners();
+                loadCycleData();
             }
 
             /**
@@ -165,6 +166,23 @@ define([
                     windowClass: options.windowClass || null,
                     templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/' + options.templateFile
                 }));
+            }
+
+            /**
+             * Loads the cycle data and its overdue appraisals
+             */
+            function loadCycleData() {
+                AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
+                    vm.cycle = cycle;
+                    vm.loading.cycle = false;
+
+                    cacheAttributes();
+
+                    return vm.cycle.loadAppraisals({ overdue: true });
+                })
+                .then(function () {
+                    vm.loading.appraisals = false;
+                });
             }
 
             return vm;

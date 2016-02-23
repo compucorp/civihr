@@ -158,6 +158,23 @@ define([
             });
         });
 
+        describe('when the data has been edited by another controller', function () {
+            var newData;
+
+            beforeEach(function () {
+                $scope.$digest();
+
+                newData = _.assign({}, ctrl.cycle, { cycle_name: 'foo bar' });
+
+                $rootScope.$emit('AppraisalCycle::edit', newData);
+                $scope.$digest();
+            });
+
+            it('updates the cycle in the controller', function () {
+                expect(ctrl.cycle.cycle_name).toBe(newData.cycle_name);
+            });
+        });
+
         describe('Edit Dates modal', function () {
             beforeEach(function () {
                 ctrl.openEditDatesModal();
