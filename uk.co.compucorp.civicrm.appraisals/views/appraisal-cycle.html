@@ -172,31 +172,36 @@
                                         <div class="clearfix"></div>
                                     </header>
                                     <crm-loading show="!cycle.loading.appraisals">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Employee</th>
-                                                        <th>Appraisal Type</th>
-                                                        <th>Status</th>
-                                                        <th>Due Date</th>
-                                                        <th>Self Appraisal</th>
-                                                        <th>Manager Appraisal</th>
-                                                        <th>Grade</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr ng-repeat="appraisal in cycle.cycle.appraisals">
-                                                        <td>{{appraisal.contact.display_name}}</td>
-                                                        <td>{{cycle.types[cycle.cycle.cycle_type_id - 1].label}}</td>
-                                                        <td>{{cycle.statuses[appraisal.status_id - 1].label}}</td>
-                                                        <td>dd/mm/yyyy</td>
-                                                        <td><a href>View Self Appraisal</a></td>
-                                                        <td><a href>View Manager Appraisal</a></td>
-                                                        <td class="text-center">-</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div ng-switch="dashboard.appraisals.list.length === 0">
+                                            <div ng-switch-when="true" class="panel-body text-center">
+                                                No overdue appraisals
+                                            </div>
+                                            <div ng-switch-default class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Employee</th>
+                                                            <th>Appraisal Type</th>
+                                                            <th>Status</th>
+                                                            <th>Due Date</th>
+                                                            <th>Self Appraisal</th>
+                                                            <th>Manager Appraisal</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="appraisal in cycle.cycle.appraisals">
+                                                            <td>{{appraisal.contact.display_name}}</td>
+                                                            <td>{{cycle.types[cycle.cycle.cycle_type_id - 1].label}}</td>
+                                                            <td>{{cycle.statuses[appraisal.status_id - 1].label}}</td>
+                                                            <td>dd/mm/yyyy</td>
+                                                            <td><a href>View Self Appraisal</a></td>
+                                                            <td><a href>View Manager Appraisal</a></td>
+                                                            <td class="text-center">-</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </crm-loading>
                                 </section>
