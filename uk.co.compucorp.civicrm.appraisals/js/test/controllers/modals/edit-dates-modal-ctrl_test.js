@@ -13,7 +13,12 @@ define([
 
             ctrl = $controller('EditDatesModalCtrl', {
                 $modalInstance: $modalInstance,
-                $scope: $rootScope.$new()
+                $scope: (function (scope) {
+                    var modalScope = scope;
+                    scope.cycle = { id: '8' };
+
+                    return scope;
+                })($rootScope.$new())
             });
         }));
 
@@ -22,5 +27,10 @@ define([
                 expect(ctrl.cancel).toBeDefined();
             });
         });
+
+        it('contains the cycle in its scope', function () {
+            expect(ctrl.cycle).toBeDefined();
+            expect(ctrl.cycle.id).toBe('8');
+        });
     });
-})
+});

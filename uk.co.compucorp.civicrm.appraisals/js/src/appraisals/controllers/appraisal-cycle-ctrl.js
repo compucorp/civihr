@@ -6,8 +6,9 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', '$stateParams', 'AppraisalCycle', 'dialog', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $stateParams, AppraisalCycle, dialog, statuses, types) {
+        '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', 'AppraisalCycle',
+        'dialog', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $stateParams, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -66,7 +67,10 @@ define([
             vm.openEditDatesModal = function () {
                 openModal({
                     controller: 'EditDatesModalCtrl',
-                    templateFile: 'edit-dates.html'
+                    templateFile: 'edit-dates.html',
+                    scopeData: {
+                        cycle: vm.cycle
+                    }
                 });
             };
 
@@ -120,6 +124,12 @@ define([
                     controller: options.controller,
                     controllerAs: 'modal',
                     bindToController: true,
+                    scope: (function (scopeData) {
+                        var modalScope = $rootScope.$new();
+                        _.assign(modalScope, scopeData);
+
+                        return modalScope;
+                    })(options.scopeData),
                     windowClass: options.windowClass || null,
                     templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/' + options.templateFile
                 }));
