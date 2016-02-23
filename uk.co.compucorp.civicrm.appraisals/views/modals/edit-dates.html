@@ -6,6 +6,17 @@
 </div>
 <div class="modal-body">
     <div class="alert alert-danger" ng-if="modal.formSubmitted && modal.form.$invalid">
+        <ul>
+            <li ng-if="modal.formErrors.cycle_self_appraisal_due.required">
+                Please specify the self appraisal due date
+            </li>
+            <li ng-if="modal.formErrors.cycle_manager_appraisal_due.required">
+                Please specify the manager appraisal due date
+            </li>
+            <li ng-if="modal.formErrors.cycle_grade_due.required">
+                Please specify the grade due date
+            </li>
+        </ul>
     </div>
     <form
         novalidate
