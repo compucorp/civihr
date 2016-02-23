@@ -6,12 +6,14 @@ define([
 
     controllers.controller('EditDatesModalCtrl', [
         '$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
-        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance) {
+        'dialog',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, dialog) {
             $log.debug('EditDatesModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
                 $modalInstance: $modalInstance
             }));
+            var oldDueDates = {};
 
             vm.cycle = angular.copy($scope.cycle);
             vm.formErrors = {};
@@ -30,11 +32,16 @@ define([
                     return;
                 }
 
-                vm.cycle.update().then(function () {
-                    $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
-                    $modalInstance.close();
-                });
+                if (haveDueDatesChanged()) {
+                    showDueDatesChangedDialog().then(function (response) {
+                        !!response && updateDates();
+                    });
+                } else {
+                    updateDates();
+                }
             };
+
+            init();
 
             /**
              * Formats all the dates in the current date format
@@ -77,6 +84,46 @@ define([
                         return _.isEmpty(value);
                     })
                     .value()
+            }
+
+            /**
+             * Compares the old due dates with the new due dates
+             *
+             * @return {boolean}
+             */
+            function haveDueDatesChanged() {
+                return !_.isEqual(oldDueDates, vm.cycle.dueDates());
+            }
+
+            /**
+             * Initialization code
+             */
+            function init() {
+                oldDueDates = vm.cycle.dueDates();
+            }
+
+            /**
+             * Shows the dialog warning the user that due dates have changed
+             *
+             * @return {Promise}
+             */
+            function showDueDatesChangedDialog() {
+                return dialog.open({
+                    title: 'Confirm Change Dates',
+                    copyCancel: 'Cancel',
+                    copyConfirm: 'Proceed',
+                    msg: 'This will update the due dates for all appraisals in the cycle'
+                });
+            }
+
+            /**
+             * Submits the new dates
+             */
+            function updateDates() {
+                vm.cycle.update().then(function () {
+                    $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
+                    $modalInstance.close();
+                });
             }
 
             return vm;

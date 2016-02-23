@@ -7,8 +7,8 @@ define([
     'use strict';
 
     describe('EditDatesModalCtrl', function () {
-        var $compile, $controller, $filter, $modalInstance, $provide, $rootScope,
-        $templateCache, $scope, appraisalCycleAPIMock, cycle, ctrl;
+        var $compile, $controller, $filter, $q, $modalInstance, $provide, $rootScope,
+        $templateCache, $scope, appraisalCycleAPIMock, cycle, ctrl, dialog;
 
         beforeEach(function () {
             module('common.mocks', 'appraisals', 'appraisals.templates', function (_$provide_) {
@@ -24,17 +24,20 @@ define([
             ]);
         });
         beforeEach(inject([
-            '$compile', '$controller', '$filter', '$rootScope', '$templateCache',
-            'AppraisalCycleInstance',
-            function (_$compile_, _$controller_, _$filter_, _$rootScope_, _$templateCache_, AppraisalCycleInstance) {
+            '$compile', '$controller', '$filter', '$q', '$rootScope', '$templateCache',
+            'AppraisalCycleInstance', 'dialog',
+            function (_$compile_, _$controller_, _$filter_, _$q_, _$rootScope_, _$templateCache_, AppraisalCycleInstance, _dialog_) {
                 cycle = AppraisalCycleInstance.init(
-                    appraisalCycleAPIMock.mockedCycles().list[2]
+                    appraisalCycleAPIMock.mockedCycles().list[2],
+                    true
                 );
 
                 $compile = _$compile_;
                 $controller = _$controller_;
+                $q = _$q_;
                 $templateCache = _$templateCache_;
                 $rootScope = _$rootScope_;
+                dialog = _dialog_
 
                 initSpies(_$filter_);
                 initController();
@@ -120,29 +123,78 @@ define([
         describe('submit()', function () {
             beforeEach(function () {
                 spyOn($rootScope, '$emit');
-
-                ctrl.submit();
-                $rootScope.$digest();
             });
 
-            it('marks the form as submitted', function () {
-                expect(ctrl.formSubmitted).toBe(true);
+            describe('standard submit (dates have been changed)', function () {
+                var dates = {
+                    cycle_self_appraisal_due: '01/01/2001',
+                    cycle_manager_appraisal_due: '02/02/2002',
+                    cycle_grade_due: '03/03/2003'
+                };
+
+                describe('before the dialog shows up', function () {
+                    beforeEach(function () {
+                        resolveDialogWith(null);
+                        submitFormWith(dates);
+                    });
+
+                    it('marks the form as submitted', function () {
+                        expect(ctrl.formSubmitted).toBe(true);
+                    });
+
+                    it('formats the datepicker dates', function () {
+                        expect($filter).toHaveBeenCalledWith('date');
+                    });
+
+                    it('shows a confirmation dialog', function () {
+                        expect(dialog.open).toHaveBeenCalled();
+                    });
+                });
+
+                describe('when the dialog is confirmed', function () {
+                    beforeEach(function () {
+                        resolveDialogWith(true);
+                        submitFormWith(dates);
+                    });
+
+                    it('updates the cycle', function () {
+                        expect(ctrl.cycle.update).toHaveBeenCalled();
+                    });
+
+                    it('emits an event', function () {
+                        expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', ctrl.cycle);
+                    });
+
+                    it('closes the modal', function () {
+                        expect($modalInstance.close).toHaveBeenCalled();
+                    });
+                });
+
+                describe('when the dialog is rejected', function () {
+                    beforeEach(function () {
+                        resolveDialogWith(false);
+                        submitFormWith(dates);
+                    });
+
+                    it('does not do anything', function () {
+                        expect(ctrl.cycle.update).not.toHaveBeenCalled();
+                    });
+                });
             });
 
-            it('formats the datepicker dates', function () {
-                expect($filter).toHaveBeenCalledWith('date');
-            });
+            describe('submit with unchanged dates', function () {
+                beforeEach(function () {
+                    resolveDialogWith(null);
+                    submitFormWith(ctrl.cycle.dueDates());
+                });
 
-            it('updates the cycle', function () {
-                expect(ctrl.cycle.update).toHaveBeenCalled();
-            });
+                it('does not show a confirmation dialog', function () {
+                    expect(dialog.open).not.toHaveBeenCalled();
+                });
 
-            it('emits an event', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith('AppraisalCycle::edit', ctrl.cycle);
-            });
-
-            it('closes the modal', function () {
-                expect($modalInstance.close).toHaveBeenCalled();
+                it('goes straight to the cycle update', function () {
+                    expect(ctrl.cycle.update).toHaveBeenCalled();
+                });
             });
         });
 
@@ -188,6 +240,28 @@ define([
             $compile(angular.element(template))($scope);
 
             ctrl.form = $scope.modal.form;
+        }
+
+        /**
+         * Spyes on dialog.open() method and resolves it with the given value
+         *
+         * @param {any} value
+         */
+        function resolveDialogWith(value) {
+            var spy;
+
+            if (typeof dialog.open.calls !== 'undefined') {
+                spy = dialog.open;
+            } else {
+                spy = spyOn(dialog, 'open');
+            }
+
+            spy.and.callFake(function () {
+                var deferred = $q.defer();
+                deferred.resolve(value);
+
+                return deferred.promise;
+            });;
         }
 
         /**
