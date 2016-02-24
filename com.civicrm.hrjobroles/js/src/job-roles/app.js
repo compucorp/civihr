@@ -17,7 +17,6 @@ define([
 
     angular.module('hrjobroles', [
         'ngAnimate',
-        'angular-date',
         'common.angularDate',
         'compuNgRoute',
         'xeditable',

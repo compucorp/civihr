@@ -43,7 +43,6 @@ define([
             'ngResource',
             'ui.bootstrap',
             'ui.select',
-            'angular-date',
             'common.angularDate',
             'angularFileUpload',
             'hrjc.controllers',
