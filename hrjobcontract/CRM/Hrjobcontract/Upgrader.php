@@ -946,6 +946,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1006();
     $this->upgrade_1008();
     $this->upgrade_1009();
+    $this->upgrade_1011();
+    $this->upgrade_1012();
   }
   
   function upgrade_1001() {
@@ -1173,6 +1175,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_BAO_Navigation::resetNavigation();
 
     return TRUE;
+  }
+
+  /**
+   * Install 'length_of_service' Custom Field for 'Individual' Contact entity.
+   */
+  function upgrade_1012() {
+      $this->executeCustomDataFile('xml/length_of_service.xml');
+      return TRUE;
   }
           
   function decToFraction($fte) {
