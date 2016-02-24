@@ -130,11 +130,7 @@ define([
              * @return {boolean}
              */
             function haveDueDatesChanged() {
-                var newDueDates = vm.cycle.dueDates();
-
-                return Object.keys(newDueDates).some(function (key) {
-                    return oldDueDates[key] !== newDueDates[key]
-                });
+                return !_.isEqual(oldDueDates, vm.cycle.dueDates());
             }
 
             /**

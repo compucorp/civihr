@@ -39,6 +39,17 @@
             }
         }
 
+        .panel--breakdown {
+
+            .chr_steps__step__legend__content {
+
+                > p:first-child {
+                    min-height: 37px;
+                    padding: 0 15px;
+                }
+            }
+        }
+
         .panel--grades {
 
             > .panel-body {

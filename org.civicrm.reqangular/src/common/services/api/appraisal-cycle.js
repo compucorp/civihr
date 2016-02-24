@@ -1,66 +1,34 @@
 define([
-    'common/angular',
     'common/lodash',
     'common/modules/apis',
     'common/services/api',
     'common/services/api/option-group'
-], function (angular, _, apis) {
+], function (_, apis) {
     'use strict';
 
-    apis.factory('api.appraisals', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {
-        $log.debug('api.appraisals');
-
-        // Draft
+    apis.factory('api.appraisal-cycle', ['$q', '$log', 'api', 'api.optionGroup', function ($q, $log, api, optionGroupAPI) {
+        $log.debug('api.appraisal-cycle');
 
         return api.extend({
 
             /**
-             * Returns:
-             *   - the list of cycles, eventually filtered/paginated
-             *   - the total count of the cycles based on the filters,
-             *     independent of the pagination settings
+             * Returns the list of appraisals
              *
-             * @param {object} filters - Values the full list should be filtered by
+             * @param {object} filters
              * @param {object} pagination
-             *   `page` for the current page, `size` for number of items per page
-             * @param {string} sort - The field and direction to order by
-             * @return {Promise} resolves to an object with `list` and `total`
+             * @param {string} sort
+             * @return {Promise}
              */
             all: function (filters, pagination, sort) {
-                $log.debug('api.appraisals.all');
+                $log.debug('api.appraisal-cycle.all');
 
-                filters = filters || {};
-
-                return $q.all([
-                    (function () {
-                        var params = _.assign({}, filters, {
-                            'api.AppraisalCycle.getappraisalsperstep': {},
-                            options: { sort: sort || 'id DESC' }
-                        });
-
-                        if (pagination) {
-                            params.options.offset = (pagination.page - 1) * pagination.size;
-                            params.options.limit = pagination.size;
-                        }
-
-                        return this.sendGET('AppraisalCycle', 'get', params).then(function (data) {
-                            return data.values;
-                        });
-                    }.bind(this))(),
-                    (function () {
-                        var params = _.assign({}, filters, { 'return': 'id' });
-
-                        return this.sendGET('AppraisalCycle', 'get', params);
-                    }.bind(this))()
-                ]).then(function (results) {
-                    return {
-                        list: results[0],
-                        total: results[1].count,
-                        allIds: results[1].values.map(function (cycle) {
-                            return cycle.id;
-                        }).join(',')
-                    };
-                });
+                return this.getAll(
+                    'AppraisalCycle',
+                    filters,
+                    pagination,
+                    sort,
+                    { 'api.AppraisalCycle.getappraisalsperstep': {} }
+                );
             },
 
             /**
@@ -70,7 +38,7 @@ define([
              * @return {Promise} resolves to the newly created cycle
              */
             create: function (attributes) {
-                $log.debug('api.appraisals.create');
+                $log.debug('api.appraisal-cycle.create');
 
                 return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
                         'api.AppraisalCycle.getappraisalsperstep': {}
@@ -87,7 +55,7 @@ define([
              * @return {Promise} resolves to the found cycle
              */
             find: function (id) {
-                $log.debug('api.appraisals.find');
+                $log.debug('api.appraisal-cycle.find');
 
                 var params = {
                     id: '' + id,
@@ -119,7 +87,7 @@ define([
              * @return {Promise}
              */
             statuses: function () {
-                $log.debug('api.appraisals.statuses');
+                $log.debug('api.appraisal-cycle.statuses');
 
                 return optionGroupAPI.valuesOf('appraisal_status');
             },
@@ -131,7 +99,7 @@ define([
              * @return {Promise}
              */
             statusOverview: function (params) {
-                $log.debug('api.appraisals.statusOverview');
+                $log.debug('api.appraisal-cycle.statusOverview');
 
                 return this.sendGET('AppraisalCycle', 'getstatusoverview', params)
                     .then(function (data) {
@@ -146,7 +114,7 @@ define([
              * @return {Promise} resolves to the amended cycle
              */
             update: function (attributes) {
-                $log.debug('api.appraisals.update');
+                $log.debug('api.appraisal-cycle.update');
 
                 return this.sendPOST('AppraisalCycle', 'create', _.assign(attributes, {
                         'api.AppraisalCycle.getappraisalsperstep': {}
@@ -163,7 +131,7 @@ define([
              * @return {Promise} resolves to an integer
              */
             total: function (filters) {
-                $log.debug('api.appraisals.total');
+                $log.debug('api.appraisal-cycle.total');
 
                 return this.sendGET('AppraisalCycle', 'getcount', filters || {}).then(function (data) {
                     return data.result;
@@ -176,7 +144,7 @@ define([
              * @return {Promise}
              */
             types: function () {
-                $log.debug('api.appraisals.types');
+                $log.debug('api.appraisal-cycle.types');
 
                 return optionGroupAPI.valuesOf('appraisal_cycle_type');
             }

@@ -1,6 +1,7 @@
 module.exports = function (config) {
-    var civicrmPath = '../../../../../../';
+    var civicrmPath = '../../../../';
     var civihrPath = 'tools/extensions/civihr/';
+    var extPath = civihrPath + 'org.civicrm.reqangular/';
 
     config.set({
         basePath: civicrmPath,
@@ -17,23 +18,26 @@ module.exports = function (config) {
             'js/Common.js',
 
             // manual loading of requirejs as to avoid interference with the global dependencies above
-            civihrPath + 'org.civicrm.reqangular/node_modules/requirejs/require.js',
-            civihrPath + 'org.civicrm.reqangular/node_modules/karma-requirejs/lib/adapter.js',
-
-            // the requireJS config file that bootstraps the whole test suite
-            civihrPath + 'org.civicrm.reqangular/src/tests/test-main.js',
+            extPath + 'node_modules/requirejs/require.js',
+            extPath + 'node_modules/karma-requirejs/lib/adapter.js',
 
             // load vendor libraries
-            { pattern: civihrPath + 'org.civicrm.reqangular/src/common/vendor/*.min.js', included: false },
+            { pattern: extPath + 'src/common/vendor/*.min.js', included: false },
 
             // load modules
-            { pattern: civihrPath + 'org.civicrm.reqangular/src/common/**/*.js', included: false },
+            { pattern: extPath + 'src/common/**/*.js', included: false },
+
+            // the mocked components files
+            { pattern: extPath + 'test/mocks/**/*.js', included: false },
 
             // load tests
-            { pattern: civihrPath + 'org.civicrm.reqangular/src/tests/**/*_test.js', included: false }
+            { pattern: extPath + 'test/**/*_test.js', included: false },
+
+            // the requireJS config file that bootstraps the whole test suite
+            extPath + 'test/test-main.js'
         ],
         exclude: [
-            civihrPath + 'org.civicrm.reqangular/src/common/angular-date/**/*.js'
+            extPath + 'src/common/angular-date/**/*.js'
         ]
     });
 };

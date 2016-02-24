@@ -10,7 +10,19 @@ define(function () {
         $urlRouterProvider.otherwise("/dashboard");
 
         $stateProvider
-            .state('dashboard', {
+            .state('appraisals', {
+                abstract: true,
+                template: '<ui-view/>',
+                resolve: {
+                    statuses: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.statuses();
+                    }],
+                    types: ['AppraisalCycle', function (AppraisalCycle) {
+                        return AppraisalCycle.types();
+                    }]
+                }
+            })
+            .state('appraisals.dashboard', {
                 url: '/dashboard',
                 controller: 'AppraisalsDashboardCtrl',
                 controllerAs: 'dashboard',
@@ -24,26 +36,20 @@ define(function () {
                     }],
                     statusOverview: ['AppraisalCycle', function (AppraisalCycle) {
                         return AppraisalCycle.statusOverview();
-                    }],
-                    statuses: ['AppraisalCycle', function (AppraisalCycle) {
-                        return AppraisalCycle.statuses();
-                    }],
-                    types: ['AppraisalCycle', function (AppraisalCycle) {
-                        return AppraisalCycle.types();
                     }]
                 }
             })
-            .state('appraisal-cycle', {
+            .state('appraisals.appraisal-cycle', {
                 url: '/appraisal-cycle/:cycleId',
                 controller: 'AppraisalCycleCtrl',
                 controllerAs: 'cycle',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
             })
-            .state('profile', {
+            .state('appraisals.profile', {
                 url: '/profile',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/profile.html'
             })
-            .state('import', {
+            .state('appraisals.import', {
                 url: '/import',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/import.html'
             });

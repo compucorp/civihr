@@ -4,13 +4,9 @@ define([
 ], function (_, mocks) {
     'use strict';
 
-    mocks.factory('AppraisalCycleInstanceMock', ['$q', 'AppraisalCycleInstance', function ($q, instance) {
+    mocks.factory('AppraisalInstanceMock', ['$q', 'AppraisalInstance', function ($q, instance) {
 
         return _.assign(Object.create(instance), {
-
-            update: jasmine.createSpy('update').and.callFake(function (value) {
-                return promiseResolvedWith(instance.toAPI());
-            }),
 
             /**
              * Checks if the given object is a modal instance

@@ -140,10 +140,12 @@ define([
                     delete filters.cycle_is_active;
                 }
 
+                // Converts the date filters to the current date format
                 Object.keys(filters).filter(function (key) {
-                    return _.endsWith(key, '_date') || _.endsWith(key, '_from') || _.endsWith(key, '_to');
+                    return _.endsWith(key, '_date') || _.endsWith(key, '_due');
                 }).forEach(function (key) {
-                    filters[key] = $filter('date')(filters[key], 'dd/MM/yyyy');
+                    filters[key].from = $filter('date')(filters[key].from, 'dd/MM/yyyy');
+                    filters[key].to = $filter('date')(filters[key].to, 'dd/MM/yyyy');
                 });
 
                 return filters;

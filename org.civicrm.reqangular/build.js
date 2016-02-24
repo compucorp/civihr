@@ -53,6 +53,7 @@
         'common/bundles/directives',
         'common/modules/templates',
         'common/bundles/angular-date',
-        'common/bundles/routers'
+        'common/bundles/routers',
+        'common/bundles/models'
     ]
 })

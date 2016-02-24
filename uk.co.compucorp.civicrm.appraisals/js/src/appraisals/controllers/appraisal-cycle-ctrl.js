@@ -1,16 +1,25 @@
 define([
-    'appraisals/modules/controllers'
-], function (controllers) {
+    'common/lodash',
+    'appraisals/modules/controllers',
+    'appraisals/models/appraisal-cycle'
+], function (_, controllers) {
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', 'dialog',
-        function ($log, $modal, $rootElement, dialog) {
+        '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', 'AppraisalCycle',
+        'dialog', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $stateParams, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
+            var cachedAttributes = {};
 
+            vm.cycle = {};
             vm.filtersCollapsed = true;
+            vm.loading = { cycle: true, appraisals: true };
+
+            vm.statuses = statuses;
+            vm.types = types;
 
             // dummy data
             vm.grades = [
@@ -37,12 +46,9 @@ define([
              * Opens the Access Settings modal
              */
             vm.openAccessSettingsModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'AccessSettingsModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/access-settings.html'
+                    templateFile: 'access-settings.html'
                 });
             };
 
@@ -50,12 +56,9 @@ define([
              * Opens the Add Contacts modal
              */
             vm.openAddContactsModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'AddContactsModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/add-contacts.html'
+                    templateFile: 'add-contacts.html'
                 });
             };
 
@@ -63,12 +66,12 @@ define([
              * Opens the Edit Dates modal
              */
             vm.openEditDatesModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'EditDatesModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/edit-dates.html'
+                    templateFile: 'edit-dates.html',
+                    scopeData: {
+                        cycle: vm.cycle
+                    }
                 });
             };
 
@@ -76,12 +79,9 @@ define([
              * Opens the View Cycle modal
              */
             vm.openViewCycleModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'ViewCycleModalCtrl',
-                    controllerAs: 'modal',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/view-cycle.html'
+                    templateFile: 'view-cycle.html'
                 });
             };
 
@@ -89,15 +89,101 @@ define([
              * Opens the Send Notification Reminder modal
              */
             vm.openSendNotificationReminderModal = function () {
-                $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                openModal({
                     controller: 'SendNotificationReminderModalCtrl',
-                    controllerAs: 'modal',
                     windowClass: 'modal--send-notification-reminder',
-                    bindToController: true,
-                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/send-notification-reminder.html'
+                    templateFile: 'send-notification-reminder.html',
                 });
             };
+
+            /**
+             * Shows a confirmation dialog
+             * If confirmed, updates the cycle. If rejected, restores the old values
+             */
+            vm.update = function () {
+                dialog.open({
+                    title: 'Confirm Cycle Update',
+                    copyCancel: null,
+                    copyConfirm: 'Proceed',
+                    msg: 'This will update the data of the cycle'
+                })
+                .then(function (response) {
+                    if (response) {
+                        vm.cycle.update();
+                        cacheAttributes();
+                    } else {
+                        _.assign(vm.cycle, cachedAttributes);
+                    }
+                });
+            }
+
+            init();
+
+            /**
+             * Attaches the listeners to the $rootScope
+             */
+            function addListeners() {
+                $rootScope.$on('AppraisalCycle::edit', function (event, editedCycle) {
+                    _.assign(vm.cycle, editedCycle);
+                    cacheAttributes();
+                });
+            }
+
+            /**
+             * Caches the cycle attributes so that they can be restored
+             * in case the user won't confirm a future cycle's data update
+             */
+            function cacheAttributes() {
+                cachedAttributes = vm.cycle.attributes();
+            }
+
+            /**
+             * Initializes the listeners and cycle data
+             */
+            function init() {
+                addListeners();
+                loadCycleData();
+            }
+
+            /**
+             * Opens a modal
+             *
+             * @param {object} options - Parameter for the modal
+             * @return {Promise}
+             */
+            function openModal(options) {
+                return $modal.open(_.assign({
+                    targetDomEl: $rootElement.children().eq(0),
+                    controller: options.controller,
+                    controllerAs: 'modal',
+                    bindToController: true,
+                    scope: (function (scopeData) {
+                        var modalScope = $rootScope.$new();
+                        _.assign(modalScope, scopeData);
+
+                        return modalScope;
+                    })(options.scopeData),
+                    windowClass: options.windowClass || null,
+                    templateUrl: CRM.vars.appraisals.baseURL + '/views/modals/' + options.templateFile
+                }));
+            }
+
+            /**
+             * Loads the cycle data and its overdue appraisals
+             */
+            function loadCycleData() {
+                AppraisalCycle.find($stateParams.cycleId).then(function (cycle) {
+                    vm.cycle = cycle;
+                    vm.loading.cycle = false;
+
+                    cacheAttributes();
+
+                    return vm.cycle.loadAppraisals({ overdue: true });
+                })
+                .then(function () {
+                    vm.loading.appraisals = false;
+                });
+            }
 
             return vm;
         }
