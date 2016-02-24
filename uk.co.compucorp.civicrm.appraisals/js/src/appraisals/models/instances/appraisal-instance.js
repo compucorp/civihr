@@ -1,9 +1,9 @@
 define([
     'common/lodash',
     'common/moment',
-    'common/models/instances/instance',
-    'appraisals/modules/models-instances'
-], function (_, moment, __, instances) {
+    'appraisals/modules/models-instances',
+    'common/models/instances/instance'
+], function (_, moment, instances) {
     'use strict';
 
     instances.factory('AppraisalInstance', ['ModelInstance', function (ModelInstance) {
