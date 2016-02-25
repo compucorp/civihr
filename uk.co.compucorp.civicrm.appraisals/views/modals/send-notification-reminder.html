@@ -45,7 +45,11 @@
             <label for="notes" class="control-label">
                 Notes <span class="text-default">(Displayed on Reminder)</span>
             </label>
-            <textarea class="form-control" id="notes" rows="5"></textarea>
+            <div
+                id="notes"
+                text-angular
+                ta-toolbar="[['bold','italics','underline','strikeThrough','ul','ol','undo','redo','clear']]">
+            </div>
         </div>
     </form>
 </div>

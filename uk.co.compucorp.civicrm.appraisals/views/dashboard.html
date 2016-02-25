@@ -147,7 +147,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="self-due-from"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_self_appraisal_due.from"
                                                     ng-init="dashboard.calendars.selfFrom = false"
                                                     ng-click="dashboard.calendars.selfFrom = !dashboard.calendars.selfFrom"
@@ -168,7 +168,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="self-due-to"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_self_appraisal_due.to"
                                                     ng-init="dashboard.calendars.selfTo = false"
                                                     ng-click="dashboard.calendars.selfTo = !dashboard.calendars.selfTo"
@@ -189,7 +189,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="manager-due-from"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_manager_appraisal_due.from"
                                                     ng-init="dashboard.calendars.managerFrom = false"
                                                     ng-click="dashboard.calendars.managerFrom = !dashboard.calendars.managerFrom"
@@ -210,7 +210,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="manager-due-to"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_manager_appraisal_due.to"
                                                     ng-init="dashboard.calendars.managerTo = false"
                                                     ng-click="dashboard.calendars.managerTo = !dashboard.calendars.managerTo"
@@ -233,7 +233,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="grade-due-from"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_grade_due.from"
                                                     ng-init="dashboard.calendars.gradeFrom = false"
                                                     ng-click="dashboard.calendars.gradeFrom = !dashboard.calendars.gradeFrom"
@@ -254,7 +254,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="grade-due-to"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_grade_due.to"
                                                     ng-init="dashboard.calendars.gradeTo = false"
                                                     ng-click="dashboard.calendars.gradeTo = !dashboard.calendars.gradeTo"
@@ -275,7 +275,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="appraisal-due-from"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_start_date.from"
                                                     ng-init="dashboard.calendars.periodFrom = false"
                                                     ng-click="dashboard.calendars.periodFrom = !dashboard.calendars.periodFrom"
@@ -296,7 +296,7 @@
                                                     type="text"
                                                     class="form-control"
                                                     id="appraisal-due-to"
-                                                    datepicker-popup="dd/MM/yyyy"
+                                                    datepicker-popup
                                                     ng-model="dashboard.filters.cycle_end_date.to"
                                                     ng-init="dashboard.calendars.periodTo = false"
                                                     ng-click="dashboard.calendars.periodTo = !dashboard.calendars.periodTo"
@@ -357,7 +357,7 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <h3 class="panel-title panel-title-sm" ng-switch="cycle.cycle_is_active">
-                                                <a ui-sref="appraisals.appraisal-cycle({ cycleId: cycle.id })">{{cycle.cycle_name}}</a>
+                                                <a ui-sref="appraisals.appraisal-cycle.cycle-summary({ cycleId: cycle.id })">{{cycle.cycle_name}}</a>
                                                 &nbsp;
                                                 <span ng-switch-when="true">(Active)</span>
                                                 <span ng-switch-when="false">(Inactive)</span>

@@ -7,7 +7,7 @@ define([
 
     describe('Model', function () {
         var Model;
-        var modelInterface = ['extend', 'processFilters'];
+        var modelInterface = ['extend', 'compactFilters', 'processFilters'];
 
         beforeEach(module('common.models'));
         beforeEach(inject(['Model', function (_Model_) {
@@ -44,35 +44,37 @@ define([
             });
         });
 
-        describe('processFilters()', function () {
+        describe('compactFilters()', function () {
             var filters;
 
-            describe('falsey values', function () {
-                beforeEach(function () {
-                    filters = Model.processFilters({
-                        filter_1: 'a non-empty string',
-                        filter_2: '',
-                        filter_3: 456,
-                        filter_4: 0,
-                        filter_5: undefined,
-                        filter_6: { foo: 'foo' },
-                        filter_7: null,
-                        filter_8: {},
-                        filter_9: false
-                    });
-                });
-
-                it('skips them, except for 0 and false', function () {
-                    expect(filters).toEqual({
-                        filter_1: 'a non-empty string',
-                        filter_3: 456,
-                        filter_4: 0,
-                        filter_6: { foo: 'foo' },
-                        filter_8: {},
-                        filter_9: false
-                    });
+            beforeEach(function () {
+                filters = Model.processFilters({
+                    filter_1: 'a non-empty string',
+                    filter_2: '',
+                    filter_3: 456,
+                    filter_4: 0,
+                    filter_5: undefined,
+                    filter_6: { foo: 'foo' },
+                    filter_7: null,
+                    filter_8: {},
+                    filter_9: false
                 });
             });
+
+            it('removes falsy values, except for 0 and false', function () {
+                expect(filters).toEqual({
+                    filter_1: 'a non-empty string',
+                    filter_3: 456,
+                    filter_4: 0,
+                    filter_6: { foo: 'foo' },
+                    filter_8: {},
+                    filter_9: false
+                });
+            });
+        });
+
+        describe('processFilters()', function () {
+            var filters;
 
             describe('filter names', function () {
                 describe('standard filters', function () {
@@ -102,6 +104,22 @@ define([
                         expect(filters).toEqual({
                             filter_1: 'foo',
                             filter_2: 'bar'
+                        });
+                    });
+                });
+
+                describe('multiple values filters', function () {
+                    beforeEach(function () {
+                        filters = Model.processFilters({
+                            filter_1: { in: ['1', '2', '3', '4', '5'] },
+                            filter_2: { nin: ['a', 'b', 'c', 'd', 'e']}
+                        });
+                    });
+
+                    it('uses the correct operator depending on the filter name', function () {
+                        expect(filters).toEqual({
+                            filter_1: { 'IN': ['1', '2', '3', '4', '5'] },
+                            filter_2: { 'NOT IN': ['a', 'b', 'c', 'd', 'e'] }
                         });
                     });
                 });

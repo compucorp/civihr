@@ -2,6 +2,7 @@ define([
     'common/angular',
     'common/lodash',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
     'mocks/models/instances/appraisal-cycle-instance'
@@ -29,11 +30,15 @@ define([
                 $provide = _$provide_;
             });
             // Override api.appraisal-cycle with the mocked version
-            inject(['api.appraisal-cycle.mock', function (_appraisalCycleAPIMock_) {
-                appraisalCycleAPIMock = _appraisalCycleAPIMock_;
+            inject([
+                'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalCycleAPIMock_, HR_settingsMock) {
+                    appraisalCycleAPIMock = _appraisalCycleAPIMock_;
 
-                $provide.value('api.appraisal-cycle', appraisalCycleAPIMock);
-            }]);
+                    $provide.value('api.appraisal-cycle', appraisalCycleAPIMock);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
         });
         beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycle_, _AppraisalCycleInstanceMock_, _dialog_) {
             $compile = _$compile_;

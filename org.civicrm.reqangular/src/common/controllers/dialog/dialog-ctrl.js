@@ -1,9 +1,7 @@
-define([
-    'common/modules/dialog'
-], function (dialog) {
+define([], function () {
     'use strict';
 
-    dialog.controller('DialogCtrl', ['$scope','$modalInstance', 'content',
+    return ['$scope','$modalInstance', 'content',
         function ($scope, $modalInstance, content) {
             $scope.title = content.title || 'CiviHR';
             $scope.msg = content.msg || '';
@@ -19,5 +17,5 @@ define([
                 $modalInstance.close(false);
             };
         }
-    ]);
+    ];
 });

@@ -2,6 +2,7 @@ define([
     'common/lodash',
     'common/moment',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
@@ -22,13 +23,14 @@ define([
             });
             // Override apis with the mocked versions
             inject([
-                'api.appraisal.mock', 'api.appraisal-cycle.mock',
-                function (_appraisalAPIMock_, _appraisalCycleAPIMock_) {
+                'api.appraisal.mock', 'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalAPIMock_, _appraisalCycleAPIMock_, HR_settingsMock) {
                     appraisalAPI = _appraisalAPIMock_;
                     appraisalCycleAPI = _appraisalCycleAPIMock_;
 
                     $provide.value('api.appraisal', appraisalAPI);
                     $provide.value('api.appraisal-cycle', appraisalCycleAPI);
+                    $provide.value('HR_settings', HR_settingsMock);
                 }
             ]);
         });
