@@ -1,5 +1,6 @@
 define([
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-mock',
     'appraisals/app',
     'mocks/models/instances/appraisal-instance'
@@ -7,7 +8,7 @@ define([
     'use strict';
 
     describe('Appraisal', function () {
-        var $provide, $rootScope, Appraisal, AppraisalMock, AppraisalInstanceMock,
+        var $log, $provide, $rootScope, Appraisal, AppraisalMock, AppraisalInstanceMock,
             appraisalAPI, appraisals;
 
         beforeEach(function () {
@@ -15,14 +16,19 @@ define([
                 $provide = _$provide_;
             });
             // Override api.appraisal-cycle with the mocked version
-            inject(['api.appraisal.mock', function (_appraisalAPIMock_) {
-                $provide.value('api.appraisal', _appraisalAPIMock_);
-            }]);
+            inject([
+                'api.appraisal.mock','HR_settingsMock',
+                function (_appraisalAPIMock_, HR_settingsMock) {
+                    $provide.value('api.appraisal', _appraisalAPIMock_);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
         });
 
         beforeEach(inject([
-            '$rootScope', 'Appraisal', 'AppraisalInstanceMock', 'api.appraisal',
-            function (_$rootScope_, _Appraisal_, _AppraisalInstanceMock_, _appraisalAPI_) {
+            '$log', '$rootScope', 'Appraisal', 'AppraisalInstanceMock', 'api.appraisal',
+            function (_$log_, _$rootScope_, _Appraisal_, _AppraisalInstanceMock_, _appraisalAPI_) {
+                $log = _$log_;
                 $rootScope = _$rootScope_;
 
                 Appraisal = _Appraisal_;
@@ -35,7 +41,7 @@ define([
         ]));
 
         it('has the expected api', function () {
-            expect(Object.keys(Appraisal)).toEqual(['all', 'find', 'overdue']);
+            expect(Object.keys(Appraisal)).toEqual(['all', 'create', 'find', 'overdue']);
         });
 
         describe('all()', function () {
@@ -71,6 +77,56 @@ define([
                     Appraisal.all(null, pagination).then(function (response) {
                         expect(appraisalAPI.all).toHaveBeenCalledWith(null, pagination);
                         expect(response.list.length).toEqual(2);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+            });
+        });
+
+        describe('create()', function () {
+            var newAppraisal = { contact_id: '1', appraisal_cycle_id: '2', status_id: '5' };
+
+            beforeEach(function () {
+                spyOn($log, 'error');
+            });
+
+            describe('when contact id is missing', function () {
+                beforeEach(function () {
+                    Appraisal.create(_.omit(newAppraisal, 'contact_id'));
+                })
+
+                it('throws an error', function () {
+                    expect($log.error).toHaveBeenCalledWith('ERR_APPRAISAL_CREATE: CONTACT ID MISSING');
+                });
+            });
+
+            describe('when appraisal cycle id is missing', function () {
+                beforeEach(function () {
+                    Appraisal.create(_.omit(newAppraisal, 'appraisal_cycle_id'));
+                })
+
+                it('throws an error', function () {
+                    expect($log.error).toHaveBeenCalledWith('ERR_APPRAISAL_CREATE: APPRAISAL CYCLE ID MISSING');
+                });
+            });
+
+            describe('when mandatory params are present', function () {
+                var promise;
+
+                beforeEach(function () {
+                    promise = Appraisal.create(newAppraisal);
+                });
+
+                it('creates a new appraisal', function (done) {
+                    promise.then(function () {
+                        expect(appraisalAPI.create).toHaveBeenCalled();
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                it('returns an instance of the model', function (done) {
+                    promise.then(function (savedAppraisal) {
+                        expect(AppraisalInstanceMock.isInstance(savedAppraisal)).toBe(true);
                     })
                     .finally(done) && $rootScope.$digest();
                 });

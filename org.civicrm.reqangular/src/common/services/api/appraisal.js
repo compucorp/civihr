@@ -24,6 +24,21 @@ define([
             },
 
             /**
+             * Creates a new appraisal
+             *
+             * @param {object} attributes - The data of the new appraisal
+             * @return {Promise} resolves to the newly created appraisal
+             */
+            create: function (attributes) {
+                $log.debug('api.appraisal.create');
+
+                return this.sendPOST('Appraisal', 'create', attributes)
+                    .then(function (data) {
+                        return data.values[0];
+                    });
+            },
+
+            /**
              * Finds the appraisal with the given id
              *
              * @param {string/int} id

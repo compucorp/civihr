@@ -9,8 +9,8 @@ define([
     'use strict';
 
     instances.factory('AppraisalCycleInstance', ['$q', 'Appraisal', 'ModelInstance',
-        'api.appraisal-cycle',
-        function ($q, Appraisal, ModelInstance, appraisalCycleAPI) {
+        'api.appraisal-cycle', 'HR_settings',
+        function ($q, Appraisal, ModelInstance, appraisalCycleAPI, HR_settings) {
 
             var DUE_DATE_FIELD_TO_STATUS_ID = {
                 cycle_self_appraisal_due:    '1',
@@ -27,11 +27,12 @@ define([
              */
             var nextDueDate = _.memoize(function nextDueDates(id, dueDates) {
                 var today, dates, date;
+                var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
 
                 today = moment();
                 dates = _.chain(dueDates)
                     .transform(function (result, date, key) {
-                        result[key] = moment(date, 'DD/MM/YYYY');
+                        result[key] = moment(date, dateFormat);
                     })
                     .pick(function (date) {
                         return date.isSameOrAfter(today, 'day');
@@ -45,7 +46,7 @@ define([
                 date = moment.min.apply(moment, _.values(dates));
 
                 return {
-                    date: date.format('DD/MM/YYYY'),
+                    date: date.format(dateFormat),
                     status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(dates, function (date) {
                         return date === date;
                     })]
@@ -113,8 +114,10 @@ define([
                  *
                  */
                 fromAPIFilter: function (result, __, key) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
+                        result[key] = moment(this[key], 'YYYY-MM-DD').format(dateFormat);
                     } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
                         calculateAppraisalsFigures.call(result, this[key].values);
                     } else if (key === 'cycle_is_active') {
@@ -132,9 +135,10 @@ define([
                  * @return {boolean}
                  */
                 isStatusOverdue: function (id) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
                     var field = _.invert(DUE_DATE_FIELD_TO_STATUS_ID)[id];
 
-                    return moment(this[field], 'DD/MM/YYYY').isBefore(moment());
+                    return moment(this[field], dateFormat).isBefore(moment());
                 },
 
                 /**
@@ -181,11 +185,12 @@ define([
                  *
                  */
                 toAPIFilter: function (result, __, key) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
                     var blacklist = ['appraisals', 'appraisals_count',
                         'completion_percentage'];
 
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
+                        result[key] = moment(this[key], dateFormat).format('YYYY-MM-DD');
                     } else if (_.includes(blacklist, key)) {
                         return;
                     } else {

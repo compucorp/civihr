@@ -20,7 +20,7 @@ define([
         /**
          * Transforms date range filters to values the API can use
          *
-         * @param {string} value
+         * @param {object} value
          * @return {object}
          */
         function processDateRangeFilter(value) {
@@ -30,6 +30,20 @@ define([
                 return { '>=': apiDateFormat(value.from) };
             } else {
                 return { '<=': apiDateFormat(value.to) };
+            }
+        }
+
+        /**
+         * Transforms multiple values filters to values the API can use
+         *
+         * @param {object} value
+         * @return {object}
+         */
+        function processMultipleValuesFilter(value) {
+            if (value.in) {
+                return { 'IN': value.in };
+            } else {
+                return { 'NOT IN': value.nin };
             }
         }
 
@@ -46,6 +60,22 @@ define([
             },
 
             /**
+             * Removes falsey values from the filters (except 0 or false)
+             *
+             * @param {object} filters
+             * @return {object|null}
+             */
+            compactFilters: function (filters) {
+                if (!filters) {
+                    return null;
+                }
+
+                return _.pick(filters, function (value) {
+                    return value === 0 || value === false || !!value;
+                });
+            },
+
+            /**
              * Processes the filters provided, removing falsey values (except 0 or false)
              * And applying filter-specific transformations if needed
              *
@@ -57,18 +87,17 @@ define([
                     return null;
                 }
 
-                return _.chain(rawFilters)
-                    .pick(function (value) {
-                        return value === 0 || value === false || !!value;
-                    })
-                    .transform(function (filters, value, key) {
-                        if (value.from || value.to) {
-                            filters[key] = processDateRangeFilter(value);
-                        } else {
-                            filters[key] = value;
-                        }
-                    }, {})
-                    .value();
+                rawFilters = this.compactFilters(rawFilters);
+
+                return _.transform(rawFilters, function (filters, value, key) {
+                    if (value.from || value.to) {
+                        filters[key] = processDateRangeFilter(value);
+                    } else if (value.in || value.nin) {
+                        filters[key] = processMultipleValuesFilter(value);
+                    } else {
+                        filters[key] = value;
+                    }
+                }, {});
             }
         };
     });

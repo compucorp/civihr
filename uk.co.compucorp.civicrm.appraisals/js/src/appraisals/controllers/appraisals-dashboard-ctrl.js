@@ -8,9 +8,9 @@ define([
 
     controllers.controller('AppraisalsDashboardCtrl',
         ['$filter', '$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout',
-        'AppraisalCycle', 'activeCycles', 'totalCycles', 'statusOverview',
+        'AppraisalCycle', 'activeCycles', 'HR_settings', 'totalCycles', 'statusOverview',
         'statuses', 'types',
-        function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, totalCycles, statusOverview, statuses, types) {
+        function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, HR_settings, totalCycles, statusOverview, statuses, types) {
             $log.debug('AppraisalsDashboardCtrl');
 
             var vm = {};
@@ -144,8 +144,8 @@ define([
                 Object.keys(filters).filter(function (key) {
                     return _.endsWith(key, '_date') || _.endsWith(key, '_due');
                 }).forEach(function (key) {
-                    filters[key].from = $filter('date')(filters[key].from, 'dd/MM/yyyy');
-                    filters[key].to = $filter('date')(filters[key].to, 'dd/MM/yyyy');
+                    filters[key].from = $filter('date')(filters[key].from, HR_settings.DATE_FORMAT);
+                    filters[key].to = $filter('date')(filters[key].to, HR_settings.DATE_FORMAT);
                 });
 
                 return filters;

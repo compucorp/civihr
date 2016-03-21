@@ -1,6 +1,7 @@
 define([
     'common/angular',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
 ], function (angular) {
@@ -14,9 +15,13 @@ define([
                 $provide = _$provide_;
             });
             // Override api.appraisal-cycle with the mocked version
-            inject(['api.appraisal-cycle.mock', function (_appraisalCycleAPIMock_) {
-                $provide.value('api.appraisal-cycle', _appraisalCycleAPIMock_);
-            }]);
+            inject([
+                'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalCycleAPIMock_, HR_settingsMock) {
+                    $provide.value('api.appraisal-cycle', _appraisalCycleAPIMock_);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
         });
 
         beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {

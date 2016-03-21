@@ -35,6 +35,18 @@ define([
                     }).join(',')
                 })
             },
+            create: function (attributes, value) {
+                var created = value || (function () {
+                    var created = angular.copy(attributes);
+
+                    created.id = '' + Math.ceil(Math.random() * 5000);
+                    created.createdAt = Date.now();
+
+                    return created;
+                })();
+
+                return promiseResolvedWith(created);
+            },
             find: function (id, value) {
                 var appraisal = value || this.mockedAppraisals().list.filter(function (appraisal) {
                     return appraisal.id === id;
@@ -93,6 +105,11 @@ define([
                             manager: {
                                 id: '301',
                                 display_name: 'Manager #1'
+                            },
+                            role: {
+                                title: 'Role #1',
+                                level: 'Level #1',
+                                location: 'Location #1'
                             }
                         },
                         {
@@ -115,6 +132,11 @@ define([
                             manager: {
                                 id: '302',
                                 display_name: 'Manager #2'
+                            },
+                            role: {
+                                title: 'Role #2',
+                                level: 'Level #2',
+                                location: 'Location #2'
                             }
                         },
                         {
@@ -137,6 +159,11 @@ define([
                             manager: {
                                 id: '303',
                                 display_name: 'Manager #3'
+                            },
+                            role: {
+                                title: 'Role #3',
+                                level: 'Level #3',
+                                location: 'Location #3'
                             }
                         },
                         {
@@ -159,6 +186,11 @@ define([
                             manager: {
                                 id: '304',
                                 display_name: 'Manager #4'
+                            },
+                            role: {
+                                title: 'Role #4',
+                                level: 'Level #1',
+                                location: 'Location #1'
                             }
                         },
                         {
@@ -181,6 +213,11 @@ define([
                             manager: {
                                 id: '305',
                                 display_name: 'Manager #5'
+                            },
+                            role: {
+                                title: 'Role #5',
+                                level: 'Level #2',
+                                location: 'Location #2'
                             }
                         },
                         {
@@ -203,6 +240,11 @@ define([
                             manager: {
                                 id: '306',
                                 display_name: 'Manager #6'
+                            },
+                            role: {
+                                title: 'Role #6',
+                                level: 'Level #3',
+                                location: 'Location #3'
                             }
                         },
                         {
@@ -225,6 +267,11 @@ define([
                             manager: {
                                 id: '307',
                                 display_name: 'Manager #7'
+                            },
+                            role: {
+                                title: 'Role #7',
+                                level: 'Level #1',
+                                location: 'Location #1'
                             }
                         },
                         {
@@ -247,6 +294,11 @@ define([
                             manager: {
                                 id: '308',
                                 display_name: 'Manager #8'
+                            },
+                            role: {
+                                title: 'Role #8',
+                                level: 'Level #2',
+                                location: 'Location #2'
                             }
                         },
                         {
@@ -269,6 +321,11 @@ define([
                             manager: {
                                 id: '309',
                                 display_name: 'Manager #9'
+                            },
+                            role: {
+                                title: 'Role #9',
+                                level: 'Level #3',
+                                location: 'Location #3'
                             }
                         },
                         {
@@ -291,6 +348,11 @@ define([
                             manager: {
                                 id: '313',
                                 display_name: 'Manager #10'
+                            },
+                            role: {
+                                title: 'Role #10',
+                                level: 'Level #1',
+                                location: 'Location #1'
                             }
                         },
                     ]

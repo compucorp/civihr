@@ -1,12 +1,11 @@
 define([
-    'common/angular',
     'common/modules/services'
-], function (angular, module) {
+], function (module) {
     'use strict';
 
-    module.factory('HR_settings', function(){
+    module.factory('HR_settings', function () {
         return {
             DATE_FORMAT: null
-        }
+        };
     });
 });

@@ -1,13 +1,21 @@
 define([
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'appraisals/app',
 ], function () {
     'use strict';
 
     describe('AppraisalsCtrl', function () {
-        var $log, ctrl;
+        var $log, $provide, ctrl;
 
-        beforeEach(module('appraisals'));
+        beforeEach(function () {
+            module('appraisals', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            inject(['HR_settingsMock', function (HR_settingsMock) {
+                $provide.value('HR_settings', HR_settingsMock);
+            }]);
+        });
 
         beforeEach(inject(function ($rootScope, _$log_, $controller) {
             ($log = _$log_) && spyOn($log, 'debug');

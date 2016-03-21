@@ -1,10 +1,7 @@
-define([
-    'common/modules/dialog',
-    'common/controllers/dialog-ctrl'
-], function (dialog) {
+define([], function () {
     'use strict';
 
-    dialog.factory('dialog', ['$modal', '$rootElement', '$templateCache',
+    return ['$modal', '$rootElement', '$templateCache',
         function ($modal, $rootElement, $templateCache) {
 
             return {
@@ -43,5 +40,5 @@ define([
                 }
             };
         }
-    ]);
+    ];
 });

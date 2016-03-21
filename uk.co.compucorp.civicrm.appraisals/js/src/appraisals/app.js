@@ -2,7 +2,10 @@ define([
     'appraisals/utils/routes',
     'common/angular',
     'common/angularBootstrap',
-    'common/services/dialog',
+    'common/ui-select',
+    'common/modules/dialog',
+    'common/modules/xeditable-civi',
+    'common/services/angular-date/date-format',
     'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
@@ -27,11 +30,14 @@ define([
         'ngResource',
         'ui.router',
         'ui.bootstrap',
+        'common.angularDate',
         'common.dialog',
         'common.directives',
         'appraisals.controllers',
         'appraisals.directives',
-        'appraisals.models'
+        'appraisals.models',
+        'ui.select',
+        'xeditable-civi'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', '$httpProvider', '$logProvider',
         function ($stateProvider, $urlRouterProvider, $resourceProvider, $httpProvider, $logProvider) {
@@ -42,9 +48,13 @@ define([
             routes($urlRouterProvider, $stateProvider);
         }
     ])
-    .run(['$log', function ($log) {
-        $log.debug('app.run');
-    }]);
+    .run(['$log', 'editableOptions', 'editableThemes',
+        function ($log, editableOptions, editableThemes) {
+            $log.debug('app.run');
+
+            editableOptions.theme = 'bs3';
+        }
+    ]);
 
     return angular;
 });

@@ -1,14 +1,22 @@
 define([
     'common/lodash',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
     'appraisals/app'
 ], function (_) {
     'use strict';
 
     describe('AppraisalInstance', function () {
-        var AppraisalInstance, ModelInstance;
+        var $provide, AppraisalInstance, ModelInstance;
 
-        beforeEach(module('appraisals'));
+        beforeEach(function () {
+            module('appraisals', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            inject(['HR_settingsMock', function (HR_settingsMock) {
+                $provide.value('HR_settings', HR_settingsMock);
+            }]);
+        });
         beforeEach(inject(function (_AppraisalInstance_, _ModelInstance_) {
             AppraisalInstance = _AppraisalInstance_;
             ModelInstance = _ModelInstance_;

@@ -6,9 +6,9 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', 'AppraisalCycle',
-        'dialog', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $rootScope, $stateParams, AppraisalCycle, dialog, statuses, types) {
+        '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', '$timeout',
+        'AppraisalCycle', 'dialog', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -17,6 +17,7 @@ define([
             vm.cycle = {};
             vm.filtersCollapsed = true;
             vm.loading = { cycle: true, appraisals: true };
+            vm.picker = { opened: false };
 
             vm.statuses = statuses;
             vm.types = types;
@@ -28,6 +29,18 @@ define([
                 { label: "Value #3", value: 30 },
                 { label: "Value #4", value: 40 }
             ];
+
+            /**
+             *  editable-bsdate does not work with the latest ui.bootstrap
+             *  (https://github.com/vitalets/angular-xeditable/issues/164)
+             *
+             * This method provides a workaround for the issue
+             */
+            vm.toggleCalendar = function () {
+                $timeout(function () {
+                    vm.picker.opened = !vm.picker.opened;
+                });
+            };
 
             /**
              * Deletes a cycle (via a dialog modal)
@@ -58,7 +71,10 @@ define([
             vm.openAddContactsModal = function () {
                 openModal({
                     controller: 'AddContactsModalCtrl',
-                    templateFile: 'add-contacts.html'
+                    templateFile: 'add-contacts.html',
+                    scopeData: {
+                        cycleId: vm.cycle.id
+                    }
                 });
             };
 
@@ -176,11 +192,10 @@ define([
                     vm.cycle = cycle;
                     vm.loading.cycle = false;
 
-                    cacheAttributes();
-
                     return vm.cycle.loadAppraisals({ overdue: true });
                 })
                 .then(function () {
+                    cacheAttributes();
                     vm.loading.appraisals = false;
                 });
             }

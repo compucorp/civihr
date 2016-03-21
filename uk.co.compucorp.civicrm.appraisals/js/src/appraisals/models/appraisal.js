@@ -6,8 +6,8 @@ define([
     'use strict';
 
     models.factory('Appraisal', [
-        'Model', 'api.appraisal.mock', 'AppraisalInstance',
-        function (Model, appraisalAPI, instance) {
+        '$log', 'Model', 'api.appraisal.mock', 'AppraisalInstance',
+        function ($log, Model, appraisalAPI, instance) {
 
             return Model.extend({
 
@@ -26,6 +26,28 @@ define([
                         });
 
                         return response;
+                    });
+                },
+
+                /**
+                 * Creates a new appraisal
+                 *
+                 * @param {object} attributes - The attributes of the appraisal to be created
+                 * @return {Promise} - Resolves with the instance of the new appraisal
+                 */
+                create: function (attributes) {
+                    if (!attributes.contact_id) {
+                        $log.error('ERR_APPRAISAL_CREATE: CONTACT ID MISSING');
+                    }
+
+                    if (!attributes.appraisal_cycle_id) {
+                        $log.error('ERR_APPRAISAL_CREATE: APPRAISAL CYCLE ID MISSING');
+                    }
+
+                    var appraisal = instance.init(attributes).toAPI();
+
+                    return appraisalAPI.create(appraisal).then(function (newAppraisal) {
+                        return instance.init(newAppraisal, true);
                     });
                 },
 

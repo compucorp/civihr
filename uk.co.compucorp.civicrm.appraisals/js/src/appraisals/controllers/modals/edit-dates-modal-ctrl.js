@@ -6,8 +6,8 @@ define([
 
     controllers.controller('EditDatesModalCtrl', [
         '$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
-        'dialog',
-        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, dialog) {
+        'HR_settings', 'dialog',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, HR_settings, dialog) {
             $log.debug('EditDatesModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
@@ -51,7 +51,7 @@ define([
              */
             function formatDates() {
                 Object.keys(vm.cycle.dueDates()).forEach(function (key) {
-                    vm.cycle[key] = $filter('date')(vm.cycle[key], 'dd/MM/yyyy');
+                    vm.cycle[key] = $filter('date')(vm.cycle[key], HR_settings.DATE_FORMAT);
                 });
             }
 

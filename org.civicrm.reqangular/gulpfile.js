@@ -26,14 +26,16 @@ gulp.task('cache-templates', function (cb) {
 });
 
 gulp.task('requirejs-bundle', function (done) {
-    exec('r.js -o build.js', function (_, stdout, stderr) {
+    exec('r.js -o build.js', function (err, stdout, stderr) {
+        err && err.code && console.log(stdout);
         done();
     });
 });
 
 gulp.task('requirejs-bundle-mock', function (done) {
-    exec('r.js -o build.mocks.js', function (_, stdout, stderr) {
-        done();
+    exec('r.js -o build.mocks.js', function (err, stdout, stderr) {
+       err && err.code && console.log(stdout);
+       done();
     });
 });
 
