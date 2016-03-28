@@ -275,6 +275,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'name' => 'job_contract_id',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Job Id') ,
+          'import' => true,
           'required' => true,
         ) ,
         'title' => array(
@@ -283,12 +284,14 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'title' => ts('Job Role Title') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
+          'import' => true,
           'default' => 'NULL',
         ) ,
         'description' => array(
           'name' => 'description',
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Job Role Description') ,
+          'import' => true,
         ) ,
         'status' => array(
           'name' => 'status',
@@ -309,7 +312,6 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'title' => ts('Hours Unit') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'import' => true,
           'where' => 'civicrm_hrjobroles.role_hours_unit',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -425,6 +427,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'title' => ts('Funder Contact ID') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
+          'import' => true,
         ) ,
         'hrjc_funder_val_type' => array(
           'name' => 'funder_val_type',
