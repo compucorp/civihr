@@ -10,6 +10,8 @@ define([
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
     'appraisals/controllers/appraisal-cycle-ctrl',
+    'appraisals/controllers/appraisal-cycle-appraisals-ctrl',
+    'appraisals/controllers/appraisal-cycle-summary-ctrl',
     'appraisals/controllers/modals/basic-modal-ctrl',
     'appraisals/controllers/modals/appraisal-cycle-modal-ctrl',
     'appraisals/controllers/modals/access-settings-modal-ctrl',

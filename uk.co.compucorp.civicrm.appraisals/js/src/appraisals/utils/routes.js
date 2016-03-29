@@ -48,7 +48,19 @@ define(function () {
                 url: '/appraisal-cycle/:cycleId',
                 controller: 'AppraisalCycleCtrl',
                 controllerAs: 'cycle',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html',
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
+            })
+            .state('appraisals.appraisal-cycle.cycle-summary', {
+                url: '/appraisal-cycle/:cycleId/cycle-summary',
+                controller: 'AppraisalCycleSummaryCtrl',
+                controllerAs: 'cycleSummary',
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/cycle-summary.html'
+            })
+            .state('appraisals.appraisal-cycle.appraisals-in-cycle', {
+                url: '/appraisal-cycle/:cycleId/appraisals-in-cycle',
+                controller: 'AppraisalCycleAppraisalsCtrl',
+                controllerAs: 'cycleAppraisals',
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/appraisals-in-cycle.html',
                 resolve: {
                     departments: ['OptionGroup', function (OptionGroup) {
                         return OptionGroup.valuesOf('hrjc_department');
@@ -63,14 +75,6 @@ define(function () {
                         return OptionGroup.valuesOf('hrjc_region');
                     }],
                 }
-            })
-            .state('appraisals.appraisal-cycle.cycle-summary', {
-                url: '/appraisal-cycle/:cycleId/cycle-summary',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/cycle-summary.html'
-            })
-            .state('appraisals.appraisal-cycle.appraisals-in-cycle', {
-                url: '/appraisal-cycle/:cycleId/appraisals-in-cycle',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/appraisals-in-cycle.html'
             })
             .state('appraisals.profile', {
                 url: '/profile',

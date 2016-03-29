@@ -55,24 +55,11 @@ define([
             it('stores on scope the data passed by ui-router', function () {
                 expect(ctrl.statuses).toBeDefined();
                 expect(ctrl.types).toBeDefined();
-                expect(ctrl.departments).toBeDefined();
-                expect(ctrl.levels).toBeDefined();
-                expect(ctrl.locations).toBeDefined();
-                expect(ctrl.regions).toBeDefined();
             });
 
             it('has no cycle data loaded', function () {
                 expect(ctrl.cycle).toBeDefined();
                 expect(ctrl.cycle).toEqual(jasmine.any(Object));
-            });
-
-            it('contains grades', function () {
-                expect(ctrl.grades).toBeDefined();
-                expect(ctrl.grades).toEqual(jasmine.any(Array));
-            });
-
-            it('has the filters form collapsed', function () {
-                expect(ctrl.filtersCollapsed).toBe(true);
             });
 
             it('is loading the data', function () {
@@ -181,16 +168,6 @@ define([
             });
         });
 
-        describe('Edit Dates modal', function () {
-            beforeEach(function () {
-                ctrl.openEditDatesModal();
-            });
-
-            it('opens the modal', function () {
-                expect($modal.open).toHaveBeenCalled();
-            });
-        });
-
         describe('Access Settings modal', function () {
             beforeEach(function () {
                 ctrl.openAccessSettingsModal();
@@ -242,11 +219,7 @@ define([
                 },
                 AppraisalCycle: AppraisalCycle,
                 statuses: [],
-                types: [],
-                departments: [],
-                levels: [],
-                locations: [],
-                regions: []
+                types: []
             });
         }
 

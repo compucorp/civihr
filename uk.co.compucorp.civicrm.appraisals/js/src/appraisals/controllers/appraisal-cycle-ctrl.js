@@ -7,44 +7,17 @@ define([
 
     controllers.controller('AppraisalCycleCtrl', [
         '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', '$timeout',
-        'AppraisalCycle', 'dialog', 'departments', 'levels', 'locations', 'regions', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, departments, levels, locations, regions, statuses, types) {
+        'AppraisalCycle', 'dialog', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
             var cachedAttributes = {};
 
             vm.cycle = {};
-            vm.filtersCollapsed = true;
             vm.loading = { cycle: true, appraisals: true };
-            vm.picker = { opened: false };
-
-            vm.departments = departments;
-            vm.levels = levels;
-            vm.locations = locations;
-            vm.regions = regions;
             vm.statuses = statuses;
             vm.types = types;
-
-            // dummy data
-            vm.grades = [
-                { label: "Value #1", value: 10 },
-                { label: "Value #2", value: 20 },
-                { label: "Value #3", value: 30 },
-                { label: "Value #4", value: 40 }
-            ];
-
-            /**
-             *  editable-bsdate does not work with the latest ui.bootstrap
-             *  (https://github.com/vitalets/angular-xeditable/issues/164)
-             *
-             * This method provides a workaround for the issue
-             */
-            vm.toggleCalendar = function () {
-                $timeout(function () {
-                    vm.picker.opened = !vm.picker.opened;
-                });
-            };
 
             /**
              * Deletes a cycle (via a dialog modal)
@@ -78,19 +51,6 @@ define([
                     templateFile: 'add-contacts.html',
                     scopeData: {
                         cycleId: vm.cycle.id
-                    }
-                });
-            };
-
-            /**
-             * Opens the Edit Dates modal
-             */
-            vm.openEditDatesModal = function () {
-                openModal({
-                    controller: 'EditDatesModalCtrl',
-                    templateFile: 'edit-dates.html',
-                    scopeData: {
-                        cycle: vm.cycle
                     }
                 });
             };
