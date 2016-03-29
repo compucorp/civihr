@@ -55,6 +55,10 @@ define([
             it('stores on scope the data passed by ui-router', function () {
                 expect(ctrl.statuses).toBeDefined();
                 expect(ctrl.types).toBeDefined();
+                expect(ctrl.departments).toBeDefined();
+                expect(ctrl.levels).toBeDefined();
+                expect(ctrl.locations).toBeDefined();
+                expect(ctrl.regions).toBeDefined();
             });
 
             it('has no cycle data loaded', function () {
@@ -238,7 +242,11 @@ define([
                 },
                 AppraisalCycle: AppraisalCycle,
                 statuses: [],
-                types: []
+                types: [],
+                departments: [],
+                levels: [],
+                locations: [],
+                regions: []
             });
         }
 

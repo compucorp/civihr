@@ -48,7 +48,21 @@ define(function () {
                 url: '/appraisal-cycle/:cycleId',
                 controller: 'AppraisalCycleCtrl',
                 controllerAs: 'cycle',
-                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
+                templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html',
+                resolve: {
+                    departments: ['OptionGroup', function (OptionGroup) {
+                        return OptionGroup.valuesOf('hrjc_department');
+                    }],
+                    levels: ['OptionGroup', function (OptionGroup) {
+                        return OptionGroup.valuesOf('hrjc_level_type');
+                    }],
+                    locations: ['OptionGroup', function (OptionGroup) {
+                        return OptionGroup.valuesOf('hrjc_location');
+                    }],
+                    regions: ['OptionGroup', function (OptionGroup) {
+                        return OptionGroup.valuesOf('hrjc_region');
+                    }],
+                }
             })
             .state('appraisals.appraisal-cycle.cycle-summary', {
                 url: '/appraisal-cycle/:cycleId/cycle-summary',

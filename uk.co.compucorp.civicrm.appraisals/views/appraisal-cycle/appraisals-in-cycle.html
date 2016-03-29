@@ -70,7 +70,11 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <div class="crm_custom-select crm_custom-select--full">
-                                                    <select class="form-control" id="department">
+                                                    <select
+                                                        class="form-control"
+                                                        id="department"
+                                                        ng-model="cycle.filters.department_id"
+                                                        ng-options="department.value as department.label for department in cycle.departments">
                                                         <option value="">---</option>
                                                     </select>
                                                     <span class="crm_custom-select__arrow"></span>
@@ -87,7 +91,11 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <div class="crm_custom-select crm_custom-select--full">
-                                                    <select class="form-control" id="level">
+                                                    <select
+                                                        class="form-control"
+                                                        id="level"
+                                                        ng-model="cycle.filters.level_id"
+                                                        ng-options="level.value as level.label for level in cycle.levels">
                                                         <option value="">---</option>
                                                     </select>
                                                     <span class="crm_custom-select__arrow"></span>
@@ -102,7 +110,11 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <div class="crm_custom-select crm_custom-select--full">
-                                                    <select class="form-control" id="location">
+                                                    <select
+                                                        class="form-control"
+                                                        id="location"
+                                                        ng-model="cycle.filters.location_id"
+                                                        ng-options="location.value as location.label for location in cycle.locations">
                                                         <option value="">---</option>
                                                     </select>
                                                     <span class="crm_custom-select__arrow"></span>
@@ -119,7 +131,11 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <div class="crm_custom-select crm_custom-select--full">
-                                                    <select class="form-control" id="region">
+                                                    <select
+                                                        class="form-control"
+                                                        id="region"
+                                                        ng-model="cycle.filters.region_id"
+                                                        ng-options="region.value as region.label for region in cycle.regions">
                                                         <option value="">---</option>
                                                     </select>
                                                     <span class="crm_custom-select__arrow"></span>

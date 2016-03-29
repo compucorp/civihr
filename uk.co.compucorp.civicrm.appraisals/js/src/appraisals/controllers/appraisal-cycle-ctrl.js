@@ -7,8 +7,8 @@ define([
 
     controllers.controller('AppraisalCycleCtrl', [
         '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', '$timeout',
-        'AppraisalCycle', 'dialog', 'statuses', 'types',
-        function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, statuses, types) {
+        'AppraisalCycle', 'dialog', 'departments', 'levels', 'locations', 'regions', 'statuses', 'types',
+        function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, departments, levels, locations, regions, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
 
             var vm = {};
@@ -19,6 +19,10 @@ define([
             vm.loading = { cycle: true, appraisals: true };
             vm.picker = { opened: false };
 
+            vm.departments = departments;
+            vm.levels = levels;
+            vm.locations = locations;
+            vm.regions = regions;
             vm.statuses = statuses;
             vm.types = types;
 
