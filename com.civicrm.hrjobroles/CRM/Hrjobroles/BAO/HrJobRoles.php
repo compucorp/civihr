@@ -53,7 +53,7 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
     $queryParam = array(1 => array($searchValue, 'String'));
     $query = "SELECT id from civicrm_contact where ".$searchField." = %1";
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
-    $result->fetch() ? $result->id : 0;
+    return $result->fetch() ? $result->id : 0;
   }
 
 
@@ -72,7 +72,7 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
               left join civicrm_hrjobcontract_details chrjcd on chrjcr.id=chrjcd.jobcontract_revision_id
               where  chrjcr.jobcontract_id = %1 order by chrjcr.id desc limit 1";
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
-    $result->fetch() ? $result : 0;
+    return $result->fetch() ? $result : 0;
   }
 
   public static function importableFields() {
