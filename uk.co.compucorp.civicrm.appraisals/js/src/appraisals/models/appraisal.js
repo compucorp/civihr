@@ -20,7 +20,17 @@ define([
                  * @return {Promise}
                  */
                 all: function (filters, pagination) {
-                    return appraisalAPI.all(this.processFilters(filters), pagination).then(function (response) {
+                    var promise;
+
+                    // TEMPORARY - the way the `overdue` filter is handled is
+                    // to be changed later on, this is just to return mocked data
+                    if (!!filters && filters.overdue === true) {
+                        promise = appraisalAPI.overdue(filters);
+                    } else {
+                        promise = appraisalAPI.all(this.processFilters(filters), pagination);
+                    }
+
+                    return promise.then(function (response) {
                         response.list = response.list.map(function (appraisal) {
                             return instance.init(appraisal, true);
                         });
@@ -61,23 +71,6 @@ define([
                     return appraisalAPI.find(id).then(function (appraisal) {
                         return instance.init(appraisal, true);
                     });
-                },
-
-                /**
-                 * Returns all the overdue appraisals
-                 *
-                 * @param {object} filters - Values the full list should be filtered by
-                 * @return {Promise}
-                 */
-                overdue: function (filters) {
-                    return appraisalAPI.overdue(filters)
-                        .then(function (response) {
-                            response.list = response.list.map(function (appraisal) {
-                                return instance.init(appraisal, true);
-                            });
-
-                            return response;
-                        });
                 }
             });
         }
