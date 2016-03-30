@@ -16,22 +16,30 @@ define([], function () {
                  */
                 attrs.datepickerPopup = HR_settings.DATE_FORMAT;
 
-                scope.$watch('isOpen', function (value) {
+                /**
+                 * Calculates position of the datepicker popup.
+                 * @param value
+                 */
+                var adjustPopupPosition = function (value) {
                     if (value) {
+                        var popupPosition;
+                        var popupWidth = element.parent().find('.datepicker-popup').outerWidth();
+
+
                         scope.popupPosition = $position.position(element);
                         scope.popupPosition.top += scope.popupPosition.height;
 
-                        var popupWidth = 316;
-
-                        var popupPosition = element.offset().left + element.width();
+                        popupPosition = element.offset().left + element.width();
                         popupPosition += popupWidth;
-                        
-                        if( popupPosition > $window.innerWidth ){
-                            var diff = popupPosition - $window.innerWidth;
-                            scope.popupPosition.left -= diff;
+
+                        if (popupPosition > $window.innerWidth) {
+                            scope.popupPosition.left -= popupPosition - $window.innerWidth;
                         }
                     }
-                });
+                };
+
+
+                scope.$watch('isOpen', adjustPopupPosition);
 
                 original_link.apply(this, arguments);
             };
@@ -40,3 +48,4 @@ define([], function () {
         return $delegate;
     }];
 });
+
