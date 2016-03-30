@@ -51,13 +51,13 @@ define(function () {
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle.html'
             })
             .state('appraisals.appraisal-cycle.cycle-summary', {
-                url: '/appraisal-cycle/:cycleId/cycle-summary',
+                url: '/cycle-summary',
                 controller: 'AppraisalCycleSummaryCtrl',
                 controllerAs: 'cycleSummary',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/cycle-summary.html'
             })
             .state('appraisals.appraisal-cycle.appraisals-in-cycle', {
-                url: '/appraisal-cycle/:cycleId/appraisals-in-cycle',
+                url: '/appraisals-in-cycle',
                 controller: 'AppraisalCycleAppraisalsCtrl',
                 controllerAs: 'cycleAppraisals',
                 templateUrl: CRM.vars.appraisals.baseURL + '/views/appraisal-cycle/appraisals-in-cycle.html',
