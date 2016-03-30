@@ -69,7 +69,8 @@ define([
                     expect(instance.appraisals_count).toBeDefined();
                     expect(instance.completion_percentage).toBeDefined();
                     expect(instance.statuses).toBeDefined();
-                    expect(instance.appraisals_count).toEqual(0);
+                    expect(instance.appraisals).toEqual({});
+                    expect(instance.appraisals_count).toBe(0);
                     expect(instance.completion_percentage).toBe(0);
                     expect(instance.statuses).toEqual({});
                 });
@@ -130,60 +131,94 @@ define([
             var instance, promise;
 
             beforeEach(function () {
-                instance = AppraisalCycleInstance.init({
-                    id: '1'
-                });
+                spyOn(Appraisal, 'all').and.callThrough();
+                instance = AppraisalCycleInstance.init({ id: '1' });
             });
 
             describe('all appraisals', function () {
                 var expectedList;
+                var filters = { is_current: '1' };
+                var pagination = { page: 1, size: 20 };
 
                 beforeEach(function () {
-                    spyOn(Appraisal, 'all').and.callThrough();
-                    promise = instance.loadAppraisals();
-
                     expectedList = appraisalAPI.mockedAppraisals().list.filter(function (appraisal) {
-                        return appraisal.appraisal_cycle_id === '1';
+                        return appraisal.appraisal_cycle_id === '1' && appraisal.is_current === '1';
                     });
                 });
 
-                it('calls Appraisal.all() with the cycle id', function (done) {
-                    promise.then(function () {
-                        expect(Appraisal.all).toHaveBeenCalledWith({
-                            appraisal_cycle_id: instance.id
-                        });
-                    })
-                    .finally(done) && $rootScope.$digest();
+                describe('common behaviour', function () {
+                    beforeEach(function () {
+                        promise = instance.loadAppraisals(filters, pagination);
+                    });
+
+                    it('calls Appraisal.all() with the cycle id', function (done) {
+                        promise.then(function () {
+                            expect(Appraisal.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                                appraisal_cycle_id: instance.id
+                            }), jasmine.any(Object));
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
+
+                    it('passes the filters and pagination settings to the Appraisal model', function (done) {
+                        promise.then(function () {
+                            expect(Appraisal.all).toHaveBeenCalledWith(
+                                jasmine.objectContaining(filters),
+                                pagination
+                            );
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
                 });
 
-                it('stores the appraisals in an internal property', function (done) {
-                    promise.then(function (appraisals) {
-                        expect(instance.appraisals.length).toBe(expectedList.length);
-                    })
-                    .finally(done) && $rootScope.$digest();
+                describe('when `store` is true (default)', function () {
+                    beforeEach(function () {
+                        promise = instance.loadAppraisals(filters, pagination);
+                    });
+
+                    it('stores the appraisals in an internal property', function (done) {
+                        promise.then(function () {
+                            expect(instance.appraisals.allIds).toBeDefined();
+                            expect(instance.appraisals.list).toBeDefined();
+                            expect(instance.appraisals.total).toBeDefined();
+                            expect(instance.appraisals.list.length).toBe(expectedList.length);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    });
                 });
 
-                it('returns appraisals instances', function (done) {
-                    promise.then(function () {
-                        expect(instance.appraisals.every(function (appraisal) {
-                            return AppraisalInstanceMock.isInstance(appraisal);
-                        })).toBe(true);
+                describe('when `store` is false', function () {
+                    beforeEach(function () {
+                        promise = instance.loadAppraisals(filters, pagination, false);
+                    });
+
+                    it('does not store the appraisals list internally', function (done) {
+                        promise.then(function (appraisals) {
+                            expect(instance.appraisals).toEqual({});
+                        })
+                        .finally(done) && $rootScope.$digest();
                     })
-                    .finally(done) && $rootScope.$digest();
+
+                    it('returns the appraisals list', function (done) {
+                        promise.then(function (appraisals) {
+                            expect(appraisals.list.length).toBe(expectedList.length);
+                        })
+                        .finally(done) && $rootScope.$digest();
+                    })
                 });
             });
 
             describe('only overdue appraisals', function () {
                 beforeEach(function () {
-                    spyOn(Appraisal, 'overdue').and.callThrough();
                     promise = instance.loadAppraisals({ overdue: true });
                 });
 
                 it('calls Appraisals.overdue() with the cycle id', function (done) {
                     promise.then(function () {
-                        expect(Appraisal.overdue).toHaveBeenCalledWith({
-                            appraisal_cycle_id: instance.id
-                        });
+                        expect(Appraisal.all).toHaveBeenCalledWith({
+                            appraisal_cycle_id: instance.id,
+                            overdue: true
+                        }, undefined);
                     })
                     .finally(done) && $rootScope.$digest();
                 });

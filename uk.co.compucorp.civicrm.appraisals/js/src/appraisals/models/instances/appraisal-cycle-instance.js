@@ -91,7 +91,7 @@ define([
                  */
                 defaultCustomData: function () {
                     return {
-                        appraisals: [],
+                        appraisals: {},
                         appraisals_count: 0,
                         completion_percentage: 0,
                         statuses: {}
@@ -142,23 +142,27 @@ define([
                 },
 
                 /**
-                 * Stores internally its own appraisals
+                 * Stores internally, or return, the list of its own appraisals
                  *
-                 * @param {object} options
-                 *   The only supported option is the special "overdue" one, which
-                 *   if passed sets the method to return only the overdue appraisals
+                 * @param {object} filters
+                 * @param {object} pagination
+                 * @param {boolean=true} store
+                 *   If `false`, it will return the appraisals list instead of
+                 *   storing it internally
                  * @return {Promise}
                  */
-                loadAppraisals: function (options) {
-                    var method = 'all';
+                loadAppraisals: function (filters, pagination, store) {
+                    store = !(store === false);
 
-                    if (typeof options !== 'undefined' && options.overdue === true) {
-                        method = 'overdue';
-                    }
+                    filters = _.defaults({ appraisal_cycle_id: this.id }, filters);
 
-                    return Appraisal[method]({ appraisal_cycle_id: this.id })
+                    return Appraisal.all(filters, pagination)
                         .then(function (appraisals) {
-                            this.appraisals = appraisals.list;
+                            if (store) {
+                                this.appraisals = appraisals;
+                            } else {
+                                return appraisals;
+                            }
                         }.bind(this));
                 },
 

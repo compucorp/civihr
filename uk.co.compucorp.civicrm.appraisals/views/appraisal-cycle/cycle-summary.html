@@ -91,7 +91,7 @@
                     <div class="clearfix"></div>
                 </header>
                 <crm-loading show="!cycle.loading.appraisals">
-                    <div ng-switch="dashboard.appraisals.list.length === 0">
+                    <div ng-switch="cycle.cycle.appraisals.list.length === 0">
                         <div ng-switch-when="true" class="panel-body text-center">
                             No overdue appraisals
                         </div>
@@ -110,7 +110,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="appraisal in cycle.cycle.appraisals">
+                                    <tr ng-repeat="appraisal in cycle.cycle.appraisals.list">
                                         <td>{{appraisal.contact.display_name}}</td>
                                         <td>{{appraisal.role.title}}</td>
                                         <td>{{appraisal.role.level}}</td>
