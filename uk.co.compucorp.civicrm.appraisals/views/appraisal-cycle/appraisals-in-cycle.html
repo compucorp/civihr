@@ -75,7 +75,7 @@
                                                             class="form-control"
                                                             id="department"
                                                             ng-model="cycle.filters.department_id"
-                                                            ng-options="department.value as department.label for department in cycle.departments">
+                                                            ng-options="department.value as department.label for department in cycleAppraisals.departments">
                                                             <option value="">---</option>
                                                         </select>
                                                         <span class="crm_custom-select__arrow"></span>
@@ -96,7 +96,7 @@
                                                             class="form-control"
                                                             id="level"
                                                             ng-model="cycle.filters.level_id"
-                                                            ng-options="level.value as level.label for level in cycle.levels">
+                                                            ng-options="level.value as level.label for level in cycleAppraisals.levels">
                                                             <option value="">---</option>
                                                         </select>
                                                         <span class="crm_custom-select__arrow"></span>
@@ -115,7 +115,7 @@
                                                             class="form-control"
                                                             id="location"
                                                             ng-model="cycle.filters.location_id"
-                                                            ng-options="location.value as location.label for location in cycle.locations">
+                                                            ng-options="location.value as location.label for location in cycleAppraisals.locations">
                                                             <option value="">---</option>
                                                         </select>
                                                         <span class="crm_custom-select__arrow"></span>
@@ -136,7 +136,7 @@
                                                             class="form-control"
                                                             id="region"
                                                             ng-model="cycle.filters.region_id"
-                                                            ng-options="region.value as region.label for region in cycle.regions">
+                                                            ng-options="region.value as region.label for region in cycleAppraisals.regions">
                                                             <option value="">---</option>
                                                         </select>
                                                         <span class="crm_custom-select__arrow"></span>
