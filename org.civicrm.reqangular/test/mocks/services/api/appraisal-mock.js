@@ -3,14 +3,16 @@ define([
     'common/mocks/module',
     'common/mocks/services/api/contact-mock',
     'common/mocks/services/api/job-role-mock',
+    'common/mocks/services/api/option-group-mock'
 ], function (_, mocks) {
     'use strict';
 
     mocks.factory('api.appraisal.mock', [
-        '$q', 'api.contact.mock', 'api.job-role.mock',
-        function ($q, contactAPI, jobRoleAPI) {
+        '$q', 'api.contact.mock', 'api.job-role.mock', 'api.optionGroup.mock',
+        function ($q, contactAPI, jobRoleAPI, optionGroupAPI) {
             var mockedContacts = contactAPI.mockedContacts().list;
             var mockedJobRoles = jobRoleAPI.mockedJobRoles.list;
+            var mockedOptionValues = optionGroupAPI.mockedOptionValues();
 
             return {
                 all: function (filters, pagination, value) {
@@ -94,16 +96,13 @@ define([
              * @return {object}
              */
             function generateAppraisals() {
-                var appr_count, contact, cycle_count, manager, jobRole;
+                var appr_count, contact, cycle_count, manager;
                 var appraisals = [];
 
                 for (cycle_count = 0; cycle_count <= 10; cycle_count++) {
                     for (appr_count = 0; appr_count <= 10; appr_count++) {
                         contact = _.sample(mockedContacts);
                         manager = _.sample(mockedContacts);
-                        jobRole = _.find(mockedJobRoles, function (jobRole) {
-                            return jobRole['api.HRJobContract.getsingle'].contact_id === contact.id;
-                        });
 
                         appraisals.push({
                             id: '' + appr_count,
@@ -126,11 +125,31 @@ define([
                                 id: manager.id,
                                 display_name: manager.display_name
                             },
-                            role: {
-                                title: jobRole.title,
-                                level: jobRole.level_type,
-                                location: jobRole.location
-                            }
+                            role: (function () {
+                                var jobRole = _.find(mockedJobRoles, function (jobRole) {
+                                    return jobRole['api.HRJobContract.getsingle'].contact_id === contact.id;
+                                });
+                                var level = _.find(mockedOptionValues.hrjc_level_type, function (level) {
+                                    return level.id === jobRole.level_type;
+                                });
+                                var location = _.find(mockedOptionValues.hrjc_location, function (location) {
+                                    return location.id === jobRole.location;
+                                });
+
+                                return {
+                                    title: jobRole.title,
+                                    level: {
+                                        id: level.id,
+                                        label: level.label,
+                                        value: level.value
+                                    },
+                                    location: {
+                                        id: location.id,
+                                        label: location.label,
+                                        value: location.value
+                                    }
+                                };
+                            }())
                         });
                     }
                 }
