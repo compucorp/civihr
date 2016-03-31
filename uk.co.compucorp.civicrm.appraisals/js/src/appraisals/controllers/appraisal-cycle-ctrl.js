@@ -15,7 +15,7 @@ define([
             var cachedAttributes = {};
 
             vm.cycle = {};
-            vm.loading = { cycle: true, appraisals: true };
+            vm.loading = { cycle: true };
             vm.statuses = statuses;
             vm.types = types;
 
@@ -156,11 +156,7 @@ define([
                     vm.cycle = cycle;
                     vm.loading.cycle = false;
 
-                    return vm.cycle.loadAppraisals({ overdue: true });
-                })
-                .then(function () {
                     cacheAttributes();
-                    vm.loading.appraisals = false;
                 });
             }
 

@@ -11,7 +11,10 @@ define([
 
             var vm = {};
 
+            vm.loading = { overdue: true };
             vm.picker = { opened: false };
+
+            vm.overdueAppraisals = [];
             // dummy data
             vm.grades = [
                 { label: "Value #1", value: 10 },
@@ -44,6 +47,24 @@ define([
                     }
                 });
             };
+
+            $scope.$watch('cycle.loading.cycle', function (newValue) {
+                !newValue && init();
+            });
+
+            /**
+             * Initializing code
+             *
+             * Loads the cycle overdue appraisals and stores them in a
+             * ctrl's dedicated property instead of storing them in the cycle instance
+             */
+            function init() {
+                $scope.cycle.cycle.loadAppraisals({ overdue: true }, null, false)
+                    .then(function (overdueAppraisals) {
+                        vm.loading.overdue = false;
+                        vm.overdueAppraisals = overdueAppraisals;
+                    });
+            }
 
             /**
              * Opens a modal

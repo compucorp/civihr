@@ -90,8 +90,8 @@
                     <a href class="pull-right">View in Search</a>
                     <div class="clearfix"></div>
                 </header>
-                <crm-loading show="!cycle.loading.appraisals">
-                    <div ng-switch="cycle.cycle.appraisals.list.length === 0">
+                <crm-loading show="!cycleSummary.loading.overdue">
+                    <div ng-switch="cycleSummary.overdueAppraisals.list.length === 0">
                         <div ng-switch-when="true" class="panel-body text-center">
                             No overdue appraisals
                         </div>
@@ -110,8 +110,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="appraisal in cycle.cycle.appraisals.list">
-                                        <td>{{appraisal.contact.display_name}}</td>
+                                    <tr ng-repeat="appraisal in cycleSummary.overdueAppraisals.list">
+                                        <td>sdsdds{{appraisal.contact.display_name}}</td>
                                         <td>{{appraisal.role.title}}</td>
                                         <td>{{appraisal.role.level}}</td>
                                         <td>{{appraisal.role.location}}</td>

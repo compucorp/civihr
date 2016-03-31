@@ -64,7 +64,6 @@ define([
 
             it('is loading the data', function () {
                 expect(ctrl.loading.cycle).toBe(true);
-                expect(ctrl.loading.appraisals).toBe(true);
             });
 
             it('requests the cycle data', function () {
@@ -78,7 +77,6 @@ define([
 
                 it('marks the data as loaded', function () {
                     expect(ctrl.loading.cycle).toBe(false);
-                    expect(ctrl.loading.appraisals).toBe(false);
                 });
 
                 it('stores the data internally', function () {
