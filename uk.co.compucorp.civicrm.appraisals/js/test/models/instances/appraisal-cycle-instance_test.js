@@ -141,7 +141,7 @@ define([
                 var pagination = { page: 1, size: 20 };
 
                 beforeEach(function () {
-                    expectedList = appraisalAPI.mockedAppraisals().list.filter(function (appraisal) {
+                    expectedList = appraisalAPI.mockedAppraisals.list.filter(function (appraisal) {
                         return appraisal.appraisal_cycle_id === '1' && appraisal.is_current === '1';
                     });
                 });

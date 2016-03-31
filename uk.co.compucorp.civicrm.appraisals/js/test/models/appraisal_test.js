@@ -36,7 +36,7 @@ define([
                 appraisalAPI = _appraisalAPI_;
 
                 appraisalAPI.spyOnMethods();
-                appraisals = _appraisalAPI_.mockedAppraisals();
+                appraisals = _appraisalAPI_.mockedAppraisals;
             }
         ]));
 
