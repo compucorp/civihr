@@ -1,5 +1,7 @@
 define([], function () {
     return ['$delegate', 'HR_settings', '$position', '$window', function ($delegate, HR_settings, $position, $window) {
+        'use strict';
+
         var original_link = $delegate[0].link;
 
         $delegate[0].compile = function () {
@@ -18,13 +20,12 @@ define([], function () {
 
                 /**
                  * Calculates position of the datepicker popup.
-                 * @param value
+                 * @param {bool} isDatepickerOpen
                  */
-                var adjustPopupPosition = function (value) {
-                    if (value) {
+                var adjustPopupPosition = function (isDatepickerOpen) {
+                    if (isDatepickerOpen) {
                         var popupPosition;
                         var popupWidth = element.parent().find('.datepicker-popup').outerWidth();
-
 
                         scope.popupPosition = $position.position(element);
                         scope.popupPosition.top += scope.popupPosition.height;
@@ -37,7 +38,6 @@ define([], function () {
                         }
                     }
                 };
-
 
                 scope.$watch('isOpen', adjustPopupPosition);
 
