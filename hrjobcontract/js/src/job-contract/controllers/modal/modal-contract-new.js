@@ -92,95 +92,111 @@ define([
                 $scope.$broadcast('hrjc-loader-show');
                 var contract = new Contract();
 
-                contract.$save({
-                    action: 'create',
-                    json: {
-                        sequential: 1,
-                        contact_id: settings.contactId,
-                        is_primary: utils.contractListLen ? $scope.entity.contract.is_primary : 1
-                    }
-                },function(data){
-                    var contract = data.values[0],
-                        contractId = contract.id,
-                        entityDetails = $scope.entity.details,
-                        entityHour = $scope.entity.hour,
-                        entityPay = $scope.entity.pay,
-                        entityLeave = $scope.entity.leave,
-                        entityHealth = $scope.entity.health,
-                        entityPension = $scope.entity.pension,
-                        modalInstance,
-                        promiseContractNew,
-                        promiseUpload = [],
-                        uploader = $scope.uploader,
-                        revisionId;
+                ContractDetailsService.validateDates({
+                    contact_id: settings.contactId,
+                    period_start_date: $scope.entity.details.period_start_date,
+                    period_end_date: $scope.entity.details.period_end_date
+                }).then(function(result){
+                    console.info('then:');
+                    console.info(result);
+                    if (result.success) {
+                        contract.$save({
+                            action: 'create',
+                            json: {
+                                sequential: 1,
+                                contact_id: settings.contactId,
+                                is_primary: utils.contractListLen ? $scope.entity.contract.is_primary : 1
+                            }
+                        },function(data){
+                            var contract = data.values[0],
+                                contractId = contract.id,
+                                entityDetails = $scope.entity.details,
+                                entityHour = $scope.entity.hour,
+                                entityPay = $scope.entity.pay,
+                                entityLeave = $scope.entity.leave,
+                                entityHealth = $scope.entity.health,
+                                entityPension = $scope.entity.pension,
+                                modalInstance,
+                                promiseContractNew,
+                                promiseUpload = [],
+                                uploader = $scope.uploader,
+                                revisionId;
 
-                    contract.is_current = !entityDetails.period_end_date || new Date(entityDetails.period_end_date) > new Date();
+                            contract.is_current = !entityDetails.period_end_date || new Date(entityDetails.period_end_date) > new Date();
 
-                    UtilsService.prepareEntityIds(entityDetails, contractId);
+                            UtilsService.prepareEntityIds(entityDetails, contractId);
 
-                    ContractDetailsService.save(entityDetails).then(function(results){
-                        revisionId = results.jobcontract_revision_id;
-                    },function(reason){
-                        CRM.alert(reason, 'Error', 'error');
-                        ContractService.delete(contractId);
-                        $modalInstance.dismiss();
-                        return $q.reject();
-                    }).then(function(){
+                            ContractDetailsService.save(entityDetails).then(function(results){
+                                revisionId = results.jobcontract_revision_id;
+                            },function(reason){
+                                CRM.alert(reason, 'Error', 'error');
+                                ContractService.delete(contractId);
+                                $modalInstance.dismiss();
+                                return $q.reject();
+                            }).then(function(){
 
-                        angular.forEach($scope.entity, function(entity){
-                            UtilsService.prepareEntityIds(entity, contractId, revisionId);
-                        });
+                                angular.forEach($scope.entity, function(entity){
+                                    UtilsService.prepareEntityIds(entity, contractId, revisionId);
+                                });
 
-                        promiseContractNew = [
-                            ContractHourService.save(entityHour),
-                            ContractPayService.save(entityPay),
-                            ContractLeaveService.save(entityLeave),
-                            ContractHealthService.save(entityHealth),
-                            ContractPensionService.save(entityPension)
-                        ];
+                                promiseContractNew = [
+                                    ContractHourService.save(entityHour),
+                                    ContractPayService.save(entityPay),
+                                    ContractLeaveService.save(entityLeave),
+                                    ContractHealthService.save(entityHealth),
+                                    ContractPensionService.save(entityPension)
+                                ];
 
-                        if ($scope.uploader.details.contract_file.queue.length) {
-                            promiseUpload.push(ContractFilesService.upload(uploader.details.contract_file, revisionId));
-                        }
-
-                        if ($scope.uploader.pension.evidence_file.queue.length) {
-                            promiseUpload.push(ContractFilesService.upload(uploader.pension.evidence_file, revisionId));
-                        }
-
-                        if (promiseUpload.length) {
-                            modalInstance  = $modal.open({
-                                targetDomEl: $rootElement.find('div').eq(0),
-                                templateUrl: settings.pathApp+'views/modalProgress.html',
-                                size: 'sm',
-                                controller: 'ModalProgressCtrl',
-                                resolve: {
-                                    uploader: function(){
-                                        return uploader;
-                                    },
-                                    promiseFilesUpload: function(){
-                                        return promiseUpload;
-                                    }
+                                if ($scope.uploader.details.contract_file.queue.length) {
+                                    promiseUpload.push(ContractFilesService.upload(uploader.details.contract_file, revisionId));
                                 }
+
+                                if ($scope.uploader.pension.evidence_file.queue.length) {
+                                    promiseUpload.push(ContractFilesService.upload(uploader.pension.evidence_file, revisionId));
+                                }
+
+                                if (promiseUpload.length) {
+                                    modalInstance  = $modal.open({
+                                        targetDomEl: $rootElement.find('div').eq(0),
+                                        templateUrl: settings.pathApp+'views/modalProgress.html',
+                                        size: 'sm',
+                                        controller: 'ModalProgressCtrl',
+                                        resolve: {
+                                            uploader: function(){
+                                                return uploader;
+                                            },
+                                            promiseFilesUpload: function(){
+                                                return promiseUpload;
+                                            }
+                                        }
+                                    });
+
+                                    promiseContractNew.push(modalInstance.result);
+                                }
+
+                                return $q.all(promiseContractNew);
+                            },function(reason){
+                                CRM.alert(reason, 'Error', 'error');
+                                $modalInstance.dismiss();
+                                return $q.reject();
+                            }).then(function(){
+                                $scope.$broadcast('hrjc-loader-hide');
+                                $modalInstance.close(contract);
                             });
 
-                            promiseContractNew.push(modalInstance.result);
-                        }
-
-                        return $q.all(promiseContractNew);
-                    },function(reason){
-                        CRM.alert(reason, 'Error', 'error');
-                        $modalInstance.dismiss();
-                        return $q.reject();
-                    }).then(function(){
+                        },function(reason){
+                            $scope.$broadcast('hrjc-loader-hide');
+                            $modalInstance.dismiss();
+                            CRM.alert((reason.statusText || 'Unknown error'), 'Error', 'error');
+                            return $q.reject();
+                        });
+                    } else {
+                        CRM.alert('Unable to create Job Contract with specified period dates', 'Error', 'error');
                         $scope.$broadcast('hrjc-loader-hide');
-                        $modalInstance.close(contract);
-                    });
-
+                    }
                 },function(reason){
-                    $scope.$broadcast('hrjc-loader-hide');
-                    $modalInstance.dismiss();
-                    CRM.alert((reason.statusText || 'Unknown error'), 'Error', 'error');
-                    return $q.reject();
+                    console.info('reason:');
+                    console.info(reason);
                 });
             };
 

@@ -81,6 +81,33 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
   }
 
   /**
+   * Check if given Contract start and end dates are available for given Contact.
+   * 
+   * @param array $params key-value pairs
+   * @return bool
+   */
+  public static function validateDates(array $params) {
+    return true;  // temporary, for testing only. see the bottom of the method.
+    if (empty($params['contact_id'])) {
+      throw new CiviCRM_API3_Exception("Please specify 'contact_id' value.");
+    }
+    if (empty($params['period_start_date'])) {
+      throw new CiviCRM_API3_Exception("Please specify 'period_start_date' value.");
+    }
+    if (empty($params['period_end_date'])) {
+      throw new CiviCRM_API3_Exception("Please specify 'period_end_date' value.");
+    }
+    $jobContractId = !empty($params['jobcontract_id']) ? $params['jobcontract_id'] : null;
+
+    /** TODO: resolve revision issue when we know how it should work (confirm with Jamie):
+    SELECT COUNT(jc.id) FROM civicrm_hrjobcontract jc 
+    LEFT JOIN civicrm_hrjobcontract_revision jcr ON jcr.jobcontract_id = jc.id 
+    LEFT JOIN civicrm_hrjobcontract_details jcd ON jcd.jobcontract_revision_id = jcr.details_revision_id 
+    WHERE jc.contact_id = 49
+     */
+  }
+
+  /**
    * combine all the importable fields from the lower levels object
    *
    * The ordering is important, since currently we do not have a weight

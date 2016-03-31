@@ -15,6 +15,41 @@ define([
         });
 
         return {
+            validateDates: function(params) {
+console.info('validateDates()');
+console.info('params:');
+console.info(params);
+                if ((!params || typeof params !== 'object') ||
+                    (!params.contact_id) ||
+                    (!params.period_start_date)) {
+                console.info('returning');
+                    return null;
+                }
+
+                params.sequential = 0;
+                params.debug = settings.debug;
+
+                var deffered = $q.defer(),
+                    val;
+
+                ContractDetails.save({
+                    action: 'validatedates',
+                    json: params
+                },
+                null,
+                function(data){
+console.info('validateDates data:');
+console.info(data);
+                    if (UtilsService.errorHandler(data,'Unable to fetch API "validatedates" response',deffered)) {
+                        return;
+                    }
+
+                    val = data.values;
+                    deffered.resolve(val);
+                });
+console.info('returning promise');
+                return deffered.promise;
+            },
             getOne: function(params) {
 
                 if ((!params || typeof params !== 'object') ||
