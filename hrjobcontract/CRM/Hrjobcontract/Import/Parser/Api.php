@@ -13,6 +13,12 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   protected $_revisionIdIncremental = 1;
 
   /**
+   * Params for the current import mode used ( Import Contracts Or Contracts Revision )
+   * @var integer
+   */
+  protected $_importMode = NULL;
+
+  /**
    * Params for the current entity being prepared for the api
    * @var array
    */
@@ -132,7 +138,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
    * @access public
    */
   function import($onDuplicate, &$values) {
-
     $entityNames = array(
         'details',
         'hour',
@@ -142,6 +147,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         'pension',
         'role',
     );
+
+    $this->_importMode = $values['importMode'];
+    unset($values['importMode']);
 
     $this->summary($values);
 
@@ -161,9 +169,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     try {
       $importedJobContractId = $this->determineContractId($params);
-      $contactId = $this->determineContactId($params, $formatValues);
       list($revisionParams, $revisionId) = $this->getRevisionData($entityNames);
-      $localJobContractId = $this->createJobContract($importedJobContractId, $contactId, $entityNames);
+      if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS)  {
+        $localJobContractId = $params['HRJobContractRevision-jobcontract_id'];
+      }
+      else  {
+        $contactId = $this->determineContactId($params, $formatValues);
+        $localJobContractId = $this->createJobContract($importedJobContractId, $contactId, $entityNames);
+      }
       $contractRevison = $this->createContractRevison($revisionId, $revisionParams, $entityNames, $localJobContractId);
       $this->importRelatedEntities($params, $revisionParams, $localJobContractId, $revisionId, $contractRevison);
     } catch(\RuntimeException $e) {
@@ -418,7 +431,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         unset($newRevisionParams[$value . '_revision_id']);
       }
       $newRevisionParams['jobcontract_id'] = $localJobContractId;
-      $newRevisionParams = $this->validateFields('HRJobContractRevision', $newRevisionParams);
+      // TODO : Make validateFields work for any import mode
+      if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS)  {
+        $newRevisionParams = $this->validateFields('HRJobContractRevision', $newRevisionParams);
+      }
+      else {
+        $newRevisionParams = $this->formatDateParams(array(), $newRevisionParams);
+        $newRevisionParams['effective_date'] = $newRevisionParams['HRJobContractRevision-effective_date'];
+      }
       $newRevisionInstance = CRM_Hrjobcontract_BAO_HRJobContractRevision::create($newRevisionParams);
 
       if (!empty($this->_previousRevision['imported']['id'])) {
@@ -480,7 +500,10 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       }
 
       $params = $this->formatDateParams($entity, $params);
-      $params = $this->validateFields($entity, $params);
+      // TODO : Make validateFields work for any import mode
+      if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS)  {
+        $params = $this->validateFields($entity, $params);
+      }
 
       $entityInstance = null;
       if ($revisionParams[$tableName . '_revision_id'] === $revisionId) {

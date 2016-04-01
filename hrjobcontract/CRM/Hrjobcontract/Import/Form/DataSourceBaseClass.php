@@ -98,6 +98,19 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
     $this->addRule('uploadFile', ts('Input file must be in CSV format'), 'utf8File');
 
     $this->addElement('checkbox', 'skipColumnHeader', ts('First row contains column headers'));
+
+    $importModeOptions = array();
+    $importModeOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Import Contracts'), CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS
+    );
+    $importModeOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Import Contracts Revision'), CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS
+    );
+
+    $this->addGroup($importModeOptions, 'importMode',
+      ts('Import Mode')
+    );
+
     if($this->isDuplicateOptions) {
       $duplicateOptions = array();
       $duplicateOptions[] = $this->createElement('radio',
@@ -126,6 +139,11 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
       $this->assign('loadedMapping', $loadeMapping);
       $this->setDefaults(array('savedMapping' => $loadeMapping));
     }
+
+    $this->setDefaults(array(
+      'importMode' =>
+        CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS,
+    ));
 
     $this->setDefaults(array(
       'onDuplicate' =>
@@ -167,12 +185,14 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
 
     $fileName         = $this->controller->exportValue($this->_name, 'uploadFile');
     $skipColumnHeader = $this->controller->exportValue($this->_name, 'skipColumnHeader');
+    $importMode       = $this->controller->exportValue($this->_name, 'importMode');
     $onDuplicate      = $this->controller->exportValue($this->_name, 'onDuplicate');
     $contactType      = $this->controller->exportValue($this->_name, 'contactType');
     $dateFormats      = $this->controller->exportValue($this->_name, 'dateFormats');
     $savedMapping     = $this->controller->exportValue($this->_name, 'savedMapping');
 
     $this->set('onDuplicate', $onDuplicate);
+    $this->set('importMode', $importMode);
     $this->set('contactType', $contactType);
     $this->set('dateFormats', $dateFormats);
     $this->set('savedMapping', $savedMapping);
