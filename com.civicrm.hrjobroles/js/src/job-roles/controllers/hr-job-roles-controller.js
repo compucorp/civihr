@@ -25,6 +25,16 @@ define([
             };
 
             /**
+             * Checks if date should be considered empty.
+             * Empty date is saved to database as 0000-00-00 00:00:00
+             * @param {String} date
+             * @returns {boolean}
+             */
+            var isDateEmpty = function(date){
+                return date === '0000-00-00 00:00:00';
+            };
+
+            /**
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
@@ -55,8 +65,8 @@ define([
              * @returns {boolean}
              */
             $scope.checkIfDatesAreCustom = function (start, end) {
-                if (start === '0000-00-00 00:00:00') start = null;
-                if (end === '0000-00-00 00:00:00') end = null;
+                if (isDateEmpty(start)) start = null;
+                if (isDateEmpty(end)) end = null;
 
                 var custom = true;
 
@@ -68,10 +78,6 @@ define([
                         && $filter('formatDate')(end) === $filter('formatDate')(value.end_date))
                         custom = false;
                 });
-
-                if (custom) {
-                    console.info('Leaving old JobRole Dates.');
-                }
 
                 return custom;
             };
@@ -332,7 +338,7 @@ define([
                     }
                 }
 
-                if(form_id === 'end_date' && !$scope.edit_data[role_id].end_date){
+                if (form_id === 'end_date' && !$scope.edit_data[role_id].end_date) {
                     $scope.edit_data[role_id].end_date = null;
                 }
 
@@ -863,7 +869,9 @@ define([
                     job_roles.past_job_roles = [];
 
                     data.values.forEach(function (object_data) {
-                        if (!object_data.end_date || moment(object_data.end_date).isAfter(moment())) {
+                        var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
+
+                        if (!end_date || moment(end_date).isAfter(moment())) {
                             job_roles.present_job_roles.push(object_data);
                         } else {
                             job_roles.past_job_roles.push(object_data);
