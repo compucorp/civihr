@@ -65,8 +65,8 @@ define([
              * @returns {boolean}
              */
             $scope.checkIfDatesAreCustom = function (start, end) {
-                if (start === isDateEmpty(start)) start = null;
-                if (end === isDateEmpty(end)) end = null;
+                if (isDateEmpty(start)) start = null;
+                if (isDateEmpty(end)) end = null;
 
                 var custom = true;
 
