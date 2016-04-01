@@ -228,7 +228,7 @@ define([
                         "region": job_roles_data.region,
                         "department": job_roles_data.department,
                         "start_date": job_roles_data.newStartDate,
-                        "end_date": job_roles_data.newEndDate || 0
+                        "end_date": job_roles_data.newEndDate || null
                     });
                 }).then(function (response) {
                     // Passing data to deferred's resolve function on successful completion
