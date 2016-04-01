@@ -25,6 +25,16 @@ define([
             };
 
             /**
+             * Checks if date should be considered empty.
+             * Empty date is saved to database as 0000-00-00 00:00:00
+             * @param {String} date
+             * @returns {boolean}
+             */
+            var isDateEmpty = function(date){
+                return date === '0000-00-00 00:00:00';
+            };
+
+            /**
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
@@ -55,8 +65,8 @@ define([
              * @returns {boolean}
              */
             $scope.checkIfDatesAreCustom = function (start, end) {
-                if (start === '0000-00-00 00:00:00') start = null;
-                if (end === '0000-00-00 00:00:00') end = null;
+                if (start === isDateEmpty(start)) start = null;
+                if (end === isDateEmpty(end)) end = null;
 
                 var custom = true;
 
@@ -859,8 +869,7 @@ define([
                     job_roles.past_job_roles = [];
 
                     data.values.forEach(function (object_data) {
-                        // Empty date is saved to database as 0000-00-00 00:00:00
-                        var end_date = object_data.end_date == '0000-00-00 00:00:00' ? null : object_data.end_date;
+                        var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
 
                         if (!end_date || moment(end_date).isAfter(moment())) {
                             job_roles.present_job_roles.push(object_data);
