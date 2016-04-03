@@ -62,6 +62,18 @@ define([
                 expect(ctrl.loading.appraisals).toBe(true);
             });
 
+            it('does not have any filter set', function () {
+                expect(ctrl.filters).toEqual({});
+            });
+
+            it('has the current page set to the first page', function () {
+                expect(ctrl.pagination.page).toBe(1);
+            });
+
+            it('has the page size set to 5', function () {
+                expect(ctrl.pagination.size).toBe(5);
+            });
+
             it('has the filters form collapsed', function () {
                 expect(ctrl.filtersCollapsed).toBe(true);
             });
@@ -72,7 +84,10 @@ define([
                 });
 
                 it('triggers the call to the method that loads them', function () {
-                    expect($scope.cycle.cycle.loadAppraisals).toHaveBeenCalled();
+                    expect($scope.cycle.cycle.loadAppraisals).toHaveBeenCalledWith(
+                        ctrl.filters,
+                        { page: 1, size: 5 }
+                    );
                 });
             });
 
@@ -83,6 +98,45 @@ define([
 
                 it('marks the appraisals as loaded', function () {
                     expect(ctrl.loading.appraisals).toBe(false);
+                });
+            });
+        });
+
+        describe('afterInit()', function () {
+            var newPage = 4;
+
+            beforeEach(function () {
+                $scope.$digest();
+            });
+
+            describe('setPage()', function () {
+                beforeEach(function () {
+                    ctrl.setPage(newPage);
+                });
+
+                it('marks the appraisals as loading', function () {
+                    expect(ctrl.loading.appraisals).toBe(true);
+                });
+
+                it('changes the current page of the appraisals list', function () {
+                    expect(ctrl.pagination.page).toBe(newPage);
+                });
+
+                it('fetches the appraisals for that page', function () {
+                    expect($scope.cycle.cycle.loadAppraisals).toHaveBeenCalledWith(
+                        ctrl.filters,
+                        { page: newPage, size: 5 }
+                    );
+                });
+
+                describe('after appraisals have been loaded', function () {
+                    beforeEach(function () {
+                        $scope.$digest();
+                    });
+
+                    it('marks the appraisals as loaded', function () {
+                        expect(ctrl.loading.appraisals).toBe(false);
+                    });
                 });
             });
         });
