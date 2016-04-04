@@ -16,6 +16,8 @@ define([], function () {
                     newEl.attr(attrs.item(i).nodeName, attrs.item(i).value);
                 }
 
+                newEl.addClass(tag);
+
                 return newEl;
             };
 
@@ -40,7 +42,6 @@ define([], function () {
                     this.parent.setLocalValue.call(this);
                     this.scope.select.$data = this.scope.$data;
                 }
-
             });
 
             linkOrg = dir.link;
