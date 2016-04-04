@@ -1,6 +1,8 @@
 define([
     'appraisals/modules/controllers'
 ], function (controllers) {
+    'use strict';
+
     controllers.controller('AppraisalsCtrl',
         ['$log', '$rootElement', '$modal', 'AppraisalCycle',
         function ($log, $rootElement, $modal, AppraisalCycle) {
@@ -9,7 +11,7 @@ define([
             return {
                 openAppraisalCycleModal: function () {
                     $modal.open({
-                        targetDomEl: $rootElement,
+                        targetDomEl: $rootElement.children().eq(0),
                         controller: 'AppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,

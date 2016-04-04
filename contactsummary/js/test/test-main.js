@@ -1,5 +1,7 @@
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
+var mocksPath = CRM.vars.contactsummary.baseURL + '/js/test/mocks';
+var srcPath = CRM.vars.contactsummary.baseURL + '/js/src/contact-summary';
 
 Object.keys(window.__karma__.files).forEach(function(file) {
     if (TEST_REGEXP.test(file)) {
@@ -11,7 +13,11 @@ require.config({
     deps: allTestFiles,
     waitSeconds: 60,
     paths: {
-        'contact-summary': '/base/tools/extensions/civihr/contactsummary/js/src/contact-summary'
+        'contact-summary': srcPath,
+        'mocks': mocksPath
     },
-    callback: window.__karma__.start
+    callback: function () {
+        window.__karma__.start();
+    }
 });
+

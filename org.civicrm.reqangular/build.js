@@ -13,7 +13,7 @@
         'common/angularMocks': 'common/vendor/angular/angular-mocks',
         'common/angularResource': 'common/vendor/angular/angular-resource.min',
         'common/angularRoute': 'common/vendor/angular/angular-route.min',
-        'common/angular-date': 'common/angular-date/dist/angular-date',
+        'common/angularUiRouter': 'common/vendor/angular/angular-ui-router.min',
         'common/require': 'common/vendor/require.min',
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
@@ -24,9 +24,6 @@
             exports: 'angular'
         },
         'common/angularAnimate': {
-            deps: ['common/angular']
-        },
-        'common/angular-date': {
             deps: ['common/angular']
         },
         'common/angularBootstrap': {
@@ -41,9 +38,17 @@
         'common/angularRoute': {
             deps: ['common/angular']
         },
+        'common/angularUiRouter': {
+            deps: ['common/angular']
+        },
     },
     include: [
         'common/bundles/vendors',
-        'common/bundles/apis'
+        'common/bundles/apis',
+        'common/bundles/services',
+        'common/bundles/directives',
+        'common/modules/templates',
+        'common/bundles/angular-date',
+        'common/bundles/routers'
     ]
 })

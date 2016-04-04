@@ -67,6 +67,7 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     $this->setFields();
     $fields = $this->_fields;
     $this->_fields = array();
+
     foreach ($fields as $name => $field) {
       $field['type'] = CRM_Utils_Array::value('type', $field, CRM_Utils_Type::T_INT);
       $field['dataPattern'] = CRM_Utils_Array::value('dataPattern', $field, '//');

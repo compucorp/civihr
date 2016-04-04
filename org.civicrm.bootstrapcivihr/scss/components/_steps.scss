@@ -70,7 +70,7 @@
 .chr_steps__step__legend__content {
     background: white;
     border: 1px solid $gray-dark;
-    font-size: 10px;
+    font-size: 12px;
     padding: 10px 4px;
     width: 100%;
 }
@@ -101,6 +101,27 @@
             border-width: ($steps-compact-height / 2) 0 ($steps-compact-height / 2) $steps-gutter;
             margin-top: -($steps-compact-height / 2);
         }
+    }
+}
+
+// A version that uses flexbox to strech proportionally in the available space
+.chr_steps--flex {
+    display: flex;
+
+    .chr_steps__step {
+        display: block;
+        flex-grow: 1;
+        float: none;
+    }
+
+    .chr_steps__step__arrow {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+    }
+
+    .chr_steps__step__legend {
+        display: block;
     }
 }
 

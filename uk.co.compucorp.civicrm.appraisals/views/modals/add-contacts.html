@@ -1,0 +1,66 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="modal.cancel()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h2 class="modal-title">Add Contacts To Cycle</h2>
+</div>
+<div class="modal-body">
+    <div class="alert alert-danger" ng-if="modal.formSubmitted && modal.form.$invalid">
+    </div>
+    <form
+        novalidate
+        name="modal.form"
+        class="form-horizontal"
+        ng-class="{ 'form-submitted': modal.formSubmitted }">
+        <div class="form-group">
+            <label for="group-contacts" class="control-label col-sm-5">
+                Add a Group of Contacts:
+            </label>
+            <div class="col-sm-5">
+                <div class="crm_custom-select crm_custom-select--full">
+                    <select id="group-contacts" class="form-control">
+                        <option value="">---</option>
+                    </select>
+                    <span class="crm_custom-select__arrow"></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-sm btn-secondary-outline text-uppercase">add</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="region-department-etc" class="control-label col-sm-5">
+                Add by Region, Department, Lever or Location:
+            </label>
+            <div class="col-sm-5">
+                <div class="crm_custom-select crm_custom-select--full">
+                    <select id="region-department-etc" class="form-control">
+                        <option value="">---</option>
+                    </select>
+                    <span class="crm_custom-select__arrow"></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-sm btn-secondary-outline text-uppercase">add</a>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label for="individual-contacts" class="control-label col-sm-5">
+                Add Individual Contacts:
+            </label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="individual-contacts">
+                <span class="fa fa-search form-control-feedback"></span>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-sm btn-secondary-outline text-uppercase">add</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modal.cancel()">cancel</button>
+    <button type="button" class="btn btn-primary text-uppercase" ng-click="modal.submit()">
+        add contacts
+    </button>
+</div>

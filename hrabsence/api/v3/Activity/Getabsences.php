@@ -27,6 +27,11 @@ function _civicrm_api3_activity_getabsences_spec(&$spec) {
     'title' => 'Activity Type',
     'type' => 1,
   );
+  $spec['status_id'] = array(
+    'name' => 'status_id',
+    'title' => 'Status Id',
+    'type' => 1,
+  );
 }
 
 /**
@@ -63,6 +68,15 @@ function civicrm_api3_activity_getabsences($params) {
     array(
       '#typeId' => array_search('Absence', $activityTypes)
     ));
+
+  if(isset($params['status_id'])){
+    // Handle only single value != case for now
+    $statusId = (array) $params['status_id'];
+    $operator = key($statusId);
+    if($operator == '!=') {
+      $select->where('request.status_id != #statusId', array('#statusId' => $statusId));
+    }
+  }
 
   if (!empty($params['period_id'])) {
     $periodIds = (array) $params['period_id'];

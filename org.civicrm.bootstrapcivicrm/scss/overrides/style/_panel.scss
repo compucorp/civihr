@@ -3,6 +3,12 @@
 
     border: none;
     margin-bottom: $grid-gutter-width;
+
+    > .table,
+    > .table-responsive > .table,
+    > .panel-collapse > .table {
+        border-top: 1px solid $gray-lighter;
+    }
 }
 
 .panel-body {
@@ -24,6 +30,10 @@
             }
         }
     }
+}
+
+.panel-body-small {
+    padding: $panel-heading-padding;
 }
 
 .panel-footer {
@@ -99,5 +109,13 @@
 
     > .panel-heading {
         margin-bottom: 15px;
+    }
+}
+
+// Panel heading with buttons, aligned vertically
+.panel-heading-w-buttons {
+
+    .btn {
+        margin: -8px 0 -8px 10px;
     }
 }
