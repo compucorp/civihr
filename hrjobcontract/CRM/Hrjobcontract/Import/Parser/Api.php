@@ -172,12 +172,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       return CRM_Import_Parser::ERROR;
     }
 
-    foreach ($entityNames as $value) {
-        $field = $value . '_revision_id';
-        $contractRevison->$field = $this->_previousRevision['local'][$value];
-    }
-    $contractRevison->save();
-
     $this->_previousRevision['imported']['id'] = $revisionId;
   }
 
