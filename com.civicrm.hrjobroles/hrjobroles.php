@@ -179,3 +179,12 @@ function hrjobroles_civicrm_entityTypes(&$entityTypes) {
     );
 
 }
+
+/**
+ * Implementation of hook_civicrm_queryObjects
+ */
+function hrjobroles_civicrm_queryObjects(&$queryObjects, $type) {
+    if ($type == 'Contact') {
+        $queryObjects[] = new CRM_Hrjobroles_BAO_Query();
+    }
+}
