@@ -319,6 +319,24 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
+   * Check Job Contract if exist   .
+   *
+   * @param Integer $contractID
+   * @return array|0 ( return 0 if not exist or an array contain some contract details if exist )
+   */
+  public static function checkContract($contractID) {
+    if ( !CRM_Utils_Rule::positiveInteger($contractID))  {
+      return 0;
+    }
+    $queryParam = array(1 => array($contractID, 'Integer'));
+    $query = "SELECT chrjcd.period_start_date, chrjcd.period_end_date from civicrm_hrjobcontract_revision chrjcr
+              left join civicrm_hrjobcontract_details chrjcd on chrjcr.id=chrjcd.jobcontract_revision_id
+              where  chrjcr.jobcontract_id = %1 order by chrjcr.id desc limit 1";
+    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
+    return $result->fetch() ? $result : 0;
+  }
+
+  /**
    * combine all the importable fields from the lower levels object
    *
    * The ordering is important, since currently we do not have a weight

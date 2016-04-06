@@ -56,25 +56,6 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
     return $result->fetch() ? $result->id : 0;
   }
 
-
-  /**
-   * Check Job Contract if exist   .
-   *
-   * @param Integer $contractID
-   * @return array|0 ( return 0 if not exist or an array contain some contract details if exist )
-   */
-  public static function checkContract($contractID) {
-    if ( !CRM_Utils_Rule::positiveInteger($contractID))  {
-      return 0;
-    }
-    $queryParam = array(1 => array($contractID, 'Integer'));
-    $query = "SELECT chrjcd.period_start_date, chrjcd.period_end_date from civicrm_hrjobcontract_revision chrjcr
-              left join civicrm_hrjobcontract_details chrjcd on chrjcr.id=chrjcd.jobcontract_revision_id
-              where  chrjcr.jobcontract_id = %1 order by chrjcr.id desc limit 1";
-    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
-    return $result->fetch() ? $result : 0;
-  }
-
   public static function importableFields() {
     $fields = array('' => array('title' => ts('- do not import -')));
     return array_merge($fields, static::import());

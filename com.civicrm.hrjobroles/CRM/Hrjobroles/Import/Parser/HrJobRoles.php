@@ -148,7 +148,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
 
-    $contractDetails = CRM_Hrjobroles_BAO_HrJobRoles::checkContract($params['job_contract_id']);
+    $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
     if ($contractDetails == 0)  {
       CRM_Contact_Import_Parser_Contact::addToErrorMsg('job contract ID is not found', $errorMessage);
     }
