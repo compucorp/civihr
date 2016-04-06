@@ -97,8 +97,6 @@ define([
                     period_start_date: $scope.entity.details.period_start_date,
                     period_end_date: $scope.entity.details.period_end_date
                 }).then(function(result){
-                    console.info('then:');
-                    console.info(result);
                     if (result.success) {
                         contract.$save({
                             action: 'create',
@@ -191,12 +189,10 @@ define([
                             return $q.reject();
                         });
                     } else {
-                        CRM.alert('Unable to create Job Contract with specified period dates', 'Error', 'error');
+                        CRM.alert(result.message, 'Error', 'error');
                         $scope.$broadcast('hrjc-loader-hide');
                     }
                 },function(reason){
-                    console.info('reason:');
-                    console.info(reason);
                 });
             };
 
