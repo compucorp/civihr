@@ -55,8 +55,10 @@ function civicrm_api3_h_r_job_details_get($params) {
  * @throws API_Exception
  */
 function civicrm_api3_h_r_job_details_validatedates($params) {
+  $validateDates = CRM_Hrjobcontract_BAO_HRJobDetails::validateDates($params);
   $result = array(
-    'success' => CRM_Hrjobcontract_BAO_HRJobDetails::validateDates($params),
+    'success' => $validateDates['result'],
+    'message' => !empty($validateDates['message']) ? $validateDates['message'] : null,
   );
   return civicrm_api3_create_success($result, $params);
 }
