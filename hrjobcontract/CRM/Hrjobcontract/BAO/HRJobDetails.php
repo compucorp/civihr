@@ -120,7 +120,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
    * @param int $jobContractId
    * @return array
    */
-  public static function getConflictingContracts($contactId, $periodStartDate, $periodEndDate, $jobContractId = null) {
+  private static function getConflictingContracts($contactId, $periodStartDate, $periodEndDate, $jobContractId = null) {
     $conflictingContracts = array();
     $conflictingContractsQuery = "
       SELECT jc.id, jcd.title, jcd.period_start_date, jcd.period_end_date, jcd.jobcontract_revision_id, jcr.effective_date
@@ -128,6 +128,8 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
       LEFT JOIN civicrm_hrjobcontract_revision jcr ON jcr.jobcontract_id = jc.id 
       LEFT JOIN civicrm_hrjobcontract_details jcd ON jcd.jobcontract_revision_id = jcr.details_revision_id 
       WHERE jc.contact_id = %1
+      AND jc.deleted = 0
+      AND jcr.deleted = 0
       AND jcr.overrided = 0
     ";
     if ($periodEndDate === NULL) {
@@ -199,7 +201,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
    * @param array $conflictingContracts
    * @return string
    */
-  public static function getConflictMessage(array $conflictingContracts) {
+  private static function getConflictMessage(array $conflictingContracts) {
     $message = "Unable to save. Staff can only have one current contract and the start or end date of this contract overlaps another contract:";
     $conflictLines = array();
     foreach ($conflictingContracts as $conflict) {
