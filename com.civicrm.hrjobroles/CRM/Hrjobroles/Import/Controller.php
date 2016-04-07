@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -28,32 +28,31 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @copyright CiviCRM LLC (c) 2004-2014
  * $Id$
  *
  */
+class CRM_Hrjobroles_Import_Controller extends CRM_Core_Controller {
 
-/**
- * This class gets the name of the file to upload
- */
-class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Hrjobcontract_Import_Form_DataSourceBaseClass {
-  public $_parser = 'CRM_Hrjobcontract_Import_Parser_Api';
-  protected $_enableContactOptions = FALSE;
-  protected $_userContext = 'civicrm/job/import';
-  protected $_mappingType = 'Import Job';
-  protected $_entity = array('HRJobContract', 'HRJobContractRevision', 'HRJobDetails', 'HRJobPay', 'HRJobHealth', 'HRJobPension', 'HRJobHour', 'HRJobLeave');
   /**
-  * Include duplicate options
-  */
-  protected $isDuplicateOptions = FALSE;
-
-    /**
-   * Function to actually build the form - this appears to be entirely code that should be in a shared baseclass in core
-   *
-   * @return None
-   * @access public
+   * class constructor
    */
-  public function buildQuickForm() {
-    parent::buildQuickForm();
+  function __construct($title = NULL, $action = CRM_Core_Action::NONE, $modal = TRUE) {
+    parent::__construct($title, $modal);
+
+    // lets get around the time limit issue if possible, CRM-2113
+    if (!ini_get('safe_mode')) {
+      set_time_limit(0);
+    }
+
+    $this->_stateMachine = new CRM_Import_StateMachine($this, $action);
+
+    // create and instantiate the pages
+    $this->addPages($this->_stateMachine, $action);
+
+    // add all the actions
+    $config = CRM_Core_Config::singleton();
+    $this->addActions($config->uploadDir, array('uploadFile'));
   }
 }
+

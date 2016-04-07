@@ -25,6 +25,16 @@ define([
             };
 
             /**
+             * Checks if date should be considered empty.
+             * Empty date is saved to database as 0000-00-00 00:00:00
+             * @param {String} date
+             * @returns {boolean}
+             */
+            var isDateEmpty = function(date){
+                return date === '0000-00-00 00:00:00';
+            };
+
+            /**
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
@@ -55,8 +65,8 @@ define([
              * @returns {boolean}
              */
             $scope.checkIfDatesAreCustom = function (start, end) {
-                if (start === '0000-00-00 00:00:00') start = null;
-                if (end === '0000-00-00 00:00:00') end = null;
+                if (isDateEmpty(start)) start = null;
+                if (isDateEmpty(end)) end = null;
 
                 var custom = true;
 
@@ -68,10 +78,6 @@ define([
                         && $filter('formatDate')(end) === $filter('formatDate')(value.end_date))
                         custom = false;
                 });
-
-                if (custom) {
-                    console.info('Leaving old JobRole Dates.');
-                }
 
                 return custom;
             };
@@ -332,7 +338,7 @@ define([
                     }
                 }
 
-                if(form_id === 'end_date' && !$scope.edit_data[role_id].end_date){
+                if (form_id === 'end_date' && !$scope.edit_data[role_id].end_date) {
                     $scope.edit_data[role_id].end_date = null;
                 }
 
@@ -804,66 +810,69 @@ define([
                     });
             }
 
+
             /**
-             * Get job roles based on the passed Contact ID (refresh part of the page)
-             * @param contact_id
-             * @returns {promise}
+             * Fetches the contract ids of the given contact
+             *
+             * @param {int} contactId
+             * @return {Promise} resolves with an array of contract ids
              */
-            function getJobRolesList(contact_id) {
-                var contractsPromise;
-                if (!job_roles.job_contract_ids) {
-                    contractsPromise = HRJobRolesService.getContracts(contact_id).then(function (data) {
+            function contractIdsFromContact(contactId) {
+                return HRJobRolesService.getContracts(contactId).then(function (data) {
+                    var jobContractIds = [];
+                    var contractsData = {};
 
-                        var job_contract_ids = [];
-                        var contractsData = {};
+                    // If we have job contracts, try to get the job roles for the contract
+                    if (data.count !== 0) {
+                        for (var i = 0; i < data.count; i++) {
+                            // Job contract IDs which will be passed to the "getAllJobRoles" service
+                            jobContractIds.push(data.values[i]['id']);
 
-                        // If we have job contracts, try to get the job roles for the contract
-                        if (data.count != 0) {
-                            for (var i = 0; i < data.count; i++) {
+                            var contract = {
+                                id: data.values[i]['id'],
+                                title: data.values[i]['title'],
+                                start_date: data.values[i]['period_start_date'],
+                                end_date: data.values[i]['period_end_date'],
+                                status: status,
+                                revisions: data.values[i]['revisions']
+                            };
 
-                                // Job contract IDs which will be passed to the "getAllJobRoles" service
-                                job_contract_ids.push(data.values[i]['id']);
+                            var optionalEndDate = $filter('formatDate')(contract.end_date) || 'Unspecified';
+                            contract.label = contract.title + ' (' + $filter('formatDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
 
-                                var contract = {
-                                    id: data.values[i]['id'],
-                                    title: data.values[i]['title'],
-                                    start_date: data.values[i]['period_start_date'],
-                                    end_date: data.values[i]['period_end_date'],
-                                    status: status,
-                                    revisions: data.values[i]['revisions']
-                                };
-
-                                var optionalEndDate = $filter('formatDate')(contract.end_date) || 'Unspecified';
-                                contract.label = contract.title + ' (' + $filter('formatDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
-
-                                contractsData[data.values[i]['id']] = contract;
-                            }
-
-                            // Store the ContractsData what we can reuse later
-                            job_roles.contractsData = contractsData;
-
-                            job_roles.job_contract_ids = job_contract_ids;
-
-                            return job_contract_ids;
-                        } else {
-                            job_roles.empty = 'No Job Contracts found for this Contact!';
+                            contractsData[data.values[i]['id']] = contract;
                         }
-                    }, function (errorMessage) {
-                        $scope.error = errorMessage;
-                    });
-                } else {
-                    contractsPromise = $q.when(job_roles.job_contract_ids);
-                }
 
-                return contractsPromise.then(function (result) {
-                    return HRJobRolesService.getAllJobRoles(result);
-                }).then(function (data) {
+                        // Store the ContractsData what we can reuse later
+                        job_roles.contractsData = contractsData;
+                    } else {
+                        job_roles.empty = 'No Job Contracts found for this Contact!';
+                    }
+
+                    job_roles.job_contract_ids = jobContractIds;
+
+                    return jobContractIds;
+                }, function (errorMessage) {
+                    $scope.error = errorMessage;
+                });
+            }
+
+            /**
+             * Fetches the job roles of the contracts with the given ids
+             *
+             * @param {Array} contractIds
+             * @return {Promise}
+             */
+            function jobRolesFromContracts(contractIds) {
+                return HRJobRolesService.getAllJobRoles(contractIds).then(function (data) {
                     // Assign data
                     job_roles.present_job_roles = [];
                     job_roles.past_job_roles = [];
 
                     data.values.forEach(function (object_data) {
-                        if (!object_data.end_date || moment(object_data.end_date).isAfter(moment())) {
+                        var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
+
+                        if (!end_date || moment(end_date).isAfter(moment())) {
                             job_roles.present_job_roles.push(object_data);
                         } else {
                             job_roles.past_job_roles.push(object_data);
@@ -879,9 +888,27 @@ define([
                     }
 
                     job_roles.status = 'Data load OK';
-
                 }, function (errorMessage) {
                     $scope.error = errorMessage;
+                });
+            }
+
+            /**
+             * Get job roles based on the passed Contact ID (refresh part of the page)
+             * @param contactId
+             * @returns {promise}
+             */
+            function getJobRolesList(contactId) {
+                var contractsPromise;
+
+                if (!job_roles.job_contract_ids) {
+                    contractsPromise = contractIdsFromContact(contactId);
+                } else {
+                    contractsPromise = $q.when(job_roles.job_contract_ids);
+                }
+
+                contractsPromise.then(function (contractIds) {
+                    !!contractIds.length && jobRolesFromContracts(contractIds);
                 });
             }
 

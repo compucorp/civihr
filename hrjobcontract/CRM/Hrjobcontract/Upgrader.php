@@ -1184,7 +1184,31 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $this->executeCustomDataFile('xml/length_of_service.xml');
       return TRUE;
   }
-          
+
+  /**
+   * Add 'effective_end_date' field to Job Contract Revisions table
+   * and generate effective end date values for current Job Contracts Revisions.
+   * Also add 'overrided' field to Job Contract Revisions table
+   * telling if the revision is overrided by the other one with the same
+   * 'effective_date' value.
+   * 
+   * @return TRUE
+   */
+  function upgrade_1013() {
+    // Adding 'effective_end_date' field to 'civicrm_hrjobcontract_revision' table.
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` ADD `effective_end_date` DATE NULL DEFAULT NULL AFTER `effective_date`");
+    // Adding 'overrided' field to 'civicrm_hrjobcontract_revision' table.
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` ADD `overrided` BOOLEAN NOT NULL DEFAULT FALSE AFTER `deleted`");
+
+    // Filling 'effective_end_date' column for each existing Job Contract.
+    $query = "SELECT id FROM civicrm_hrjobcontract ORDER BY id ASC";
+    $jobcontracts = CRM_Core_DAO::executeQuery($query);
+    while ($jobcontracts->fetch()) {
+        CRM_Hrjobcontract_BAO_HRJobContractRevision::updateEffectiveEndDates($jobcontracts->id);
+    }
+    return TRUE;
+  }
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();

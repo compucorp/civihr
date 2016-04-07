@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @copyright CiviCRM LLC (c) 2004-2014
  * $Id$
  *
  */
@@ -37,14 +37,8 @@
  * This class previews the uploaded file and returns summary
  * statistics
  */
-class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Preview {
-  /**
-   * This is used in error urls
-   * although this code specifies the Event import parser it is a completely generic function that could live anywhere (& probably does in C&P
-   * manefestations
-   * @var unknown
-   */
-  protected $_importParserUrl = '&parser=CRM_Event_Import_Parser';
+class CRM_Hrjobroles_Import_Form_Preview extends CRM_Import_Form_Preview {
+
   /**
    * Function to set variables up before form is built
    *
@@ -60,7 +54,6 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
     $invalidRowCount  = $this->get('invalidRowCount');
     $conflictRowCount = $this->get('conflictRowCount');
     $mismatchCount    = $this->get('unMatchCount');
-    $entity    = $this->get('_entity');
 
     //get the mapping name displayed if the mappingId is set
     $mappingId = $this->get('loadMappingId');
@@ -81,22 +74,22 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
     }
 
     if ($invalidRowCount) {
-      $urlParams = 'type=' . CRM_Import_Parser::ERROR . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::ERROR . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadErrorRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
     }
 
     if ($conflictRowCount) {
-      $urlParams = 'type=' . CRM_Import_Parser::CONFLICT . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::CONFLICT . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadConflictRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
     }
 
     if ($mismatchCount) {
-      $urlParams = 'type=' . CRM_Import_Parser::NO_MATCH . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::NO_MATCH . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadMismatchRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
     }
 
     $properties = array(
-      'mapper','locations',
+      'mapper',
       'dataValues', 'columnCount',
       'totalRowCount', 'validRowCount',
       'invalidRowCount', 'conflictRowCount',
@@ -123,28 +116,18 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
     $invalidRowCount  = $this->get('invalidRowCount');
     $conflictRowCount = $this->get('conflictRowCount');
     $onDuplicate      = $this->get('onDuplicate');
-    $importMode       = $this->get('importMode');
-    $entity           = $this->get('_entity');
 
     $config = CRM_Core_Config::singleton();
-    $separator = $config->fieldSeparator;
+    $seperator = $config->fieldSeparator;
 
     $mapper = $this->controller->exportValue('MapField', 'mapper');
-
     $mapperKeys = array();
 
     foreach ($mapper as $key => $value) {
       $mapperKeys[$key] = $mapper[$key][0];
-      if (isset($mapper[$key][1]) && is_numeric($mapper[$key][1])) {
-        $mapperLocTypes[$key] = $mapper[$key][1];
-      }
-      else {
-        $mapperLocTypes[$key] = NULL;
-      }
     }
-    $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
-    $parser = new $this->_parser($mapperKeys,$mapperLocTypes);
-    $parser->setEntity($entity);
+
+    $parser = new CRM_Hrjobroles_Import_Parser_HrJobRoles($mapperKeys);
 
     $mapFields = $this->get('fields');
 
@@ -153,17 +136,13 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
       if (isset($mapFields[$mapper[$key][0]])) {
         $header[] = $mapFields[$mapper[$key][0]];
       }
-      if (isset($mapper[$key][1])) {
-        $header[] = $leaveType[$mapper[$key][1]];
-      }
       $mapperFields[] = implode(' - ', $header);
     }
-    $parser->run($fileName, $separator,
+    $parser->run($fileName, $seperator,
       $mapperFields,
       $skipColumnHeader,
       CRM_Import_Parser::MODE_IMPORT,
-      $onDuplicate,
-      $importMode
+      $onDuplicate
     );
 
     // add all the necessary variables to the form
@@ -188,12 +167,13 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
       fclose($fd);
 
       $this->set('errorFile', $errorFile);
-      $urlParams = 'type=' . CRM_Import_Parser::ERROR . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::ERROR . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadErrorRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
-      $urlParams = 'type=' . CRM_Import_Parser::CONFLICT . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::CONFLICT . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadConflictRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
-      $urlParams = 'type=' . CRM_Import_Parser::NO_MATCH . $this->_importParserUrl;
+      $urlParams = 'type=' . CRM_Import_Parser::NO_MATCH . '&parser=CRM_Hrjobroles_Import_Parser';
       $this->set('downloadMismatchRecordsUrl', CRM_Utils_System::url('civicrm/export', $urlParams));
     }
   }
 }
+

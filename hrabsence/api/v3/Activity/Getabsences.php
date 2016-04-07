@@ -69,12 +69,12 @@ function civicrm_api3_activity_getabsences($params) {
       '#typeId' => array_search('Absence', $activityTypes)
     ));
 
-  if(isset($params['status_id'])){
-    // Handle only single value != case for now
+  if(isset($params['status_id'])) {
+    //Handles only != and "NOT IN" operators for now
     $statusId = (array) $params['status_id'];
     $operator = key($statusId);
-    if($operator == '!=') {
-      $select->where('request.status_id != #statusId', array('#statusId' => $statusId));
+    if($operator == '!=' || $operator == 'NOT IN') {
+      $select->where('request.status_id NOT IN(#statusId)', array('#statusId' => $statusId[$operator]));
     }
   }
 

@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -24,42 +24,17 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 */
-
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @copyright CiviCRM LLC (c) 2004-2014
  * $Id$
  *
  */
-
 /**
  * This class gets the name of the file to upload
  */
-class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_MapField {
-  protected $_highlightedFields = array();
-  /**
-   * Fields to remove from the field mapping if 'On Duplicate Update is selected
-   * @var array
-   */
-  protected $_onDuplicateUpdateRemove = array();
-  /**
-   * Fields to highlight in the field mapping if 'On Duplicate Update is selected
-   * @var array
-   */
-  protected $_onDuplicateUpdateHighlight = array();
-  /**
-   * Fields to highlight in the field mapping if 'On Duplicate Skip' or On Duplicate No Check is selected
-   * @var array
-   */
-  protected $_onDuplicateSkipHighlight = array();
-
-  /**
-   * name of option value in mapping type group that holds possible option values
-   * @var array
-   */
-  protected $_mappingType = '';
-
+class CRM_Hrjobroles_Import_Form_MapField extends CRM_Import_Form_MapField {
   /**
    * Function to set variables up before form is built
    *
@@ -68,66 +43,34 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
    */
   public function preProcess() {
     $this->_mapperFields = $this->get('fields');
-    $this->_entity = $this->get('_entity');
-    $this->_importMode = $this->get('importMode');
-
-    $this->_highlightedFields = array(
-      'HRJobDetails-position',
-      'HRJobDetails-contract_type',
-      'HRJobDetails-period_start_date',
-      'HRJobDetails-title'
-    );
-    if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS) {
-      $this->_highlightedFields = array_merge($this->_highlightedFields, array(
-        'HRJobContract-contact_id',
-        'HRJobContract-email',
-        'HRJobContract-external_identifier'
-      ));
-    }
-    elseif ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
-      $this->_highlightedFields = array_merge($this->_highlightedFields, array(
-        'HRJobContractRevision-jobcontract_id',
-        'HRJobContractRevision-effective_date'
-      ));
-    }
+    unset($this->_mapperFields['id']);
+    asort($this->_mapperFields);
 
     $this->_columnCount = $this->get('columnCount');
     $this->assign('columnCount', $this->_columnCount);
     $this->_dataValues = $this->get('dataValues');
     $this->assign('dataValues', $this->_dataValues);
 
-    $skipColumnHeader   = $this->controller->exportValue('DataSource', 'skipColumnHeader');
-    $this->_onDuplicate = $this->get('onDuplicate');
+    $skipColumnHeader = $this->controller->exportValue('DataSource', 'skipColumnHeader');
+
     if ($skipColumnHeader) {
       $this->assign('skipColumnHeader', $skipColumnHeader);
       $this->assign('rowDisplayCount', 3);
       /* if we had a column header to skip, stash it for later */
+
       $this->_columnHeaders = $this->_dataValues[0];
-    } else {
+    }
+    else {
       $this->assign('rowDisplayCount', 2);
     }
-    $this->doDuplicateOptionHandling();
-    $this->assign('highlightedFields', $this->_highlightedFields);
+    $highlightedFields = array();
+    $requiredFields = array('job_contract_id', 'title');
+    foreach ($requiredFields as $val) {
+      $highlightedFields[] = $val;
+    }
+    $this->assign('highlightedFields', $highlightedFields);
   }
 
-  /**
-   * Here we add or remove fields based on the selected duplicate option
-   */
-  function doDuplicateOptionHandling() {
-    if ($this->_onDuplicate == CRM_Import_Parser::DUPLICATE_UPDATE) {
-      foreach ($this->_onDuplicateUpdateRemove as $value) {
-        unset($this->_mapperFields[$value]);
-      }
-      foreach ($this->__onDuplicateUpdateHighlight as $name) {
-        $this->_highlightedFields[] = $name;
-      }
-    }
-    elseif ($this->_onDuplicate == CRM_Import_Parser::DUPLICATE_SKIP ||
-        $this->_onDuplicate == CRM_Import_Parser::DUPLICATE_NOCHECK
-    ) {
-      $this->_highlightedFields = $this->_highlightedFields + $this->_onDuplicateUpdateHighlight;
-    }
-  }
   /**
    * Function to actually build the form
    *
@@ -144,29 +87,25 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
     else {
       $savedMapping = $this->get('savedMapping');
-
-      list($mappingName, $mappingContactType, $mappingLocation, $mappingPhoneType, $mappingImProvider, $mappingRelation, $mappingOperator, $mappingValue) = CRM_Core_BAO_Mapping::getMappingFields($savedMapping);
-
-      $mappingName        = $mappingName[1];
-      $mappingLocation    = CRM_Utils_Array::value(1, $mappingValue);
-
       //mapping is to be loaded from database
+
+      list($mappingName, $mappingContactType, $mappingLocation, $mappingPhoneType, $mappingRelation) = CRM_Core_BAO_Mapping::getMappingFields($savedMapping);
+
+      //get loaded Mapping Fields
+      $mappingName        = CRM_Utils_Array::value('1', $mappingName);
+      $mappingContactType = CRM_Utils_Array::value('1', $mappingContactType);
+      $mappingLocation    = CRM_Utils_Array::value('1', $mappingLocation);
+      $mappingPhoneType   = CRM_Utils_Array::value('1', $mappingPhoneType);
+      $mappingRelation    = CRM_Utils_Array::value('1', $mappingRelation);
+
+      $this->assign('loadedMapping', $savedMapping);
+      $this->set('loadedMapping', $savedMapping);
+
       $params         = array('id' => $savedMapping);
       $temp           = array();
       $mappingDetails = CRM_Core_BAO_Mapping::retrieve($params, $temp);
 
-      $this->assign('loadedMapping', $mappingDetails->name);
-      $this->set('loadedMapping', $savedMapping);
-
-      $getMappingName = new CRM_Core_DAO_Mapping();
-      $getMappingName->id = $savedMapping;
-      $getMappingName->mapping_type = $this->_mappingType;
-      $getMappingName->find();
-      while ($getMappingName->fetch()) {
-        $mapperName = $getMappingName->name;
-      }
-
-      $this->assign('savedName', $mapperName);
+      $this->assign('savedName', $mappingDetails->name);
 
       $this->add('hidden', 'mappingId', $savedMapping);
 
@@ -177,61 +116,80 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
 
     $this->addElement('checkbox', 'saveMapping', $saveDetailsName, NULL, array('onclick' => "showSaveDetails(this)"));
-    $this->addFormRule(array('CRM_Hrjobcontract_Import_Form_MapFieldBaseClass', 'formRule'), $this);
+
+    $this->addFormRule(array('CRM_Hrjobroles_Import_Form_MapField', 'formRule'));
+
     //-------- end of saved mapping stuff ---------
 
-    $this->_leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
+    $defaults = array();
+    $mapperKeys = array_keys($this->_mapperFields);
 
-    $defaults         = array();
-    $mapperKeys       = array_keys($this->_mapperFields);
     $hasHeaders       = !empty($this->_columnHeaders);
     $headerPatterns   = $this->get('headerPatterns');
     $dataPatterns     = $this->get('dataPatterns');
     $hasLocationTypes = $this->get('fieldTypes');
+
 
     /* Initialize all field usages to false */
 
     foreach ($mapperKeys as $key) {
       $this->_fieldUsed[$key] = FALSE;
     }
+    $this->_location_types = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id');
     $sel1 = $this->_mapperFields;
 
     $sel2[''] = NULL;
 
-    //assigne option to leave amount column
-    foreach ($mapperKeys as $key) {
-      $options = NULL;
-      if ($key == 'leave_amount'){
-        $options = $this->_leaveType;
-      }
-      $sel2[$key] = $options;
-    }
-    $js       = "<script type='text/javascript'>\n";
+    $js = "<script type='text/javascript'>\n";
     $formName = 'document.forms.' . $this->_name;
-    // this next section used to warn for mismatch column count or mismatch mapping
+
+    //used to warn for mismatch column count or mismatch mapping
     $warning = 0;
+
+
     for ($i = 0; $i < $this->_columnCount; $i++) {
       $sel = &$this->addElement('hierselect', "mapper[$i]", ts('Mapper for Field %1', array(1 => $i)), NULL);
       $jsSet = FALSE;
       if ($this->get('savedMapping')) {
         if (isset($mappingName[$i])) {
           if ($mappingName[$i] != ts('- do not import -')) {
+
             $mappingHeader = array_keys($this->_mapperFields, $mappingName[$i]);
-            $locationId    = isset($mappingLocation[$i]) ? $mappingLocation[$i] : 0;
-            if (!$locationId) {
+
+            if (!isset($locationId) || !$locationId) {
               $js .= "{$formName}['mapper[$i][1]'].style.display = 'none';\n";
             }
-            $defaults["mapper[$i]"] = array($mappingHeader[0], $locationId);
+
+            if (!isset($phoneType) || !$phoneType) {
+              $js .= "{$formName}['mapper[$i][2]'].style.display = 'none';\n";
+            }
+
+            $js .= "{$formName}['mapper[$i][3]'].style.display = 'none';\n";
+            $defaults["mapper[$i]"] = array(
+              $mappingHeader[0],
+              (isset($locationId)) ? $locationId : "",
+              (isset($phoneType)) ? $phoneType : "",
+            );
+            $jsSet = TRUE;
           }
           else {
-            $js .= "{$formName}['mapper[$i][1]'].style.display = 'none';\n";
             $defaults["mapper[$i]"] = array();
+          }
+          if (!$jsSet) {
+            for ($k = 1; $k < 4; $k++) {
+              $js .= "{$formName}['mapper[$i][$k]'].style.display = 'none';\n";
+            }
           }
         }
         else {
           // this load section to help mapping if we ran out of saved columns when doing Load Mapping
+          $js .= "swapOptions($formName, 'mapper[$i]', 0, 3, 'hs_mapper_" . $i . "_');\n";
+
           if ($hasHeaders) {
-            $defaults["mapper[$i]"] = array($this->defaultFromHeader($this->_columnHeaders[$i], $headerPatterns));
+            $defaults["mapper[$i]"] = array(
+              $this->defaultFromHeader($this->_columnHeaders[$i],
+                $headerPatterns
+              ));
           }
           else {
             $defaults["mapper[$i]"] = array($this->defaultFromData($dataPatterns, $i));
@@ -240,23 +198,28 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         //end of load mapping
       }
       else {
-        $js .= "swapOptions($formName, 'mapper[$i]', 0, 1, 'hs_mapper_0_');\n";
+        $js .= "swapOptions($formName, 'mapper[$i]', 0, 3, 'hs_mapper_" . $i . "_');\n";
         if ($hasHeaders) {
           // Infer the default from the skipped headers if we have them
           $defaults["mapper[$i]"] = array(
             $this->defaultFromHeader($this->_columnHeaders[$i],
               $headerPatterns
-            ), 0,
+            ),
+            //                     $defaultLocationType->id
+            0,
           );
         }
         else {
           // Otherwise guess the default from the form of the data
           $defaults["mapper[$i]"] = array(
-            $this->defaultFromData($dataPatterns, $i), 0,
+            $this->defaultFromData($dataPatterns, $i),
+            //                     $defaultLocationType->id
+            0,
           );
         }
       }
-      $sel->setOptions(array($sel1, $sel2));
+
+      $sel->setOptions(array($sel1, $sel2, (isset($sel3)) ? $sel3 : "", (isset($sel4)) ? $sel4 : ""));
     }
     $js .= "</script>\n";
     $this->assign('initHideBoxes', $js);
@@ -267,7 +230,6 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         $warning++;
       }
     }
-
     if ($warning != 0 && $this->get('savedMapping')) {
       $session = CRM_Core_Session::singleton();
       $session->setStatus(ts('The data columns in this import file appear to be different from the saved mapping. Please verify that you have selected the correct saved mapping before continuing.'));
@@ -278,6 +240,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     }
 
     $this->setDefaults($defaults);
+
     $this->addButtons(array(
         array(
           'type' => 'back',
@@ -306,73 +269,66 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
    * @static
    * @access public
    */
-  static function formRule($fields, $files, $self) {
+  static function formRule($fields) {
     $errors = array();
+    // define so we avoid notices below
+    $errors['_qf_default'] = '';
+
     $fieldMessage = NULL;
     if (!array_key_exists('savedMapping', $fields)) {
       $importKeys = array();
       foreach ($fields['mapper'] as $mapperPart) {
         $importKeys[] = $mapperPart[0];
       }
-
+      // FIXME: should use the schema titles, not redeclare them
       $requiredFields = array(
-        'HRJobDetails-title' => ts('Job Title'),
-        'HRJobDetails-position' => ts('Job Position'),
-        'HRJobDetails-contract_type' => ts('Job Contract Type'),
-        'HRJobDetails-period_start_date' => ts('Contract Start Date')
+        'job_contract_id' => ts('Contract ID'),
+        'title' => ts('Job Role Title')
       );
 
-     if ($self->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
-        $requiredFields = array_merge($requiredFields, array(
-          'HRJobContractRevision-jobcontract_id' => ts('Contract ID'),
-          'HRJobContractRevision-effective_date' => ts('Job Title')
-        ));
-      }
 
-      $missingNames = array();
-      $errorRequired = FALSE;
       foreach ($requiredFields as $field => $title) {
         if (!in_array($field, $importKeys)) {
-          if (!isset($errors['_qf_default'])) {
-            $errors['_qf_default'] = '';
-          }
-          $errorRequired = TRUE;
-          $missingNames[] = ts($title);
+            $errors['_qf_default'] .= ts('Missing required field: %1', array(1 => $title)) . '<br />';
         }
       }
-      if ($errorRequired) {
-        $errors['_qf_default'] = ts('Missing required fields:') . ' ' . implode(ts(' and '), $missingNames);
+
+      if (in_array('hrjc_cost_center', $importKeys))  {
+        if (!in_array('hrjc_cost_center_val_type', $importKeys))  {
+          $errors['_qf_default'] .= ts('Missing required field: %1', array(1 => 'Cost center value type')) . '<br />';
+        }
+        if (!in_array('hrjc_role_amount_pay_cost_center', $importKeys) &&  !in_array('hrjc_role_percent_pay_cost_center', $importKeys))  {
+          $errors['_qf_default'] .= ts('Missing one of these fields: (%1) | (%2)', array(1 => 'Amount of Pay Assigned to this cost center', 2 => 'Percent of Pay Assigned to this cost center')) . '<br />';
+        }
       }
 
-      if(
-        !in_array('HRJobContract-contact_id', $importKeys)
-        && !in_array('HRJobContract-email', $importKeys)
-        && !in_array('HRJobContract-external_identifier', $importKeys)
-        && $self->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS
-      ) {
-        $errors['_qf_default'] = ts('Contact ID, Email or External Identifier is required.');
+      if (in_array('funder', $importKeys))  {
+        if (!in_array('hrjc_funder_val_type', $importKeys))  {
+          $errors['_qf_default'] .= ts('Missing required field: %1', array(1 => 'Funder value type')) . '<br />';
+        }
+        if (!in_array('hrjc_role_amount_pay_funder', $importKeys) && !in_array('hrjc_role_percent_pay_funder', $importKeys))  {
+          $errors['_qf_default'] .= ts('Missing one of these fields: (%1) | (%2)', array(1 => 'Amount of Pay Assigned to this funder', 2 => 'Percent of Pay Assigned to this funder')) . '<br />';
+        }
       }
+
     }
 
-    if (CRM_Utils_Array::value('saveMapping', $fields)) {
+
+    if (!empty($fields['saveMapping'])) {
       $nameField = CRM_Utils_Array::value('saveMappingName', $fields);
       if (empty($nameField)) {
         $errors['saveMappingName'] = ts('Name is required to save Import Mapping');
       }
       else {
-        $mappingTypeId = CRM_Core_OptionGroup::getValue('mapping_type', $self->_mappingType, 'name');
+        $mappingTypeId = CRM_Core_OptionGroup::getValue('mapping_type', 'Import Job Roles', 'name');
         if (CRM_Core_BAO_Mapping::checkMapping($nameField, $mappingTypeId)) {
-          $errors['saveMappingName'] = ts('Duplicate ' . $self->_mappingType . 'Mapping Name');
+          $errors['saveMappingName'] = ts('Duplicate Import Mapping Name');
         }
       }
     }
 
-    //display Error if loaded mapping is not selected
-    if (array_key_exists('loadMapping', $fields)) {
-      $getMapName = CRM_Utils_Array::value('savedMapping', $fields);
-      if (empty($getMapName)) {
-        $errors['savedMapping'] = ts('Select saved mapping');
-      }
+    if (empty($errors['_qf_default'])) {
+      unset($errors['_qf_default']);
     }
     if (!empty($errors)) {
       if (!empty($errors['saveMappingName'])) {
@@ -382,6 +338,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
       }
       return $errors;
     }
+
     return TRUE;
   }
 
@@ -405,32 +362,27 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
     $skipColumnHeader = $this->controller->exportValue('DataSource', 'skipColumnHeader');
 
     $config = CRM_Core_Config::singleton();
-    $separator = $config->fieldSeparator;
+    $seperator = $config->fieldSeparator;
 
-    $mapperKeys     = array();
-    $mapper         = array();
-    $mapperKeys     = $this->controller->exportValue($this->_name, 'mapper');
-    $mapperKeysMain = array();
-    $subMapper = array();
-    $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
+    $mapper          = array();
+    $mapperKeys      = $this->controller->exportValue($this->_name, 'mapper');
+    $mapperKeysMain  = array();
+
+
     for ($i = 0; $i < $this->_columnCount; $i++) {
-      $selOne             = CRM_Utils_Array::value(1, $mapperKeys[$i]);
-      if ($selOne && is_numeric($selOne)) {
-        $subMapper[$i] = $locationsVal = $leaveType[$selOne];
-        $mapperLocTypeVal = $selOne;
-      }
-      $mapper[$i] =  $this->_mapperFields[$mapperKeys[$i][0]];
+      $mapper[$i] = $this->_mapperFields[$mapperKeys[$i][0]];
       $mapperKeysMain[$i] = $mapperKeys[$i][0];
     }
 
     $this->set('mapper', $mapper);
-    $this->set('locations', $subMapper);
     // store mapping Id to display it in the preview page
-    $this->set('loadMappingId', CRM_Utils_Array::value('mappingId', $params));
+    if (!empty($params['mappingId'])) {
+      $this->set('loadMappingId', $params['mappingId']);
+    }
 
     //Updating Mapping Records
-    if (CRM_Utils_Array::value('updateMapping', $params)) {
-      $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
+    if (!empty($params['updateMapping'])) {
+
       $mappingFields = new CRM_Core_DAO_MappingField();
       $mappingFields->mapping_id = $params['mappingId'];
       $mappingFields->find();
@@ -448,60 +400,42 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         $updateMappingFields->mapping_id = $params['mappingId'];
         $updateMappingFields->column_number = $i;
 
-        $explodedValues = explode('_', $mapperKeys[$i][0]);
-        $id             = CRM_Utils_Array::value(0, $explodedValues);
-        $first          = CRM_Utils_Array::value(1, $explodedValues);
-        $second         = CRM_Utils_Array::value(2, $explodedValues);
-
         $updateMappingFields->name = $mapper[$i];
-        if (CRM_Utils_Array::value($i,$subMapper)) {
-          $location_id = array_keys($leaveType, $subMapper[$i]);
-          $updateMappingFields->value = $location_id[0];
-        }
         $updateMappingFields->save();
       }
     }
 
     //Saving Mapping Details and Records
-    if (CRM_Utils_Array::value('saveMapping', $params)) {
+    if (!empty($params['saveMapping'])) {
       $mappingParams = array(
         'name' => $params['saveMappingName'],
         'description' => $params['saveMappingDesc'],
         'mapping_type_id' => CRM_Core_OptionGroup::getValue('mapping_type',
-          $this->_mappingType,
+          'Import Job Roles',
           'name'
         ),
       );
       $saveMapping = CRM_Core_BAO_Mapping::add($mappingParams);
-      $leaveType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobLeave', 'leave_type');
+
       for ($i = 0; $i < $this->_columnCount; $i++) {
         $saveMappingFields = new CRM_Core_DAO_MappingField();
         $saveMappingFields->mapping_id = $saveMapping->id;
         $saveMappingFields->column_number = $i;
 
-        $explodedValues = explode('_', $mapperKeys[$i][0]);
-        $id             = CRM_Utils_Array::value(0, $explodedValues);
-        $first          = CRM_Utils_Array::value(1, $explodedValues);
-        $second         = CRM_Utils_Array::value(2, $explodedValues);
-
         $saveMappingFields->name = $mapper[$i];
-        if (CRM_Utils_Array::value($i,$subMapper)) {
-          $location_id = array_keys($leaveType,  $subMapper[$i]);
-          $saveMappingFields->value = $location_id[0];
-        }
         $saveMappingFields->save();
       }
       $this->set('savedMapping', $saveMappingFields->mapping_id);
     }
 
-    $this->set('_entity', $this->_entity);
 
-    $parser = new $this->_parser($mapperKeysMain);
-    $parser->setEntity($this->_entity);
-    $parser->run($fileName, $separator, $mapper, $skipColumnHeader,
-      CRM_Import_Parser::MODE_PREVIEW, $this->get('contactType')
+    $parser = new CRM_Hrjobroles_Import_Parser_HrJobRoles($mapperKeysMain);
+    $parser->run($fileName, $seperator, $mapper, $skipColumnHeader,
+      CRM_Import_Parser::MODE_PREVIEW
     );
+
     // add all the necessary variables to the form
     $parser->set($this);
   }
 }
+

@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @copyright CiviCRM LLC (c) 2004-2014
  * $Id$
  *
  */
@@ -36,30 +36,8 @@
 /**
  * This class gets the name of the file to upload
  */
-class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
-  protected $_enableContactOptions = TRUE;
-  /**
-   * This gets pushed into user context which ?? preserves the url?
-   * @var string
-   */
-  protected $_userContext = '';
+class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Core_Form {
 
-  /**
-   * name of option value in mapping type group that holds possible option values
-   * @var array
-   */
-  protected $_mappingType = '';
-
-  /**
-   * Include duplicate options
-   */
-  protected $isDuplicateOptions = TRUE;
-
-  /**
-   * Entity being imported
-   * @var string
-   */
-  //protected $_entity;
   /**
    * Function to set variables up before form is built
    *
@@ -68,68 +46,51 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
    */
   public function preProcess() {
     $session = CRM_Core_Session::singleton();
-    $session->pushUserContext(CRM_Utils_System::url($this->_userContext, 'reset=1'));
+    $session->pushUserContext(CRM_Utils_System::url('civicrm/jobroles/import'));
+    // check for post max size
+    CRM_Core_Config_Defaults::formatUnitSize(ini_get('post_max_size'), TRUE);
   }
 
   /**
-   * Function to actually build the form - this appears to be entirely code that should be in a shared baseclass in core
+   * Function to actually build the form
    *
-   * @return None
+   * @return void
    * @access public
    */
   public function buildQuickForm() {
     //Setting Upload File Size
     $config = CRM_Core_Config::singleton();
-    if ($config->maxImportFileSize >= 8388608) {
-      $uploadFileSize = 8388608;
-    }
-    else {
-      $uploadFileSize = $config->maxImportFileSize;
-    }
+
+    $uploadFileSize = CRM_Core_Config_Defaults::formatUnitSize($config->maxFileSize.'m');
     $uploadSize = round(($uploadFileSize / (1024 * 1024)), 2);
 
     $this->assign('uploadSize', $uploadSize);
-
-    $this->add('file', 'uploadFile', ts('Import Data File'), 'size=30 maxlength=255', TRUE);
-
-    $this->addRule('uploadFile', ts('A valid file must be uploaded.'), 'uploadedfile');
-    $this->addRule('uploadFile', ts('File size should be less than %1 MBytes (%2 bytes)', array(1 => $uploadSize, 2 => $uploadFileSize)), 'maxfilesize', $uploadFileSize);
     $this->setMaxFileSize($uploadFileSize);
+    $this->add('File', 'uploadFile', ts('Import Data File'), 'size=30 maxlength=255', TRUE);
+    $this->addRule('uploadFile', ts('File size should be less than %1 MBytes (%2 bytes)', array(1 => $uploadSize, 2 => $uploadFileSize)), 'maxfilesize', $uploadFileSize);
+    $this->addRule('uploadFile', ts('A valid file must be uploaded.'), 'uploadedfile');
     $this->addRule('uploadFile', ts('Input file must be in CSV format'), 'utf8File');
 
     $this->addElement('checkbox', 'skipColumnHeader', ts('First row contains column headers'));
 
-    $importModeOptions = array();
-    $importModeOptions[] = $this->createElement('radio',
-      NULL, NULL, ts('Import Contracts'), CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS
+    $duplicateOptions = array();
+    $duplicateOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Skip'), CRM_Import_Parser::DUPLICATE_SKIP
     );
-    $importModeOptions[] = $this->createElement('radio',
-      NULL, NULL, ts('Import Contracts Revision'), CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS
+    $duplicateOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Update'), CRM_Import_Parser::DUPLICATE_UPDATE
+    );
+    $duplicateOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Fill'), CRM_Import_Parser::DUPLICATE_FILL
     );
 
-    $this->addGroup($importModeOptions, 'importMode',
-      ts('Import Mode')
+    $this->addGroup($duplicateOptions, 'onDuplicate',
+      ts('On duplicate entries')
     );
 
-    if($this->isDuplicateOptions) {
-      $duplicateOptions = array();
-      $duplicateOptions[] = $this->createElement('radio',
-        NULL, NULL, ts('Skip'), CRM_Import_Parser::DUPLICATE_SKIP
-      );
-      $duplicateOptions[] = $this->createElement('radio',
-        NULL, NULL, ts('Update'), CRM_Import_Parser::DUPLICATE_UPDATE
-      );
-      $duplicateOptions[] = $this->createElement('radio',
-        NULL, NULL, ts('No Duplicate Checking'), CRM_Import_Parser::DUPLICATE_NOCHECK
-      );
-
-      $this->addGroup($duplicateOptions, 'onDuplicate',
-        ts('On Duplicate Entries')
-      );
-    }
     //get the saved mapping details
     $mappingArray = CRM_Core_BAO_Mapping::getMappings(CRM_Core_OptionGroup::getValue('mapping_type',
-        $this->_mappingType,
+        'Import Job Roles',
         'name'
       ));
     $this->assign('savedMapping', $mappingArray);
@@ -141,20 +102,9 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
     }
 
     $this->setDefaults(array(
-      'importMode' =>
-        CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS,
-    ));
-
-    $this->setDefaults(array(
       'onDuplicate' =>
         CRM_Import_Parser::DUPLICATE_SKIP,
       ));
-
-    $this->setDefaults(array(
-      'contactType' =>
-        CRM_Import_Parser::CONTACT_INDIVIDUAL,
-      )
-    );
 
     //build date formats
     CRM_Core_Form_Date::buildAllowedDateFormats($this);
@@ -185,15 +135,11 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
 
     $fileName         = $this->controller->exportValue($this->_name, 'uploadFile');
     $skipColumnHeader = $this->controller->exportValue($this->_name, 'skipColumnHeader');
-    $importMode       = $this->controller->exportValue($this->_name, 'importMode');
     $onDuplicate      = $this->controller->exportValue($this->_name, 'onDuplicate');
-    $contactType      = $this->controller->exportValue($this->_name, 'contactType');
     $dateFormats      = $this->controller->exportValue($this->_name, 'dateFormats');
     $savedMapping     = $this->controller->exportValue($this->_name, 'savedMapping');
 
     $this->set('onDuplicate', $onDuplicate);
-    $this->set('importMode', $importMode);
-    $this->set('contactType', $contactType);
     $this->set('dateFormats', $dateFormats);
     $this->set('savedMapping', $savedMapping);
 
@@ -204,19 +150,19 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
     $seperator = $config->fieldSeparator;
 
     $mapper = array();
-    $mapper = array();
-    $parser = new $this->_parser($mapper);
+
+    $parser = new CRM_Hrjobroles_Import_Parser_HrJobRoles($mapper);
     $parser->setMaxLinesToProcess(100);
-    $parser->setEntity($this->_entity);
     $parser->run($fileName, $seperator,
       $mapper,
       $skipColumnHeader,
-      CRM_Import_Parser::MODE_MAPFIELD, $contactType
+      CRM_Import_Parser::MODE_MAPFIELD
     );
 
     // add all the necessary variables to the form
     $parser->set($this);
   }
+
   /**
    * Return a descriptive name for the page, used in wizard header
    *
@@ -227,3 +173,4 @@ class CRM_Hrjobcontract_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
     return ts('Upload Data');
   }
 }
+

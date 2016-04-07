@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                |
+ | CiviCRM version 4.5                                                |
  +--------------------------------------------------------------------+
  | Copyright CiviCRM LLC (c) 2004-2014                                |
  +--------------------------------------------------------------------+
@@ -28,18 +28,13 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2013
+ * @copyright CiviCRM LLC (c) 2004-2014
  * $Id$
  *
  */
 
 
-abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
-  /**
-   * Import Modes
-   */
-  CONST IMPORT_CONTRACTS = 1, IMPORT_REVISIONS = 2;
-
+abstract class CRM_Hrjobroles_Import_Parser extends CRM_Import_Parser {
 
   protected $_fileName;
 
@@ -54,9 +49,9 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
   protected $_fileSize;
 
   /**
-   * separator being used
+   * seperator being used
    */
-  protected $_separator;
+  protected $_seperator;
 
   /**
    * total number of lines in file
@@ -70,16 +65,23 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
    */
   protected $_haveColumnHeader;
 
-  protected $_entityFields;
-
-
+  /**
+   * @param $fileName
+   * @param string $seperator
+   * @param $mapper
+   * @param bool $skipColumnHeader
+   * @param int $mode
+   * @param int $onDuplicate
+   *
+   * @return mixed
+   * @throws Exception
+   */
   function run($fileName,
-    $separator = ',',
+    $seperator = ',',
     &$mapper,
     $skipColumnHeader = FALSE,
     $mode = self::MODE_PREVIEW,
-    $onDuplicate = self::DUPLICATE_SKIP,
-    $importMode  = self::IMPORT_CONTRACTS
+    $onDuplicate = self::DUPLICATE_SKIP
   ) {
     if (!is_array($fileName)) {
       CRM_Core_Error::fatal();
@@ -90,7 +92,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
 
     $this->_haveColumnHeader = $skipColumnHeader;
 
-    $this->_separator = $separator;
+    $this->_seperator = $seperator;
 
     $fd = fopen($fileName, "r");
     if (!$fd) {
@@ -117,7 +119,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     while (!feof($fd)) {
       $this->_lineCount++;
 
-      $values = fgetcsv($fd, 8192, $separator);
+      $values = fgetcsv($fd, 8192, $seperator);
       if (!$values) {
         continue;
       }
@@ -153,7 +155,6 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
         $returnCode = $this->summary($values);
       }
       elseif ($mode == self::MODE_IMPORT) {
-        $values['importMode'] = $importMode;
         $returnCode = $this->import($onDuplicate, $values);
       }
       else {
@@ -233,12 +234,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     if ($mode == self::MODE_PREVIEW || $mode == self::MODE_IMPORT) {
       $customHeaders = $mapper;
 
-      $customfields = CRM_Core_BAO_CustomField::getFields('Activity');
-      foreach ($customHeaders as $key => $value) {
-        if ($id = CRM_Core_BAO_CustomField::getKeyID($value)) {
-          $customHeaders[$key] = $customfields[$id][0];
-        }
-      }
+
       if ($this->_invalidRowCount) {
         // removed view url for invlaid contacts
         $headers = array_merge(array(ts('Line Number'),
@@ -260,7 +256,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
       }
       if ($this->_duplicateCount) {
         $headers = array_merge(array(ts('Line Number'),
-            ts('View Activity History URL'),
+            ts('Reason'),
           ),
           $customHeaders
         );
@@ -269,6 +265,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
         self::exportCSV($this->_duplicateFileName, $headers, $this->_duplicates);
       }
     }
+
     return $this->fini();
   }
 
@@ -284,33 +281,48 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
   function setActiveFields($fieldKeys) {
     $this->_activeFieldCount = count($fieldKeys);
     foreach ($fieldKeys as $key) {
-      if (empty($this->_fields[$key]) || $key == "do_not_import") {
-        $this->_activeFields[] = new CRM_Hrjobcontract_Import_Field('', ts('- do not import -'));
+      if (empty($this->_fields[$key])) {
+        $this->_activeFields[] = new CRM_Hrjobroles_Import_Field('', ts('- do not import -'));
       }
       else {
         $this->_activeFields[] = clone($this->_fields[$key]);
       }
     }
   }
-  
-  function addField($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
-    if (empty($name) || $name == "do_not_import") {
-      $this->_fields['doNotImport'] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
-    }
-    else {
-      foreach($this->_entity as $entity) {
-        $this->_fields[$name] = new CRM_Hrjobcontract_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
-        $this->_activeEntityFields[$entity][$name] = $this->_fields[$name];
+
+  /**
+   * function to format the field values for input to the api
+   *
+   * @return array (reference ) associative array of name/value pairs
+   * @access public
+   */
+  function &getActiveFieldParams() {
+    $params = array();
+    for ($i = 0; $i < $this->_activeFieldCount; $i++) {
+      if (isset($this->_activeFields[$i]->_value)
+        && !isset($params[$this->_activeFields[$i]->_name])
+        && !isset($this->_activeFields[$i]->_related)
+      ) {
+
+        $params[$this->_activeFields[$i]->_name] = $this->_activeFields[$i]->_value;
       }
     }
+    return $params;
   }
 
   /**
-   * @param $elements
+   * @param $name
+   * @param $title
+   * @param int $type
+   * @param string $headerPattern
+   * @param string $dataPattern
    */
-  function setActiveFieldLocationTypes($elements) {
-    for ($i = 0; $i < count($elements); $i++) {
-      $this->_activeFields[$i]->_hasLocationType = $elements[$i];
+  function addField($name, $title, $type = CRM_Utils_Type::T_INT, $headerPattern = '//', $dataPattern = '//') {
+    if (empty($name)) {
+      $this->_fields['doNotImport'] = new CRM_Hrjobroles_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
+    }
+    else {
+        $this->_fields[$name] = new CRM_Hrjobroles_Import_Field($name, $title, $type, $headerPattern, $dataPattern);
     }
   }
 
@@ -319,20 +331,22 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
    *
    * @param CRM_Core_Session $store
    *
+   * @param int $mode
+   *
    * @return void
    * @access public
    */
   function set($store, $mode = self::MODE_SUMMARY) {
     $store->set('fileSize', $this->_fileSize);
     $store->set('lineCount', $this->_lineCount);
-    $store->set('seperator', $this->_separator);
+    $store->set('seperator', $this->_seperator);
     $store->set('fields', $this->getSelectValues());
     $store->set('fieldTypes', $this->getSelectTypes());
 
     $store->set('headerPatterns', $this->getHeaderPatterns());
     $store->set('dataPatterns', $this->getDataPatterns());
     $store->set('columnCount', $this->_activeFieldCount);
-    $store->set('_entity', $this->_entity);
+
     $store->set('totalRowCount', $this->_totalCount);
     $store->set('validRowCount', $this->_validCount);
     $store->set('invalidRowCount', $this->_invalidRowCount);
@@ -356,147 +370,18 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     }
   }
 
-  function isErrorInCoreData($params, &$errorMessage) {
-    $fields = $this->_allFields;
-    foreach ($params as $key => $value)  {
-      if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
-        self::addToErrorMsg(ts('Please enter valid Contact ID'), $errorMessage);
-      }
-      if ($value) {
-        if (array_key_exists($key, $fields)) {
-          if (array_key_exists('enumValues', $fields[$key])) {
-            $enumValue = $fields[$key]['enumValues'];
-            $enumArray = explode(', ', $enumValue);
-            if (!self::in_value(trim($value), $enumArray)) {
-              self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-            }
-          }
-          if (array_key_exists('pseudoconstant', $fields[$key])) {
-            if (array_key_exists('optionGroupName', $fields[$key]['pseudoconstant'])) {
-              $options = CRM_Core_OptionGroup::values($fields[$key]['pseudoconstant']['optionGroupName'], FALSE, FALSE, FALSE, NULL, 'name');
-              if (!array_key_exists(strtolower(trim($value)), array_change_key_case($options))) {
-              self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-              }
-            }
-          }
-          switch ($fields[$key]['type']) {
-            case CRM_Utils_Type::T_BOOLEAN :
-              if (CRM_Utils_String::strtoboolstr($value) === FALSE) {
-                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-              }
-              break;
-            case CRM_Utils_Type::T_INT :
-            case CRM_Utils_Type::T_MONEY :
-            case CRM_Utils_Type::T_FLOAT :
-              if ($key == "leave_amount" && is_array($value)) {
-                foreach ($value as $values) {
-                  if (!empty($values['leave_amount']) && !is_numeric($values['leave_amount'])) {
-                    self::addToErrorMsg(ts("%1 is not numeric", $fields[$key]['title']), $errorMessage);
-                  }
-                }
-              }
-              else if (!is_numeric($value)) {
-                self::addToErrorMsg(ts("%1 is not numeric", $fields[$key]['title']), $errorMessage);
-              }
-              break;
-            }
-          switch ($key) {
-            case 'contact_id':
-              //Contact ID
-              if ($key == 'contact_id' && (empty($value) || !is_numeric($value))) {
-                self::addToErrorMsg(ts('Please enter Contact ID'), $errorMessage);
-              }
-
-            case 'hrjob_manager_contact_id':
-              //manager
-              $params = array(
-                'contact_id' => $value,
-              );
-              $result = civicrm_api3('contact', 'get', $params);
-              if ($result['count'] <=0 || ($result['values'][$result['id']]['contact_type'] != "Individual")) {
-                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-              }
-              break;
-
-            case 'hrjob_health_provider':
-              //health provider org
-              $params = array(
-                'contact_id' => $value,
-                'contact_type' => 'Organization',
-                'contact_sub_type' => 'health_insurance_provider',
-              );
-
-            case 'hrjob_health_provider_life_insurance':
-              //life provider org
-              $params = array(
-                'contact_id' => $value,
-                'contact_type' => 'Organization',
-                'contact_sub_type' => 'life_insurance_provider',
-              );
-
-            case 'hrjob_funding_org_id':
-              //funding organization
-              $params = array(
-                'contact_id' => $value,
-                'contact_type' => 'Organization',
-              );
-              $result = civicrm_api3('contact', 'get', $params);
-              if ($result['count'] <=0) {
-                self::addToErrorMsg($fields[$key]['title'], $errorMessage);
-              }
-              break;
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * function to ckeck a value present or not in a array
-   *
-   * @return ture if value present in array or retun false
-   *
-   * @access public
-   */
-  function in_value($value, $valueArray) {
-    foreach ($valueArray as $key => $v) {
-      //fix for CRM-1514
-      if (strtolower(trim($v, ".")) == strtolower(trim($value, "."))) {
-        return TRUE;
-      }
-    }
-    return FALSE;
-  }
-
-  /**
-   * function to build error-message containing error-fields
-   *
-   * @param String   $errorName      A string containing error-field name.
-   * @param String   $errorMessage   A string containing all the error-fields, where the new errorName is concatenated.
-   *
-   * @static
-   * @access public
-   */
-  function addToErrorMsg($errorName, &$errorMessage) {
-    if ($errorMessage) {
-      $errorMessage .= "; $errorName";
-    }
-    else {
-      $errorMessage = $errorName;
-    }
-  }
-
   /**
    * Export data to a CSV file
    *
-   * @param string $filename
+   * @param $fileName
    * @param array $header
    * @param data $data
    *
+   * @internal param string $filename
    * @return void
    * @access public
    */
-  function exportCSV($fileName, $header, $data) {
+  static function exportCSV($fileName, $header, $data) {
     $output = array();
     $fd = fopen($fileName, 'w');
 
@@ -508,17 +393,7 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
 
     foreach ($data as $datum) {
       foreach ($datum as $key => $value) {
-        if (is_array($value)) {
-          foreach ($value[0] as $k1 => $v1) {
-            if ($k1 == 'location_type_id') {
-              continue;
-            }
-            $datum[$k1] = $v1;
-          }
-        }
-        else {
-          $datum[$key] = "\"$value\"";
-        }
+        $datum[$key] = "\"$value\"";
       }
       $output[] = implode($config->fieldSeparator, $datum);
     }
@@ -526,28 +401,5 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     fclose($fd);
   }
 
-  function &getActiveFieldParams() {
-    $params = array();
-    for ($i = 0; $i < $this->_activeFieldCount; $i++) {
-      if (isset($this->_activeFields[$i]->_value)) {
-        if (isset($this->_activeFields[$i]->_hasLocationType)) {
-          if (!isset($params[$this->_activeFields[$i]->_name])) {
-            $params[$this->_activeFields[$i]->_name] = array();
-          }
-          $value = array(
-            $this->_activeFields[$i]->_name => $this->_activeFields[$i]->_value,
-            'leave_type' => $this->_activeFields[$i]->_hasLocationType,
-          );
-          $params[$this->_activeFields[$i]->_name][] = $value;
-        }
-
-        if (!isset($params[$this->_activeFields[$i]->_name])) {
-          if (!isset($this->_activeFields[$i]->_related)) {
-            $params[$this->_activeFields[$i]->_name] = $this->_activeFields[$i]->_value;
-          }
-        }
-      }
-    }
-    return $params;
-  }
 }
+
