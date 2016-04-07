@@ -128,32 +128,44 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
       LEFT JOIN civicrm_hrjobcontract_revision jcr ON jcr.jobcontract_id = jc.id 
       LEFT JOIN civicrm_hrjobcontract_details jcd ON jcd.jobcontract_revision_id = jcr.details_revision_id 
       WHERE jc.contact_id = %1
-      AND
-      (
-        jcr.effective_date <= jcd.period_start_date
-        AND
-        (
-          jcr.effective_end_date IS NULL
-          OR
-          jcr.effective_end_date >= jcd.period_start_date
-        )
-        AND jcr.overrided = 0
-      )
+      AND jcr.overrided = 0
     ";
     if ($periodEndDate === NULL) {
       $conflictingContractsQuery .= "
         AND
         (
-          %2 <= jcd.period_start_date
+          (
+            %2 <= jcd.period_start_date
+          )
+          OR
+          (
+            %2 > jcd.period_start_date
+            AND
+            (
+              jcr.effective_end_date IS NULL
+              OR
+              jcr.effective_end_date >= %2
+            )
+          )
         )
       ";
     } else {
       $conflictingContractsQuery .= "
         AND
         (
-          (jcd.period_start_date BETWEEN %2 AND %3)
-          OR (jcd.period_end_date IS NOT NULL AND (jcd.period_end_date BETWEEN %2 AND %3))
-          OR (%2 < jcd.period_start_date AND (jcd.period_end_date IS NOT NULL AND %3 > jcd.period_end_date))
+          (
+            (jcd.period_start_date BETWEEN %2 AND %3)
+            OR (jcd.period_end_date IS NOT NULL AND (jcd.period_end_date BETWEEN %2 AND %3))
+            OR (%2 < jcd.period_start_date AND (jcd.period_end_date IS NOT NULL AND %3 > jcd.period_end_date))
+            OR (jcd.period_end_date IS NULL AND jcd.period_start_date <= %3)
+          )
+          AND
+          (
+            (jcr.effective_date BETWEEN %2 AND %3)
+            OR (jcr.effective_end_date IS NOT NULL AND (jcr.effective_end_date BETWEEN %2 AND %3))
+            OR (%2 < jcr.effective_date AND (jcr.effective_end_date IS NOT NULL AND %3 > jcr.effective_end_date))
+            OR (jcr.effective_end_date IS NULL AND jcr.effective_date <= %3)
+          )
         )
       ";
     }
