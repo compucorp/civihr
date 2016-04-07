@@ -262,7 +262,7 @@ define([
                 beforeEach(function () {
                     spy = spyOn(HRJobRolesService, 'getContracts');
                     spyOn(HRJobRolesService, 'getAllJobRoles').and.callThrough();
-                })
+                });
 
                 describe('when the user does not have a contract', function () {
                     beforeEach(function () {
@@ -276,6 +276,10 @@ define([
 
                     it('does not try to fetch any job role', function () {
                         expect(HRJobRolesService.getAllJobRoles).not.toHaveBeenCalled();
+                    });
+
+                    it('shows a message', function () {
+                        expect(ctrl.empty).toEqual(jasmine.any(String));
                     });
                 });
 
@@ -291,12 +295,16 @@ define([
 
                         initController();
                         $rootScope.$digest();
-                    })
+                    });
 
                     it('fetches the job roles', function () {
                         expect(HRJobRolesService.getAllJobRoles).toHaveBeenCalledWith(contracts.map(function (contract) {
                             return contract.id;
                         }));
+                    });
+
+                    it('does not show any message', function () {
+                        expect(ctrl.empty).not.toEqual(jasmine.any(String));
                     });
                 });
             });
