@@ -845,10 +845,11 @@ define([
 
                         // Store the ContractsData what we can reuse later
                         job_roles.contractsData = contractsData;
-                        job_roles.job_contract_ids = jobContractIds;
                     } else {
                         job_roles.empty = 'No Job Contracts found for this Contact!';
                     }
+
+                    job_roles.job_contract_ids = jobContractIds;
 
                     return jobContractIds;
                 }, function (errorMessage) {
