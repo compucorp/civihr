@@ -51,30 +51,27 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   function &getFields() {
     if (!self::$_hrjobFields) {
       self::$_hrjobFields = CRM_Hrjobcontract_BAO_HRJobDetails::export();
-      self::$_hrjobFields['hrjobcontract_role_manager_contact'] =
-        array(
-          'name'  => 'manager_contact',
-          'title' => 'Job Manager',
-          'type'  => CRM_Utils_Type::T_STRING,
-          'where' => 'civicrm_hrjobcontract_role_manager.display_name'
-        );
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobHealth::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobHour::export());
-
-      // special case to check for existence of health record entry
-      /*self::$_hrjobFields['hrjobcontract_health_is_healthcare'] =
-        array(
-          'name'  => 'is_healthcare',
-          'title' => 'Is health care',
-          'type'  => CRM_Utils_Type::T_BOOLEAN,
-          'where' => 'civicrm_hrjobcontract_health.id'
-        );*/
-      
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobLeave::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobPay::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobPension::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobRole::export());
+
+      self::$_hrjobFields['hrjobcontract_role_manager_contact'] = array(
+          'name'  => 'manager_contact',
+          'title' => 'Job Manager',
+          'type'  => CRM_Utils_Type::T_STRING,
+          'where' => 'civicrm_hrjobcontract_role_manager.display_name'
+      );
+      self::$_hrjobFields['hrjobcontract_id'] = array(
+          'name'  => 'contract_id',
+          'title' => 'Contract ID',
+          'type'  => CRM_Utils_Type::T_INT,
+          'where' => 'hrjobcontract.id'
+      );
     }
+
     return self::$_hrjobFields;
   }
 
