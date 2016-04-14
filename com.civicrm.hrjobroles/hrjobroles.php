@@ -188,3 +188,85 @@ function hrjobroles_civicrm_queryObjects(&$queryObjects, $type) {
         $queryObjects[] = new CRM_Hrjobroles_BAO_Query();
     }
 }
+
+/**
+ * This extension deals with multi values fields and
+ * options lists in a peculiar way. Because of that,
+ * the CiviCRM export function isn't capable to
+ * properly retrieve all the related information about
+ * the Job Role. With this hook, we have a chance to
+ * fix this, by manipulating the results and fixing
+ * the fields data
+ *
+ *
+ * @param $exportTempTable
+ * @param $headerRows
+ * @param $sqlColumns
+ * @param $exportMode
+ */
+function hrjobroles_civicrm_export( $exportTempTable, $headerRows, $sqlColumns, $exportMode ) {
+
+    $splitItemsQuery = function($items) {
+        return "
+SELECT SUBSTRING_INDEX(SUBSTRING_INDEX($items, '|', n.n), '|', -1) value
+FROM (
+    SELECT a.N + b.N * 10 + 1 n
+    FROM
+      (SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) a
+      ,(SELECT 0 AS N UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) b
+    ORDER BY n
+  ) n
+having value <> ''";
+    };
+
+    $optionsFields = array('hrjc_role_department', 'hrjc_level_type', 'location', 'hrjc_region');
+    $optionsUpdates = array();
+    foreach($optionsFields as $field) {
+        if(isset($sqlColumns[$field])) {
+            $optionsUpdates[] = "et.$field = (SELECT ov.label FROM civicrm_option_value ov WHERE ov.id = et.$field)";
+        }
+    }
+
+    if(isset($sqlColumns['funder'])) {
+        // Since the contacts IDs are all stored on a single column, separated by |,
+        // we need this ugly query to split them into rows, so we can pass the IDs
+        // to a WHERE IN on the contacts table and concat their display names
+        // Note: This query can handle roles with a maximum number of 98 funders.
+        $optionsUpdates[] = "et.funder = (SELECT GROUP_CONCAT(c.display_name SEPARATOR ', ') FROM civicrm_contact c WHERE id IN({$splitItemsQuery('et.funder')}))";
+    }
+
+    if(isset($sqlColumns['hrjc_cost_center'])) {
+        $optionsUpdates[] = "et.hrjc_cost_center = (SELECT GROUP_CONCAT(ov.label SEPARATOR ', ') FROM civicrm_option_value ov WHERE id IN({$splitItemsQuery('et.hrjc_cost_center')}))";
+    }
+
+    // The values for those fields are hardcoded, so here we replace them
+    // with their "labels" (1 = %, 0 = Fixed)
+    $valTypeFields = array('hrjc_funder_val_type', 'hrjc_cost_center_val_type');
+    foreach($valTypeFields as $field) {
+        if(isset($sqlColumns[$field])) {
+            $optionsUpdates[] = "et.$field = REPLACE(REPLACE(REPLACE(et.$field, '|1', '%,'), '|0', 'Fixed,'), ',|', '')";
+        }
+    }
+
+    // Those fields also store multiple values separeted by |, but they are not
+    // related to any other table or option list. Here this ugly combination of
+    // substrings, reverse and replace is used to replace the | with commas and
+    // not letting any leading or trailing commas
+    $fieldsToSplitValues = array(
+        'hrjc_role_amount_pay_cost_center',
+        'hrjc_role_amount_pay_funder',
+        'hrjc_role_percent_pay_cost_center',
+        'hrjc_role_percent_pay_funder'
+    );
+    foreach($fieldsToSplitValues as $i => $field) {
+        if(isset($sqlColumns[$field])) {
+            $optionsUpdates[] = "et.$field = (SELECT REPLACE(REVERSE(SUBSTRING(REVERSE(SUBSTRING(et.$field, 2)), 2)), '|', ', '))";
+        }
+    }
+
+    if(!empty($optionsUpdates)) {
+        $query = "UPDATE $exportTempTable et SET " . implode(', ', $optionsUpdates);
+        CRM_Core_DAO::executeQuery($query);
+    }
+
+}
