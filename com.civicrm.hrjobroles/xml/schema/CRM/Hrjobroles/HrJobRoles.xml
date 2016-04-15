@@ -22,7 +22,7 @@
 
     <field>
         <name>job_contract_id</name>
-        <title>Job Id</title>
+        <title>Job ID</title>
         <type>int unsigned</type>
         <required>true</required>
         <comment>FK to Contract</comment>
@@ -279,7 +279,7 @@
 
     <field>
         <name>start_date</name>
-        <title>start_date</title>
+        <title>Start Date</title>
         <type>timestamp</type>
         <default>0</default>
         <comment>Start Date of the job role</comment>
@@ -290,7 +290,7 @@
 
     <field>
         <name>end_date</name>
-        <title>end_date</title>
+        <title>End Date</title>
         <type>timestamp</type>
         <default>0</default>
         <comment>End Date of the job role</comment>
