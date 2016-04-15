@@ -97,7 +97,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
 
     // Fetch select list options from the database and cache them
     $this->_optionsList['location'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('hrjc_location');
-    $this->_optionsList['region'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('hrjc_region');
+    $this->_optionsList['hrjc_region'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('hrjc_region');
     $this->_optionsList['hrjc_role_department'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('hrjc_department');
     $this->_optionsList['hrjc_level_type'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('hrjc_level_type');
     $this->_optionsList['hrjc_cost_center'] = CRM_Hrjobroles_BAO_HrJobRoles::buildDbOptions('cost_centres');
@@ -149,156 +149,100 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $dateType = $session->get('dateTypes');
 
     $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
-    if ($contractDetails == 0)  {
+    if (empty($contractDetails))  {
       CRM_Contact_Import_Parser_Contact::addToErrorMsg('job contract ID is not found', $errorMessage);
     }
     else  {
 
-      // check some parameters if they are valid
+      // START checking imported values if they are valid
 
-      foreach ($params as $key => $val) {
-        switch($key)  {
-          case 'title':
-            if (empty($val)) {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role title is required', $errorMessage);
-            }
-            break;
-          case 'hrjc_role_start_date':
-            if ($val) {
-              $dateValue = CRM_Utils_Date::formatDate($val, $dateType);
-              if ($dateValue) {
-                $params[$key] = $dateValue;
-              }
-              else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('start date is not a valid date', $errorMessage);
-              }
-            }
-            break;
-          case 'hrjc_role_end_date':
-            if ($val) {
-              $dateValue = CRM_Utils_Date::formatDate($val, $dateType);
-              if ($dateValue) {
-                $params[$key] = $dateValue;
-              }
-              else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('end date is not a valid date', $errorMessage);
-              }
-            }
-            break;
-          case 'hrjc_role_amount_pay_cost_center':
-            if ( !filter_var($val, FILTER_VALIDATE_FLOAT) || $val < 0)  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to cost center should be positive number', $errorMessage);
-            }
-            break;
-          case 'hrjc_role_amount_pay_funder':
-            if ( !filter_var($val, FILTER_VALIDATE_FLOAT) || $val < 0 )  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to funder should be positive number', $errorMessage);
-            }
-            break;
-          case 'hrjc_role_percent_pay_cost_center':
-            if ( !CRM_Utils_Rule::positiveInteger($val))  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to cost center should be positive number', $errorMessage);
-            }
-            break;
-          case 'hrjc_role_percent_pay_funder':
-            if ( !filter_var($val, FILTER_VALIDATE_FLOAT) || $val < 0 )  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to funder should be positive number', $errorMessage);
-            }
-            break;
-          case 'hrjc_funder_val_type':
-            if ( $val != 0 && $val != 1)  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder value type should be either 0 or 1', $errorMessage);
-            }
-            break;
-          case 'hrjc_cost_center_val_type':
-            if ( $val != 0 && $val != 1)  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center value type should be either 0 or 1', $errorMessage);
-            }
-            break;
-          case 'location':
-            if ( !empty($val)) {
-              $optionID = $this->getOptionKey($key, $val);
-              if ($optionID != 0) {
-                $params[$key] = $optionID;
-              } else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('location is not found', $errorMessage);
-              }
-            }
-            break;
-          case 'region':
-            if ( !empty($val)) {
-              $optionID = $this->getOptionKey($key, $val);
-              if ($optionID != 0) {
-                $params[$key] = $optionID;
-              } else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('region is not found', $errorMessage);
-              }
-            }
-            break;
-          case 'hrjc_role_department':
-            if ( !empty($val)) {
-              $optionID = $this->getOptionKey($key, $val);
-              if ($optionID != 0) {
-                $params[$key] = $optionID;
-              } else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('department is not found', $errorMessage);
-              }
-            }
-            break;
-          case 'hrjc_level_type':
-            if ( !empty($val)) {
-              $optionID = $this->getOptionKey($key, $val);
-              if ($optionID != 0) {
-                $params[$key] = $optionID;
-              } else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('level type is not found', $errorMessage);
-              }
-            }
-            break;
-          case 'hrjc_cost_center':
-            if ( !empty($val)) {
-              $optionID = $this->getOptionKey($key, $val);
-              if ($optionID != 0) {
-                $params[$key] = $optionID;
-              } else {
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center is not found', $errorMessage);
-              }
-            }
-            break;
+      $fields = CRM_Hrjobroles_DAO_HrJobRoles::fields();
+
+      if (empty($params['title'])) {
+        CRM_Contact_Import_Parser_Contact::addToErrorMsg($fields['title']['title'].' is required', $errorMessage);
+      }
+
+      $optionValues = array('location', 'hrjc_region', 'hrjc_role_department', 'hrjc_level_type');
+      foreach($optionValues as $key)  {
+        if (!empty($params[$key])) {
+          $optionID = $this->getOptionKey($key, $params[$key]);
+          if ($optionID !== 0) {
+            $params[$key] = $optionID;
+          } else {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg($fields[$key]['title'].' is not found', $errorMessage);
+          }
         }
       }
 
-      // check if job role start and end dates if exist matches or within contract start and end dates
-
-      $contractStartDate = CRM_Utils_Date::formatDate($contractDetails->period_start_date, $dateType);
-      $contractEndDate = CRM_Utils_Date::formatDate($contractDetails->period_end_date, $dateType);
-
-      if (isset($params['hrjc_role_start_date']))  {
-        $roleStartDate = $params['hrjc_role_start_date'];
-        if ($roleStartDate < $contractStartDate)  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role start date should not be before contract start date', $errorMessage);
-        }
-        if (isset($contractEndDate) && ($roleStartDate > $contractEndDate) )  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role start date should not be after contract end date', $errorMessage);
+      $cost_center_error = FALSE;
+      if (!empty($params['hrjc_cost_center'])) {
+        $optionID = $this->getOptionKey('hrjc_cost_center', $params['hrjc_cost_center']);
+        if ($optionID !== 0) {
+          $params['hrjc_cost_center'] = $optionID;
+          if (!empty($params['hrjc_cost_center_val_type']))  {
+            $val = strtolower($params['hrjc_cost_center_val_type']);
+            if ($val == 'fixed')  {
+              $params['hrjc_cost_center_val_type'] = 0;
+            }
+            elseif ($val == '%')  {
+              $params['hrjc_cost_center_val_type'] = 1;
+            }
+            else  {
+              $cost_center_error = TRUE;
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center value type should be either (fixed) or (%) ', $errorMessage);
+            }
+          }
+          else {
+            $cost_center_error = TRUE;
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center value type is not defined', $errorMessage);
+          }
+        } else {
+          $cost_center_error = TRUE;
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center is not found', $errorMessage);
         }
       }
-      else  {
-        $params['hrjc_role_start_date'] = $contractStartDate;
+      else {
+        $cost_center_error = TRUE;
       }
 
-      if (isset($params['hrjc_role_end_date']))  {
-        $roleEndDate = $params['hrjc_role_end_date'];
-        if ($roleEndDate <=  $params['hrjc_role_start_date'])  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role end date should not be before or equal job role start date', $errorMessage);
+      if ($params['hrjc_cost_center_val_type'] === 0 && !$cost_center_error)  {
+        if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount should be removed', $errorMessage);
         }
-        if (isset($contractEndDate) && $roleEndDate > $contractEndDate)  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role end date should not be after contract end date', $errorMessage);
+        elseif (!empty($params['hrjc_role_amount_pay_cost_center']))  {
+          if ( !filter_var($params['hrjc_role_amount_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_cost_center'] < 0)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to cost center should be positive number', $errorMessage);
+          }
         }
+        else  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount is not set', $errorMessage);
+        }
+        $params['hrjc_role_percent_pay_cost_center'] = 0;
       }
-      elseif (isset($contractEndDate))  {
-        $params['hrjc_role_start_date'] = $contractEndDate;
+      elseif ($params['hrjc_cost_center_val_type'] === 1 && !$cost_center_error)  {
+        if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount should be removed', $errorMessage);
+        }
+        elseif (!empty($params['hrjc_role_percent_pay_cost_center']))  {
+          if ( !filter_var($params['hrjc_role_percent_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_cost_center'] < 0)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to cost center should be positive number', $errorMessage);
+          }
+        }
+        else  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount is not set', $errorMessage);
+        }
+        $params['hrjc_role_amount_pay_cost_center'] = 0;
       }
 
+      if ($cost_center_error)  {
+        unset($params['hrjc_cost_center']);
+        unset($params['hrjc_cost_center_val_type']);
+        unset($params['hrjc_role_amount_pay_cost_center']);
+        unset($params['hrjc_role_percent_pay_cost_center']);
+      }
+
+
+      $funder_error = FALSE;
       if (!empty($params['funder'])) {
         $funder_value = $params['funder'];
         if (is_numeric ($funder_value))  {
@@ -307,15 +251,114 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         else {
           $search_field = 'display_name';
         }
-
         $result = CRM_Hrjobroles_BAO_HrJobRoles::checkContact($funder_value, $search_field);
-        if ($result != 0)  {
+        if ($result !== 0)  {
           $params['funder'] = $result;
-        }
-        else  {
+          if (!empty($params['hrjc_funder_val_type']))  {
+            $val = strtolower($params['hrjc_funder_val_type']);
+            if ($val == 'fixed')  {
+              $params['hrjc_funder_val_type'] = 0;
+            }
+            elseif ($val == '%')  {
+              $params['hrjc_funder_val_type'] = 1;
+            }
+            else  {
+              $funder_error = TRUE;
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder value type should be either (fixed) or (%) ', $errorMessage);
+            }
+          }
+          else {
+            $funder_error = TRUE;
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder value type is not defined', $errorMessage);
+          }
+        } else {
+          $funder_error = TRUE;
           CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder is not an existing contact', $errorMessage);
         }
       }
+      else {
+        $funder_error = TRUE;
+      }
+
+      if ($params['hrjc_funder_val_type'] === 0 && !$funder_error)  {
+        if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount should be removed', $errorMessage);
+        }
+        elseif (!empty($params['hrjc_role_amount_pay_funder']))  {
+          if ( !filter_var($params['hrjc_role_amount_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_funder'] < 0)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to funder should be positive number', $errorMessage);
+          }
+        }
+        else  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount is not set', $errorMessage);
+        }
+        $params['hrjc_role_percent_pay_funder'] = 0;
+      }
+      elseif ($params['hrjc_funder_val_type'] === 1 && !$funder_error)  {
+        if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount should be removed', $errorMessage);
+        }
+        elseif (!empty($params['hrjc_role_percent_pay_funder']))  {
+          if ( !filter_var($params['hrjc_role_percent_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_funder'] < 0)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to funder should be positive number', $errorMessage);
+          }
+        }
+        else  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount is not set', $errorMessage);
+        }
+        $params['hrjc_role_amount_pay_funder'] = 0;
+      }
+
+      if ($funder_error)  {
+        unset($params['funder']);
+        unset($params['hrjc_funder_val_type']);
+        unset($params['hrjc_role_amount_pay_funder']);
+        unset($params['hrjc_role_percent_pay_funder']);
+      }
+
+      // check if job role start and end dates if exist matches or within contract start and end dates
+
+      $contractStartDate = CRM_Utils_Date::formatDate($contractDetails->period_start_date, $dateType);
+      $contractEndDate = CRM_Utils_Date::formatDate($contractDetails->period_end_date, $dateType);
+
+      if (!empty($params['hrjc_role_start_date'])) {
+        $roleStartDate = CRM_Utils_Date::formatDate($params['hrjc_role_start_date'], $dateType);
+        if ($roleStartDate) {
+          $params['hrjc_role_start_date'] = $roleStartDate;
+          if ($roleStartDate < $contractStartDate)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role start date should not be before contract start date', $errorMessage);
+          }
+          if (!empty($contractEndDate) && ($roleStartDate > $contractEndDate) )  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role start date should not be after contract end date', $errorMessage);
+          }
+        }
+        else {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('Start Date is not a valid date', $errorMessage);
+        }
+      } else  {
+        $params['hrjc_role_start_date'] = $contractStartDate;
+      }
+
+      if (!empty($params['hrjc_role_end_date'])) {
+        $roleEndDate = CRM_Utils_Date::formatDate($params['hrjc_role_end_date'], $dateType);
+        if ($roleEndDate) {
+          $params['hrjc_role_end_date'] = $roleEndDate;
+          if ($roleEndDate <=  $params['hrjc_role_start_date'])  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role end date should not be before or equal job role start date', $errorMessage);
+          }
+          if (!empty($contractEndDate) && $roleEndDate > $contractEndDate)  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('job role end date should not be after contract end date', $errorMessage);
+          }
+        }
+        else {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg('End Date is not a valid date', $errorMessage);
+        }
+      }
+      else  {
+        $params['hrjc_role_end_date'] = $contractEndDate;
+      }
+
+      // END checking imported values if they are valid
 
     }
 
