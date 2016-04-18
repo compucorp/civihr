@@ -37,9 +37,18 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         '1' => '%'
     );
 
+    /**
+     * @var array A list of fields available while importing/exporting
+     */
+    private $hrjobRoleFields = array();
+
+
     public function &getFields() {
-        $arr = array();
-        return $arr;
+        if (empty($this->hrjobRoleFields)) {
+            $this->hrjobRoleFields = CRM_Hrjobroles_DAO_HrJobRoles::export();
+        }
+
+        return $this->hrjobRoleFields;
     }
 
     /**
@@ -53,7 +62,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $from = '';
         switch ($name) {
             case 'civicrm_contact':
-                $from .= " $side JOIN civicrm_hrjobroles hrjobroles ON hrjobcontract.id = hrjobroles.job_contract_id ";
+                $from .= " $side JOIN civicrm_hrjobroles ON hrjobcontract.id = civicrm_hrjobroles.job_contract_id ";
                 break;
         }
 
@@ -88,7 +97,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $fieldsKeys = CRM_Hrjobroles_BAO_HrJobRoles::fieldKeys();
         $field = substr($name, 11);
         $fieldKey = isset($fieldsKeys[$field]) ? $fieldsKeys[$field] : '';
-        $whereField = 'hrjobroles.'.$field;
+        $whereField = 'civicrm_hrjobroles.'.$field;
         if($fieldKey) {
             $fieldTitle = $fields[$fieldKey]['title'];
         } else {
