@@ -39,13 +39,14 @@ function _hrleaveandabsences_create_administer_menu() {
   $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
 
   $params = array(
-      'label'     => ts('Leave and Absences'),
-      'name'      => 'leave_and_absences',
-      'url'       => null,
-      'operator'  => null,
-      'is_active' => 1,
-      'parent_id' => $administerMenuId,
-      'weight'    => $maxWeightOfAdminMenuItems + 1
+      'label'      => ts('Leave and Absences'),
+      'name'       => 'leave_and_absences',
+      'url'        => null,
+      'operator'   => null,
+      'is_active'  => 1,
+      'parent_id'  => $administerMenuId,
+      'weight'     => $maxWeightOfAdminMenuItems + 1,
+      'permission' => 'administer leave and absences'
   );
 
   $leaveAndAbsencesAdminNavigation = _hrleaveandabsences_add_navigation_menu($params);
@@ -62,25 +63,25 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
           'label'      => ts('Leave/Absence Types'),
           'name'       => 'leave_and_absence_types',
           'url'        => 'civicrm/admin/leaveandabsences/types',
-          'permission' => '',
+          'permission' => 'administer leave and absences',
       ),
       array(
           'label'      => ts('Leave/Absence Periods'),
           'name'       => 'leave_and_absence_periods',
           'url'        => 'civicrm/admin/leaveandabsences/periods',
-          'permission' => '',
+          'permission' => 'administer leave and absences',
       ),
       array(
           'label'      => ts('Public Holidays'),
           'name'       => 'leave_and_absence_public_holidays',
           'url'        => 'civicrm/admin/leaveandabsences/public_holidays',
-          'permission' => '',
+          'permission' => 'administer leave and absences',
       ),
       array(
           'label'      => ts('Manage Work Patterns'),
           'name'       => 'leave_and_absence_manage_work_patterns',
           'url'        => 'civicrm/admin/leaveandabsences/work_patterns',
-          'permission' => '',
+          'permission' => 'administer leave and absences',
       )
   );
 
@@ -118,12 +119,13 @@ function _hrleavesandabsences_create_main_menu() {
   $reportWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'weight', 'name');
 
   $params = array(
-      'label'     => ts('Leave and Absences'),
-      'name'      => 'leave_and_absences',
-      'url'       => 'civicrm/leaveandabsences/dashboard',
-      'operator'  => null,
-      'weight'    => $reportWeight + 1,
-      'is_active' => 1
+      'label'      => ts('Leave and Absences'),
+      'name'       => 'leave_and_absences',
+      'url'        => 'civicrm/leaveandabsences/dashboard',
+      'operator'   => null,
+      'weight'     => $reportWeight + 1,
+      'is_active'  => 1,
+      'permission' => 'access leave and absences'
   );
 
   _hrleaveandabsences_add_navigation_menu($params);
@@ -185,6 +187,17 @@ function hrleaveandabsences_civicrm_disable() {
   CRM_Core_BAO_Navigation::resetNavigation();
 
   _hrleaveandabsences_civix_civicrm_disable();
+}
+
+/**
+ * Implements hook_civicrm_permission().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_permission
+ */
+function hrleaveandabsences_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRLeaveAndAbsences') . ': '; // name of extension or module
+  $permissions['access leave and absences'] = $prefix . ts('Access Leave and Absences');
+  $permissions['administer leave and absences'] = $prefix . ts('Administer Leave and Absences');
 }
 
 /**
