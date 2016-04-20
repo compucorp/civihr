@@ -948,6 +948,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1009();
     $this->upgrade_1011();
     $this->upgrade_1012();
+    $this->upgrade_1014();
   }
   
   function upgrade_1001() {
@@ -1205,6 +1206,32 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $jobcontracts = CRM_Core_DAO::executeQuery($query);
     while ($jobcontracts->fetch()) {
         CRM_Hrjobcontract_BAO_HRJobContractRevision::updateEffectiveEndDates($jobcontracts->id);
+    }
+    return TRUE;
+  }
+
+  /**
+   * Create a CiviCRM daily scheduled job which updates Contacts length of service values.
+   * 
+   * @return TRUE
+   */
+  function upgrade_1014() {
+    $dao = new CRM_Core_DAO_Job();
+    $dao->api_entity = 'HRJobContract';
+    $dao->api_action = 'updatelengthofservice';
+    $dao->find(TRUE);
+    if (!$dao->id)
+    {
+      $dao = new CRM_Core_DAO_Job();
+      $dao->domain_id = CRM_Core_Config::domainID();
+      $dao->run_frequency = 'Daily';
+      $dao->parameters = null;
+      $dao->name = 'Length of service updater';
+      $dao->description = 'Updates Length of service value for each Contact';
+      $dao->api_entity = 'HRJobContract';
+      $dao->api_action = 'updatelengthofservice';
+      $dao->is_active = 1;
+      $dao->save();
     }
     return TRUE;
   }
