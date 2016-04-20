@@ -135,6 +135,16 @@ function hrjobcontract_civicrm_uninstall() {
   $customGroup = civicrm_api3('CustomGroup', 'getsingle', array('return' => "id",'name' => "Contact_Length_Of_Service",));
   civicrm_api3('CustomGroup', 'delete', array('id' => $customGroup['id']));
 
+  // delete scheduled job entry containing length of service upgrader
+  $dao = new CRM_Core_DAO_Job();
+  $dao->api_entity = 'HRJobContract';
+  $dao->api_action = 'updatelengthofservice';
+  $dao->find(TRUE);
+  if ($dao->id)
+  {
+    $dao->delete();
+  }
+
   return _hrjobcontract_civix_civicrm_uninstall();
 }
 
@@ -182,6 +192,17 @@ function _hrjobcontract_setActiveFields($setActive) {
   $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason', 'hrjc_contract_type', 'hrjc_level_type', 'hrjc_department', 'hrjc_hours_type', 'hrjc_pay_grade', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_location', 'hrjc_pension_type', 'hrjc_region', 'hrjc_pay_scale')";
   CRM_Core_DAO::executeQuery($query);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason', 'hrjc_contract_type', 'hrjc_level_type', 'hrjc_department', 'hrjc_hours_type', 'hrjc_pay_grade', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_location', 'hrjc_pension_type', 'hrjc_region', 'hrjc_pay_scale')");
+
+  // disable/enable update length of service scheduled job
+    $dao = new CRM_Core_DAO_Job();
+    $dao->api_entity = 'HRJobContract';
+    $dao->api_action = 'updatelengthofservice';
+    $dao->find(TRUE);
+    if ($dao->id)
+    {
+      $dao->is_active = $setActive;
+      $dao->save();
+    }
 }
 
 /**
