@@ -267,6 +267,17 @@ function hrleaveandabsences_civicrm_alterSettingsFolders(&$metaDataFolders = NUL
 }
 
 /**
+ * Implementation of hook_civicrm_entityTypes
+ */
+function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array(
+      'name'  => 'AbsenceType',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
+      'table' => 'civicrm_hrleaveandabsences_absence_type',
+  );
+}
+
+/**
  * Functions below this ship commented out. Uncomment as required.
  *
 

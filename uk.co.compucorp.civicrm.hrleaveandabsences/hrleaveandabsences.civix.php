@@ -114,14 +114,14 @@ function _hrleaveandabsences_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue =
 }
 
 /**
- * @return CRM_Hrleaveandabsences_Upgrader
+ * @return CRM_HRLeaveAndAbsences_Upgrader
  */
 function _hrleaveandabsences_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Hrleaveandabsences/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/HRLeaveAndAbsences/Upgrader.php')) {
     return NULL;
   }
   else {
-    return CRM_Hrleaveandabsences_Upgrader_Base::instance();
+    return CRM_HRLeaveAndAbsences_Upgrader_Base::instance();
   }
 }
 
