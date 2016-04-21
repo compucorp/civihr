@@ -549,14 +549,6 @@ function hrjobcontract_civicrm_export( $exportTempTable, $headerRows, $sqlColumn
 
 function hrjobcontract_civicrm_merge($type, &$data, $mainId = NULL, $otherId = NULL, $tables = NULL) {
   switch ($type) {
-    case 'relTables':
-      $data['rel_table_hrjobcontract'] = array(
-        'title'  => ts('Job Contracts'),
-        'tables' => array('civicrm_hrjobcontract'),
-        'url'    => CRM_Utils_System::url('civicrm/contact/view', 'cid=$cid'),
-      );
-      break;
-
     case 'cidRefs':
         $data['civicrm_hrjobcontract'] = array('contact_id');
       break;

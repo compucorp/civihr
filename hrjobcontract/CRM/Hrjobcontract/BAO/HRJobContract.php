@@ -150,6 +150,32 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
+   * Return an associative array with Contracts for specific contact.
+   * @param int $cuid
+   * @return array
+   */
+  public static function getContactContracts($cuid)  {
+    $contracts = civicrm_api3('HRJobContract', 'get', array(
+      'sequential' => 1,
+      'contact_id' => $cuid,
+    ));
+    $contracts = $contracts['values'];
+    $contractsList = array();
+    $counter = 0;
+    foreach ($contracts as $contract)  {
+      $contractDetails = civicrm_api3('HRJobDetails', 'get', array(
+        'sequential' => 1,
+        'jobcontract_id' => $contract['id'],
+      ));
+      $contractDetails = $contractDetails['values'][0];
+      $contractDetails['contract_id'] = $contract['id'];
+      $contractsList[$counter++] = $contractDetails;
+    }
+
+    return $contractsList;
+  }
+
+  /**
    * Return an assotiative array with Contracts dates.
    * 
    * @param array $contracts

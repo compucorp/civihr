@@ -102,11 +102,13 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
       return array(
         'success' => TRUE,
         'message' => NULL,
+        'conflicting_contracts' => NULL,
       );
     }
     return array(
       'success' => FALSE,
       'message' => self::getConflictMessage($conflictingContracts),
+      'conflicting_contracts' => $conflictingContracts,
     );
   }
 

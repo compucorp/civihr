@@ -23,6 +23,30 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
+   * Return an associative array with Roles for specific contact.
+   * @param int $cuid
+   * @return array
+   */
+  public static function getContactRoles($cuid)  {
+    $queryParam = array(1 => array($cuid, 'String'));
+    $query = "SELECT cjr.id as role_id, cjr.job_contract_id as contract_id, cjr.title
+              FROM civicrm_hrjobroles cjr
+              left join civicrm_hrjobcontract cjc on cjr.job_contract_id=cjc.id
+              where cjc.contact_id=%1 and cjc.deleted = 0;";
+    $counter = 0;
+    $roles = CRM_Core_DAO::executeQuery($query, $queryParam);
+    $rolesList = array();
+    while ($roles->fetch()) {
+      $roleDetails['role_id'] = $roles->role_id;
+      $roleDetails['contract_id'] = $roles->contract_id;
+      $roleDetails['title'] = $roles->title;
+      $rolesList[$counter++] = $roleDetails;
+    }
+
+    return $rolesList;
+  }
+
+  /**
    * Get options for a given job roles field along with their database IDs.
    *
    * @param String $fieldName
