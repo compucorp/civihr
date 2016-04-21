@@ -18,7 +18,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `must_take_public_holiday_as_leave` tinyint   DEFAULT 0 ,
      `default_entitlement` int unsigned NOT NULL   COMMENT 'The number of days entitled for this type',
      `add_public_holiday_to_entitlement` tinyint   DEFAULT 0 ,
-     `is_enabled` tinyint   DEFAULT 1 COMMENT 'Only enabled types can be requested',
+     `is_active` tinyint   DEFAULT 1 COMMENT 'Only enabled types can be requested',
      `allow_accruals_request` tinyint   DEFAULT 0 ,
      `max_leave_accrual` int unsigned    COMMENT 'Value is the number of days that can be accrued. Null means unlimited',
      `allow_accrue_in_the_past` tinyint   DEFAULT 0 ,

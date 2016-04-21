@@ -161,7 +161,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
    *
    * @var boolean
    */
-  public $is_enabled;
+  public $is_active;
   /**
    *
    * @var boolean
@@ -209,7 +209,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
   /**
    * The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry
    *
-   * @var int usigned
+   * @var int unsigned
    */
   public $carry_forward_expiration_unit;
   /**
@@ -308,8 +308,8 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('By default should public holiday be added to the default entitlement?') ,
         ) ,
-        'is_enabled' => array(
-          'name' => 'is_enabled',
+        'is_active' => array(
+          'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Is enabled?') ,
           'default' => '1',
@@ -356,7 +356,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
         ) ,
         'carry_forward_expiration_unit' => array(
           'name' => 'carry_forward_expiration_unit',
-          'type' => CRM_Utils_Type::T_INT ,
+          'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Carry Forward Expiration Unit') ,
         ) ,
         'carry_forward_expiration_date' => array(
@@ -393,7 +393,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
         'must_take_public_holiday_as_leave' => 'must_take_public_holiday_as_leave',
         'default_entitlement' => 'default_entitlement',
         'add_public_holiday_to_entitlement' => 'add_public_holiday_to_entitlement',
-        'is_enabled' => 'is_enabled',
+        'is_active' => 'is_active',
         'allow_accruals_request' => 'allow_accruals_request',
         'max_leave_accrual' => 'max_leave_accrual',
         'allow_accrue_in_the_past' => 'allow_accrue_in_the_past',
