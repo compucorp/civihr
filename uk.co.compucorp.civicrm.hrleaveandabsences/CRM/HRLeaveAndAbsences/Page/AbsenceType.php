@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
         ],
         CRM_Core_Action::BASIC => [
           'name' => ts('Set as default'),
-          'class' => 'crm-set-as-default',
+          'class' => 'civihr-set-as-default',
           'title' => ts('Set this Leave/Absence as default')
         ]
       ];
