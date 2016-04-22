@@ -36,6 +36,11 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
 
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
+-- /*******************************************************
+-- *
+-- * default absence types
+-- *
+-- *******************************************************/
 INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   id,
   title,
@@ -119,3 +124,21 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1,
   3
 );
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_notification_receiver
+-- *
+-- * A contact that will be notified of new leave requests of this type
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_notification_receiver` (
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique NotificationReceiver ID',
+     `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
+     `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact',
+    PRIMARY KEY ( `id` ),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_notification_receiver_type_id
+      FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrleaveandabsences_notification_receiver_contact_id
+      FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
