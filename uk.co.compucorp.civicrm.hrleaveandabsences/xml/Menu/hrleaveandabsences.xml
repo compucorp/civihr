@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/leaveandabsences/types</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_AbsenceType</page_callback>
+    <title>Leave/Absence Types</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
+</menu>
