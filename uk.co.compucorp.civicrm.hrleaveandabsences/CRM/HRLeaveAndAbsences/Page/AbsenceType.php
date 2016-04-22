@@ -69,8 +69,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
         ],
         CRM_Core_Action::DELETE  => [
           'name'  => ts('Delete'),
-          'url'   => 'civicrm/admin/leaveandabsences/type',
-          'qs'    => 'action=delete&id=%%id%%',
+          'class' => 'civihr-delete',
           'title' => ts('Delete Leave/Absence Type'),
         ],
         CRM_Core_Action::BASIC => [

@@ -39,8 +39,12 @@
     {literal}
     <script type="text/javascript">
         CRM.$(function($) {
-            function successMsg() {
-                return ts('"%1" is now the default Leave/Absence Type');
+            function setAsDefaultSuccessMsg() {
+                return ts('"%1" is now the default Leave/Absence Type', {1: info.title});
+            }
+
+            function deleteAbsenceTypeSuccessMsg() {
+                return ts('"%1" was deleted', {1: info.title});
             }
 
             function refresh() {
@@ -56,7 +60,16 @@
                         id: info.id,
                         is_default: 1
                     },
-                    {success: successMsg}
+                    {success: setAsDefaultSuccessMsg}
+                ).done(refresh);
+            }
+
+            function deleteAbsenceType() {
+                CRM.api3(
+                    info.entity,
+                    'delete',
+                    { id: info.id },
+                    {success: deleteAbsenceTypeSuccessMsg}
                 ).done(refresh);
             }
 
@@ -64,22 +77,41 @@
                 $a = $(this);
                 $row = $a.closest('.crm-entity');
                 info = $a.crmEditableEntity();
+                var title = ts('Set "%1" as default', {1: info.title});
+                var message = ts('Are you sure you want to set "%1" as the default Leave/Absence Type?', {1: info.title});
+                showConfirmation(title, message, setAsDefault);
+
+                return false;
+            }
+
+            function confirmDelete() {
+                $a = $(this);
+                $row = $a.closest('.crm-entity');
+                info = $a.crmEditableEntity();
+                var title = ts('Delete "%1"', {1: info.title});
+                var message = ts('Are you sure you want to delete "%1"?', {1: info.title});
+                showConfirmation(title, message, deleteAbsenceType);
+
+                return false;
+            }
+
+            function showConfirmation(title, message, yesCallback) {
                 CRM.confirm({
-                    title: ts('Set "%1" as default', {1: info.title}),
-                    message: ts('Are you sure you want to set "%1" as the default Leave/Absence Type?', {1: info.title}),
+                    title: title,
+                    message: message,
                     options: {
                         yes: ts('Yes'),
                         no: ts('No')
                     }
                 })
-                .on('crmConfirm:yes', setAsDefault);
-
-                return false;
+                .on('crmConfirm:yes', yesCallback);
             }
 
             $('body')
                     .off('click.civihrSetAsDefault')
-                    .on('click.civihrSetAsDefault', '.action-item.civihr-set-as-default', confirmAsDefault);
+                    .on('click.civihrSetAsDefault', '.action-item.civihr-set-as-default', confirmAsDefault)
+                    .off('click.civihrDelete')
+                    .on('click.civihrDelete', '.action-item.civihr-delete', confirmDelete);
         });
     </script>
     {/literal}
