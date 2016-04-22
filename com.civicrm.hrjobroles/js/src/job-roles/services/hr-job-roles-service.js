@@ -375,7 +375,6 @@ define([
                     "name": { "IN": option_group_name },
                     "options": { "limit": 1000 }
                 }).done(function (option_group_data) {
-
                     if (option_group_data.is_error !== 1) {
 
                         var option_group_ids = [];

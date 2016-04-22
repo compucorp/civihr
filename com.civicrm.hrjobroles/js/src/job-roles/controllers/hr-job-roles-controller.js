@@ -709,7 +709,7 @@ define([
                             var LevelList = {};
 
                             // Pass the Cost Centers option group list to the scope
-                            var CostCentreList = {};
+                            var CostCentreList = [];
 
                             angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
@@ -762,14 +762,13 @@ define([
 
                                             break;
                                         case 'cost_centres':
-
                                             if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                CostCentreList[data.values[i]['id']] = {
+                                                CostCentreList.push({
                                                     id: data.values[i]['id'],
-                                                    title: data.values[i]['label']
-                                                };
-
+                                                    title: data.values[i]['label'],
+                                                    weight: data.values[i]['weight']
+                                                });
                                             }
 
                                             break;
