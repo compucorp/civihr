@@ -35,3 +35,87 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
 
 
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
+  id,
+  title,
+  color,
+  must_take_public_holiday_as_leave,
+  default_entitlement,
+  allow_request_cancelation,
+  add_public_holiday_to_entitlement,
+  allow_accruals_request,
+  allow_carry_forward,
+  max_number_of_days_to_carry_forward,
+  carry_forward_expiration_duration,
+  carry_forward_expiration_unit,
+  is_reserved,
+  is_default,
+  weight
+) VALUES (
+  1,
+  'Holiday / Vacation',
+  '#151D2C',
+  1,
+  20,
+  3,
+  1,
+  0,
+  1,
+  5,
+  1,
+  3, -- Years
+  1,
+  1,
+  1
+);
+
+INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
+  id,
+  title,
+  color,
+  must_take_public_holiday_as_leave,
+  default_entitlement,
+  allow_request_cancelation,
+  allow_accruals_request,
+  max_leave_accrual,
+  accrual_expiration_duration,
+  accrual_expiration_unit,
+  is_reserved,
+  weight
+) VALUES (
+  2,
+  'TOIL',
+  '#056780',
+  0,
+  0,
+  3,
+  1,
+  5,
+  3,
+  2, -- months
+  1,
+  2
+);
+
+INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
+  id,
+  title,
+  color,
+  must_take_public_holiday_as_leave,
+  default_entitlement,
+  allow_request_cancelation,
+  allow_overuse,
+  is_reserved,
+  weight
+) VALUES (
+  3,
+  'Sick',
+  '#B32E2E',
+  0,
+  0,
+  1, -- no
+  1,
+  1,
+  3
+);
