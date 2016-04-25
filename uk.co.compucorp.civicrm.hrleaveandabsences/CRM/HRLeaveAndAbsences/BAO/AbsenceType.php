@@ -55,6 +55,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     ];
   }
 
+  public static function getDefaultValues($id) {
+    $absenceType = civicrm_api3('AbsenceType', 'get', array('id' => $id));
+    return $absenceType['values'][$id];
+  }
+
   private static function unsetDefaultTypes() {
     $tableName = self::getTableName();
     $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";

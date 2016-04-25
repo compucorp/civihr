@@ -53,7 +53,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
       $this->links = [
         CRM_Core_Action::UPDATE  => [
           'name'  => ts('Edit'),
-          'url'   => 'civicrm/admin/leaveandabsences/type',
+          'url'   => 'civicrm/admin/leaveandabsences/types',
           'qs'    => 'action=update&id=%%id%%&reset=1',
           'title' => ts('Edit Leave/Absence Type'),
         ],
@@ -90,7 +90,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editForm() {
-    // TODO: Implement editForm() method.
+    return 'CRM_HRLeaveAndAbsences_Form_AbsenceType';
   }
 
   /**
@@ -100,7 +100,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editName() {
-    // TODO: Implement editName() method.
+    return 'Leave/Absence Types';
   }
 
   /**
@@ -112,7 +112,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function userContext($mode = null) {
-    // TODO: Implement userContext() method.
+    return 'civicrm/admin/leaveandabsences/types';
   }
 
   private function calculateLinksMask($absenceType) {
