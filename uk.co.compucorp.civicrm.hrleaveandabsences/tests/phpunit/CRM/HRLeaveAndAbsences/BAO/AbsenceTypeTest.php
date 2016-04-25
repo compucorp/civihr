@@ -281,11 +281,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
     $this->createBasicType(['allow_request_cancelation' => $requestCancelationOption]);
   }
+
+  public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
+  {
+    $firstEntity = $this->createBasicType();
+    $this->assertNotEmpty($firstEntity->weight);
+
+    $secondEntity = $this->createBasicType();
+    $this->assertNotEmpty($secondEntity->weight);
+    $this->assertEquals($firstEntity->weight + 1, $secondEntity->weight);
+  }
   
   private function createBasicType($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
-        'weight' => 1,
         'color' => '#000000',
         'default_entitlement' => 20,
         'allow_request_cancelation' => 1,

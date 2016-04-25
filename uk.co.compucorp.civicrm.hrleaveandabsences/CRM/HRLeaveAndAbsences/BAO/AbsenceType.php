@@ -26,6 +26,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     if(isset($params['is_default']) && $params['is_default']) {
       self::unsetDefaultTypes();
     }
+
+    if(empty($params['id'])) {
+      $params['weight'] = self::getMaxWeight() + 1;
+    }
+
     $instance = new $className();
     $instance->copyValues($params);
     $instance->save();
@@ -52,10 +57,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
   private static function unsetDefaultTypes() {
     $tableName = self::getTableName();
-    $query = "UPDATE $tableName SET is_default = 0 WHERE is_default = 1";
+    $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
     CRM_Core_DAO::executeQuery($query);
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateParams($params) {
     if(!empty($params['add_public_holiday_to_entitlement'])) {
       self::validateAddPublicHolidayToEntitlement();
@@ -85,6 +95,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateTOIL($params) {
     $allow_accruals_request = !empty($params['allow_accruals_request']);
     if(!empty($params['max_leave_accrual']) && !$allow_accruals_request) {
@@ -122,6 +137,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateCarryForward($params) {
     $allow_carry_forward = !empty($params['allow_carry_forward']);
     if(!empty($params['max_number_of_days_to_carry_forward']) && !$allow_carry_forward) {
@@ -202,5 +222,23 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     return true;
+  }
+
+  /**
+   * Gets the maximum weight of all leave/absence types
+   *
+   * Returns 0 if there's no type available
+   *
+   * @return int the maximu weight
+   */
+  private static function getMaxWeight() {
+    $tableName = self::getTableName();
+    $query = "SELECT MAX(weight) as max_weight FROM {$tableName}";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if($dao->fetch()) {
+      return $dao->max_weight;
+    }
+
+    return 0;
   }
 }
