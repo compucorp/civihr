@@ -125,7 +125,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
   private static function getConflictingContracts($contactId, $periodStartDate, $periodEndDate, $jobContractId = null) {
     $conflictingContracts = array();
     $conflictingContractsQuery = "
-      SELECT jc.id, jcd.title, jcd.period_start_date, jcd.period_end_date, jcd.jobcontract_revision_id, jcr.effective_date
+      SELECT jc.id, jcd.title, jcd.period_start_date, jcd.period_end_date, jcd.jobcontract_revision_id, jcr.effective_date, jcr.effective_end_date
       FROM civicrm_hrjobcontract jc 
       LEFT JOIN civicrm_hrjobcontract_revision jcr ON jcr.jobcontract_id = jc.id 
       LEFT JOIN civicrm_hrjobcontract_details jcd ON jcd.jobcontract_revision_id = jcr.details_revision_id 
@@ -144,6 +144,12 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
           OR
           (
             %2 > jcd.period_start_date
+            AND
+            (
+              jcd.period_end_date IS NULL
+              OR
+              jcd.period_end_date >= %2
+            )
             AND
             (
               jcr.effective_end_date IS NULL
@@ -191,6 +197,7 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
         'period_end_date' => $conflictingContractsResult->period_end_date,
         'jobcontract_revision_id' => $conflictingContractsResult->jobcontract_revision_id,
         'effective_date' => $conflictingContractsResult->effective_date,
+        'effective_end_date' => $conflictingContractsResult->effective_end_date,
       );
     }
     return $conflictingContracts;

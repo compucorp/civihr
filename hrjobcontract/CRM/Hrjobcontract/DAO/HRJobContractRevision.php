@@ -183,6 +183,15 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'import' => true,
           'headerPattern' => '/^effective\s?date/i',
         ) ,
+        'effective_end_date' => array(
+          'name' => 'effective_end_date',
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => ts('Effective End Date') ,
+          'required' => false,
+          'export' => true,
+          'import' => true,
+          'headerPattern' => '/^effective\s?end\s?date/i',
+        ) ,
         'change_reason' => array(
           'name' => 'change_reason',
           'type' => CRM_Utils_Type::T_INT,
@@ -312,6 +321,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
         'created_date' => 'created_date',
         'modified_date' => 'modified_date',
         'effective_date' => 'effective_date',
+        'effective_end_date' => 'effective_end_date',
         'change_reason' => 'change_reason',
         'status' => 'status',
         'details_revision_id' => 'details_revision_id',

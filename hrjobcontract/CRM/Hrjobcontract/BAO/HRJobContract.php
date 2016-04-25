@@ -32,7 +32,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
         CRM_Hrjobcontract_JobContractDates::removeDates($instance->id);
     }
     
-    if (module_exists('rules')) {
+    if (function_exists('module_exists') && module_exists('rules')) {
         rules_invoke_event('hrjobcontract_after_create', $instance);
     }
 
