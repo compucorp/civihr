@@ -11,9 +11,9 @@ define([
     'use strict';
 
     return angular.module("common.angularDate", ['common.services', 'ui.bootstrap', 'common.templates']).config(['$provide', function($provide){
-        $provide.decorator('datepickerPopupDirective', datepickerPopup);
-        $provide.decorator('datepickerPopupWrapDirective', datepickerPopupWrap);
-        $provide.decorator('datepickerDirective', datepicker);
-        $provide.decorator('daypickerDirective', daypicker);
+        $provide.decorator('uibDatepickerPopupDirective', datepickerPopup);
+        $provide.decorator('uibDatepickerPopupWrapDirective', datepickerPopupWrap);
+        $provide.decorator('uibDatepickerDirective', datepicker);
+        $provide.decorator('uibDaypickerDirective', daypicker);
     }]);
 });

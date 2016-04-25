@@ -1,5 +1,5 @@
 define([], function () {
-    return ['$delegate', 'HR_settings', '$position', '$window', function ($delegate, HR_settings, $position, $window) {
+    return ['$delegate', 'HR_settings', '$uibPosition', '$window', function ($delegate, HR_settings, $position, $window) {
         'use strict';
 
         var original_link = $delegate[0].link;
