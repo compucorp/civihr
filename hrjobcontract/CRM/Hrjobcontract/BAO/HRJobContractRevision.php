@@ -15,7 +15,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
   public static function create($params) {
     global $user;
 
-    $params['editor_uid'] = $user->uid;
+    if (!empty($user->uid)) {
+        $params['editor_uid'] = $user->uid;
+    }
     $className = 'CRM_Hrjobcontract_DAO_HRJobContractRevision';
     $entityName = 'HRJobContractRevision';
     $hook = empty($params['id']) ? 'create' : 'edit';
