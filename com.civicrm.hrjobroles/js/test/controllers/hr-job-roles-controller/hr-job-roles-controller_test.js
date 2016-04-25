@@ -27,6 +27,92 @@ define([
             DateValidation.dateFormats.push('DD/MM/YYYY');
         }));
 
+        describe('getOptionValues', function() {
+          beforeEach(function () {
+            spyOn(HRJobRolesService, 'getOptionValues').and.returnValue($q.resolve({
+               "count":5,
+               "values":[
+                  {
+                     "id":"845",
+                     "option_group_id":"111",
+                     "label":"Senior Manager",
+                     "value":"Senior Manager",
+                     "name":"Senior_Manager",
+                     "is_default":"0",
+                     "weight":"1",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"846",
+                     "option_group_id":"111",
+                     "label":"Junior Manager",
+                     "value":"Junior Manager",
+                     "name":"Junior_Manager",
+                     "is_default":"0",
+                     "weight":"2",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"879",
+                     "option_group_id":"124",
+                     "label":"Other",
+                     "value":"Other",
+                     "name":"Other",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"3",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"1045",
+                     "option_group_id":"124",
+                     "label":"Test A",
+                     "value":"1",
+                     "name":"Test A",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"2",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"1046",
+                     "option_group_id":"124",
+                     "label":"Test B",
+                     "value":"2",
+                     "name":"Test B",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"1",
+                     "description":"Test B",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  }
+               ],
+               "optionGroupData":{
+                  "cost_centres":"124"
+               }
+            }));
+            initController();
+            $rootScope.$digest();
+          });
+
+          it('builds the "CostCentreList" array of objects containing the "weight" property', function(){
+            expect(scope.CostCentreList.length).toBe(3);
+            expect(scope.CostCentreList[0].weight).not.toBeNull();
+            expect(scope.CostCentreList[1].weight).not.toBeNull();
+            expect(scope.CostCentreList[2].weight).not.toBeNull();
+          });
+        });
+
         describe('Basic tests', function () {
             beforeEach(function () {
                 spyOn(HRJobRolesService, 'getContracts').and.callThrough();
