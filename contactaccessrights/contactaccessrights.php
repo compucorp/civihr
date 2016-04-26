@@ -59,6 +59,16 @@ function contactaccessrights_civicrm_disable() {
 }
 
 /**
+ * Implements hook_civicrm_permission().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_permission
+ */
+function contactaccessrights_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRContactAccessRights') . ': ';
+  $permissions['administer roles and teams'] = $prefix . ts('Administer roles and teams');
+}
+
+/**
  * Implements hook_civicrm_upgrade().
  *
  * @param $op    string, the type of operation being performed; 'check' or 'enqueue'
@@ -189,11 +199,13 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
  * @param int   $contactID ID of the contact whose summary page is being viewed.
  */
 function contactaccessrights_civicrm_summaryActions(&$actions, $contactID) {
-  $actions['casework'] = array(
-    'title'  => 'Manage roles and teams',
-    'weight' => 999,
-    'ref'    => 'manage-contact-access-rights',
-    'key'    => 'manage-contact-access-rights',
-    'href'   => "/civicrm/admin/contact-access-rights/manage?"
-  );
+  if (CRM_Core_Permission::check('administer roles and teams')) {
+    $actions['casework'] = array(
+      'title'  => 'Manage roles and teams',
+      'weight' => 999,
+      'ref'    => 'manage-contact-access-rights',
+      'key'    => 'manage-contact-access-rights',
+      'href'   => "/civicrm/admin/contact-access-rights/manage?"
+    );
+  }
 }
