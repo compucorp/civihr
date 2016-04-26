@@ -67,7 +67,7 @@ define([
                 maxFileSize: CRM.jobContractTabApp.maxFileSize
             }
         })
-        .config(['settings', '$routeProvider', '$resourceProvider', '$logProvider', '$httpProvider', 'datepickerConfig', 'uiSelectConfig',
+        .config(['settings', '$routeProvider', '$resourceProvider', '$logProvider', '$httpProvider', 'uibDatepickerConfig', 'uiSelectConfig',
             function (settings, $routeProvider, $resourceProvider, $logProvider, $httpProvider, datepickerConfig, uiSelectConfig) {
                 $logProvider.debugEnabled(settings.debug);
 

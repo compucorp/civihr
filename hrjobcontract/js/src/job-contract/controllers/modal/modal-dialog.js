@@ -3,7 +3,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ModalDialogCtrl',['$scope','$modalInstance', '$timeout', 'content', '$log',
+    controllers.controller('ModalDialogCtrl',['$scope','$uibModalInstance', '$timeout', 'content', '$log',
         function ($scope, $modalInstance, $timeout, content, $log) {
             $log.debug('Controller: ModalDialogCtrl');
 

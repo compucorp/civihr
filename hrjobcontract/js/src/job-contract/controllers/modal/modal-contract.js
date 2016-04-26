@@ -12,7 +12,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ModalContractCtrl',['$scope','$modal', '$modalInstance','$q', '$rootElement','$rootScope','$filter',
+    controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
         'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'action', 'entity',
         'content', 'files', 'UtilsService', 'utils', 'settings', '$log',
@@ -87,7 +87,7 @@ define([
                 }
 
                 var modalInstance = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
                     size: 'sm',
                     controller: 'ModalDialogCtrl',
@@ -216,7 +216,7 @@ define([
 
             function changeReason(){
                 var modalChangeReason = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalChangeReason.html?v='+(new Date()).getTime(),
                     controller: 'ModalChangeReasonCtrl',
                     resolve: {
@@ -237,7 +237,7 @@ define([
 
             function confirmEdit() {
                 var modalConfirmEdit = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalConfirmEdit.html?v='+(new Date()).getTime(),
                     controller: 'ModalDialogCtrl',
                     resolve: {
@@ -314,7 +314,7 @@ define([
 
                     if (promiseFilesEditUpload.length) {
                         modalInstance  = $modal.open({
-                            targetDomEl: $rootElement.find('div').eq(0),
+                            appendTo: $rootElement.find('div').eq(0),
                             templateUrl: settings.pathApp+'views/modalProgress.html?v='+(new Date()).getTime(),
                             size: 'sm',
                             controller: 'ModalProgressCtrl',
@@ -487,7 +487,7 @@ define([
 
                         if (promiseFilesChangeUpload.length) {
                             modalInstance  = $modal.open({
-                                targetDomEl: $rootElement.find('div').eq(0),
+                                appendTo: $rootElement.find('div').eq(0),
                                 templateUrl: settings.pathApp+'views/modalProgress.html',
                                 size: 'sm',
                                 controller: 'ModalProgressCtrl',

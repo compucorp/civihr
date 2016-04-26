@@ -1,4 +1,4 @@
-.dropdown-menu[datepicker-popup-wrap] {
+[uib-datepicker-popup-wrap] > .dropdown-menu {
   padding: 10px;
 }
 
@@ -7,7 +7,7 @@
 }
 
 .#{$prefix}datepicker,
-.dropdown-menu[datepicker-popup-wrap] {
+[uib-datepicker-popup-wrap] > .dropdown-menu {
   table {
 
     &:focus {

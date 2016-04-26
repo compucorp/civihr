@@ -12,12 +12,12 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ModalContractNewCtrl', ['$scope', '$modalInstance', '$q', '$modal', '$rootElement',
+    controllers.controller('ModalContractNewCtrl', ['$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
         'Contract','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService', 'utils',
         'settings', '$log',
-        function ($scope, $modalInstance, $q, $modal, $rootElement, Contract, ContractService, ContractDetailsService, ContractHourService,
-                 ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
+        function ($scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
+                 ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
                  ContractFilesService, model, UtilsService, utils, settings, $log) {
             $log.debug('Controller: ModalContractNewCtrl');
 
@@ -47,6 +47,38 @@ define([
             $scope.entity.contract = {
                 is_primary: 0
             };
+
+            $scope.tooltips = {
+                fileSize: $sce.trustAsHtml('<p>' +
+                    'THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.' +
+                '</p>'),
+                fte: $sce.trustAsHtml('<div>' +
+                    '<strong>FTE</strong> stands for' +
+                    'Full Time Equivalent. This is a useful measure for' +
+                    'an organisation that has peopleworking part-time.' +
+                    'For a full-time person, FTE is always equal to' +
+                    '1.0, whereas for a part-time person, the FTE will represent' +
+                    'the fraction of standard hours that the person works on a' +
+                    'regular basis.<br>' +
+                    'E.g. if the standard working day at an organisation' +
+                    'comprises of 8 hours, then a person who regularly works for' +
+                    '8 hours each day would be considered to be full- time and' +
+                    'would have an FTE value of 1.0. A person who regularly works' +
+                    'for only 4 hours each day would be considered to be a' +
+                    'part-time person and would have an FTE value of 0.5. If the' +
+                    'organisation had 10 people, each with an FTE of 1.0 the' +
+                    'actual headcount of full-time people would be 10 and the' +
+                    'FTE headcount (equal to actual headcount multiplied by the' +
+                    'FTE value) would also be 10. However, if the organisation' +
+                    'had another 10 people who each worked part-time with an FTE' +
+                    'value of 0.5 the actual headcount of part-time people would' +
+                    'be 10 while the FTE headcount would only be 5. Thus for an' +
+                    'organisation that had a total of 10 full-time people, and 10' +
+                    'part-time people (each with an FTE of 0.5) the actual' +
+                    'headcount for the organisation would be 20 while the FTE' +
+                    'headcount would be 15.' +
+                '</div>')
+            }
 
             $scope.filesValidate = function() {
                 var entityName,
@@ -155,7 +187,7 @@ define([
 
                                 if (promiseUpload.length) {
                                     modalInstance  = $modal.open({
-                                        targetDomEl: $rootElement.find('div').eq(0),
+                                        appendTo: $rootElement.find('div').eq(0),
                                         templateUrl: settings.pathApp+'views/modalProgress.html',
                                         size: 'sm',
                                         controller: 'ModalProgressCtrl',

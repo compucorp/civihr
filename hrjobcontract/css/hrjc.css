@@ -10781,7 +10781,7 @@ fieldset[disabled]
   box-shadow: none;
 }
 /* line 1, ../scss/civihr/partials/_datepicker.scss */
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu {
   padding: 10px;
 }
 /* line 5, ../scss/civihr/partials/_datepicker.scss */
@@ -10791,17 +10791,17 @@ fieldset[disabled]
 }
 /* line 13, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table:focus,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table:focus {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table:focus {
   outline: 0 none;
 }
 /* line 17, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody {
   background-color: #f4f7f8;
 }
 /* line 20, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody .btn,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody .btn {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn {
   background-color: #f4f7f8;
   border-radius: 20px;
   padding: 7px;
@@ -10810,50 +10810,50 @@ fieldset[disabled]
 }
 /* line 27, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody .btn:active,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody .btn:active {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn:active {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
 /* line 31, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody .btn:focus,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody .btn:focus {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn:focus {
   outline: 0 none;
   background-color: #e8eef0;
 }
 /* line 36, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody .btn.active,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody .btn.active {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn.active {
   -webkit-box-shadow: none;
   box-shadow: none;
   background-color: #41afcb;
 }
 /* line 40, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table tbody .btn.active span,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table tbody .btn.active span {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn.active span {
   color: #fff;
 }
 /* line 47, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table td, #hrjob-contract .hrjc-datepicker table th,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table td,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table th {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table td,
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table th {
   padding: 7px;
 }
 /* line 51, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table thead small,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table thead small {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table thead small {
   color: #525966;
   font-size: 11px;
 }
 /* line 57, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table .btn,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table .btn {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table .btn {
   border-width: 0;
   font-size: 12px;
   font-weight: normal;
 }
 /* line 63, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table > thead > tr > th,
-#hrjob-contract .dropdown-menu[datepicker-popup-wrap] table > thead > tr > th {
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table > thead > tr > th {
   vertical-align: middle;
 }
 /* line 1, ../scss/civihr/partials/_dropdowns.scss */
@@ -11259,6 +11259,125 @@ fieldset[disabled]
 /* line 27, ../scss/hrjc/modules/_animate.scss */
 #hrjob-contract .hrjc-list-contract-item .hrjc-loader {
   opacity: 1;
+}
+/* line 1, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .ng-animate.item:not(.left):not(.right) {
+  -webkit-transition: 0s ease-in-out left;
+  transition: 0s ease-in-out left;
+}
+/* line 5, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-datepicker .uib-title {
+  width: 100%;
+}
+/* line 8, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-day button,
+#hrjob-contract .uib-month button,
+#hrjob-contract .uib-year button {
+  min-width: 100%;
+}
+/* line 13, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-left,
+#hrjob-contract .uib-right {
+  width: 100%;
+}
+/* line 17, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-position-measure {
+  display: block !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
+/* line 24, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-position-scrollbar-measure {
+  position: absolute !important;
+  top: -9999px !important;
+  width: 50px !important;
+  height: 50px !important;
+  overflow: scroll !important;
+}
+/* line 31, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-position-body-scrollbar-measure {
+  overflow: scroll !important;
+}
+/* line 34, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-datepicker-popup.dropdown-menu {
+  display: block;
+  float: none;
+  margin: 0;
+}
+/* line 39, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-button-bar {
+  padding: 10px 9px 2px;
+}
+/* line 42, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract [uib-tooltip-popup].tooltip.top-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.top-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.left-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.right-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.top-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.top-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.left-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.right-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-html-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.top-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.top-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.left-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.right-top > .tooltip-arrow,
+#hrjob-contract [uib-tooltip-template-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjob-contract [uib-popover-popup].popover.top-left > .arrow,
+#hrjob-contract [uib-popover-popup].popover.top-right > .arrow,
+#hrjob-contract [uib-popover-popup].popover.bottom-left > .arrow,
+#hrjob-contract [uib-popover-popup].popover.bottom-right > .arrow,
+#hrjob-contract [uib-popover-popup].popover.left-top > .arrow,
+#hrjob-contract [uib-popover-popup].popover.left-bottom > .arrow,
+#hrjob-contract [uib-popover-popup].popover.right-top > .arrow,
+#hrjob-contract [uib-popover-popup].popover.right-bottom > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.top-left > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.top-right > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.bottom-left > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.bottom-right > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.left-top > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.left-bottom > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.right-top > .arrow,
+#hrjob-contract [uib-popover-html-popup].popover.right-bottom > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.top-left > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.top-right > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.bottom-left > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.bottom-right > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.left-top > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.left-bottom > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.right-top > .arrow,
+#hrjob-contract [uib-popover-template-popup].popover.right-bottom > .arrow {
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin: 0;
+}
+/* line 96, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract [uib-popover-popup].popover,
+#hrjob-contract [uib-popover-html-popup].popover,
+#hrjob-contract [uib-popover-template-popup].popover {
+  display: block !important;
+}
+/* line 101, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract .uib-time input {
+  width: 50px;
+}
+/* line 104, ../scss/hrjc/modules/_ui-bootstrap.scss */
+#hrjob-contract [uib-typeahead-popup].dropdown-menu {
+  display: block;
 }
 /* line 3, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-group-action .dropdown-menu .checkbox {
