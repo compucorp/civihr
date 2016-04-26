@@ -6,13 +6,13 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleModalCtrl',
-        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
+        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$uibModalInstance',
         'AppraisalCycle', 'HR_settings', 'dialog',
         function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle, HR_settings, dialog) {
             $log.debug('AppraisalCycleModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
             var oldDueDates = {};
 

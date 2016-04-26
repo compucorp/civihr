@@ -5,13 +5,13 @@ define([
     'use strict';
 
     controllers.controller('EditDatesModalCtrl', [
-        '$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
+        '$filter', '$log', '$rootScope', '$scope', '$controller', '$uibModalInstance',
         'HR_settings', 'dialog',
         function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, HR_settings, dialog) {
             $log.debug('EditDatesModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
             var oldDueDates = {};
 

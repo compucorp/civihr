@@ -216,7 +216,7 @@ define([
         function initController() {
             ctrl = $controller('EditDatesModalCtrl', {
                 $filter: $filter,
-                $modalInstance: $modalInstance,
+                $uibModalInstance: $modalInstance,
                 $scope: (function (scope) {
                     scope.cycle = cycle;
                     return scope;

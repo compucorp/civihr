@@ -377,7 +377,7 @@ define([
          */
         function initController(params) {
             ctrl = $controller('AppraisalCycleModalCtrl', angular.extend({}, {
-                $modalInstance: $modalInstance,
+                $uibModalInstance: $modalInstance,
                 $scope: $scope,
                 AppraisalCycle: AppraisalCycle
             }, params));

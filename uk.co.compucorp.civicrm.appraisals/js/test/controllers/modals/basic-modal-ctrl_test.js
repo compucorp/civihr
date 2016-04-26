@@ -11,14 +11,14 @@ define([
         };
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function ($controller, _$modal_) {
-            var $modal = _$modal_;
+        beforeEach(inject(function ($controller, _$uibModal_) {
+            var $modal = _$uibModal_;
 
             spyOn($modal, 'open').and.returnValue(fakeModalInstance);
             spyOn(fakeModalInstance, 'dismiss');
 
             ctrl = $controller('BasicModalCtrl', {
-                $modalInstance: $modal.open()
+                $uibModalInstance: $modal.open()
             });
         }));
 
