@@ -27,6 +27,7 @@ define([
     'appraisals/vendor/ui-router',
 ], function (routes, angular) {
     angular.module('appraisals', [
+        'ngAnimate',
         'ngResource',
         'ui.router',
         'ui.bootstrap',
