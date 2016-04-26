@@ -130,11 +130,16 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             'is_default',
             ts('Is default leave type')
         );
-        $this->add(
-            'checkbox',
-            'is_reserved',
-            ts('Is reserved')
-        );
+        if($this->_action & CRM_Core_Action::UPDATE) {
+            $this->add(
+                'checkbox',
+                'is_reserved',
+                ts('Is reserved'),
+                false,
+                false,
+                ['disabled' => 'disabled']
+            );
+        }
         $this->addYesNo(
             'must_take_public_holiday_as_leave',
             ts('Must staff take public holiday as leave?')
