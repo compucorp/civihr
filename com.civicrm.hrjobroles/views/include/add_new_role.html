@@ -46,8 +46,8 @@
                                                     <p class="input-group input-group-unstyled">
                                                         <input type="text" class="form-control" id="{{prefix}}newStartDate"
                                                                placeholder="{{format}}"
-                                                               is-open="!!(CalendarShow.newStartDate)"
-                                                               datepicker-popup
+                                                               is-open="CalendarShow.newStartDate"
+                                                               uib-datepicker-popup
                                                                ng-model="edit_data['new_role_id']['newStartDate']"
                                                                ng-change="select('newStartDate')"
                                                                ng-disabled="isDisabled"
@@ -73,8 +73,8 @@
                                                     <p class="input-group input-group-unstyled">
                                                         <input type="text" class="form-control" id="{{prefix}}newEndDate"
                                                            placeholder="{{format}}"
-                                                           datepicker-popup
-                                                           is-open="!!(CalendarShow.newEndDate)"
+                                                           uib-datepicker-popup
+                                                           is-open="CalendarShow.newEndDate"
                                                            ng-model="edit_data['new_role_id']['newEndDate']"
                                                            ng-change="select('newEndDate')"
                                                            ng-disabled="isDisabled"

@@ -8820,7 +8820,7 @@ fieldset[disabled]
   -webkit-box-shadow: none;
   box-shadow: none;
 }
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu {
   padding: 10px;
 }
 #hrjobroles .hrjobroles-datepicker {
@@ -8828,15 +8828,15 @@ fieldset[disabled]
   box-shadow: 1px 4px 15px 0px rgba(0, 0, 0, 0.1);
 }
 #hrjobroles .hrjobroles-datepicker table:focus,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table:focus {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table:focus {
   outline: 0 none;
 }
 #hrjobroles .hrjobroles-datepicker table tbody,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody {
   background-color: #f4f7f8;
 }
 #hrjobroles .hrjobroles-datepicker table tbody .btn,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn {
   background-color: #f4f7f8;
   border-radius: 20px;
   padding: 7px;
@@ -8844,43 +8844,43 @@ fieldset[disabled]
   width: auto !important;
 }
 #hrjobroles .hrjobroles-datepicker table tbody .btn:active,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn:active {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn:active {
   -webkit-box-shadow: none;
   box-shadow: none;
 }
 #hrjobroles .hrjobroles-datepicker table tbody .btn:focus,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn:focus {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn:focus {
   outline: 0 none;
   background-color: #e8eef0;
 }
 #hrjobroles .hrjobroles-datepicker table tbody .btn.active,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn.active {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn.active {
   -webkit-box-shadow: none;
   box-shadow: none;
   background-color: #41afcb;
 }
 #hrjobroles .hrjobroles-datepicker table tbody .btn.active span,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table tbody .btn.active span {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table tbody .btn.active span {
   color: #fff;
 }
 #hrjobroles .hrjobroles-datepicker table td, #hrjobroles .hrjobroles-datepicker table th,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table td,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table th {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table td,
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table th {
   padding: 7px;
 }
 #hrjobroles .hrjobroles-datepicker table thead small,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table thead small {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table thead small {
   color: #525966;
   font-size: 11px;
 }
 #hrjobroles .hrjobroles-datepicker table .btn,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table .btn {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table .btn {
   border-width: 0;
   font-size: 12px;
   font-weight: normal;
 }
 #hrjobroles .hrjobroles-datepicker table > thead > tr > th,
-#hrjobroles .dropdown-menu[datepicker-popup-wrap] table > thead > tr > th {
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table > thead > tr > th {
   vertical-align: middle;
 }
 #hrjobroles .dropdown-menu {
@@ -9169,6 +9169,112 @@ fieldset[disabled]
 #hrjobroles .well {
   -webkit-box-shadow: none;
   box-shadow: none;
+}
+#hrjobroles .ng-animate.item:not(.left):not(.right) {
+  -webkit-transition: 0s ease-in-out left;
+  transition: 0s ease-in-out left;
+}
+#hrjobroles .uib-datepicker .uib-title {
+  width: 100%;
+}
+#hrjobroles .uib-day button,
+#hrjobroles .uib-month button,
+#hrjobroles .uib-year button {
+  min-width: 100%;
+}
+#hrjobroles .uib-left,
+#hrjobroles .uib-right {
+  width: 100%;
+}
+#hrjobroles .uib-position-measure {
+  display: block !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
+#hrjobroles .uib-position-scrollbar-measure {
+  position: absolute !important;
+  top: -9999px !important;
+  width: 50px !important;
+  height: 50px !important;
+  overflow: scroll !important;
+}
+#hrjobroles .uib-position-body-scrollbar-measure {
+  overflow: scroll !important;
+}
+#hrjobroles .uib-datepicker-popup.dropdown-menu {
+  display: block;
+  float: none;
+  margin: 0;
+}
+#hrjobroles .uib-button-bar {
+  padding: 10px 9px 2px;
+}
+#hrjobroles [uib-tooltip-popup].tooltip.top-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.top-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.left-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.right-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.top-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.top-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.left-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.right-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-html-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.top-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.top-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.bottom-left > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.bottom-right > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.left-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.left-bottom > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.right-top > .tooltip-arrow,
+#hrjobroles [uib-tooltip-template-popup].tooltip.right-bottom > .tooltip-arrow,
+#hrjobroles [uib-popover-popup].popover.top-left > .arrow,
+#hrjobroles [uib-popover-popup].popover.top-right > .arrow,
+#hrjobroles [uib-popover-popup].popover.bottom-left > .arrow,
+#hrjobroles [uib-popover-popup].popover.bottom-right > .arrow,
+#hrjobroles [uib-popover-popup].popover.left-top > .arrow,
+#hrjobroles [uib-popover-popup].popover.left-bottom > .arrow,
+#hrjobroles [uib-popover-popup].popover.right-top > .arrow,
+#hrjobroles [uib-popover-popup].popover.right-bottom > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.top-left > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.top-right > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.bottom-left > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.bottom-right > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.left-top > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.left-bottom > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.right-top > .arrow,
+#hrjobroles [uib-popover-html-popup].popover.right-bottom > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.top-left > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.top-right > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.bottom-left > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.bottom-right > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.left-top > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.left-bottom > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.right-top > .arrow,
+#hrjobroles [uib-popover-template-popup].popover.right-bottom > .arrow {
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  margin: 0;
+}
+#hrjobroles [uib-popover-popup].popover,
+#hrjobroles [uib-popover-html-popup].popover,
+#hrjobroles [uib-popover-template-popup].popover {
+  display: block !important;
+}
+#hrjobroles .uib-time input {
+  width: 50px;
+}
+#hrjobroles [uib-typeahead-popup].dropdown-menu {
+  display: block;
 }
 #hrjobroles .btn-tab-action {
   background-color: transparent;
