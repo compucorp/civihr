@@ -15,6 +15,12 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
 
         if ($this->_id) {
             $defaults = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
+        } else {
+            $defaults = [
+                'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
+                'add_public_holiday_to_entitlement' => 0,
+                'must_take_public_holiday_as_leave' => 0
+            ];
         }
 
         return $defaults;
