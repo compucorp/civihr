@@ -1,7 +1,7 @@
 define([], function () {
     'use strict';
 
-    return ['$modal', '$rootElement', '$templateCache',
+    return ['$uibModal', '$rootElement', '$templateCache',
         function ($modal, $rootElement, $templateCache) {
 
             return {

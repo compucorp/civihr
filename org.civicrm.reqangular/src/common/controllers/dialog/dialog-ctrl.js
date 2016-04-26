@@ -1,7 +1,7 @@
 define([], function () {
     'use strict';
 
-    return ['$scope','$modalInstance', 'content',
+    return ['$scope','$uibModalInstance', 'content',
         function ($scope, $modalInstance, content) {
             $scope.title = content.title || 'CiviHR';
             $scope.msg = content.msg || '';
