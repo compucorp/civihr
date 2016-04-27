@@ -115,13 +115,13 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
             case 'hrjobroles_start_date_low':
             case 'hrjobroles_start_date_high':
                 $query->dateQueryBuilder($values,
-                    'hrjobroles', 'hrjobroles_start_date', 'start_date', 'Job Role Start Date'
+                    'civicrm_hrjobroles', 'hrjobroles_start_date', 'start_date', 'Job Role Start Date'
                 );
                 return;
             case 'hrjobroles_end_date_low':
             case 'hrjobroles_end_date_high':
                 $query->dateQueryBuilder($values,
-                    'hrjobroles', 'hrjobroles_end_date', 'end_date', 'Job Role End Date'
+                    'civicrm_hrjobroles', 'hrjobroles_end_date', 'end_date', 'Job Role End Date'
                 );
                 return;
             case 'hrjobroles_location':
