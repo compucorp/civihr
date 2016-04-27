@@ -71,22 +71,22 @@
                     <div class="content">{$form.allow_accruals_request.html}</div>
                     <div class="clear"></div>
                 </div>
-                <div class="crm-section">
+                <div class="crm-section toil-option">
                     <div class="label">{$form.max_leave_accrual.label}</div>
                     <div class="content">{$form.max_leave_accrual.html}</div>
                     <div class="clear"></div>
                 </div>
-                <div class="crm-section">
+                <div class="crm-section toil-option">
                     <div class="label">{$form.allow_accrue_in_the_past.label}</div>
                     <div class="content">{$form.allow_accrue_in_the_past.html}</div>
                     <div class="clear"></div>
                 </div>
-                <div class="crm-section">
+                <div class="crm-section toil-option">
                     <div class="label">{ts}Default expiry of accrued amounts{/ts}</div>
                     <div class="content">
-                        <label><input type="checkbox"> {ts}Never expire{/ts}</label>
+                        <label><input type="checkbox" id="accrual_never_expire" {if $form.accrual_expiration_duration.value eq ''}checked{/if}> {ts}Never expire{/ts}</label>
                         <br/>
-                        {$form.accrual_expiration_duration.html}{$form.accrual_expiration_unit.html}
+                        <span class="toil-expiration">{$form.accrual_expiration_duration.html}{$form.accrual_expiration_unit.html}</span>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -108,29 +108,169 @@
                     <div class="content">{$form.allow_carry_forward.html}</div>
                     <div class="clear"></div>
                 </div>
-                <div class="crm-section">
+                <div class="crm-section carry-forward-option">
                     <div class="label">{$form.max_number_of_days_to_carry_forward.label}</div>
                     <div class="content">{$form.max_number_of_days_to_carry_forward.html}</div>
                     <div class="clear"></div>
                 </div>
-                <div class="crm-section">
+                <div class="crm-section carry-forward-option">
                     <div class="label">{ts}Carry forward leave expiry{/ts}</div>
                     <div class="content">
-                        <label><input type="radio" name="carry_forward_expiration"> {ts}Never expire{/ts}</label>
+                        {assign var="carry_forward_expire_after_duration" value=false }
+                        {assign var="carry_forward_expire_after_date" value=false }
+                        {assign var="carry_forward_never_expire" value=false }
+                        {if $form.carry_forward_expiration_duration.value neq '' and $form.carry_forward_expiration_unit.value neq '' }
+                            {assign var="carry_forward_expire_after_duration" value=true }
+                        {/if}
+                        {if $form.carry_forward_expiration_date_day.value neq '' and $form.carry_forward_expiration_date_month.value neq '' }
+                            {assign var="carry_forward_expire_after_date" value=true }
+                        {/if}
+                        {if not $carry_forward_expire_after_duration and not $carry_forward_expire_after_date }
+                            {assign var="carry_forward_never_expire" value=true }
+                        {/if}
+                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_never_expire" {if $carry_forward_never_expire}checked{/if}> {ts}Never expire{/ts}</label>
                         <br/>
-                        <label><input type="radio" name="carry_forward_expiration"> {ts}Expire after a certain duration{/ts}</label>
+                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_duration" {if $carry_forward_expire_after_duration}checked{/if}> {ts}Expire after a certain duration{/ts}</label>
                         <br/>
-                        {$form.carry_forward_expiration_duration.html}{$form.carry_forward_expiration_unit.html}
+                        <span class="carry-forward-expiration-duration">{$form.carry_forward_expiration_duration.html}{$form.carry_forward_expiration_unit.html}<br/></span>
+                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_date" {if $carry_forward_expire_after_date}checked{/if}> {ts}Expire on a particular date{/ts}</label>
                         <br/>
-                        <label><input type="radio" name="carry_forward_expiration"> {ts}Expire on a particular date{/ts}</label>
-                        <br/>
-                        {$form.carry_forward_expiration_date_day.html}{$form.carry_forward_expiration_date_month.html}
+                        <span class="carry-forward-expiration-date">{$form.carry_forward_expiration_date_day.html}{$form.carry_forward_expiration_date_month.html}</span>
                     </div>
                     <div class="clear"></div>
                 </div>
             </div>
         </div>
         <div class="clear"></div>
+    {literal}
+        <script type="text/javascript">
+            CRM.$(function($) {
+                function initToilControls() {
+                    var allow_accruals_request = $('#allow_accruals_request');
+                    var accrual_never_expire = $('#accrual_never_expire');
+
+                    if(allow_accruals_request.is(':checked')) {
+                        $('.toil-option').show();
+                    }
+
+                    if(!accrual_never_expire.is(':checked')) {
+                        $('.toil-expiration').show();
+                    }
+
+                    allow_accruals_request.on('click', function() {
+                        if(this.checked) {
+                            $('.toil-option').show();
+                        } else {
+                            hideToilOptions();
+                        }
+                    });
+
+                    accrual_never_expire.on('click', function() {
+                        if(this.checked) {
+                            hideToilExpiration();
+                        } else {
+                            $('.toil-expiration').show();
+                        }
+                    });
+                }
+
+                function hideToilOptions() {
+                    document.getElementById('max_leave_accrual').value = '';
+                    var allow_accrue_in_the_past_radios = document.getElementsByName('allow_accrue_in_the_past')
+                    for(i = 0; i < allow_accrue_in_the_past_radios.length; i++) {
+                        allow_accrue_in_the_past_radios.item(i).checked = false;
+                    }
+                    document.getElementById('accrual_never_expire').checked = true;
+                    hideToilExpiration();
+                    $('.toil-option').hide();
+                }
+
+                function hideToilExpiration() {
+                    document.getElementById('accrual_expiration_duration').value = '';
+                    $('#accrual_expiration_unit').select2('val', '');
+                    $('.toil-expiration').hide();
+                }
+
+                function initCarryForwardControls() {
+                    var allow_carry_forward = $('#allow_carry_forward');
+                    var carry_forward_never_expire = $('#carry_forward_never_expire');
+                    var carry_forward_expire_after_duration = $('#carry_forward_expire_after_duration');
+                    var carry_forward_expire_after_date = $('#carry_forward_expire_after_date');
+
+                    if(allow_carry_forward.is(':checked')) {
+                        $('.carry-forward-option').show();
+                    }
+
+                    if(carry_forward_expire_after_duration.is(':checked')) {
+                        $('.carry-forward-expiration-duration').show();
+                    }
+
+                    if(carry_forward_expire_after_date.is(':checked')) {
+                        $('.carry-forward-expiration-date').show();
+                    }
+
+                    allow_carry_forward.on('click', function() {
+                        if(this.checked) {
+                            $('.carry-forward-option').show();
+                        } else {
+                            hideCarryForwardOptions();
+                        }
+                    });
+
+                    carry_forward_never_expire.on('click', function() {
+                        if(this.checked) {
+                            hideCarryForwardExpirationDuration();
+                            hideCarryForwardExpirationDate();
+                        }
+                    })
+
+                    carry_forward_expire_after_duration.on('click', function() {
+                        if(this.checked) {
+                            hideCarryForwardExpirationDate();
+                            $('.carry-forward-expiration-duration').show();
+                        }
+                    });
+
+                    carry_forward_expire_after_date.on('click', function() {
+                        if(this.checked) {
+                            hideCarryForwardExpirationDuration();
+                            $('.carry-forward-expiration-date').show();
+                        }
+                    });
+                }
+
+                function hideCarryForwardOptions() {
+                    var carry_forward_expiration_radios = document.getElementsByName('carry_forward_expiration');
+                    document.getElementById('max_number_of_days_to_carry_forward').value = '';
+                    for(i = 0; i < carry_forward_expiration_radios.length; i++) {
+                        carry_forward_expiration_radios.item(i).checked = false;
+                    }
+                    carry_forward_expiration_radios.item(0).checked = true;
+                    hideCarryForwardExpirationDuration();
+                    hideCarryForwardExpirationDate();
+                    $('.carry-forward-option').hide();
+                }
+
+                function hideCarryForwardExpirationDuration() {
+                    document.getElementById('carry_forward_expiration_duration').value = '';
+                    $('#carry_forward_expiration_unit').select2('val', '');
+                    $('.carry-forward-expiration-duration').hide();
+                }
+
+                function hideCarryForwardExpirationDate() {
+                    document.getElementById('carry_forward_expiration_date_day').value = '';
+                    $('#carry_forward_expiration_date_month').select2('val', '');
+                    $('.carry-forward-expiration-date').hide();
+                }
+
+                $(document).ready(function() {
+                    initToilControls();
+                    initCarryForwardControls();
+                });
+
+            });
+        </script>
+    {/literal}
     {/if}
     <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
 </div>
