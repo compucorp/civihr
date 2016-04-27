@@ -155,7 +155,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_date = !empty($params['carry_forward_expiration_date']);
+    $has_carry_forward_expiration_day = !empty($params['carry_forward_expiration_day']);
+    $has_carry_forward_expiration_month = !empty($params['carry_forward_expiration_month']);
+    $has_carry_forward_expiration_date = $has_carry_forward_expiration_day && $has_carry_forward_expiration_month;
     if($has_carry_forward_expiration_date && !$allow_carry_forward) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'To set the Carry Forward Expiration Date you must allow Carry Forward'
@@ -183,15 +185,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    if($has_carry_forward_expiration_date && !preg_match('/\d\d-\d\d/', $params['carry_forward_expiration_date'])) {
+    if ($has_carry_forward_expiration_date &&
+        !self::isValidDateAndMonth($params['carry_forward_expiration_day'], $params['carry_forward_expiration_month'])
+    ) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
-      );
-    }
-
-    if($has_carry_forward_expiration_date && !self::isValidDateAndMonth($params['carry_forward_expiration_date'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
+          'Invalid Carry Forward Expiration Date'
       );
     }
 
@@ -210,10 +208,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @TODO Find a better place to put this method.
    *
    */
-  private static function isValidDateAndMonth($carry_forward_expiration_date) {
-    list($day, $month) = explode('-', $carry_forward_expiration_date);
-    $day = (int)$day;
-    $month = (int)$month;
+  private static function isValidDateAndMonth($day, $month) {
     if($month < 1 || $month > 12) {
       return false;
     }

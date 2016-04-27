@@ -122,7 +122,7 @@
                         {if $form.carry_forward_expiration_duration.value neq '' and $form.carry_forward_expiration_unit.value neq '' }
                             {assign var="carry_forward_expire_after_duration" value=true }
                         {/if}
-                        {if $form.carry_forward_expiration_date_day.value neq '' and $form.carry_forward_expiration_date_month.value neq '' }
+                        {if $form.carry_forward_expiration_day.value neq '' and $form.carry_forward_expiration_month.value neq '' }
                             {assign var="carry_forward_expire_after_date" value=true }
                         {/if}
                         {if not $carry_forward_expire_after_duration and not $carry_forward_expire_after_date }
@@ -135,7 +135,7 @@
                         <span class="carry-forward-expiration-duration">{$form.carry_forward_expiration_duration.html}{$form.carry_forward_expiration_unit.html}<br/></span>
                         <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_date" {if $carry_forward_expire_after_date}checked{/if}> {ts}Expire on a particular date{/ts}</label>
                         <br/>
-                        <span class="carry-forward-expiration-date">{$form.carry_forward_expiration_date_day.html}{$form.carry_forward_expiration_date_month.html}</span>
+                        <span class="carry-forward-expiration-date">{$form.carry_forward_expiration_day.html}{$form.carry_forward_expiration_month.html}</span>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -258,8 +258,8 @@
                 }
 
                 function hideCarryForwardExpirationDate() {
-                    document.getElementById('carry_forward_expiration_date_day').value = '';
-                    $('#carry_forward_expiration_date_month').select2('val', '');
+                    document.getElementById('carry_forward_expiration_day').value = '';
+                    $('#carry_forward_expiration_month').select2('val', '');
                     $('.carry-forward-expiration-date').hide();
                 }
 

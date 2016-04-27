@@ -11,8 +11,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
 {
 
     public function setDefaultValues() {
-        $defaults = array();
-
         if ($this->_id) {
             $defaults = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
         } else {
@@ -248,9 +246,14 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             'carry_forward_expiration_unit',
             ['options' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::getExpirationUnitOptions()]
         );
-        $this->add('text', 'carry_forward_expiration_date_day');
+        $this->add(
+            'text',
+            'carry_forward_expiration_day',
+            '',
+            $this->getDAOFieldAttributes('carry_forward_expiration_day')
+        );
         $this->addSelect(
-            'carry_forward_expiration_date_month',
+            'carry_forward_expiration_month',
             ['options' => $this->getMonthsOptions()]
         );
     }

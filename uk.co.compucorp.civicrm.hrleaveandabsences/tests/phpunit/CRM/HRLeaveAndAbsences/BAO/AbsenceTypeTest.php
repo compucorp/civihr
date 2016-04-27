@@ -166,10 +166,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage To set the Carry Forward Expiration Date you must allow Carry Forward
    */
-  public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDateIsNotEmpty() {
+  public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDayAndMonthAreNotEmpty() {
     $this->createBasicType([
         'allow_carry_forward'   => false,
-        'carry_forward_expiration_date' => '01-05'
+        'carry_forward_expiration_day' => 10,
+        'carry_forward_expiration_month' => 4,
     ]);
   }
 
@@ -194,7 +195,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 1,
       'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS,
-      'carry_forward_expiration_date' => '15-04'
+      'carry_forward_expiration_day' => 15,
+      'carry_forward_expiration_month' => 4,
     ]);
   }
 
@@ -217,26 +219,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
   }
 
   /**
-   * @dataProvider carryForwardExpirationDateFormatDataProvider
-   */
-  public function testCarryForwardExpirationDateFormatIsCorrect($date, $throwsException) {
-    if($throwsException) {
-      $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
-      );
-    }
-
-    $this->createBasicType([
-        'allow_carry_forward' => true,
-        'carry_forward_expiration_date' => $date
-    ]);
-  }
-
-  /**
    * @dataProvider carryForwardExpirationDateDataProvider
    */
-  public function testCarryForwardExpirationDateIsValid($date, $throwsException) {
+  public function testCarryForwardExpirationDateIsValid($day, $month, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
           CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
@@ -246,7 +231,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
     $this->createBasicType([
         'allow_carry_forward' => true,
-        'carry_forward_expiration_date' => $date
+        'carry_forward_expiration_day' => $day,
+        'carry_forward_expiration_month' => $month
     ]);
   }
 
@@ -349,26 +335,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     return $data;
   }
 
-  public function carryForwardExpirationDateFormatDataProvider() {
-    return [
-      ['12-12', false],
-      ['01-05', false],
-      ['02-07', false],
-      [1, true],
-      ['02/07', true],
-      ['whatever', true]
-    ];
-  }
-
   public function carryForwardExpirationDateDataProvider() {
     return [
-      ['12-12', false],
-      ['01-02', false],
-      ['31-01', false],
-      ['30-02', true],
-      ['31-04', true],
-      ['77-99', true],
-      ['12-31', true]
+      [12, 12, false],
+      [1, 2, false],
+      [31, 1, false],
+      [30, 2, true],
+      [31, 4, true],
+      [77, 9, true],
+      [12, 31, true],
     ];
   }
 }
