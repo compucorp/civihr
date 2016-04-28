@@ -57,6 +57,18 @@ define([
             }
         }
 
+        function formatDate(date) {
+          if (date instanceof Date) {
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+
+            return date.getTime();
+          } else {
+            return date;
+          }
+        }
+
         var Validation = {
             dateFormats: [
                 'x',
@@ -81,21 +93,10 @@ define([
              * @param {Date|string|int} end
              */
             validate: function validate(start, end, contract_start, contract_end) {
-                if (start instanceof Date) {
-                    start = start.getTime();
-                }
-
-                if (end instanceof Date) {
-                    end = end.getTime();
-                }
-
-                if (contract_start instanceof Date) {
-                    contract_start = start.getTime();
-                }
-
-                if (contract_end instanceof Date) {
-                    contract_end = end.getTime();
-                }
+                start = formatDate(start);
+                end = formatDate(end);
+                contract_start = formatDate(contract_start);
+                contract_end = formatDate(contract_end);
 
                 var start_date = moment(start, this.dateFormats, true);
                 var end_date = moment(end, this.dateFormats, true);
