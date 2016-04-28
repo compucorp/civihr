@@ -4,6 +4,18 @@ require_once 'CiviTest/CiviUnitTestCase.php';
 
 class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
+  private $allColors = [
+      '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',
+      '#3D4A5E', '#E56A6A', '#FA8F55', '#6DAD68', '#B37995', '#84619C', '#2997B3',
+      '#263345', '#CC4A49', '#D97038', '#4F944A', '#995978', '#5F3D76', '#147E99',
+      '#151D2C', '#B32E2E', '#BF561D', '#377A31', '#803D5E', '#47275C', '#056780'
+  ];
+
+  protected $_tablesToTruncate = [
+    'civicrm_hrleaveandabsences_notification_receiver',
+    'civicrm_hrleaveandabsences_absence_type',
+  ];
+
   public function setUp() {
     parent::setUp();
   }
@@ -276,6 +288,33 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     $secondEntity = $this->createBasicType();
     $this->assertNotEmpty($secondEntity->weight);
     $this->assertEquals($firstEntity->weight + 1, $secondEntity->weight);
+  }
+
+  public function testShouldHaveAllTheColorsAvailableIfTheresNotTypeCreated() {
+    $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+    foreach($this->allColors as $color) {
+      $this->assertContains($color, $availableColors);
+    }
+  }
+
+  public function testShouldNotAllowColorToBeReusedUntilAllColorsHaveBeenUsed() {
+    $usedColors = [];
+    $numberOfColors = count($this->allColors);
+    for($i = 0; $i < $numberOfColors; $i++) {
+      $color = $this->allColors[$i];
+      $this->createBasicType(['color' => $color]);
+      $usedColors[] = $color;
+      $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+
+      $isLastColor = ($i == $numberOfColors - 1);
+      foreach($usedColors as $usedColor) {
+        if($isLastColor) {
+          $this->assertContains($usedColor, $availableColors);
+        } else {
+          $this->assertNotContains($usedColor, $availableColors);
+        }
+      }
+    }
   }
   
   private function createBasicType($params = array()) {

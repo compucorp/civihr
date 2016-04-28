@@ -7,3 +7,13 @@
 .crm-absence_type-form-block .toil-expiration,
 .crm-absence_type-form-block .carry-forward-expiration-duration,
 .crm-absence_type-form-block .carry-forward-expiration-date { display: none; }
+
+/* Color picker customizations */
+.crm-absence_type-form-block .sp-replacer { padding: 2px; }
+.crm-absence_type-form-block .sp-preview { width: 15px; height: 15px; }
+
+.crm-absence_type-form-block .sp-dd {
+    height: 0;
+    line-height: 15px;
+    font-size: 9px;
+}

@@ -263,9 +263,22 @@
                     $('.carry-forward-expiration-date').hide();
                 }
 
+                function initColorPicker() {
+                    $('#color').spectrum({
+                        preferredFormat: "hex3",
+                        allowEmpty:true,
+                        showPaletteOnly: true,
+                        showPalette:true,
+                        {/literal}
+                        palette: {$availableColors}
+                        {literal}
+                    });
+                }
+
                 $(document).ready(function() {
                     initToilControls();
                     initCarryForwardControls();
+                    initColorPicker();
                 });
 
             });
