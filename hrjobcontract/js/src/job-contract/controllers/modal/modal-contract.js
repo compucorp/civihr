@@ -1,4 +1,5 @@
 define([
+    'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/services/contract',
     'job-contract/services/contract-details',
@@ -9,7 +10,7 @@ define([
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
     'job-contract/services/utils'
-], function (controllers) {
+], function (angular, controllers) {
     'use strict';
 
     controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
@@ -52,6 +53,9 @@ define([
 
             angular.copy(entity,$scope.entity);
             angular.copy(files,$scope.files);
+
+            $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
+            $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
 
             angular.forEach($scope.files, function(entityFiles, entityName){
                 $scope.filesTrash[entityName] = [];
@@ -214,6 +218,22 @@ define([
                 }
             }
 
+            /**
+             * # TO DO: This should probably happen inside the service that returns the data #
+             *
+             * Converts a date string into a Date object (if string is not empty)
+             *
+             * @param {string} dateString
+             * @param {Date/null}
+             */
+            function convertToDateObject(dateString) {
+                if (dateString) {
+                    return (moment(dateString, 'YYYY-MM-DD') || moment()).toDate();
+                }
+
+                return dateString;
+            }
+
             function changeReason(){
                 var modalChangeReason = $modal.open({
                     appendTo: $rootElement.find('div').eq(0),
@@ -255,7 +275,7 @@ define([
             function contractEdit(){
                 $scope.$broadcast('hrjc-loader-show');
 
-                var entityNew = $scope.entity,
+                var entityNew = angular.copy($scope.entity),
                     filesTrash = $scope.filesTrash,
                     uploader = $scope.uploader,
                     entityName, file, i, len, modalInstance;
@@ -347,7 +367,7 @@ define([
             function contractChange(reasonId, date){
                 $scope.$broadcast('hrjc-loader-show');
 
-                var entityNew = $scope.entity,
+                var entityNew = angular.copy($scope.entity),
                     filesTrash = $scope.filesTrash,
                     uploader = $scope.uploader,
                     entityName, field, fieldName, file, entityChangedList = [], entityChangedListLen = 0,

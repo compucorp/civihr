@@ -14,6 +14,20 @@ define([
             json: {}
         });
 
+        /**
+         * If parameter passed is a Date object, it converts it into a string
+         *
+         * @param {string} dateObj
+         * @param {string/any}
+         */
+        function convertToDateString(dateObj) {
+            if (dateObj instanceof Date) {
+                return moment(dateObj.getTime()).format('YYYY-MM-DD');
+            }
+
+            return dateObj;
+        }
+
         return {
             validateDates: function(params) {
                 if ((!params || typeof params !== 'object') ||
@@ -21,6 +35,9 @@ define([
                     (!params.period_start_date)) {
                     return null;
                 }
+
+                params.period_start_date = convertToDateString(params.period_start_date);
+                params.period_end_date = convertToDateString(params.period_end_date);
 
                 params.sequential = 0;
                 params.debug = settings.debug;
@@ -129,6 +146,9 @@ define([
                 if (!contractDetails || typeof contractDetails !== 'object') {
                     return null;
                 }
+
+                contractDetails.period_start_date = convertToDateString(contractDetails.period_start_date);
+                contractDetails.period_end_date = convertToDateString(contractDetails.period_end_date);
 
                 var deffered = $q.defer(),
                     params = angular.extend({

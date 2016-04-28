@@ -1,4 +1,5 @@
 define([
+    'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/services/contract',
     'job-contract/services/contract-details',
@@ -9,7 +10,7 @@ define([
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
     'job-contract/services/utils'
-], function (controllers) {
+], function (angular, controllers) {
     'use strict';
 
     controllers.controller('ModalContractNewCtrl', ['$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
@@ -140,7 +141,7 @@ define([
                         },function(data){
                             var contract = data.values[0],
                                 contractId = contract.id,
-                                entityDetails = $scope.entity.details,
+                                entityDetails = angular.copy($scope.entity.details),
                                 entityHour = $scope.entity.hour,
                                 entityPay = $scope.entity.pay,
                                 entityLeave = $scope.entity.leave,
