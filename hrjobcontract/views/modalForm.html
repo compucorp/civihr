@@ -84,8 +84,7 @@
                                                max-date="dpDateStartMax"
                                                ng-model="entity.details.period_start_date"
                                                ng-disabled="isDisabled"
-                                               date-input
-                                               required />
+                                               required >
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateStartOpen')"  ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
                                         </span>
@@ -97,14 +96,15 @@
 
                                 <div class="col-sm-4">
                                     <div class="input-group input-group-unstyled">
-                                        <input placeholder="{{format}}" type="text" class="form-control" id="{{prefix}}period-end-date"
+                                        <input placeholder="{{format}}"
+                                               type="text"
+                                               class="form-control"
+                                               id="{{prefix}}period-end-date"
                                                uib-datepicker-popup
                                                is-open="dpDateEndOpen"
                                                min-date="dpDateEndMin"
                                                ng-model="entity.details.period_end_date"
-                                               ng-disabled="isDisabled"
-                                               date-input
-                                        >
+                                               ng-disabled="isDisabled" >
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateEndOpen')" ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
                                         </span>
