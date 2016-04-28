@@ -147,14 +147,13 @@ define([
 
                 var contract = me.contractsData[data.contract.$viewValue];
 
-                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, contract.start_date, contract.end_date, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        data.start_date.$error.custom.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        data.end_date.$error.custom.push(error);
-                    }
+                errors = validateDates({
+                  'start_date': data.start_date.$viewValue,
+                  'end_date': data.end_date.$viewValue,
+                  'contract_start_date': contract.start_date,
+                  'contract_end_date': contract.end_date,
+                  'startError': data.start_date.$error.custom,
+                  'endError': data.end_date.$error.custom,
                 });
 
                 return errors > 0 ? 'Error' : true;
@@ -444,14 +443,15 @@ define([
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
 
-                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, me.contractsData[$scope.edit_data.new_role_id.job_contract_id].start_date, me.contractsData[$scope.edit_data.new_role_id.job_contract_id].end_date, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        $scope.errors.newStartDate.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        $scope.errors.newEndDate.push(error);
-                    }
+                var contract = me.contractsData[$scope.edit_data.new_role_id.job_contract_id];
+
+                errors = validateDates({
+                  'start_date': $scope.edit_data.new_role_id.newStartDate,
+                  'end_date': $scope.edit_data.new_role_id.newEndDate,
+                  'contract_start_date': contract.start_date,
+                  'contract_end_date': contract.end_date,
+                  'startError': $scope.errors.newStartDate,
+                  'endError': $scope.errors.newEndDate,
                 });
 
                 if (!errors) {
@@ -980,6 +980,22 @@ define([
                 }, function (errorMessage) {
                     $scope.error = errorMessage;
                 });
+            }
+
+            function validateDates(data, cb) {
+              var errors = 0;
+
+              $scope.validateDates(data.start_date, data.end_date, data.contract_start_date, data.contract_end_date, function (error, field) {
+                  errors++;
+                  if (field.indexOf('start_date') > -1) {
+                      data.startError.push(error);
+                  }
+                  if (field.indexOf('end_date') > -1) {
+                      data.endError.push(error);
+                  }
+              });
+
+              return errors;
             }
         }
     ]);
