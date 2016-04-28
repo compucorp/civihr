@@ -150,6 +150,8 @@ define([
 
                 beforeEach(function(){
                     form_data = angular.copy(Mock.form_data);
+                    ctrl.contractsData = angular.copy(Mock.contracts_data);
+                    form_data.contract.$viewValue = '1';
                 });
 
                 it('should not pass validation', function(){
@@ -177,6 +179,30 @@ define([
                     form_data.title.$viewValue = 'test';
 
                     expect(scope.validateRole(form_data)).toBe(true);
+                });
+
+                it('should not pass validation when the start date is lower than contract start date', function(){
+                    form_data.start_date.$viewValue = '2016-05-04';
+                    form_data.end_date.$viewValue = '2017-05-05';
+                    form_data.title.$viewValue = 'test';
+
+                    expect(scope.validateRole(form_data)).not.toBe(true);
+                });
+
+                it('should not pass validation when the end date is higher than contract end date', function(){
+                    form_data.start_date.$viewValue = '2016-06-04';
+                    form_data.end_date.$viewValue = '2017-05-06';
+                    form_data.title.$viewValue = 'test';
+
+                    expect(scope.validateRole(form_data)).not.toBe(true);
+                });
+
+                it('should not pass validation when the start data and thr end date is higher than contract end date', function(){
+                    form_data.start_date.$viewValue = '2016-05-06';
+                    form_data.end_date.$viewValue = '2017-05-06';
+                    form_data.title.$viewValue = 'test';
+
+                    expect(scope.validateRole(form_data)).not.toBe(true);
                 });
             });
 

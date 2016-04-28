@@ -39,6 +39,24 @@ define([
             }
         }
 
+        function checkIfContractStartDateIsLowerThanStart (contract_start, start_date) {
+            if (contract_start.isAfter(start_date)) {
+                _error('Start Date cannot be lower than Contract Start Date.', ['start_date']);
+            }
+        }
+
+        function checkIfStartIsLowerThanContractEnd (start_date, contract_end) {
+            if (start_date.isAfter(contract_end)) {
+                _error('Start Date cannot be higher than Contract End Date.', ['start_date']);
+            }
+        }
+
+        function checkIfEndIsEqualOrLowerThanContractEnd (end_date, contract_end) {
+            if (end_date.isAfter(contract_end)) {
+                _error('End Date cannot be higher than Contract End Date.', ['end_date']);
+            }
+        }
+
         var Validation = {
             dateFormats: [
                 'x',
@@ -62,7 +80,7 @@ define([
              * @param {Date|string|int} start
              * @param {Date|string|int} end
              */
-            validate: function validate(start, end) {
+            validate: function validate(start, end, contract_start, contract_end) {
                 if (start instanceof Date) {
                     start = start.getTime();
                 }
@@ -71,8 +89,19 @@ define([
                     end = end.getTime();
                 }
 
+                if (contract_start instanceof Date) {
+                    contract_start = start.getTime();
+                }
+
+                if (contract_end instanceof Date) {
+                    contract_end = end.getTime();
+                }
+
                 var start_date = moment(start, this.dateFormats, true);
                 var end_date = moment(end, this.dateFormats, true);
+
+                contract_start = moment(contract_start, this.dateFormats, true);
+                contract_end = moment(contract_end, this.dateFormats, true);
 
                 checkIfValuesAreValid(start_date, ['start_date']);
 
@@ -81,6 +110,15 @@ define([
 
                     if (start) {
                         checkIfStartDateIsLower(start_date, end_date);
+                        checkIfContractStartDateIsLowerThanStart(contract_start, start_date);
+
+                        if (contract_end.isValid()) {
+                          checkIfStartIsLowerThanContractEnd(start_date, contract_end);
+                        }
+                    }
+
+                    if (contract_end.isValid()) {
+                      checkIfEndIsEqualOrLowerThanContractEnd(end_date, contract_end);
                     }
                 }
             }

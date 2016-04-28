@@ -126,10 +126,10 @@ define([
              * @param end
              * @param {function} error
              */
-            $scope.validateDates = function (start, end, error) {
+            $scope.validateDates = function (start, end, contract_start, contract_end, error) {
                 DateValidation.setErrorCallback(error);
 
-                DateValidation.validate(start, end);
+                DateValidation.validate(start, end, contract_start, contract_end);
             };
 
             /**
@@ -145,7 +145,9 @@ define([
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
-                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function (error, field) {
+                var contract = me.contractsData[data.contract.$viewValue];
+
+                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, contract.start_date, contract.end_date, function (error, field) {
                     errors++;
                     if (field.indexOf('start_date') > -1) {
                         data.start_date.$error.custom.push(error);
@@ -442,7 +444,7 @@ define([
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
 
-                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function (error, field) {
+                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, me.contractsData[$scope.edit_data.new_role_id.job_contract_id].start_date, me.contractsData[$scope.edit_data.new_role_id.job_contract_id].end_date, function (error, field) {
                     errors++;
                     if (field.indexOf('start_date') > -1) {
                         $scope.errors.newStartDate.push(error);
