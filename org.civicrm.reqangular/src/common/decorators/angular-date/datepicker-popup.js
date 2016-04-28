@@ -16,30 +16,7 @@ define([], function () {
                  * @override
                  * @type {string}
                  */
-                attrs.datepickerPopup = HR_settings.DATE_FORMAT;
-
-                /**
-                 * Calculates position of the datepicker popup.
-                 * @param {bool} isDatepickerOpen
-                 */
-                var adjustPopupPosition = function (isDatepickerOpen) {
-                    if (isDatepickerOpen) {
-                        var popupPosition;
-                        var popupWidth = element.parent().find('.datepicker-popup').outerWidth();
-
-                        scope.popupPosition = $position.position(element);
-                        scope.popupPosition.top += scope.popupPosition.height;
-
-                        popupPosition = element.offset().left + element.width();
-                        popupPosition += popupWidth;
-
-                        if (popupPosition > $window.innerWidth) {
-                            scope.popupPosition.left -= popupPosition - $window.innerWidth;
-                        }
-                    }
-                };
-
-                scope.$watch('isOpen', adjustPopupPosition);
+                attrs.uibDatepickerPopup = attrs.uibDatepickerPopup || HR_settings.DATE_FORMAT || 'yyyy-MM-dd';
 
                 original_link.apply(this, arguments);
             };
