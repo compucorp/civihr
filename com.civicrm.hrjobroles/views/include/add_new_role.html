@@ -190,7 +190,7 @@
                                             </span>
                                         </td>
                                         <td ng-show="tableform.$visible">
-                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -224,7 +224,7 @@
                                         <th style="width:15%">Type</th>
                                         <th style="width:15%">% Amount</th>
                                         <th style="width:15%">Absolute Amount</th>
-                                        <th style="width:15%" ng-show="!tableformcc.$visible">Action</th>
+                                        <th style="width:15%" ng-show="tableformcc.$visible">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -257,12 +257,12 @@
                                                 </span>
                                             </span>
                                         </td>
-                                        <td ng-show="!tableformcc.$visible">
-                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                        <td ng-show="tableformcc.$visible">
+                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="{{tableformcc.$visible ? 4 : 5}}">
+                                        <td colspan="{{!tableformcc.$visible ? 4 : 5}}">
                                             <a href ng-show="tableformcc.$visible" ng-disabled="tableformcc.$waiting" ng-click="addAdditionalRow('new_role_id', 'cost_centre')" class="btn btn-link"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Cost Centre</a>
                                         </td>
                                     </tr>
