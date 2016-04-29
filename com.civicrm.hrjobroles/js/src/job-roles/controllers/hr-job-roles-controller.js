@@ -965,12 +965,12 @@ define([
                 });
             }
 
-          /**
-           * Trigger validation on JobRole Dates + attach error callback
-           * @param {object} data - The dates to validate
-           * @param {object} errors - The error recipients
-           * @returns {boolean|string}
-           */
+            /**
+             * Trigger validation on JobRole Dates + attach error callback
+             * @param {object} data - The dates to validate
+             * @param {object} errors - The error recipients
+             * @returns {boolean}
+             */
             function validateDates(data, errors) {
               var errorsCount = 0;
 
@@ -985,7 +985,7 @@ define([
               });
               DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
 
-              return errorsCount > 0 ? 'Error' : true;
+              return errorsCount === 0;
             }
 
             /**
