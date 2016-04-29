@@ -39,6 +39,11 @@
                     <div class="clear"></div>
                 </div>
                 <div class="crm-section">
+                    <div class="label">{$form.notification_receivers_ids.label}</div>
+                    <div class="content">{$form.notification_receivers_ids.html}</div>
+                    <div class="clear"></div>
+                </div>
+                <div class="crm-section">
                     <div class="label">{$form.is_active.label}</div>
                     <div class="content">{$form.is_active.html}</div>
                     <div class="clear"></div>

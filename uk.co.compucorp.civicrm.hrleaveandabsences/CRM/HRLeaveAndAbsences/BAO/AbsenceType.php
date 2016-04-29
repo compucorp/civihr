@@ -66,7 +66,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     $instance = new $className();
     $instance->copyValues($params);
+    $transaction = new CRM_Core_Transaction();
     $instance->save();
+
+    if(array_key_exists('notification_receivers_ids', $params)) {
+      self::saveNotificationReceivers($instance->id, $params['notification_receivers_ids']);
+    }
+
+    $transaction->commit();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
@@ -105,8 +112,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   public static function getDefaultValues($id) {
-    $absenceType = civicrm_api3('AbsenceType', 'get', array('id' => $id));
-    return $absenceType['values'][$id];
+    $result = civicrm_api3('AbsenceType', 'get', array('id' => $id));
+    $absenceType = $result['values'][$id];
+    $absenceType['notification_receivers_ids'] = self::getNotificationReceiversIDs($id);
+    return $absenceType;
   }
 
   private static function unsetDefaultTypes() {
@@ -291,6 +300,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return 0;
   }
 
+
   /**
    * Gets a list of all the colors in AbsenceType::allColors
    * that have already been used in leave/absence types.
@@ -309,4 +319,29 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     return $colors;
   }
+
+  /**
+   * Adds a list of notification receivers (contacts) to an Absence Type.
+   *
+   * @param int $typeId the ID of the type to add the notification receivers to
+   * @param array $contactsIds the IDs of the contacts to be added as notification receivers
+   */
+  private static function saveNotificationReceivers($typeId, $contactsIds) {
+    CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::removeReceiversFromAbsenceType($typeId);
+    if(!empty($contactsIds)) {
+      CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::addReceiversToAbsenceType($typeId, $contactsIds);
+    }
+  }
+
+  /**
+   * Returns a list of the Notification Receivers IDs for an Absence Type.
+   *
+   * @param int $typeId the ID of the type to get the notification receivers
+   *
+   * @return array the IDs of the notification receivers for the Absence Type
+   */
+  private static function getNotificationReceiversIDs($typeId) {
+    return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
+  }
+
 }

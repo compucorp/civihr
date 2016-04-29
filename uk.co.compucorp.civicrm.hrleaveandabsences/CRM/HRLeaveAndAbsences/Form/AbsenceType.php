@@ -65,6 +65,10 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
                 }
             }
 
+            if(!empty($params['notification_receivers_ids'])) {
+                $params['notification_receivers_ids'] = explode(',', $params['notification_receivers_ids']);
+            }
+
             try {
                 $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::create($params);
             } catch(CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException $ex) {
@@ -166,6 +170,11 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             ts('Default entitlement'),
             $this->getDAOFieldAttributes('default_entitlement'),
             true
+        );
+        $this->addEntityRef(
+            'notification_receivers_ids',
+            ts('When an employee does not have a leave approver, who should be notified of leave requests'),
+            ['multiple' => TRUE, 'create' => TRUE]
         );
         $this->addYesNo(
             'add_public_holiday_to_entitlement',
