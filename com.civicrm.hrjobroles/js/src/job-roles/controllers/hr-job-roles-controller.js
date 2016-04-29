@@ -131,7 +131,7 @@ define([
 
                 var contract = getContractData(data.contract.$viewValue);
 
-                return validateDates({
+                var validateResponse = validateDates({
                   'start': data.start_date.$viewValue,
                   'end': data.end_date.$viewValue,
                   'contractStart': contract.start_date,
@@ -141,6 +141,8 @@ define([
                   'start': data.start_date.$error.custom,
                   'end': data.end_date.$error.custom
                 });
+
+                return (validateResponse ? true : 'Error');
             };
 
             $scope.today = function () {
@@ -985,7 +987,7 @@ define([
               });
               DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
 
-              return errorsCount === 0;
+              return (errorsCount === 0);
             }
 
             /**
