@@ -30,6 +30,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         $this->addRequestingLeaveFields();
         $this->addTOILFields();
         $this->addCarryForwardFields();
+        $this->addFieldsRules();
 
         $this->addButtons([
             [ 'type' => 'next', 'name' => ts('Save'), 'isDefault' => true ],
@@ -274,5 +275,17 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     {
         $dao = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
         return CRM_Core_DAO::getAttribute($dao, $field);
+    }
+
+    private function addFieldsRules()
+    {
+        $positiveNumberMessage = ts('The value should be a positive number');
+        $this->addRule('default_entitlement', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('max_consecutive_leave_days', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('max_leave_accrual', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('accrual_expiration_duration', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('max_number_of_days_to_carry_forward', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('carry_forward_expiration_duration', $positiveNumberMessage, 'positiveInteger');
+        $this->addRule('carry_forward_expiration_day', $positiveNumberMessage, 'positiveInteger');
     }
 }
