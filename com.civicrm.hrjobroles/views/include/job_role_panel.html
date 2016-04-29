@@ -339,7 +339,7 @@
                                                 <td ng-show="tableform.$visible">
                                                     <button type="button"
                                                             ng-click="deleteAdditionalRow(job_roles_data.id, 'funder', key)"
-                                                            class="btn btn-danger pull-right"><span
+                                                            class="btn btn-danger pull-left"><span
                                                             class="fa fa-remove"
                                                             aria-hidden="true"></span></button>
                                                 </td>
@@ -399,7 +399,7 @@
                                             <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                 <td>
                                                     <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCentreList">
+                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in CostCentreList | orderBy: 'weight'">
                                                                             {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                                                         </span>
                                                 </td>
@@ -436,7 +436,7 @@
                                                                         </span>
                                                 </td>
                                                 <td ng-show="tableformcc.$visible">
-                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                                 </td>
                                             </tr>
                                             <tr>
