@@ -38,9 +38,7 @@ define([
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
-                var id = $scope.edit_data['new_role_id']['job_contract_id'];
-
-                var contract = me.contractsData[id];
+                var contract = getContractData($scope.edit_data['new_role_id']['job_contract_id']);
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
 
                 if (!areDatesCustom) {
@@ -90,7 +88,7 @@ define([
             $scope.onContractEdited = function (jobContractId, role_id) {
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
 
-                var contract = me.contractsData[id];
+                var contract = getContractData(id);
 
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
 
@@ -121,41 +119,30 @@ define([
             };
 
             /**
-             * Trigger validation on JobRole Dates + attach error callback
-             * @param start
-             * @param end
-             * @param {function} error
-             */
-            $scope.validateDates = function (start, end, error) {
-                DateValidation.setErrorCallback(error);
-
-                DateValidation.validate(start, end);
-            };
-
-            /**
              * Validation method for JobRole data.
              * If string is returned form is not submitted.
              * @param data
              * @returns {boolean|string}
              */
             $scope.validateRole = function (data) {
-                var errors = 0;
-
                 // Reset Error Messages
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
-                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        data.start_date.$error.custom.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        data.end_date.$error.custom.push(error);
-                    }
+                var contract = getContractData(data.contract.$viewValue);
+
+                var validateResponse = validateDates({
+                  'start': data.start_date.$viewValue,
+                  'end': data.end_date.$viewValue,
+                  'contractStart': contract.start_date,
+                  'contractEnd': contract.end_date,
+                },
+                {
+                  'start': data.start_date.$error.custom,
+                  'end': data.end_date.$error.custom
                 });
 
-                return errors > 0 ? 'Error' : true;
+                return (validateResponse ? true : 'Error');
             };
 
             $scope.today = function () {
@@ -359,7 +346,7 @@ define([
                 var contract_id = $scope.edit_data[role_id].job_contract_id;
 
                 if ($scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date'])) {
-                    var contract = me.contractsData[contract_id];
+                    var contract = getContractData(contract_id);
 
                     // search for revision containing these dates
                     var revision = contract.revisions.some(function (rev) {
@@ -436,23 +423,23 @@ define([
             $scope.saveNewRole = function saveNewRole() {
                 $log.debug('Add New Role');
 
-                var errors = 0;
-
                 $scope.errors = {};
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
 
-                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        $scope.errors.newStartDate.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        $scope.errors.newEndDate.push(error);
-                    }
+                var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
+                var validateResponse = validateDates({
+                  'start': $scope.edit_data.new_role_id.newStartDate,
+                  'end': $scope.edit_data.new_role_id.newEndDate,
+                  'contractStart': contract.start_date,
+                  'contractEnd': contract.end_date,
+                },
+                {
+                  'start': $scope.errors.newStartDate,
+                  'end': $scope.errors.newEndDate
                 });
 
-                if (!errors) {
+                if (validateResponse) {
 
                     $scope.edit_data.new_role_id.newStartDate = $scope.parseDate($scope.edit_data.new_role_id.newStartDate);
 
@@ -978,6 +965,38 @@ define([
                 }, function (errorMessage) {
                     $scope.error = errorMessage;
                 });
+            }
+
+            /**
+             * Trigger validation on JobRole Dates + attach error callback
+             * @param {object} data - The dates to validate
+             * @param {object} errors - The error recipients
+             * @returns {boolean}
+             */
+            function validateDates(data, errors) {
+              var errorsCount = 0;
+
+              DateValidation.setErrorCallback(function (error, field) {
+                  errorsCount++;
+                  if (field.indexOf('start_date') > -1) {
+                      errors.start.push(error);
+                  }
+                  if (field.indexOf('end_date') > -1) {
+                      errors.end.push(error);
+                  }
+              });
+              DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
+
+              return (errorsCount === 0);
+            }
+
+            /**
+             * Get a contract with the given contractId
+             * @param {int} contractId
+             * @returns {object}
+             */
+            function getContractData(contractId) {
+              return me.contractsData[contractId];
             }
         }
     ]);
