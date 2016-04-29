@@ -317,13 +317,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         CRM_Core_DAO::executeQuery($updateRevisionQuery, $updateRevisionParams);
 
     }
-    
-    // Migrating Job_Summary data:
-    if ($tableExists['civicrm_value_job_summary_10'])
-    {
-        CRM_Core_DAO::executeQuery('INSERT INTO civicrm_value_jobcontract_summary_10 SELECT * FROM civicrm_value_job_summary_10');
-    }
-      
+
     return true;
   }
   
