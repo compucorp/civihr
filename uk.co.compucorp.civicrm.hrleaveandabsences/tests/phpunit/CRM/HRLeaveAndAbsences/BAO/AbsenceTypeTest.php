@@ -316,6 +316,18 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
       }
     }
   }
+
+  public function testIsReservedCannotBeSetOnCreate() {
+    $entity = $this->createBasicType(['is_reserved' => 1]);
+    $this->assertEquals(0, $entity->is_reserved);
+  }
+
+  public function testIsReservedCannotBeSetOnUpdate() {
+    $entity = $this->createBasicType();
+    $this->assertEquals(0, $entity->is_reserved);
+    $entity = $this->updateBasicType($entity->id, ['is_reserved' => 1]);
+    $this->assertEquals(0, $entity->is_reserved);
+  }
   
   private function createBasicType($params = array()) {
     $basicRequiredFields = [

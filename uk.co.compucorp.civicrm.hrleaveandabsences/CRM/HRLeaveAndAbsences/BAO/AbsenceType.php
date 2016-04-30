@@ -64,6 +64,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     $params['color'] = strtoupper($params['color']);
 
+    unset($params['is_reserved']);
+
     $instance = new $className();
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
