@@ -287,5 +287,53 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         $this->addRule('max_number_of_days_to_carry_forward', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('carry_forward_expiration_duration', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('carry_forward_expiration_day', $positiveNumberMessage, 'positiveInteger');
+        $this->addFormRule([$this, 'formRules']);
+    }
+
+    public function formRules($values)
+    {
+        $errors = [];
+        $this->validateToilExpiration($values, $errors);
+        $this->validateCarryForwardExpiration($values, $errors);
+
+        return empty($errors) ? true : $errors;
+    }
+
+    private function validateToilExpiration($values, &$errors)
+    {
+        $expiration_unit = CRM_Utils_Array::value('accrual_expiration_unit', $values);
+        $expiration_duration = CRM_Utils_Array::value('accrual_expiration_duration', $values);
+
+        if($expiration_unit && !$expiration_duration) {
+            $errors['accrual_expiration_duration'] = ts('You must also set the expiration duration');
+        }
+
+        if($expiration_duration && !$expiration_unit) {
+            $errors['accrual_expiration_unit'] = ts('You must also set the expiration unit');
+        }
+    }
+
+    private function validateCarryForwardExpiration($values, &$errors)
+    {
+        $expiration_unit = CRM_Utils_Array::value('carry_forward_expiration_unit', $values);
+        $expiration_duration = CRM_Utils_Array::value('carry_forward_expiration_duration', $values);
+        $expiration_day = CRM_Utils_Array::value('carry_forward_expiration_day', $values);
+        $expiration_month = CRM_Utils_Array::value('carry_forward_expiration_month', $values);
+
+        if($expiration_unit && !$expiration_duration) {
+            $errors['carry_forward_expiration_duration'] = ts('You must also set the expiration duration');
+        }
+
+        if($expiration_duration && !$expiration_unit) {
+            $errors['carry_forward_expiration_unit'] = ts('You must also set the expiration unit');
+        }
+
+        if($expiration_day && !$expiration_month) {
+            $errors['carry_forward_expiration_month'] = ts('You must also set the expiration month');
+        }
+
+        if($expiration_month && !$expiration_day) {
+            $errors['carry_forward_expiration_day'] = ts('You must also set the expiration day');
+        }
     }
 }
