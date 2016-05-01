@@ -70,17 +70,14 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
                 $params['notification_receivers_ids'] = explode(',', $params['notification_receivers_ids']);
             }
 
+            $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
             try {
                 $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::create($params);
+                CRM_Core_Session::setStatus(ts("The Leave/Absence type '%1' has been $actionDescription.", array( 1 => $absenceType->title)), 'Success', 'success');
             } catch(CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException $ex) {
-                $this->setElementError('title', $ex->getMessage());
-            }
-
-            if ($this->_action & CRM_Core_Action::UPDATE) {
-                CRM_Core_Session::setStatus(ts('The Leave/Absence type \'%1\' has been updated.', array( 1 => $absenceType->title)), 'Success', 'success');
-            }
-            else {
-                CRM_Core_Session::setStatus(ts('The Leave/Absence type \'%1\' has been added.', array( 1 => $absenceType->title)), 'Success', 'success');
+                $message = ts("The Leave/Absence could not be $actionDescription.");
+                $message .= ' ' . $ex->getMessage();
+                CRM_Core_Session::setStatus($message, 'Error', 'error');
             }
 
             $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1&action=browse');
