@@ -10,36 +10,38 @@ require_once 'CRM/Core/Form.php';
 class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
 {
 
+    private $defaultValues = [];
+
     public function setDefaultValues() {
-        if ($this->_id) {
-            $defaults = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
-        } else {
-            $defaults = [
-                'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
-                'add_public_holiday_to_entitlement' => 0,
-                'must_take_public_holiday_as_leave' => 0
-            ];
+        if(empty($this->defaultValues)) {
+            if ($this->_id) {
+                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
+            } else {
+                $this->defaultValues = [
+                    'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
+                    'add_public_holiday_to_entitlement' => 0,
+                    'must_take_public_holiday_as_leave' => 0
+                ];
+            }
         }
 
-        return $defaults;
+        return $this->defaultValues;
     }
 
     public function buildQuickForm()
     {
+        $this->_id = CRM_Utils_Request::retrieve('id' , 'Positive', $this);
+
         $this->addBasicDetailsFields();
         $this->addRequestingLeaveFields();
         $this->addTOILFields();
         $this->addCarryForwardFields();
         $this->addFieldsRules();
 
-        $this->addButtons([
-            [ 'type' => 'next', 'name' => ts('Save'), 'isDefault' => true ],
-            [ 'type' => 'cancel', 'name' => ts('Cancel') ],
-        ]);
-
+        $this->addButtons($this->getAvailableButtons());
+        $this->assign('deleteUrl', $this->getDeleteUrl());
         $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
 
-        $this->_id = CRM_Utils_Request::retrieve('id' , 'Positive', $this);
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/spectrum.css');
         CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/spectrum-min.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
@@ -308,5 +310,32 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         if($expiration_month && !$expiration_day) {
             $errors['carry_forward_expiration_day'] = ts('You must also set the expiration day');
         }
+    }
+
+    private function getAvailableButtons()
+    {
+        $buttons = [
+            [ 'type' => 'next', 'name' => ts('Save'), 'isDefault' => true ],
+            [ 'type' => 'cancel', 'name' => ts('Cancel') ],
+        ];
+
+        $defaultValues = $this->setDefaultValues();
+        $is_reserved = empty($defaultValues['is_reserved']) ? false : true;
+        if(($this->_action & CRM_Core_Action::UPDATE) && !$is_reserved) {
+            $buttons[] = [ 'type' => 'delete', 'name' => ts('Delete') ];
+        }
+
+        return $buttons;
+    }
+
+    private function getDeleteUrl()
+    {
+        return CRM_Utils_System::url(
+            'civicrm/admin/leaveandabsences/types',
+            "action=delete&id={$this->_id}&reset=1",
+            false,
+            null,
+            false
+        );
     }
 }

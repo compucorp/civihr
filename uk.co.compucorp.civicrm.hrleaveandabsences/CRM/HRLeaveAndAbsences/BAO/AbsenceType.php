@@ -81,6 +81,19 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return $instance;
   }
 
+  public static function del($id)
+  {
+    $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
+    $absenceType->id = $id;
+    $absenceType->find(true);
+
+    if($absenceType->is_reserved) {
+      throw new CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException('Reserved types cannot be deleted!');
+    }
+
+    $absenceType->delete();
+  }
+
   public static function getRequestCancelationOptions() {
      return [
          self::REQUEST_CANCELATION_NO                       => ts('No'),

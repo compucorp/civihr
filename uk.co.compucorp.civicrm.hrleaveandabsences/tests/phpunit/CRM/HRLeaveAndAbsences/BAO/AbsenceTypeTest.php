@@ -328,6 +328,27 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     $entity = $this->updateBasicType($entity->id, ['is_reserved' => 1]);
     $this->assertEquals(0, $entity->is_reserved);
   }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   * @expectedExceptionMessage Reserved types cannot be deleted!
+   */
+  public function testShouldNotBeAllowedToDeleteReservedTypes()
+  {
+    $id = $this->createReservedType();
+    $this->assertNotNull($id);
+    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($id);
+  }
+
+  public function testShouldBeAllowedToDeleteReservedTypes()
+  {
+    $entity = $this->createBasicType();
+    $this->assertNotNull($entity->id);
+    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($entity->id);
+    $entity = $this->findTypeByID($entity->id);
+    $this->assertNull($entity);
+
+  }
   
   private function createBasicType($params = array()) {
     $basicRequiredFields = [
@@ -350,6 +371,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     $entity = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
     $entity->id = $id;
     $entity->find(true);
+
+    if($entity->N == 0) {
+      return null;
+    }
 
     return $entity;
   }
@@ -396,5 +421,26 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
       [77, 9, true],
       [12, 31, true],
     ];
+  }
+
+  /**
+   * Since we cannot create reserved types through the API,
+   * we have this helper method to insert one directly in
+   * the database
+   */
+  private function createReservedType()
+  {
+    $connection = $this->getConnection()->getConnection();
+    $title = 'Title ' . microtime();
+    $query = "
+      INSERT INTO
+        civicrm_hrleaveandabsences_absence_type(title, color, default_entitlement, allow_request_cancelation, is_reserved, weight)
+        VALUES('{$title}', '#000000', 0, 1, 1, 1)
+    ";
+    if($connection->query($query)) {
+      return $connection->lastInsertId();
+    }
+
+    return null;
   }
 }

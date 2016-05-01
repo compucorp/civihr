@@ -280,10 +280,32 @@
                     });
                 }
 
+                function initDeleteButton() {
+                    $('.crm-button-type-delete').on('click', function(e) {
+                        e.preventDefault();
+                        CRM.confirm({
+                            title: ts('Delete Leave/Absence type'),
+                            message: ts('Are you sure you want to delete this leave/absence type?'),
+                            options: {
+                                yes: ts('Yes'),
+                                no: ts('No')
+                            }
+                        })
+                        .on('crmConfirm:yes', deleteCallback);
+                    });
+                }
+
+                function deleteCallback() {
+                    {/literal}
+                    window.location = "{$deleteUrl}";
+                    {literal}
+                }
+
                 $(document).ready(function() {
                     initToilControls();
                     initCarryForwardControls();
                     initColorPicker();
+                    initDeleteButton();
                 });
 
             });

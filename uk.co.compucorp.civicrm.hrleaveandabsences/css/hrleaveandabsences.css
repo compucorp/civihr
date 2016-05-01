@@ -17,3 +17,6 @@
     line-height: 15px;
     font-size: 9px;
 }
+
+#crm-container .crm-absence_type-form-block .crm-submit-buttons .crm-button-type-next,
+#crm-container .crm-absence_type-form-block .crm-submit-buttons .crm-button-type-cancel { float: right !important; }
