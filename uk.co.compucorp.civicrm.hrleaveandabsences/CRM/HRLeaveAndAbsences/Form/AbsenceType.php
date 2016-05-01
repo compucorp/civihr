@@ -37,7 +37,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             [ 'type' => 'cancel', 'name' => ts('Cancel') ],
         ]);
 
-        $this->assign('elementNames', $this->getRenderableElementNames());
         $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
 
         $this->_id = CRM_Utils_Request::retrieve('id' , 'Positive', $this);
@@ -84,29 +83,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             $session = CRM_Core_Session::singleton();
             $session->replaceUserContext($url);
         }
-    }
-
-    /**
-     * Get the fields/elements defined in this form.
-     *
-     * @return array (string)
-     */
-    public function getRenderableElementNames()
-    {
-// The _elements list includes some items which should not be
-// auto-rendered in the loop -- such as "qfKey" and "buttons".  These
-// items don't have labels.  We'll identify renderable by filtering on
-// the 'label'.
-        $elementNames = array();
-        foreach ($this->_elements as $element) {
-            /** @var HTML_QuickForm_Element $element */
-            $label = $element->getLabel();
-            if (!empty($label)) {
-                $elementNames[] = $element->getName();
-            }
-        }
-
-        return $elementNames;
     }
 
     private function getMonthsOptions()
