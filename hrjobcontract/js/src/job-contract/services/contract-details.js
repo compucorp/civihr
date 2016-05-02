@@ -4,8 +4,8 @@ define([
 ], function (services) {
     'use strict';
 
-    services.factory('ContractDetailsService', ['$resource', 'settings', '$q', 'UtilsService', '$log',
-        function ($resource, settings, $q, UtilsService, $log) {
+    services.factory('ContractDetailsService', ['$filter', '$resource', 'settings', '$q', 'UtilsService', '$log',
+        function ($filter, $resource, settings, $q, UtilsService, $log) {
             $log.debug('Service: ContractDetailsService');
 
         var ContractDetails = $resource(settings.pathRest, {
@@ -17,15 +17,13 @@ define([
         /**
          * If parameter passed is a Date object, it converts it into a string
          *
-         * @param {string} dateObj
+         * @param {Date} dateObj
          * @param {string/any}
          */
         function convertToDateString(dateObj) {
-            if (dateObj instanceof Date) {
-                return moment(dateObj.getTime()).format('YYYY-MM-DD');
-            }
+            var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
 
-            return dateObj;
+            return dateString !== 'Unspecified' ? dateString : dateObj;
         }
 
         return {

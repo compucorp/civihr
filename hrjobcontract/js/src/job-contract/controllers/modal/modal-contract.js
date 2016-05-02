@@ -227,11 +227,9 @@ define([
              * @param {Date/null}
              */
             function convertToDateObject(dateString) {
-                if (dateString) {
-                    return (moment(dateString, 'YYYY-MM-DD') || moment()).toDate();
-                }
+                var dateObj = $filter('formatDate')(dateString, Date);
 
-                return dateString;
+                return dateObj !== 'Unspecified' ? dateObj : dateString;
             }
 
             function changeReason(){
