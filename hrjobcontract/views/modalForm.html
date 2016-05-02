@@ -111,13 +111,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="col-sm-4 control-label">Contract Duration</label>
-
-                                <div class="col-sm-8">
-                                    <p class="form-control-static">{{duration}}</p>
-                                </div>
-                            </div>
                             <div class="form-group required" hrjc-validate ng-show="!!entity.details.period_end_date">
                                 <label for="{{prefix}}end-reason" class="col-sm-4 control-label">Contract End Reason</label>
 
@@ -130,6 +123,13 @@
                                             <option value="">- select -</option>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">Contract Duration</label>
+
+                                <div class="col-sm-8">
+                                    <p class="form-control-static">{{duration}}</p>
                                 </div>
                             </div>
                             <div class="form-group" hrjc-validate>
