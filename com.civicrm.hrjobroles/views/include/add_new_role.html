@@ -15,8 +15,8 @@
         <div class="{{prefix}}role-details">
             <div class="row">
                 <div class="col-xs-12">
-                    <tabset>
-                        <tab heading="Basic Details">
+                    <uib-tabset>
+                        <uib-tab heading="Basic Details">
                             <form name="form" class="form-horizontal" role="form">
                                 <div class="{{prefix}}basic-details">
                                     <div class="row">
@@ -52,9 +52,7 @@
                                                                ng-change="select('newStartDate')"
                                                                ng-disabled="isDisabled"
                                                                close-text="Close"
-                                                               required
-                                                               date-input/>
-
+                                                               required>
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newStartDate')">
                                                                 <i class="glyphicon glyphicon-calendar"></i>
@@ -78,9 +76,7 @@
                                                            ng-model="edit_data['new_role_id']['newEndDate']"
                                                            ng-change="select('newEndDate')"
                                                            ng-disabled="isDisabled"
-                                                           close-text="Close"
-                                                           date-input />
-
+                                                           close-text="Close">
                                                         <span class="input-group-btn">
                                                             <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
                                                         </span>
@@ -133,8 +129,8 @@
                                     </div>
                                 </div>
                             </form>
-                        </tab>
-                        <tab heading="Funding">
+                        </uib-tab>
+                        <uib-tab heading="Funding">
                             <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
@@ -163,7 +159,7 @@
                                     <tr ng-repeat="(key, funder) in edit_data['new_role_id']['funders']">
                                         <td>
                                             <!-- editable funder (text with validation) -->
-                                            <span editable-text="funder.funder_id" e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableform" e-name="funder" onbeforesave="checkName($data, user.id)">
+                                            <span editable-text="funder.funder_id" e-uib-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableform" e-name="funder" onbeforesave="checkName($data, user.id)">
                                                 {{ funder.funder_id.sort_name || 'empty' }}
                                             </span>
                                         </td>
@@ -201,8 +197,8 @@
                                     </tbody>
                                 </table>
                             </form>
-                        </tab>
-                        <tab heading="Cost Centres">
+                        </uib-tab>
+                        <uib-tab heading="Cost Centres">
                             <form editable-form name="tableformcc" onaftersave="saveTable()" oncancel="cancel()">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
@@ -269,8 +265,8 @@
                                     </tbody>
                                 </table>
                             </form>
-                        </tab>
-                    </tabset>
+                        </uib-tab>
+                    </uib-tabset>
                 </div>
             </div>
             <div class="row">

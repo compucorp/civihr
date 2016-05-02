@@ -32,8 +32,8 @@
             <div class="{{prefix}}role-details">
                 <div class="row">
                     <div class="col-xs-12">
-                        <tabset>
-                            <tab heading="Basic Details">
+                        <uib-tabset>
+                            <uib-tab heading="Basic Details">
                                 <form class="form-horizontal"
                                       role="form"
                                       editable-form
@@ -111,7 +111,6 @@
                                                                    ng-change="select('start_date')"
                                                                    ng-disabled="isDisabled"
                                                                    close-text="Close"
-                                                                   date-input
                                                                    required
                                                             />
                                                             <span class="input-group-btn">
@@ -145,7 +144,6 @@
                                                                    ng-change="select('end_date')"
                                                                    ng-disabled="isDisabled"
                                                                    close-text="Close"
-                                                                   date-input
                                                             />
                                                             <span class="input-group-btn">
                                                                 <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -256,8 +254,8 @@
                                         -->
                                     </div>
                                 </form>
-                            </tab>
-                            <tab heading="Funding">
+                            </uib-tab>
+                            <uib-tab heading="Funding">
                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
                                     <form editable-form name="tableform"
                                           onaftersave="updateRole(job_roles_data.id)"
@@ -299,7 +297,7 @@
                                                 <td>
                                                     <!-- editable funder (text with validation) -->
                                                                         <span editable-text="funder.funder_id"
-                                                                              e-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10"
+                                                                              e-uib-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10"
                                                                               e-form="tableform" e-name="funder"
                                                                               onbeforesave="checkName($data, user.id)">
                                                                             {{funder.funder_id.sort_name || 'empty'}}
@@ -359,8 +357,8 @@
                                         </table>
                                     </form>
                                 </div>
-                            </tab>
-                            <tab heading="Cost Centres">
+                            </uib-tab>
+                            <uib-tab heading="Cost Centres">
                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
                                     <form editable-form name="tableformcc"
                                           onaftersave="updateRole(job_roles_data.id)"
@@ -448,8 +446,8 @@
                                         </table>
                                     </form>
                                 </div>
-                            </tab>
-                        </tabset>
+                            </uib-tab>
+                        </uib-tabset>
                     </div>
                 </div>
                 <div class="row">
