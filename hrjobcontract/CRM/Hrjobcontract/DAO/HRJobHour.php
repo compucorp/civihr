@@ -172,7 +172,7 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Job Hours Id') ,
+                  'title' => ts('Job Hours ID') ,
                   'required' => true,
                   'export' => false,
                   'import' => false,

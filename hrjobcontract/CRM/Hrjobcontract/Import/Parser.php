@@ -40,6 +40,12 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
    */
   CONST IMPORT_CONTRACTS = 1, IMPORT_REVISIONS = 2;
 
+  /**
+   * @access protected
+   * @var integer
+   * import mode ( for importing job contracts or importing contract revisions )
+   */
+  public $_importMode;
 
   protected $_fileName;
 
@@ -81,6 +87,8 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
     $onDuplicate = self::DUPLICATE_SKIP,
     $importMode  = self::IMPORT_CONTRACTS
   ) {
+    $this->_importMode = $importMode;
+
     if (!is_array($fileName)) {
       CRM_Core_Error::fatal();
     }
@@ -153,7 +161,6 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
         $returnCode = $this->summary($values);
       }
       elseif ($mode == self::MODE_IMPORT) {
-        $values['importMode'] = $importMode;
         $returnCode = $this->import($onDuplicate, $values);
       }
       else {
