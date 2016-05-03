@@ -1,14 +1,15 @@
 define([
     'common/lodash',
+    'common/moment',
     'common/angularMocks',
     'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app'
-], function (_) {
+], function (_, moment) {
     'use strict';
 
     describe('EditDatesModalCtrl', function () {
-        var $compile, $controller, $filter, $q, $modalInstance, $provide, $rootScope,
+        var $compile, $controller, $q, $modalInstance, $provide, $rootScope,
         $templateCache, $scope, appraisalCycleAPIMock, cycle, ctrl, dialog;
 
         beforeEach(function () {
@@ -26,9 +27,9 @@ define([
             ]);
         });
         beforeEach(inject([
-            '$compile', '$controller', '$filter', '$q', '$rootScope', '$templateCache',
+            '$compile', '$controller', '$q', '$rootScope', '$templateCache',
             'AppraisalCycleInstance', 'dialog',
-            function (_$compile_, _$controller_, _$filter_, _$q_, _$rootScope_, _$templateCache_, AppraisalCycleInstance, _dialog_) {
+            function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, AppraisalCycleInstance, _dialog_) {
                 cycle = AppraisalCycleInstance.init(
                     appraisalCycleAPIMock.mockedCycles().list[2],
                     true
@@ -41,7 +42,7 @@ define([
                 $rootScope = _$rootScope_;
                 dialog = _dialog_
 
-                initSpies(_$filter_);
+                initSpies();
                 initController();
                 initForm();
 
@@ -76,9 +77,9 @@ define([
 
         describe('form validation', function () {
             var validData = {
-                cycle_self_appraisal_due: '01/01/2001',
-                cycle_manager_appraisal_due: '02/02/2002',
-                cycle_grade_due: '03/03/2003',
+                cycle_self_appraisal_due: moment('2001-01-01').toDate(),
+                cycle_manager_appraisal_due: moment('2002-02-02').toDate(),
+                cycle_grade_due: moment('2003-03-03').toDate(),
             };
 
             describe('valid data', function () {
@@ -107,7 +108,7 @@ define([
 
         describe('form errors', function () {
             var invalidData = {
-                cycle_self_appraisal_due: '01/01/2001'
+                cycle_self_appraisal_due: moment('2001-01-01').toDate()
             };
 
             beforeEach(function () {
@@ -129,9 +130,9 @@ define([
 
             describe('standard submit (dates have been changed)', function () {
                 var dates = {
-                    cycle_self_appraisal_due: '01/01/2001',
-                    cycle_manager_appraisal_due: '02/02/2002',
-                    cycle_grade_due: '03/03/2003'
+                    cycle_self_appraisal_due: moment('2001-01-01').toDate(),
+                    cycle_manager_appraisal_due: moment('2002-02-02').toDate(),
+                    cycle_grade_due: moment('2003-03-03').toDate()
                 };
 
                 describe('before the dialog shows up', function () {
@@ -142,10 +143,6 @@ define([
 
                     it('marks the form as submitted', function () {
                         expect(ctrl.formSubmitted).toBe(true);
-                    });
-
-                    it('formats the datepicker dates', function () {
-                        expect($filter).toHaveBeenCalledWith('date');
                     });
 
                     it('shows a confirmation dialog', function () {
@@ -203,11 +200,8 @@ define([
         /**
          * Creates fake functions to inject in the controller
          */
-        function initSpies(_$filter_) {
+        function initSpies() {
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
-            $filter = jasmine.createSpy('filter').and.callFake(function (filter) {
-                return _$filter_.apply(null, arguments);
-            });
         }
 
         /**
@@ -215,7 +209,6 @@ define([
          */
         function initController() {
             ctrl = $controller('EditDatesModalCtrl', {
-                $filter: $filter,
                 $uibModalInstance: $modalInstance,
                 $scope: (function (scope) {
                     scope.cycle = cycle;

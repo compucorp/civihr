@@ -25,8 +25,6 @@ define([
             vm.submit = function () {
                 vm.formSubmitted = true;
 
-                formatDates();
-
                 if (!vm.form.$valid) {
                     vm.formErrors = formErrors();
                     return;
@@ -42,18 +40,6 @@ define([
             };
 
             init();
-
-            /**
-             * Formats all the dates in the current date format
-             *
-             * (Necessary because the date picker directives always return
-             * a Date object instead of simply a string in the specified format)
-             */
-            function formatDates() {
-                Object.keys(vm.cycle.dueDates()).forEach(function (key) {
-                    vm.cycle[key] = $filter('date')(vm.cycle[key], HR_settings.DATE_FORMAT);
-                });
-            }
 
             /**
              * Extracts from the AngularJS form object all the current errors
