@@ -7,7 +7,7 @@ define([
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
     'mocks/models/instances/appraisal-instance'
-], function (_) {
+], function (_, moment) {
     'use strict';
 
     describe('AppraisalCycleInstance', function () {
@@ -103,8 +103,8 @@ define([
 
                 it('normalizes the data', function () {
                     expect(instance.foo).toBe(attributes.foo);
-                    expect(instance.cycle_start_date).toBe('23/09/2015');
-                    expect(instance.cycle_grade_due).toBe('22/11/2015');
+                    expect(instance.cycle_start_date).toEqual(moment('2015-09-23').toDate());
+                    expect(instance.cycle_grade_due).toEqual(moment('2015-11-22').toDate());
                     expect(instance.cycle_is_active).toBe(false);
                     expect(instance['api.AppraisalCycle.getappraisalsperstep']).not.toBeDefined();
                     expect(instance.appraisals_count).toBeDefined();
@@ -195,19 +195,19 @@ define([
 
             beforeEach(function () {
                 instance = AppraisalCycleInstance.init({
-                    cycle_start_date: '01/01/2015',
-                    cycle_end_date: '31/12/2015',
-                    cycle_self_appraisal_due: '31/01/2016',
-                    cycle_manager_appraisal_due: '28/02/2016',
-                    cycle_grade_due: '30/03/2016'
+                    cycle_start_date: moment('2015-01-01').toDate(),
+                    cycle_end_date: moment('2015-12-31').toDate(),
+                    cycle_self_appraisal_due: moment('2016-01-31').toDate(),
+                    cycle_manager_appraisal_due: moment('2016-02-28').toDate(),
+                    cycle_grade_due: moment('2016-03-30').toDate()
                 });
             });
 
             it('returns only the due dates', function () {
                 expect(instance.dueDates()).toEqual({
-                    cycle_self_appraisal_due: '31/01/2016',
-                    cycle_manager_appraisal_due: '28/02/2016',
-                    cycle_grade_due: '30/03/2016'
+                    cycle_self_appraisal_due: jasmine.any(Date),
+                    cycle_manager_appraisal_due: jasmine.any(Date),
+                    cycle_grade_due: jasmine.any(Date)
                 });
             })
         });
@@ -217,9 +217,9 @@ define([
 
             beforeEach(function () {
                 instance = AppraisalCycleInstance.init({
-                    cycle_self_appraisal_due: '01/02/2016',
-                    cycle_manager_appraisal_due: '01/03/2016',
-                    cycle_grade_due: '01/04/2016'
+                    cycle_self_appraisal_due: moment('2016-02-01').toDate(),
+                    cycle_manager_appraisal_due: moment('2016-03-01').toDate(),
+                    cycle_grade_due: moment('2016-04-01').toDate()
                 });
 
                 jasmine.clock().mockDate(new Date(2016, 2, 1));
@@ -237,9 +237,9 @@ define([
 
             beforeEach(function () {
                 instance = AppraisalCycleInstance.init({
-                    cycle_self_appraisal_due: '01/02/2016',
-                    cycle_manager_appraisal_due: '01/03/2016',
-                    cycle_grade_due: '01/04/2016'
+                    cycle_self_appraisal_due: moment('2016-02-01').toDate(),
+                    cycle_manager_appraisal_due: moment('2016-03-01').toDate(),
+                    cycle_grade_due: moment('2016-04-01').toDate()
                 });
             });
 
@@ -252,7 +252,7 @@ define([
 
                     it('returns today', function () {
                         expect(nextDueDate.status_id).toBe('1');
-                        expect(nextDueDate.date).toBe('01/02/2016');
+                        expect(nextDueDate.date).toEqual(moment('2016-02-01').toDate());
                     });
                 });
 
@@ -264,7 +264,7 @@ define([
 
                     it('returns the next to come', function () {
                         expect(nextDueDate.status_id).toBe('2');
-                        expect(nextDueDate.date).toBe('01/03/2016');
+                        expect(nextDueDate.date).toEqual(moment('2016-03-01').toDate());
                     });
                 });
             });
@@ -287,8 +287,8 @@ define([
             beforeEach(function () {
                 instance = AppraisalCycleInstance.init({
                     foo: 'foo',
-                    cycle_start_date: '23/09/2015',
-                    cycle_grade_due: '22/11/2015',
+                    cycle_start_date: moment('2015-09-23').toDate(),
+                    cycle_grade_due: moment('2015-11-22').toDate(),
                     completion_percentage: 20,
                     appraisals_count: {
                         steps: [
@@ -322,12 +322,12 @@ define([
             var oldData = {
                 id: '23',
                 name: 'new cycle',
-                cycle_start_date: '12/11/2015',
-                cycle_grade_due: '01/01/2016'
+                cycle_start_date: moment('2015-11-12').toDate(),
+                cycle_grade_due: moment('2016-01-01').toDate()
             };
             var newData = {
                 name: 'newest cycle',
-                cycle_grade_due: '01/02/2016'
+                cycle_grade_due: moment('2016-02-01').toDate()
             };
 
             beforeEach(function () {
