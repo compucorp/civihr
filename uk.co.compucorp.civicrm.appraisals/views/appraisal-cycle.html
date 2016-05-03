@@ -42,7 +42,7 @@
                                 <label class="col-sm-3 control-label">Period:</label>
                                 <div class="col-sm-9">
                                     <p class="form-control-static">
-                                        {{cycle.cycle.cycle_start_date}} - {{cycle.cycle.cycle_end_date}}
+                                        {{cycle.cycle.cycle_start_date | formatDate}} - {{cycle.cycle.cycle_end_date | formatDate}}
                                     </p>
                                 </div>
                             </div>

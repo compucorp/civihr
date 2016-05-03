@@ -5,6 +5,7 @@ define([
     'common/ui-select',
     'common/modules/dialog',
     'common/modules/xeditable-civi',
+    'common/filters/angular-date/format-date',
     'common/services/angular-date/date-format',
     'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
