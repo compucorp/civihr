@@ -36,8 +36,6 @@ define([
             vm.submit = function () {
                 vm.formSubmitted = true;
 
-                formatDates();
-
                 if (!isFormValid()) {
                     vm.formErrors = formErrors();
                     return;
@@ -78,20 +76,6 @@ define([
                     $rootScope.$emit('AppraisalCycle::edit', vm.cycle);
                     $modalInstance.close();
                 });
-            }
-
-            /**
-             * Formats all the dates in the current date format
-             *
-             * (Necessary because the date picker directives always return
-             * a Date object instead of simply a string in the specified format)
-             */
-            function formatDates() {
-                for (var key in vm.cycle) {
-                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        vm.cycle[key] = $filter('date')(vm.cycle[key], HR_settings.DATE_FORMAT);
-                    }
-                }
             }
 
             /**
@@ -166,13 +150,11 @@ define([
              * @return {boolean}
              */
             function isFormValid() {
-                var momentFormat = HR_settings.DATE_FORMAT.toUpperCase();
-
-                var startDate = moment(vm.cycle.cycle_start_date, momentFormat);
-                var endDate = moment(vm.cycle.cycle_end_date, momentFormat);
-                var selfDue = moment(vm.cycle.cycle_self_appraisal_due, momentFormat);
-                var managerDue = moment(vm.cycle.cycle_manager_appraisal_due, momentFormat);
-                var gradeDue = moment(vm.cycle.cycle_grade_due, momentFormat);
+                var startDate = moment(vm.cycle.cycle_start_date);
+                var endDate = moment(vm.cycle.cycle_end_date);
+                var selfDue = moment(vm.cycle.cycle_self_appraisal_due);
+                var managerDue = moment(vm.cycle.cycle_manager_appraisal_due);
+                var gradeDue = moment(vm.cycle.cycle_grade_due);
 
                 vm.form.cycle_end_date.$setValidity('isAfter', endDate.isAfter(startDate));
                 vm.form.cycle_manager_appraisal_due.$setValidity('isAfter', managerDue.isAfter(selfDue));

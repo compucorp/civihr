@@ -1,12 +1,13 @@
 define([
     'common/angular',
     'common/lodash',
+    'common/moment',
     'common/angularMocks',
     'common/mocks/services/hr-settings-mock',
     'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
     'mocks/models/instances/appraisal-cycle-instance'
-], function (angular, _) {
+], function (angular, _, moment) {
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
@@ -18,11 +19,11 @@ define([
             cycle_name: 'Appraisal Cycle #1',
             cycle_type_id: '1',
             cycle_is_active: true,
-            cycle_start_date: '01/01/2015',
-            cycle_end_date: '31/12/2015',
-            cycle_self_appraisal_due: '31/01/2016',
-            cycle_manager_appraisal_due: '28/02/2016',
-            cycle_grade_due: '30/03/2016'
+            cycle_start_date: moment('2015-01-01').toDate(),
+            cycle_end_date: moment('2015-12-31').toDate(),
+            cycle_self_appraisal_due: moment('2016-01-31').toDate(),
+            cycle_manager_appraisal_due: moment('2016-02-28').toDate(),
+            cycle_grade_due: moment('2016-03-30').toDate()
         };
 
         beforeEach(function () {
@@ -172,7 +173,9 @@ define([
 
             describe('end date', function () {
                 beforeEach(function () {
-                    submitFormWith(_.assign({}, validCycle, { cycle_end_date: '31/12/2014' }));
+                    submitFormWith(_.assign({}, validCycle, {
+                        cycle_end_date: moment('2014-12-31').toDate()
+                    }));
                 });
 
                 it('end date must be after end date', function () {
@@ -184,7 +187,9 @@ define([
 
             describe('manager appraisal due date', function () {
                 beforeEach(function () {
-                    submitFormWith(_.assign({}, validCycle, { cycle_manager_appraisal_due: '05/01/2016' }));
+                    submitFormWith(_.assign({}, validCycle, {
+                        cycle_manager_appraisal_due: moment('2016-01-05').toDate()
+                    }));
                 });
 
                 it('manager appraisal due date must be after self appraisal due date', function () {
@@ -196,7 +201,9 @@ define([
 
             describe('grade due date', function () {
                 beforeEach(function () {
-                    submitFormWith(_.assign({}, validCycle, { cycle_grade_due: '10/02/2016' }));
+                    submitFormWith(_.assign({}, validCycle, {
+                        cycle_grade_due: moment('2016-02-10').toDate()
+                    }));
                 });
 
                 it('grade due date must be after manager appraisal due date', function () {
@@ -210,9 +217,9 @@ define([
         describe('form errors', function () {
             var cycleWithErrors = _.assign({}, validCycle, {
                 cycle_name: '',
-                cycle_end_date: '31/12/2014',
+                cycle_end_date: moment('2014-12-31').toDate(),
                 cycle_grade_due: '',
-                cycle_manager_appraisal_due: '20/01/2016'
+                cycle_manager_appraisal_due: moment('2016-01-20').toDate()
             });
 
             beforeEach(function () {
@@ -280,9 +287,7 @@ define([
                 });
 
                 beforeEach(function () {
-                    editedCycle = _.assign({}, _.find(appraisalCycleAPIMock.mockedCycles().list, function (cycle) {
-                        return cycle.id === '4217';
-                    }), {
+                    editedCycle = _.assign({}, getMockedCycleFormFields($scope.cycleId), {
                         cycle_name: 'Amended name',
                         cycle_type_id: '2'
                     });
@@ -317,7 +322,7 @@ define([
 
                     beforeEach(function () {
                         editedWithNewDueDates = _.assign({}, editedCycle, {
-                            cycle_grade_due: '11/08/2016'
+                            cycle_grade_due: moment('2016-08-11').toDate()
                         });
                     });
 
@@ -367,6 +372,23 @@ define([
                         });
                     });
                 });
+
+                /**
+                 * Fetches the mocked cycle with the given id, initializes it
+                 * as an instance (since the mocked cycle simulates the data)
+                 * coming from the API), and then return its attributes minus
+                 * the default ones (which do not have equivalent fields in the form)
+                 *
+                 * @param {string} id
+                 * @return {Object}
+                 */
+                function getMockedCycleFormFields(id) {
+                    var cycle = AppraisalCycleInstance.init(_.find(appraisalCycleAPIMock.mockedCycles().list, function (cycle) {
+                        return cycle.id === id;
+                    }), true);
+
+                    return _.omit(cycle.attributes(), Object.keys(cycle.defaultCustomData()));
+                }
             });
         });
 
