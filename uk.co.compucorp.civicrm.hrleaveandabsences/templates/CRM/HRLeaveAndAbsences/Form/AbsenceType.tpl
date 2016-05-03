@@ -89,7 +89,11 @@
                 <div class="crm-section toil-option">
                     <div class="label">{ts}Default expiry of accrued amounts{/ts}</div>
                     <div class="content">
-                        <label><input type="checkbox" id="accrual_never_expire" {if $form.accrual_expiration_duration.value eq ''}checked{/if}> {ts}Never expire{/ts}</label>
+                        {assign var="accrual_never_expire" value=false }
+                        {if $form.accrual_expiration_duration.value eq '' and $form.accrual_expiration_unit.value.0 eq ''}
+                            {assign var="accrual_never_expire" value=true }
+                        {/if}
+                        <label><input type="checkbox" id="accrual_never_expire" {if $accrual_never_expire}checked{/if}> {ts}Never expire{/ts}</label>
                         <br/>
                         <span class="toil-expiration">{$form.accrual_expiration_duration.html}{$form.accrual_expiration_unit.html}</span>
                     </div>
@@ -124,10 +128,10 @@
                         {assign var="carry_forward_expire_after_duration" value=false }
                         {assign var="carry_forward_expire_after_date" value=false }
                         {assign var="carry_forward_never_expire" value=false }
-                        {if $form.carry_forward_expiration_duration.value neq '' and $form.carry_forward_expiration_unit.value neq '' }
+                        {if $form.carry_forward_expiration_duration.value neq '' or $form.carry_forward_expiration_unit.value.0 neq '' }
                             {assign var="carry_forward_expire_after_duration" value=true }
                         {/if}
-                        {if $form.carry_forward_expiration_day.value neq '' and $form.carry_forward_expiration_month.value neq '' }
+                        {if $form.carry_forward_expiration_day.value neq '' or $form.carry_forward_expiration_month.value.0 neq '' }
                             {assign var="carry_forward_expire_after_date" value=true }
                         {/if}
                         {if not $carry_forward_expire_after_duration and not $carry_forward_expire_after_date }
