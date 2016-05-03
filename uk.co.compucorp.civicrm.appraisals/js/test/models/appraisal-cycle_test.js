@@ -267,8 +267,8 @@ define([
             var newCycle = {
                 name: 'new cycle',
                 type: 'type 4',
-                cycle_start_date: '01/01/2014',
-                cycle_end_date: '01/01/2015'
+                cycle_start_date: moment('2014-01-01').toDate(),
+                cycle_end_date: moment('2015-01-01').toDate()
             };
 
             it('creates a new appraisal cycle', function (done) {
