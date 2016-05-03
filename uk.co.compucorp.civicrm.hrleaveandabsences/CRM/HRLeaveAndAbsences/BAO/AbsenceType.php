@@ -10,6 +10,37 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   const REQUEST_CANCELATION_ALWAYS = 2;
   const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
 
+  private static $allColors = [
+      '#5A6779',
+      '#3D4A5E',
+      '#263345',
+      '#151D2C',
+      '#E5807F',
+      '#E56A6A',
+      '#CC4A49',
+      '#B32E2E',
+      '#ECA67F',
+      '#FA8F55',
+      '#D97038',
+      '#BF561D',
+      '#8EC68A',
+      '#6DAD68',
+      '#4F944A',
+      '#377A31',
+      '#C096AA',
+      '#B37995',
+      '#995978',
+      '#803D5E',
+      '#9579A8',
+      '#84619C',
+      '#5F3D76',
+      '#47275C',
+      '#42B0CB',
+      '#2997B3',
+      '#147E99',
+      '#056780',
+  ];
+
   /**
    * Create a new AbsenceType based on array-data
    *
@@ -26,12 +57,41 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     if(isset($params['is_default']) && $params['is_default']) {
       self::unsetDefaultTypes();
     }
+
+    if(empty($params['id'])) {
+      $params['weight'] = self::getMaxWeight() + 1;
+    }
+
+    $params['color'] = strtoupper($params['color']);
+
+    unset($params['is_reserved']);
+
     $instance = new $className();
     $instance->copyValues($params);
+    $transaction = new CRM_Core_Transaction();
     $instance->save();
+
+    if(array_key_exists('notification_receivers_ids', $params)) {
+      self::saveNotificationReceivers($instance->id, $params['notification_receivers_ids']);
+    }
+
+    $transaction->commit();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  public static function del($id)
+  {
+    $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
+    $absenceType->id = $id;
+    $absenceType->find(true);
+
+    if($absenceType->is_reserved) {
+      throw new CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException('Reserved types cannot be deleted!');
+    }
+
+    $absenceType->delete();
   }
 
   public static function getRequestCancelationOptions() {
@@ -50,12 +110,40 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     ];
   }
 
+  public static function getAvailableColors() {
+    $colorsInUse = self::getColorsInUse();
+    if(count(self::$allColors) == count($colorsInUse)) {
+      return self::$allColors;
+    }
+
+    $availableColors = [];
+    foreach(self::$allColors as $color) {
+      if(!in_array($color, $colorsInUse)) {
+        $availableColors[] = $color;
+      }
+    }
+
+    return $availableColors;
+  }
+
+  public static function getDefaultValues($id) {
+    $result = civicrm_api3('AbsenceType', 'get', array('id' => $id));
+    $absenceType = $result['values'][$id];
+    $absenceType['notification_receivers_ids'] = self::getNotificationReceiversIDs($id);
+    return $absenceType;
+  }
+
   private static function unsetDefaultTypes() {
     $tableName = self::getTableName();
-    $query = "UPDATE $tableName SET is_default = 0 WHERE is_default = 1";
+    $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
     CRM_Core_DAO::executeQuery($query);
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateParams($params) {
     if(!empty($params['add_public_holiday_to_entitlement'])) {
       self::validateAddPublicHolidayToEntitlement();
@@ -85,6 +173,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateTOIL($params) {
     $allow_accruals_request = !empty($params['allow_accruals_request']);
     if(!empty($params['max_leave_accrual']) && !$allow_accruals_request) {
@@ -122,6 +215,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
   }
 
+  /**
+   * @param $params The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
   private static function validateCarryForward($params) {
     $allow_carry_forward = !empty($params['allow_carry_forward']);
     if(!empty($params['max_number_of_days_to_carry_forward']) && !$allow_carry_forward) {
@@ -130,7 +228,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_date = !empty($params['carry_forward_expiration_date']);
+    $has_carry_forward_expiration_day = !empty($params['carry_forward_expiration_day']);
+    $has_carry_forward_expiration_month = !empty($params['carry_forward_expiration_month']);
+    $has_carry_forward_expiration_date = $has_carry_forward_expiration_day && $has_carry_forward_expiration_month;
     if($has_carry_forward_expiration_date && !$allow_carry_forward) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'To set the Carry Forward Expiration Date you must allow Carry Forward'
@@ -158,15 +258,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    if($has_carry_forward_expiration_date && !preg_match('/\d\d-\d\d/', $params['carry_forward_expiration_date'])) {
+    if ($has_carry_forward_expiration_date &&
+        !self::isValidDateAndMonth($params['carry_forward_expiration_day'], $params['carry_forward_expiration_month'])
+    ) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
-      );
-    }
-
-    if($has_carry_forward_expiration_date && !self::isValidDateAndMonth($params['carry_forward_expiration_date'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
+          'Invalid Carry Forward Expiration Date'
       );
     }
 
@@ -185,10 +281,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @TODO Find a better place to put this method.
    *
    */
-  private static function isValidDateAndMonth($carry_forward_expiration_date) {
-    list($day, $month) = explode('-', $carry_forward_expiration_date);
-    $day = (int)$day;
-    $month = (int)$month;
+  private static function isValidDateAndMonth($day, $month) {
     if($month < 1 || $month > 12) {
       return false;
     }
@@ -203,4 +296,67 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     return true;
   }
+
+  /**
+   * Gets the maximum weight of all leave/absence types
+   *
+   * Returns 0 if there's no type available
+   *
+   * @return int the maximu weight
+   */
+  private static function getMaxWeight() {
+    $tableName = self::getTableName();
+    $query = "SELECT MAX(weight) as max_weight FROM {$tableName}";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if($dao->fetch()) {
+      return $dao->max_weight;
+    }
+
+    return 0;
+  }
+
+
+  /**
+   * Gets a list of all the colors in AbsenceType::allColors
+   * that have already been used in leave/absence types.
+   *
+   * @return array The list of colors already used
+   */
+  private static function getColorsInUse()
+  {
+    $colors = [];
+    $tableName = self::getTableName();
+    $query = "SELECT DISTINCT(color) as color FROM {$tableName}";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    while($dao->fetch()) {
+      $colors[] = $dao->color;
+    }
+
+    return $colors;
+  }
+
+  /**
+   * Adds a list of notification receivers (contacts) to an Absence Type.
+   *
+   * @param int $typeId the ID of the type to add the notification receivers to
+   * @param array $contactsIds the IDs of the contacts to be added as notification receivers
+   */
+  private static function saveNotificationReceivers($typeId, $contactsIds) {
+    CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::removeReceiversFromAbsenceType($typeId);
+    if(!empty($contactsIds)) {
+      CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::addReceiversToAbsenceType($typeId, $contactsIds);
+    }
+  }
+
+  /**
+   * Returns a list of the Notification Receivers IDs for an Absence Type.
+   *
+   * @param int $typeId the ID of the type to get the notification receivers
+   *
+   * @return array the IDs of the notification receivers for the Absence Type
+   */
+  private static function getNotificationReceiversIDs($typeId) {
+    return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
+  }
+
 }

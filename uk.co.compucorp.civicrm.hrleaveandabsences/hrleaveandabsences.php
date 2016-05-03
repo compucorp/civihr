@@ -62,7 +62,7 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Leave/Absence Types'),
           'name'       => 'leave_and_absence_types',
-          'url'        => 'civicrm/admin/leaveandabsences/types',
+          'url'        => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(

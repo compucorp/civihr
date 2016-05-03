@@ -28,7 +28,8 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `max_number_of_days_to_carry_forward` int unsigned    ,
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry',
-     `carry_forward_expiration_date` varchar(5)    COMMENT 'If expiration_unit + expiration_duration is not informed, this should be. Its a date in the format dd-mm',
+     `carry_forward_expiration_day` int    COMMENT 'If expiration_unit + expiration_duration is not informed, the expiration day and month should be',
+     `carry_forward_expiration_month` int    COMMENT 'If expiration_unit + expiration_duration is not informed, the expiration day and month should be',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 

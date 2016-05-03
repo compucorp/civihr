@@ -32,6 +32,27 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
     $this->assign('rows', $rows);
   }
 
+  public function edit($action, $id = NULL, $imageUpload = FALSE, $pushUserContext = TRUE) {
+    if($action & CRM_Core_Action::DELETE) {
+      $this->delete($id);
+    } else {
+      parent::edit($action, $id, $imageUpload, $pushUserContext);
+    }
+  }
+
+  public function delete($id) {
+    try {
+      CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($id);
+      CRM_Core_Session::setStatus(ts('The Leave/Absence type was deleted'), 'Success', 'success');
+    } catch(Exception $ex) {
+      $message = ts('Error deleting the Leave/Absence type.') . ' '. $ex->getMessage();
+      CRM_Core_Session::setStatus($message, 'Error', 'error');
+    }
+
+    $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1&action=browse');
+    CRM_Utils_System::redirect($url);
+  }
+
   /**
    * name of the BAO to perform various DB manipulations
    *
@@ -53,7 +74,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
       $this->links = [
         CRM_Core_Action::UPDATE  => [
           'name'  => ts('Edit'),
-          'url'   => 'civicrm/admin/leaveandabsences/type',
+          'url'   => 'civicrm/admin/leaveandabsences/types',
           'qs'    => 'action=update&id=%%id%%&reset=1',
           'title' => ts('Edit Leave/Absence Type'),
         ],
@@ -90,7 +111,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editForm() {
-    // TODO: Implement editForm() method.
+    return 'CRM_HRLeaveAndAbsences_Form_AbsenceType';
   }
 
   /**
@@ -100,7 +121,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editName() {
-    // TODO: Implement editName() method.
+    return 'Leave/Absence Types';
   }
 
   /**
@@ -112,7 +133,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function userContext($mode = null) {
-    // TODO: Implement userContext() method.
+    return 'civicrm/admin/leaveandabsences/types';
   }
 
   private function calculateLinksMask($absenceType) {
