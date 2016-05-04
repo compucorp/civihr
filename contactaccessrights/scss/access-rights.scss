@@ -1,0 +1,10 @@
+li#access-rights {
+  float: right !important;
+}
+
+.access-rights-form {
+  .ui-select-choices-group {
+    float: none !important;
+    margin: 0 !important;
+  }
+}
