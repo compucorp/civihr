@@ -131,8 +131,9 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
    */
   public $leave_days;
   /**
+   * This is the number of hours between time_from and time_to minus break
    *
-   * @var int unsigned
+   * @var float
    */
   public $number_of_hours;
   /**
@@ -220,8 +221,12 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
         ) ,
         'number_of_hours' => array(
           'name' => 'number_of_hours',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_MONEY,
           'title' => ts('Number Of Hours') ,
+          'precision' => array(
+            20,
+            2
+          ) ,
         ) ,
         'week_id' => array(
           'name' => 'week_id',

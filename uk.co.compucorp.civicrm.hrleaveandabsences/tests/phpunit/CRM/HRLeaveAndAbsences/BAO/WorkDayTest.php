@@ -163,6 +163,20 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
         $this->createBasicWorkDay(['day_of_the_week' => 1]);
     }
 
+    /**
+     * @dataProvider numberOfHoursDataProvider
+     */
+    public function testNumberOfHoursShouldBeCalculatedFromTimesAndBreak($timeFrom, $timeTo, $break, $expectedNumberOfHours)
+    {
+        $entity = $this->createBasicWorkDay([
+            'time_from' => $timeFrom,
+            'time_to' => $timeTo,
+            'break' => $break
+        ]);
+
+        $this->assertEquals($expectedNumberOfHours, $entity->number_of_hours);
+    }
+
     private function createBasicWorkDay($params = [])
     {
         $basicDefaultParams = [
@@ -172,8 +186,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
             'time_from' => '09:00',
             'time_to' => '18:00',
             'break' => 1,
-            'leave_days' => 1,
-            'number_of_hours' => 8
+            'leave_days' => 1
         ];
 
         $params = array_merge($basicDefaultParams, $params);
@@ -305,6 +318,17 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
             [CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND, false],
             ['adasdsa', true],
             [rand(4, PHP_INT_MAX), true],
+        ];
+    }
+
+    public function numberOfHoursDataProvider()
+    {
+        return [
+            ['09:00', '18:00', 1, 8],
+            ['07:00', '15:30', 1, 7.5],
+            ['12:00', '18:00', 1, 5],
+            ['12:00', '16:00', 0.25, 3.75],
+            ['10:00', '18:00', 0.75, 7.25],
         ];
     }
 }

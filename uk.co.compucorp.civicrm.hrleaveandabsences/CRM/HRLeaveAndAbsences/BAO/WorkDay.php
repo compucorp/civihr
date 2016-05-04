@@ -23,6 +23,15 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
       unset($params['week_id']);
     }
 
+    $params['number_of_hours'] = null;
+    if($params['type'] == self::WORK_DAY_OPTION_YES) {
+      $params['number_of_hours'] = self::calculateNumberOfHours(
+          $params['time_from'],
+          $params['time_to'],
+          $params['break']
+      );
+    }
+
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new $className();
     $instance->copyValues($params);
@@ -123,5 +132,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
         'Invalid Work Day Type'
       );
     }
+  }
+
+  private static function calculateNumberOfHours($timeFrom, $timeTo, $break)
+  {
+    $timeFromInHours = strtotime($timeFrom) / 3600;
+    $timeToInHours = strtotime($timeTo) / 3600;
+    $numberOfHours = $timeToInHours - $timeFromInHours - $break;
+
+    return $numberOfHours;
   }
 }
