@@ -1,7 +1,8 @@
 define([
-    'common/angular'
+    'common/angular',
+    'common/angularResource'
 ], function (angular) {
     'use strict';
 
-    return angular.module('common.apis', []);
+    return angular.module('common.apis', ['ngResource']);
 });

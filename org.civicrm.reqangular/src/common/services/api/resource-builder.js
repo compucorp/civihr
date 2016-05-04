@@ -1,9 +1,9 @@
 define([
-	'access-rights/modules/models'
-], function (models) {
+	'common/modules/apis',
+], function (apis) {
 	'use strict';
 
-	models.factory('resourceBuilder', ['$resource', '$httpParamSerializerJQLike', function ($resource, $httpParamSerializerJQLike) {
+	apis.factory('resourceBuilder', ['$resource', '$httpParamSerializerJQLike', function ($resource, $httpParamSerializerJQLike) {
 		return {
       build: function(entityName, additionalParams, dataTransformations, entityPrototype) {
   			var entityResource = $resource('/civicrm/ajax/rest', _.assign({
@@ -13,7 +13,6 @@ define([
           }
   			}, (additionalParams || {})), {
   				save: {
-  					url: 'test.test',
   					method: 'POST',
   					headers: {
   						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'

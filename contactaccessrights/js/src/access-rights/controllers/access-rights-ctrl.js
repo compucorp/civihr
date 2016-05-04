@@ -12,7 +12,6 @@ define(['access-rights/modules/controllers'], function (controllers) {
             controller: 'AccessRightsModalCtrl',
             controllerAs: 'modalCtrl',
             bindToController: true,
-            // size: 'lg',
             templateUrl: CRM.vars.contactAccessRights.baseURL + '/views/access-rights-modal.html'
           });
         }

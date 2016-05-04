@@ -1,10 +1,7 @@
 define([
 	'common/angular',
-	'common/modules/models',
-	'common/modules/apis',
-	'common/mocks/module', // Temporary, necessary to use the mocked API data
-  'common/angularResource'
+	'common/modules/apis'
 ], function (angular) {
 	'use strict';
-	return angular.module('access-rights.models', []);
+	return angular.module('access-rights.models', ['common.apis']);
 });

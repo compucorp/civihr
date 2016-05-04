@@ -1,10 +1,11 @@
 define([
-	'access-rights/modules/models',
-	'access-rights/services/resource-builder',
-], function (models) {
+	'common/modules/apis',
+	'common/services/api',
+	'common/services/api/resource-builder'
+], function (apis) {
 	'use strict';
 
-	models.factory('apiBuilder', ['resourceBuilder', function (resourceBuilder) {
+	apis.factory('apiBuilder', ['resourceBuilder', function (resourceBuilder) {
 		var methods = {
 			/**
 			 * Sends the entity to the API via POST

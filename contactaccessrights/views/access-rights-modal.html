@@ -20,7 +20,6 @@
                     Regions:
                 </label>
                 <div class="col-xs-12 col-sm-8">
-                  {{modalCtrl.managementData.selectedData.regions}}
                     <ui-select multiple ng-required="true" ng-model="modalCtrl.managementData.selectedData.regions">
                         <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
                         <ui-select-choices repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
@@ -34,7 +33,6 @@
                     Locations:
                 </label>
                 <div class="col-xs-12 col-sm-8">
-                  {{modalCtrl.managementData.selectedData.locations}}
                     <ui-select multiple ng-required="true" ng-model="modalCtrl.managementData.selectedData.locations">
                         <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
                         <ui-select-choices repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">

@@ -1,9 +1,9 @@
 define([
   'access-rights/modules/models',
-	'access-rights/services/api-builder',
+  'common/services/api/api-builder'
 ], function (models) {
 	'use strict';
-  models.factory('Region', ['apiBuilder', '$httpParamSerializerJQLike', function (apiBuilder, $httpParamSerializerJQLike) {
+  models.factory('Region', ['apiBuilder', function (apiBuilder) {
     var methods = {
       getAll: function (filters, pagination, sort) {
         return this.getAllEntities(filters, pagination, sort);

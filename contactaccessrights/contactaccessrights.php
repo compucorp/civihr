@@ -210,6 +210,12 @@ function contactaccessrights_civicrm_summaryActions(&$actions, $contactID) {
   }
 }
 
+function contactaccessrights_civicrm_summary( $contactID, &$content, &$contentPlacement ) {
+  CRM_Core_Resources::singleton()->addVars('summaryPage', array(
+    'contactID' => $contactID
+  ));
+}
+
 define('CONTACT_ACCESS_RIGHTS', 'uk.co.compucorp.contactaccessrights');
 function contactaccessrights_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary && CRM_Core_Permission::check('administer roles and teams')) {
