@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>WorkWeek</class>
+  <name>civicrm_hrleaveandabsences_work_week</name>
+  <comment>A Work Pattern can have multiple Work Weeks. A Work Week contains a set of Work Days that, together, make the Work Pattern</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique WorkWeek ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>number</name>
+    <type>int unsigned</type>
+    <label>Number</label>
+    <required>true</required>
+    <comment>Each Week of a Pattern has a unique and sequential number</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>pattern_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The Work Pattern this Week belongs to</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>pattern_id</name>
+    <table>civicrm_hrleaveandabsences_work_pattern</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+</table>

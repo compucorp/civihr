@@ -143,3 +143,70 @@ CREATE TABLE `civicrm_hrleaveandabsences_notification_receiver` (
     CONSTRAINT FK_civicrm_hrleaveandabsences_notification_receiver_contact_id
       FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_work_pattern
+-- *
+-- * This entity holds the basic description about a Work Pattern
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_work_pattern` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkPattern ID',
+     `label` varchar(127) NOT NULL   COMMENT 'The Work Pattern label\'s (name)',
+     `description` varchar(255)    COMMENT 'A small description of the Work Pattern',
+     `is_default` tinyint   DEFAULT 0 COMMENT 'There can only be one default entity at any given time',
+     `is_active` tinyint   DEFAULT 1 COMMENT 'Only enabled Work Patterns can be used. The is_active name is used to follow Civi\'s conventions.',
+     `weight` int unsigned NOT NULL   COMMENT 'The weight value is used to order the Work Patterns on a list',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `work_pattern_unique_label`(label)
+
+
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_work_week
+-- *
+-- * A Work Pattern can have multiple Work Weeks. A Work Week contains a set of Work Days that, together, make the Work Pattern
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_work_week` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkWeek ID',
+     `number` int unsigned NOT NULL   COMMENT 'Each Week of a Pattern has a unique and sequential number',
+     `pattern_id` int unsigned NOT NULL   COMMENT 'The Work Pattern this Week belongs to',
+    PRIMARY KEY ( `id` ),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_work_week_pattern_id
+      FOREIGN KEY (`pattern_id`)
+      REFERENCES `civicrm_hrleaveandabsences_work_pattern`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_work_day
+-- *
+-- * The specific details of day in a Work Week.
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkDay ID',
+     `day_of_the_week` int unsigned NOT NULL   COMMENT 'A number between 1 and 7, following ISO-8601. 1 is Monday and 7 is Sunday',
+     `type` int unsigned NOT NULL   COMMENT 'The type of this day: yes (working day), no (non working day), weekend',
+     `time_from` time    COMMENT 'The start time of this work day',
+     `time_to` time    COMMENT 'The end time of this work day',
+     `break` decimal(20,2)    COMMENT 'The amount of break time (in hours) allowed for this day. ',
+     `leave_days` int unsigned    COMMENT 'The proportion of a days leave that will be deducted if this day is taken as leave.',
+     `number_of_hours` int unsigned    ,
+     `week_id` int unsigned NOT NULL   COMMENT 'The Work Week this Day belongs to',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_day_for_week`(week_id, day_of_the_week),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_work_day_week_id
+      FOREIGN KEY (`week_id`)
+      REFERENCES `civicrm_hrleaveandabsences_work_week`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

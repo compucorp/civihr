@@ -3,4 +3,7 @@
 <tables xmlns:xi="http://www.w3.org/2001/XInclude">
     <xi:include href="AbsenceType.xml" parse="xml" />
     <xi:include href="NotificationReceiver.xml" parse="xml" />
+    <xi:include href="WorkPattern.xml" parse="xml" />
+    <xi:include href="WorkWeek.xml" parse="xml" />
+    <xi:include href="WorkDay.xml" parse="xml" />
 </tables>
