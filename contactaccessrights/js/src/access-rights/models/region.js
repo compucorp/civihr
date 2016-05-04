@@ -1,17 +1,30 @@
 define([
   'access-rights/modules/models',
-	'access-rights/services/base-api',
+	'access-rights/services/api-builder',
 ], function (models) {
 	'use strict';
-  models.factory('Region', ['baseApi', '$httpParamSerializerJQLike', function (baseApi, $httpParamSerializerJQLike) {
-    var optionGroupName = 'hrjc_region';
-    return baseApi.extend({
-      save: function(obj){
-        return this.saveEntity(obj, optionGroupName);
-      },
-			getAll: function (filters, pagination, sort, additionalParams) {
-        return this.getAllEntities(optionGroupName, filters, pagination, sort, additionalParams);
+  models.factory('Region', ['apiBuilder', '$httpParamSerializerJQLike', function (apiBuilder, $httpParamSerializerJQLike) {
+    var methods = {
+      getAll: function (filters, pagination, sort) {
+        return this.getAllEntities(filters, pagination, sort);
 			}
-		});
+    };
+    var dataTransformations = {
+      toApi: function(data){
+        data.additionalCustomParameter = 'TESTING TO API!';
+        return data;
+      },
+      fromApi: function(data){
+        return data.values;
+      }
+    };
+    var entityPrototype = {
+      hello: function(){
+        alert(this.name);
+      }
+    };
+		return apiBuilder.build(methods, 'OptionValue', {
+      'option_group_name': 'hrjc_region'
+    }, dataTransformations, entityPrototype);
 	}]);
 });

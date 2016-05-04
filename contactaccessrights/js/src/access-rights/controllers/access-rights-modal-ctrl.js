@@ -6,17 +6,11 @@ define(['access-rights/modules/controllers'], function (controllers) {
 			$log.debug('AccessRightsModalCtrl');
 
 			Region.getAll().then(function (data) {
-				// console.log(data);
-				// Region.save(data.list[1046]);
-				console.log(data);
-				vm.availableData.regions = data.list;
+				vm.availableData.regions = data;
 			});
 
 			Location.getAll().then(function (data) {
-				// console.log(data);
-				// Region.save(data.list[1046]);
-				console.log(data);
-				vm.availableData.locations = data.list;
+				vm.availableData.locations = data;
 			});
 
 			var vm = this;
@@ -25,8 +19,8 @@ define(['access-rights/modules/controllers'], function (controllers) {
 			};
 
 			vm.availableData = {
-				regions: {},
-				locations: {}
+				regions: [],
+				locations: []
 			};
 
 			vm.selectedData = {
