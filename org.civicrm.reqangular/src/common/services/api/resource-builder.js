@@ -25,6 +25,19 @@ define([
   						return $httpParamSerializerJQLike(dataTransformations ? dataTransformations.toApi(data): data);
   					}
   				},
+					remove: {
+						method: 'POST',
+  					headers: {
+  						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  					},
+  					responseType: 'json',
+  					params: {
+  						action: 'delete'
+  					},
+  					transformRequest: function (data) {
+  						return $httpParamSerializerJQLike(dataTransformations ? dataTransformations.toApi(data): data);
+  					}
+					},
   				getAll: {
   					method: 'GET',
             responseType: 'json',

@@ -7,6 +7,7 @@ define([
     'access-rights/controllers/access-rights-modal-ctrl',
     'access-rights/models/region',
     'access-rights/models/location',
+    'access-rights/models/right'
 ], function (angular) {
     angular.module('access-rights', [
         'ui.bootstrap',
