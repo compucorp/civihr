@@ -1,10 +1,7 @@
 define(['access-rights/modules/controllers'], function (controllers) {
 	'use strict';
-	controllers.controller('AccessRightsCtrl', ['$log', '$rootElement', '$modal',
-		function ($log, $rootElement, $modal) {
-      var vm = this;
-			$log.debug('AccessRightsCtrl');
-
+	controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
+		function ($rootElement, $modal) {
 			return {
         openModal: function () {
           $modal.open({

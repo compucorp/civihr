@@ -45,7 +45,7 @@ define([
             isArray: true,
   					transformResponse: function (data, headers) {
   						if(dataTransformations)
-  							return dataTransformations.fromApi(data);
+  							return dataTransformations.fromApi(data.values);
   						return data.values;
   					}
   				}

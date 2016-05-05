@@ -1,6 +1,5 @@
 (function () {
 	var extPath = CRM.vars.contactAccessRights.baseURL + '/js/src/access-rights';
-
 	require.config({
 		urlArgs: 'bust=' + (new Date()).getTime(),
 		paths: {

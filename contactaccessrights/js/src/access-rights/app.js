@@ -1,6 +1,5 @@
 define([
     'common/angular',
-    'common/angularBootstrap',
     'common/ui-select',
     'common/directives/loading',
     'access-rights/controllers/access-rights-ctrl',
@@ -10,7 +9,6 @@ define([
     'access-rights/models/right'
 ], function (angular) {
     angular.module('access-rights', [
-        'ui.bootstrap',
         'access-rights.controllers',
         'access-rights.models',
         'ui.select',

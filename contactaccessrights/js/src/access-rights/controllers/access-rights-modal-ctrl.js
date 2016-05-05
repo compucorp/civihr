@@ -1,11 +1,10 @@
 define(['access-rights/modules/controllers'], function (controllers) {
 	'use strict';
 
-	controllers.controller('AccessRightsModalCtrl', ['Region', 'Location', 'Right', '$log', '$q', '$modalInstance',
-		function (Region, Location, Right, $log, $q, $modalInstance) {
-			$log.debug('AccessRightsModalCtrl');
-
+	controllers.controller('AccessRightsModalCtrl', ['Region', 'Location', 'Right', '$q', '$modalInstance',
+		function (Region, Location, Right, $q, $modalInstance) {
 			var vm = this;
+
 			vm.availableData = {
 				regions: [],
 				locations: []
@@ -58,7 +57,12 @@ define(['access-rights/modules/controllers'], function (controllers) {
 							return i.entity_id === entityId;
 						}).id;
 					});
-				return $q.all([fnSave(newEntityIds), Right.deleteByIds(removedRightIds)]);
+				var promises = [];
+				if(newEntityIds.length > 0)
+					promises.push(fnSave(newEntityIds));
+				if(removedRightIds.length > 0)
+					promises.push(Right.deleteByIds(removedRightIds));
+				return $q.all(promises);
 			}
 
 			Region.getAll().then(function (regions) {

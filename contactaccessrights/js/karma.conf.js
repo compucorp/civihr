@@ -1,7 +1,7 @@
 module.exports = function (config) {
     var civicrmPath = '../../../../../';
     var civihrPath = 'tools/extensions/civihr/';
-    var extPath = civihrPath + 'contactaccessrights';
+    var extPath = civihrPath + 'contactaccessrights/';
 
     config.set({
         basePath: civicrmPath,
@@ -19,8 +19,6 @@ module.exports = function (config) {
             'js/crm.ajax.js',
 
             // Global variables that need to be accessible in the test environment
-            extPath + 'js/test/globals.js',
-
             // manual loading of requirejs as to avoid interference with the global dependencies above
             extPath + 'node_modules/requirejs/require.js',
             extPath + 'node_modules/karma-requirejs/lib/adapter.js',
@@ -33,9 +31,6 @@ module.exports = function (config) {
 
             // the application modules
             { pattern: extPath + 'js/src/access-rights/**/*.js', included: false },
-
-            // the mocked components files
-            { pattern: extPath + 'js/test/mocks/**/*.js', included: false },
 
             // the test files
             { pattern: extPath + 'js/test/**/*_test.js', included: false },
@@ -53,10 +48,6 @@ module.exports = function (config) {
         preprocessors: (function (obj) {
             obj[extPath + 'views/**/*.html'] = ['ng-html2js'];
             return obj;
-        })({}),
-        ngHtml2JsPreprocessor: {
-            prependPrefix: '/base/',
-            moduleName: 'access-rights.templates'
-        }
+        })({})
     });
 };
