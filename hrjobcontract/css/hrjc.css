@@ -10852,6 +10852,11 @@ fieldset[disabled]
   font-weight: normal;
 }
 /* line 63, ../scss/civihr/partials/_datepicker.scss */
+#hrjob-contract .hrjc-datepicker table .text-muted,
+#hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table .text-muted {
+  color: #CCCCCC;
+}
+/* line 67, ../scss/civihr/partials/_datepicker.scss */
 #hrjob-contract .hrjc-datepicker table > thead > tr > th,
 #hrjob-contract [uib-datepicker-popup-wrap] > .dropdown-menu table > thead > tr > th {
   vertical-align: middle;

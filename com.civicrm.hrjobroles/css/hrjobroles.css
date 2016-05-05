@@ -8879,6 +8879,10 @@ fieldset[disabled]
   font-size: 12px;
   font-weight: normal;
 }
+#hrjobroles .hrjobroles-datepicker table .text-muted,
+#hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table .text-muted {
+  color: #CCCCCC;
+}
 #hrjobroles .hrjobroles-datepicker table > thead > tr > th,
 #hrjobroles [uib-datepicker-popup-wrap] > .dropdown-menu table > thead > tr > th {
   vertical-align: middle;
