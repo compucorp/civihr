@@ -1,23 +1,27 @@
 <?php
 
-class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
+class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
   private $links = array();
 
   public function run() {
-    CRM_Utils_System::setTitle(ts('Leave/Absence Types'));
+    CRM_Utils_System::setTitle(ts('Work Patterns'));
     parent::run();
   }
 
   public function browse() {
-    $object = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $object->orderBy('weight');
-    $object->find();
+    $object = new CRM_HRLeaveAndAbsences_BAO_WorkPattern();
+    $object->findWithNumberOfWeeksAndHours();
     $rows = [];
     while($object->fetch()) {
       $rows[$object->id] = array();
 
       CRM_Core_DAO::storeValues($object, $rows[$object->id]);
+
+      // we need to manually add these fields because, since they are not
+      // real fields, storeValues will ignore them
+      $rows[$object->id]['number_of_hours'] = $object->number_of_hours ?: 0;
+      $rows[$object->id]['number_of_weeks'] = $object->number_of_weeks ?: 0;
 
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
           $this->links(),
@@ -26,33 +30,12 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
       );
     }
 
-    $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1');
-    CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_AbsenceType', 'id', $returnURL);
+    $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/work_patterns', 'reset=1');
+    CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_WorkPattern', 'id', $returnURL);
 
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     $this->assign('rows', $rows);
-  }
-
-  public function edit($action, $id = NULL, $imageUpload = FALSE, $pushUserContext = TRUE) {
-    if($action & CRM_Core_Action::DELETE) {
-      $this->delete($id);
-    } else {
-      parent::edit($action, $id, $imageUpload, $pushUserContext);
-    }
-  }
-
-  public function delete($id) {
-    try {
-      CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($id);
-      CRM_Core_Session::setStatus(ts('The Leave/Absence type was deleted'), 'Success', 'success');
-    } catch(Exception $ex) {
-      $message = ts('Error deleting the Leave/Absence type.') . ' '. $ex->getMessage();
-      CRM_Core_Session::setStatus($message, 'Error', 'error');
-    }
-
-    $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1&action=browse');
-    CRM_Utils_System::redirect($url);
   }
 
   /**
@@ -62,7 +45,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function getBAOName() {
-    return 'CRM_HRLeaveAndAbsences_BAO_AbsenceType';
+    return 'CRM_HRLeaveAndAbsences_BAO_WorkPattern';
   }
 
   /**
@@ -76,29 +59,29 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
       $this->links = [
         CRM_Core_Action::UPDATE  => [
           'name'  => ts('Edit'),
-          'url'   => 'civicrm/admin/leaveandabsences/types',
+          'url'   => 'civicrm/admin/leaveandabsences/work_patterns',
           'qs'    => 'action=update&id=%%id%%&reset=1',
-          'title' => ts('Edit Leave/Absence Type'),
+          'title' => ts('Edit Work Pattern'),
         ],
         CRM_Core_Action::DISABLE => [
           'name'  => ts('Disable'),
           'class' => 'crm-enable-disable',
-          'title' => ts('Disable Leave/Absence Type'),
+          'title' => ts('Disable Work Pattern'),
         ],
         CRM_Core_Action::ENABLE  => [
           'name'  => ts('Enable'),
           'class' => 'crm-enable-disable',
-          'title' => ts('Enable Leave/Absence Type'),
+          'title' => ts('Enable Work Pattern'),
         ],
         CRM_Core_Action::DELETE  => [
           'name'  => ts('Delete'),
           'class' => 'civihr-delete',
-          'title' => ts('Delete Leave/Absence Type'),
+          'title' => ts('Delete Work Pattern'),
         ],
         CRM_Core_Action::BASIC => [
           'name' => ts('Set as default'),
           'class' => 'civihr-set-as-default',
-          'title' => ts('Set this Leave/Absence as default')
+          'title' => ts('Set this Work Pattern as default')
         ]
       ];
     }
@@ -113,7 +96,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editForm() {
-    return 'CRM_HRLeaveAndAbsences_Form_AbsenceType';
+    return '';
   }
 
   /**
@@ -123,7 +106,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editName() {
-    return 'Leave/Absence Types';
+    return 'Work Patterns';
   }
 
   /**
@@ -135,23 +118,19 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
    * @access public
    */
   public function userContext($mode = null) {
-    return 'civicrm/admin/leaveandabsences/types';
+    return 'civicrm/admin/leaveandabsences/work_patterns';
   }
 
-  private function calculateLinksMask($absenceType) {
+  private function calculateLinksMask($workPattern) {
     $mask = array_sum(array_keys($this->links()));
 
-    if($absenceType->is_reserved) {
-      $mask -= CRM_Core_Action::DELETE;
-    }
-
-    if($absenceType->is_active) {
+    if($workPattern->is_active) {
       $mask -= CRM_Core_Action::ENABLE;
     } else {
       $mask -= CRM_Core_Action::DISABLE;
     }
 
-    if($absenceType->is_default) {
+    if($workPattern->is_default) {
       $mask -= CRM_Core_Action::BASIC;
     }
 

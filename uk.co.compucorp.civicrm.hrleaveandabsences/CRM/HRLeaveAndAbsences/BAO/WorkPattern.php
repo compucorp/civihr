@@ -32,6 +32,30 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * This method works like find() (it actually uses it)
+   * but it includes the number_of_weeks and number_of_hours
+   * for each pattern.
+   *
+   * It loads all the data with a single SQL query, giving you a
+   * better performance than loading the related information in
+   * different queries.
+   *
+   */
+  public function findWithNumberOfWeeksAndHours()
+  {
+    $week = new CRM_HRLeaveAndAbsences_BAO_WorkWeek();
+    $day = new CRM_HRLeaveAndAbsences_BAO_WorkDay();
+    $week->joinAdd($day, 'LEFT');
+    $this->joinAdd($week, 'LEFT');
+    $this->orderBy('weight');
+    $this->selectAdd('civicrm_hrleaveandabsences_work_pattern.*');
+    $this->selectAdd('COUNT(DISTINCT civicrm_hrleaveandabsences_work_week.id) as number_of_weeks');
+    $this->selectAdd('SUM(civicrm_hrleaveandabsences_work_day.number_of_hours) as number_of_hours');
+    $this->groupBy('civicrm_hrleaveandabsences_work_pattern.id');
+    $this->find();
+  }
+
+  /**
    * Gets the maximum weight of all work patterns
    *
    * Returns 0 if there's no work pattern available
@@ -54,5 +78,13 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     $tableName = self::getTableName();
     $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
     CRM_Core_DAO::executeQuery($query);
+  }
+
+  public function links()
+  {
+    $workWeekTable = CRM_HRLeaveAndAbsences_BAO_WorkWeek::getTableName();
+    return [
+      'id' => "{$workWeekTable}:pattern_id"
+    ];
   }
 }

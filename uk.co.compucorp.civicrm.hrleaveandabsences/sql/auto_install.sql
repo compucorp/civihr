@@ -202,7 +202,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
      `time_to` time    COMMENT 'The end time of this work day',
      `break` decimal(20,2)    COMMENT 'The amount of break time (in hours) allowed for this day. ',
      `leave_days` int unsigned    COMMENT 'The proportion of a days leave that will be deducted if this day is taken as leave.',
-     `number_of_hours` int unsigned    ,
+     `number_of_hours` decimal(20,2)    COMMENT 'This is the number of hours between time_from and time_to minus break',
      `week_id` int unsigned NOT NULL   COMMENT 'The Work Week this Day belongs to',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `unique_day_for_week`(week_id, day_of_the_week),
