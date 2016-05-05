@@ -152,11 +152,34 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase {
       'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
       'HRJobHour-hours_type' => 'part time',
       'HRJobHour-hours_amount' => '25',
-      'HRJobHour-hours_unit' => 'week',
     );
 
     $this->runImport($params);
     $this->validateResult($contactID, 'HRJobHour');
+  }
+
+  function testHourAutoPopulatedFields() {
+    $contact2Params = array(
+      'first_name' => 'John_55',
+      'last_name' => 'Snow_55',
+      'email' => 'a55@b55.com',
+      'contact_type' => 'Individual',
+    );
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-contact_id' => $contactID,
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobHour-location_standard_hours' => 'Small office - 36.00 hours per Week',
+      'HRJobHour-hours_type' => 'part time',
+      'HRJobHour-hours_amount' => '25.52',
+    );
+
+    $this->runImport($params);
+    $expected = array('hours_unit'=>'Week', 'fte_num'=> 319, 'fte_denom'=>450, 'hours_fte'=>0.71);
+    $this->validateHourAutoFields($contactID, $expected);
   }
 
   function testPayImport() {
@@ -184,6 +207,33 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase {
 
     $this->runImport($params);
     $this->validateResult($contactID, 'HRJobPay');
+  }
+
+  function testPayAutoPopulatedFields() {
+    $contact2Params = array(
+      'first_name' => 'John_66',
+      'last_name' => 'Snow_66',
+      'email' => 'a66@b66.com',
+      'contact_type' => 'Individual',
+    );
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-contact_id' => $contactID,
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobPay-is_paid' => 'Yes',
+      'HRJobPay-pay_scale' => 'US - Senior - USD 38000.00 per Year',
+      'HRJobPay-pay_currency' => 'USD',
+      'HRJobPay-pay_amount' => '35000',
+      'HRJobPay-pay_unit' => 'year',
+      'HRJobPay-pay_cycle' => 'Monthly',
+    );
+
+    $this->runImport($params);
+    $expected = array('pay_annualized_est'=>35000, 'pay_per_cycle_gross'=> 2916.67, 'pay_per_cycle_net'=>2916.67);
+    $this->validatePayAutoFields($contactID, $expected);
   }
 
 
@@ -285,5 +335,30 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase {
     ), 'unable to create contract type');
     return  $contractType['id'];
   }
+
+  private function validateHourAutoFields($contactID, $expected)  {
+    $result = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
+    $contractID = $result['id'];
+    $result = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
+    $revisionID = $result['details_revision_id'];
+    $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
+    $result = $this->callAPISuccessGetSingle('HRJobHour', array('jobcontract_revision_id'=>$revisionID));
+    foreach($expected as $key => $value)  {
+      $this->assertEquals($value, $result[$key]);
+    }
+  }
+
+  private function validatePayAutoFields($contactID, $expected)  {
+    $result = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
+    $contractID = $result['id'];
+    $result = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
+    $revisionID = $result['details_revision_id'];
+    $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
+    $result = $this->callAPISuccessGetSingle('HRJobPay', array('jobcontract_revision_id'=>$revisionID));
+    foreach($expected as $key => $value)  {
+      $this->assertEquals($value, $result[$key]);
+    }
+  }
+
 }
 

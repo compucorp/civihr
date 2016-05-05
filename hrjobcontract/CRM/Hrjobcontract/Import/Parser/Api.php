@@ -143,8 +143,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     $this->_params['skipRecentView'] = TRUE;
     $this->_params['check_permissions'] = TRUE;
-    
-    //$params = $this->getActiveFieldParams();
+
+    $this->setAutoPopulatedFields();
+
     $params = $this->_params;
 
     try {
@@ -551,14 +552,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $errorMessage = "{$this->_fields[$key]->_title} is not found";
         }
         break;
-      case 'HRJobHour-fte_denom':
-      case 'HRJobHour-hours_fte':
-      case 'HRJobHour-fte_num':
       case 'HRJobPension-ee_contrib_abs':
       case 'HRJobPension-ee_contrib_pct':
       case 'HRJobPension-er_contrib_pct':
-      case 'HRJobPay-pay_per_cycle_gross':
-      case 'HRJobPay-pay_per_cycle_net':
       case 'HRJobPay-pay_amount':
         if ( filter_var($value, FILTER_VALIDATE_FLOAT) === FALSE || $value < 0 )  {
           $errorMessage = "{$this->_fields[$key]->_title} should be positive number";
@@ -587,10 +583,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
           $errorMessage = "{$this->_fields[$key]->_title} is not valid";
         }
         break;
-      case 'HRJobHour-hours_unit':
       case 'HRJobHealth-plan_type':
       case 'HRJobHealth-plan_type_life_insurance':
-      case 'HRJobPay-pay_unit':
+        case 'HRJobPay-pay_unit':
       case 'HRJobDetails-notice_unit_employee':
       case 'HRJobDetails-notice_unit':
       case 'HRJobPension-is_enrolled':
@@ -754,5 +749,135 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       $errorMessage = "annual {$value_type}s  format is not correct";
     }
     return array('value'=>$outputArray, 'error_message'=>$errorMessage);
+  }
+
+  private function setAutoPopulatedFields()  {
+    $params = $this->_params;
+
+    // calculate and set Hour tab auto populated fields
+    if (isset($params['HRJobHour-location_standard_hours'])
+      && $params['HRJobHour-location_standard_hours'] != ''
+      && isset($params['HRJobHour-hours_type'])
+      && $params['HRJobHour-hours_type'] != ''
+    )  {
+      $hourLocation = civicrm_api3('HRHoursLocation', 'getsingle', array(
+        'sequential' => 1,
+        'id' => $params['HRJobHour-location_standard_hours']
+      ));
+      if (!empty($hourLocation))  {
+        $this->_params['HRJobHour-hours_unit'] = $hourLocation['periodicity'];
+        // calculate FTE Numerator/Denominator Equivalence
+        if (isset($params['HRJobHour-hours_amount']) && $params['HRJobHour-hours_amount'] != '')  {
+          $inputHourAmount = round(floatval($params['HRJobHour-hours_amount']), 2);
+          $actualHourAmount = round(floatval($hourLocation['standard_hours']), 2);
+          $fteNoRound = $inputHourAmount/$actualHourAmount;
+          $fte = round($inputHourAmount/$actualHourAmount, 2);
+          list ($num, $denom) = $this->float2rat($fteNoRound);
+          $this->_params['HRJobHour-fte_num'] = $num;
+          $this->_params['HRJobHour-fte_denom'] = $denom;
+          $this->_params['HRJobHour-hours_fte'] = $fte;
+        }
+      }
+    }
+
+    // calculate and set Pay tab auto populated fields
+
+    if (!empty($params['HRJobPay-is_paid'])
+      && isset($params['HRJobPay-pay_amount'])
+      && $params['HRJobPay-pay_amount'] != ''
+      && isset($params['HRJobPay-pay_unit'])
+      && $params['HRJobPay-pay_unit'] != ''
+    )  {
+      // calculate and set  annual pay estimate before benefits and deductions
+        switch($params['HRJobPay-pay_unit'])  {
+        case 'Hour':
+          $multiplicationFactor = 2080;
+          break;
+        case 'Day':
+          $multiplicationFactor = 260;
+          break;
+        case 'Week':
+          $multiplicationFactor = 52;
+          break;
+        case 'Month':
+          $multiplicationFactor = 12;
+          break;
+        case 'Year':
+          $multiplicationFactor = 1;
+          break;
+        default:
+          $multiplicationFactor = 0;
+          break;
+      }
+      $params['HRJobPay-pay_annualized_est'] = $this->_params['HRJobPay-pay_annualized_est'] = round(round(floatval($params['HRJobPay-pay_amount']), 2) * $multiplicationFactor, 2) ;
+
+      if (isset($params['HRJobPay-pay_cycle']) && $params['HRJobPay-pay_cycle'] != '')  {
+        // calculate and set gross Pay per cycle (before benefits and deductions)
+        $pay_cycle = strtolower($this->getOptionID('HRJobPay-pay_cycle', $params['HRJobPay-pay_cycle'], 'label', 'value'));
+        switch($pay_cycle)  {
+          case 'weekly':
+            $divisionFactor = 52;
+            break;
+          case 'monthly':
+            $divisionFactor = 12;
+            break;
+          default:
+            $divisionFactor = 1;
+        }
+        $this->_params['HRJobPay-pay_per_cycle_gross'] = round(($params['HRJobPay-pay_annualized_est'] / $divisionFactor), 2);
+
+        // calculate and set Net pay per cycle, to achieve that we have to :
+        // 1- Calculate sum of benefits per cycle
+        $benefits_sum = 0;
+        if (!empty($params['HRJobPay-annual_benefits']))  {
+          foreach($params['HRJobPay-annual_benefits'] as $benefit)  {
+            $type = $this->getOptionID('benefit_types', $benefit['type'], 'label', 'value');
+            if ($type == '%')  {
+              $amount = ($benefit['amount_pct']/100) * $params['HRJobPay-pay_annualized_est'];
+            }
+            else  {
+              $amount =  $benefit['amount_abs'];
+            }
+            $benefits_sum+= $amount;
+          }
+          $benefits_sum = round(($benefits_sum/$divisionFactor), 2);
+        }
+        // 2- Calculate sum of deductions per cycle
+        $deductions_sum = 0;
+        if (!empty($params['HRJobPay-annual_deductions']))  {
+          foreach($params['HRJobPay-annual_deductions'] as $deduction)  {
+            $type = $this->getOptionID('deduction_types', $deduction['type'], 'label', 'value');
+            if ($type == '%')  {
+              $amount = ($deduction['amount_pct']/100) * $params['HRJobPay-pay_annualized_est'];
+            }
+            else  {
+              $amount =  $deduction['amount_abs'];
+            }
+            $deductions_sum+= $amount;
+          }
+          $deductions_sum = round(($deductions_sum/$divisionFactor), 2);
+        }
+        // 3- Subtract deductions from benefits
+        $totalBenefits = $benefits_sum - $deductions_sum;
+        // 4- subtract benefits after deductions from gross pay per cycle
+        $this->_params['HRJobPay-pay_per_cycle_net'] = $this->_params['HRJobPay-pay_per_cycle_gross'] + $totalBenefits;
+      }
+
+    }
+  }
+
+  private function float2rat($n, $tolerance = 1.e-6) {
+    $h1=1; $h2=0;
+    $k1=0; $k2=1;
+    $b = 1/$n;
+    do {
+      $b = 1/$b;
+      $a = floor($b);
+      $aux = $h1; $h1 = $a*$h1+$h2; $h2 = $aux;
+      $aux = $k1; $k1 = $a*$k1+$k2; $k2 = $aux;
+      $b = $b-$a;
+    } while (abs($n-$h1/$k1) > $n*$tolerance);
+
+    return array($h1,$k1);
   }
 }
