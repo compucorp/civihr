@@ -142,4 +142,12 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
 
     return $numberOfHours;
   }
+
+  public function links()
+  {
+    $workWeekTable = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getTableName();
+    return [
+        'week_id' => "{$workWeekTable}:id",
+    ];
+  }
 }

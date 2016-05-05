@@ -60,6 +60,26 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
         $this->assertEquals(1, $entity2->is_default);
     }
 
+    public function testFindWithNumberOfWeeksAndHours()
+    {
+
+        $this->createWorkPatternWith40HoursWorkWeek('Pattern 1');
+        $this->createWorkPatternWithTwoWeeksAnd31AndHalfHours('Pattern 2');
+
+        $object = new CRM_HRLeaveAndAbsences_BAO_WorkPattern();
+        $object->findWithNumberOfWeeksAndHours();
+        $this->assertEquals(2, $object->N);
+
+        $object->fetch();
+        $this->assertEquals('Pattern 1', $object->label);
+        $this->assertEquals(1, $object->number_of_weeks);
+        $this->assertEquals(40.0, $object->number_of_hours);
+
+        $object->fetch();
+        $this->assertEquals('Pattern 2', $object->label);
+        $this->assertEquals(2, $object->number_of_weeks);
+        $this->assertEquals(31.5, $object->number_of_hours);
+    }
 
     private function createBasicWorkPattern($params = [])
     {
@@ -86,5 +106,206 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
         }
 
         return $entity;
+    }
+
+    /**
+     * This creates a WorkPattern with a single WorkWeek containing
+     * 7 WorkDays (5 Working Days with 8 working hours each and 2 days
+     * of weekend).
+     *
+     * @param string $label the label of the Work Pattern
+     *
+     * @return \CRM_HRLeaveAndAbsences_DAO_WorkPattern|NULL
+     */
+    private function createWorkPatternWith40HoursWorkWeek($label)
+    {
+        $pattern = $this->createBasicWorkPattern(['label' => $label]);
+        $result  = $this->callAPISuccess(
+            'WorkWeek',
+            'create',
+            ['pattern_id' => $pattern->id, 'sequential' => 1]
+        );
+        $week1   = $result['values'][0];
+
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 1,
+            'time_from'       => '09:00',
+            'time_to'         => '18:00',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 2,
+            'time_from'       => '09:00',
+            'time_to'         => '18:00',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 3,
+            'time_from'       => '09:00',
+            'time_to'         => '18:00',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 4,
+            'time_from'       => '09:00',
+            'time_to'         => '18:00',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 5,
+            'time_from'       => '09:00',
+            'time_to'         => '18:00',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 6
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 7
+        ]);
+
+        return $pattern;
+    }
+
+    /**
+     * This creates a WorkPattern with two WorkWeeks.
+     *
+     * The first WorkWeek contains 3 working days, with 7.5 working hours each,
+     * 2 non working days and 2 days of weekend.
+     *
+     * The second WorkWeek contains 2 working days, with 4.5 working hours each,
+     * 3 non working days and 2 days of weekend.
+     *
+     * @param string $label the label of the Work Pattern
+     *
+     * @return \CRM_HRLeaveAndAbsences_DAO_WorkPattern|NULL
+     */
+    private function createWorkPatternWithTwoWeeksAnd31AndHalfHours($label)
+    {
+        $pattern = $this->createBasicWorkPattern(['label' => $label]);
+
+        $result = $this->callAPISuccess(
+            'WorkWeek',
+            'create',
+            ['pattern_id' => $pattern->id, 'sequential' => 1]
+        );
+        $week1 = $result['values'][0];
+
+        $result = $this->callAPISuccess(
+            'WorkWeek',
+            'create',
+            ['pattern_id' => $pattern->id, 'sequential' => 1]
+        );
+        $week2 = $result['values'][0];
+
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 1,
+            'time_from'       => '07:00',
+            'time_to'         => '15:30',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_NO,
+            'day_of_the_week' => 2,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 3,
+            'time_from'       => '07:00',
+            'time_to'         => '15:30',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_NO,
+            'day_of_the_week' => 4,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 5,
+            'time_from'       => '07:00',
+            'time_to'         => '15:30',
+            'break'           => 1,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 6,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week1['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 7,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_NO,
+            'day_of_the_week' => 1,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 2,
+            'time_from'       => '07:00',
+            'time_to'         => '12:00',
+            'break'           => 0.5,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_NO,
+            'day_of_the_week' => 3,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+            'day_of_the_week' => 4,
+            'time_from'       => '07:00',
+            'time_to'         => '12:00',
+            'break'           => 0.5,
+            'leave_days'      => 1
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_NO,
+            'day_of_the_week' => 5,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 6,
+        ]);
+        $this->callAPISuccess('WorkDay', 'create', [
+            'week_id'         => $week2['id'],
+            'type'            => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'day_of_the_week' => 7,
+        ]);
     }
 }
