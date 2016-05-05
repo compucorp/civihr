@@ -10,7 +10,7 @@
                 {strip}
                     {* handle enable/disable actions*}
                     {include file="CRM/common/enableDisableApi.tpl"}
-                    <table cellpadding="0" cellspacing="0" border="0">
+                    <table cellpadding="0" cellspacing="0" border="0" class="hrleaveandabsences-entity-list">
                         <thead class="sticky">
                             <th>{ts}Title{/ts}</th>
                             <th>{ts}Allow Accruals?{/ts}</th>
@@ -41,80 +41,8 @@
         </div>
         {literal}
         <script type="text/javascript">
-            CRM.$(function($) {
-                function setAsDefaultSuccessMsg() {
-                    return ts('"%1" is now the default Leave/Absence Type', {1: info.title});
-                }
-
-                function deleteAbsenceTypeSuccessMsg() {
-                    return ts('"%1" was deleted', {1: info.title});
-                }
-
-                function refresh() {
-                    $a.trigger('crmPopupFormSuccess');
-                    CRM.refreshParent($row);
-                }
-
-                function setAsDefault() {
-                    CRM.api3(
-                        info.entity,
-                        'create',
-                        {
-                            id: info.id,
-                            is_default: 1
-                        },
-                        {success: setAsDefaultSuccessMsg}
-                    ).done(refresh);
-                }
-
-                function deleteAbsenceType() {
-                    CRM.api3(
-                        info.entity,
-                        'delete',
-                        { id: info.id },
-                        {success: deleteAbsenceTypeSuccessMsg}
-                    ).done(refresh);
-                }
-
-                function confirmAsDefault() {
-                    $a = $(this);
-                    $row = $a.closest('.crm-entity');
-                    info = $a.crmEditableEntity();
-                    var title = ts('Set "%1" as default', {1: info.title});
-                    var message = ts('Are you sure you want to set "%1" as the default Leave/Absence Type?', {1: info.title});
-                    showConfirmation(title, message, setAsDefault);
-
-                    return false;
-                }
-
-                function confirmDelete() {
-                    $a = $(this);
-                    $row = $a.closest('.crm-entity');
-                    info = $a.crmEditableEntity();
-                    var title = ts('Delete "%1"', {1: info.title});
-                    var message = ts('Are you sure you want to delete "%1"?', {1: info.title});
-                    showConfirmation(title, message, deleteAbsenceType);
-
-                    return false;
-                }
-
-                function showConfirmation(title, message, yesCallback) {
-                    CRM.confirm({
-                        title: title,
-                        message: message,
-                        options: {
-                            yes: ts('Yes'),
-                            no: ts('No')
-                        }
-                    })
-                    .on('crmConfirm:yes', yesCallback);
-                }
-
-                $('body')
-                        .off('click.civihrSetAsDefault')
-                        .on('click.civihrSetAsDefault', '.action-item.civihr-set-as-default', confirmAsDefault)
-                        .off('click.civihrDelete')
-                        .on('click.civihrDelete', '.action-item.civihr-delete', confirmDelete);
+            CRM.$(function() {
+                var listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list'));
             });
         </script>
         {/literal}
