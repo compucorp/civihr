@@ -205,7 +205,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Id') ,
+                  'title' => ts('ID') ,
                   'required' => true,
                   'export' => false,
                   'import' => false,

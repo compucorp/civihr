@@ -113,6 +113,37 @@ class CRM_Hrjobcontract_SelectValues {
     return $commonUnit;
   }
 
+  /** is Enrolled options list
+   * @static
+   * @return array
+   */
+  static function &isEnrolledOptions() {
+    static $isEnrolledOptions = NULL;
+    if (!$isEnrolledOptions) {
+      $isEnrolledOptions = array(
+        0 => 'No',
+        1 => 'Yes',
+        2 => 'Opted Out',
+      );
+    }
+    return $isEnrolledOptions;
+  }
+
+  /** (is paid) options
+   * @static
+   * @return array
+   */
+  static function &isPaidOptions() {
+    static $isPaidOptions = NULL;
+    if (!$isPaidOptions) {
+      $isPaidOptions = array(
+        0 => 'No',
+        1 => 'yes',
+      );
+    }
+    return $isPaidOptions;
+  }
+
   /**
    * Get options for a given job roles field along with their database IDs.
    * @param String $fieldName
@@ -185,6 +216,25 @@ class CRM_Hrjobcontract_SelectValues {
     while ($result->fetch()) {
       $label = $result->location." - ".$result->standard_hours." hours per ".$result->periodicity;
       $options[] =  array( 'id'=>$result->id, 'label'=> $label);
+    }
+    return $options;
+  }
+
+  /**
+   * Get leave types .
+   * @return array
+   */
+  public static function buildLeaveTypes() {
+    $result = civicrm_api3('HRAbsenceType', 'get', array(
+      'sequential' => 1,
+      'is_active' => 1,
+      'options' => array('limit' => 0),
+    ));
+    $result = $result['values'];
+    $options = array();
+    foreach ($result as $item) {
+      $label = $item['title'];
+      $options[] =  array( 'id'=>$item['id'], 'label'=> $label);
     }
     return $options;
   }

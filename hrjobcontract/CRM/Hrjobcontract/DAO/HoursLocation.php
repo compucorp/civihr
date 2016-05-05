@@ -107,7 +107,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Hours Location Id') ,
+          'title' => ts('Hours Location ID') ,
           'required' => true,
         ) ,
         'location' => array(

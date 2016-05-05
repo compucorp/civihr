@@ -222,7 +222,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Job Role Id') ,
+                  'title' => ts('Job Role ID') ,
                   'export' => false,
                   'import' => false,
                   'required' => true,
@@ -327,7 +327,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                 'hrjobcontract_role_manager_contact_id' => array(
                   'name' => 'manager_contact_id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Manager Contact Id') ,
+                  'title' => ts('Manager Contact ID') ,
                   'export' => true,
                   'import' => true,
                   'FKClassName' => 'CRM_Contact_DAO_Contact',

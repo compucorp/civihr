@@ -197,7 +197,7 @@ function _civicrm_hrjobcontract_api3_custom_get($bao_name, &$params, $returnAsSu
             }
         }
     }
-    
+
     _civicrm_api3_dao_set_filter($bao, $params, TRUE, $entity);
     if ($returnAsSuccess)
     {
@@ -208,10 +208,14 @@ function _civicrm_hrjobcontract_api3_custom_get($bao_name, &$params, $returnAsSu
             {
                 foreach ($callbacks as $callbackKey => $callbackValue)
                 {
+                  $daoToArray[$entryKey][$callbackKey] = NULL;
+                  if (array_key_exists($callbackKey, $entryValue))
+                   {
                     $daoToArray[$entryKey][$callbackKey] = call_user_func(array($callbackValue['className'], $callbackValue['fnName']), $entryValue[$callbackKey]);
+                   }
                 }
             }
-        }        
+        }
         return civicrm_api3_create_success($daoToArray, $params, $entity, 'get');
     }
     else {

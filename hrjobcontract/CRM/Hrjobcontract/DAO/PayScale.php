@@ -116,7 +116,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Pay Scale Id') ,
+          'title' => ts('Pay Scale ID') ,
           'required' => true,
         ) ,
         'pay_scale' => array(

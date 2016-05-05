@@ -190,7 +190,7 @@ class CRM_Hrjobcontract_DAO_HRJobPay extends CRM_Hrjobcontract_DAO_Base
               'id' => array(
                 'name' => 'id',
                 'type' => CRM_Utils_Type::T_INT,
-                'title' => ts('Job Pay Id') ,
+                'title' => ts('Job Pay ID') ,
                 'required' => true,
                 'export' => false,
                 'import' => false,
@@ -283,7 +283,7 @@ class CRM_Hrjobcontract_DAO_HRJobPay extends CRM_Hrjobcontract_DAO_Base
                 'type' => CRM_Utils_Type::T_BOOLEAN,
                 'title' => ts('Estimated Auto Pay') ,
                 'export' => true,
-                'import' => true,
+                'import' => false,
                 'default' => '1',
                 'headerPattern' => '/^estimated\s?auto\s?pay/i',
               ) ,
