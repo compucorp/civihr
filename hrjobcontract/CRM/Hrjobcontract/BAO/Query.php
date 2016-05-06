@@ -56,14 +56,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobLeave::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobPay::export());
       self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobPension::export());
-      self::$_hrjobFields = array_merge(self::$_hrjobFields, CRM_Hrjobcontract_BAO_HRJobRole::export());
 
-      self::$_hrjobFields['hrjobcontract_role_manager_contact'] = array(
-          'name'  => 'manager_contact',
-          'title' => 'Job Manager',
-          'type'  => CRM_Utils_Type::T_STRING,
-          'where' => 'civicrm_hrjobcontract_role_manager.display_name'
-      );
       self::$_hrjobFields['hrjobcontract_id'] = array(
           'name'  => 'contract_id',
           'title' => 'Contract ID',
@@ -81,12 +74,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       foreach ($fields as $fldName => $params) {
         if (!empty($query->_returnProperties[$fldName])) {
           $query->_select[$fldName]  = "{$params['where']} as $fldName";
-          if ($fldName == 'hrjobcontract_role_manager_contact') {
-            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjobcontract_role_manager.sort_name) SEPARATOR ' | ') as $fldName";
-          }
-          if ($fldName == 'hrjobcontract_role_department') {
-            $query->_select[$fldName]  = "GROUP_CONCAT(DISTINCT(civicrm_hrjobcontract_role.department) SEPARATOR ' | ') as $fldName";
-          }
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);
           $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
@@ -125,7 +112,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("hrjobcontract.is_primary", $op, $value, "Boolean");
         $query->_tables['civicrm_hrjobcontract'] = $query->_whereTables['civicrm_hrjobcontract'] = 1;
         return;
-      case 'hrjobcontract_role_role_level_type':
       case 'hrjobcontract_details_contract_type':
       case 'hrjobcontract_pay_is_paid':
       case 'hrjobcontract_hour_hours_type':
@@ -348,12 +334,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         $from .= " /*civicrm_hrjobcontract*/
         ";
         break;
-      case 'civicrm_hrjobcontract_role_manager':
-        $from .= "
-         $side JOIN civicrm_hrjobcontract_role civicrm_hrjobcontract_role_manager_contact ON civicrm_hrjobcontract_role_manager_contact.jobcontract_revision_id = rev.role_revision_id
-         $side JOIN civicrm_contact civicrm_hrjobcontract_role_manager ON civicrm_hrjobcontract_role_manager_contact.manager_contact_id = civicrm_hrjobcontract_role_manager.id
-        ";
-        break;
       case 'civicrm_hrjobcontract_details':
         $from .= " $side JOIN civicrm_hrjobcontract_details ON rev.details_revision_id = civicrm_hrjobcontract_details.jobcontract_revision_id ";
         break;
@@ -373,9 +353,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         break;
       case 'civicrm_hrjobcontract_pay':
         $from .= " $side JOIN civicrm_hrjobcontract_pay ON rev.pay_revision_id = civicrm_hrjobcontract_pay.jobcontract_revision_id ";
-        break;
-      case 'civicrm_hrjobcontract_role':
-        $from .= " $side JOIN civicrm_hrjobcontract_role ON rev.role_revision_id = civicrm_hrjobcontract_role.jobcontract_revision_id ";
         break;
     }
     
@@ -429,11 +406,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('select', 'hrjobcontract_details_location', ts('Normal Place of Work'), $hrjcLocation, FALSE,
         array('id' => 'hrjobcontract_details_location', 'multiple' => true)
       );
-      
-      $form->add('select', 'hrjobcontract_role_role_level_type', ts('Level'),
-        CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobRole', 'hrjobcontract_role_role_level_type'), FALSE,
-        array('id' => 'hrjobcontract_role_role_level_type', 'multiple' => true)
-      );
+
       $form->add('select', 'hrjobcontract_details_contract_type', ts('Contract Type'),
         CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobDetails', 'hrjobcontract_details_contract_type'), FALSE,
         array('id' => 'hrjobcontract_details_contract_type', 'multiple' => true)
