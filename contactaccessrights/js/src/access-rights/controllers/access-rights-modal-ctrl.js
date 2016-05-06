@@ -22,10 +22,16 @@ define(['access-rights/modules/controllers'], function (controllers) {
 
 			vm.errorMsg = '';
 
+			/**
+			 * Closes the modal
+			 */
 			vm.cancel = function () {
 				$modalInstance.dismiss('cancel');
 			};
 
+			/**
+			 * Saves data and closes the modal
+			 */
 			vm.submit = function () {
 				$q.all([persistRegions(), persistLocations()])
 					.then(function () {
@@ -36,16 +42,34 @@ define(['access-rights/modules/controllers'], function (controllers) {
 					});
 			};
 
+			/**
+			 * Saves the new regions, and deletes the removed ones
+			 *
+			 * @return {Promise}
+			 */
 			function persistRegions() {
 				return persistValues(vm.originalData.regions, vm.selectedData.regions,
 					Right.saveRegions.bind(Right));
 			}
 
+			/**
+			 * Saves the new locations, and deletes the removed ones
+			 *
+			 * @return {Promise}
+			 */
 			function persistLocations() {
 				return persistValues(vm.originalData.locations, vm.selectedData.locations,
 					Right.saveLocations.bind(Right));
 			}
 
+			/**
+			 * Saves the new values, and deletes the removed ones
+			 *
+			 * @param  {array} 		originalData The original data, fetched when the modal was opened
+			 * @param  {array}    selectedData The current selected data
+			 * @param  {function} fnSave       Function to use for saving the values
+			 * @return {Promise}               The result of all promises
+			 */
 			function persistValues(originalData, selectedData, fnSave) {
 				var originalEntityIds = originalData.map(function (i) {
 					return i.entity_id;

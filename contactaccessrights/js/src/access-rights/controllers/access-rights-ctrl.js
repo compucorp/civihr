@@ -3,6 +3,10 @@ define(['access-rights/modules/controllers'], function (controllers) {
 	controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
 		function ($rootElement, $modal) {
 			return {
+
+        /**				
+         * Opens the permissions modal
+         */
         openModal: function () {
           $modal.open({
             targetDomEl: $rootElement.children().eq(0),
