@@ -19,7 +19,12 @@ define([
         $log.debug('app.run');
         editableOptions.theme = 'bs3';
       }
-    ]);
+    ]).config(['$locationProvider', function ($locationProvider) {
+      $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+      });
+    }]);
 
   return angular;
 });

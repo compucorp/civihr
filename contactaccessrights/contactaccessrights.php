@@ -186,14 +186,14 @@ function contactaccessrights_civicrm_summary( $contactID, &$content, &$contentPl
   ));
 }
 
-define('CONTACT_ACCESS_RIGHTS', 'uk.co.compucorp.contactaccessrights');
 function contactaccessrights_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary && CRM_Core_Permission::check('administer roles and teams')) {
+    $extName = 'uk.co.compucorp.contactaccessrights';
     CRM_Core_Resources::singleton()->addVars('contactAccessRights', array(
-      'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl(CONTACT_ACCESS_RIGHTS)
+      'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl($extName)
     ));
-    CRM_Core_Resources::singleton()->addStyleFile(CONTACT_ACCESS_RIGHTS, 'css/access-rights.css');
-    CRM_Core_Resources::singleton()->addScriptFile(CONTACT_ACCESS_RIGHTS, CRM_Core_Config::singleton()->debug ?
+    CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/access-rights.css');
+    CRM_Core_Resources::singleton()->addScriptFile($extName, CRM_Core_Config::singleton()->debug ?
       'js/src/access-rights.js' : 'js/dist/access-rights.min.js', 1010);
   }
 }

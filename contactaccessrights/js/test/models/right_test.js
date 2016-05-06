@@ -12,13 +12,13 @@ define([
       apiSpy = jasmine.createSpyObj('apiSpy', ['getAllEntities', 'removeEntity', 'saveEntity']);
       apiBuilderSpy.build.and.returnValue(apiSpy);
       $provide.value('apiBuilder', apiBuilderSpy);
-      CRM = {
-        vars: {
-          summaryPage: {
-            contactID: 1
+      $provide.value('$location', {
+        search: function () {
+          return {
+            cid: 1
           }
         }
-      };
+      });
     }));
     beforeEach(inject(function (_Right_) {
       Right = _Right_;
