@@ -105,7 +105,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $quoteValue = "\"$value\"";
     }
 
-    $strtolower = function_exists('mb_strtolower') ? 'mb_strtolower' : 'strtolower';
     switch ($name) {
       case 'hrjobcontract_details_is_primary':
         $query->_qill[$grouping][]  = $value ? ts('Is Primary') : ts('Is not Primary');
@@ -127,13 +126,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         list($tableName, $fieldName) = explode('.', $fields[$name]['where'], 2);
         $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
         return;
-
-      /*case 'hrjobcontract_is_healthcare':
-        $op = "IS NOT NULL";
-        $query->_qill[$grouping][]  = ts('Healthcare is provided');
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_health.id", $op);
-        $query->_tables['civicrm_hrjobcontract_health'] = $query->_whereTables['civicrm_hrjobcontract_health'] = 1;
-        return;*/
 
       case 'hrjobcontract_pension_is_enrolled':
         $display = $options = $value;
@@ -366,7 +358,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function registerAdvancedSearchPane(&$panes) {
-    //if (!CRM_Core_Permission::check('access HRJobs')) { echo 'not accessible'; return; }
     $panes['Job Contract'] = 'hrjobcontract';
     $panes['Job Contract: Health']  = 'hrjobcontract_health';
     $panes['Job Contract: Hour']  = 'hrjobcontract_hour';
@@ -376,7 +367,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function getPanesMapper(&$panes) {
-    //if (!CRM_Core_Permission::check('access HRJobs')) { echo 'not accessible'; return; }
     $panes['Job Contract']          = 'civicrm_hrjobcontract';
     $panes['Job Contract: Health']  = 'civicrm_hrjobcontract_health';
     $panes['Job Contract: Hour']    = 'civicrm_hrjobcontract_hour';
@@ -386,7 +376,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function buildAdvancedSearchPaneForm(&$form, $type) {
-    //if (!CRM_Core_Permission::check('access HRJobs')) { echo 'not accessible'; return; }
     if ($type == 'hrjobcontract') {
       $form->add('hidden', 'hidden_hrjobcontract', 1);
       $form->addElement('text', 'hrjobcontract_details_position', ts('Position'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobDetails', 'position'));
@@ -413,7 +402,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       );
       CRM_Core_Form_Date::buildDateRange($form, 'hrjobcontract_details_period_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
       CRM_Core_Form_Date::buildDateRange($form, 'hrjobcontract_details_period_end_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
-      //$form->addYesNo( 'hrjobcontract_details_is_primary', ts('Is Primary?'));
       $form->add('select', 'hrjobcontract_details_is_primary', ts('Is Primary'), array('' => '- select -', 0 => 'No', 1 => 'Yes'), FALSE,
         array('id' => 'hrjobcontract_details_is_primary', 'multiple' => false)
       );
@@ -421,7 +409,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     
     if ($type == 'hrjobcontract_health') {
       $form->add('hidden', 'hidden_hrjobcontract_health', 1);
-      //$form->add('checkbox', 'hrjobcontract_health_is_healthcare', ts('Is healthcare provided?'));
       
       $form->addElement('text', 'hrjobcontract_health_health_provider', ts('Healthcare Provider (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'provider'));
       $form->add('select', 'hrjobcontract_health_health_plan_type', ts('Healthcare Plan Type'), CRM_Hrjobcontract_SelectValues::planType(), FALSE,
@@ -605,7 +592,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
   }
 
   public function setAdvancedSearchPaneTemplatePath(&$paneTemplatePathArray, $type) {
-    //if (!CRM_Core_Permission::check('access HRJobs')) { echo 'not accessible'; return; }
     if ($type  == 'hrjobcontract') {
       $paneTemplatePathArray['hrjobcontract'] = 'CRM/Hrjobcontract/Form/Search/Criteria/JobContract.tpl';
     }
@@ -640,7 +626,6 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
    * @void
    */
   public function alterSearchBuilderOptions(&$apiEntities, &$fieldOptions) {
-    //if (!CRM_Core_Permission::check('access HRJobs')) { echo 'not accessible'; return; }
     $apiEntities = array_merge($apiEntities, array(
       //'HRJob',
       'HRJobContract',
