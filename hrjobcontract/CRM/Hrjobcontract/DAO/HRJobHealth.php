@@ -231,6 +231,7 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
                 'export' => true,
                 'import' => true,
                 'headerPattern' => '/^healthcare\s?dependents/i',
+                'where' => 'civicrm_hrjobcontract_health.dependents'
               ) ,
               'hrjobcontract_health_health_provider_life_insurance' => array(
                 'name' => 'provider_life_insurance',
@@ -276,6 +277,7 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
                 'export' => true,
                 'import' => true,
                 'headerPattern' => '/^life\s?insurance\s?dependents/i',
+                'where' => 'civicrm_hrjobcontract_health.dependents_life_insurance'
               ) ,
             )
         );
