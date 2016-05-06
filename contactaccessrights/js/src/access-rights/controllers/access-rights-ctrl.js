@@ -1,10 +1,10 @@
 define(['access-rights/modules/controllers'], function (controllers) {
-	'use strict';
-	controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
-		function ($rootElement, $modal) {
-			return {
+  'use strict';
+  controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
+    function ($rootElement, $modal) {
+      return {
 
-        /**				
+        /**
          * Opens the permissions modal
          */
         openModal: function () {
@@ -17,6 +17,6 @@ define(['access-rights/modules/controllers'], function (controllers) {
           });
         }
       };
-		}
-	]);
+    }
+  ]);
 });

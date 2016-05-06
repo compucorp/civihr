@@ -1,7 +1,7 @@
 define([
-	'common/angular',
-	'common/modules/apis'
+  'common/angular',
+  'common/modules/apis'
 ], function (angular) {
-	'use strict';
-	return angular.module('access-rights.models', ['common.apis']);
+  'use strict';
+  return angular.module('access-rights.models', ['common.apis']);
 });
