@@ -286,6 +286,7 @@ class CRM_Hrjobcontract_DAO_HRJobPay extends CRM_Hrjobcontract_DAO_Base
                 'import' => false,
                 'default' => '1',
                 'headerPattern' => '/^estimated\s?auto\s?pay/i',
+                'where' => 'civicrm_hrjobcontract_pay.pay_is_auto_est'
               ) ,
               'hrjobcontract_pay_annual_benefits' => array(
                 'name' => 'annual_benefits',
