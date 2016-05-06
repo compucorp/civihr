@@ -8,14 +8,14 @@ define([
 	'use strict';
 
 	describe('AccessRightsModalCtrl', function () {
-		var ctrl, $scope, $q, fakeModalInstance, fakeRegion, fakeLocation, fakeRight;
+		var ctrl, $scope, $q, modalInstanceSpy, regionSpy, locationSpy, rightSpy;
 
 		beforeEach(module('access-rights.models', 'access-rights.controllers'));
 		beforeEach(function () {
-			fakeModalInstance = jasmine.createSpyObj('fakeModalInstance', ['dismiss']);
-			fakeRegion = jasmine.createSpyObj('fakeRegion', ['getAll']);
-			fakeLocation = jasmine.createSpyObj('fakeLocation', ['getAll']);
-			fakeRight = jasmine.createSpyObj('fakeRight', ['getRegions', 'getLocations',
+			modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
+			regionSpy = jasmine.createSpyObj('regionSpy', ['getAll']);
+			locationSpy = jasmine.createSpyObj('locationSpy', ['getAll']);
+			rightSpy = jasmine.createSpyObj('rightSpy', ['getRegions', 'getLocations',
 				'saveRegions', 'saveLocations', 'deleteByIds'
 			]);
 		});
@@ -38,53 +38,53 @@ define([
 				};
 			}
 
-			[fakeRegion.getAll, fakeLocation.getAll]
+			[regionSpy.getAll, locationSpy.getAll]
 			.forEach(function (fn, idx) {
 				fn.and.returnValue($q.resolve([1, 2, 3].map(function (i) {
 					return getEntityMock(i, idx === 0);
 				})));
 			});
 
-			[fakeRight.getRegions, fakeRight.getLocations].forEach(function (fn, idx) {
+			[rightSpy.getRegions, rightSpy.getLocations].forEach(function (fn, idx) {
 				fn.and.returnValue($q.resolve([getEntityMock(1, idx === 0)]));
 			});
 
-			[fakeRight.saveRegions, fakeRight.saveLocations].forEach(function (fn) {
+			[rightSpy.saveRegions, rightSpy.saveLocations].forEach(function (fn) {
 				fn.and.returnValue($q.resolve());
 			});
 
 			ctrl = _$controller_('AccessRightsModalCtrl', {
 				$scope: $scope,
-				$modalInstance: fakeModalInstance,
-				Region: fakeRegion,
-				Location: fakeLocation,
-				Right: fakeRight
+				$modalInstance: modalInstanceSpy,
+				Region: regionSpy,
+				Location: locationSpy,
+				Right: rightSpy
 			});
 			$scope.$digest();
 		}));
 
 		describe('constructor', function () {
 			it('calls Region.getAll()', function () {
-				expect(fakeRegion.getAll).toHaveBeenCalled();
+				expect(regionSpy.getAll).toHaveBeenCalled();
 			});
 
 			it('calls Right.getRegions()', function () {
-				expect(fakeRight.getRegions).toHaveBeenCalled();
+				expect(rightSpy.getRegions).toHaveBeenCalled();
 			});
 
 			it('calls Location.getAll()', function () {
-				expect(fakeLocation.getAll).toHaveBeenCalled();
+				expect(locationSpy.getAll).toHaveBeenCalled();
 			});
 
 			it('calls Right.getLocations()', function () {
-				expect(fakeRight.getLocations).toHaveBeenCalled();
+				expect(rightSpy.getLocations).toHaveBeenCalled();
 			});
 		});
 
 		describe('cancel', function () {
 			it('closes the modal instance', function () {
 				ctrl.cancel();
-				expect(fakeModalInstance.dismiss).toHaveBeenCalled();
+				expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
 			});
 		});
 
@@ -99,15 +99,15 @@ define([
 
 				it('saves the new Locations', function () {
 					ctrl.submit();
-					expect(fakeRight.saveLocations.calls.count()).toBe(1);
-					expect(fakeRight.saveLocations).toHaveBeenCalledWith(newIds);
+					expect(rightSpy.saveLocations.calls.count()).toBe(1);
+					expect(rightSpy.saveLocations).toHaveBeenCalledWith(newIds);
 				});
 
 				it('sets the error message', function () {
-					fakeRight.saveLocations.and.returnValue($q.reject());
+					rightSpy.saveLocations.and.returnValue($q.reject());
 					ctrl.submit();
 					$scope.$digest();
-					expect(fakeRight.saveLocations.calls.count()).toBe(1);
+					expect(rightSpy.saveLocations.calls.count()).toBe(1);
 					expect(ctrl.errorMsg.length).not.toBe(0);
 				});
 			});
@@ -121,15 +121,15 @@ define([
 
 				it('saves the new Regions', function () {
 					ctrl.submit();
-					expect(fakeRight.saveRegions.calls.count()).toBe(1);
-					expect(fakeRight.saveRegions).toHaveBeenCalledWith(newIds);
+					expect(rightSpy.saveRegions.calls.count()).toBe(1);
+					expect(rightSpy.saveRegions).toHaveBeenCalledWith(newIds);
 				});
 
 				it('sets the error message', function () {
-					fakeRight.saveRegions.and.returnValue($q.reject());
+					rightSpy.saveRegions.and.returnValue($q.reject());
 					ctrl.submit();
 					$scope.$digest();
-					expect(fakeRight.saveRegions.calls.count()).toBe(1);
+					expect(rightSpy.saveRegions.calls.count()).toBe(1);
 					expect(ctrl.errorMsg.length).not.toBe(0);
 				});
 			});
@@ -141,15 +141,15 @@ define([
 
 				it('deletes the removed Locations', function () {
 					ctrl.submit();
-					expect(fakeRight.deleteByIds.calls.count()).toBe(1);
-					expect(fakeRight.deleteByIds).toHaveBeenCalledWith([11]);
+					expect(rightSpy.deleteByIds.calls.count()).toBe(1);
+					expect(rightSpy.deleteByIds).toHaveBeenCalledWith([11]);
 				});
 
 				it('sets the error message', function () {
-					fakeRight.deleteByIds.and.returnValue($q.reject());
+					rightSpy.deleteByIds.and.returnValue($q.reject());
 					ctrl.submit();
 					$scope.$digest();
-					expect(fakeRight.deleteByIds.calls.count()).toBe(1);
+					expect(rightSpy.deleteByIds.calls.count()).toBe(1);
 					expect(ctrl.errorMsg.length).not.toBe(0);
 				});
 			});
@@ -161,15 +161,15 @@ define([
 
 				it('deletes the removed Regions', function () {
 					ctrl.submit();
-					expect(fakeRight.deleteByIds.calls.count()).toBe(1);
-					expect(fakeRight.deleteByIds).toHaveBeenCalledWith([1]);
+					expect(rightSpy.deleteByIds.calls.count()).toBe(1);
+					expect(rightSpy.deleteByIds).toHaveBeenCalledWith([1]);
 				});
 
 				it('sets the error message', function () {
-					fakeRight.deleteByIds.and.returnValue($q.reject());
+					rightSpy.deleteByIds.and.returnValue($q.reject());
 					ctrl.submit();
 					$scope.$digest();
-					expect(fakeRight.deleteByIds.calls.count()).toBe(1);
+					expect(rightSpy.deleteByIds.calls.count()).toBe(1);
 					expect(ctrl.errorMsg.length).not.toBe(0);
 				});
 			});

@@ -5,7 +5,7 @@ define([
 	'use strict';
 
 	describe('AccessRightsCtrl', function () {
-		var ctrl, fakeModal;
+		var ctrl, modalSpy;
 
 		beforeEach(module('access-rights.controllers'));
 		beforeEach(inject(function (_$controller_, _$rootScope_) {
@@ -16,17 +16,17 @@ define([
 					}
 				}
 			};
-			fakeModal = jasmine.createSpyObj('fakeModal', ['open']);
+			modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
 			ctrl = _$controller_('AccessRightsCtrl', {
 				$scope: _$rootScope_.$new(),
-				$modal: fakeModal
+				$modal: modalSpy
 			});
 		}));
 
 		describe('openModal', function () {
 			it('opens the modal', function () {
 				ctrl.openModal();
-				expect(fakeModal.open).toHaveBeenCalled();
+				expect(modalSpy.open).toHaveBeenCalled();
 			});
 		});
 	});

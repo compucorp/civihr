@@ -7,21 +7,21 @@ define([
 	'use strict';
 
 	describe('apiBuilder', function () {
-		var apiBuilder, resourceBuilder, fakeResourceBuilder;
+		var apiBuilder, resourceBuilder, resourceBuilderSpy;
 
 		beforeEach(module('common.apis'));
 		beforeEach(inject(['apiBuilder', 'resourceBuilder',
 			function (_apiBuilder_, _resourceBuilder_) {
 				apiBuilder = _apiBuilder_;
 				resourceBuilder = _resourceBuilder_;
-				var fakeMethods = ['save', 'remove', 'getAll'];
-				fakeResourceBuilder = jasmine.createSpyObj('fakeResourceBuilder', fakeMethods);
-				fakeMethods.forEach(function (i) {
-					fakeResourceBuilder[i].and.returnValue({
+				var spyMethods = ['save', 'remove', 'getAll'];
+				resourceBuilderSpy = jasmine.createSpyObj('resourceBuilderSpy', spyMethods);
+				spyMethods.forEach(function (i) {
+					resourceBuilderSpy[i].and.returnValue({
 						$promise: {}
 					});
 				});
-				spyOn(resourceBuilder, 'build').and.returnValue(fakeResourceBuilder);
+				spyOn(resourceBuilder, 'build').and.returnValue(resourceBuilderSpy);
 			}
 		]));
 
@@ -75,21 +75,21 @@ define([
 			describe('getAllEntities', function () {
 				it('calls the "getAll" action from the resource', function () {
 					api.getAllEntities();
-					expect(fakeResourceBuilder.getAll).toHaveBeenCalled();
+					expect(resourceBuilderSpy.getAll).toHaveBeenCalled();
 				});
 			});
 
 			describe('removeEntity', function () {
 				it('calls the "remove" action from the resource', function () {
 					api.removeEntity();
-					expect(fakeResourceBuilder.remove).toHaveBeenCalled();
+					expect(resourceBuilderSpy.remove).toHaveBeenCalled();
 				});
 			});
 
 			describe('saveEntity', function () {
 				it('calls the "save" action from the resource', function () {
 					api.saveEntity();
-					expect(fakeResourceBuilder.save).toHaveBeenCalled();
+					expect(resourceBuilderSpy.save).toHaveBeenCalled();
 				});
 			});
 
