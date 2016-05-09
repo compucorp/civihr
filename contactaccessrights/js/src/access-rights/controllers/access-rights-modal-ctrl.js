@@ -66,8 +66,7 @@ define([
           .map(function (entityId) {
             return _.find(originalData, function (i) {
                 return i.entity_id === entityId;
-              })
-              .id;
+              }).id;
           });
 
         var promises = [];
@@ -87,23 +86,23 @@ define([
        */
       $q.all([Region.getAll()
           .then(function (regions) {
-            vm.availableData.regions = regions;
+            vm.availableData.regions = regions.values;
             return Right.getRegions();
           })
           .then(function (regionRights) {
-            vm.originalData.regions = regionRights;
-            vm.selectedData.regions = regionRights.map(function (regionRight) {
+            vm.originalData.regions = regionRights.values;
+            vm.selectedData.regions = regionRights.values.map(function (regionRight) {
               return regionRight.entity_id;
             });
           }),
           Location.getAll()
           .then(function (locations) {
-            vm.availableData.locations = locations;
+            vm.availableData.locations = locations.values;
             return Right.getLocations();
           })
           .then(function (locationRights) {
-            vm.originalData.locations = locationRights;
-            vm.selectedData.locations = locationRights.map(function (locationRight) {
+            vm.originalData.locations = locationRights.values;
+            vm.selectedData.locations = locationRights.values.map(function (locationRight) {
               return locationRight.entity_id;
             });
           })

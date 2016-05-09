@@ -4,5 +4,5 @@ define([
 ], function (angular) {
   'use strict';
 
-  return angular.module('access-rights.models', ['common.apis']);
+  return angular.module('access-rights.models', ['common.apis', 'common.models']);
 });

@@ -1,16 +1,13 @@
 define([
   'access-rights/modules/models',
-  'common/services/api/api-builder'
+  'access-rights/services/region',
+  'common/models/model'
 ], function (models) {
   'use strict';
 
-  models.factory('Region', ['apiBuilder', function (apiBuilder) {
-    return apiBuilder.build({
-      getAll: function (filters, pagination, sort) {
-        return this.getAllEntities(filters, pagination, sort);
-      }
-    }, 'OptionValue', {
-      'option_group_name': 'hrjc_region'
+  models.factory('Region', ['Model', 'api.region', function (Model, api) {
+    return Model.extend({
+      getAll: api.query.bind(api)
     });
   }]);
 });
