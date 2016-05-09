@@ -17,7 +17,10 @@
         <div class="alert alert-danger" ng-show="modalCtrl.errorMsg">
           {{modalCtrl.errorMsg}}
         </div>
-        <form class="form-horizontal access-rights-form">
+        <div class="alert alert-info" ng-hide="modalCtrl.dataLoaded">
+          Loading data...
+        </div>
+        <form class="form-horizontal access-rights-form" ng-show="modalCtrl.dataLoaded">
             <div class="form-group has-feedback">
                 <label for="contact" class="col-xs-12 col-sm-4 control-label">
                     Regions:
@@ -49,7 +52,7 @@
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modalCtrl.cancel()">cancel</button>
-    <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()">
+    <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
         save
     </button>
 </div>

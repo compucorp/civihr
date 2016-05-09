@@ -9,13 +9,6 @@ define([
 
     beforeEach(module('access-rights.controllers'));
     beforeEach(inject(function (_$controller_, _$rootScope_) {
-      CRM = {
-        vars: {
-          contactAccessRights: {
-            baseURL: ''
-          }
-        }
-      };
       modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
       ctrl = _$controller_('AccessRightsCtrl', {
         $scope: _$rootScope_.$new(),
@@ -24,8 +17,11 @@ define([
     }));
 
     describe('openModal', function () {
-      it('opens the modal', function () {
+      beforeEach(function () {
         ctrl.openModal();
+      });
+
+      it('opens the modal', function () {
         expect(modalSpy.open).toHaveBeenCalled();
       });
     });

@@ -180,12 +180,6 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
   $where = trim($where) ? $where . " OR " . $whereStr : $whereStr;
 }
 
-function contactaccessrights_civicrm_summary( $contactID, &$content, &$contentPlacement ) {
-  CRM_Core_Resources::singleton()->addVars('summaryPage', array(
-    'contactID' => $contactID
-  ));
-}
-
 function contactaccessrights_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary && CRM_Core_Permission::check('administer roles and teams')) {
     $extName = 'uk.co.compucorp.contactaccessrights';

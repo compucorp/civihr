@@ -3,6 +3,7 @@ define([
   'common/services/api/api-builder'
 ], function (models) {
   'use strict';
+
   models.factory('Location', ['apiBuilder', function (apiBuilder) {
     return apiBuilder.build({
       getAll: function (filters, pagination, sort) {

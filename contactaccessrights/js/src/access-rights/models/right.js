@@ -3,6 +3,7 @@ define([
   'common/services/api/api-builder'
 ], function (models) {
   'use strict';
+
   models.factory('Right', ['apiBuilder', '$q', '$location', function (apiBuilder, $q, $location) {
     var methods = {
       getLocations: function (filters, pagination, sort) {
@@ -40,7 +41,8 @@ define([
       }
     };
     return apiBuilder.build(methods, 'Rights', {
-      'contact_id': $location.search().cid
+      'contact_id': $location.search()
+        .cid
     });
   }]);
 });

@@ -8,18 +8,21 @@ define([
   'access-rights/models/location',
   'access-rights/models/right'
 ], function (angular) {
+  'use strict'
+
   angular.module('access-rights', [
-      'access-rights.controllers',
-      'access-rights.models',
       'ui.select',
-      'xeditable-civi'
+      'xeditable-civi',
+      'access-rights.controllers',
+      'access-rights.models'
     ])
     .run(['$log', 'editableOptions', 'editableThemes',
       function ($log, editableOptions, editableThemes) {
         $log.debug('app.run');
         editableOptions.theme = 'bs3';
       }
-    ]).config(['$locationProvider', function ($locationProvider) {
+    ])
+    .config(['$locationProvider', function ($locationProvider) {
       $locationProvider.html5Mode({
         enabled: true,
         requireBase: false

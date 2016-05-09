@@ -1,5 +1,8 @@
-define(['access-rights/modules/controllers'], function (controllers) {
+define([
+  'access-rights/modules/controllers'
+], function (controllers) {
   'use strict';
+
   controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
     function ($rootElement, $modal) {
       return {
@@ -9,7 +12,8 @@ define(['access-rights/modules/controllers'], function (controllers) {
          */
         openModal: function () {
           $modal.open({
-            targetDomEl: $rootElement.children().eq(0),
+            targetDomEl: $rootElement.children()
+              .eq(0),
             controller: 'AccessRightsModalCtrl',
             controllerAs: 'modalCtrl',
             bindToController: true,

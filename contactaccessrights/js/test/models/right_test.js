@@ -59,10 +59,13 @@ define([
     });
 
     describe('deleteByIds', function () {
+      var ids = [1, 2];
+      beforeEach(function(){
+        apiBuilderSpy.build.calls.mostRecent().args[0].deleteByIds.call(apiSpy, ids);
+      });
+
       it('calls api.removeEntity', function () {
-        var idsToDelete = [1, 2];
-        apiBuilderSpy.build.calls.mostRecent().args[0].deleteByIds.call(apiSpy, idsToDelete);
-        expect(apiSpy.removeEntity.calls.count()).toBe(idsToDelete.length);
+        expect(apiSpy.removeEntity.calls.count()).toBe(ids.length);
         expect(apiSpy.removeEntity.calls.argsFor(0)).toEqual([{
           id: 1
         }]);
@@ -73,10 +76,13 @@ define([
     });
 
     describe('saveRegions', function () {
+      var ids = [1, 2];
+      beforeEach(function(){
+        apiBuilderSpy.build.calls.mostRecent().args[0].saveRegions.call(apiSpy, ids);
+      });
+
       it('calls api.saveEntity', function () {
-        var idsToSave = [1, 2];
-        apiBuilderSpy.build.calls.mostRecent().args[0].saveRegions.call(apiSpy, idsToSave);
-        expect(apiSpy.saveEntity.calls.count()).toBe(idsToSave.length);
+        expect(apiSpy.saveEntity.calls.count()).toBe(ids.length);
         expect(apiSpy.saveEntity.calls.argsFor(0)).toEqual([{
           entity_id: 1,
           entity_type: 'hrjc_region'
@@ -89,10 +95,13 @@ define([
     });
 
     describe('saveLocations', function () {
+      var ids = [1, 2];
+      beforeEach(function(){
+        apiBuilderSpy.build.calls.mostRecent().args[0].saveLocations.call(apiSpy, ids);
+      });
+
       it('calls api.saveEntity', function () {
-        var idsToSave = [1, 2];
-        apiBuilderSpy.build.calls.mostRecent().args[0].saveLocations.call(apiSpy, idsToSave);
-        expect(apiSpy.saveEntity.calls.count()).toBe(idsToSave.length);
+        expect(apiSpy.saveEntity.calls.count()).toBe(ids.length);
         expect(apiSpy.saveEntity.calls.argsFor(0)).toEqual([{
           entity_id: 1,
           entity_type: 'hrjc_location'

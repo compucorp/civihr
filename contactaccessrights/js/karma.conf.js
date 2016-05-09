@@ -19,6 +19,9 @@ module.exports = function (config) {
       'js/crm.ajax.js',
 
       // Global variables that need to be accessible in the test environment
+      extPath + 'js/test/globals.js',
+
+      // Global variables that need to be accessible in the test environment
       // manual loading of requirejs as to avoid interference with the global dependencies above
       extPath + 'node_modules/requirejs/require.js',
       extPath + 'node_modules/karma-requirejs/lib/adapter.js',
