@@ -51,12 +51,12 @@
         
         <tr>
             <td>
-                {$form.hrjobcontract_role_role_level_type.label}<br />
-                {$form.hrjobcontract_role_role_level_type.html}
-            </td>
-            <td>
                 {$form.hrjobcontract_details_contract_type.label}<br />
                 {$form.hrjobcontract_details_contract_type.html}
+            </td>
+            <td>
+                {$form.hrjobcontract_details_location.label}<br />
+                {$form.hrjobcontract_details_location.html}
             </td>
         </tr>
         <tr>
@@ -85,12 +85,6 @@
                 {$form.hrjobcontract_details_funding_notes.label}<br />
                 {$form.hrjobcontract_details_funding_notes.html}
             </td>
-            <td>
-                {$form.hrjobcontract_details_location.label}<br />
-                {$form.hrjobcontract_details_location.html}
-            </td>
-        </tr>
-        <tr>
             <td colspan="2">
                 {$form.hrjobcontract_details_is_primary.label}&nbsp;{$form.hrjobcontract_details_is_primary.html}
             </td>
