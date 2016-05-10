@@ -196,7 +196,10 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     if ($searchField != 'value' && is_numeric($value)) {
       $searchField = 'id';
     }
-    $index = array_search(strtolower($value), array_map('strtolower', array_column($this->_optionsList[$option], $searchField)) );
+    $index = FALSE;
+    if (!empty($this->_optionsList[$option]))  {
+      $index = array_search(strtolower($value), array_map('strtolower', array_column($this->_optionsList[$option], $searchField)) );
+    }
     if ($index !== FALSE)  {
       return $this->_optionsList[$option][$index][$returnField];
     }
