@@ -65,8 +65,8 @@ define([
         var removedRightIds = _.difference(originalEntityIds, selectedData)
           .map(function (entityId) {
             return _.find(originalData, function (i) {
-                return i.entity_id === entityId;
-              }).id;
+              return i.entity_id === entityId;
+            }).id;
           });
 
         var promises = [];
@@ -82,35 +82,44 @@ define([
       }
 
       /**
-       * Load the API data
+       * Loads the API data
        */
-      $q.all([Region.getAll()
-          .then(function (regions) {
-            vm.availableData.regions = regions.values;
-            return Right.getRegions();
+      function init() {
+        $q.all([
+            Region.getAll(),
+            Location.getAll()
+          ])
+          .then(function (values) {
+            return {
+              regions: values[0],
+              locations: values[1]
+            };
           })
-          .then(function (regionRights) {
-            vm.originalData.regions = regionRights.values;
-            vm.selectedData.regions = regionRights.values.map(function (regionRight) {
-              return regionRight.entity_id;
+          .then(function (values) {
+            return $q.all(_.map(values, function (value, key) {
+              vm.availableData[key] = value.values;
+              return Right['get' + _.capitalize(key)]();
+            }));
+          })
+          .then(function (values) {
+            return {
+              regions: values[0],
+              locations: values[1]
+            };
+          })
+          .then(function (values) {
+            Object.keys(values).forEach(function (key) {
+              vm.originalData[key] = values[key].values;
+              vm.selectedData[key] = values[key].values.map(function (entity) {
+                return entity.entity_id;
+              });
             });
-          }),
-          Location.getAll()
-          .then(function (locations) {
-            vm.availableData.locations = locations.values;
-            return Right.getLocations();
           })
-          .then(function (locationRights) {
-            vm.originalData.locations = locationRights.values;
-            vm.selectedData.locations = locationRights.values.map(function (locationRight) {
-              return locationRight.entity_id;
-            });
-          })
-        ])
-        .then(function () {
-          vm.dataLoaded = true;
-        });
-
+          .then(function () {
+            vm.dataLoaded = true;
+          });
+      }
+      init();
     }
   ]);
 });

@@ -9,8 +9,7 @@ define([
     var additionalParams = {
       'contact_id': $location.search().cid
     };
-
-    var methods = {
+    return api.extend({
       getLocations: function () {
         return this.sendGET(entityName, 'getlocations', additionalParams, false);
       },
@@ -43,7 +42,6 @@ define([
           })
         }.bind(this)));
       }
-    };
-    return api.extend(methods);
+    });
   }]);
 });

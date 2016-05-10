@@ -8,11 +8,8 @@ define([
     return api.extend({
       query: function () {
         return this.sendGET('OptionValue', 'get', {
-          'option_group_name': 'hrjc_region',
-          'json': {
-            sequential: 1
-          }
-        }, false);
+          'option_group_name': 'hrjc_region'
+        }, true);
       }
     });
   }]);

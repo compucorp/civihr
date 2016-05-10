@@ -25,6 +25,14 @@ define([
       $scope.$digest();
     }));
 
+
+    /**
+     * Creates a mocked entity
+     *
+     * @param  {int} sequential     Sequential to base the "id" and "entity_id" properties
+     * @param  {bool} isRegion      Whether it's about a region
+     * @return {object}             The mocked object
+     */
     function getEntityMock(sequential, isRegion) {
       var difference = isRegion ? 0 : 10;
       return {
@@ -33,6 +41,10 @@ define([
       };
     }
 
+
+    /**
+     * Jasmine spies initialization
+     */
     function initSpies() {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
       regionSpy = jasmine.createSpyObj('regionSpy', ['getAll']);
