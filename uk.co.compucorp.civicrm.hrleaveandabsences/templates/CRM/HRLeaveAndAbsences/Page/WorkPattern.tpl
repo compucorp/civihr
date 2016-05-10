@@ -1,5 +1,5 @@
 {if $action eq 1 or $action eq 2 or $action eq 8}
-    {* include form template *}
+    {include file="CRM/HRLeaveAndAbsences/Form/WorkPattern.tpl"}
 {else}
     {if $rows}
         <div id="ltype">

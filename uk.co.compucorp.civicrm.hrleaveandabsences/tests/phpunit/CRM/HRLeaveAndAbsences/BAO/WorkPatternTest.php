@@ -81,6 +81,28 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
         $this->assertEquals(31.5, $object->number_of_hours);
     }
 
+    public function testGetValuesArrayShouldReturnWorkPatternValues()
+    {
+        $params = [
+            'label' => 'Pattern Label',
+            'description' => 'Pattern Description',
+            'is_active' => 1,
+            'is_default' => 1
+        ];
+        $entity = $this->createBasicWorkPattern($params);
+        $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($entity->id);
+        $this->assertEquals($params['label'], $values['label']);
+        $this->assertEquals($params['description'], $values['description']);
+        $this->assertEquals($params['is_active'], $values['is_active']);
+        $this->assertEquals($params['is_default'], $values['is_default']);
+    }
+
+    public function testGetValuesArrayShouldReturnEmptyArrayWhenWorkPatternDoesntExists()
+    {
+        $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray(1);
+        $this->assertEmpty($values);
+    }
+
     private function createBasicWorkPattern($params = [])
     {
         $basicRequiredFields = ['label' => 'Pattern ' . microtime() ];

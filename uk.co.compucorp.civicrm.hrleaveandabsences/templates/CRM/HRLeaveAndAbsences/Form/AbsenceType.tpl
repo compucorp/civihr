@@ -1,6 +1,6 @@
 <h1 class="title">{if $action eq 1}{ts}New Leave/Absence Type{/ts}{elseif $action eq 2}{ts}Edit Leave/Absence Type{/ts}{/if}</h1>
 
-<div class="crm-block crm-form-block crm-absence_type-form-block">
+<div class="crm-block crm-form-block crm-absence_type-form-block crm-leave-and-absences-form-block">
     {if $action neq 8}
         <div class="row">
             <div class="col-sm-6">
