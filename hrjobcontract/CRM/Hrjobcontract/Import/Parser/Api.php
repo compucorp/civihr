@@ -485,6 +485,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     }
   }
 
+  /**
+   * loop through all imported fields and check if there is any required fields missing
+   * or if any value is not valid , convert the value to something can be inserted into database
+   * and finally set _params attribute to the new converted values
+   *
+   * @return array  array of error messages for the invalid or missing fields if there is any
+   * @access private
+   */
   private function validateFieldsValues()  {
     $params = &$this->getActiveFieldParams();
     $errorMessages = NULL;
@@ -531,8 +539,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     return $errorMessages;
   }
 
-
-
+  /**
+   * validate and convert a single imported value if it contain a valid value
+   *
+   * @param @key the key of the field we are going to validate
+   * @param @value the value of the field we are going to validate
+   * @return array  contain converted values ( if any ) , and error messages ( if any )
+   * @access private
+   */
   private function validateField($key, $value)  {
     $errorMessage = NULL;
     $convertedValue = $value;
@@ -669,7 +683,15 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     return array('value'=>$convertedValue, 'error_message'=>$errorMessage);
   }
 
-  // TODO: add function comments
+  /**
+   * benefits and deductions have a complex format so we validate them in
+   * a single method to make the code more readable
+   *
+   * @param @$value_type either 'benefit' or 'deduction'
+   * @param @value the value of the field we are going to validate
+   * @return array  contain converted values ( if any ) , and error messages ( if any )
+   * @access private
+   */
   private function validateBenefitsAndDeductions($value_type, $value)  {
     $errorMessage = NULL;
     $outputArray = array();
@@ -751,10 +773,25 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     return array('value'=>$outputArray, 'error_message'=>$errorMessage);
   }
 
+  /**
+   * some fields should be auto populated when creating a new contract
+   * here where we calculate and set them
+   *
+   * @access private
+   */
   private function setAutoPopulatedFields()  {
+    $this->setHourAutoPopulatedFields();
+    $this->setPayAutoPopulatedFields();
+  }
+
+  /**
+   * calculate and set hour tab auto populated fields
+   *
+   * @access private
+   */
+  private function setHourAutoPopulatedFields()  {
     $params = $this->_params;
 
-    // calculate and set Hour tab auto populated fields
     if (isset($params['HRJobHour-location_standard_hours'])
       && $params['HRJobHour-location_standard_hours'] != ''
       && isset($params['HRJobHour-hours_type'])
@@ -779,8 +816,15 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         }
       }
     }
+  }
 
-    // calculate and set Pay tab auto populated fields
+  /**
+   * calculate and set pay tab auto populated fields
+   *
+   * @access private
+   */
+  private function setPayAutoPopulatedFields()  {
+    $params = $this->_params;
 
     if (!empty($params['HRJobPay-is_paid'])
       && isset($params['HRJobPay-pay_amount'])
@@ -789,83 +833,97 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       && $params['HRJobPay-pay_unit'] != ''
     )  {
       // calculate and set  annual pay estimate before benefits and deductions
-        switch($params['HRJobPay-pay_unit'])  {
-        case 'Hour':
-          $multiplicationFactor = 2080;
-          break;
-        case 'Day':
-          $multiplicationFactor = 260;
-          break;
-        case 'Week':
-          $multiplicationFactor = 52;
-          break;
-        case 'Month':
-          $multiplicationFactor = 12;
-          break;
-        case 'Year':
-          $multiplicationFactor = 1;
-          break;
-        default:
-          $multiplicationFactor = 0;
-          break;
-      }
+      $multiplicationFactor = $this->getPayUnitFactor($params['HRJobPay-pay_unit']);
       $params['HRJobPay-pay_annualized_est'] = $this->_params['HRJobPay-pay_annualized_est'] = round(round(floatval($params['HRJobPay-pay_amount']), 2) * $multiplicationFactor, 2) ;
 
       if (isset($params['HRJobPay-pay_cycle']) && $params['HRJobPay-pay_cycle'] != '')  {
         // calculate and set gross Pay per cycle (before benefits and deductions)
         $pay_cycle = strtolower($this->getOptionID('HRJobPay-pay_cycle', $params['HRJobPay-pay_cycle'], 'label', 'value'));
-        switch($pay_cycle)  {
-          case 'weekly':
-            $divisionFactor = 52;
-            break;
-          case 'monthly':
-            $divisionFactor = 12;
-            break;
-          default:
-            $divisionFactor = 1;
-        }
+        $divisionFactor = $this->getPayUnitFactor($pay_cycle, 'division');
+
         $this->_params['HRJobPay-pay_per_cycle_gross'] = round(($params['HRJobPay-pay_annualized_est'] / $divisionFactor), 2);
 
         // calculate and set Net pay per cycle, to achieve that we have to :
         // 1- Calculate sum of benefits per cycle
-        $benefits_sum = 0;
-        if (!empty($params['HRJobPay-annual_benefits']))  {
-          foreach($params['HRJobPay-annual_benefits'] as $benefit)  {
-            $type = $this->getOptionID('benefit_types', $benefit['type'], 'label', 'value');
-            if ($type == '%')  {
-              $amount = ($benefit['amount_pct']/100) * $params['HRJobPay-pay_annualized_est'];
-            }
-            else  {
-              $amount =  $benefit['amount_abs'];
-            }
-            $benefits_sum+= $amount;
-          }
-          $benefits_sum = round(($benefits_sum/$divisionFactor), 2);
-        }
+        $benefits_sum = $this->calculateBenefitsSum($divisionFactor, 'benefit');
         // 2- Calculate sum of deductions per cycle
-        $deductions_sum = 0;
-        if (!empty($params['HRJobPay-annual_deductions']))  {
-          foreach($params['HRJobPay-annual_deductions'] as $deduction)  {
-            $type = $this->getOptionID('deduction_types', $deduction['type'], 'label', 'value');
-            if ($type == '%')  {
-              $amount = ($deduction['amount_pct']/100) * $params['HRJobPay-pay_annualized_est'];
-            }
-            else  {
-              $amount =  $deduction['amount_abs'];
-            }
-            $deductions_sum+= $amount;
-          }
-          $deductions_sum = round(($deductions_sum/$divisionFactor), 2);
-        }
+        $deductions_sum = $this->calculateBenefitsSum($divisionFactor, 'deduction');
         // 3- Subtract deductions from benefits
         $totalBenefits = $benefits_sum - $deductions_sum;
         // 4- subtract benefits after deductions from gross pay per cycle
         $this->_params['HRJobPay-pay_per_cycle_net'] = $this->_params['HRJobPay-pay_per_cycle_gross'] + $totalBenefits;
       }
-
     }
   }
 
+  /**
+   * calculate sum of benefits/deductions depending on $type parameter
+   *
+   * @param $divisionFactor (calculated depending on pay cycle)
+   * @param $type either (benefit) or (deduction)
+   * @return float
+   * @access private
+   */
+  private function calculateBenefitsSum($divisionFactor, $type)  {
+    $sum = 0;
+    if (!empty($this->_params["HRJobPay-annual_{$type}s"]))  {
+      foreach($this->_params["HRJobPay-annual_{$type}s"] as $item)  {
+        $type = $this->getOptionID("{$type}_types", $item['type'], 'label', 'value');
+        if ($type == '%')  {
+          $amount = ($item['amount_pct']/100) * $this->_params['HRJobPay-pay_annualized_est'];
+        }
+        else  {
+          $amount =  $item['amount_abs'];
+        }
+        $sum+= $amount;
+      }
+      $sum = round(($sum/$divisionFactor), 2);
+    }
+    return $sum;
+  }
+
+  /**
+   * calculate the division/multiplication factor
+   *
+   * @param $payUnit
+   * @param $operation
+   * @return int
+   * @access private
+   */
+  private function getPayUnitFactor($payUnit, $operation = 'multiplication')  {
+    switch($payUnit)  {
+      case 'Hour':
+        $factor = 2080;
+        break;
+      case 'Day':
+        $factor = 260;
+        break;
+      case 'Week':
+      case 'weekly':
+        $factor = 52;
+        break;
+      case 'Month':
+      case 'monthly':
+        $factor = 12;
+        break;
+      case 'Year':
+        $factor = 1;
+        break;
+      default:
+        $factor = ($operation == 'division') ? 1 : 0;
+        break;
+    }
+    return $factor;
+  }
+
+  /**
+   * convert decimal value to rational format
+   * credit http://stackoverflow.com/questions/14330713/converting-float-decimal-to-fraction/14357170#14357170
+   * @param $n
+   * @param $tolerance
+   * @return array (numerator/denominator)
+   * @access private
+   */
   private function float2rat($n, $tolerance = 1.e-6) {
     $h1=1; $h2=0;
     $k1=0; $k2=1;
@@ -880,4 +938,5 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     return array($h1,$k1);
   }
+
 }
