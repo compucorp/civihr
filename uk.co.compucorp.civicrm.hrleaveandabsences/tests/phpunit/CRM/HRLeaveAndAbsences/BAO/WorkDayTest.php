@@ -1,6 +1,5 @@
 <?php
 
-define( 'CIVICRM_DEBUG_LOG_QUERY', 1 );
 
 require_once 'CiviTest/CiviUnitTestCase.php';
 

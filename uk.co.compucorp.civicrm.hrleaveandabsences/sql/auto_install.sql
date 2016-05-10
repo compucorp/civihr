@@ -210,3 +210,24 @@ CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
       FOREIGN KEY (`week_id`)
       REFERENCES `civicrm_hrleaveandabsences_work_week`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * default work pattern
+-- *
+-- *******************************************************/
+INSERT INTO civicrm_hrleaveandabsences_work_pattern(id, label, description, is_default, is_active, weight)
+VALUES(1, 'Default 5 day week (London)', 'A standard 37.5 week', 1, 1, 1);
+
+INSERT INTO civicrm_hrleaveandabsences_work_week(id, pattern_id, number)
+VALUES(1, 1, 1);
+
+INSERT INTO civicrm_hrleaveandabsences_work_day(week_id, day_of_the_week, type, time_from, time_to, break, leave_days, number_of_hours)
+VALUES
+  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5), -- Monday
+  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5), -- Tuesday
+  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5), -- Wednesday
+  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5), -- Thursday
+  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5), -- Friday
+  (1, 6, 3, NULL, NULL, NULL, NULL, NULL), -- Saturday
+  (1, 7, 3, NULL, NULL, NULL, NULL, NULL); -- Sunday
