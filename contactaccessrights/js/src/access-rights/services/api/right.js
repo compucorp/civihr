@@ -1,43 +1,46 @@
 define([
   'access-rights/modules/models',
-  'common/services/api/api-builder'
+  'common/services/api'
 ], function (models) {
   'use strict';
 
-  models.factory('api.right', ['api', '$q', '$location', function (api, $q, $location) {
+  models.factory('rightApi', ['api', '$q', '$location', function (api, $q, $location) {
     var entityName = 'Rights';
     var additionalParams = {
       'contact_id': $location.search().cid
     };
 
     var methods = {
-      getLocations: function (filters, pagination, sort) {
+      getLocations: function () {
         return this.sendGET(entityName, 'getlocations', additionalParams, false);
       },
-      getRegions: function (filters, pagination, sort) {
+      getRegions: function () {
         return this.sendGET(entityName, 'getregions', additionalParams, false);
       },
       deleteByIds: function (ids) {
         return $q.all(ids.map(function (id) {
-          return this.sendPOST(entityName, 'delete', _.assign(additionalParams, {
+          return this.sendPOST(entityName, 'delete', {
+            'contact_id': $location.search().cid,
             'id': id
-          }));
+          });
         }.bind(this)));
       },
       saveRegions: function (ids) {
         return $q.all(ids.map(function (id) {
-          return this.sendPOST(entityName, 'create', _.assign(additionalParams, {
+          return this.sendPOST(entityName, 'create', {
+            'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_region'
-          }))
+          })
         }.bind(this)));
       },
       saveLocations: function (ids) {
         return $q.all(ids.map(function (id) {
-          return this.sendPOST(entityName, 'create', _.assign(additionalParams, {
+          return this.sendPOST(entityName, 'create', {
+            'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_location'
-          }))
+          })
         }.bind(this)));
       }
     };

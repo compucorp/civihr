@@ -1,17 +1,20 @@
 define([
   'common/angularMocks',
-  'access-rights/models/location'
+  'access-rights/models/right'
 ], function () {
   'use strict';
 
   describe('Right', function () {
-    var $provide, Right, apiBuilderSpy, apiSpy;
+    var $provide, modelSpy, apiSpy;
 
     beforeEach(module('access-rights.models', function ($provide) {
-      apiBuilderSpy = jasmine.createSpyObj('apiBuilderSpy', ['build']);
-      apiSpy = jasmine.createSpyObj('apiSpy', ['getAllEntities', 'removeEntity', 'saveEntity']);
-      apiBuilderSpy.build.and.returnValue(apiSpy);
-      $provide.value('apiBuilder', apiBuilderSpy);
+      modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
+      modelSpy.extend.and.returnValue({});
+      apiSpy = jasmine.createSpyObj('apiSpy', ['getLocations', 'getRegions',
+        'deleteByIds', 'saveRegions', 'saveLocations'
+      ]);
+      $provide.value('Model', modelSpy);
+      $provide.value('rightApi', apiSpy);
       $provide.value('$location', {
         search: function () {
           return {
@@ -20,96 +23,71 @@ define([
         }
       });
     }));
-    beforeEach(inject(function (_Right_) {
-      Right = _Right_;
-    }));
+    beforeEach(inject(function (Right) {}));
 
-    it('calls apiBuilder.build with correct parameters', function () {
-      expect(apiBuilderSpy.build.calls.count()).toBe(1);
-      expect(apiBuilderSpy.build.calls.mostRecent().args.length).toBe(3);
-      expect('getLocations' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getRegions' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect('deleteByIds' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect('saveRegions' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect('saveLocations' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect(apiBuilderSpy.build.calls.mostRecent().args[1]).toBe('Rights');
-      expect(apiBuilderSpy.build.calls.mostRecent().args[2]).toEqual({
-        'contact_id': 1
-      });
+    it('calls Model.extend with correct parameters', function () {
+      expect(modelSpy.extend.calls.count()).toBe(1);
+      expect(modelSpy.extend.calls.mostRecent().args.length).toBe(1);
+      expect('getLocations' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('getRegions' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('deleteByIds' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('saveRegions' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('saveLocations' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
     });
 
     describe('getLocations', function () {
-      it('calls api.getAllEntities', function () {
-        apiBuilderSpy.build.calls.mostRecent().args[0].getLocations.call(apiSpy, 'filters', 'pagination', 'sort');
-        expect(apiSpy.getAllEntities.calls.count()).toBe(1);
-        expect(apiSpy.getAllEntities).toHaveBeenCalledWith('filters', 'pagination', 'sort', {
-          action: 'getlocations'
-        });
+      beforeEach(function () {
+        modelSpy.extend.calls.mostRecent().args[0].getLocations();
+      });
+
+      it('calls api.getLocations', function () {
+        expect(apiSpy.getLocations.calls.count()).toBe(1);
       });
     });
 
     describe('getRegions', function () {
-      it('calls api.getAllEntities', function () {
-        apiBuilderSpy.build.calls.mostRecent().args[0].getRegions.call(apiSpy, 'filters', 'pagination', 'sort');
-        expect(apiSpy.getAllEntities.calls.count()).toBe(1);
-        expect(apiSpy.getAllEntities).toHaveBeenCalledWith('filters', 'pagination', 'sort', {
-          action: 'getregions'
-        });
+      beforeEach(function () {
+        modelSpy.extend.calls.mostRecent().args[0].getRegions();
+      });
+
+      it('calls api.getRegions', function () {
+        expect(apiSpy.getRegions.calls.count()).toBe(1);
       });
     });
 
     describe('deleteByIds', function () {
       var ids = [1, 2];
-      beforeEach(function(){
-        apiBuilderSpy.build.calls.mostRecent().args[0].deleteByIds.call(apiSpy, ids);
+      beforeEach(function () {
+        modelSpy.extend.calls.mostRecent().args[0].deleteByIds(ids);
       });
 
-      it('calls api.removeEntity', function () {
-        expect(apiSpy.removeEntity.calls.count()).toBe(ids.length);
-        expect(apiSpy.removeEntity.calls.argsFor(0)).toEqual([{
-          id: 1
-        }]);
-        expect(apiSpy.removeEntity.calls.argsFor(1)).toEqual([{
-          id: 2
-        }]);
+      it('calls api.deleteByIds', function () {
+        expect(apiSpy.deleteByIds.calls.count()).toBe(1);
+        expect(apiSpy.deleteByIds.calls.argsFor(0)).toEqual([ids]);
       });
     });
 
     describe('saveRegions', function () {
       var ids = [1, 2];
-      beforeEach(function(){
-        apiBuilderSpy.build.calls.mostRecent().args[0].saveRegions.call(apiSpy, ids);
+      beforeEach(function () {
+        modelSpy.extend.calls.mostRecent().args[0].saveRegions(ids);
       });
 
-      it('calls api.saveEntity', function () {
-        expect(apiSpy.saveEntity.calls.count()).toBe(ids.length);
-        expect(apiSpy.saveEntity.calls.argsFor(0)).toEqual([{
-          entity_id: 1,
-          entity_type: 'hrjc_region'
-        }]);
-        expect(apiSpy.saveEntity.calls.argsFor(1)).toEqual([{
-          entity_id: 2,
-          entity_type: 'hrjc_region'
-        }]);
+      it('calls api.saveRegions', function () {
+        expect(apiSpy.saveRegions.calls.count()).toBe(1);
+        expect(apiSpy.saveRegions.calls.argsFor(0)).toEqual([ids]);
       });
     });
 
     describe('saveLocations', function () {
       var ids = [1, 2];
-      beforeEach(function(){
-        apiBuilderSpy.build.calls.mostRecent().args[0].saveLocations.call(apiSpy, ids);
+      beforeEach(function () {
+        modelSpy.extend.calls.mostRecent().args[0].saveLocations(ids);
       });
 
-      it('calls api.saveEntity', function () {
-        expect(apiSpy.saveEntity.calls.count()).toBe(ids.length);
-        expect(apiSpy.saveEntity.calls.argsFor(0)).toEqual([{
-          entity_id: 1,
-          entity_type: 'hrjc_location'
-        }]);
-        expect(apiSpy.saveEntity.calls.argsFor(1)).toEqual([{
-          entity_id: 2,
-          entity_type: 'hrjc_location'
-        }]);
+      it('calls api.saveLocations', function () {
+        expect(apiSpy.saveLocations.calls.count()).toBe(1);
+        expect(apiSpy.saveLocations.calls.argsFor(0)).toEqual([ids]);
       });
     });
 

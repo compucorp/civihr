@@ -1,37 +1,34 @@
 define([
   'common/angularMocks',
-  'access-rights/models/location'
+  'access-rights/models/region'
 ], function () {
   'use strict';
 
   describe('Region', function () {
-    var $provide, Region, apiBuilderSpy, apiSpy;
+    var $provide, modelSpy, apiSpy;
 
     beforeEach(module('access-rights.models', function ($provide) {
-      apiBuilderSpy = jasmine.createSpyObj('apiBuilderSpy', ['build']);
-      apiSpy = jasmine.createSpyObj('apiSpy', ['getAllEntities']);
-      apiBuilderSpy.build.and.returnValue(apiSpy);
-      $provide.value('apiBuilder', apiBuilderSpy);
+      modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
+      modelSpy.extend.and.returnValue({});
+      apiSpy = jasmine.createSpyObj('apiSpy', ['query']);
+      $provide.value('regionApi', apiSpy);
+      $provide.value('Model', modelSpy);
     }));
-    beforeEach(inject(function (_Region_) {
-      Region = _Region_;
-    }));
+    beforeEach(inject(function (Region) {}));
 
-    it('calls apiBuilder.build with correct parameters', function () {
-      expect(apiBuilderSpy.build.calls.count()).toBe(1);
-      expect(apiBuilderSpy.build.calls.mostRecent().args.length).toBe(3);
-      expect('getAll' in apiBuilderSpy.build.calls.mostRecent().args[0]).toBeTruthy();
-      expect(apiBuilderSpy.build.calls.mostRecent().args[1]).toBe('OptionValue');
-      expect(apiBuilderSpy.build.calls.mostRecent().args[2]).toEqual({
-        'option_group_name': 'hrjc_region'
-      });
+    it('calls modelSpy.extend with correct parameters', function () {
+      expect(modelSpy.extend.calls.count()).toBe(1);
+      expect(modelSpy.extend.calls.mostRecent().args.length).toBe(1);
+      expect('getAll' in modelSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
     });
 
     describe('getAll', function () {
-      it('calls api.getAllEntities', function () {
-        apiBuilderSpy.build.calls.mostRecent().args[0].getAll.call(apiSpy, 'filters', 'pagination', 'sort');
-        expect(apiSpy.getAllEntities.calls.count()).toBe(1);
-        expect(apiSpy.getAllEntities).toHaveBeenCalledWith('filters', 'pagination', 'sort');
+      beforeEach(function(){
+        modelSpy.extend.calls.mostRecent().args[0].getAll();
+      });
+
+      it('calls api.query', function () {
+        expect(apiSpy.query.calls.count()).toBe(1);
       });
     });
 

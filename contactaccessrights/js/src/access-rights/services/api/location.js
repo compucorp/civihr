@@ -4,7 +4,7 @@ define([
 ], function (models) {
   'use strict';
 
-  models.factory('api.location', ['api', function (api) {
+  models.factory('locationApi', ['api', function (api) {
     return api.extend({
       query: function () {
         return this.sendGET('OptionValue', 'get', {

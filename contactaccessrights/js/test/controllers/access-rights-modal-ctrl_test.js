@@ -42,13 +42,17 @@ define([
       ]);
 
       [regionSpy.getAll, locationSpy.getAll].forEach(function (fn, idx) {
-        fn.and.returnValue($q.resolve([1, 2, 3].map(function (i) {
-          return getEntityMock(i, idx === 0);
-        })));
+        fn.and.returnValue($q.resolve({
+          values: [1, 2, 3].map(function (i) {
+            return getEntityMock(i, idx === 0);
+          })
+        }));
       });
 
       [rightSpy.getRegions, rightSpy.getLocations].forEach(function (fn, idx) {
-        fn.and.returnValue($q.resolve([getEntityMock(1, idx === 0)]));
+        fn.and.returnValue($q.resolve({
+          values: [getEntityMock(1, idx === 0)]
+        }));
       });
 
       [rightSpy.saveRegions, rightSpy.saveLocations].forEach(function (fn) {
@@ -58,31 +62,26 @@ define([
 
     describe('constructor', function () {
       it('calls Region.getAll()', function () {
-        expect(regionSpy.getAll)
-          .toHaveBeenCalled();
+        expect(regionSpy.getAll).toHaveBeenCalled();
       });
 
       it('calls Right.getRegions()', function () {
-        expect(rightSpy.getRegions)
-          .toHaveBeenCalled();
+        expect(rightSpy.getRegions).toHaveBeenCalled();
       });
 
       it('calls Location.getAll()', function () {
-        expect(locationSpy.getAll)
-          .toHaveBeenCalled();
+        expect(locationSpy.getAll).toHaveBeenCalled();
       });
 
       it('calls Right.getLocations()', function () {
-        expect(rightSpy.getLocations)
-          .toHaveBeenCalled();
+        expect(rightSpy.getLocations).toHaveBeenCalled();
       });
     });
 
     describe('cancel', function () {
       it('closes the modal instance', function () {
         ctrl.cancel();
-        expect(modalInstanceSpy.dismiss)
-          .toHaveBeenCalled();
+        expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
       });
     });
 
@@ -96,7 +95,7 @@ define([
         });
 
         describe('when there are no errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             ctrl.submit();
           });
 
@@ -107,7 +106,7 @@ define([
         });
 
         describe('when there are errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             rightSpy.saveLocations.and.returnValue($q.reject());
             ctrl.submit();
             $scope.$digest();
@@ -128,7 +127,7 @@ define([
         });
 
         describe('when there are no errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             ctrl.submit();
           });
 
@@ -139,7 +138,7 @@ define([
         });
 
         describe('when there are errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             rightSpy.saveRegions.and.returnValue($q.reject());
             ctrl.submit();
             $scope.$digest();
@@ -158,7 +157,7 @@ define([
         });
 
         describe('when there are no errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             ctrl.submit();
           });
 
@@ -169,7 +168,7 @@ define([
         });
 
         describe('when there are errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             rightSpy.deleteByIds.and.returnValue($q.reject());
             ctrl.submit();
             $scope.$digest();
@@ -189,7 +188,7 @@ define([
         });
 
         describe('when there no are errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             ctrl.submit();
           });
 
@@ -200,7 +199,7 @@ define([
         });
 
         describe('when there are errors', function () {
-          beforeEach(function(){
+          beforeEach(function () {
             rightSpy.deleteByIds.and.returnValue($q.reject());
             ctrl.submit();
             $scope.$digest();

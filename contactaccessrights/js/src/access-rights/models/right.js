@@ -1,12 +1,12 @@
 define([
   'access-rights/modules/models',
-  'access-rights/services/right',
+  'access-rights/services/api/right',
   'common/services/api',
   'common/models/model'
 ], function (models) {
   'use strict';
 
-  models.factory('Right', ['Model', 'api.right', function (Model, api) {
+  models.factory('Right', ['Model', 'rightApi', function (Model, api) {
     return Model.extend({
       getLocations: api.getLocations.bind(api),
       getRegions: api.getRegions.bind(api),
