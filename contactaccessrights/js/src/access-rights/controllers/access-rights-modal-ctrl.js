@@ -97,7 +97,7 @@ define([
           })
           .then(function (values) {
             return $q.all(_.map(values, function (value, key) {
-              vm.availableData[key] = value.values;
+              vm.availableData[key] = value;
               return Right['get' + _.capitalize(key)]();
             }));
           })

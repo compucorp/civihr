@@ -1,13 +1,15 @@
 define([
   'access-rights/modules/models',
-  'access-rights/services/api/region',
+  'common/services/api/option-group',
   'common/models/model'
 ], function (models) {
   'use strict';
 
-  models.factory('Region', ['Model', 'regionApi', function (Model, api) {
+  models.factory('Region', ['Model', 'api.optionGroup', function (Model, OptionGroup) {
     return Model.extend({
-      getAll: api.query.bind(api)
+      getAll: function () {
+        return OptionGroup.valuesOf('hrjc_region');
+      }
     });
   }]);
 });

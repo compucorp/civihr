@@ -10,8 +10,8 @@ define([
     beforeEach(module('access-rights.models', function ($provide) {
       modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
       modelSpy.extend.and.returnValue({});
-      apiSpy = jasmine.createSpyObj('apiSpy', ['query']);
-      $provide.value('locationApi', apiSpy);
+      apiSpy = jasmine.createSpyObj('apiSpy', ['valuesOf']);
+      $provide.value('api.optionGroup', apiSpy);
       $provide.value('Model', modelSpy);
     }));
     beforeEach(inject(function (Location) {}));
@@ -24,11 +24,11 @@ define([
 
     describe('getAll', function () {
       beforeEach(function(){
-        modelSpy.extend.calls.mostRecent().args[0].getAll.call(apiSpy);
+        modelSpy.extend.calls.mostRecent().args[0].getAll();
       });
 
-      it('calls api.query', function () {
-        expect(apiSpy.query.calls.count()).toBe(1);
+      it('calls api.valuesOf', function () {
+        expect(apiSpy.valuesOf.calls.count()).toBe(1);
       });
     });
 

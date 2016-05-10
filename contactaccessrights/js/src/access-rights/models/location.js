@@ -1,13 +1,15 @@
 define([
   'access-rights/modules/models',
-  'access-rights/services/api/location',
+  'common/services/api/option-group',
   'common/models/model'
 ], function (models) {
   'use strict';
 
-  models.factory('Location', ['Model', 'locationApi', function (Model, api) {
+  models.factory('Location', ['Model', 'api.optionGroup', function (Model, OptionGroup) {
     return Model.extend({
-      getAll: api.query.bind(api)
+      getAll: function () {
+        return OptionGroup.valuesOf('hrjc_location');
+      }
     });
   }]);
 });
