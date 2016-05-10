@@ -860,7 +860,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
    * calculate sum of benefits/deductions depending on $type parameter
    *
    * @param $divisionFactor (calculated depending on pay cycle)
-   * @param $type either (benefit) or (deduction)
+   * @param $type  (benefit)|(deduction)
    * @return float
    * @access private
    */
@@ -868,8 +868,8 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $sum = 0;
     if (!empty($this->_params["HRJobPay-annual_{$type}s"]))  {
       foreach($this->_params["HRJobPay-annual_{$type}s"] as $item)  {
-        $type = $this->getOptionID("{$type}_types", $item['type'], 'label', 'value');
-        if ($type == '%')  {
+        $amountType = $this->getOptionID("{$type}_types", $item['type'], 'label', 'value');
+        if ($amountType == '%')  {
           $amount = ($item['amount_pct']/100) * $this->_params['HRJobPay-pay_annualized_est'];
         }
         else  {
