@@ -329,7 +329,16 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 }
 
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && isset($objectRef->case_id)) {
+  // to resolve conflict between 'hrcase' and 'Task and assignments.'
+  $activityCreatedByTaskAndAssignments = FALSE;
+  $session  = new CRM_Core_Session();
+  if($session->get('activityCreatedByTaskAndAssignments') == TRUE) {
+    $activityCreatedByTaskAndAssignments = TRUE;
+    $session->set('activityCreatedByTaskAndAssignments', FALSE);
+  }
+
+  if ($objectName == 'Activity' && isset($objectRef->case_id) && (!$activityCreatedByTaskAndAssignments)) {
+    $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
     $hrjob = civicrm_api3('HRJobContract', 'get', array(
       'sequential' => 1,
@@ -343,7 +352,7 @@ function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     }
     if (isset($notice_amt)) {
       $revoke = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Revoke access to databases"));
-      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID"));
+      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID", 'component_id' => $component_id));
       $date = strtotime($objectRef->activity_date_time);
       if ($objectRef->activity_type_id == $revoke['value']) {
         $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit}", $date));
