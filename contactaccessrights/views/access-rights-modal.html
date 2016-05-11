@@ -1,58 +1,57 @@
 <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="modalCtrl.cancel()">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <h2 class="modal-title">Manage Rights</h2>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="modalCtrl.cancel()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <h2 class="modal-title">Manage Rights</h2>
 </div>
 <div class="modal-body">
-    <strong>Contact Access Rights</strong>
-    <hr />
-    <p>You can specify an administrator's access to contacts by region or location here, or grant them access to all contacts using Drupal permissions <a href="/admin/people/permissions" target="_blank">here</a>.</p>
-    <p>The user will then have access to contacts whose active roles place them in this region or location.</p>
-    <p>
-        For even more granular permissions, you can use ACL groups
-        <a href="/civicrm/admin/access?reset=1" target="_blank">here</a>.
-    </p>
-    <p>
-        <div class="alert alert-danger" ng-show="modalCtrl.errorMsg">
-          {{modalCtrl.errorMsg}}
+  <strong>Contact Access Rights</strong>
+  <hr />
+  <p>You can specify an administrator's access to contacts by region or location here, or grant them access to all contacts using Drupal permissions <a href="/admin/people/permissions" target="_blank">here</a>.</p>
+  <p>The user will then have access to contacts whose active roles place them in this region or location.</p>
+  <p>
+    For even more granular permissions, you can use ACL groups
+    <a href="/civicrm/admin/access?reset=1" target="_blank">here</a>.
+  </p>
+  <p>
+    <div class="alert alert-danger" ng-show="modalCtrl.errorMsg">
+      {{modalCtrl.errorMsg}}
+    </div>
+    <crm-loading show="modalCtrl.dataLoaded">
+      <form class="form-horizontal access-rights-form">
+        <div class="form-group has-feedback">
+          <label for="contact" class="col-xs-12 col-sm-4 control-label">
+            Regions:
+          </label>
+          <div class="col-xs-12 col-sm-8">
+            <ui-select multiple ng-required="true" ng-model="modalCtrl.selectedData.regions">
+              <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
+              <ui-select-choices repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
+                <div ng-bind-html="region.name | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
-        <div class="alert alert-info" ng-hide="modalCtrl.dataLoaded">
-          Loading data...
+        <div class="form-group has-feedback">
+          <label for="contact" class="col-xs-12 col-sm-4 control-label">
+            Locations:
+          </label>
+          <div class="col-xs-12 col-sm-8">
+            <ui-select multiple ng-required="true" ng-model="modalCtrl.selectedData.locations">
+              <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
+              <ui-select-choices repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">
+                <div ng-bind-html="location.name | highlight: $select.search"></div>
+              </ui-select-choices>
+            </ui-select>
+          </div>
         </div>
-        <form class="form-horizontal access-rights-form" ng-show="modalCtrl.dataLoaded">
-            <div class="form-group has-feedback">
-                <label for="contact" class="col-xs-12 col-sm-4 control-label">
-                    Regions:
-                </label>
-                <div class="col-xs-12 col-sm-8">
-                    <ui-select multiple ng-required="true" ng-model="modalCtrl.selectedData.regions">
-                        <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
-                        <ui-select-choices repeat="region.id as region in modalCtrl.availableData.regions | filter: $select.search">
-                            <div ng-bind-html="region.name | highlight: $select.search"></div>
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
-            </div>
-            <div class="form-group has-feedback">
-                <label for="contact" class="col-xs-12 col-sm-4 control-label">
-                    Locations:
-                </label>
-                <div class="col-xs-12 col-sm-8">
-                    <ui-select multiple ng-required="true" ng-model="modalCtrl.selectedData.locations">
-                        <ui-select-match placeholder="- select -">{{$item.name}}</ui-select-match>
-                        <ui-select-choices repeat="location.id as location in modalCtrl.availableData.locations | filter: $select.search">
-                            <div ng-bind-html="location.name | highlight: $select.search"></div>
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
-            </div>
-        </form>
-    </p>
+      </form>
+    </crm-loading>
+  </p>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modalCtrl.cancel()">cancel</button>
-    <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
-        save
-    </button>
+  <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="modalCtrl.cancel()">cancel</button>
+  <button type="button" class="btn btn-primary text-uppercase" ng-click="modalCtrl.submit()" ng-show="modalCtrl.dataLoaded">
+    save
+  </button>
 </div>

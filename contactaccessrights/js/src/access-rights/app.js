@@ -1,6 +1,7 @@
 define([
   'common/angular',
   'common/ui-select',
+  'common/modules/xeditable-civi',
   'common/directives/loading',
   'access-rights/controllers/access-rights-ctrl',
   'access-rights/controllers/access-rights-modal-ctrl',
@@ -12,6 +13,7 @@ define([
 
   angular.module('access-rights', [
       'ui.select',
+      'common.directives',
       'xeditable-civi',
       'access-rights.controllers',
       'access-rights.models'
@@ -22,11 +24,12 @@ define([
         editableOptions.theme = 'bs3';
       }
     ])
-    .config(['$locationProvider', function ($locationProvider) {
+    .config(['$locationProvider', '$httpProvider', function ($locationProvider, $httpProvider) {
       $locationProvider.html5Mode({
         enabled: true,
         requireBase: false
       });
+      $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
     }]);
 
   return angular;
