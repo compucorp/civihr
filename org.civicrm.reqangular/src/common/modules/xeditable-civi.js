@@ -9,9 +9,6 @@ define([
     'use strict';
 
     return angular.module('xeditable-civi', ['xeditable', 'textAngular'])
-            .config(['$provide', function ($provide) {
-                $provide.decorator('editableDirectiveFactory', editableDirectiveFactory);
-            }])
             .directive('editableUiSelect', editableUiSelect)
             .directive('editableTa', editableTa);
 });
