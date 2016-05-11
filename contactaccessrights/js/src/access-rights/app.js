@@ -2,6 +2,7 @@ define([
   'common/angular',
   'common/ui-select',
   'common/modules/xeditable-civi',
+  'common/directives/loading',
   'access-rights/controllers/access-rights-ctrl',
   'access-rights/controllers/access-rights-modal-ctrl',
   'access-rights/models/region',
@@ -12,6 +13,7 @@ define([
 
   angular.module('access-rights', [
       'ui.select',
+      'common.directives',
       'xeditable-civi',
       'access-rights.controllers',
       'access-rights.models'
