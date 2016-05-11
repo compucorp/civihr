@@ -439,6 +439,11 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
  * @return boolean
  */
 function activityCreatedByTaskandAssignments($activity_type_id) {
+  // check if task and assignments is enabled
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
+  if(!$isEnabled) {
+    return FALSE;
+  }
 
   $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviTask');
   $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviDocument');
