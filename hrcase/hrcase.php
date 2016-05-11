@@ -329,15 +329,7 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 }
 
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  // to resolve conflict between 'hrcase' and 'Task and assignments.'
-  $activityCreatedByTaskAndAssignments = FALSE;
-  $session  = new CRM_Core_Session();
-  if($session->get('activityCreatedByTaskAndAssignments') == TRUE) {
-    $activityCreatedByTaskAndAssignments = TRUE;
-    $session->set('activityCreatedByTaskAndAssignments', FALSE);
-  }
-
-  if ($objectName == 'Activity' && isset($objectRef->case_id) && (!$activityCreatedByTaskAndAssignments)) {
+  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectRef->activity_type_id)) {
     $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
     $hrjob = civicrm_api3('HRJobContract', 'get', array(
@@ -438,4 +430,34 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
     }
   }
   return $schedules;
+}
+
+/**
+ * function to check if the activity is created by task and assignments extension
+ *
+ * @param int $activity_type_id
+ * @return boolean
+ */
+function activityCreatedByTaskandAssignments($activity_type_id) {
+
+  $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviTask');
+  $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviDocument');
+
+  // get the component_id of current object passed into hook_civicrm_post():
+  $optionGroup = civicrm_api3('OptionGroup', 'getsingle', array(
+    'sequential' => 1,
+    'name' => "activity_type",
+  ));
+
+  $result = civicrm_api3('OptionValue', 'getsingle', array(
+    'sequential' => 1,
+    'option_group_id' => $optionGroup['id'],
+    'value' => $activity_type_id,
+  ));
+
+  if (!empty($result['component_id']) && in_array($result['component_id'], $tasksAssignmentsComponentIds)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }
