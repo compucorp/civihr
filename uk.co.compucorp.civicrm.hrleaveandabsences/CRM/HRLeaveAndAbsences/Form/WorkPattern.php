@@ -11,6 +11,11 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 {
 
     /**
+    *  The maximum number of weeks this form can handle
+    */
+    const MAX_NUMBER_OF_WEEKS = 5;
+
+    /**
      * An array used to store the loaded WorkPattern's default values, so we
      * only need to load them once.
      *
@@ -34,7 +39,8 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
                 $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
             } else {
                 $this->defaultValues = [
-                    'is_active' => 1
+                    'is_active' => 1,
+                    'weeks' => []
                 ];
             }
         }
@@ -50,8 +56,12 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         $this->_id = CRM_Utils_Request::retrieve('id' , 'Positive', $this);
 
         $this->addBasicDetailsFields();
+        $this->addCalendarFields();
+        $this->addFieldsRules();
 
         $this->addButtons($this->getAvailableButtons());
+
+        $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
 
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
 
@@ -126,10 +136,97 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         );
     }
 
+    private function addCalendarFields()
+    {
+      $leaveDaysAmounts = CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('hrleaveandabsences_leave_days_amounts');
+      $daysPerWeek = 7;
+      for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
+        $this->add('hidden', "weeks[$i][days][number]");
+        for($j = 0; $j < $daysPerWeek; $j++) {
+          $this->add(
+            'select',
+            "weeks[$i][days][$j][type]",
+            false,
+            CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions()
+          );
+          $this->add('text', "weeks[$i][days][$j][time_from]");
+          $this->add('text', "weeks[$i][days][$j][time_to]");
+          $this->add('text', "weeks[$i][days][$j][break]");
+          $this->add('text', "weeks[$i][days][$j][number_of_hours]");
+          $this->add('select', "weeks[$i][days][$j][leave_days]", false, $leaveDaysAmounts);
+        }
+      }
+    }
+
     private function getDAOFieldAttributes($field)
     {
         $dao = 'CRM_HRLeaveAndAbsences_DAO_WorkPattern';
         return CRM_Core_DAO::getAttribute($dao, $field);
+    }
+
+    private function addFieldsRules()
+    {
+      $this->addFormRule([$this, 'formRules']);
+    }
+
+    public function formRules($values)
+    {
+      $errors = [];
+      $this->validateWorkDays($values, $errors);
+
+      return empty($errors) ? true : $errors;
+    }
+
+    private function validateWorkDays($values, &$errors)
+    {
+
+      foreach($values['weeks'] as $weekIndex => $week) {
+        foreach($week['days'] as $dayIndex => $day) {
+          if(!empty($day)) {
+            $this->validateWorkDay($weekIndex, $dayIndex, $day, $errors);
+          }
+        }
+      }
+    }
+
+    private function validateWorkDay($weekIndex, $dayIndex, $day, &$errors)
+    {
+      $isWorkingDay = $day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES;
+      $hasTimeFrom = strlen(trim($day['time_from'])) > 0;
+      $hasTimeTo = strlen(trim($day['time_to'])) > 0;
+      $hasBreak = strlen(trim($day['break'])) > 0;
+      if($isWorkingDay) {
+        if(!$hasTimeFrom) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_from]";
+          $errors[$field] = ts('Please inform the Time From');
+        }
+        if(!$hasTimeTo) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_to]";
+          $errors[$field] = ts('Please inform the Time To');
+        }
+        //break can be 0, so we can't check it with empty
+        if(!$hasBreak) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][break]";
+          $errors[$field] = ts('Please inform the Break');
+        }
+      } else {
+        if($hasTimeFrom) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_from]";
+          $errors[$field] = ts('Time From should be empty');
+        }
+        if($hasTimeTo) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_to]";
+          $errors[$field] = ts('Time To should be empty');
+        }
+        if($hasBreak) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][break]";
+          $errors[$field] = ts('Break should be empty');
+        }
+        if(!empty($day['leave_days']) ) {
+          $field = "weeks[{$weekIndex}][days][{$dayIndex}][leave_days]";
+          $errors[$field] = ts('Leave Days should be empty');
+        }
+      }
     }
 
     /**
