@@ -6,6 +6,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
 {
     protected $_tablesToTruncate = [
         'civicrm_hrleaveandabsences_work_pattern',
+        'civicrm_hrleaveandabsences_work_week',
+        'civicrm_hrleaveandabsences_work_day',
     ];
 
     public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
@@ -95,6 +97,18 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
         $this->assertEquals($params['description'], $values['description']);
         $this->assertEquals($params['is_active'], $values['is_active']);
         $this->assertEquals($params['is_default'], $values['is_default']);
+        $this->assertEmpty($values['weeks']);
+    }
+
+    public function testGetValuesArrayShouldReturnWorkPatternValuesWithWeeksAndDays()
+    {
+      $label = 'Pattern Label ' . microtime();
+      $entity = $this->createWorkPatternWith40HoursWorkWeek($label);
+      $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($entity->id);
+
+      $this->assertEquals($label, $values['label']);
+      $this->assertCount(1, $values['weeks']);
+      $this->assertCount(7, $values['weeks'][0]['days']);
     }
 
     public function testGetValuesArrayShouldReturnEmptyArrayWhenWorkPatternDoesntExists()

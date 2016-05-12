@@ -75,7 +75,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
 
   /**
    * Returns an array containing all the fields values for the
-   * WorkPattern with the given ID.
+   * WorkPattern with the given ID, including its related
+   * WorkWeeks and WorkDays.
    *
    * This method is mainly used by the WorkPattern form, so it
    * can get the data to fill its fields.
@@ -89,8 +90,25 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function getValuesArray($id) {
     try {
-      $result = civicrm_api3('WorkPattern', 'getsingle', ['id' => $id]);
+      $params = [
+        'id' => $id,
+        'api.WorkWeek.get' => [
+          'pattern_id' => '$value.id',
+          'api.WorkDay.get' => [
+            'week_id' => '$value.id'
+          ]
+        ]
+      ];
+      $result = civicrm_api3('WorkPattern', 'getsingle', $params);
 
+      $workWeeks = $result['api.WorkWeek.get']['values'];
+      foreach($workWeeks as $i => $week) {
+        $workWeeks[$i]['days'] = $week['api.WorkDay.get']['values'];
+        unset($workWeeks[$i]['api.WorkDay.get']);
+      }
+
+      $result['weeks'] = $workWeeks;
+      unset($result['api.WorkWeek.get']);
       return $result;
 
     } catch(CiviCRM_API3_Exception $ex) {
