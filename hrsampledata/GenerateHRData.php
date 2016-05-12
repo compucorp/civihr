@@ -1433,7 +1433,11 @@ class GenerateHRData {
               'case_id' => $caseObj->id,
               'contact_id' => $applicantID,
             );
-            CRM_Case_BAO_Case::addCaseToContact($contactParams);
+            if (is_callable('CRM_Case_BAO_Case::addCaseToContact')) {
+                CRM_Case_BAO_Case::addCaseToContact($contactParams);
+            } else {
+                CRM_Case_BAO_CaseContact::create($contactParams);
+            }
 
             $xmlProcessor = new CRM_Case_XMLProcessor_Process();
             $xmlProcessorParams = array(
