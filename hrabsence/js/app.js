@@ -88,7 +88,7 @@ CRM.HRAbsenceApp.module('Main', function(Main, HRAbsenceApp, Backbone, Marionett
     calendarAbsenceCriteria = new HRAbsenceApp.Models.AbsenceCriteria({
       target_contact_id: CRM.absenceApp.contactId,
       options: {'absence-range': 1},
-      status_id:{'!=':3}
+      status_id:{'NOT IN':[3, 9]} //3: Cancelled, 9: Rejected
     });
     absenceCollection = new HRAbsenceApp.Models.AbsenceCollection([], {
       crmCriteriaModel: absenceCriteria,

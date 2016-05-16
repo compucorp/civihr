@@ -140,7 +140,7 @@ class CRM_Hrjobcontract_DAO_Base extends CRM_Core_DAO
       'jobcontract_revision_id' => array(
         'name' => 'jobcontract_revision_id',
         'type' => CRM_Utils_Type::T_INT,
-        'title' => ts('Job Contract Revision Id') ,
+        'title' => ts('Job Contract Revision ID') ,
         'required' => true,
         //'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
       ) ,
@@ -331,14 +331,14 @@ class CRM_Hrjobcontract_DAO_Base extends CRM_Core_DAO
     }
     $instance->copyValues($params);
     
-    if (module_exists('rules')) {
+    if (function_exists('module_exists') && module_exists('rules')) {
         rules_invoke_event('hrjobcontract_' . $tableName .'_presave', $instance);
     }
     
     $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
     
-    if (module_exists('rules')) {
+    if (function_exists('module_exists') && module_exists('rules')) {
         if ($hook == 'create') {
             rules_invoke_event('hrjobcontract_' . $tableName . '_insert', $instance);
         } else {

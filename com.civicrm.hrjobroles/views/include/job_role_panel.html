@@ -10,7 +10,7 @@
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group">
                     <label class="control-label control-label-lg">Dates:</label>
-                    <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | CustomDate}} - {{job_roles_data['end_date'] || "Unspecified" | CustomDate }}</span>
+                    <span class="form-control-static form-control-static-md">{{job_roles_data['start_date'] | formatDate}} - {{job_roles_data['end_date'] || "Unspecified" | formatDate }}</span>
                 </div>
             </div>
         </div>
@@ -20,10 +20,10 @@
             <div class="col-xs-12">
                 <a class="btn btn-collapse" ng-click="collapseRow(job_roles_data.id)">
                     <i ng-class="{
-                                        'fa': true,
-                                        'fa-chevron-down': collapsedRows[job_roles_data.id] == false,
-                                        'fa-chevron-right': collapsedRows[job_roles_data.id] || !collapsedRows[job_roles_data.id]
-                                    }"></i>
+                        'fa': true,
+                        'fa-chevron-down': collapsedRows[job_roles_data.id] == false,
+                        'fa-chevron-right': collapsedRows[job_roles_data.id] || !collapsedRows[job_roles_data.id]
+                    }"></i>
                     Details
                 </a>
             </div>
@@ -103,16 +103,15 @@
                                                     <div class="col-xs-8">
                                                         <div class="input-group" ng-hide="!editableForm.$visible">
                                                             <input type="text" class="form-control" id="{{prefix}}start_date"
-                                                                   placeholder="dd/mm/yyyy"
+                                                                   placeholder="{{format}}"
                                                                    name="start_date"
                                                                    is-open="!!(CalendarShow.start_date)"
                                                                    datepicker-popup
-                                                                   min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['start_date']"
                                                                    ng-change="select('start_date')"
                                                                    ng-disabled="isDisabled"
                                                                    close-text="Close"
-                                                                   custom-date-input
+                                                                   date-input
                                                                    required
                                                             />
                                                             <span class="input-group-btn">
@@ -125,7 +124,7 @@
                                                         </div>
 
                                                         <p class="form-control-static" ng-show="!editableForm.$visible">
-                                                            {{edit_data[job_roles_data.id]['start_date'] | CustomDate}}
+                                                            {{edit_data[job_roles_data.id]['start_date'] | formatDate}}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -138,16 +137,15 @@
                                                     <div class="col-xs-8">
                                                         <div class="input-group" ng-hide="!editableForm.$visible">
                                                             <input type="text" class="form-control" id="{{prefix}}end_date"
-                                                                   placeholder="dd/mm/yyyy"
+                                                                   placeholder="{{format}}"
                                                                    name="end_date"
                                                                    is-open="!!(CalendarShow.end_date)"
                                                                    datepicker-popup
-                                                                   min-date="minDate"
                                                                    ng-model="edit_data[job_roles_data.id]['end_date']"
                                                                    ng-change="select('end_date')"
                                                                    ng-disabled="isDisabled"
                                                                    close-text="Close"
-                                                                   custom-date-input
+                                                                   date-input
                                                             />
                                                             <span class="input-group-btn">
                                                                 <button type="button" class="btn btn-default" ng-click="open('end_date')"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -159,7 +157,7 @@
                                                         </div>
 
                                                         <p class="form-control-static" ng-show="!editableForm.$visible">
-                                                            {{ edit_data[job_roles_data.id]['end_date'] || "Unspecified" | CustomDate }}
+                                                            {{ edit_data[job_roles_data.id]['end_date'] || "Unspecified" | formatDate }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -341,7 +339,7 @@
                                                 <td ng-show="tableform.$visible">
                                                     <button type="button"
                                                             ng-click="deleteAdditionalRow(job_roles_data.id, 'funder', key)"
-                                                            class="btn btn-danger pull-right"><span
+                                                            class="btn btn-danger pull-left"><span
                                                             class="fa fa-remove"
                                                             aria-hidden="true"></span></button>
                                                 </td>
@@ -401,7 +399,7 @@
                                             <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                 <td>
                                                     <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCentreList">
+                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in CostCentreList | orderBy: 'weight'">
                                                                             {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                                                         </span>
                                                 </td>
@@ -438,7 +436,7 @@
                                                                         </span>
                                                 </td>
                                                 <td ng-show="tableformcc.$visible">
-                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                                 </td>
                                             </tr>
                                             <tr>

@@ -276,6 +276,11 @@ class CRM_Hrjobcontract_Report_Form_Summary extends CRM_Report_Form {
                     'no_repeat' => TRUE,
                     'dbAlias' => 'hrjobcontract_details_civireport.period_end_date',
                 ),
+                'details_end_reason' => array(
+                    'title' => ts('End reason'),
+                    'no_repeat' => TRUE,
+                    'name' => 'end_reason',
+                ),
                 'details_notice_amount' => array(
                     'title' => ts('Notice Period from Employer (Amount)'),
                     'no_repeat' => TRUE,

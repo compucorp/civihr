@@ -175,6 +175,10 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     }
     public function details_location_import($value)
     {
+        if(!isset($this->_locationOptionsFlipped[$value])) {
+            return null;
+        }
+
         return $this->_locationOptionsFlipped[$value];
     }
     

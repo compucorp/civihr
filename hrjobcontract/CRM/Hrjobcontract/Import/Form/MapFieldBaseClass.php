@@ -69,16 +69,27 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
   public function preProcess() {
     $this->_mapperFields = $this->get('fields');
     $this->_entity = $this->get('_entity');
-    $this->_highlightedFields = array(
-      'HRJobContract-contact_id',
-      'HRJobContract-email',
-      'HRJobContract-external_identifier',
+    $this->_importMode = $this->get('importMode');
 
+    $this->_highlightedFields = array(
       'HRJobDetails-position',
       'HRJobDetails-contract_type',
       'HRJobDetails-period_start_date',
       'HRJobDetails-title'
     );
+    if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS) {
+      $this->_highlightedFields = array_merge($this->_highlightedFields, array(
+        'HRJobContract-contact_id',
+        'HRJobContract-email',
+        'HRJobContract-external_identifier'
+      ));
+    }
+    elseif ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
+      $this->_highlightedFields = array_merge($this->_highlightedFields, array(
+        'HRJobContractRevision-jobcontract_id',
+        'HRJobContractRevision-effective_date'
+      ));
+    }
 
     $this->_columnCount = $this->get('columnCount');
     $this->assign('columnCount', $this->_columnCount);
@@ -311,6 +322,13 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         'HRJobDetails-period_start_date' => ts('Contract Start Date')
       );
 
+     if ($self->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
+        $requiredFields = array_merge($requiredFields, array(
+          'HRJobContractRevision-jobcontract_id' => ts('Contract ID'),
+          'HRJobContractRevision-effective_date' => ts('Job Title')
+        ));
+      }
+
       $missingNames = array();
       $errorRequired = FALSE;
       foreach ($requiredFields as $field => $title) {
@@ -330,6 +348,7 @@ class CRM_Hrjobcontract_Import_Form_MapFieldBaseClass extends CRM_Import_Form_Ma
         !in_array('HRJobContract-contact_id', $importKeys)
         && !in_array('HRJobContract-email', $importKeys)
         && !in_array('HRJobContract-external_identifier', $importKeys)
+        && $self->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS
       ) {
         $errors['_qf_default'] = ts('Contact ID, Email or External Identifier is required.');
       }

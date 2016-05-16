@@ -3,6 +3,14 @@ label {
     font-weight: 600;
 }
 
+.checkbox,
+.radio {
+
+    > label {
+        color: $text-color;
+    }
+}
+
 .form-control {
     @include box-shadow(none);
 
@@ -42,6 +50,14 @@ label {
                 font-size: $font-size-base;
             }
         }
+    }
+}
+
+// A .form-horizontal spreaded on a single line
+.form-horizontal-inline {
+
+    .form-group {
+        margin-bottom: 0;
     }
 }
 

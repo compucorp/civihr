@@ -274,6 +274,59 @@ class CRM_Appraisals_Upgrader extends CRM_Appraisals_Upgrader_Base
         
         return TRUE;
     }
+
+    /**
+     * Remove multiple Appraisals per Contact / Cycle excepting the newest.
+     * 
+     * @return bool TRUE
+     */
+    public function upgrade_0010() {
+        $contactsPerCycle = CRM_Core_DAO::executeQuery("
+            SELECT appraisal_cycle_id, contact_id FROM `civicrm_appraisal` 
+            GROUP BY appraisal_cycle_id, contact_id
+        ");
+        while ($contactsPerCycle->fetch()) {
+            self::removeMultipleAppraisals(
+                $contactsPerCycle->appraisal_cycle_id,
+                $contactsPerCycle->contact_id
+            );
+        }
+        return TRUE;
+    }
+
+    /**
+     * Remove multiple Appraisals for given Contact and Appraisal Cycle.
+     * We keep only the newest created Appraisals.
+     * 
+     * @param int $cycleId
+     * @param int $contactId
+     * @return bool TRUE
+     */
+    private static function removeMultipleAppraisals($cycleId, $contactId) {
+        $latestAppraisal = CRM_Core_DAO::executeQuery("
+            SELECT original_id FROM `civicrm_appraisal`
+            WHERE appraisal_cycle_id = %1
+            AND contact_id = %2
+            AND is_current = 1
+            ORDER BY created_date DESC
+            LIMIT 1
+        ", array(
+            1 => array($cycleId, 'Integer'),
+            2 => array($contactId, 'Integer'),
+        ));
+        if ($latestAppraisal->fetch()) {
+            CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_appraisal` 
+                WHERE appraisal_cycle_id = %1
+                AND contact_id = %2
+                AND original_id <> %3
+            ", array(
+                1 => array($cycleId, 'Integer'),
+                2 => array($contactId, 'Integer'),
+                3 => array($latestAppraisal->original_id, 'Integer'),
+            ));
+        }
+        return TRUE;
+    }
     
     public function enable() {
         $this->setIsActive(1);

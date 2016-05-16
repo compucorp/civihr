@@ -9,8 +9,6 @@ define([
 
         var API_ENDPOINT = '/civicrm/ajax/rest';
 
-        // Draft
-
         return {
 
             /**
@@ -21,6 +19,56 @@ define([
              */
             extend: function (childAPI) {
                 return angular.extend(Object.create(this), childAPI);
+            },
+
+            /**
+             * Returns:
+             *   - the list of entities, eventually filtered/paginated
+             *   - the total count of the entities based on the filters,
+             *     independent of the pagination settings
+             *
+             * @param {string} entity - The entity name
+             * @param {object} filters - Values the full list should be filtered by
+             * @param {object} pagination
+             *   `page` for the current page, `size` for number of items per page
+             * @param {string} sort - The field and direction to order by
+             * @param {object} additionalParams - Additional params to pass to the api
+             * @return {Promise} resolves to an object with `list` and `total`
+             */
+            getAll: function (entity, filters, pagination, sort, additionalParams) {
+                $log.debug('api.all');
+
+                filters = filters || {};
+
+                return $q.all([
+                    (function () {
+                        var params = _.assign({}, filters, (additionalParams || {}), {
+                            options: { sort: sort || 'id DESC' }
+                        });
+
+                        if (pagination) {
+                            params.options.offset = (pagination.page - 1) * pagination.size;
+                            params.options.limit = pagination.size;
+                        }
+
+                        return this.sendGET(entity, 'get', params).then(function (data) {
+                            return data.values;
+                        });
+                    }.bind(this))(),
+                    (function () {
+                        var params = _.assign({}, filters, { 'return': 'id' });
+
+                        return this.sendGET(entity, 'get', params);
+                    }.bind(this))()
+                ]).then(function (results) {
+                    return {
+                        list: results[0],
+                        total: results[1].count,
+                        allIds: results[1].values.map(function (cycle) {
+                            return cycle.id;
+                        }).join(',')
+                    };
+                });
             },
 
             /**

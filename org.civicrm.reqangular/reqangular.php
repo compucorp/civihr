@@ -111,7 +111,6 @@ function reqangular_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * Implementation of hook_civicrm_pageRun
  */
 function reqangular_civicrm_pageRun($page) {
-
     $url = CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.reqangular');
 
     CRM_Core_Resources::singleton()->addVars('reqAngular', array(

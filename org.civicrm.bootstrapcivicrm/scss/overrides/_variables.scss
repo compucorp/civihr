@@ -128,6 +128,9 @@ $table-border-color: $gray-lighter !default;
 //
 //## For each of Bootstrap's buttons, define text, background and border color.
 
+$btn-font-weight:            600 !default;
+$btn-small-font-weight:      400 !default;
+
 $btn-padding-base-vertical:  7px;
 $btn-padding-small-vertical: 5px;
 
@@ -147,6 +150,13 @@ $input-border-radius-large: $input-border-radius !default;
 $input-border-radius-small: $input-border-radius !default;
 
 $input-addon-color:         $gray-darker !default;
+
+// custom select
+$customselect-background:             #ffffff;
+$customselect-caret-width:            32;
+$customselect-padding-right:          $customselect-caret-width + 12;
+$customselect-feedback-padding-right: $customselect-padding-right + 10;
+
 
 //== Dropdowns
 //
@@ -210,6 +220,19 @@ $nav-pills-sidebar-link-padding:  16px 17px!default;
 $nav-pills-sidebar-link-color:    $brand-primary !default;
 $nav-pills-sidebar-link-hover-bg: $background-color !default;
 
+//== Tabs
+
+// Nav tabs placed in a panel heading
+$nav-tabs-panel-heading-border:                  0 !default;
+$nav-tabs-panel-heading-margin:                  -10px 0 !default;
+$nav-tabs-panel-heading-link-background:         transparent !default;
+$nav-tabs-panel-heading-link-border-color:       #ffffff !default;
+$nav-tabs-panel-heading-link-border-width:       0 !default;
+$nav-tabs-panel-heading-link-border-hover-width: 0 0 3px 0 !default;
+$nav-tabs-panel-heading-link-color:              $nav-tabs-panel-heading-link-border-color !default;
+$nav-tabs-panel-heading-link-padding:            15px 15px 12px !default;
+$nav-tabs-panel-heading-link-weight:             600 !default;
+
 
 //== Pagination
 //
@@ -227,6 +250,12 @@ $pagination-active-bg:                 $pagination-bg !default;
 $pagination-disabled-color:            $gray-lighter !default;
 $pagination-disabled-bg:               $pagination-bg !default;
 
+
+//== Form states and alerts
+//
+//## Define colors for form feedback states and, by default, alerts.
+
+$state-danger-text: $brand-danger !default;
 
 //== Breadcrumbs
 //
