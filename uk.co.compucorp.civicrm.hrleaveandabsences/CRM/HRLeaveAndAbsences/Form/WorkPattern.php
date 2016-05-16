@@ -136,6 +136,9 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         );
     }
 
+    /**
+     * Adds the fields of the Calendar tab to the form
+     */
     private function addCalendarFields()
     {
       $leaveDaysAmounts = CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('hrleaveandabsences_leave_days_amounts');
@@ -149,9 +152,9 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             false,
             CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions()
           );
-          $this->add('text', "weeks[$i][days][$j][time_from]");
-          $this->add('text', "weeks[$i][days][$j][time_to]");
-          $this->add('text', "weeks[$i][days][$j][break]");
+          $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5]);
+          $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5]);
+          $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4]);
           $this->add('text', "weeks[$i][days][$j][number_of_hours]");
           $this->add('select', "weeks[$i][days][$j][leave_days]", false, $leaveDaysAmounts);
         }
