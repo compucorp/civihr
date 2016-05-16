@@ -169,6 +169,19 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       $this->addFormRule([$this, 'formRules']);
     }
 
+    /**
+     * Execute validations concerning all the form fields.
+     *
+     * Form Rules can be used for validations that depends on multiple fields,
+     * (for example, if field X is not empty, then Y is required). Here, we use
+     * it to validate work days, because time from, time to and break are
+     * required only if the day is a working day.
+     *
+     * @param array $values An array containing all the form's fields values
+     *
+     * @return array|bool Returns true if form is valid. Otherwise, an
+     *                    array containing all the validation errors is returned.
+     */
     public function formRules($values)
     {
       $errors = [];
@@ -177,6 +190,12 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       return empty($errors) ? true : $errors;
     }
 
+    /**
+     * Validates each work day of each work week.
+     *
+     * @param array $values An array containing all the form's fields values
+     * @param array $errors An array containing all the validation errors
+     */
     private function validateWorkDays($values, &$errors)
     {
 
@@ -189,44 +208,132 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
     }
 
+    /**
+     * Validates a single work day.
+     *
+     * Since the work day fields are stored in a nested array, we need the
+     * weekIndex and dayIndex parameters to be able of properly set an error
+     * message for a field.
+     *
+     * @param int $weekIndex The array index of the week this work day is in
+     * @param int $dayIndex The array index of this day, inside the weeks[weekIndex][days] array
+     * @param array $day An array containing the work day fields values sent through the form
+     * @param array $errors An array where validation errors will be stored
+     */
     private function validateWorkDay($weekIndex, $dayIndex, $day, &$errors)
     {
-      $isWorkingDay = $day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES;
+      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES) {
+        $this->validateWorkingDay($weekIndex, $dayIndex, $day, $errors);
+      } else {
+        $this->validateNonWorkingDay($weekIndex, $dayIndex, $day, $errors);
+      }
+    }
+
+    /**
+     * Validates a single Working Day (a WorkDay where "Working Day?" is Yes).
+     *
+     * A valid Working Day has:
+     * - Time From, Time To and Break not empty
+     * - Time From less than Time To
+     * - Time From and Time To matching the HH:MM format
+     * - Break not larger than the period between Time From and Time To
+     *
+     * @param int $weekIndex The array index of the week this work day is in
+     * @param int $dayIndex The array index of this day, inside the weeks[weekIndex][days] array
+     * @param array $day An array containing the work day fields values sent through the form
+     * @param array $errors An array where validation errors will be stored
+     *
+     */
+    private function validateWorkingDay($weekIndex, $dayIndex, $day, &$errors) {
       $hasTimeFrom = strlen(trim($day['time_from'])) > 0;
       $hasTimeTo = strlen(trim($day['time_to'])) > 0;
       $hasBreak = strlen(trim($day['break'])) > 0;
-      if($isWorkingDay) {
-        if(!$hasTimeFrom) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_from]";
-          $errors[$field] = ts('Please inform the Time From');
-        }
-        if(!$hasTimeTo) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_to]";
-          $errors[$field] = ts('Please inform the Time To');
-        }
-        //break can be 0, so we can't check it with empty
-        if(!$hasBreak) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][break]";
-          $errors[$field] = ts('Please inform the Break');
-        }
+      $timeFromField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_from');
+      $timeToField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_to');
+      $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
+
+      if (!$hasTimeFrom) {
+        $errors[$timeFromField] = ts('Please inform the Time From');
       } else {
-        if($hasTimeFrom) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_from]";
-          $errors[$field] = ts('Time From should be empty');
-        }
-        if($hasTimeTo) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][time_to]";
-          $errors[$field] = ts('Time To should be empty');
-        }
-        if($hasBreak) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][break]";
-          $errors[$field] = ts('Break should be empty');
-        }
-        if(!empty($day['leave_days']) ) {
-          $field = "weeks[{$weekIndex}][days][{$dayIndex}][leave_days]";
-          $errors[$field] = ts('Leave Days should be empty');
+        if (!$this->isValidHour($day['time_from'])) {
+          $errors[$timeFromField] = ts('Invalid hour');
         }
       }
+
+      if (!$hasTimeTo) {
+        $errors[$timeToField] = ts('Please inform the Time To');
+      } else {
+        if (!$this->isValidHour($day['time_to'])) {
+          $errors[$timeToField] = ts('Invalid hour');
+        }
+      }
+
+      if (!$hasBreak) {
+        $errors[$breakField] = ts('Please inform the Break');
+      } else {
+        if (!is_numeric($day['break'])) {
+          $errors[$breakField] = ts('Break should be a valid number');
+        }
+      }
+
+      $timeFrom = strtotime($day['time_from']);
+      $timeTo   = strtotime($day['time_to']);
+      if (($hasTimeFrom && $hasTimeTo) && ($timeFrom >= $timeTo)) {
+        $errors[$timeFromField] = ts('Time From should be less than Time To');
+      }
+
+      $secondsInWorkingHours = $timeTo - $timeFrom;
+      $secondsInBreak        = $day['break'] * 3600;
+      $hasTimesAndBreak      = $hasTimeFrom && $hasTimeTo && $hasBreak;
+      if ($hasTimesAndBreak && $secondsInBreak >= $secondsInWorkingHours) {
+        $errors[$breakField] = ts('Break should be less than the number of hours between Time From and Time To');
+      }
+    }
+
+    /**
+     * Validates a single Non Working Day
+     *
+     * On a Non Working Day, Time From, Time To, Break and Leave Days should be
+     * empty
+     *
+     * @param int $weekIndex The array index of the week this work day is in
+     * @param int $dayIndex The array index of this day, inside the weeks[weekIndex][days] array
+     * @param array $day An array containing the work day fields values sent through the form
+     * @param array $errors An array where validation errors will be stored
+     *
+     */
+    private function validateNonWorkingDay($weekIndex, $dayIndex, $day, &$errors)
+    {
+      $hasTimeFrom = strlen(trim($day['time_from'])) > 0;
+      $hasTimeTo = strlen(trim($day['time_to'])) > 0;
+      $hasBreak = strlen(trim($day['break'])) > 0;
+      $timeFromField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_from');
+      $timeToField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_to');
+      $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
+      $leaveDaysField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'leave_days');
+
+      if ($hasTimeFrom) {
+        $errors[$timeFromField] = ts('Time From should be empty');
+      }
+      if ($hasTimeTo) {
+        $errors[$timeToField] = ts('Time To should be empty');
+      }
+      if ($hasBreak) {
+        $errors[$breakField] = ts('Break should be empty');
+      }
+      if (!empty($day['leave_days'])) {
+        $errors[$leaveDaysField] = ts('Leave Days should be empty');
+      }
+    }
+
+    private function getWorkDayFieldName($weekIndex, $dayIndex, $field)
+    {
+      return "weeks[{$weekIndex}][days][{$dayIndex}][$field]";
+    }
+
+    private function isValidHour($time)
+    {
+      return preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $time);
     }
 
     /**
