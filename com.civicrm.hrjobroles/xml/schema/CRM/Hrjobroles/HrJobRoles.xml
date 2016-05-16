@@ -10,9 +10,11 @@
 
     <field>
         <name>id</name>
+        <type>Job Role ID</type>
         <type>int unsigned</type>
         <required>true</required>
         <comment>Unique HrJobRoles ID</comment>
+        <export>true</export>
         <add>4.5</add>
     </field>
     <primaryKey>
@@ -22,7 +24,7 @@
 
     <field>
         <name>job_contract_id</name>
-        <title>Job Id</title>
+        <title>Job ID</title>
         <type>int unsigned</type>
         <required>true</required>
         <comment>FK to Contract</comment>
@@ -42,6 +44,7 @@
         <default>NULL</default>
         <comment>Title or Project name for the Job Role.</comment>
         <add>4.5</add>
+        <export>true</export>
     </field>
 
     <field>
@@ -49,6 +52,7 @@
         <title>Job Role Description</title>
         <type>text</type>
         <comment>Negotiated name for the role</comment>
+        <export>true</export>
     </field>
 
     <field>
@@ -58,21 +62,23 @@
         <length>255</length>
         <default>NULL</default>
         <comment>Job Role Status (Active / Inactive)</comment>
+        <export>true</export>
         <add>4.5</add>
     </field>
 
     <field>
         <name>hours</name>
-        <title>Amount</title>
+        <title>Job Role Hours</title>
         <type>float</type>
         <default>0</default>
         <comment>Amount of time allocated for work (in a given week)</comment>
+        <export>true</export>
         <uniqueName>hrjc_role_hours</uniqueName>
     </field>
 
     <field>
         <name>role_hours_unit</name>
-        <title>Hours Unit</title>
+        <title>Job Role Hours Unit</title>
         <type>varchar</type>
         <length>63</length>
         <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
@@ -83,7 +89,7 @@
 
     <field>
         <name>region</name>
-        <title>Region</title>
+        <title>Job Role Region</title>
         <type>varchar</type>
         <length>127</length>
         <export>true</export>
@@ -98,7 +104,7 @@
 
     <field>
         <name>department</name>
-        <title>Department</title>
+        <title>Job Role Department</title>
         <type>varchar</type>
         <length>127</length>
         <export>true</export>
@@ -113,7 +119,7 @@
 
     <field>
         <name>level_type</name>
-        <title>Level</title>
+        <title>Job Role Level</title>
         <type>varchar</type>
         <length>63</length>
         <comment>Junior manager, senior manager, etc.</comment>
@@ -141,9 +147,10 @@
 
     <field>
         <name>functional_area</name>
-        <title>Functional Area</title>
+        <title>Job Role Functional Area</title>
         <type>varchar</type>
         <length>127</length>
+        <export>true</export>
     </field>
     <index>
         <name>index_functional_area</name>
@@ -152,9 +159,10 @@
 
     <field>
         <name>organization</name>
-        <title>Organization</title>
+        <title>Job Role Organization</title>
         <type>varchar</type>
         <length>127</length>
+        <export>true</export>
     </field>
     <index>
         <name>index_organization</name>
@@ -163,7 +171,7 @@
 
     <field>
         <name>cost_center</name>
-        <title>Cost Center</title>
+        <title>Job Role Cost Center</title>
         <type>varchar</type>
         <length>255</length>
         <comment>List of Cost Center option group values</comment>
@@ -178,7 +186,7 @@
 
     <field>
         <name>cost_center_val_type</name>
-        <title>Cost Center value type</title>
+        <title>Job Role Cost Center value type</title>
         <type>varchar</type>
         <length>127</length>
         <comment>Cost Center value type (fixed or %)</comment>
@@ -193,7 +201,7 @@
 
     <field>
         <name>percent_pay_cost_center</name>
-        <title>Percent of Pay Assigned to this cost center</title>
+        <title>Job Role Percent of Pay Assigned to this cost center</title>
         <type>varchar</type>
         <length>255</length>
         <default>0</default>
@@ -205,7 +213,7 @@
 
     <field>
         <name>amount_pay_cost_center</name>
-        <title>Amount of Pay Assigned to this cost center</title>
+        <title>Job Role Amount of Pay Assigned to this cost center</title>
         <type>varchar</type>
         <length>255</length>
         <default>0</default>
@@ -217,16 +225,17 @@
 
     <field>
         <name>funder</name>
-        <title>Funder Contact ID</title>
+        <title>Job Role Funders</title>
         <type>varchar</type>
         <length>255</length>
         <default>0</default>
         <comment>List of attached Funder contact IDs</comment>
+        <export>true</export>
     </field>
 
     <field>
         <name>funder_val_type</name>
-        <title>Funder value type</title>
+        <title>Job Role Funder value type</title>
         <type>varchar</type>
         <length>127</length>
         <comment>Funder value type (fixed or %)</comment>
@@ -241,7 +250,7 @@
 
     <field>
         <name>percent_pay_funder</name>
-        <title>Percent of Pay Assigned to this funder</title>
+        <title>Job Role Percent of Pay Assigned to this funder</title>
         <type>varchar</type>
         <length>255</length>
         <default>0</default>
@@ -253,7 +262,7 @@
 
     <field>
         <name>amount_pay_funder</name>
-        <title>Amount of Pay Assigned to this funder</title>
+        <title>Job Role Amount of Pay Assigned to this funder</title>
         <type>varchar</type>
         <length>255</length>
         <default>0</default>
@@ -265,7 +274,7 @@
 
     <field>
         <name>location</name>
-        <title>Location</title>
+        <title>Job Role Location</title>
         <type>varchar</type>
         <length>127</length>
         <comment>Main work location</comment>
@@ -279,7 +288,7 @@
 
     <field>
         <name>start_date</name>
-        <title>start_date</title>
+        <title>Job Role Start Date</title>
         <type>timestamp</type>
         <default>0</default>
         <comment>Start Date of the job role</comment>
@@ -290,7 +299,7 @@
 
     <field>
         <name>end_date</name>
-        <title>end_date</title>
+        <title>Job Role End Date</title>
         <type>timestamp</type>
         <default>0</default>
         <comment>End Date of the job role</comment>

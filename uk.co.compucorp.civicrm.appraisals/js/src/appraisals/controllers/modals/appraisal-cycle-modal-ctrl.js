@@ -6,8 +6,9 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleModalCtrl',
-        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance', 'AppraisalCycle', 'dialog',
-        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle, dialog) {
+        ['$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
+        'AppraisalCycle', 'HR_settings', 'dialog',
+        function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, AppraisalCycle, HR_settings, dialog) {
             $log.debug('AppraisalCycleModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
@@ -88,7 +89,7 @@ define([
             function formatDates() {
                 for (var key in vm.cycle) {
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        vm.cycle[key] = $filter('date')(vm.cycle[key], 'dd/MM/yyyy');
+                        vm.cycle[key] = $filter('date')(vm.cycle[key], HR_settings.DATE_FORMAT);
                     }
                 }
             }
@@ -130,11 +131,7 @@ define([
              * @return {boolean}
              */
             function haveDueDatesChanged() {
-                var newDueDates = vm.cycle.dueDates();
-
-                return Object.keys(newDueDates).some(function (key) {
-                    return oldDueDates[key] !== newDueDates[key]
-                });
+                return !_.isEqual(oldDueDates, vm.cycle.dueDates());
             }
 
             /**
@@ -169,11 +166,13 @@ define([
              * @return {boolean}
              */
             function isFormValid() {
-                var startDate = moment(vm.cycle.cycle_start_date, 'DD/MM/YYYY');
-                var endDate = moment(vm.cycle.cycle_end_date, 'DD/MM/YYYY');
-                var selfDue = moment(vm.cycle.cycle_self_appraisal_due, 'DD/MM/YYYY');
-                var managerDue = moment(vm.cycle.cycle_manager_appraisal_due, 'DD/MM/YYYY');
-                var gradeDue = moment(vm.cycle.cycle_grade_due, 'DD/MM/YYYY');
+                var momentFormat = HR_settings.DATE_FORMAT.toUpperCase();
+
+                var startDate = moment(vm.cycle.cycle_start_date, momentFormat);
+                var endDate = moment(vm.cycle.cycle_end_date, momentFormat);
+                var selfDue = moment(vm.cycle.cycle_self_appraisal_due, momentFormat);
+                var managerDue = moment(vm.cycle.cycle_manager_appraisal_due, momentFormat);
+                var gradeDue = moment(vm.cycle.cycle_grade_due, momentFormat);
 
                 vm.form.cycle_end_date.$setValidity('isAfter', endDate.isAfter(startDate));
                 vm.form.cycle_manager_appraisal_due.$setValidity('isAfter', managerDue.isAfter(selfDue));

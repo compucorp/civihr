@@ -102,6 +102,23 @@ function civicrm_api3_h_r_job_contract_deletecontractpermanently($params) {
   return _civicrm_hrjobcontract_api3_deletecontractpermanently($params);
 }
 
+function civicrm_api3_h_r_job_contract_getlengthofservice($params) {
+  if (empty($params['contact_id'])) {
+    throw new API_Exception(ts("Please specify 'contact_id' value."));
+  }
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfService($params['contact_id']);
+  return civicrm_api3_create_success($result, $params);
+}
+
+function civicrm_api3_h_r_job_contract_updatelengthofservice($params) {
+  if (empty($params['contact_id'])) {
+    $result = CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfServiceAllContacts();
+  } else {
+    $result = CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfService($params['contact_id']);
+  }
+  return civicrm_api3_create_success($result, $params);
+}
+
 /**
  * @see _civicrm_api3_generic_getlist_params.
  *

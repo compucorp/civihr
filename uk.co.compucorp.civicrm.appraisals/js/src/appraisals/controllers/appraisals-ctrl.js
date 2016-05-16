@@ -1,6 +1,8 @@
 define([
     'appraisals/modules/controllers'
 ], function (controllers) {
+    'use strict';
+
     controllers.controller('AppraisalsCtrl',
         ['$log', '$rootElement', '$modal', 'AppraisalCycle',
         function ($log, $rootElement, $modal, AppraisalCycle) {

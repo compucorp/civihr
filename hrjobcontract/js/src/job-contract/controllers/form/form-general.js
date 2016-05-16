@@ -1,21 +1,24 @@
 define([
     'common/moment',
-    'job-contract/controllers/controllers'
+    'job-contract/controllers/controllers',
+    'common/filters/angular-date/format-date'
 ], function (moment, controllers){
     'use strict';
 
-    controllers.controller('FormGeneralCtrl',['$scope','$log','$timeout',
-        function ($scope, $log) {
+    controllers.controller('FormGeneralCtrl',['$scope','$log', 'HR_settings',
+        function ($scope, $log, HR_settings) {
             $log.debug('Controller: FormGeneralCtrl');
 
             var entityDetails = $scope.entity.details;
+
+            $scope.format = HR_settings.DATE_FORMAT;
 
             $scope.dpOpen = function($event, opened){
                 $event.preventDefault();
                 $event.stopPropagation();
 
                 $scope[opened] = true;
-            }
+            };
 
             function duration(dateStart, dateEnd){
 
@@ -49,7 +52,12 @@ define([
             });
 
             $scope.$watch('entity.details.period_end_date', function(){
-                $scope.dpDateStartMax = entityDetails.period_end_date ? moment(entityDetails.period_end_date).subtract(1, 'day').format() : '';
+                if (entityDetails.period_end_date) {
+                    $scope.dpDateStartMax = moment(entityDetails.period_end_date).subtract(1, 'day').format();  
+                } else {
+                    $scope.dpDateStartMax = null;
+                    entityDetails.end_reason = null;
+                }
                 $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
             });
 

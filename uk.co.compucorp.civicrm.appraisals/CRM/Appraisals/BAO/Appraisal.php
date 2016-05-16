@@ -17,18 +17,12 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
         $now = CRM_Utils_Date::currentDBDate();
         
         if ($hook === 'create') {
-            if (empty($params['appraisal_cycle_id'])) {
-                throw new Exception("Please specify 'appraisal_cycle_id' value to create Appraisal.");
-            }
-            
+            self::validateNewAppraisal($params);
+
             $appraisalCycle = civicrm_api3('AppraisalCycle', 'getsingle', array(
                 'sequential' => 1,
-                'id' => (int)$params['appraisal_cycle_id'],
+                'id' => $params['appraisal_cycle_id'],
             ));
-            if (!empty($appraisalCycle['is_error']) && (int)$appraisalCycle['is_error']) {
-                throw new Exception("Cannot find Appraisal Cycle with 'id' = " . (int)$params['appraisal_cycle_id'] . '.');
-            }
-            
             if (empty($params['self_appraisal_due'])) {
                 $params['self_appraisal_due'] = $appraisalCycle['cycle_self_appraisal_due'];
             }
@@ -87,6 +81,42 @@ class CRM_Appraisals_BAO_Appraisal extends CRM_Appraisals_DAO_Appraisal
         ////TODO: trigger on post: CRM_Tasksassignments_Reminder::sendReminder((int)$instance->id);
         
         return $instance;
+    }
+
+    /**
+     * Check if a new Appraisal can be created with given parameters.
+     * Return TRUE or throw an exception containing error info.
+     * 
+     * @param array $params
+     * @return boolean
+     * @throws Exception
+     */
+    protected static function validateNewAppraisal(array $params) {
+      // Checking for Appraisal Cycle ID parameter.
+      if (empty($params['appraisal_cycle_id'])) {
+        throw new Exception("Please specify 'appraisal_cycle_id' value to create Appraisal.");
+      }
+      // Checking if Appraisal Cycle exists with given Cycle ID.
+      $appraisalCycle = civicrm_api3('AppraisalCycle', 'getsingle', array(
+        'sequential' => 1,
+        'id' => $params['appraisal_cycle_id'],
+      ));
+      if (!empty($appraisalCycle['is_error']) && (int)$appraisalCycle['is_error']) {
+        throw new Exception("Cannot find Appraisal Cycle with 'id' = {$params['appraisal_cycle_id']}.");
+      }
+      // Checking if there is current Appraisal already existing for given Cycle ID and Contact ID.
+      if (!empty($params['contact_id'])) {
+        $appraisal = civicrm_api3('Appraisal', 'getcount', array(
+          'appraisal_cycle_id' => $params['appraisal_cycle_id'],
+          'contact_id' => $params['contact_id'],
+          'is_current' => 1,
+        ));
+        if ((int)$appraisal) {
+          throw new Exception("Specified Contact already has an Appraisal with given Appraisal Cycle ID.");
+        }
+      }
+      // If any requirements are met then return TRUE.
+      return TRUE;
     }
     
     /**

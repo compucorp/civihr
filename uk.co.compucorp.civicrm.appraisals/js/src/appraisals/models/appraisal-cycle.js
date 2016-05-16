@@ -2,62 +2,14 @@ define([
     'common/lodash',
     'common/moment',
     'appraisals/modules/models',
-    'common/services/api/appraisals'
+    'common/models/model',
+    'common/services/api/appraisal-cycle'
 ], function (_, moment, models) {
     'use strict';
 
-    models.factory('AppraisalCycle', ['api.appraisals', 'AppraisalCycleInstance', function (appraisalsAPI, instance) {
+    models.factory('AppraisalCycle', ['Model', 'api.appraisal-cycle', 'AppraisalCycleInstance', function (Model, appraisalCycleAPI, instance) {
 
-        // Draft
-
-        /**
-         * Transform date range filters to values the API can use
-         *
-         * Date range filters come in the `a_date_from` and `a_date_to` format
-         * The suffix gets stripped from the filter name and, depending on its value,
-         * the correct operator is applied to the filter
-         *
-         * @param {string} key
-         * @param {string} value
-         * @param {object} filters (by reference)
-         *   The current collection of processed filters
-         */
-        function processDateRangeFilter(key, value, filters) {
-            var suffix = _.last(key.split('_'));
-            var field = key.replace('_' + suffix, '');
-            var operator = suffix === 'from' ? '>=' : '<=';
-
-            filters[field] = {};
-            filters[field][operator] = moment(value, 'DD/MM/YYYY').format('YYYY-MM-DD');
-        }
-
-        /**
-         * Processes the filters provided, removing falsey values (except 0 or false)
-         * And applying filter-specific transformations if needed
-         *
-         * @param {object} rawFilters - The unprocessed filters
-         * @return {object}
-         */
-        function processFilters(rawFilters) {
-            if (!rawFilters) {
-                return null;
-            }
-
-            return _.chain(rawFilters)
-                .pick(function (value) {
-                    return value === 0 || value === false || !!value;
-                })
-                .transform(function (filters, __, key) {
-                    if (_.endsWith(key, '_from') || _.endsWith(key, '_to')) {
-                        processDateRangeFilter(key, rawFilters[key], filters);
-                    } else {
-                        filters[key] = rawFilters[key];
-                    }
-                }, {})
-                .value();
-        };
-
-        return {
+        return Model.extend({
 
             /**
              * Returns the active cycles
@@ -65,7 +17,7 @@ define([
              * @return {Promise}
              */
             active: function () {
-                return appraisalsAPI.total({ cycle_is_active: true });
+                return appraisalCycleAPI.total({ cycle_is_active: true });
             },
 
             /**
@@ -77,7 +29,7 @@ define([
              * @return {Promise}
              */
             all: function (filters, pagination) {
-                return appraisalsAPI.all(processFilters(filters), pagination).then(function (response) {
+                return appraisalCycleAPI.all(this.processFilters(filters), pagination).then(function (response) {
                     response.list = response.list.map(function (cycle) {
                         return instance.init(cycle, true);
                     });
@@ -95,7 +47,7 @@ define([
             create: function (attributes) {
                 var cycle = instance.init(attributes).toAPI();
 
-                return appraisalsAPI.create(cycle).then(function (newCycle) {
+                return appraisalCycleAPI.create(cycle).then(function (newCycle) {
                     return instance.init(newCycle, true);
                 });
             },
@@ -107,7 +59,7 @@ define([
              * @return {Promise} - Resolves with the new cycle
              */
             find: function (id) {
-                return appraisalsAPI.find(id).then(function (cycle) {
+                return appraisalCycleAPI.find(id).then(function (cycle) {
                     return instance.init(cycle, true);
                 });
             },
@@ -118,7 +70,7 @@ define([
              * @return {Promise}
              */
             grades: function () {
-                return appraisalsAPI.grades();
+                return appraisalCycleAPI.grades();
             },
 
             /**
@@ -127,7 +79,7 @@ define([
              * @return {Promise}
              */
             statuses: function () {
-                return appraisalsAPI.statuses().then(function (statuses) {
+                return appraisalCycleAPI.statuses().then(function (statuses) {
                     return statuses.map(function (status) {
                         return _.pick(status, ['value', 'label']);
                     });
@@ -158,7 +110,7 @@ define([
              *   }
              */
             statusOverview: function (params) {
-                return appraisalsAPI.statusOverview(_.defaults(params || {}, {
+                return appraisalCycleAPI.statusOverview(_.defaults(params || {}, {
                         current_date: moment().format('YYYY-MM-DD')
                     }))
                     .then(function (status) {
@@ -185,7 +137,7 @@ define([
              * @return {Promise}
              */
             total: function () {
-                return appraisalsAPI.total();
+                return appraisalCycleAPI.total();
             },
 
             /**
@@ -194,12 +146,12 @@ define([
              * @return {Promise}
              */
             types: function () {
-                return appraisalsAPI.types().then(function (types) {
+                return appraisalCycleAPI.types().then(function (types) {
                     return types.map(function (types) {
                         return _.pick(types, ['value', 'label']);
                     });
                 });
             },
-        };
+        });
     }]);
 });

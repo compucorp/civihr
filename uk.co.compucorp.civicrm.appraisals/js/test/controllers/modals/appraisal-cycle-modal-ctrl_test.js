@@ -2,16 +2,17 @@ define([
     'common/angular',
     'common/lodash',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
-    'mocks/models/appraisal-cycle',
     'mocks/models/instances/appraisal-cycle-instance'
 ], function (angular, _) {
     'use strict';
 
     describe('AppraisalCycleModalCtrl', function () {
-        var $compile, $controller, $q, $modalInstance, $rootScope, $scope,
-            $templateCache, AppraisalCycle, AppraisalCycleInstance, ctrl, dialog,
-            validCycle;
+        var $compile, $controller, $q, $modalInstance, $provide, $rootScope, $scope,
+            $templateCache, AppraisalCycle, AppraisalCycleInstance, appraisalCycleAPIMock,
+            ctrl, dialog, validCycle;
 
         validCycle = {
             cycle_name: 'Appraisal Cycle #1',
@@ -24,8 +25,22 @@ define([
             cycle_grade_due: '30/03/2016'
         };
 
-        beforeEach(module('appraisals', 'appraisals.mocks', 'appraisals.templates'));
-        beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycleMock_, _AppraisalCycleInstanceMock_, _dialog_) {
+        beforeEach(function () {
+            module('appraisals', 'common.mocks', 'appraisals.mocks', 'appraisals.templates', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            // Override api.appraisal-cycle with the mocked version
+            inject([
+                'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalCycleAPIMock_, HR_settingsMock) {
+                    appraisalCycleAPIMock = _appraisalCycleAPIMock_;
+
+                    $provide.value('api.appraisal-cycle', appraisalCycleAPIMock);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
+        });
+        beforeEach(inject(function (_$compile_, _$controller_, _$q_, _$rootScope_, _$templateCache_, _AppraisalCycle_, _AppraisalCycleInstanceMock_, _dialog_) {
             $compile = _$compile_;
             $controller = _$controller_;
             $q = _$q_;
@@ -34,9 +49,12 @@ define([
             $scope = $rootScope.$new();
             $templateCache = _$templateCache_;
 
-            AppraisalCycle = _AppraisalCycleMock_;
+            AppraisalCycle = _AppraisalCycle_;
             AppraisalCycleInstance = _AppraisalCycleInstanceMock_;
             dialog = _dialog_;
+
+            spyOn(AppraisalCycle, 'types').and.callThrough();
+            spyOn(AppraisalCycle, 'find').and.callThrough();
 
             initController();
         }));
@@ -124,6 +142,7 @@ define([
 
         describe('form validation', function () {
             beforeEach(function () {
+                spyOn(AppraisalCycle, 'create').and.callThrough();
                 initForm();
             });
 
@@ -147,7 +166,6 @@ define([
                     expect(ctrl.form.$valid).toBe(false);
                     expect(ctrl.form.cycle_name.$error.required).toBe(true);
                     expect(ctrl.form.cycle_grade_due.$error.required).toBe(true);
-                    expect(ctrl.form.cycle_type_id.$error.required).toBe(false);
                     expect(AppraisalCycle.create).not.toHaveBeenCalled();
                 });
             });
@@ -230,6 +248,7 @@ define([
 
             describe('when in "create mode', function () {
                 beforeEach(function () {
+                    spyOn(AppraisalCycle, 'create').and.callThrough();
                     submitFormWith(validCycle);
                 });
 
@@ -255,12 +274,13 @@ define([
 
                     initController({ $scope: $scope });
                     initForm();
+
+                    $rootScope.$digest();
+                    spyOn(ctrl.cycle, 'update').and.callThrough();
                 });
 
                 beforeEach(function () {
-                    ctrl.edit = true;
-
-                    editedCycle = _.assign({}, _.find(AppraisalCycle.mockedCycles().list, function (cycle) {
+                    editedCycle = _.assign({}, _.find(appraisalCycleAPIMock.mockedCycles().list, function (cycle) {
                         return cycle.id === '4217';
                     }), {
                         cycle_name: 'Amended name',

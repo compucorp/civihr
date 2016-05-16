@@ -2,9 +2,9 @@ define([
     'common/moment',
     'common/angularMocks',
     'contact-summary/app',
-    'contact-summary/mocks/constants',
-    'contact-summary/mocks/services',
-    'contact-summary/services/contactDetails'
+    'contact-summary/services/contactDetails',
+    'mocks/constants',
+    'mocks/services'
 ], function (moment) {
     'use strict';
 

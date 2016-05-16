@@ -19,20 +19,9 @@
     #{$bootstrap-namespace} {
         padding-top: 25px;
 
-        .chr_steps--appraisals-status__contacts {
-            color: $brand-primary;
-        }
-
         .chr_steps--appraisals-status__count {
-            font-size: em(12, 10);
-            font-weight: 600;
             display: block;
         }
-
-        .chr_steps--appraisals-status__overdue {
-            color: $brand-danger;
-        }
-
 
         .panel--active-cycles,
         .panel--status {
@@ -42,10 +31,28 @@
             }
         }
 
+        .panel--breakdown,
         .panel--grades {
 
             > .panel-body {
-                height: 225px;
+                height: 165px;
+            }
+        }
+
+        .panel--breakdown {
+
+            .chr_steps__step__legend__content {
+
+                > p:first-child {
+                    min-height: 37px;
+                    padding: 0 15px;
+                }
+            }
+        }
+
+        .panel--grades {
+
+            > .panel-body {
                 padding: 0;
             }
         }
@@ -58,6 +65,57 @@
                 font-weight: 600;
                 line-height: 126px;
             }
+        }
+    }
+}
+
+#{$bootstrap-namespace} {
+
+    .modal--send-notification-reminder__view-recipient {
+        display: inline-block;
+        margin-top: 15px;
+    }
+
+    .panel--appraisals-in-cycle {
+
+        > .panel-heading {
+
+            > hr {
+                margin-bottom: 15px;
+                margin-top: 15px;
+            }
+        }
+    }
+
+    .panel--appraisals-in-cycle__filters {
+        background: $brand-primary-light;
+        margin: 15px -20px;
+    }
+
+    .panel--appraisals-in-cycle__filters__form {
+        padding: $panel-body-padding;
+    }
+
+
+    .panel--appraisal-cycle-header__title {
+
+        .panel--appraisal-cycle-header__title__cycle-id {
+            margin-left: 30px;
+        }
+    }
+
+    .panel--appraisal-cycle-header__title__cycle-id {
+        font-size: $font-size-h3;
+
+        > span {
+            font-weight: 400;
+        }
+    }
+
+    .panel--appraisal-cycle-header__settings {
+
+        &:hover {
+            text-decoration: none !important;
         }
     }
 }

@@ -3,9 +3,9 @@ define([
     'common/lodash',
     'common/angularMocks',
     'contact-summary/app',
-    'contact-summary/mocks/constants',
-    'contact-summary/mocks/services',
-    'contact-summary/services/leave'
+    'contact-summary/services/leave',
+    'mocks/constants',
+    'mocks/services'
 ], function (moment) {
     'use strict';
 
