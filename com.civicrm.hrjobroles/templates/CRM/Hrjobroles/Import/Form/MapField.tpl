@@ -23,15 +23,15 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-<div class="crm-block crm-form-block crm-activity-import-mapfield-form-block">
-{* Activity Import Wizard - Step 2 (map incoming data fields) *}
+<div class="crm-block crm-form-block crm-jobroles-import-mapfield-form-block">
+{* Job Roles Import Wizard - Step 2 (map incoming data fields) *}
 {* @var $form Contains the array for the form elements and other form associated information assigned to the template by the controller *}
 
  {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
  {include file="CRM/common/WizardHeader.tpl"}
 
- <div id="help">
-    <p>{ts}Review the values shown below from the first 2 rows of your import file and select the matching CiviCRM database fields from the drop-down lists in the right-hand column. Select '- do not import -' for any columns in the import file that you want ignored.{/ts}</p>
+ <div class="help">
+    <p>{ts}Review the values shown below from the first 2 rows of your import file and select the matching CiviHR database fields from the drop-down lists in the right-hand column. Select '- do not import -' for any columns in the import file that you want ignored.{/ts}</p>
     {if $savedMapping}
     <p>{ts}Click 'Load Saved Field Mapping' if data has been previously imported from the same source. You can then select the saved import mapping setup and load it automatically.{/ts}<p>
     {/if}
@@ -39,7 +39,7 @@
 </div>
 <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="top"}</div>
  {* Table for mapping data to CRM fields *}
- {include file="CRM/Activity/Import/Form/MapTable.tpl}
+ {include file="CRM/Hrjobroles/Import/Form/MapTable.tpl"}
  <br />
 
 <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
