@@ -149,6 +149,11 @@
           });
         }
 
+        function getWorkDayIndexFromFieldId(id) {
+          var index = id.replace(/weeks_\d+_days_(\d)_type/, '$1');
+          return parseInt(index);
+        }
+
         $('#number_of_weeks').on('change', function() {
           for(i = 0; i < 5; i++) {
             if(i < this.value) {
@@ -156,6 +161,20 @@
             } else {
               hideWeek(i);
             }
+          }
+        });
+
+        $('.work-day-type').on('change', function() {
+          var workDayIndex = getWorkDayIndexFromFieldId(this.id);
+          var weekElement = $(this).parents('.work-pattern-week');
+          var workDayCells = weekElement.find('table tbody tr td:nth-child(' + (workDayIndex + 2) + ')');
+
+          if(this.value == NON_WORKING_DAY || this.value == WEEKEND) {
+            workDayCells.find('input, .leave-days').attr('disabled', 'disabled');
+            workDayCells.find('input').val('');
+            workDayCells.find('.leave-days').val(0);
+          } else {
+            workDayCells.find('input, .leave-days').removeAttr('disabled');
           }
         });
 
