@@ -90,9 +90,12 @@ class CRM_Hrjobroles_Import_Form_Preview extends CRM_Import_Form_Preview {
 
     $properties = array(
       'mapper',
-      'dataValues', 'columnCount',
-      'totalRowCount', 'validRowCount',
-      'invalidRowCount', 'conflictRowCount',
+      'dataValues',
+      'columnCount',
+      'totalRowCount',
+      'validRowCount',
+      'invalidRowCount',
+      'conflictRowCount',
       'downloadErrorRecordsUrl',
       'downloadConflictRecordsUrl',
       'downloadMismatchRecordsUrl',

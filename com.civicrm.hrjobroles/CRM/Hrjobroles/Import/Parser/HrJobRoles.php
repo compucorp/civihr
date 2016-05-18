@@ -33,7 +33,6 @@
  *
  */
 
-require_once 'api/api.php';
 
 /**
  * class to parse activity csv files
@@ -409,12 +408,9 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
   }
 
   /**
-   * the initializer code, called before the processing
-   *
-   * @return void
-   * @access public
+   * Function of undocumented functionality required by the interface.
    */
-  function fini() {}
+   protected function fini() {}
 
 
   /**
