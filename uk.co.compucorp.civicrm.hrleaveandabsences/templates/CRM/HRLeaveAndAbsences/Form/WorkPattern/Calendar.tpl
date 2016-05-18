@@ -96,6 +96,43 @@
         const WORKING_DAY = 2;
         const WEEKEND = 3;
 
+        function setWeekVisibleFlag(weekIndex, flagValue) {
+          var is_visible_flag_field_name = 'weeks['+weekIndex+'][is_visible]';
+          document.getElementsByName(is_visible_flag_field_name)[0].value = flagValue ? 1 : 0;
+        }
+
+        function resetWeekDays(weekIndex) {
+          var weekElement = $('.work-pattern-week').eq(weekIndex);
+          var weekendCells = weekElement.find('tbody tr td:not(:nth-child(-n+6))');
+
+          weekElement.find('input').val('');
+          weekElement.find('.work-day-type').val(1); //se every day as a non working day
+          weekElement.find('.leave-days').val(0);
+          weekendCells.find('input,.leave-days').attr('disabled', 'disabled');
+        }
+
+        function setInitialWeekDaysValues(weekIndex) {
+          var weekElement = $('.work-pattern-week').eq(weekIndex);
+          var workDayTypeSelects = weekElement.find('.work-day-type');
+          var workingDayCells = weekElement.find('tbody tr td:nth-child(-n+6)');
+
+          workDayTypeSelects.slice(0, 5).val(WORKING_DAY); //set first five days as working day
+          workDayTypeSelects.slice(5).val(WEEKEND); // set the last two days as weekend
+          workingDayCells.find('input, .leave-days').removeAttr('disabled');
+        }
+
+        function showWeek(weekIndex) {
+          $('.work-pattern-week').eq(weekIndex).show();
+          setInitialWeekDaysValues(weekIndex);
+          setWeekVisibleFlag(weekIndex, true);
+        }
+
+        function hideWeek(weekIndex) {
+          $('.work-pattern-week').eq(weekIndex).hide();
+          resetWeekDays(weekIndex);
+          setWeekVisibleFlag(weekIndex, false);
+        }
+
         function disableNonWorkingDayFields() {
           $('.work-pattern-week').each(function(weekIndex, weekElement) {
             weekElement = $(weekElement);
@@ -112,47 +149,7 @@
           });
         }
 
-        disableNonWorkingDayFields();
-
         $('#number_of_weeks').on('change', function() {
-
-          function setWeekVisibleFlag(weekIndex, flagValue) {
-            var is_visible_flag_field_name = 'weeks['+weekIndex+'][is_visible]';
-            document.getElementsByName(is_visible_flag_field_name)[0].value = flagValue ? 1 : 0;
-          }
-
-          function resetWeekDays(weekIndex) {
-            var weekElement = $('.work-pattern-week').eq(weekIndex);
-            var weekendCells = weekElement.find('tbody tr td:not(:nth-child(-n+6))');
-
-            weekElement.find('input').val('');
-            weekElement.find('.work-day-type').val(1); //se every day as a non working day
-            weekElement.find('.leave-days').val(0);
-            weekendCells.find('input,.leave-days').attr('disabled', 'disabled');
-          }
-
-          function setInitialWeekDaysValues(weekIndex) {
-            var weekElement = $('.work-pattern-week').eq(weekIndex);
-            var workDayTypeSelects = weekElement.find('.work-day-type');
-            var workingDayCells = weekElement.find('tbody tr td:nth-child(-n+6)');
-
-            workDayTypeSelects.slice(0, 5).val(WORKING_DAY); //set first five days as working day
-            workDayTypeSelects.slice(5).val(WEEKEND); // set the last two days as weekend
-            workingDayCells.find('input, .leave-days').removeAttr('disabled');
-          }
-
-          function showWeek(weekIndex) {
-            $('.work-pattern-week').eq(weekIndex).show();
-            setInitialWeekDaysValues(weekIndex);
-            setWeekVisibleFlag(weekIndex, true);
-          }
-
-          function hideWeek(weekIndex) {
-            $('.work-pattern-week').eq(weekIndex).hide();
-            resetWeekDays(weekIndex);
-            setWeekVisibleFlag(weekIndex, false);
-          }
-
           for(i = 0; i < 5; i++) {
             if(i < this.value) {
               showWeek(i);
@@ -161,6 +158,8 @@
             }
           }
         });
+
+        disableNonWorkingDayFields();
       });
     </script>
   {/literal}
