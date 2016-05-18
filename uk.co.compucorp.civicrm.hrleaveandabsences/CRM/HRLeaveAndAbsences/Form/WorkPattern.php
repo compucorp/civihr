@@ -51,7 +51,18 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             'weeks'     => [
               // this is used to simulate an existing week, so we can have the
               // first week visible when adding a new pattern
-              ['is_visible' => true]
+              [
+                'is_visible' => true,
+                'days' => [
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
+                ]
+              ]
             ]
           ];
         }
@@ -163,13 +174,22 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             'select',
             "weeks[$i][days][$j][type]",
             false,
-            CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions()
+            CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions(),
+            false,
+            ['class' => 'work-day-type']
           );
           $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5]);
           $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5]);
           $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4]);
           $this->add('text', "weeks[$i][days][$j][number_of_hours]");
-          $this->add('select', "weeks[$i][days][$j][leave_days]", false, $leaveDaysAmounts);
+          $this->add(
+            'select',
+            "weeks[$i][days][$j][leave_days]",
+            false,
+            $leaveDaysAmounts,
+            false,
+            ['class' => 'leave-days']
+          );
         }
       }
     }
