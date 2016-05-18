@@ -34,18 +34,30 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
      * {@inheritdoc}
      */
     public function setDefaultValues() {
-        if(empty($this->defaultValues)) {
-            if ($this->_id) {
-                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
-            } else {
-                $this->defaultValues = [
-                    'is_active' => 1,
-                    'weeks' => []
-                ];
-            }
-        }
+      if (empty($this->defaultValues)) {
+        if ($this->_id) {
+          $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
 
-        return $this->defaultValues;
+          // We need to add the is_visible information here so it can be used
+          // to fill the weeks[index][is_visible] fields
+          foreach ($this->defaultValues['weeks'] as $i => $week) {
+            if (!empty($week['days'])) {
+              $this->defaultValues['weeks'][$i]['is_visible'] = true;
+            }
+          }
+        } else {
+          $this->defaultValues = [
+            'is_active' => 1,
+            'weeks'     => [
+              // this is used to simulate an existing week, so we can have the
+              // first week visible when adding a new pattern
+              ['is_visible' => true]
+            ]
+          ];
+        }
+      }
+
+      return $this->defaultValues;
     }
 
     /**
@@ -61,6 +73,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 
         $this->addButtons($this->getAvailableButtons());
 
+        $this->assign('weeks_visibility', $this->getWeeksVisibility());
         $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
 
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
@@ -144,7 +157,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       $leaveDaysAmounts = CRM_Core_BAO_OptionValue::getOptionValuesAssocArrayFromName('hrleaveandabsences_leave_days_amounts');
       $daysPerWeek = 7;
       for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
-        $this->add('hidden', "weeks[$i][days][number]");
+        $this->add('hidden', "weeks[$i][is_visible]");
         for($j = 0; $j < $daysPerWeek; $j++) {
           $this->add(
             'select',
@@ -371,5 +384,32 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             null,
             false
         );
+    }
+
+    /**
+     * This is a helper method to check which weeks are visible on the Calendar
+     * tab.
+     *
+     * If the form has been submitted, we look at the values of the
+     * weeks[index][is_visible] fields. Otherwise, we just go with the
+     * defaultValues loaded from the database;
+     *
+     * @return array An indexed array in the format [weekIndex => true|false]
+     */
+    private function getWeeksVisibility()
+    {
+      $visibility = [];
+      //we need to call this to make sure the defaultValues are loaded
+      $this->setDefaultValues();
+
+      for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
+        if($this->isSubmitted()) {
+          $visibility[$i] = $this->getSubmitValue("weeks[$i][is_visible]");
+        } else {
+          $visibility[$i] = empty($this->defaultValues['weeks'][$i]['is_visible']) ? false : true;
+        }
+      }
+
+      return $visibility;
     }
 }

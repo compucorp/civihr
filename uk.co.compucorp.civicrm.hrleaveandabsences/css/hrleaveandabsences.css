@@ -32,6 +32,8 @@
   margin-bottom: 15px;
 }
 
+.work-pattern-calendar .work-pattern-week.empty-week { display: none; }
+
 .work-pattern-calendar .work-pattern-week .week-number {
   float: left;
   padding: 5px 0 15px 5px;

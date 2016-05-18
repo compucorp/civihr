@@ -8,8 +8,8 @@
     </select>
   </div>
   {section name=i start=0 loop=$max_number_of_weeks step=1}
-    <div class="work-pattern-week">
-      <div class="week-number">Week {"`$smarty.section.i.index+1`"}</div>
+    <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} empty-week{/if}" >
+      <div class="week-number">Week {"`$smarty.section.i.index+1`"}{$form.weeks[$smarty.section.i.index].is_visible.html}</div>
       <div class="week-hours">Total hours: <span class="number-of-hours">37.5</span></div>
       <table class="week-days">
         <thead>
@@ -88,5 +88,35 @@
         </tbody>
       </table>
     </div>
+    {literal}
+    <script type="text/javascript">
+      CRM.$(function($) {
+        $('#number_of_weeks').on('change', function() {
+          function setWeekVisibleFlag(weekIndex, flagValue) {
+            var is_visible_flag_field_name = 'weeks['+weekIndex+'][is_visible]';
+            document.getElementsByName(is_visible_flag_field_name)[0].value = flagValue ? 1 : 0;
+          }
+
+          function showWeek(weekIndex) {
+            $('.work-pattern-week').eq(weekIndex).show();
+            setWeekVisibleFlag(weekIndex, true);
+          }
+
+          function hideWeek(weekIndex) {
+            $('.work-pattern-week').eq(weekIndex).hide();
+            setWeekVisibleFlag(weekIndex, false);
+          }
+
+          for(i = 0; i < 5; i++) {
+            if(i < this.value) {
+              showWeek(i);
+            } else {
+              hideWeek(i);
+            }
+          }
+        });
+      });
+    </script>
+    {/literal}
   {/section}
 </div>
