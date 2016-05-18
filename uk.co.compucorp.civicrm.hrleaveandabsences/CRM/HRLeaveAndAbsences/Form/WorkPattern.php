@@ -85,6 +85,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         $this->addButtons($this->getAvailableButtons());
 
         $this->assign('weeks_visibility', $this->getWeeksVisibility());
+        $this->assign('number_of_visible_weeks', $this->getNumberOfVisibleWeeks());
         $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
 
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
@@ -424,12 +425,22 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 
       for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
         if($this->isSubmitted()) {
-          $visibility[$i] = $this->getSubmitValue("weeks[$i][is_visible]");
+          $visibility[$i] = (bool)$this->getSubmitValue("weeks[$i][is_visible]");
         } else {
           $visibility[$i] = empty($this->defaultValues['weeks'][$i]['is_visible']) ? false : true;
         }
       }
 
       return $visibility;
+    }
+
+    /**
+     * Get the number of Weeks visible on the Calendar tab.
+     *
+     * @return int
+     */
+    private function getNumberOfVisibleWeeks()
+    {
+      return count(array_filter($this->getWeeksVisibility()));
     }
 }
