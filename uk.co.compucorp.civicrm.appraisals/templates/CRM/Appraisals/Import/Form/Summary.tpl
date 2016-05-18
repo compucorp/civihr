@@ -31,14 +31,14 @@
  {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
  {include file="CRM/common/WizardHeader.tpl"}
 
-<div id="help">
+<div class="help">
     <p>
     <strong>{ts}Import has completed successfully.{/ts}</strong> {ts}The information below summarizes the results.{/ts}
     </p>
 
    {if $unMatchCount }
         <p class="error">
-        {ts count=$unMatchCount plural='CiviCRM has detected mismatched participant IDs. These records have not been Updated.'}CiviCRM has detected mismatched participant ID. This record have not been updated.{/ts}
+        {ts count=$unMatchCount plural='CiviHR has detected mismatched participant IDs. These records have not been Updated.'}CiviHR has detected mismatched participant ID. This record have not been updated.{/ts}
         </p>
         <p class="error">
         {ts 1=$downloadMismatchRecordsUrl}You can <a href="%1">Download Mismatched Participantss</a>. You may then correct them, and import the new file with the corrected data.{/ts}
@@ -47,7 +47,7 @@
 
     {if $invalidRowCount }
         <p class="error">
-        {ts count=$invalidRowCount plural='CiviCRM has detected invalid data and/or formatting errors in %count records. These records have not been imported.'}CiviCRM has detected invalid data and/or formatting errors in one record. This record have not been imported.{/ts}
+        {ts count=$invalidRowCount plural='CiviHR has detected invalid data and/or formatting errors in %count records. These records have not been imported.'}CiviHR has detected invalid data and/or formatting errors in one record. This record have not been imported.{/ts}
         </p>
         <p class="error">
         {ts 1=$downloadErrorRecordsUrl}You can <a href="%1">Download Errors</a>. You may then correct them, and import the new file with the corrected data.{/ts}
@@ -56,7 +56,7 @@
 
     {if $conflictRowCount}
         <p class="error">
-        {ts count=$conflictRowCount plural='CiviCRM has detected %count records with conflicting transaction IDs within this data file or relative to existing participant records. These records have not been imported.'}CiviCRM has detected one record with conflicting transaction ID within this data file or relative to existing particpant records. This record have not been imported.{/ts}
+        {ts count=$conflictRowCount plural='CiviHR has detected %count records with conflicting transaction IDs within this data file or relative to existing participant records. These records have not been imported.'}CiviHR has detected one record with conflicting transaction ID within this data file or relative to existing particpant records. This record have not been imported.{/ts}
         </p>
         <p class="error">
         {ts 1=$downloadConflictRecordsUrl}You can <a href="%1">Download Conflicts</a>. You may then review these records to determine if they are actually conflicts, and correct the transaction IDs for those that are not.{/ts}
@@ -65,7 +65,7 @@
 
     {if $duplicateRowCount}
         <p {if $dupeError}class="error"{/if}>
-        {ts count=$duplicateRowCount plural='CiviCRM has detected %count records which are duplicates of existing CiviCRM participant records.'}CiviCRM has detected one record which is a duplicate of existing CiviCRM participant record.{/ts} {$dupeActionString}
+        {ts count=$duplicateRowCount plural='CiviHR has detected %count records which are duplicates of existing CiviHR participant records.'}CiviHR has detected one record which is a duplicate of existing CiviHR participant record.{/ts} {$dupeActionString}
         </p>
         <p {if $dupeError}class="error"{/if}>
         {ts 1=$downloadDuplicateRecordsUrl}You can <a href="%1">Download Duplicates</a>. You may then review these records to determine if they are actually duplicates, and correct the transaction IDs for those that are not.{/ts}
@@ -119,7 +119,7 @@
     {if $duplicateRowCount}
     <tr class="error"><td class="label">{ts}Duplicate Rows{/ts}</td>
         <td class="data">{$duplicateRowCount}</td>
-        <td class="explanation">{ts}Rows which are duplicates of existing CiviCRM records.{/ts} {$dupeActionString}
+        <td class="explanation">{ts}Rows which are duplicates of existing CiviHR records.{/ts} {$dupeActionString}
             {if $duplicateRowCount}
                 <p><a href="{$downloadDuplicateRecordsUrl}">{ts}Download Duplicates{/ts}</a></p>
             {/if}
