@@ -67,13 +67,13 @@
           </tr>
           <tr class="hours-row">
             <td>{ts}Hours{/ts}</td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.0.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.1.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.2.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.3.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.4.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.5.number_of_hours.value}"></td>
-            <td><input type="text" class="crm-form-text" readonly value="{$form.weeks[$smarty.section.i.index].days.6.number_of_hours.value}"></td>
+            <td>{$form.weeks[$smarty.section.i.index].days.0.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.1.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.2.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.3.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.4.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.5.number_of_hours.html}</td>
+            <td>{$form.weeks[$smarty.section.i.index].days.6.number_of_hours.html}</td>
           </tr>
           <tr>
             <td>{ts}Leave days{/ts}</td>
@@ -150,8 +150,36 @@
         }
 
         function getWorkDayIndexFromFieldId(id) {
-          var index = id.replace(/weeks_\d+_days_(\d)_type/, '$1');
+          var index = id.replace(/weeks_\d+_days_(\d)_.+/, '$1');
           return parseInt(index);
+        }
+
+        function getWorkWeekIndexFromFieldId(id) {
+          var index = id.replace(/weeks_(\d+)_days_\d_.+/, '$1');
+          return parseInt(index);
+        }
+
+        function calculateNumberOfHoursForADay(weekIndex, dayIndex) {
+          var fieldsPrefix = 'weeks_' + weekIndex + '_days_' + dayIndex + '_';
+          var timeFrom = document.getElementById(fieldsPrefix + 'time_from').value;
+          var timeTo = document.getElementById(fieldsPrefix + 'time_to').value;
+          var breakHours = document.getElementById(fieldsPrefix + 'break').value;
+          var hoursField = document.getElementById(fieldsPrefix + 'number_of_hours');
+          var secondsInPeriod = 0;
+          var secondsInBreak = 0;
+          var numberOfHours = 0;
+
+          timeFrom = Date.parse('2016-01-01 ' + timeFrom);
+          timeTo = Date.parse('2016-01-01 ' + timeTo);
+          breakHours = parseFloat(breakHours);
+
+          if (!isNaN(timeFrom) && !isNaN(timeTo) && !isNaN(breakHours)) {
+            secondsInPeriod = (timeTo - timeFrom) / 1000;
+            secondsInBreak = breakHours * 3600;
+            numberOfHours = (secondsInPeriod - secondsInBreak) / 3600;
+            numberOfHours = numberOfHours < 0 ? 0 : numberOfHours.toFixed(2);
+            hoursField.value = numberOfHours;
+          }
         }
 
         $('#number_of_weeks').on('change', function() {
@@ -176,6 +204,12 @@
           } else {
             workDayCells.find('input, .leave-days').removeAttr('disabled');
           }
+        });
+
+        $('.work-day-break, .work-day-time').on('input', function() {
+            var dayIndex = getWorkDayIndexFromFieldId(this.id);
+            var weekIndex = getWorkWeekIndexFromFieldId(this.id);
+            calculateNumberOfHoursForADay(weekIndex, dayIndex);
         });
 
         disableNonWorkingDayFields();

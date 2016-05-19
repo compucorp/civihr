@@ -179,10 +179,10 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             false,
             ['class' => 'work-day-type']
           );
-          $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5]);
-          $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5]);
-          $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4]);
-          $this->add('text', "weeks[$i][days][$j][number_of_hours]");
+          $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
+          $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
+          $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4, 'class' => 'work-day-break']);
+          $this->add('text', "weeks[$i][days][$j][number_of_hours]", '', ['readonly' => 'readonly']);
           $this->add(
             'select',
             "weeks[$i][days][$j][leave_days]",
