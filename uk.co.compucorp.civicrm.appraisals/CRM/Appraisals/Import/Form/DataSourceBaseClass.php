@@ -80,12 +80,8 @@ class CRM_Appraisals_Import_Form_DataSourceBaseClass extends CRM_Core_Form {
   public function buildQuickForm() {
     //Setting Upload File Size
     $config = CRM_Core_Config::singleton();
-    if ($config->maxImportFileSize >= 8388608) {
-      $uploadFileSize = 8388608;
-    }
-    else {
-      $uploadFileSize = $config->maxImportFileSize;
-    }
+
+    $uploadFileSize = CRM_Utils_Number::formatUnitSize($config->maxFileSize . 'm', TRUE);
     $uploadSize = round(($uploadFileSize / (1024 * 1024)), 2);
 
     $this->assign('uploadSize', $uploadSize);
