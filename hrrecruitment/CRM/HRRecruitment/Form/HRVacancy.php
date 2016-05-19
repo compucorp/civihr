@@ -136,12 +136,12 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->addSelect('location', array('label' => ts('Location'), 'entity' => 'HRJobDetails', 'field' => 'location'));
     $this->add('text', 'salary', ts('Salary'), $attributes['salary']);
 
-    $this->addWysiwyg('description', ts('Description'), array('rows' => 2, 'cols' => 40));
-    $this->addWysiwyg('benefits', ts('Benefits'), array('rows' => 2, 'cols' => 40));
-    $this->addWysiwyg('requirements', ts('Requirements'), array('rows' => 2, 'cols' => 40));
+    $this->add('wysiwyg', 'description', ts('Description'), array('rows' => 2, 'cols' => 40));
+    $this->add('wysiwyg', 'benefits', ts('Benefits'), array('rows' => 2, 'cols' => 40));
+    $this->add('wysiwyg', 'requirements', ts('Requirements'), array('rows' => 2, 'cols' => 40));
 
-    $this->addDateTime('start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDateTime'));
-    $this->addDateTime('end_date', ts('End Date'), FALSE, array('formatType' => 'activityDateTime'));
+    $this->add('datepicker', 'start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDateTime'));
+    $this->add('datepicker', 'end_date', ts('End Date'), FALSE, array('formatType' => 'activityDateTime'));
 
     $include = & $this->addElement('advmultiselect', 'stages',
       '', CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'"),
@@ -274,5 +274,12 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       }
       CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/vacancy/find', $urlParams));
     }
+  }
+
+  /**
+   * Classes extending CRM_Core_Form should implement this method.
+   */
+  public function getDefaultEntity() {
+    return 'HRVacancy';
   }
 }
