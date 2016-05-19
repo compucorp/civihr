@@ -341,9 +341,9 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
      */
     private function validateNonWorkingDay($weekIndex, $dayIndex, $day, &$errors)
     {
-      $hasTimeFrom = strlen(trim($day['time_from'])) > 0;
-      $hasTimeTo = strlen(trim($day['time_to'])) > 0;
-      $hasBreak = strlen(trim($day['break'])) > 0;
+      $hasTimeFrom = isset($day['time_from']) && strlen(trim($day['time_from'])) > 0;
+      $hasTimeTo = isset($day['time_to']) && strlen(trim($day['time_to'])) > 0;
+      $hasBreak = isset($day['break']) && strlen(trim($day['break'])) > 0;
       $timeFromField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_from');
       $timeToField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'time_to');
       $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
