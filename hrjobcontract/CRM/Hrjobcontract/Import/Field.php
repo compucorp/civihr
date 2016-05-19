@@ -94,7 +94,7 @@ class CRM_Hrjobcontract_Import_Field {
     switch ($this->_name) {
       case 'contact_id':
         // note: we validate extistence of the contact in API, upon
-        // insert (it would be too costlty to do a db call here)
+        // insert (it would be too costly to do a db call here)
         return CRM_Utils_Rule::integer($this->_value);
       default:
         break;

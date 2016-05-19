@@ -43,7 +43,7 @@
           <th>{ts 1=$smarty.section.rows.iteration}Import Data (row %1){/ts}</th>
         {/if}
       {/section}
-      <th>{ts}Matching CiviCRM Field{/ts}</th>
+      <th>{ts}Matching CiviHR Field{/ts}</th>
     </tr>
 
     {*Loop on columns parsed from the import data rows*}
@@ -85,13 +85,12 @@
           </table>
         </div>
         <script type="text/javascript">
-          CRM.$(function($) {
-            {if $mappingDetailsError }
-              $('#saveDetails').show();
-            {else}
-              $('#saveDetails').hide();
-            {/if}
-          });
+          {if $mappingDetailsError }
+            cj('#saveDetails').show();
+          {else}
+            cj('#saveDetails').hide();
+          {/if}
+
           {literal}
           function showSaveDetails(chkbox) {
             if (chkbox.checked) {
