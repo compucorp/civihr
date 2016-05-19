@@ -101,7 +101,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         if ($this->_action & (CRM_Core_Action::ADD | CRM_Core_Action::UPDATE)) {
             // store the submitted values in an array
             $params = $this->exportValues();
-
+            $params['weeks'] = $this->getWeeksFromSubmittedParams($params);
             if ($this->_action & CRM_Core_Action::UPDATE) {
                 $params['id'] = $this->_id;
             }
@@ -442,5 +442,31 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
     private function getNumberOfVisibleWeeks()
     {
       return count(array_filter($this->getWeeksVisibility()));
+    }
+
+    /**
+     * Returns the weeks from a params array of submitted form values.
+     *
+     * The submitted form values will include even weeks that are not visible
+     * on the form, but this method returns only the weeks that were visible.
+     *
+     * @param array $params An array of the submitted form values
+     *
+     * @return array An array containing only the visible weeks among the submitted values.
+     */
+    private function getWeeksFromSubmittedParams($params)
+    {
+      $weeks = [];
+      if(!isset($params['weeks']) || !is_array($params['weeks'])) {
+        return $weeks;
+      }
+
+      foreach($params['weeks'] as $week) {
+        if(!empty($week['is_visible'])) {
+          $weeks[] = $week;
+        }
+      }
+
+      return $weeks;
     }
 }
