@@ -50,7 +50,8 @@
 .work-pattern-calendar .work-pattern-week .week-days input {
   width: 100%;
   padding: 5px;
-  margin: 2px
+  margin: 2px;
+  text-align: center;
 }
 
 .work-pattern-calendar .work-pattern-week .week-days select { width: 100%; }

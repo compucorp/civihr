@@ -207,6 +207,27 @@
           numberOfHoursElement.text(totalNumberOfHours);
         }
 
+        function updateHoursForFieldChange(field) {
+          var dayIndex = getWorkDayIndexFromFieldId(field.id);
+          var weekIndex = getWorkWeekIndexFromFieldId(field.id);
+          calculateNumberOfHoursForADay(weekIndex, dayIndex);
+          calculateNumberOfHoursForAWeek(weekIndex);
+        }
+
+        function setTimeMasks() {
+          var inputMask = Inputmask({'mask': '99:99', 'oncomplete': function() {
+            updateHoursForFieldChange(this);
+          }});
+          inputMask.mask(document.querySelectorAll('.work-day-time'));
+        }
+
+        function setBreakMasks() {
+          var inputMask = Inputmask({'alias': 'decimal', 'rightAlign': false, 'oncomplete': function() {
+            updateHoursForFieldChange(this);
+          }});
+          inputMask.mask(document.querySelectorAll('.work-day-break'));
+        }
+
         $('#number_of_weeks').on('change', function() {
           for(i = 0; i < 5; i++) {
             if(i < this.value) {
@@ -231,14 +252,9 @@
           }
         });
 
-        $('.work-day-break, .work-day-time').on('input', function() {
-            var dayIndex = getWorkDayIndexFromFieldId(this.id);
-            var weekIndex = getWorkWeekIndexFromFieldId(this.id);
-            calculateNumberOfHoursForADay(weekIndex, dayIndex);
-            calculateNumberOfHoursForAWeek(weekIndex);
-        });
-
         disableNonWorkingDayFields();
+        setTimeMasks();
+        setBreakMasks();
       });
     </script>
   {/literal}

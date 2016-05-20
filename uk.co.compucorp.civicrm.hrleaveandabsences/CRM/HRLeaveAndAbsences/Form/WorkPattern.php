@@ -84,6 +84,8 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
 
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.min.js');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.numeric.extensions.min.js');
 
         parent::buildQuickForm();
     }
