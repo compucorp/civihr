@@ -10,7 +10,7 @@
   {section name=i start=0 loop=$max_number_of_weeks step=1}
     <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} empty-week{/if}" >
       <div class="week-number">Week {"`$smarty.section.i.index+1`"}{$form.weeks[$smarty.section.i.index].is_visible.html}</div>
-      <div class="week-hours">Total hours: <span class="number-of-hours">37.5</span></div>
+      <div class="week-hours">Total hours: <span class="number-of-hours">{$weeks_hours[$smarty.section.i.index]}</span></div>
       <table class="week-days">
         <thead>
           <tr>
@@ -182,6 +182,18 @@
           }
         }
 
+        function calculateNumberOfHoursForAWeek(weekIndex) {
+          var weekSelector ='.work-pattern-week:nth('+weekIndex+')';
+          var numberOfHoursElement = $(weekSelector + ' .number-of-hours');
+          var hoursFields = $(weekSelector + ' .work-day-hours');
+          var totalNumberOfHours = 0;
+          hoursFields.each(function(i, element) {
+            totalNumberOfHours += element.value ? parseFloat(element.value) : 0;
+          });
+
+          numberOfHoursElement.text(totalNumberOfHours);
+        }
+
         $('#number_of_weeks').on('change', function() {
           for(i = 0; i < 5; i++) {
             if(i < this.value) {
@@ -210,6 +222,7 @@
             var dayIndex = getWorkDayIndexFromFieldId(this.id);
             var weekIndex = getWorkWeekIndexFromFieldId(this.id);
             calculateNumberOfHoursForADay(weekIndex, dayIndex);
+            calculateNumberOfHoursForAWeek(weekIndex);
         });
 
         disableNonWorkingDayFields();

@@ -37,14 +37,8 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       if (empty($this->defaultValues)) {
         if ($this->_id) {
           $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
+          $this->setIsVisibleForWeeksInDefaultValues();
 
-          // We need to add the is_visible information here so it can be used
-          // to fill the weeks[index][is_visible] fields
-          foreach ($this->defaultValues['weeks'] as $i => $week) {
-            if (!empty($week['days'])) {
-              $this->defaultValues['weeks'][$i]['is_visible'] = true;
-            }
-          }
         } else {
           $this->defaultValues = [
             'is_active' => 1,
@@ -85,6 +79,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         $this->addButtons($this->getAvailableButtons());
 
         $this->assign('weeks_visibility', $this->getWeeksVisibility());
+        $this->assign('weeks_hours', $this->getWeeksNumberOfHours());
         $this->assign('number_of_visible_weeks', $this->getNumberOfVisibleWeeks());
         $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
 
@@ -182,7 +177,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
           $this->add('text', "weeks[$i][days][$j][time_from]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
           $this->add('text', "weeks[$i][days][$j][time_to]", '', ['maxlength' => 5, 'class' => 'work-day-time']);
           $this->add('text', "weeks[$i][days][$j][break]", '', ['maxlength' => 4, 'class' => 'work-day-break']);
-          $this->add('text', "weeks[$i][days][$j][number_of_hours]", '', ['readonly' => 'readonly']);
+          $this->add('text', "weeks[$i][days][$j][number_of_hours]", '', ['readonly' => 'readonly', 'class' => 'work-day-hours']);
           $this->add(
             'select',
             "weeks[$i][days][$j][leave_days]",
@@ -468,5 +463,85 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       return $weeks;
+    }
+
+    /**
+     * Sets the is_visible property for the weeks in the defaultValues array.
+     *
+     * A week is visible if it has days in it.
+     */
+    private function setIsVisibleForWeeksInDefaultValues()
+    {
+      // We need to add the is_visible information here so it can be used
+      // to fill the weeks[index][is_visible] fields
+      foreach($this->defaultValues['weeks'] as $i => $week) {
+        $this->defaultValues['weeks'][$i]['is_visible'] = !empty($week['days']);
+      }
+    }
+
+    /**
+     * Returns the total number of hours for each week.
+     *
+     * If the form has been submitted, it calculate the number of hours based
+     * on the submitted values. Otherwise, the it will be calculated from
+     * defaultValues.
+     *
+     * @return array An array in the format [weekIndex => numberOfHours]
+     */
+    private function getWeeksNumberOfHours()
+    {
+      if($this->isSubmitted()) {
+        return $this->calculateWeekHoursFromSubmittedValues();
+      } else {
+        return $this->calculateWeekHoursFromDefaultValues();
+      }
+    }
+
+    /**
+     * Calculate the total number of hours for each week, based on the submitted
+     * values.
+     *
+     * @return array An array in the format [weekIndex => numberOfHours]
+     */
+    private function calculateWeekHoursFromSubmittedValues()
+    {
+      $numberOfHours = [];
+      for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
+        $weekNumberOfHours = 0;
+        for($j = 0; $j < 7; $j++) {
+          $fieldHours = $this->getSubmitValue("weeks[$i][days][$j][number_of_hours]");
+          if($fieldHours) {
+            $weekNumberOfHours += (float)$fieldHours;
+          }
+        }
+
+        $numberOfHours[$i] = $weekNumberOfHours;
+      }
+
+      return $numberOfHours;
+    }
+
+    /**
+     * Calculate the total number of hours for each week, based on the loaded
+     * defaultValues.
+     *
+     * @return array An array in the format [weekIndex => numberOfHours]
+     */
+    private function calculateWeekHoursFromDefaultValues()
+    {
+      $numberOfHours = [];
+      //we need to call this to make sure the defaultValues are loaded
+      $this->setDefaultValues();
+
+      for($i = 0; $i < self::MAX_NUMBER_OF_WEEKS; $i++) {
+        $weekNumberOfHours = 0;
+        if(isset($this->defaultValues['weeks'][$i]['days'])) {
+          $days = $this->defaultValues['weeks'][$i]['days'];
+          $weekNumberOfHours = array_sum(array_column($days, 'number_of_hours'));
+        }
+        $numberOfHours[$i] = $weekNumberOfHours;
+      }
+
+      return $numberOfHours;
     }
 }
