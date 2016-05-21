@@ -76,7 +76,7 @@
             <td>{$form.weeks[$smarty.section.i.index].days.6.number_of_hours.html}</td>
           </tr>
           <tr>
-            <td>{ts}Leave days{/ts}</td>
+            <td>{ts}Leave days{/ts} {help id="id-leave-days"}</td>
             <td>{$form.weeks[$smarty.section.i.index].days.0.leave_days.html}</td>
             <td>{$form.weeks[$smarty.section.i.index].days.1.leave_days.html}</td>
             <td>{$form.weeks[$smarty.section.i.index].days.2.leave_days.html}</td>
