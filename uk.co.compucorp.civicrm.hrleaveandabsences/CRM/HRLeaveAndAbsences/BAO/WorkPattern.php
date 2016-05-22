@@ -69,6 +69,19 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Deletes the Work Pattern with the given ID
+   *
+   * @param int $id The ID of the Work Pattern to be deleted
+   */
+  public static function del($id)
+  {
+    $workPattern = new CRM_HRLeaveAndAbsences_DAO_WorkPattern();
+    $workPattern->id = $id;
+    $workPattern->find(true);
+    $workPattern->delete();
+  }
+
+  /**
    * This method works like find() (it actually uses it)
    * but it includes the number_of_weeks and number_of_hours
    * for each pattern.

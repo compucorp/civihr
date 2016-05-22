@@ -228,6 +228,37 @@
           inputMask.mask(document.querySelectorAll('.work-day-break'));
         }
 
+        function initDeleteButton() {
+          $('.crm-button-type-delete').on('click', function(e) {
+            e.preventDefault();
+            CRM.confirm({
+                title: ts('Delete Work Pattern'),
+                message: ts('Are you sure you want to delete this Work Pattern?'),
+                options: {
+                  yes: ts('Yes'),
+                  no: ts('No')
+                }
+              })
+              .on('crmConfirm:yes', deleteCallback);
+          });
+        }
+
+        function disableFormChangesNotification() {
+          var form = $('form.CRM_HRLeaveAndAbsences_Form_WorkPattern');
+          form.attr('data-warn-changes', 'false');
+        }
+
+        function deleteCallback() {
+          //Since we're already displayed the delete confirmation,
+          //there's no reason to show another notification about
+          //changes made to the pattern
+          disableFormChangesNotification();
+
+          {/literal}
+          window.location = "{$delete_url}";
+          {literal}
+        }
+
         $('#number_of_weeks').on('change', function() {
           for(i = 0; i < 5; i++) {
             if(i < this.value) {
@@ -255,6 +286,7 @@
         disableNonWorkingDayFields();
         setTimeMasks();
         setBreakMasks();
+        initDeleteButton();
       });
     </script>
   {/literal}
