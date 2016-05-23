@@ -11,8 +11,8 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 {
 
     /**
-    *  The maximum number of weeks this form can handle
-    */
+     * The maximum number of weeks this form can handle
+     */
     const MAX_NUMBER_OF_WEEKS = 5;
 
     /**
@@ -87,6 +87,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
         CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.min.js');
         CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.numeric.extensions.min.js');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.workpattern.js');
 
         parent::buildQuickForm();
     }
@@ -193,12 +194,23 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
     }
 
+    /**
+     * A helper method to call the CRM_Core_DAO::getAttribute to get the
+     * fields attributes of the WorkPattern BAO
+     *
+     * @param $field - The name of a field of the WorkPattern BAO
+     *
+     * @return array - The attributes returned by CRM_Core_DAO::getAttribute
+     */
     private function getDAOFieldAttributes($field)
     {
         $dao = 'CRM_HRLeaveAndAbsences_DAO_WorkPattern';
         return CRM_Core_DAO::getAttribute($dao, $field);
     }
 
+    /**
+     * Adds fields validations rules to the form
+     */
     private function addFieldsRules()
     {
       $this->addFormRule([$this, 'formRules']);
@@ -361,18 +373,40 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
     }
 
+    /**
+     * A helper method to easily get the names of the Calendar fields.
+     *
+     * The calendar fields are stored in a nested array structure, and their
+     * names reflect this structure.
+     *
+     * @param $weekIndex - The index of the Week this field belongs to
+     * @param $dayIndex - The index of the Day this field belongs to
+     * @param $field - The field name
+     *
+     * @return string
+     */
     private function getWorkDayFieldName($weekIndex, $dayIndex, $field)
     {
       return "weeks[{$weekIndex}][days][{$dayIndex}][$field]";
     }
 
+    /**
+     * Checks if the times entered on the form are valid.
+     *
+     * The times are expected to follow the HH:MM format. This method also,
+     * checks for invalid hours like 32:99
+     *
+     * @param string $time The value to be validated
+     *
+     * @return boolean
+     */
     private function isValidHour($time)
     {
       return preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $time);
     }
 
     /**
-     * An helper method to retrieve the buttons available
+     * A helper method to retrieve the buttons available
      * on the form.
      *
      * The Delete button is only available while editing an
@@ -394,6 +428,12 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         return $buttons;
     }
 
+    /**
+     * Returns the URL to where the user will be redirected after they click
+     * on the Delete button.
+     *
+     * @return string
+     */
     private function getDeleteUrl()
     {
         return CRM_Utils_System::url(
