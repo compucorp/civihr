@@ -8,7 +8,7 @@
     </select>
   </div>
   {section name=i start=0 loop=$max_number_of_weeks step=1}
-    <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} empty-week{/if}" >
+    <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} hidden-week{/if}" >
       <div class="week-number">Week {"`$smarty.section.i.index+1`"}{$form.weeks[$smarty.section.i.index].is_visible.html}</div>
       <div class="week-hours">Total hours: <span class="number-of-hours">{$weeks_hours[$smarty.section.i.index]}</span></div>
       <table class="week-days">
@@ -132,7 +132,7 @@
 
         function showWeek(weekIndex) {
           if(!weekIsVisible(weekIndex)) {
-            $('.work-pattern-week').eq(weekIndex).show();
+            $('.work-pattern-week').eq(weekIndex).removeClass('hidden-week');
             setInitialWeekDaysValues(weekIndex);
             setWeekVisibleFlag(weekIndex, true);
           }
@@ -140,7 +140,7 @@
 
         function hideWeek(weekIndex) {
           if(weekIsVisible(weekIndex)) {
-            $('.work-pattern-week').eq(weekIndex).hide();
+            $('.work-pattern-week').eq(weekIndex).addClass('hidden-week');
             resetWeekDays(weekIndex);
             setWeekVisibleFlag(weekIndex, false);
           }
