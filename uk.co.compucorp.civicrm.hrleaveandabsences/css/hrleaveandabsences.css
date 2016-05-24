@@ -22,3 +22,48 @@
 #crm-container .crm-leave-and-absences-form-block .crm-submit-buttons .crm-button-type-cancel { float: right !important; }
 
 .crm-work-pattern-form-block .ui-tabs.ui-widget-content { background: none; }
+
+.work-pattern-calendar .number-of-weeks { padding: 15px 0 15px 0; }
+
+.work-pattern-calendar .work-pattern-week {
+  border-top: 1px solid rgba(0, 0, 0, .2);
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+  padding: 15px 0 15px 0;
+  margin-bottom: 15px;
+}
+
+.work-pattern-calendar .work-pattern-week.hidden-week { display: none; }
+
+.work-pattern-calendar .work-pattern-week .week-number {
+  float: left;
+  padding: 5px 0 15px 5px;
+  font-weight: bold;
+}
+
+.work-pattern-calendar .work-pattern-week .week-hours {
+  float: right;
+  padding: 5px 5px 15px 0;
+}
+
+.work-pattern-calendar .work-pattern-week .week-days td { padding: 5px 10px 5px 10px; }
+
+.work-pattern-calendar .work-pattern-week .week-days input {
+  width: 100%;
+  padding: 5px;
+  margin: 2px;
+  text-align: center;
+}
+
+.work-pattern-calendar .work-pattern-week .week-days select { width: 100%; }
+
+.work-pattern-calendar .work-pattern-week .week-hours .number-of-hours {font-weight: bold;}
+
+.work-pattern-calendar .work-pattern-week .week-days .hours-row td {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.work-pattern-calendar .work-pattern-week .week-days .hours-row td:not(:first-child) {
+  border-top: 1px solid rgba(0, 0, 0, .2);
+  border-bottom: 1px solid rgba(0, 0, 0, .2);
+}

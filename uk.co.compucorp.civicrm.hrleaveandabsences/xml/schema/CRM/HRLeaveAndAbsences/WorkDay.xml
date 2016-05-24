@@ -40,17 +40,19 @@
 
   <field>
     <name>time_from</name>
-    <type>time</type>
+    <type>char</type>
+    <length>5</length>
     <label>Time from</label>
-    <comment>The start time of this work day</comment>
+    <comment>The start time of this work day. This field is a char because CiviCRM can't handle TIME fields.</comment>
     <add>4.4</add>
   </field>
 
   <field>
     <name>time_to</name>
-    <type>time</type>
+    <type>char</type>
+    <length>5</length>
     <label>Time to</label>
-    <comment>The end time of this work day</comment>
+    <comment>The end time of this work day. This field is a char because CiviCRM can't handle TIME fields.</comment>
     <add>4.4</add>
   </field>
 

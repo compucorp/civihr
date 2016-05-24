@@ -107,15 +107,15 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
    */
   public $type;
   /**
-   * The start time of this work day
+   * The start time of this work day. This field is a char because CiviCRM can't handle TIME fields.
    *
-   * @var time
+   * @var string
    */
   public $time_from;
   /**
-   * The end time of this work day
+   * The end time of this work day. This field is a char because CiviCRM can't handle TIME fields.
    *
-   * @var time
+   * @var string
    */
   public $time_to;
   /**
@@ -197,13 +197,17 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
         ) ,
         'time_from' => array(
           'name' => 'time_from',
-          'type' => CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Time From') ,
+          'maxlength' => 5,
+          'size' => CRM_Utils_Type::SIX,
         ) ,
         'time_to' => array(
           'name' => 'time_to',
-          'type' => CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Time To') ,
+          'maxlength' => 5,
+          'size' => CRM_Utils_Type::SIX,
         ) ,
         'break' => array(
           'name' => 'break',
