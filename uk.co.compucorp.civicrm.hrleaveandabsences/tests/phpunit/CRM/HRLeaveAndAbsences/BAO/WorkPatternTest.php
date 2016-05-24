@@ -6,6 +6,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
 {
     protected $_tablesToTruncate = [
         'civicrm_hrleaveandabsences_work_pattern',
+        'civicrm_hrleaveandabsences_work_week',
+        'civicrm_hrleaveandabsences_work_day',
     ];
 
     public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
@@ -95,6 +97,97 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
         $this->assertEquals($params['description'], $values['description']);
         $this->assertEquals($params['is_active'], $values['is_active']);
         $this->assertEquals($params['is_default'], $values['is_default']);
+        $this->assertEmpty($values['weeks']);
+    }
+
+    public function testGetValuesArrayShouldReturnWorkPatternValuesWithWeeksAndDays()
+    {
+      $label = 'Pattern Label ' . microtime();
+      $entity = $this->createWorkPatternWith40HoursWorkWeek($label);
+      $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($entity->id);
+
+      $this->assertEquals($label, $values['label']);
+      $this->assertCount(1, $values['weeks']);
+      $this->assertCount(7, $values['weeks'][0]['days']);
+    }
+
+    public function testCanCreateWorkPatternWithWeeksAndDays()
+    {
+      $params = [
+        'weeks' => [
+          [
+            'days' => [
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 1],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 2],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 3],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 4],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 5],
+              ['type' => 3, 'day_of_the_week' => 6],
+              ['type' => 3, 'day_of_the_week' => 7],
+            ]
+          ]
+        ]
+      ];
+
+      $workPattern = $this->createBasicWorkPattern($params);
+      $this->assertNotEmpty($workPattern->id);
+      $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($workPattern->id);
+      $this->assertCount(1, $values['weeks']);
+      $this->assertCount(7, $values['weeks'][0]['days']);
+
+      $weekDays = $values['weeks'][0]['days'];
+      foreach($values['weeks'][0]['days'] as $i => $day) {
+        $this->assertEquals($day['type'], $weekDays[$i]['type']);
+        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]['day_of_the_week']);
+        if($day['type'] == 2) {
+          $this->assertEquals($day['time_from'], $weekDays[$i]['time_from']);
+          $this->assertEquals($day['time_to'], $weekDays[$i]['time_to']);
+          $this->assertEquals($day['break'], $weekDays[$i]['break']);
+          $this->assertEquals($day['leave_days'], $weekDays[$i]['leave_days']);
+        }
+      }
+    }
+
+    public function testCanUpdateWorkPatternWithWeeksAndDays()
+    {
+      $workPattern = $this->createBasicWorkPattern();
+      $this->assertNotEmpty($workPattern->id);
+      $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($workPattern->id);
+      $this->assertCount(0, $values['weeks']);
+
+      $params = [
+        'weeks' => [
+          [
+            'days' => [
+              ['type' => 2, 'time_from' => '15:00', 'time_to' => '22:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 1],
+              ['type' => 2, 'time_from' => '13:00', 'time_to' => '23:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 2],
+              ['type' => 2, 'time_from' => '09:00', 'time_to' => '18:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 3],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 4],
+              ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 5],
+              ['type' => 3, 'day_of_the_week' => 6],
+              ['type' => 3, 'day_of_the_week' => 7],
+            ]
+          ]
+        ]
+      ];
+
+      $workPattern = $this->updateBasicWorkPattern($workPattern->id, $params);
+      $this->assertNotEmpty($workPattern->id);
+      $values = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($workPattern->id);
+      $this->assertCount(1, $values['weeks']);
+      $this->assertCount(7, $values['weeks'][0]['days']);
+
+      $weekDays = $values['weeks'][0]['days'];
+      foreach($values['weeks'][0]['days'] as $i => $day) {
+        $this->assertEquals($day['type'], $weekDays[$i]['type']);
+        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]['day_of_the_week']);
+        if($day['type'] == 2) {
+          $this->assertEquals($day['time_from'], $weekDays[$i]['time_from']);
+          $this->assertEquals($day['time_to'], $weekDays[$i]['time_to']);
+          $this->assertEquals($day['break'], $weekDays[$i]['break']);
+          $this->assertEquals($day['leave_days'], $weekDays[$i]['leave_days']);
+        }
+      }
     }
 
     public function testGetValuesArrayShouldReturnEmptyArrayWhenWorkPatternDoesntExists()

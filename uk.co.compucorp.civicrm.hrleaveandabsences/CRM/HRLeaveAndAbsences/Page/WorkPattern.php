@@ -39,6 +39,36 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function edit($action, $id = NULL, $imageUpload = FALSE, $pushUserContext = TRUE) {
+    if($action & CRM_Core_Action::DELETE) {
+      $this->delete($id);
+    } else {
+      parent::edit($action, $id, $imageUpload, $pushUserContext);
+    }
+  }
+
+  /**
+   * Deletes the Work Pattern with the given ID and redirects the user back to
+   * the list page.
+   *
+   * @param int $id The ID of the Work Pattern to be deleted
+   */
+  public function delete($id) {
+    try {
+      CRM_HRLeaveAndAbsences_BAO_WorkPattern::del($id);
+      CRM_Core_Session::setStatus(ts('The Work Pattern was deleted'), 'Success', 'success');
+    } catch(Exception $ex) {
+      $message = ts('Error deleting the Work Pattern.') . ' '. $ex->getMessage();
+      CRM_Core_Session::setStatus($message, 'Error', 'error');
+    }
+
+    $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/work_patterns', 'reset=1&action=browse');
+    CRM_Utils_System::redirect($url);
+  }
+
+  /**
    * name of the BAO to perform various DB manipulations
    *
    * @return string

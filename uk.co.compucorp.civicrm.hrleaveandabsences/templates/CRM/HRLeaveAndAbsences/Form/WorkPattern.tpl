@@ -16,7 +16,7 @@
                 {include file="CRM/HRLeaveAndAbsences/Form/WorkPattern/Details.tpl"}
             </div>
             <div id="work-pattern-calendar" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-                {* the calendar form will be here *}
+                {include file="CRM/HRLeaveAndAbsences/Form/WorkPattern/Calendar.tpl"}
             </div>
 
             <div class="clear"></div>
