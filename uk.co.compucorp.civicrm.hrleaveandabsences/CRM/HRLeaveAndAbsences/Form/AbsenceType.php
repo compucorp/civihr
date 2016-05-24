@@ -87,6 +87,14 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultEntity()
+    {
+      return 'AbsenceType';
+    }
+
     private function getMonthsOptions()
     {
         return [
