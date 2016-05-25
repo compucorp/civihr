@@ -299,6 +299,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkDay',
     'table' => 'civicrm_hrleaveandabsences_work_day',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'AbsencePeriod',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod',
+    'table' => 'civicrm_hrleaveandabsences_absence_period',
+  );
 }
 
 /**
