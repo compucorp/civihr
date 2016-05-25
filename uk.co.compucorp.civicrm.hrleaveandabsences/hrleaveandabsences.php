@@ -275,6 +275,30 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
       'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
       'table' => 'civicrm_hrleaveandabsences_absence_type',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'NotificationReceiver',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_NotificationReceiver',
+    'table' => 'civicrm_hrleaveandabsences_notification_receiver',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkPattern',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkPattern',
+    'table' => 'civicrm_hrleaveandabsences_work_pattern',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkWeek',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkWeek',
+    'table' => 'civicrm_hrleaveandabsences_work_week',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkDay',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkDay',
+    'table' => 'civicrm_hrleaveandabsences_work_day',
+  );
 }
 
 /**
