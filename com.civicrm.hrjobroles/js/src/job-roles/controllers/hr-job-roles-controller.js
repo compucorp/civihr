@@ -13,6 +13,7 @@ define([
             $scope.format = HR_settings.DATE_FORMAT;
 
             var me = this;
+            var roles_type = ['funders', 'cost_centers'];
 
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
@@ -238,7 +239,7 @@ define([
                     $scope.edit_data[role_id]['funders'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var funder_contact_ids = data['funder'].split("|");
+                    var funder_contact_ids = $filter('isNotUndefined')(data['funder'].split("|"));
 
                     // Split the funder types
                     var funder_types = data['funder_val_type'].split("|");
@@ -272,7 +273,7 @@ define([
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var cost_center_contact_ids = data['cost_center'].split("|");
+                    var cost_center_contact_ids = $filter('isNotUndefined')(data['cost_center'].split("|"));
 
                     // Split the cost_centers types
                     var cost_center_types = data['cost_center_val_type'].split("|");
@@ -497,8 +498,12 @@ define([
              * Prepares data and updates existing role
              * @param role_id
              */
-            $scope.updateRole = function (role_id) {
+            $scope.updateRole = function (role_id, role_type) {
                 $log.debug('Update Role');
+
+                if (typeof role_type === 'string') {
+                  filterEmptyData(role_id, role_type);
+                }
 
                 $scope.edit_data[role_id].start_date = $scope.parseDate($scope.edit_data[role_id].start_date);
 
@@ -613,6 +618,39 @@ define([
                     $scope.edit_data[role_id]['funders'].splice(row_id, 1);
                 }
             };
+
+            $scope.onAfterSave = function (role_id, type) {
+              filterEmptyData(role_id, type);
+            }
+
+            $scope.onCancel = function (role_id, type) {
+              if (type === 'both') {
+                roles_type.map(function (role) {
+                  filterEmptyData(role_id, role);
+                });
+              } else {
+                filterEmptyData(role_id, type);
+              }
+            }
+
+            /**
+             * Filter the edit_data property to remove
+             * the funders/cost_centers entries which are empty
+             *
+             * @param  {string|int} role_id
+             * @param  {string} type
+             */
+            function filterEmptyData(role_id, type) {
+              if ($scope.edit_data.hasOwnProperty(role_id)) {
+                if (type === 'funders') {
+                  $scope.edit_data[role_id][type] = $filter('issetFunder')($scope.edit_data[role_id][type]);
+                }
+
+                if (type === 'cost_centers') {
+                  $scope.edit_data[role_id][type] = $filter('issetCostCentre')($scope.edit_data[role_id][type]);
+                }
+              }
+            }
 
             // Variable to check if we adding new job role
             var job_roles = this;

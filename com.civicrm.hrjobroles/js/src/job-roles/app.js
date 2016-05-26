@@ -9,6 +9,9 @@ define([
     'job-roles/services/hr-job-roles-service',
     'job-roles/services/date-validation',
     'job-roles/directives/example',
+    'job-roles/filters/isNotUndefined',
+    'job-roles/filters/issetCostCentre',
+    'job-roles/filters/issetFunder',
     'common/services/angular-date/date-format',
     'common/modules/routers/compu-ng-route',
     'common/directives/angular-date/date-input'
