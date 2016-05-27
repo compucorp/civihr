@@ -19,5 +19,12 @@
       <td class="html-adjust">{$form.weight.html}</td>
     </tr>
   </table>
+  {literal}
+    <script type="text/javascript">
+      CRM.$(function () {
+        var form = new CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod();
+      });
+    </script>
+  {/literal}
   <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>
 </div>

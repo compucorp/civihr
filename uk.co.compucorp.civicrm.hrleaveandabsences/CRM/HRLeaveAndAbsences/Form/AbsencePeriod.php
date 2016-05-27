@@ -31,6 +31,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
     if (empty($this->defaultValues)) {
       if ($this->_id) {
         $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getValuesArray($this->_id);
+        $this->defaultValues['_id'] = $this->_id;
       }
       else {
         $this->defaultValues = [
@@ -54,6 +55,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
     $this->addButtons($this->getAvailableButtons());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.absenceperiod.js');
     parent::buildQuickForm();
   }
 
@@ -100,6 +102,9 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
    * Adds all the fields to the form
    */
   private function addFields() {
+    // This hidden field is used to get the AbsencePeriod
+    // id when validating the Order number before submitting the form
+    $this->add('hidden', '_id');
     $this->add(
       'text',
       'title',

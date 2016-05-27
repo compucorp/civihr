@@ -22,7 +22,7 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
     }
   }
 
-  public function testAddAnEmptyType() {
+  public function testAddAnEmptyPeriod() {
     $this->loginAsAdmin();
     $this->openAddForm();
     $this->type('start_date', '');
@@ -50,11 +50,35 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
     $this->assertTrue($this->isTextPresent('Start Date should be less than End Date'));
   }
 
+  public function testShouldDisplayAConfirmationWhenSavingAPeriodWithTheSameOrderNumberOfAnExistingPeriod()
+  {
+    $this->loginAsAdmin();
+    $this->addAbsencePeriod();
+    $this->addAbsencePeriod(false);
+
+    // When adding a new period, the order is automatically
+    // max weight + 1. So, if we subtract 1 from it we'll
+    // get the order number of last added period
+    $periodOrder = (int)$this->getValue('weight') - 1;
+
+    $this->type('weight', $periodOrder);
+    $this->click("xpath=id('_qf_AbsencePeriod_next-bottom')");
+
+    $confirmationDialog = "xpath=//div[contains(@class, 'crm-confirm-dialog')]";
+    $this->waitForElementPresent($confirmationDialog);
+    $confirmationMessage = 'Another period has this order number. ' .
+                           'If you choose to continue all periods ' .
+                           'with the same or greater order number ' .
+                           'will be increased by 1 and hence will ' .
+                           'follow this period';
+    $this->assertElementContainsText($confirmationDialog, $confirmationMessage);
+  }
+
   private function openAddForm() {
     $this->openCiviPage($this->formUrl, $this->addUrlParams);
   }
 
-  private function addAbsencePeriod() {
+  private function addAbsencePeriod($submit = true) {
     $this->openAddForm();
 
     $title = 'Title ' . microtime();
@@ -64,7 +88,9 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
     $endDate->add(new DateInterval('P1D'));
     $this->type('end_date', $endDate->format('Y-m-d'));
 
-    $this->submitAndWait('AbsencePeriod');
+    if($submit) {
+      $this->submitAndWait('AbsencePeriod');
+    }
 
     return $title;
   }
