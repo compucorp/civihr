@@ -14,7 +14,9 @@ define([
 
     it('should remove undefined values', function () {
       var array = [1, 2, 'undefined', 'test', undefined];
+      var expectedArray = [1, 2, 'test'];
 
+      expect(isNotUndefined(array)).toEqual(expectedArray);
       expect(isNotUndefined(array).length).toBe(3);
     });
 
