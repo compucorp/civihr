@@ -135,7 +135,7 @@
                             </form>
                         </tab>
                         <tab heading="Funding">
-                            <form editable-form name="tableform" onaftersave="onAfterSave('new_role_id', 'funders')" oncancel="cancel('new_role_id', 'funders')">
+                            <form editable-form name="tableform" onaftersave="onAfterSave('new_role_id', 'funders')" oncancel="onCancel('new_role_id', 'funders')">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
                                     <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -203,7 +203,7 @@
                             </form>
                         </tab>
                         <tab heading="Cost Centres">
-                            <form editable-form name="tableformcc" onaftersave="onAfterSave('new_role_id', 'cost_centers')" oncancel="cancel('new_role_id', 'cost_centers')">
+                            <form editable-form name="tableformcc" onaftersave="onAfterSave('new_role_id', 'cost_centers')" oncancel="onCancel('new_role_id', 'cost_centers')">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
                                     <span class="glyphicon glyphicon-pencil"></span> Edit
