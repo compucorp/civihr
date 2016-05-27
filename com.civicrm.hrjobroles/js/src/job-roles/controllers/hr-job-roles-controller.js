@@ -619,17 +619,31 @@ define([
                 }
             };
 
-            $scope.onAfterSave = function (role_id, type) {
-              filterEmptyData(role_id, type);
+            /**
+             * Called on angular-xeditable's onaftersave callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onAfterSave = function (role_id, role_type) {
+              filterEmptyData(role_id, role_type);
             }
 
-            $scope.onCancel = function (role_id, type) {
-              if (type === 'both') {
-                roles_type.map(function (role) {
-                  filterEmptyData(role_id, role);
+            /**
+             * Called on angular-xeditable's cancel callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onCancel = function (role_id, role_type) {
+              if (role_type === 'both') {
+                roles_type.map(function (type) {
+                  filterEmptyData(role_id, type);
                 });
               } else {
-                filterEmptyData(role_id, type);
+                filterEmptyData(role_id, role_type);
               }
             }
 
@@ -638,16 +652,16 @@ define([
              * the funders/cost_centers entries which are empty
              *
              * @param  {string|int} role_id
-             * @param  {string} type
+             * @param  {string} role_type
              */
-            function filterEmptyData(role_id, type) {
+            function filterEmptyData(role_id, role_type) {
               if ($scope.edit_data.hasOwnProperty(role_id)) {
-                if (type === 'funders') {
-                  $scope.edit_data[role_id][type] = $filter('issetFunder')($scope.edit_data[role_id][type]);
+                if (role_type === 'funders') {
+                  $scope.edit_data[role_id][role_type] = $filter('issetFunder')($scope.edit_data[role_id][role_type]);
                 }
 
-                if (type === 'cost_centers') {
-                  $scope.edit_data[role_id][type] = $filter('issetCostCentre')($scope.edit_data[role_id][type]);
+                if (role_type === 'cost_centers') {
+                  $scope.edit_data[role_id][role_type] = $filter('issetCostCentre')($scope.edit_data[role_id][role_type]);
                 }
               }
             }
