@@ -10,8 +10,8 @@ define([
     var issetCostCentre;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function (issetCostCentreFilter) {
-      issetCostCentre = issetCostCentreFilter;
+    beforeEach(inject(function (_issetCostCentre_) {
+      issetCostCentre = _issetCostCentre_;
     }));
 
     it('should remove the entries which are without cost_centre_id', function () {

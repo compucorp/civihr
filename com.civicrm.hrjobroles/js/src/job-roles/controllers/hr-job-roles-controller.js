@@ -6,8 +6,8 @@ define([
 ], function (angular, controllers, moment) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation',
-        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation) {
+    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation', 'issetFunder', 'issetCostCentre', 'isNotUndefined',
+        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, issetFunder, issetCostCentre, isNotUndefined) {
             $log.debug('Controller: HRJobRolesController');
 
             $scope.format = HR_settings.DATE_FORMAT;
@@ -239,7 +239,7 @@ define([
                     $scope.edit_data[role_id]['funders'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var funder_contact_ids = $filter('isNotUndefined')(data['funder'].split("|"));
+                    var funder_contact_ids = isNotUndefined(data['funder'].split("|"));
 
                     // Split the funder types
                     var funder_types = data['funder_val_type'].split("|");
@@ -273,7 +273,7 @@ define([
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var cost_center_contact_ids = $filter('isNotUndefined')(data['cost_center'].split("|"));
+                    var cost_center_contact_ids = isNotUndefined(data['cost_center'].split("|"));
 
                     // Split the cost_centers types
                     var cost_center_types = data['cost_center_val_type'].split("|");
@@ -657,11 +657,11 @@ define([
             function filterEmptyData(role_id, role_type) {
               if ($scope.edit_data.hasOwnProperty(role_id)) {
                 if (role_type === 'funders') {
-                  $scope.edit_data[role_id][role_type] = $filter('issetFunder')($scope.edit_data[role_id][role_type]);
+                  $scope.edit_data[role_id][role_type] = issetFunder($scope.edit_data[role_id][role_type]);
                 }
 
                 if (role_type === 'cost_centers') {
-                  $scope.edit_data[role_id][role_type] = $filter('issetCostCentre')($scope.edit_data[role_id][role_type]);
+                  $scope.edit_data[role_id][role_type] = issetCostCentre($scope.edit_data[role_id][role_type]);
                 }
               }
             }

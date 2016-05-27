@@ -8,8 +8,8 @@ define([
     var isNotUndefined;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function (isNotUndefinedFilter) {
-      isNotUndefined = isNotUndefinedFilter;
+    beforeEach(inject(function (_isNotUndefined_) {
+      isNotUndefined = _isNotUndefined_;
     }));
 
     it('should remove undefined values', function () {

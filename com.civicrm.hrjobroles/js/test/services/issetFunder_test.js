@@ -10,8 +10,8 @@ define([
     var issetFunder;
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function (issetFunderFilter) {
-      issetFunder = issetFunderFilter;
+    beforeEach(inject(function (_issetFunder_) {
+      issetFunder = _issetFunder_;
     }));
 
     it('should remove the entries which are without funder_id', function () {
