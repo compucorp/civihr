@@ -363,6 +363,59 @@ define([
                     });
                 });
 
+                describe('When call onAfterSave', function() {
+                  beforeEach(function () {
+                    scope.edit_data = angular.copy(Mock.roles_data);
+                  });
+
+                  it('should remove the funders entries which are without funder_id', function() {
+                    scope.onAfterSave(3, 'funders');
+                    expect(scope.edit_data[3]['funders'].length).toBe(2);
+                  });
+
+                  it('should remove the cost_centers entries which are without cost_centre_id', function() {
+                    scope.onAfterSave(3, 'cost_centers');
+                    expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                  });
+                });
+
+                describe('When call onCancel passing', function() {
+                  beforeEach(function () {
+                    scope.edit_data = angular.copy(Mock.roles_data);
+                  });
+
+                  describe('funders', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'funders');
+                    });
+
+                    it('should remove the funders entries which are without funder_id', function() {
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
+                  });
+
+                  describe('cost_centers', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'cost_centers');
+                    });
+
+                    it('should remove the cost_centers entries which are without cost_centre_id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                    });
+                  });
+
+                  describe('both', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'both');
+                    });
+
+                    it('should remove the funders and cost_centers entries which are without id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
+                  });
+                });
+
                 describe('Updating old revision dates', function(){
 
                 });
