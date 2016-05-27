@@ -224,10 +224,28 @@ VALUES(1, 1, 1);
 
 INSERT INTO civicrm_hrleaveandabsences_work_day(week_id, day_of_the_week, type, time_from, time_to, break, leave_days, number_of_hours)
 VALUES
-  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5), -- Monday
-  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5), -- Tuesday
-  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5), -- Wednesday
-  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5), -- Thursday
-  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5), -- Friday
-  (1, 6, 3, NULL, NULL, NULL, NULL, NULL), -- Saturday
-  (1, 7, 3, NULL, NULL, NULL, NULL, NULL); -- Sunday
+  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 6, 3, NULL, NULL, NULL, NULL, NULL),
+  (1, 7, 3, NULL, NULL, NULL, NULL, NULL);
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_absence_period
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_absence_period` (
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique AbsencePeriod ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The AbsencePeriod title. There cannot be more than one entity with the same title',
+     `start_date` date NOT NULL   COMMENT 'The date this Absence Period starts',
+     `end_date` date NOT NULL   COMMENT 'The date this Absence Period ends',
+     `weight` int unsigned NOT NULL   COMMENT 'The weight value is used to order the types on a list',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_absence_period`(title)
+
+
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
