@@ -68,7 +68,7 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Leave/Absence Periods'),
           'name'       => 'leave_and_absence_periods',
-          'url'        => 'civicrm/admin/leaveandabsences/periods',
+          'url'        => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(
