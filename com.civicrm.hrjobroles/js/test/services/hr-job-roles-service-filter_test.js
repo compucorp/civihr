@@ -34,7 +34,24 @@ define([
     describe('issetFunder', function () {
       it('should remove the entries which are without cost_centre_id', function () {
         var cost_centers = angular.copy(Mock.roles_data[3]['cost_centers']);
+        var expectedArray = [
+          {
+            amount:"0",
+            cost_centre_id:"879",
+            id:1,
+            percentage:"1",
+            type:"1",
+          },
+          {
+            amount:"2",
+            cost_centre_id:"123",
+            id:1,
+            percentage:"0",
+            type:"0",
+          }
+        ];
 
+        expect(HRJobRolesServiceFilters.issetCostCentre(cost_centers)).toEqual(expectedArray);
         expect(HRJobRolesServiceFilters.issetCostCentre(cost_centers).length).toBe(2);
       });
 
@@ -49,7 +66,30 @@ define([
     describe('issetFunder', function () {
       it('should remove the entries which are without funder_id', function () {
         var funders = angular.copy(Mock.roles_data[3]['funders']);
+        var expectedArray = [
+          {
+            amount: "0",
+            funder_id: {
+              id:"1",
+              sort_name:"Default Organization"
+            },
+            id: 1,
+            percentage: "1",
+            type: "1"
+          },
+          {
+            amount: "1",
+            funder_id: {
+              id:"1",
+              sort_name:"Default Organization"
+            },
+            id: 1,
+            percentage: "0",
+            type: "0"
+          }
+        ];
 
+        expect(HRJobRolesServiceFilters.issetFunder(funders)).toEqual(expectedArray);
         expect(HRJobRolesServiceFilters.issetFunder(funders).length).toBe(2);
       });
 
