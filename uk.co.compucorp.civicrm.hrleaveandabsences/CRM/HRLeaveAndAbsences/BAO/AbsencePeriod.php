@@ -196,7 +196,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int the maximum weight
    */
-  private static function getMaxWeight() {
+  public static function getMaxWeight() {
     $tableName = self::getTableName();
     $query = "SELECT MAX(weight) as max_weight FROM {$tableName}";
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -221,5 +221,51 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     $parsed = date_parse($date);
 
     return $parsed['warning_count'] == 0 && $parsed['error_count'] == 0;
+  }
+
+  /**
+   * Returns an array containing all the fields values for the
+   * AbsencePeriod with the given ID.
+   *
+   * This method is mainly used by the AbsencePeriod form, so it
+   * can get the data to fill its fields.
+   *
+   * An empty array is returned if it is not possible to load
+   * the data.
+   *
+   * @param int $id The id of the AbsencePeriod to retrieve the values
+   *
+   * @return array An array containing the values
+   */
+  public static function getValuesArray($id) {
+    try {
+      $result = civicrm_api3('AbsencePeriod', 'getsingle', ['id' => $id]);
+      return $result;
+    } catch (CiviCRM_API3_Exception $ex) {
+      return [];
+    }
+  }
+
+  /**
+   * This method returns the most recent date that can be used as a Start Date.
+   *
+   * The returned date is maximum End Date of all existing Absence Period + 1 day.
+   *
+   * If there's no existing Absence Period, the current date is returned
+   *
+   * @return string The most recent start date available in Y-m-d format
+   */
+  public static function getMostRecentStartDateAvailable()
+  {
+    $tableName = self::getTableName();
+    $query = "SELECT MAX(end_date) as latest_end_date FROM {$tableName}";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if($dao->fetch() && $dao->latest_end_date) {
+      $latestEndDate = new DateTime($dao->latest_end_date);
+      $latestEndDate->add(new DateInterval('P1D'));
+      return $latestEndDate->format('Y-m-d');
+    }
+
+    return date('Y-m-d');
   }
 }

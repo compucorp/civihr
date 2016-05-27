@@ -161,6 +161,47 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
     ]);
   }
 
+  public function testGetValuesArrayShouldReturnAbsencePeriodValues()
+  {
+    $params = [
+      'title' => 'Period Title',
+      'start_date' => date('Y-m-d'),
+      'end_date' => date('Y-m-d', strtotime('+6 months'))
+    ];
+    $entity = $this->createBasicPeriod($params);
+    $values = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getValuesArray($entity->id);
+    $this->assertEquals($params['title'], $values['title']);
+    $this->assertEquals($params['start_date'], $values['start_date']);
+    $this->assertEquals($params['end_date'], $values['end_date']);
+  }
+
+  public function testItCanReturnTheMostRecentStartDateAvailable()
+  {
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals(date('Y-m-d'), $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2015-01-01',
+      'end_date' => '2015-12-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2016-01-01', $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2014-01-01',
+      'end_date' => '2014-01-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2016-01-01', $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2016-01-01',
+      'end_date' => '2016-12-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2017-01-01', $date);
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
