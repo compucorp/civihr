@@ -146,7 +146,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
         'id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Contract Id') ,
+          'title' => ts('Job Contract ID') ,
           'required' => false,
           'export' => false,
           'import' => false,
@@ -155,7 +155,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
         'contact_id' => array(
           'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Contact Id') ,
+          'title' => ts('Contact ID') ,
           'required' => false,
           'export' => true,
           'import' => true,

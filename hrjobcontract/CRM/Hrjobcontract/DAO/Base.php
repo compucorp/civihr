@@ -140,7 +140,7 @@ class CRM_Hrjobcontract_DAO_Base extends CRM_Core_DAO
       'jobcontract_revision_id' => array(
         'name' => 'jobcontract_revision_id',
         'type' => CRM_Utils_Type::T_INT,
-        'title' => ts('Job Contract Revision Id') ,
+        'title' => ts('Job Contract Revision ID') ,
         'required' => true,
         //'FKClassName' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
       ) ,

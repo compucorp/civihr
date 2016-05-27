@@ -205,7 +205,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Id') ,
+                  'title' => ts('ID') ,
                   'required' => true,
                   'export' => false,
                   'import' => false,
@@ -296,6 +296,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'optionGroupName' => 'hrjc_contract_end_reason',
                   ),
                   'headerPattern' => '/^end\s?reason/i',
+                  'where' => 'civicrm_hrjobcontract_details.end_reason'
                 ) ,
                 'hrjobcontract_details_notice_amount' => array(
                   'name' => 'notice_amount',

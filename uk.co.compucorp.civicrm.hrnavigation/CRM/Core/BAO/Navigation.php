@@ -586,7 +586,13 @@ ORDER BY parent_id, weight";
       $homeIcon = '<img src="' . $config->userFrameworkResourceURL . 'i/logo16px.png" style="vertical-align:middle;" />';
       self::retrieve($homeParams, $homeNav);
       if ($homeNav) {
-        list($path, $q) = explode('?', $homeNav['url']);
+        if (array_key_exists('query', parse_url($homeNav['url']))) {
+          list($path, $q) = explode('?', $homeNav['url']);
+        } else {
+          $q = NULL;
+          $path = $homeNav['url'];
+        }
+
         $homeURL = CRM_Utils_System::url($path, $q);
         $homeLabel = $homeNav['label'];
         // CRM-6804 (we need to special-case this as we don’t ts()-tag variables)

@@ -4,6 +4,18 @@ require_once 'CiviTest/CiviUnitTestCase.php';
 
 class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
+  private $allColors = [
+      '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',
+      '#3D4A5E', '#E56A6A', '#FA8F55', '#6DAD68', '#B37995', '#84619C', '#2997B3',
+      '#263345', '#CC4A49', '#D97038', '#4F944A', '#995978', '#5F3D76', '#147E99',
+      '#151D2C', '#B32E2E', '#BF561D', '#377A31', '#803D5E', '#47275C', '#056780'
+  ];
+
+  protected $_tablesToTruncate = [
+    'civicrm_hrleaveandabsences_notification_receiver',
+    'civicrm_hrleaveandabsences_absence_type',
+  ];
+
   public function setUp() {
     parent::setUp();
   }
@@ -166,10 +178,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage To set the Carry Forward Expiration Date you must allow Carry Forward
    */
-  public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDateIsNotEmpty() {
+  public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDayAndMonthAreNotEmpty() {
     $this->createBasicType([
         'allow_carry_forward'   => false,
-        'carry_forward_expiration_date' => '01-05'
+        'carry_forward_expiration_day' => 10,
+        'carry_forward_expiration_month' => 4,
     ]);
   }
 
@@ -194,7 +207,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 1,
       'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS,
-      'carry_forward_expiration_date' => '15-04'
+      'carry_forward_expiration_day' => 15,
+      'carry_forward_expiration_month' => 4,
     ]);
   }
 
@@ -217,26 +231,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
   }
 
   /**
-   * @dataProvider carryForwardExpirationDateFormatDataProvider
-   */
-  public function testCarryForwardExpirationDateFormatIsCorrect($date, $throwsException) {
-    if($throwsException) {
-      $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
-          'Invalid Carry Forward Expiration Date. The expected format is dd-mm'
-      );
-    }
-
-    $this->createBasicType([
-        'allow_carry_forward' => true,
-        'carry_forward_expiration_date' => $date
-    ]);
-  }
-
-  /**
    * @dataProvider carryForwardExpirationDateDataProvider
    */
-  public function testCarryForwardExpirationDateIsValid($date, $throwsException) {
+  public function testCarryForwardExpirationDateIsValid($day, $month, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
           CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
@@ -246,7 +243,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
     $this->createBasicType([
         'allow_carry_forward' => true,
-        'carry_forward_expiration_date' => $date
+        'carry_forward_expiration_day' => $day,
+        'carry_forward_expiration_month' => $month
     ]);
   }
 
@@ -281,11 +279,80 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
 
     $this->createBasicType(['allow_request_cancelation' => $requestCancelationOption]);
   }
+
+  public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
+  {
+    $firstEntity = $this->createBasicType();
+    $this->assertNotEmpty($firstEntity->weight);
+
+    $secondEntity = $this->createBasicType();
+    $this->assertNotEmpty($secondEntity->weight);
+    $this->assertEquals($firstEntity->weight + 1, $secondEntity->weight);
+  }
+
+  public function testShouldHaveAllTheColorsAvailableIfTheresNotTypeCreated() {
+    $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+    foreach($this->allColors as $color) {
+      $this->assertContains($color, $availableColors);
+    }
+  }
+
+  public function testShouldNotAllowColorToBeReusedUntilAllColorsHaveBeenUsed() {
+    $usedColors = [];
+    $numberOfColors = count($this->allColors);
+    for($i = 0; $i < $numberOfColors; $i++) {
+      $color = $this->allColors[$i];
+      $this->createBasicType(['color' => $color]);
+      $usedColors[] = $color;
+      $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+
+      $isLastColor = ($i == $numberOfColors - 1);
+      foreach($usedColors as $usedColor) {
+        if($isLastColor) {
+          $this->assertContains($usedColor, $availableColors);
+        } else {
+          $this->assertNotContains($usedColor, $availableColors);
+        }
+      }
+    }
+  }
+
+  public function testIsReservedCannotBeSetOnCreate() {
+    $entity = $this->createBasicType(['is_reserved' => 1]);
+    $this->assertEquals(0, $entity->is_reserved);
+  }
+
+  public function testIsReservedCannotBeSetOnUpdate() {
+    $entity = $this->createBasicType();
+    $this->assertEquals(0, $entity->is_reserved);
+    $entity = $this->updateBasicType($entity->id, ['is_reserved' => 1]);
+    $this->assertEquals(0, $entity->is_reserved);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   * @expectedExceptionMessage Reserved types cannot be deleted!
+   */
+  public function testShouldNotBeAllowedToDeleteReservedTypes()
+  {
+    $id = $this->createReservedType();
+    $this->assertNotNull($id);
+    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($id);
+  }
+
+  public function testShouldBeAllowedToDeleteReservedTypes()
+  {
+    $entity = $this->createBasicType();
+    $this->assertNotNull($entity->id);
+    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($entity->id);
+    $entity = $this->findTypeByID($entity->id);
+    $this->assertNull($entity);
+
+  }
   
   private function createBasicType($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
-        'weight' => 1,
         'color' => '#000000',
         'default_entitlement' => 20,
         'allow_request_cancelation' => 1,
@@ -304,6 +371,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     $entity = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
     $entity->id = $id;
     $entity->find(true);
+
+    if($entity->N == 0) {
+      return null;
+    }
 
     return $entity;
   }
@@ -340,26 +411,36 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     return $data;
   }
 
-  public function carryForwardExpirationDateFormatDataProvider() {
+  public function carryForwardExpirationDateDataProvider() {
     return [
-      ['12-12', false],
-      ['01-05', false],
-      ['02-07', false],
-      [1, true],
-      ['02/07', true],
-      ['whatever', true]
+      [12, 12, false],
+      [1, 2, false],
+      [31, 1, false],
+      [30, 2, true],
+      [31, 4, true],
+      [77, 9, true],
+      [12, 31, true],
     ];
   }
 
-  public function carryForwardExpirationDateDataProvider() {
-    return [
-      ['12-12', false],
-      ['01-02', false],
-      ['31-01', false],
-      ['30-02', true],
-      ['31-04', true],
-      ['77-99', true],
-      ['12-31', true]
-    ];
+  /**
+   * Since we cannot create reserved types through the API,
+   * we have this helper method to insert one directly in
+   * the database
+   */
+  private function createReservedType()
+  {
+    $connection = $this->getConnection()->getConnection();
+    $title = 'Title ' . microtime();
+    $query = "
+      INSERT INTO
+        civicrm_hrleaveandabsences_absence_type(title, color, default_entitlement, allow_request_cancelation, is_reserved, weight)
+        VALUES('{$title}', '#000000', 0, 1, 1, 1)
+    ";
+    if($connection->query($query)) {
+      return $connection->lastInsertId();
+    }
+
+    return null;
   }
 }

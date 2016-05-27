@@ -213,11 +213,17 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
    */
   public $carry_forward_expiration_unit;
   /**
-   * If expiration_unit + expiration_duration is not informed, this should be. Its a date in the format dd-mm
+   * If expiration_unit + expiration_duration is not informed, the expiration day and month should be
    *
-   * @var string
+   * @var int
    */
-  public $carry_forward_expiration_date;
+  public $carry_forward_expiration_day;
+  /**
+   * If expiration_unit + expiration_duration is not informed, the expiration day and month should be
+   *
+   * @var int
+   */
+  public $carry_forward_expiration_month;
   /**
    * class constructor
    *
@@ -359,12 +365,15 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Carry Forward Expiration Unit') ,
         ) ,
-        'carry_forward_expiration_date' => array(
-          'name' => 'carry_forward_expiration_date',
-          'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Carry Forward Expiration Date') ,
-          'maxlength' => 5,
-          'size' => CRM_Utils_Type::SIX,
+        'carry_forward_expiration_day' => array(
+          'name' => 'carry_forward_expiration_day',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Carry Forward Expiration Day') ,
+        ) ,
+        'carry_forward_expiration_month' => array(
+          'name' => 'carry_forward_expiration_month',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Carry Forward Expiration Month') ,
         ) ,
       );
     }
@@ -403,7 +412,8 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
         'max_number_of_days_to_carry_forward' => 'max_number_of_days_to_carry_forward',
         'carry_forward_expiration_duration' => 'carry_forward_expiration_duration',
         'carry_forward_expiration_unit' => 'carry_forward_expiration_unit',
-        'carry_forward_expiration_date' => 'carry_forward_expiration_date',
+        'carry_forward_expiration_day' => 'carry_forward_expiration_day',
+        'carry_forward_expiration_month' => 'carry_forward_expiration_month',
       );
     }
     return self::$_fieldKeys;

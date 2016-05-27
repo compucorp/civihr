@@ -62,7 +62,7 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Leave/Absence Types'),
           'name'       => 'leave_and_absence_types',
-          'url'        => 'civicrm/admin/leaveandabsences/types',
+          'url'        => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(
@@ -80,7 +80,7 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Manage Work Patterns'),
           'name'       => 'leave_and_absence_manage_work_patterns',
-          'url'        => 'civicrm/admin/leaveandabsences/work_patterns',
+          'url'        => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       )
   );

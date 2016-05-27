@@ -47,7 +47,6 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
 
   private $_optionsList;
 
-
   private $_contactIdIndex;
 
   /**
@@ -87,7 +86,6 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     $this->setActiveFieldLocationTypes($this->_mapperLocType);
 
     // Fetch select list options from the database and cache them
-    $this->_optionsList['HRJobHour-hours_unit'] = CRM_Hrjobcontract_SelectValues::commonUnit();
     $this->_optionsList['HRJobHour-hours_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_hours_type');
     $this->_optionsList['HRJobHour-location_standard_hours'] = CRM_Hrjobcontract_SelectValues::buildHourLocations();
     $this->_optionsList['HRJobPension-pension_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_pension_type');
@@ -99,10 +97,17 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
     $this->_optionsList['HRJobPay-pay_unit'] = CRM_Hrjobcontract_SelectValues::payUnit();
     $this->_optionsList['HRJobDetails-contract_type'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_contract_type');
     $this->_optionsList['HRJobDetails-location'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_location');
-    $this->_optionsList['HRJobDetails-notice_unit_employee'] = $this->_optionsList['HRJobHour-hours_unit'];
-    $this->_optionsList['HRJobDetails-notice_unit'] = $this->_optionsList['HRJobHour-hours_unit'];
+    $this->_optionsList['HRJobDetails-notice_unit_employee'] = CRM_Hrjobcontract_SelectValues::commonUnit();
+    $this->_optionsList['HRJobDetails-notice_unit'] = $this->_optionsList['HRJobDetails-notice_unit_employee'];
     $this->_optionsList['HRJobDetails-end_reason'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_contract_end_reason');
     $this->_optionsList['HRJobContractRevision-change_reason'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_revision_change_reason');
+    $this->_optionsList['HRJobPension-is_enrolled'] = CRM_Hrjobcontract_SelectValues::isEnrolledOptions();
+    $this->_optionsList['HRJobPay-is_paid'] = CRM_Hrjobcontract_SelectValues::isPaidOptions();
+    $this->_optionsList['benefit_names'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_benefit_name');
+    $this->_optionsList['benefit_types'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_benefit_type');
+    $this->_optionsList['deduction_names'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_deduction_name');
+    $this->_optionsList['deduction_types'] = CRM_Hrjobcontract_SelectValues::buildDbOptions('hrjc_deduction_type');
+    $this->_optionsList['HRJobLeave-leave_type'] = CRM_Hrjobcontract_SelectValues::buildLeaveTypes();
   }
   /**
    * Set fields to an array of importable fields
@@ -176,33 +181,39 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
   function fini() {}
 
   /**
-   * confirm and get option database ID or label given its ID or label
+   * confirm and get "option value" database ID,label or value given its ID or label
+   * this function is created instead of using civicrm pseudoconstant function
+   * due to inconsistency in job contracts implementation, for example the location is
+   * stored in the database using its value where contract type is stored using its label ..etc
    * @param String|Integer $option
    * @param String|Integer $value
+   * @param String $searchField
    * @param String $returnField
    * @return Integer|String
    * @access private
    */
-  protected function getOptionKey($option, $value, $returnField = 'id')  {
-    $search_field = 'label';
-    if (is_numeric ($value)) {
-      $search_field = 'id';
+  protected function getOptionID($option, $value, $returnField = 'id', $searchField = 'label')  {
+    if ($searchField != 'value' && is_numeric($value)) {
+      $searchField = 'id';
     }
-    $index = array_search(strtolower($value), array_map('strtolower', array_column($this->_optionsList[$option], $search_field)) );
+    $index = FALSE;
+    if (!empty($this->_optionsList[$option]))  {
+      $index = array_search(strtolower($value), array_map('strtolower', array_column($this->_optionsList[$option], $searchField)) );
+    }
     if ($index !== FALSE)  {
       return $this->_optionsList[$option][$index][$returnField];
     }
-    return 0;
+    return FALSE;
   }
 
   /**
-   * get static option ID given its Key
+   * get hardcoded option ID given its Key
    * @param String|Integer $option
    * @param String|Integer $value
    * @return Integer
    * @access private
    */
-  protected function getStaticOptionKey($option, $value)  {
+  protected function getHardCodedOptionID($option, $value)  {
     $key = array_search(strtolower($value), array_map('strtolower', $this->_optionsList[$option]));
     if ($key !== FALSE)  {
       return $key;

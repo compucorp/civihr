@@ -13,17 +13,11 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   protected $_revisionIdIncremental = 1;
 
   /**
-   * Params for the current import mode used ( Import Contracts Or Contracts Revision )
-   * @var integer
-   */
-  protected $_importMode = NULL;
-
-  /**
    * Params for the current entity being prepared for the api
    * @var array
    */
   protected $_params = array();
-  
+
   function setFields() {
     $this->_allFields = array();
 
@@ -32,6 +26,18 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     $fieldProviders = array(
       'HRJobRole' => new CRM_Hrjobcontract_Import_FieldsProvider_HRJobRole()
     );
+    if (empty($this->_entity))  {
+      $this->_entity = array(
+        'HRJobContract',
+        'HRJobContractRevision',
+        'HRJobDetails',
+        'HRJobPay',
+        'HRJobHealth',
+        'HRJobPension',
+        'HRJobHour',
+        'HRJobLeave'
+      );
+    }
 
     foreach ($this->_entity as $entity) {
       if(!isset($fieldProviders[$entity])) {
@@ -95,391 +101,16 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   function summary(&$values) {
     $erroneousField = NULL;
     $this->setActiveFieldValues($values, $erroneousField);
-    $errorRequired = FALSE;
-    $missingField = '';
-    $errorMessage = NULL;
-    $errorMessages = array();
 
-    $params = &$this->getActiveFieldParams();
+    $errorsMessages = $this->validateFieldsValues();
 
-    //for date-Formats
-    $session = CRM_Core_Session::singleton();
-    $dateType = $session->get('dateTypes');
-    $filter_postive_options = array(
-      'options' => array( 'min_range' => 0)
-    );
-    // check some parameters if they are valid
-    foreach ($params as $key => $val) {
-      switch ($key) {
-        case 'HRJobHour-hours_amount':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Actual Hours (Amount) should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobHour-hours_unit':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Actual Hours (Unit) is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobHour-fte_denom':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Full-Time Denominator Equivalence should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobHour-hours_fte':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Full-Time Equivalence should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobHour-fte_num':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Full-Time Numerator Equivalence should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobHour-hours_type':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val, 'value');
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Hours Type is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobHour-location_standard_hours':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val);
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Location/Standard hours is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPension-ee_contrib_abs':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Employee Contribution Absolute Amount should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPension-ee_contrib_pct':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Employee Contribution Percentage should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPension-er_contrib_pct':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Employer Contribution Percentage should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPension-pension_type':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val, 'label');
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pension Provider is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPension-is_enrolled':
-          if (!empty($val)) {
-            $dbValue = NULL;
-            switch (strtolower($val))
-            {
-              case 'no':
-                $dbValue = 0;
-                break;
-              case 'yes':
-                $dbValue = 1;
-                break;
-              case 'opted out':
-                $dbValue = 2;
-                break;
-              default:
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('(Pension: Is Enrolled) should be "Yes", "No" or "opted out")', $errorMessage);
-                break;
-            }
-            $params[$key] = $dbValue;
-          }
-          break;
-        case 'HRJobHealth-plan_type':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Healthcare Plan Type is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobHealth-provider':
-          $params[$key] = NULL;
-          if (!empty($val)) {
-            $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($val, 'Health_Insurance_Provider');
-            if ($result != 0)  {
-              $params[$key] = $result;
-            }
-            else  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Health insurance Provider is not an existing provider', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobHealth-plan_type_life_insurance':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Life insurance Plan Type is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobHealth-provider_life_insurance':
-          $params[$key] = NULL;
-          if (!empty($val)) {
-            $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($val, 'Life_Insurance_Provider');
-            if ($result != 0)  {
-              $params[$key] = $result;
-            }
-            else  {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Life insurance Provider is not an existing provider', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPay-is_paid':
-          if (!empty($val)) {
-            $dbValue = NULL;
-            switch (strtolower($val))
-            {
-              case 'no':
-                $dbValue = 0;
-                break;
-              case 'yes':
-                $dbValue = 1;
-                break;
-              default:
-                CRM_Contact_Import_Parser_Contact::addToErrorMsg('Paid column value should be ("Yes" or "No")', $errorMessage);
-                break;
-            }
-            $params[$key] = $dbValue;
-          }
-          break;
-        case 'HRJobPay-pay_cycle':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val, 'value');
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Cycle is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPay-pay_per_cycle_gross':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Per Cycle Gross should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPay-pay_per_cycle_net':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Per Cycle Net  should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPay-pay_scale':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val);
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Scale is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPay-pay_currency':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val);
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay currency is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobPay-pay_amount':
-          if ( filter_var($val, FILTER_VALIDATE_FLOAT) === FALSE || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Amount should be positive number', $errorMessage);
-          }
-          break;
-        case 'HRJobPay-pay_unit':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Pay Unit is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-contract_type':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val, 'label');
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract Type is not valid', $errorMessage);
-            }
-          }
-          else {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract Type is required', $errorMessage);
-          }
-          break;
-        case 'HRJobDetails-period_end_date':
-          if ($val) {
-            $dateValue = CRM_Utils_Date::formatDate($val, $dateType);
-            if ($dateValue) {
-              $params[$key] = $dateValue;
-            }
-            else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('contract end date is not a valid date', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-period_start_date':
-          if (empty($val))  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('contract start date is required', $errorMessage);
-          }
-          else  {
-            $dateValue = CRM_Utils_Date::formatDate($val, $dateType);
-            if ($dateValue) {
-              $params[$key] = $dateValue;
-            }
-            else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('contract start date is not a valid date', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobContractRevision-effective_date':
-          if ($val) {
-            $dateValue = CRM_Utils_Date::formatDate($val, $dateType);
-            if ($dateValue) {
-              $params[$key] = $dateValue;
-            }
-            else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('effective date is not a valid date', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-location':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val, 'value');
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Normal Place of Work is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-notice_amount_employee':
-          if ( filter_var($val, FILTER_VALIDATE_INT) === FALSE  || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Notice Period from Employee (Amount) should be positive integer', $errorMessage);
-          }
-          break;
-        case 'HRJobDetails-notice_amount':
-          if ( filter_var($val, FILTER_VALIDATE_INT) === FALSE  || $val < 0 )  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Notice Period from Employer (Amount) should be positive integer', $errorMessage);
-          }
-          break;
-        case 'HRJobDetails-notice_unit_employee':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Notice Period from Employee (Unit) is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-notice_unit':
-          if (!empty($val)) {
-            $optionID = $this->getStaticOptionKey($key, $val);
-            if ($optionID !== FALSE) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Notice Period from Employer (Unit) is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobDetails-position':
-          if (empty($val)) {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('contract position is required', $errorMessage);
-          }
-          break;
-        case 'HRJobDetails-title':
-          if (empty($val)) {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('contract title is required', $errorMessage);
-          }
-          break;
-        case 'HRJobDetails-end_reason':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val);
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract end reason is not valid', $errorMessage);
-            }
-          }
-          break;
-        case 'HRJobContractRevision-change_reason':
-          if (!empty($val)) {
-            $optionID = $this->getOptionKey($key, $val);
-            if ($optionID !== 0) {
-              $params[$key] = $optionID;
-            } else {
-              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract Revision change reason is not valid', $errorMessage);
-            }
-          }
-          break;
-      }
-    }
-
-    if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS)  {
-      $contract_id = $params['HRJobContractRevision-jobcontract_id'];
-      if (!empty($contract_id))  {
-        $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($contract_id);
-        if ($contractDetails == 0)  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract ID is not found', $errorMessage);
-        }
-      }else {
-        CRM_Contact_Import_Parser_Contact::addToErrorMsg('Contract ID is required', $errorMessage);
-      }
-
-      if (empty($params['HRJobContractRevision-effective_date'])) {
-        CRM_Contact_Import_Parser_Contact::addToErrorMsg('effective date is required', $errorMessage);
-      }
-    }
-    else  {
-      try  {
-        $params['HRJobContract-contact_id'] = $this->determineContactId($params);
-      }
-      catch (\RuntimeException $e) {
-        CRM_Contact_Import_Parser_Contact::addToErrorMsg($e->getMessage(), $errorMessage);
-      }
-
-    }
-
-    if ($errorMessage) {
-      $tempMsg = "Invalid value for field(s) : $errorMessage";
+    if ($errorsMessages !== NULL) {
+      $tempMsg = "Invalid value for field(s) : $errorsMessages";
       array_unshift($values, $tempMsg);
-      $errorMessage = NULL;
+      $errorsMessages = NULL;
       return CRM_Import_Parser::ERROR;
     }
 
-    $this->_params = $params;
-    //var_dump($params);exit;
     return CRM_Import_Parser::VALID;
   }
 
@@ -503,9 +134,6 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         'role',
     );
 
-    $this->_importMode = $values['importMode'];
-    unset($values['importMode']);
-
     // first make sure this is a valid line
     $response = $this->summary($values);
 
@@ -515,8 +143,9 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     $this->_params['skipRecentView'] = TRUE;
     $this->_params['check_permissions'] = TRUE;
-    
-    //$params = $this->getActiveFieldParams();
+
+    $this->setAutoPopulatedFields();
+
     $params = $this->_params;
 
     try {
@@ -538,6 +167,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     }
 
     $this->_previousRevision['imported']['id'] = $revisionId;
+    return CRM_Import_Parser::VALID;
   }
 
   /**
@@ -854,4 +484,459 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       }
     }
   }
+
+  /**
+   * loop through all imported fields and check if there is any required fields missing
+   * or if any value is not valid , convert the value to something can be inserted into database
+   * and finally set _params attribute to the new converted values
+   *
+   * @return array  array of error messages for the invalid or missing fields if there is any
+   * @access private
+   */
+  private function validateFieldsValues()  {
+    $params = &$this->getActiveFieldParams();
+    $errorMessages = NULL;
+
+    $requiredFields = array(
+      'HRJobDetails-title',
+      'HRJobDetails-position',
+      'HRJobDetails-contract_type',
+      'HRJobDetails-period_start_date'
+    );
+
+    if ($this->_importMode == CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS) {
+      $requiredFields = array_merge($requiredFields, array(
+        'HRJobContractRevision-jobcontract_id',
+        'HRJobContractRevision-effective_date'
+      ));
+    }
+    else  {
+      try  {
+        $params['HRJobContract-contact_id'] = $this->determineContactId($params);
+      }
+      catch (\RuntimeException $e) {
+        CRM_Contact_Import_Parser_Contact::addToErrorMsg($e->getMessage(), $errorMessages);
+      }
+    }
+
+    foreach ($requiredFields as $item) {
+      if (!in_array($item, $this->_mapperKeys) || $params[$item] == '')  {
+        CRM_Contact_Import_Parser_Contact::addToErrorMsg("{$this->_fields[$item]->_title} is required", $errorMessages);
+      }
+    }
+
+    foreach ($params as $key => $val) {
+      if ($val != '')  {
+        $validationData = $this->validateField($key, $val);
+        if ($validationData['error_message'] !== NULL)  {
+          CRM_Contact_Import_Parser_Contact::addToErrorMsg($validationData['error_message'], $errorMessages);
+          continue;
+        }
+        $params[$key] = $validationData['value'];
+      }
+    }
+    $this->_params = $params;
+    return $errorMessages;
+  }
+
+  /**
+   * validate and convert a single imported value if it contain a valid value
+   *
+   * @param @key the key of the field we are going to validate
+   * @param @value the value of the field we are going to validate
+   * @return array  contain converted values ( if any ) , and error messages ( if any )
+   * @access private
+   */
+  private function validateField($key, $value)  {
+    $errorMessage = NULL;
+    $convertedValue = $value;
+    $optionReturnType = 'id';
+    // TODO: all values should be stored by values and this part should be removed
+    if ( in_array($key, array('HRJobPension-pension_type', 'HRJobDetails-contract_type')) )  {
+      $optionReturnType = 'label';
+    }
+    elseif ( in_array($key, array('HRJobHour-hours_type', 'HRJobPay-pay_cycle', 'HRJobDetails-location', 'HRJobDetails-end_reason')) )  {
+      $optionReturnType = 'value';
+    }
+
+    switch($key)  {
+      case 'HRJobContractRevision-jobcontract_id':
+        $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($value);
+        if ($contractDetails == 0)  {
+          $errorMessage = "{$this->_fields[$key]->_title} is not found";
+        }
+        break;
+      case 'HRJobPension-ee_contrib_abs':
+      case 'HRJobPension-ee_contrib_pct':
+      case 'HRJobPension-er_contrib_pct':
+      case 'HRJobPay-pay_amount':
+        if ( filter_var($value, FILTER_VALIDATE_FLOAT) === FALSE || $value < 0 )  {
+          $errorMessage = "{$this->_fields[$key]->_title} should be positive number";
+        }
+        break;
+      case 'HRJobDetails-notice_amount_employee':
+      case 'HRJobDetails-notice_amount':
+        if ( filter_var($value, FILTER_VALIDATE_INT) === FALSE  || $value < 0 )  {
+          $errorMessage = "{$this->_fields[$key]->_title} should be positive integer";
+        }
+        break;
+      case 'HRJobHour-location_standard_hours':
+      case 'HRJobPay-pay_scale':
+      case 'HRJobPay-pay_currency':
+      case 'HRJobContractRevision-change_reason':
+      case 'HRJobPension-pension_type':
+      case 'HRJobDetails-contract_type':
+      case 'HRJobHour-hours_type':
+      case 'HRJobPay-pay_cycle':
+      case 'HRJobDetails-location':
+      case 'HRJobDetails-end_reason':
+        $optionID = $this->getOptionID($key, $value, $optionReturnType);
+        if ($optionID !== FALSE) {
+          $convertedValue = $optionID;
+        } else {
+          $errorMessage = "{$this->_fields[$key]->_title} is not valid";
+        }
+        break;
+      case 'HRJobHealth-plan_type':
+      case 'HRJobHealth-plan_type_life_insurance':
+        case 'HRJobPay-pay_unit':
+      case 'HRJobDetails-notice_unit_employee':
+      case 'HRJobDetails-notice_unit':
+      case 'HRJobPension-is_enrolled':
+      case 'HRJobPay-is_paid':
+        $optionID = $this->getHardCodedOptionID($key, $value);
+        if ($optionID !== FALSE) {
+          $convertedValue = $optionID;
+        } else {
+          $errorMessage = "{$this->_fields[$key]->_title} is not valid";
+        }
+        break;
+      case 'HRJobDetails-period_start_date':
+      case 'HRJobDetails-period_end_date':
+      case 'HRJobContractRevision-effective_date':
+        $session = CRM_Core_Session::singleton();
+        $dateType = $session->get('dateTypes');
+        $dateValue = CRM_Utils_Date::formatDate($value, $dateType);
+        if ($dateValue) {
+          $convertedValue = $dateValue;
+        }
+        else {
+          $errorMessage = "{$this->_fields[$key]->_title} is not a valid date";
+        }
+        break;
+      case 'HRJobHealth-provider':
+      case 'HRJobHealth-provider_life_insurance':
+        $providerType = 'Health_Insurance_Provider';
+        if ($key == 'HRJobHealth-provider_life_insurance')  {
+          $providerType = 'Life_Insurance_Provider';
+        }
+        $convertedValue = NULL;
+        $result = CRM_Hrjobcontract_BAO_HRJobHealth::checkProvider($value, $providerType);
+        if ($result != 0)  {
+          $convertedValue = $result;
+        }
+        else  {
+          $errorMessage = "{$this->_fields[$key]->_title} is not an existing provider";
+        }
+        break;
+      case 'HRJobLeave-leave_amount':
+        $convertedValue = array();
+        $leaveAmounts = explode(',', $value);
+        if (!empty($leaveAmounts))  {
+          foreach($leaveAmounts as $leave)  {
+            $typeAndAmount = explode(':', $leave);
+            if (!empty($typeAndAmount))  {
+              $leaveType = trim($typeAndAmount[0]);
+              $leaveAmount = trim($typeAndAmount[1]);
+              if ( filter_var($leaveAmount, FILTER_VALIDATE_INT) === FALSE  || $leaveAmount < 0 )  {
+                $errorMessage = "Leave Amount values should be positive integers";
+                break;
+              }
+              $typeID = $this->getOptionID('HRJobLeave-leave_type', $leaveType);
+              if ($typeID === FALSE) {
+                $errorMessage = "({$leaveType}) is not a valid leave type";
+              }
+              $convertedValue[$typeID] = $leaveAmount;
+            }
+            else {
+              $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
+              break;
+            }
+          }
+        }
+        else {
+          $errorMessage = "{$this->_fields[$key]->_title} format is not correct";
+        }
+        break;
+      case 'HRJobPay-annual_benefits':
+      case 'HRJobPay-annual_deductions':
+        $valueType = 'benefit';
+        if ($key == 'HRJobPay-annual_deductions')  {
+          $valueType = 'deduction';
+        }
+        $result = $this->validateBenefitsAndDeductions($valueType, $value);
+        $convertedValue = $result['value'];
+        $errorMessage = $result['error_message'];
+        break;
+    }
+
+    return array('value'=>$convertedValue, 'error_message'=>$errorMessage);
+  }
+
+  /**
+   * benefits and deductions have a complex format so we validate them in
+   * a single method to make the code more readable
+   *
+   * @param @$value_type either 'benefit' or 'deduction'
+   * @param @value the value of the field we are going to validate
+   * @return array  contain converted values ( if any ) , and error messages ( if any )
+   * @access private
+   */
+  private function validateBenefitsAndDeductions($value_type, $value)  {
+    $errorMessage = NULL;
+    $outputArray = array();
+    $rows = explode(';', $value);
+    if (!empty($rows))  {
+      foreach($rows as $row)  {
+        if (empty($row))  {
+          continue;
+        }
+        $row = trim($row);
+        $columns = explode(',', $row);
+        $valuesList = $outputRow =  array();
+        if (!empty($columns))  {
+          foreach($columns as $item)  {
+            $item = explode(':', $item);
+            if (empty($item))  {
+              $errorMessage = "annual {$value_type}s format is not correct";
+              break;
+            }
+            $valuesList[strtolower(trim($item[0]))] = isset($item[1]) ? trim($item[1]) : '';
+          }
+          $nameID = '';
+          if (!empty($valuesList['name']))  {
+            $nameID = $this->getOptionID("{$value_type}_names", $valuesList['name'], 'value');
+            if ($nameID === FALSE) {
+              $errorMessage = "{$valuesList['name']} is not a valid annual {$value_type}s name";
+              break;
+            }
+          }
+          $outputRow['name'] = $nameID;
+
+          $typeID = '';
+          if (!empty($valuesList['type']))  {
+            $typeID = $this->getOptionID("{$value_type}_types", $valuesList['type'], 'value');
+            if ($typeID === FALSE) {
+              $errorMessage = "{$valuesList['type']} is not a valid annual {$value_type}s type";
+              break;
+            }
+          }
+
+          if (!empty($valuesList['type']) && $valuesList['type'] == '%')  {
+            if ( (!isset($valuesList['amount pct']) || filter_var($valuesList['amount pct'], FILTER_VALIDATE_FLOAT) === FALSE) )  {
+              $errorMessage = "annual {$value_type}s percentage amount is not valid or set";
+              break;
+            }
+            $amount_pct = (float)$valuesList['amount pct'];
+            // get pay amount to calculate amount absolute value
+            $pay_amount = 0;
+            if (isset($this->_params['HRJobPay-pay_amount']))  {
+              if ( filter_var($value, FILTER_VALIDATE_FLOAT) !== FALSE && $value >= 0 )  {
+                $pay_amount = (float)$this->_params['HRJobPay-pay_amount'];
+              }
+            }
+            $amount_abs = ($amount_pct/100)*$pay_amount;
+          }
+          else  {
+            if(!isset($valuesList['amount abs']) || filter_var($valuesList['amount abs'], FILTER_VALIDATE_FLOAT) === FALSE )  {
+              $errorMessage = "annual {$value_type}s absolute amount is not valid or set";
+              break;
+            }
+            $amount_pct = '';
+            $amount_abs = $valuesList['amount abs'];
+          }
+
+          $outputRow['type'] = $typeID;
+          $outputRow['amount_pct'] = (string)$amount_pct;
+          $outputRow['amount_abs'] = (string)$amount_abs;
+          $outputArray[] = $outputRow;
+        }
+        else  {
+          $errorMessage = "annual {$value_type}s format is not correct";
+          break;
+        }
+      }
+    }
+    else {
+      $errorMessage = "annual {$value_type}s  format is not correct";
+    }
+    return array('value'=>$outputArray, 'error_message'=>$errorMessage);
+  }
+
+  /**
+   * some fields should be auto populated when creating a new contract
+   * here where we calculate and set them
+   *
+   * @access private
+   */
+  private function setAutoPopulatedFields()  {
+    $this->setHourAutoPopulatedFields();
+    $this->setPayAutoPopulatedFields();
+  }
+
+  /**
+   * calculate and set hour tab auto populated fields
+   *
+   * @access private
+   */
+  private function setHourAutoPopulatedFields()  {
+    $params = $this->_params;
+
+    if (isset($params['HRJobHour-location_standard_hours'])
+      && $params['HRJobHour-location_standard_hours'] != ''
+      && isset($params['HRJobHour-hours_type'])
+      && $params['HRJobHour-hours_type'] != ''
+    )  {
+      $hourLocation = civicrm_api3('HRHoursLocation', 'getsingle', array(
+        'sequential' => 1,
+        'id' => $params['HRJobHour-location_standard_hours']
+      ));
+      if (!empty($hourLocation))  {
+        $this->_params['HRJobHour-hours_unit'] = $hourLocation['periodicity'];
+        // calculate FTE Numerator/Denominator Equivalence
+        if (isset($params['HRJobHour-hours_amount']) && $params['HRJobHour-hours_amount'] != '')  {
+          $inputHourAmount = round(floatval($params['HRJobHour-hours_amount']), 2);
+          $actualHourAmount = round(floatval($hourLocation['standard_hours']), 2);
+          $fteNoRound = $inputHourAmount/$actualHourAmount;
+          $fte = round($inputHourAmount/$actualHourAmount, 2);
+          list ($num, $denom) = $this->float2rat($fteNoRound);
+          $this->_params['HRJobHour-fte_num'] = $num;
+          $this->_params['HRJobHour-fte_denom'] = $denom;
+          $this->_params['HRJobHour-hours_fte'] = $fte;
+        }
+      }
+    }
+  }
+
+  /**
+   * calculate and set pay tab auto populated fields
+   *
+   * @access private
+   */
+  private function setPayAutoPopulatedFields()  {
+    $params = $this->_params;
+
+    if (!empty($params['HRJobPay-is_paid'])
+      && isset($params['HRJobPay-pay_amount'])
+      && $params['HRJobPay-pay_amount'] != ''
+      && isset($params['HRJobPay-pay_unit'])
+      && $params['HRJobPay-pay_unit'] != ''
+    )  {
+      // calculate and set  annual pay estimate before benefits and deductions
+      $multiplicationFactor = $this->getPayUnitFactor($params['HRJobPay-pay_unit']);
+      $params['HRJobPay-pay_annualized_est'] = $this->_params['HRJobPay-pay_annualized_est'] = round(round(floatval($params['HRJobPay-pay_amount']), 2) * $multiplicationFactor, 2) ;
+
+      if (isset($params['HRJobPay-pay_cycle']) && $params['HRJobPay-pay_cycle'] != '')  {
+        // calculate and set gross Pay per cycle (before benefits and deductions)
+        $pay_cycle = strtolower($this->getOptionID('HRJobPay-pay_cycle', $params['HRJobPay-pay_cycle'], 'label', 'value'));
+        $divisionFactor = $this->getPayUnitFactor($pay_cycle, 'division');
+
+        $this->_params['HRJobPay-pay_per_cycle_gross'] = round(($params['HRJobPay-pay_annualized_est'] / $divisionFactor), 2);
+
+        // calculate and set Net pay per cycle, to achieve that we have to :
+        // 1- Calculate sum of benefits per cycle
+        $benefits_sum = $this->calculateBenefitsSum($divisionFactor, 'benefit');
+        // 2- Calculate sum of deductions per cycle
+        $deductions_sum = $this->calculateBenefitsSum($divisionFactor, 'deduction');
+        // 3- Subtract deductions from benefits
+        $totalBenefits = $benefits_sum - $deductions_sum;
+        // 4- subtract benefits after deductions from gross pay per cycle
+        $this->_params['HRJobPay-pay_per_cycle_net'] = $this->_params['HRJobPay-pay_per_cycle_gross'] + $totalBenefits;
+      }
+    }
+  }
+
+  /**
+   * calculate sum of benefits/deductions depending on $type parameter
+   *
+   * @param $divisionFactor (calculated depending on pay cycle)
+   * @param $type  (benefit)|(deduction)
+   * @return float
+   * @access private
+   */
+  private function calculateBenefitsSum($divisionFactor, $type)  {
+    $sum = 0;
+    if (!empty($this->_params["HRJobPay-annual_{$type}s"]))  {
+      foreach($this->_params["HRJobPay-annual_{$type}s"] as $item)  {
+        $amountType = $this->getOptionID("{$type}_types", $item['type'], 'label', 'value');
+        if ($amountType == '%')  {
+          $amount = ($item['amount_pct']/100) * $this->_params['HRJobPay-pay_annualized_est'];
+        }
+        else  {
+          $amount =  $item['amount_abs'];
+        }
+        $sum+= $amount;
+      }
+      $sum = round(($sum/$divisionFactor), 2);
+    }
+    return $sum;
+  }
+
+  /**
+   * calculate the division/multiplication factor
+   *
+   * @param $payUnit
+   * @param $operation
+   * @return int
+   * @access private
+   */
+  private function getPayUnitFactor($payUnit, $operation = 'multiplication')  {
+    switch($payUnit)  {
+      case 'Hour':
+        $factor = 2080;
+        break;
+      case 'Day':
+        $factor = 260;
+        break;
+      case 'Week':
+      case 'weekly':
+        $factor = 52;
+        break;
+      case 'Month':
+      case 'monthly':
+        $factor = 12;
+        break;
+      case 'Year':
+        $factor = 1;
+        break;
+      default:
+        $factor = ($operation == 'division') ? 1 : 0;
+        break;
+    }
+    return $factor;
+  }
+
+  /**
+   * convert decimal value to rational format
+   * credit http://stackoverflow.com/questions/14330713/converting-float-decimal-to-fraction/14357170#14357170
+   * @param $n
+   * @param $tolerance
+   * @return array (numerator/denominator)
+   * @access private
+   */
+  private function float2rat($n, $tolerance = 1.e-6) {
+    $h1=1; $h2=0;
+    $k1=0; $k2=1;
+    $b = 1/$n;
+    do {
+      $b = 1/$b;
+      $a = floor($b);
+      $aux = $h1; $h1 = $a*$h1+$h2; $h2 = $aux;
+      $aux = $k1; $k1 = $a*$k1+$k2; $k2 = $aux;
+      $b = $b-$a;
+    } while (abs($n-$h1/$k1) > $n*$tolerance);
+
+    return array($h1,$k1);
+  }
+
 }

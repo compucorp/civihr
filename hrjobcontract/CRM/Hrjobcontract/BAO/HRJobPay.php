@@ -42,10 +42,10 @@ class CRM_Hrjobcontract_BAO_HRJobPay extends CRM_Hrjobcontract_DAO_HRJobPay {
    *
    */
   public static function create($params) {
-      if (is_array($params['annual_benefits'])) {
+      if (!empty($params['annual_benefits']) && is_array($params['annual_benefits'])) {
           $params['annual_benefits'] = json_encode($params['annual_benefits']);
       }
-      if (is_array($params['annual_deductions'])) {
+      if (!empty($params['annual_deductions']) && is_array($params['annual_deductions'])) {
           $params['annual_deductions'] = json_encode($params['annual_deductions']);
       }
       return parent::create($params);

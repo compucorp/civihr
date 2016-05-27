@@ -519,6 +519,24 @@ function _hrjobcontract_phpunit_populateDB() {
 }
 
 function hrjobcontract_civicrm_export( $exportTempTable, $headerRows, $sqlColumns, $exportMode ) {
+  // Replace contract type option values with respective labels
+  if(isset($sqlColumns['hrjobcontract_details_contract_type'])) {
+    $udpateConditions  = "";
+    $valueLabelMap = getContractTypeOptions();
+
+    // Generate update condition string to update all values in single query
+    foreach($valueLabelMap as $value => $label) {
+      $updateConditions .= " WHEN hrjobcontract_details_contract_type = '{$value}' ";
+      $updateConditions .= " Then '{$label}' ";
+    }
+    $sql = "UPDATE {$exportTempTable} SET hrjobcontract_details_contract_type =
+            CASE
+            {$updateConditions}
+            ELSE hrjobcontract_details_contract_type
+            END";
+    CRM_Core_DAO::executeQuery($sql);
+  }
+
   if ($exportMode == CRM_Export_Form_Select::EXPORT_ALL && !empty($_POST['unchange_export_selected_column'])) {
     //drop column from table -- HR-379
     $col = array('do_not_trade', 'do_not_email');
@@ -588,4 +606,21 @@ function getWorkLocationOptions(){
 
   // fetch options for hrjc_location
   return CRM_Core_BAO_OptionValue::getOptionValuesAssocArray($optionGroupId);
+}
+
+/**
+ * Get value => label array of Contract Type Options
+ *
+ * @return array
+ */
+function getContractTypeOptions() {
+  // contract type options:
+  $contractTypeOptions = array();
+  CRM_Core_OptionGroup::getAssoc('hrjc_contract_type', $contractTypeOptions, true);
+  $valueLabelMap = array();
+  foreach ($contractTypeOptions as $contractType) {
+    $valueLabelMap[$contractType['value']] = $contractType['label'];
+  }
+
+  return $valueLabelMap;
 }

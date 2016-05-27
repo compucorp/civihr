@@ -329,7 +329,8 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 }
 
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && isset($objectRef->case_id)) {
+  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectRef->activity_type_id)) {
+    $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
     $hrjob = civicrm_api3('HRJobContract', 'get', array(
       'sequential' => 1,
@@ -343,7 +344,7 @@ function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
     }
     if (isset($notice_amt)) {
       $revoke = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Revoke access to databases"));
-      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID"));
+      $block = civicrm_api3('OptionValue', 'getsingle', array('return' => "value", 'name' => "Block work email ID", 'component_id' => $component_id));
       $date = strtotime($objectRef->activity_date_time);
       if ($objectRef->activity_type_id == $revoke['value']) {
         $date = date('Y-m-d h:i:s',strtotime("+{$notice_amt} {$notice_unit}", $date));
@@ -429,4 +430,39 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
     }
   }
   return $schedules;
+}
+
+/**
+ * function to check if the activity is created by task and assignments extension
+ *
+ * @param int $activity_type_id
+ * @return boolean
+ */
+function activityCreatedByTaskandAssignments($activity_type_id) {
+  // check if task and assignments is enabled
+  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
+  if(!$isEnabled) {
+    return FALSE;
+  }
+
+  $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviTask');
+  $tasksAssignmentsComponentIds[] = CRM_Core_Component::getComponentID('CiviDocument');
+
+  // get the component_id of current object passed into hook_civicrm_post():
+  $optionGroup = civicrm_api3('OptionGroup', 'getsingle', array(
+    'sequential' => 1,
+    'name' => "activity_type",
+  ));
+
+  $result = civicrm_api3('OptionValue', 'getsingle', array(
+    'sequential' => 1,
+    'option_group_id' => $optionGroup['id'],
+    'value' => $activity_type_id,
+  ));
+
+  if (!empty($result['component_id']) && in_array($result['component_id'], $tasksAssignmentsComponentIds)) {
+    return TRUE;
+  }
+
+  return FALSE;
 }

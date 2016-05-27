@@ -155,10 +155,14 @@
     <comment>The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry</comment>
   </field>
   <field>
-    <name>carry_forward_expiration_date</name>
-    <type>varchar</type>
-    <length>5</length>
-    <comment>If expiration_unit + expiration_duration is not informed, this should be. Its a date in the format dd-mm</comment>
+    <name>carry_forward_expiration_day</name>
+    <type>int</type>
+    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
+  </field>
+  <field>
+    <name>carry_forward_expiration_month</name>
+    <type>int</type>
+    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
   </field>
 
 </table>
