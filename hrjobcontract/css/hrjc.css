@@ -10914,7 +10914,7 @@ fieldset[disabled]
   right: 28px;
 }
 /* line 39, ../scss/civihr/partials/_forms.scss */
-#hrjob-contract .form-horizontal .has-feedback [datepicker-popup] + .form-control-feedback {
+#hrjob-contract .form-horizontal .has-feedback [uib-datepicker-popup] + .form-control-feedback {
   right: 41px;
 }
 /* line 43, ../scss/civihr/partials/_forms.scss */

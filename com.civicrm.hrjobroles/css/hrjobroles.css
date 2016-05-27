@@ -8929,7 +8929,7 @@ fieldset[disabled]
 #hrjobroles .form-horizontal .has-feedback select + .form-control-feedback {
   right: 28px;
 }
-#hrjobroles .form-horizontal .has-feedback [datepicker-popup] + .form-control-feedback {
+#hrjobroles .form-horizontal .has-feedback [uib-datepicker-popup] + .form-control-feedback {
   right: 41px;
 }
 #hrjobroles .form-horizontal .has-feedback .form-inline {
