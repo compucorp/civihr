@@ -5,7 +5,7 @@ define([
   'use strict';
 
   controllers.controller('AccessRightsModalCtrl', [
-    '$q', '$modalInstance', 'Region', 'Location', 'Right',
+    '$q', '$uibModalInstance', 'Region', 'Location', 'Right',
     function ($q, $modalInstance, Region, Location, Right) {
       var vm = this;
 

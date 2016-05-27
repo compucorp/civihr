@@ -12,6 +12,7 @@ define([
   'use strict'
 
   angular.module('access-rights', [
+      'ngAnimate',
       'ui.select',
       'common.directives',
       'xeditable-civi',
