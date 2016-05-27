@@ -111,6 +111,28 @@ define(function () {
                   id: 1,
                   percentage: "1",
                   type: "1"
+                },
+                {
+                  $$hashKey: "object:565",
+                  amount: "0",
+                  funder_id: {
+                    id:"1",
+                    sort_name:"Default Organization"
+                  },
+                  id: 1,
+                  percentage: "0",
+                  type: "1"
+                },
+                {
+                  $$hashKey: "object:565",
+                  amount: "1",
+                  funder_id: {
+                    id:"1",
+                    sort_name:"Default Organization"
+                  },
+                  id: 1,
+                  percentage: "0",
+                  type: "0"
                 }
               ],
               "cost_centers": [
@@ -119,7 +141,7 @@ define(function () {
                   amount:"0",
                   cost_centre_id:"879",
                   id:1,
-                  percentage:"0",
+                  percentage:"1",
                   type:"1",
                 },
                 {
@@ -132,11 +154,19 @@ define(function () {
                 },
                 {
                   $$hashKey:"object:845",
-                  amount:"0",
+                  amount:"2",
                   cost_centre_id:"",
                   id:1,
                   percentage:"0",
-                  type:"1",
+                  type:"0",
+                },
+                {
+                  $$hashKey:"object:845",
+                  amount:"2",
+                  cost_centre_id:"123",
+                  id:1,
+                  percentage:"0",
+                  type:"0",
                 }
               ]
             }

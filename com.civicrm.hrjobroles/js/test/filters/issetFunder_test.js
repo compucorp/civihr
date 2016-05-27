@@ -17,7 +17,7 @@ define([
     it('should remove the entries which are without funder_id', function () {
       var funders = angular.copy(Mock.roles_data[3]['funders']);
 
-      expect(issetFunder(funders).length).toBe(1);
+      expect(issetFunder(funders).length).toBe(2);
     });
 
     it('should return the passed value if isn\'t an array', function () {
