@@ -384,20 +384,35 @@ define([
                     scope.edit_data = angular.copy(Mock.roles_data);
                   });
 
-                  it('funders should remove the funders entries which are without funder_id', function() {
-                    scope.onCancel(3, 'funders');
-                    expect(scope.edit_data[3]['funders'].length).toBe(2);
+                  describe('funders', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'funders');
+                    });
+
+                    it('should remove the funders entries which are without funder_id', function() {
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
                   });
 
-                  it('cost_centers should remove the cost_centers entries which are without cost_centre_id', function() {
-                    scope.onCancel(3, 'cost_centers');
-                    expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                  describe('cost_centers', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'cost_centers');
+                    });
+
+                    it('should remove the cost_centers entries which are without cost_centre_id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                    });
                   });
 
-                  it('both should remove the funders and cost_centers entries which are without id', function() {
-                    scope.onCancel(3, 'both');
-                    expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
-                    expect(scope.edit_data[3]['funders'].length).toBe(2);
+                  describe('both', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'both');
+                    });
+
+                    it('should remove the funders and cost_centers entries which are without id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
                   });
                 });
 
