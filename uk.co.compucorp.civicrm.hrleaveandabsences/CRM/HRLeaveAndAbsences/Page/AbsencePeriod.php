@@ -105,7 +105,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsencePeriod extends CRM_Core_Page_Basic {
    * @access public
    */
   public function editForm() {
-    return '';
+    return 'CRM_HRLeaveAndAbsences_Form_AbsencePeriod';
   }
 
   /**

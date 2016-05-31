@@ -131,6 +131,36 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
     ]);
   }
 
+  public function testPeriodCannotOverlapWithItself()
+  {
+    $params = [
+      'title' => 'Period 1',
+      'start_date' => date('Y-m-d'),
+      'end_date' => date('Y-m-d', strtotime('+1 day')),
+      'weight' => 1
+    ];
+    $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+
+    $period = $this->findPeriodByID($period->id);
+    $this->assertEquals($params['title'], $period->title);
+    $this->assertEquals($params['start_date'], $period->start_date);
+    $this->assertEquals($params['end_date'], $period->end_date);
+    $this->assertEquals($params['weight'], $period->weight);
+
+    // Saving the period keeping its start and end dates should not
+    // throw an InvalidAbsencePeriod exception saying it overlaps
+    // with another period (itself)
+    $params['title'] = 'Period 1 Updated';
+    $params['id'] = $period->id;
+    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+
+    $period = $this->findPeriodByID($period->id);
+    $this->assertEquals($params['title'], $period->title);
+    $this->assertEquals($params['start_date'], $period->start_date);
+    $this->assertEquals($params['end_date'], $period->end_date);
+    $this->assertEquals($params['weight'], $period->weight);
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
    * @expectedExceptionMessage Both the start and end dates should be valid
@@ -159,6 +189,47 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
       'start_date' => $start_date,
       'end_date'   => $end_date
     ]);
+  }
+
+  public function testGetValuesArrayShouldReturnAbsencePeriodValues()
+  {
+    $params = [
+      'title' => 'Period Title',
+      'start_date' => date('Y-m-d'),
+      'end_date' => date('Y-m-d', strtotime('+6 months'))
+    ];
+    $entity = $this->createBasicPeriod($params);
+    $values = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getValuesArray($entity->id);
+    $this->assertEquals($params['title'], $values['title']);
+    $this->assertEquals($params['start_date'], $values['start_date']);
+    $this->assertEquals($params['end_date'], $values['end_date']);
+  }
+
+  public function testItCanReturnTheMostRecentStartDateAvailable()
+  {
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals(date('Y-m-d'), $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2015-01-01',
+      'end_date' => '2015-12-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2016-01-01', $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2014-01-01',
+      'end_date' => '2014-01-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2016-01-01', $date);
+
+    $this->createBasicPeriod([
+      'start_date' => '2016-01-01',
+      'end_date' => '2016-12-31',
+    ]);
+    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $this->assertEquals('2017-01-01', $date);
   }
 
   private function createBasicPeriod($params = array()) {
@@ -228,6 +299,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
       ['2015-02-31', '2014-01-01'],
       ['2015-01-01', '2015-13-01'],
       ['2015-02-31', 'dafsfdasfdasfdsafsd'],
+      ['31/02/2015', 'dafsfdasfdasfdsafsd'],
+      ['10/03/2014', '11/03/2015'],
+      ['10/03/2014', '2015-01-01'],
+      ['03/2017', '2020-10-11'],
+      ['2020-10-11', '2016'],
+      ['2020-10-11', '03/2017'],
     ];
   }
 

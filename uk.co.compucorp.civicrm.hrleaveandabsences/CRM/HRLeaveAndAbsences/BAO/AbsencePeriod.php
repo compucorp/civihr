@@ -80,7 +80,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       );
     }
 
-    if(!self::isValidDate($params['start_date']) || !self::isValidDate($params['end_date'])) {
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['start_date']);
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['end_date']);
+    if(!$startDateIsValid || !$endDateIsValid) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
         'Both the start and end dates should be valid'
       );
@@ -116,7 +118,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       2 => [$params['start_date'], 'String'],
     ];
 
-    if(!empty($query['id'])) {
+    if(!empty($params['id'])) {
       $query .= ' AND (id != %3)';
       $queryParams[3] = [$params['id'], 'Integer'];
     }
@@ -196,7 +198,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int the maximum weight
    */
-  private static function getMaxWeight() {
+  public static function getMaxWeight() {
     $tableName = self::getTableName();
     $query = "SELECT MAX(weight) as max_weight FROM {$tableName}";
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -208,18 +210,48 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
-   * This uses PHP's date_parse to check if the given date is valid.
+   * Returns an array containing all the fields values for the
+   * AbsencePeriod with the given ID.
    *
-   * The date will be valid it no error or warning is found while parsing it.
+   * This method is mainly used by the AbsencePeriod form, so it
+   * can get the data to fill its fields.
    *
-   * @param $date The date to be checked
+   * An empty array is returned if it is not possible to load
+   * the data.
    *
-   * @return bool
+   * @param int $id The id of the AbsencePeriod to retrieve the values
+   *
+   * @return array An array containing the values
    */
-  private static function isValidDate($date)
-  {
-    $parsed = date_parse($date);
+  public static function getValuesArray($id) {
+    try {
+      $result = civicrm_api3('AbsencePeriod', 'getsingle', ['id' => $id]);
+      return $result;
+    } catch (CiviCRM_API3_Exception $ex) {
+      return [];
+    }
+  }
 
-    return $parsed['warning_count'] == 0 && $parsed['error_count'] == 0;
+  /**
+   * This method returns the most recent date that can be used as a Start Date.
+   *
+   * The returned date is maximum End Date of all existing Absence Period + 1 day.
+   *
+   * If there's no existing Absence Period, the current date is returned
+   *
+   * @return string The most recent start date available in Y-m-d format
+   */
+  public static function getMostRecentStartDateAvailable()
+  {
+    $tableName = self::getTableName();
+    $query = "SELECT MAX(end_date) as latest_end_date FROM {$tableName}";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if($dao->fetch() && $dao->latest_end_date) {
+      $latestEndDate = new DateTime($dao->latest_end_date);
+      $latestEndDate->add(new DateInterval('P1D'));
+      return $latestEndDate->format('Y-m-d');
+    }
+
+    return date('Y-m-d');
   }
 }
