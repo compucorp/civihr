@@ -129,7 +129,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
                 $this->buildMultiValueClause($query, $value, $locationOptions, $fieldTitle, $grouping, $whereField);
                 return;
             case 'hrjobroles_region':
-                $regionOptions = $this->getDepartmentOptions();
+                $regionOptions = $this->getRegionOptions();
                 $this->buildMultiValueClause($query, $value, $regionOptions, $fieldTitle, $grouping, $whereField);
                 return;
             case 'hrjobroles_department':
@@ -241,7 +241,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
             );
 
             $form->addElement('text', 'hrjobroles_funder', ts('Funder (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobroles_DAO_HRJobRoles', 'funder'));
-            
+
             $form->add('select', 'hrjobroles_funder_val_type', ts('Funder Value Type'), $this->fundindAndCostCentresOptions, FALSE,
                 array('id' => 'hrjobroles_funder_val_type', 'placeholder' => ts('- select - '))
             );
