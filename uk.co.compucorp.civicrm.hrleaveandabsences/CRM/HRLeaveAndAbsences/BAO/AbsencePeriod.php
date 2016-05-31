@@ -116,7 +116,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       2 => [$params['start_date'], 'String'],
     ];
 
-    if(!empty($query['id'])) {
+    if(!empty($params['id'])) {
       $query .= ' AND (id != %3)';
       $queryParams[3] = [$params['id'], 'Integer'];
     }

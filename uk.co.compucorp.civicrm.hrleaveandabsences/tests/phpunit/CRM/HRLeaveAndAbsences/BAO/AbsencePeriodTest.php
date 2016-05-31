@@ -131,6 +131,36 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
     ]);
   }
 
+  public function testPeriodCannotOverlapWithItself()
+  {
+    $params = [
+      'title' => 'Period 1',
+      'start_date' => date('Y-m-d'),
+      'end_date' => date('Y-m-d', strtotime('+1 day')),
+      'weight' => 1
+    ];
+    $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+
+    $period = $this->findPeriodByID($period->id);
+    $this->assertEquals($params['title'], $period->title);
+    $this->assertEquals($params['start_date'], $period->start_date);
+    $this->assertEquals($params['end_date'], $period->end_date);
+    $this->assertEquals($params['weight'], $period->weight);
+
+    // Saving the period keeping its start and end dates should not
+    // throw an InvalidAbsencePeriod exception saying it overlaps
+    // with another period (itself)
+    $params['title'] = 'Period 1 Updated';
+    $params['id'] = $period->id;
+    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+
+    $period = $this->findPeriodByID($period->id);
+    $this->assertEquals($params['title'], $period->title);
+    $this->assertEquals($params['start_date'], $period->start_date);
+    $this->assertEquals($params['end_date'], $period->end_date);
+    $this->assertEquals($params['weight'], $period->weight);
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
    * @expectedExceptionMessage Both the start and end dates should be valid
