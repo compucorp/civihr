@@ -179,16 +179,33 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
   }
 
   /**
-   * Validates if the Start Date is less than the End Date
+   * Validates if Start and End Dates are valid and if Start Date is less than
+   * End Date
    *
    * @param array $values An array containing all the form's fields values
    * @param array $errors A reference to the errors array where errors will be
    *                      added if dates are invalid
    */
   private function validatePeriodDates($values, &$errors) {
+    if(empty($values['start_date']) || empty($values['end_date'])) {
+      return;
+    }
+
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['start_date']);
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['end_date']);
+
+    if(!$startDateIsValid) {
+      $errors['start_date'] = ts('Start Date should be a valid date');
+    }
+
+    if(!$endDateIsValid) {
+      $errors['end_date'] = ts('End Date should be a valid date');
+    }
+
+    $datesAreValid = $startDateIsValid && $endDateIsValid;
     $startDate = strtotime($values['start_date']);
     $endDate = strtotime($values['end_date']);
-    if($startDate >= $endDate) {
+    if($datesAreValid && $startDate >= $endDate) {
       $errors['start_date'] = ts('Start Date should be less than End Date');
     }
   }

@@ -299,6 +299,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
       ['2015-02-31', '2014-01-01'],
       ['2015-01-01', '2015-13-01'],
       ['2015-02-31', 'dafsfdasfdasfdsafsd'],
+      ['31/02/2015', 'dafsfdasfdasfdsafsd'],
+      ['10/03/2014', '11/03/2015'],
+      ['10/03/2014', '2015-01-01'],
+      ['03/2017', '2020-10-11'],
+      ['2020-10-11', '2016'],
+      ['2020-10-11', '03/2017'],
     ];
   }
 

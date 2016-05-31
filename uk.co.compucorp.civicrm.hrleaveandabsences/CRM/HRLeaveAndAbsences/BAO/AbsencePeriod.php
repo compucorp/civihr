@@ -80,7 +80,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       );
     }
 
-    if(!self::isValidDate($params['start_date']) || !self::isValidDate($params['end_date'])) {
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['start_date']);
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['end_date']);
+    if(!$startDateIsValid || !$endDateIsValid) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
         'Both the start and end dates should be valid'
       );
@@ -205,22 +207,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
 
     return 0;
-  }
-
-  /**
-   * This uses PHP's date_parse to check if the given date is valid.
-   *
-   * The date will be valid it no error or warning is found while parsing it.
-   *
-   * @param $date The date to be checked
-   *
-   * @return bool
-   */
-  private static function isValidDate($date)
-  {
-    $parsed = date_parse($date);
-
-    return $parsed['warning_count'] == 0 && $parsed['error_count'] == 0;
   }
 
   /**

@@ -74,6 +74,39 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
     $this->assertElementContainsText($confirmationDialog, $confirmationMessage);
   }
 
+  public function testStartAndEndDatesShouldBeValidDates()
+  {
+    $this->loginAsAdmin();
+    $this->openAddForm();
+
+    $randomString = CRM_Utils_String::createRandom(rand(1, 10), 'abcdefghijklmnopqrstuvwxyz');
+    $this->type('start_date', $randomString);
+    $this->type('end_date', $randomString);
+    $this->submitAndWait('AbsencePeriod');
+    $this->assertTrue($this->isTextPresent('Start Date should be a valid date'));
+    $this->assertTrue($this->isTextPresent('End Date should be a valid date'));
+
+    $randomNumber = rand(1, PHP_INT_MAX);
+    $this->type('start_date', $randomNumber);
+    $this->type('end_date', $randomNumber);
+    $this->submitAndWait('AbsencePeriod');
+    $this->assertTrue($this->isTextPresent('Start Date should be a valid date'));
+    $this->assertTrue($this->isTextPresent('End Date should be a valid date'));
+
+    $incompleteDate = '2016-01';
+    $this->type('start_date', $incompleteDate);
+    $this->type('end_date', $incompleteDate);
+    $this->submitAndWait('AbsencePeriod');
+    $this->assertTrue($this->isTextPresent('Start Date should be a valid date'));
+    $this->assertTrue($this->isTextPresent('End Date should be a valid date'));
+
+    $this->type('start_date', '2016-02-32');
+    $this->type('end_date', '2016-41-01');
+    $this->submitAndWait('AbsencePeriod');
+    $this->assertTrue($this->isTextPresent('Start Date should be a valid date'));
+    $this->assertTrue($this->isTextPresent('End Date should be a valid date'));
+  }
+
   private function openAddForm() {
     $this->openCiviPage($this->formUrl, $this->addUrlParams);
   }
