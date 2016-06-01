@@ -10,15 +10,19 @@ define([
   return ['$delegate', function ($delegate) {
     var directive = $delegate[0];
     var origCompile = directive.compile;
+
     directive.compile = function compile() {
       var link = origCompile.apply(this, arguments);
+
       return function (scope, element) {
         link.apply(this, arguments);
+
         if (element.closest('.civihr-ui-select').length) {
           ps.initialize(element[0]);
         }
       };
     };
+    
     return $delegate;
   }];
 });
