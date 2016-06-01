@@ -32,8 +32,8 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
 
     $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
       'title' => 'Period 1',
-      'start_date' => date('Y-m-d'),
-      'end_date' => date('Y-m-d', strtotime('+1 day'))
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
     $contract = CRM_Hrjobcontract_BAO_HRJobContract::create([

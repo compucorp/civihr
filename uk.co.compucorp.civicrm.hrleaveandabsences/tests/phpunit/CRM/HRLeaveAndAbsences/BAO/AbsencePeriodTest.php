@@ -353,11 +353,54 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
    */
   public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidEndDate($endDate)
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period             = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
     $period->start_date = '2016-01-01';
-    $period->end_date = '2016-12-31';
+    $period->end_date   = '2016-12-31';
 
     $period->getNumberOfWorkingDaysToWork('2016-01-01', $endDate);
+  }
+
+  public function testPreviousPeriodShouldReturnNullIfTheresNoPreviousPeriod()
+  {
+    $period = $this->createBasicPeriod();
+    $this->assertNull($period->getPreviousPeriod());
+  }
+
+  public function testPreviousPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsAPreviousPeriod()
+  {
+    $period1 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
+    ]);
+
+    $period2 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
+    ]);
+
+    $period3 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
+    ]);
+
+    $period2PreviousPeriod = $period2->getPreviousPeriod();
+    $period3PreviousPeriod = $period3->getPreviousPeriod();
+
+    $period1 = $this->findPeriodByID($period1->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period2PreviousPeriod);
+    $this->assertEquals($period1->id, $period2PreviousPeriod->id);
+    $this->assertEquals($period1->title, $period2PreviousPeriod->title);
+    $this->assertEquals($period1->start_date, $period2PreviousPeriod->start_date);
+    $this->assertEquals($period1->end_date, $period2PreviousPeriod->end_date);
+    $this->assertEquals($period1->weight, $period2PreviousPeriod->weight);
+
+    $period2 = $this->findPeriodByID($period2->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period3PreviousPeriod);
+    $this->assertEquals($period2->id, $period3PreviousPeriod->id);
+    $this->assertEquals($period2->title, $period3PreviousPeriod->title);
+    $this->assertEquals($period2->start_date, $period3PreviousPeriod->start_date);
+    $this->assertEquals($period2->end_date, $period3PreviousPeriod->end_date);
+    $this->assertEquals($period2->weight, $period3PreviousPeriod->weight);
   }
 
   private function createBasicPeriod($params = array()) {

@@ -9,7 +9,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * @return CRM_HRLeaveAndAbsences_DAO_AbsencePeriod|NULL
    */
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod';
     $entityName = 'AbsencePeriod';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -20,7 +19,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new $className();
+    $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
@@ -308,28 +307,45 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int
    */
-  public function getNumberOfWorkingDaysToWork($startDate, $endDate)
-  {
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
+  public function getNumberOfWorkingDaysToWork($startDate, $endDate) {
+    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid startDate in Y-m-d format');
     }
 
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
+    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format');
     }
 
-    if(strtotime($startDate) < strtotime($this->start_date)) {
+    if (strtotime($startDate) < strtotime($this->start_date)) {
       $startDate = $this->start_date;
     }
 
-    if(strtotime($endDate) > strtotime($this->end_date)) {
+    if (strtotime($endDate) > strtotime($this->end_date)) {
       $endDate = $this->end_date;
     }
 
-    $periodToWork = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $periodToWork             = new self();
     $periodToWork->start_date = $startDate;
-    $periodToWork->end_date = $endDate;
+    $periodToWork->end_date   = $endDate;
 
     return $periodToWork->getNumberOfWorkingDays();
+  }
+
+  /**
+   * Returns the Absence Period previous to this one. That is, the Absence
+   * Period where weight is equal to this Period weight - 1.
+   *
+   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod - The previous Absence Period or null if there's none
+   */
+  public function getPreviousPeriod()
+  {
+    $previousPeriod = new self();
+    $previousPeriod->weight = $this->weight - 1;
+    $previousPeriod->find(true);
+    if($previousPeriod->id) {
+      return $previousPeriod;
+    }
+
+    return null;
   }
 }
