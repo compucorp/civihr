@@ -129,7 +129,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
                 $this->buildMultiValueClause($query, $value, $locationOptions, $fieldTitle, $grouping, $whereField);
                 return;
             case 'hrjobroles_region':
-                $regionOptions = $this->getDepartmentOptions();
+                $regionOptions = $this->getRegionOptions();
                 $this->buildMultiValueClause($query, $value, $regionOptions, $fieldTitle, $grouping, $whereField);
                 return;
             case 'hrjobroles_department':
@@ -241,7 +241,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
             );
 
             $form->addElement('text', 'hrjobroles_funder', ts('Funder (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobroles_DAO_HRJobRoles', 'funder'));
-            
+
             $form->add('select', 'hrjobroles_funder_val_type', ts('Funder Value Type'), $this->fundindAndCostCentresOptions, FALSE,
                 array('id' => 'hrjobroles_funder_val_type', 'placeholder' => ts('- select - '))
             );
@@ -295,7 +295,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getLocationOptions() {
         if(empty($this->locationOptions)) {
-            $this->locationOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobcontract_DAO_HRJobDetails', 'location');
+            $this->locationOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'location');
         }
 
         return $this->locationOptions;
@@ -306,7 +306,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getRegionOptions() {
         if(empty($this->regionOptions)) {
-            $this->regionOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobcontract_DAO_HRJobRole', 'region');
+            $this->regionOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'region');
         }
 
         return $this->regionOptions;
@@ -317,7 +317,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getDepartmentOptions() {
         if(empty($this->departmentOptions)) {
-            $this->departmentOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobcontract_DAO_HRJobRole', 'department');
+            $this->departmentOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'department');
         }
 
         return $this->departmentOptions;
@@ -328,7 +328,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
      */
     private function getLevelTypeOptions() {
         if(empty($this->levelTypeOptions)) {
-            $this->levelTypeOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobcontract_DAO_HRJobRole', 'level_type');
+            $this->levelTypeOptions = $this->getOptionsWithIDAsKeyFor('CRM_Hrjobroles_DAO_HrJobRoles', 'level_type');
         }
 
         return $this->levelTypeOptions;
