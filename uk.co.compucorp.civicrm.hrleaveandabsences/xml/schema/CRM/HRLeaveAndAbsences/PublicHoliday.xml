@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>PublicHoliday</class>
+  <name>civicrm_hrleaveandabsences_public_holiday</name>
+  <comment>FIXME</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique PublicHoliday ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>title</name>
+    <title>Title</title>
+    <type>varchar</type>
+    <length>127</length>
+    <required>true</required>
+    <comment>The Public Holiday title</comment>
+  </field>
+  <field>
+    <name>date</name>
+    <title>Date</title>
+    <type>date</type>
+    <required>true</required>
+    <unique>true</unique>
+    <comment>The date of Public Holiday. There can't be more than one Public Holiday on the same date</comment>
+  </field>
+  <field>
+    <name>is_active</name>
+    <title>Is enabled?</title>
+    <type>boolean</type>
+    <default>1</default>
+    <comment>Determines if Public Holiday entry is active. The is_active name is used to follow Civi's conventions</comment>
+  </field>
+
+</table>

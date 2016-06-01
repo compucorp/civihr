@@ -249,3 +249,17 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_period` (
 
 
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_public_holiday
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_public_holiday` (
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Public Holiday ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The Public Holiday title',
+     `date` date NOT NULL   COMMENT 'The date of Public Holiday. There can\'t be more than one Public Holiday on the same date',
+     `is_active` tinyint   DEFAULT 1 COMMENT 'Determines if Public Holiday entry is active. The is_active name is used to follow Civi\'s conventions',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_public_holiday`(date)
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
