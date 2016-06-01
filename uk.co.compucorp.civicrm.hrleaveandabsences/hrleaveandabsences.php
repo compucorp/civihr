@@ -311,6 +311,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday',
     'table' => 'civicrm_hrleaveandabsences_public_holiday',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'Entitlement',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_Entitlement',
+    'table' => 'civicrm_hrleaveandabsences_entitlement',
+  );
 }
 
 /**
