@@ -9,9 +9,7 @@ class CRM_HRLeaveAndAbsences_Validator_Date {
   /**
    * Check if the given date is valid according to the give format.
    *
-   * If no format is given, then the default Y-m-d format will be used.
-   * If creating DateTime with given format fails then we try to
-   * create DateTime using default CiviCRM 'YmdHis' date format.
+   * If no format is given, then the default YmdHis format will be used.
    *
    * Please check http://php.net/manual/en/datetime.createfromformat.php for a
    * list of valid date formats.
@@ -21,13 +19,10 @@ class CRM_HRLeaveAndAbsences_Validator_Date {
    *
    * @return bool
    */
-  public static function isValid($date, $format = 'Y-m-d')
+  public static function isValid($date, $format = 'YmdHis')
   {
     $dateTime = DateTime::createFromFormat($format, $date);
-    if (!$dateTime && $format != 'YmdHis') {
-      $format = 'YmdHis';
-      $dateTime = DateTime::createFromFormat($format, $date);
-    }
+
     // PHP automatically converts some invalid dates to valid ones, like
     // 2016-02-30 to 2016-03-01. That's why we should also check if the
     // returned DateTime object is the same as the given date.

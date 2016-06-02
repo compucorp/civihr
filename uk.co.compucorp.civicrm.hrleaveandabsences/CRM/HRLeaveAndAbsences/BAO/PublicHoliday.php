@@ -35,6 +35,11 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    */
   private static function validateParams($params)
   {
+    if(empty($params['title'])) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
+        'Title value is required'
+      );
+    }
     self::validateDate($params);
   }
 
