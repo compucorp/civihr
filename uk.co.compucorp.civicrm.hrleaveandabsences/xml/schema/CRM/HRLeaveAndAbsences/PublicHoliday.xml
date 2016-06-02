@@ -4,7 +4,7 @@
   <base>CRM/HRLeaveAndAbsences</base>
   <class>PublicHoliday</class>
   <name>civicrm_hrleaveandabsences_public_holiday</name>
-  <comment>FIXME</comment>
+  <comment></comment>
   <add>4.4</add>
   <log>true</log>
 
@@ -43,5 +43,12 @@
     <default>1</default>
     <comment>Determines if Public Holiday entry is active. The is_active name is used to follow Civi's conventions</comment>
   </field>
+
+  <index>
+    <name>unique_date</name>
+    <fieldName>date</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
 
 </table>
