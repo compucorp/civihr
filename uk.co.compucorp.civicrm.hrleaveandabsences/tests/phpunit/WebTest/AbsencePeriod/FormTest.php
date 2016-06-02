@@ -118,7 +118,6 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
     $title = 'Title ' . microtime();
     $this->type('title', $title);
 
-    $this->type('start_date', $this->getValue('start_date'));
     $endDate = new DateTime($this->getValue('start_date'));
     $endDate->add(new DateInterval('P1D'));
     $this->type('end_date', $endDate->format('Y-m-d'));
