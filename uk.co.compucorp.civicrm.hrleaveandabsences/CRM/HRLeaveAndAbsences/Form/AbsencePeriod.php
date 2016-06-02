@@ -191,8 +191,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       return;
     }
 
-    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['start_date']);
-    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['end_date']);
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['start_date'], 'Y-m-d');
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['end_date'], 'Y-m-d');
 
     if(!$startDateIsValid) {
       $errors['start_date'] = ts('Start Date should be a valid date');
