@@ -15,14 +15,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
 
     self::validateParams($params);
 
-    if(!empty($params['start_date'])) {
-      $params['start_date'] = CRM_Utils_Date::processDate($params['start_date']);
-    }
-
-    if(!empty($params['end_date'])) {
-      $params['end_date'] = CRM_Utils_Date::processDate($params['end_date']);
-    }
-
     if(empty($params['weight'])) {
       $params['weight'] = self::getMaxWeight() + 1;
     }
@@ -80,8 +72,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       );
     }
 
-    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['start_date'], 'Y-m-d');
-    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['end_date'], 'Y-m-d');
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['start_date']);
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['end_date']);
     if(!$startDateIsValid || !$endDateIsValid) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
         'Both the start and end dates should be valid'

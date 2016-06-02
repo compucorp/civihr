@@ -66,6 +66,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
     if ($this->_action & (CRM_Core_Action::ADD | CRM_Core_Action::UPDATE)) {
       // store the submitted values in an array
       $params = $this->exportValues();
+      $params['start_date'] = !empty($params['start_date']) ? CRM_Utils_Date::processDate($params['start_date']) : NULL;
+      $params['end_date'] = !empty($params['end_date']) ? CRM_Utils_Date::processDate($params['end_date']) : NULL;
 
       if ($this->_action & CRM_Core_Action::UPDATE) {
         $params['id'] = $this->_id;
