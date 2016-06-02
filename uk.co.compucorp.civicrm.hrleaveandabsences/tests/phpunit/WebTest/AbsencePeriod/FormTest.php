@@ -44,7 +44,6 @@ class WebTest_AbsencePeriod_FormTest extends CiviSeleniumTestCase implements Hea
   public function testStartDateShouldBeLessThanEndDate() {
     $this->loginAsAdmin();
     $this->openAddForm();
-    $this->type('title', 'Test Absence Period');
     $this->type('start_date', date('Y-m-d'));
     $this->type('end_date', date('Y-m-d', strtotime('-1 day')));
     $this->submitAndWait('AbsencePeriod');
