@@ -9,7 +9,7 @@ class CRM_HRLeaveAndAbsences_Validator_Date {
   /**
    * Check if the given date is valid according to the give format.
    *
-   * If no format is given, then the default Y-m-d format will be used.
+   * If no format is given, then the default YmdHis format will be used.
    *
    * Please check http://php.net/manual/en/datetime.createfromformat.php for a
    * list of valid date formats.
@@ -19,7 +19,7 @@ class CRM_HRLeaveAndAbsences_Validator_Date {
    *
    * @return bool
    */
-  public static function isValid($date, $format = 'Y-m-d')
+  public static function isValid($date, $format = 'YmdHis')
   {
     $dateTime = DateTime::createFromFormat($format, $date);
 

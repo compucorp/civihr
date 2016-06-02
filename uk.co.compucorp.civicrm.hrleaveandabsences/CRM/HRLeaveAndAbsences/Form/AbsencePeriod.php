@@ -66,6 +66,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
     if ($this->_action & (CRM_Core_Action::ADD | CRM_Core_Action::UPDATE)) {
       // store the submitted values in an array
       $params = $this->exportValues();
+      $params['start_date'] = !empty($params['start_date']) ? CRM_Utils_Date::processDate($params['start_date']) : NULL;
+      $params['end_date'] = !empty($params['end_date']) ? CRM_Utils_Date::processDate($params['end_date']) : NULL;
 
       if ($this->_action & CRM_Core_Action::UPDATE) {
         $params['id'] = $this->_id;
@@ -191,8 +193,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       return;
     }
 
-    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['start_date']);
-    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['end_date']);
+    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['start_date'], 'Y-m-d');
+    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($values['end_date'], 'Y-m-d');
 
     if(!$startDateIsValid) {
       $errors['start_date'] = ts('Start Date should be a valid date');

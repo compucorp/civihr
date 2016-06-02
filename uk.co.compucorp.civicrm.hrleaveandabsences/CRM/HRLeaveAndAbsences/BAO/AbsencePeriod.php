@@ -15,14 +15,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
 
     self::validateParams($params);
 
-    if(!empty($params['start_date'])) {
-      $params['start_date'] = CRM_Utils_Date::processDate($params['start_date']);
-    }
-
-    if(!empty($params['end_date'])) {
-      $params['end_date'] = CRM_Utils_Date::processDate($params['end_date']);
-    }
-
     if(empty($params['weight'])) {
       $params['weight'] = self::getMaxWeight() + 1;
     }

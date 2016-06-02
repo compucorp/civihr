@@ -87,7 +87,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsencePeriod extends CRM_Core_DAO
    */
   public $id;
   /**
-   * The AbsencePeriod title. There can't be more than one entity with the same title
+   * The AbsencePeriod title. There cannot be more than one entity with the same title
    *
    * @var string
    */
@@ -139,7 +139,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsencePeriod extends CRM_Core_DAO
           'name' => 'title',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Title') ,
-          'description' => 'The AbsencePeriod title. There can\'t be more than one entity with the same title',
+          'description' => 'The AbsencePeriod title. There cannot be more than one entity with the same title',
           'required' => true,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,

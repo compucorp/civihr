@@ -34,7 +34,17 @@ class CRM_HRLeaveAndAbsences_BAO_DateTest extends PHPUnit_Framework_TestCase imp
   public function datesDataProvider()
   {
     return [
-      [date('Y-m-d'), true],
+      [date('Y'), false],
+      [date('Ym'), false],
+      [date('Ymd'), false],
+      [date('YmdH'), false],
+      [date('YmdHi'), false],
+      [date('YmdHis'), true],
+      [CRM_Utils_Date::processDate(date('Y-m-d')), true],
+      [CRM_Utils_Date::processDate(date('Y-m')), true],
+      [CRM_Utils_Date::processDate(date('Y')), true],
+      [CRM_Utils_Date::processDate(date('m')), true],
+      [date('Y-m-d'), false],
       [date('Y-m'), false],
       [date('Y'), false],
       [date('m'), false],
