@@ -7,6 +7,9 @@ define([
     'common/angularMocks',
     'common/angularResource',
     'common/angularRoute',
+    'common/angularXeditable',
+    'common/text-angular',
+    'common/ui-select',
     'common/d3',
     'common/lodash',
     'common/moment'

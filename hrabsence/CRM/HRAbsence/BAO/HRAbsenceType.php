@@ -44,7 +44,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     $activityTypesResult = civicrm_api3('activity_type', 'get', array());
     if (CRM_Utils_Array::value('allow_debits', $params) && empty($params['debit_activity_type_id'])) {
       $weight = count($activityTypesResult["values"]);
-      $debitActivityLabel = $params['name'];
+      $debitActivityLabel = $params['title'];
       $debitActivityTypeId = array_search($debitActivityLabel, $activityTypesResult["values"]);
       if (!$debitActivityTypeId) {
         $weight = $weight + 1;
@@ -64,7 +64,7 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
     if (CRM_Utils_Array::value('allow_credits', $params) && empty($params["credit_activity_type_id"])) {
       $weight = count($activityTypesResult["values"]);
-      $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["name"]));
+      $creditActivityLabel = ts('%1 (Credit)', array(1 => $params["title"]));
       $creditActivityTypeId = array_search($creditActivityLabel, $activityTypesResult["values"]);
       if (!$creditActivityTypeId) {
         $weight = $weight + 1;

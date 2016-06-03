@@ -54,4 +54,9 @@
     <title>Hours Type Option</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/contact/merge</path>
+    <title>Merge Contact</title>
+    <page_callback>CRM_Hrjobcontract_Form_Merge</page_callback>
+  </item>
 </menu>

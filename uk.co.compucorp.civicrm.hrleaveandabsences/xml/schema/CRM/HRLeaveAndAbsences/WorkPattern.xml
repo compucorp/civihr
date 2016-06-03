@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>WorkPattern</class>
+  <name>civicrm_hrleaveandabsences_work_pattern</name>
+  <comment>This entity holds the basic description about a Work Pattern</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique WorkPattern ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>label</name>
+    <type>varchar</type>
+    <length>127</length>
+    <required>true</required>
+    <comment>The Work Pattern label's (name)</comment>
+    <add>4.4</add>
+  </field>
+  <index>
+    <name>work_pattern_unique_label</name>
+    <fieldName>label</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+  <field>
+    <name>description</name>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>A small description of the Work Pattern</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>is_default</name>
+    <title>Is default?</title>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>There can only be one default entity at any given time</comment>
+  </field>
+
+  <field>
+    <name>is_active</name>
+    <title>Is enabled?</title>
+    <type>boolean</type>
+    <default>1</default>
+    <comment>Only enabled Work Patterns can be used. The is_active name is used to follow Civi's conventions.</comment>
+  </field>
+
+  <field>
+    <name>weight</name>
+    <title>Weight</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The weight value is used to order the Work Patterns on a list</comment>
+  </field>
+
+</table>

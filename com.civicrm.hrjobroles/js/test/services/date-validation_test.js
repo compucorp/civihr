@@ -175,5 +175,29 @@ define([
                 DateValidation.validate('sgdlskgs', 'sdgskjdgsdkg');
             }).toThrow();
         });
+
+        it('Start date cannot be higher than contract start date', function () {
+            expect(function () {
+                DateValidation.validate('25/04/2016', '30/04/2016', '26/04/2016', '30/06/2016');
+            }).toThrow();
+
+            expect(function () {
+                DateValidation.validate('26/04/2016', '30/04/2016', '26/04/2016', '30/06/2016');
+            }).not.toThrow();
+
+            expect(function () {
+                DateValidation.validate('26/04/2016', '30/04/2016', '26/04/2016', '30/06/2016');
+            }).not.toThrow();
+        });
+
+        it('End date cannot be higher than contract end date', function () {
+            expect(function () {
+                DateValidation.validate('30/06/2016', '01/07/2016', '26/04/2016', '30/06/2016');
+            }).toThrow();
+
+            expect(function () {
+                DateValidation.validate('30/06/2016', '20/06/2016', '26/04/2016', '30/06/2016');
+            }).toThrow();
+        });
     });
 });

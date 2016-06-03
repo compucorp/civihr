@@ -1,0 +1,27 @@
+/**
+ * Style overrides, using "!important" to solve conflicts with the default theme
+ */
+li#access-rights {
+  float: right !important;
+  margin-right: 0 !important;
+
+  #manage-roles-and-teams {
+    color: white !important;
+    margin: 0 !important;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.access-rights-form {
+  .ui-select-choices-group {
+    float: none !important;
+    margin: 0 !important;
+  }
+}
+
+.access-rights-form .ui-select-choices-row {
+  float: none !important;
+  width: 100%;
+}

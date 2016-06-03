@@ -2,56 +2,70 @@ define([
     'common/lodash',
     'common/moment',
     'common/angularMocks',
-    'appraisals/app'
+    'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/api/appraisal-mock',
+    'common/mocks/services/api/appraisal-cycle-mock',
+    'appraisals/app',
+    'mocks/models/instances/appraisal-instance'
 ], function (_) {
     'use strict';
 
     describe('AppraisalCycleInstance', function () {
-        var $q, $rootScope, AppraisalCycleInstance, appraisalsAPI;
-        var instanceInterface = ['init', 'attributes', 'defaultCustomData',
-        'dueDates', 'fromAPI', 'isStatusOverdue', 'nextDueDate', 'toAPI', 'update'];
+        var $q, $provide, $rootScope, Appraisal, AppraisalCycleInstance, AppraisalInstanceMock,
+            appraisalAPI, appraisalCycleAPI;
+        var instanceInterface = ['defaultCustomData', 'dueDates', 'fromAPIFilter',
+            'isStatusOverdue', 'loadAppraisals', 'nextDueDate', 'toAPIFilter',
+            'update'];
 
-        beforeEach(module('appraisals'));
-        beforeEach(inject(['$q', '$rootScope', 'AppraisalCycleInstance', 'api.appraisals',
-            function (_$q_, _$rootScope_, _AppraisalCycleInstance_, _appraisalsAPI_) {
+        beforeEach(function () {
+            module('appraisals', 'appraisals.mocks', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            // Override apis with the mocked versions
+            inject([
+                'api.appraisal.mock', 'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalAPIMock_, _appraisalCycleAPIMock_, HR_settingsMock) {
+                    appraisalAPI = _appraisalAPIMock_;
+                    appraisalCycleAPI = _appraisalCycleAPIMock_;
+
+                    $provide.value('api.appraisal', appraisalAPI);
+                    $provide.value('api.appraisal-cycle', appraisalCycleAPI);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
+        });
+
+        beforeEach(inject([
+            '$q', '$rootScope', 'Appraisal', 'AppraisalCycleInstance',
+            'AppraisalInstanceMock',
+            function (_$q_, _$rootScope_, _Appraisal_, _AppraisalCycleInstance_, _AppraisalInstanceMock_) {
                 $q = _$q_;
                 $rootScope = _$rootScope_;
 
+                Appraisal = _Appraisal_;
+                AppraisalInstanceMock = _AppraisalInstanceMock_;
                 AppraisalCycleInstance = _AppraisalCycleInstance_;
-                appraisalsAPI = _appraisalsAPI_;
+
+                appraisalCycleAPI.spyOnMethods();
             }
         ]));
 
         it('has the expected interface', function () {
-            expect(_.functions(AppraisalCycleInstance)).toEqual(instanceInterface);
+            expect(_.keys(AppraisalCycleInstance).filter(function (property) {
+                return _.isFunction(AppraisalCycleInstance[property]);
+            })).toEqual(instanceInterface);
         });
 
         describe('init()', function () {
             var instance;
 
             describe('simple initialization', function () {
-                var attributes = { foo: 'foo', bar: 'bar' };
-
                 beforeEach(function () {
-                    instance = AppraisalCycleInstance.init(attributes);
-                });
-
-                it('create a new instance', function () {
-                    expect(instance).toEqual(jasmine.any(Object));
-                });
-
-                it('retains the same interface', function () {
-                    expect(_.functions(instance)).toEqual(instanceInterface);
-                });
-
-                it('contains the attributes passed to it', function () {
-                    expect(instance.foo).toBeDefined();
-                    expect(instance.bar).toBeDefined();
-                    expect(instance.foo).toEqual(attributes.foo);
-                    expect(instance.bar).toEqual(attributes.bar);
+                    instance = AppraisalCycleInstance.init({});
                 });
 
                 it('contains the default custom data', function () {
+                    expect(instance.appraisals).toBeDefined();
                     expect(instance.appraisals_count).toBeDefined();
                     expect(instance.completion_percentage).toBeDefined();
                     expect(instance.statuses).toBeDefined();
@@ -112,25 +126,67 @@ define([
             });
         });
 
-        describe('attributes()', function () {
-            var attributes;
+        describe('loadAppraisals()', function () {
+            var instance, promise;
 
             beforeEach(function () {
-                attributes = AppraisalCycleInstance.init({
-                    foo: 'foo',
-                    bar: 'bar',
-                    fn: function () {}
-                })
-                .attributes();
+                instance = AppraisalCycleInstance.init({
+                    id: '1'
+                });
             });
 
-            it('returns only the attributes, without the methods', function () {
-                expect(attributes).toEqual(jasmine.objectContaining({ foo: 'foo', bar: 'bar' }));
-                expect(attributes).not.toEqual(jasmine.objectContaining({ fn: jasmine.any(Function) }));
+            describe('all appraisals', function () {
+                var expectedList;
+
+                beforeEach(function () {
+                    spyOn(Appraisal, 'all').and.callThrough();
+                    promise = instance.loadAppraisals();
+
+                    expectedList = appraisalAPI.mockedAppraisals().list.filter(function (appraisal) {
+                        return appraisal.appraisal_cycle_id === '1';
+                    });
+                });
+
+                it('calls Appraisal.all() with the cycle id', function (done) {
+                    promise.then(function () {
+                        expect(Appraisal.all).toHaveBeenCalledWith({
+                            appraisal_cycle_id: instance.id
+                        });
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                it('stores the appraisals in an internal property', function (done) {
+                    promise.then(function (appraisals) {
+                        expect(instance.appraisals.length).toBe(expectedList.length);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
+
+                it('returns appraisals instances', function (done) {
+                    promise.then(function () {
+                        expect(instance.appraisals.every(function (appraisal) {
+                            return AppraisalInstanceMock.isInstance(appraisal);
+                        })).toBe(true);
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
             });
 
-            it('returns a plain object w/o prototype', function () {
-                expect(Object.getPrototypeOf(attributes)).toBe(null);
+            describe('only overdue appraisals', function () {
+                beforeEach(function () {
+                    spyOn(Appraisal, 'overdue').and.callThrough();
+                    promise = instance.loadAppraisals({ overdue: true });
+                });
+
+                it('calls Appraisals.overdue() with the cycle id', function (done) {
+                    promise.then(function () {
+                        expect(Appraisal.overdue).toHaveBeenCalledWith({
+                            appraisal_cycle_id: instance.id
+                        });
+                    })
+                    .finally(done) && $rootScope.$digest();
+                });
             });
         });
 
@@ -188,7 +244,6 @@ define([
             });
 
             describe('when there are still due date', function () {
-
                 describe('when today is a due date', function () {
                     beforeEach(function () {
                         jasmine.clock().mockDate(new Date(2016, 1, 1));
@@ -246,13 +301,10 @@ define([
                 toAPIData = instance.toAPI();
             });
 
-            it('returns a plain object w/o prototype', function () {
-                expect(Object.getPrototypeOf(toAPIData)).toBe(null);
-            });
-
             it('filters out the custom data field', function () {
                 expect(Object.keys(toAPIData)).toEqual(_.without(
                     Object.keys(instance.attributes()),
+                    'appraisals',
                     'appraisals_count',
                     'completion_percentage'
                 ));
@@ -279,18 +331,6 @@ define([
             };
 
             beforeEach(function () {
-                spyOn(appraisalsAPI, 'update').and.callFake(function () {
-                    var deferred = $q.defer();
-                    deferred.resolve({
-                        id: '23',
-                        name: 'newest cycle',
-                        cycle_start_date: '2015-11-12',
-                        cycle_grade_due: '2016-02-01'
-                    });
-
-                    return deferred.promise;
-                });
-
                 instance = AppraisalCycleInstance.init(oldData)
             });
 
@@ -302,7 +342,7 @@ define([
                 });
 
                 it('calls the update method of the API', function () {
-                    expect(appraisalsAPI.update).toHaveBeenCalledWith(instance.toAPI());
+                    expect(appraisalCycleAPI.update).toHaveBeenCalledWith(instance.toAPI());
                 });
 
                 it('reflects the updated data on its attributes', function (done) {

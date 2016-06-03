@@ -1,5 +1,6 @@
 define([
     'common/angular',
+    'common/ui-select',
     'job-contract/controllers/controllers',
     'job-contract/controllers/contract-list',
     'job-contract/controllers/contract',
@@ -29,7 +30,6 @@ define([
     'job-contract/filters/parse-int',
     'job-contract/services/services',
     'job-contract/services/contract',
-    'job-contract/vendor/angular-select',
     'job-contract/vendor/job-summary',
     'common/services/angular-date/date-format',
     'common/modules/routers/compu-ng-route',

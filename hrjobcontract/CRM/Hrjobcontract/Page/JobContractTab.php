@@ -85,7 +85,8 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
         "location",
         'notice_unit',
         'notice_unit_employee',
-        'department'
+        'department',
+        'hrjc_contract_end_reason' => 'end_reason',
       ),
       'HRJobHour' => array(
         'hours_type',
@@ -216,6 +217,20 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
       $change_reason[$val['value']] = $val['name'];
     }
     return $change_reason;
+  }
+  
+  /**
+   * Get a reasons for job contract end
+   */
+  static function getContractEndReasons() {
+    $end_reason = array();
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'option_group_id' =>'hrjc_contract_end_reason',
+    ));
+    foreach ($result['values'] as $key => $val) {
+      $end_reason[$val['value']] = $val['name'];
+    }
+    return $end_reason;
   }
   
   /**

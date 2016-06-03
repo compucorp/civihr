@@ -39,6 +39,53 @@ define([
             }
         }
 
+        /**
+         * Check if job role start date is lower than contract start date
+         * @param {moment} start
+         * @param {moment} contractStart
+         */
+        function checkIfStartIsLowerThanContractStart (start, contractStart) {
+            if (start.isBefore(contractStart)) {
+                _error('Start Date cannot be lower than Contract Start Date.', ['start_date']);
+            }
+        }
+
+        /**
+         * Check if job role start date is higher than contract end date
+         * @param {moment} start
+         * @param {moment} contractEnd
+         */
+        function checkIfStartIsLowerThanContractEnd (start, contractEnd) {
+            if (start.isAfter(contractEnd)) {
+                _error('Start Date cannot be higher than Contract End Date.', ['start_date']);
+            }
+        }
+
+        /**
+         * Check if job role end date is lower than contract end date
+         * @param {moment} end
+         * @param {moment} contractEnd
+         */
+        function checkIfEndIsEqualOrLowerThanContractEnd (end, contractEnd) {
+            if (end.isAfter(contractEnd)) {
+                _error('End Date cannot be higher than Contract End Date.', ['end_date']);
+            }
+        }
+
+        /**
+         * Format date using moment
+         * @param {Date|string|int} start
+         * @param {array} dateFormats
+         * @returns {moment}
+         */
+        function formatDate(date, dateFormats) {
+          if (date instanceof Date) {
+            date = moment(date).valueOf();
+          }
+
+          return moment(date, dateFormats, true).startOf('day');
+        }
+
         var Validation = {
             dateFormats: [
                 'x',
@@ -61,27 +108,26 @@ define([
              * Validates Dates
              * @param {Date|string|int} start
              * @param {Date|string|int} end
+             * @param {Date|string|int} contractStart
+             * @param {Date|string|int} contractEnd
              */
-            validate: function validate(start, end) {
-                if (start instanceof Date) {
-                    start = start.getTime();
-                }
+            validate: function validate(start, end, contractStart, contractEnd) {
+                start = formatDate(start, this.dateFormats);
 
-                if (end instanceof Date) {
-                    end = end.getTime();
-                }
+                contractStart = formatDate(contractStart, this.dateFormats);
+                contractEnd = formatDate(contractEnd, this.dateFormats);
 
-                var start_date = moment(start, this.dateFormats, true);
-                var end_date = moment(end, this.dateFormats, true);
-
-                checkIfValuesAreValid(start_date, ['start_date']);
+                checkIfValuesAreValid(start, ['start_date']);
+                checkIfStartIsLowerThanContractEnd(start, contractEnd);
 
                 if (end === 0 || end) {
-                    checkIfValuesAreValid(end_date, ['end_date']);
+                  end = formatDate(end, this.dateFormats);
 
-                    if (start) {
-                        checkIfStartDateIsLower(start_date, end_date);
-                    }
+                  checkIfValuesAreValid(end, ['end_date']);
+                  checkIfEndIsEqualOrLowerThanContractEnd(end, contractEnd);
+
+                  checkIfStartDateIsLower(start, end);
+                  checkIfStartIsLowerThanContractStart(start, contractStart);
                 }
             }
         };

@@ -6,13 +6,14 @@ define([
 ], function (angular, controllers, moment) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation',
-        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation) {
+    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
+        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters) {
             $log.debug('Controller: HRJobRolesController');
 
             $scope.format = HR_settings.DATE_FORMAT;
 
             var me = this;
+            var roles_type = ['funders', 'cost_centers'];
 
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
@@ -38,9 +39,7 @@ define([
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
-                var id = $scope.edit_data['new_role_id']['job_contract_id'];
-
-                var contract = me.contractsData[id];
+                var contract = getContractData($scope.edit_data['new_role_id']['job_contract_id']);
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
 
                 if (!areDatesCustom) {
@@ -90,7 +89,7 @@ define([
             $scope.onContractEdited = function (jobContractId, role_id) {
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
 
-                var contract = me.contractsData[id];
+                var contract = getContractData(id);
 
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
 
@@ -121,41 +120,30 @@ define([
             };
 
             /**
-             * Trigger validation on JobRole Dates + attach error callback
-             * @param start
-             * @param end
-             * @param {function} error
-             */
-            $scope.validateDates = function (start, end, error) {
-                DateValidation.setErrorCallback(error);
-
-                DateValidation.validate(start, end);
-            };
-
-            /**
              * Validation method for JobRole data.
              * If string is returned form is not submitted.
              * @param data
              * @returns {boolean|string}
              */
             $scope.validateRole = function (data) {
-                var errors = 0;
-
                 // Reset Error Messages
                 data.start_date.$error.custom = [];
                 data.end_date.$error.custom = [];
 
-                $scope.validateDates(data.start_date.$viewValue, data.end_date.$viewValue, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        data.start_date.$error.custom.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        data.end_date.$error.custom.push(error);
-                    }
+                var contract = getContractData(data.contract.$viewValue);
+
+                var validateResponse = validateDates({
+                  'start': data.start_date.$viewValue,
+                  'end': data.end_date.$viewValue,
+                  'contractStart': contract.start_date,
+                  'contractEnd': contract.end_date,
+                },
+                {
+                  'start': data.start_date.$error.custom,
+                  'end': data.end_date.$error.custom
                 });
 
-                return errors > 0 ? 'Error' : true;
+                return (validateResponse ? true : 'Error');
             };
 
             $scope.today = function () {
@@ -251,7 +239,7 @@ define([
                     $scope.edit_data[role_id]['funders'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var funder_contact_ids = data['funder'].split("|");
+                    var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['funder'].split("|"));
 
                     // Split the funder types
                     var funder_types = data['funder_val_type'].split("|");
@@ -285,7 +273,7 @@ define([
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var cost_center_contact_ids = data['cost_center'].split("|");
+                    var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['cost_center'].split("|"));
 
                     // Split the cost_centers types
                     var cost_center_types = data['cost_center_val_type'].split("|");
@@ -359,7 +347,7 @@ define([
                 var contract_id = $scope.edit_data[role_id].job_contract_id;
 
                 if ($scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date'])) {
-                    var contract = me.contractsData[contract_id];
+                    var contract = getContractData(contract_id);
 
                     // search for revision containing these dates
                     var revision = contract.revisions.some(function (rev) {
@@ -436,23 +424,23 @@ define([
             $scope.saveNewRole = function saveNewRole() {
                 $log.debug('Add New Role');
 
-                var errors = 0;
-
                 $scope.errors = {};
                 $scope.errors.newStartDate = [];
                 $scope.errors.newEndDate = [];
 
-                $scope.validateDates($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate, function (error, field) {
-                    errors++;
-                    if (field.indexOf('start_date') > -1) {
-                        $scope.errors.newStartDate.push(error);
-                    }
-                    if (field.indexOf('end_date') > -1) {
-                        $scope.errors.newEndDate.push(error);
-                    }
+                var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
+                var validateResponse = validateDates({
+                  'start': $scope.edit_data.new_role_id.newStartDate,
+                  'end': $scope.edit_data.new_role_id.newEndDate,
+                  'contractStart': contract.start_date,
+                  'contractEnd': contract.end_date,
+                },
+                {
+                  'start': $scope.errors.newStartDate,
+                  'end': $scope.errors.newEndDate
                 });
 
-                if (!errors) {
+                if (validateResponse) {
 
                     $scope.edit_data.new_role_id.newStartDate = $scope.parseDate($scope.edit_data.new_role_id.newStartDate);
 
@@ -510,8 +498,12 @@ define([
              * Prepares data and updates existing role
              * @param role_id
              */
-            $scope.updateRole = function (role_id) {
+            $scope.updateRole = function (role_id, role_type) {
                 $log.debug('Update Role');
+
+                if (typeof role_type === 'string') {
+                  filterEmptyData(role_id, role_type);
+                }
 
                 $scope.edit_data[role_id].start_date = $scope.parseDate($scope.edit_data[role_id].start_date);
 
@@ -627,6 +619,53 @@ define([
                 }
             };
 
+            /**
+             * Called on angular-xeditable's onaftersave callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onAfterSave = function (role_id, role_type) {
+              filterEmptyData(role_id, role_type);
+            }
+
+            /**
+             * Called on angular-xeditable's cancel callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onCancel = function (role_id, role_type) {
+              if (role_type === 'both') {
+                roles_type.map(function (type) {
+                  filterEmptyData(role_id, type);
+                });
+              } else {
+                filterEmptyData(role_id, role_type);
+              }
+            }
+
+            /**
+             * Filter the edit_data property to remove
+             * the funders/cost_centers entries which are empty
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            function filterEmptyData(role_id, role_type) {
+              if ($scope.edit_data.hasOwnProperty(role_id)) {
+                if (role_type === 'funders') {
+                  $scope.edit_data[role_id][role_type] = HRJobRolesServiceFilters.issetFunder($scope.edit_data[role_id][role_type]);
+                }
+
+                if (role_type === 'cost_centers') {
+                  $scope.edit_data[role_id][role_type] = HRJobRolesServiceFilters.issetCostCentre($scope.edit_data[role_id][role_type]);
+                }
+              }
+            }
+
             // Variable to check if we adding new job role
             var job_roles = this;
 
@@ -709,7 +748,7 @@ define([
                             var LevelList = {};
 
                             // Pass the Cost Centers option group list to the scope
-                            var CostCentreList = {};
+                            var CostCentreList = [];
 
                             angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
@@ -762,14 +801,13 @@ define([
 
                                             break;
                                         case 'cost_centres':
-
                                             if (option_group_id === data.values[i]['option_group_id']) {
                                                 // Build the contact list
-                                                CostCentreList[data.values[i]['id']] = {
+                                                CostCentreList.push({
                                                     id: data.values[i]['id'],
-                                                    title: data.values[i]['label']
-                                                };
-
+                                                    title: data.values[i]['label'],
+                                                    weight: data.values[i]['weight']
+                                                });
                                             }
 
                                             break;
@@ -979,6 +1017,38 @@ define([
                 }, function (errorMessage) {
                     $scope.error = errorMessage;
                 });
+            }
+
+            /**
+             * Trigger validation on JobRole Dates + attach error callback
+             * @param {object} data - The dates to validate
+             * @param {object} errors - The error recipients
+             * @returns {boolean}
+             */
+            function validateDates(data, errors) {
+              var errorsCount = 0;
+
+              DateValidation.setErrorCallback(function (error, field) {
+                  errorsCount++;
+                  if (field.indexOf('start_date') > -1) {
+                      errors.start.push(error);
+                  }
+                  if (field.indexOf('end_date') > -1) {
+                      errors.end.push(error);
+                  }
+              });
+              DateValidation.validate(data.start, data.end, data.contractStart, data.contractEnd);
+
+              return (errorsCount === 0);
+            }
+
+            /**
+             * Get a contract with the given contractId
+             * @param {int} contractId
+             * @returns {object}
+             */
+            function getContractData(contractId) {
+              return me.contractsData[contractId];
             }
         }
     ]);

@@ -61,6 +61,11 @@
                 </span>
             </td>
   </tr>
+   <tr class="crm-import-form-block-importMode">
+       <td class="label">{$form.importMode.label}</td>
+       <td>{$form.importMode.html}</td>
+       </td>
+   </tr>
   <tr class="crm-api-import-uploadfile-form-block-onDuplicate">
             <td class="label">{$form.onDuplicate.label}</td>
       <td>{$form.onDuplicate.html}</td>

@@ -39,7 +39,8 @@
                                       editable-form
                                       name="editableForm"
                                       onbeforesave="validateRole(editableForm)"
-                                      onaftersave="updateRole(job_roles_data.id)">
+                                      onaftersave="updateRole(job_roles_data.id)"
+                                      oncancel="onCancel(job_roles_data.id, 'both')">
                                     <!-- button to show edit form -->
                                     <button type="button" class="btn btn-sm btn-tab-action pull-right"
                                             ng-click="editableForm.$show()"
@@ -260,8 +261,8 @@
                             <tab heading="Funding">
                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
                                     <form editable-form name="tableform"
-                                          onaftersave="updateRole(job_roles_data.id)"
-                                          oncancel="cancel()">
+                                          onaftersave="updateRole(job_roles_data.id, 'funders')"
+                                          oncancel="onCancel(job_roles_data.id, 'funders')">
                                         <!-- buttons -->
                                         <button type="button"
                                                 class="btn btn-sm btn-tab-action pull-right"
@@ -339,7 +340,7 @@
                                                 <td ng-show="tableform.$visible">
                                                     <button type="button"
                                                             ng-click="deleteAdditionalRow(job_roles_data.id, 'funder', key)"
-                                                            class="btn btn-danger pull-right"><span
+                                                            class="btn btn-danger pull-left"><span
                                                             class="fa fa-remove"
                                                             aria-hidden="true"></span></button>
                                                 </td>
@@ -363,8 +364,8 @@
                             <tab heading="Cost Centres">
                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
                                     <form editable-form name="tableformcc"
-                                          onaftersave="updateRole(job_roles_data.id)"
-                                          oncancel="cancel()">
+                                          onaftersave="updateRole(job_roles_data.id, 'cost_centers')"
+                                          oncancel="onCancel(job_roles_data.id, 'cost_centers')">
                                         <!-- buttons -->
                                         <button type="button"
                                                 class="btn btn-sm btn-tab-action pull-right"
@@ -399,7 +400,7 @@
                                             <tr ng-repeat="(key, cost_centre) in edit_data[job_roles_data.id]['cost_centers']">
                                                 <td>
                                                     <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCentreList">
+                                                                        <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in CostCentreList | orderBy: 'weight'">
                                                                             {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                                                         </span>
                                                 </td>
@@ -436,7 +437,7 @@
                                                                         </span>
                                                 </td>
                                                 <td ng-show="tableformcc.$visible">
-                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                                    <button type="button" ng-click="deleteAdditionalRow(job_roles_data.id, 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                                 </td>
                                             </tr>
                                             <tr>

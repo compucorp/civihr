@@ -14,7 +14,6 @@ require.config({
     waitSeconds: 60,
     paths: {
         'job-contract': srcPath,
-        'job-contract/vendor/angular-select': srcPath + '/vendor/angular/select',
         'job-contract/vendor/fraction': srcPath + '/vendor/fraction',
         'job-contract/vendor/job-summary': srcPath + '/vendor/jobsummary',
         'mocks': mocksPath

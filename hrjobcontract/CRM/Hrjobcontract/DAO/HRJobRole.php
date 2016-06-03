@@ -222,7 +222,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Job Role Id') ,
+                  'title' => ts('Job Role ID') ,
                   'export' => false,
                   'import' => false,
                   'required' => true,
@@ -236,6 +236,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'maxlength' => 127,
                   'size' => CRM_Utils_Type::HUGE,
                   'headerPattern' => '/^role\s?title/i',
+                  'where' => 'civicrm_hrjobcontract_role.title'
                 ) ,
                 'hrjobcontract_role_description' => array(
                   'name' => 'description',
@@ -244,6 +245,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'export' => true,
                   'import' => true,
                   'headerPattern' => '/^role\s?description/i',
+                  'where' => 'civicrm_hrjobcontract_role.description',
                 ) ,
                 'hrjobcontract_role_role_hours' => array(
                   'name' => 'hours',
@@ -252,6 +254,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'export' => true,
                   'import' => true,
                   'headerPattern' => '/^role\s?hours\s?amount/i',
+                  'where' => 'civicrm_hrjobcontract_role.hours'
                 ) ,
                 'hrjobcontract_role_role_unit' => array(
                   'name' => 'role_hours_unit',
@@ -327,11 +330,12 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                 'hrjobcontract_role_manager_contact_id' => array(
                   'name' => 'manager_contact_id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Manager Contact Id') ,
+                  'title' => ts('Manager Contact ID') ,
                   'export' => true,
                   'import' => true,
                   'FKClassName' => 'CRM_Contact_DAO_Contact',
                   'headerPattern' => '/^manager\s?contact\s?id/i',
+                  'where' => 'civicrm_hrjobcontract_role.manager_contact_id'
                 ) ,
                 'hrjobcontract_role_functional_area' => array(
                   'name' => 'functional_area',
@@ -342,6 +346,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'maxlength' => 127,
                   'size' => CRM_Utils_Type::HUGE,
                   'headerPattern' => '/^functional\s?area/i',
+                  'where' => 'civicrm_hrjobcontract_role.functional_area'
                 ) ,
                 'hrjobcontract_role_organization' => array(
                   'name' => 'organization',
@@ -352,6 +357,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'maxlength' => 127,
                   'size' => CRM_Utils_Type::HUGE,
                   'headerPattern' => '/^organization/i',
+                  'where' => 'civicrm_hrjobcontract_role.organization'
                 ) ,
                 'hrjobcontract_role_cost_center' => array(
                   'name' => 'cost_center',
@@ -362,6 +368,7 @@ class CRM_Hrjobcontract_DAO_HRJobRole extends CRM_Hrjobcontract_DAO_Base
                   'maxlength' => 127,
                   'size' => CRM_Utils_Type::HUGE,
                   'headerPattern' => '/^cost\s?center/i',
+                  'where' => 'civicrm_hrjobcontract_role.cost_center'
                 ) ,
                 'hrjobcontract_role_funder' => array(
                   'name' => 'funder',

@@ -185,8 +185,6 @@ class CRM_Contactaccessrights_Form_ManageRights extends CRM_Core_Form {
    */
   private function getOptions($optionGroupName) {
     try {
-      $options = ['' => ts('- select -')];
-
       $result = civicrm_api3('OptionValue', 'get', ['sequential' => 1, 'option_group_name' => $optionGroupName]);
 
       foreach ($result['values'] as $option) {

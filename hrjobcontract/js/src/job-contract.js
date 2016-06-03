@@ -5,7 +5,6 @@
         urlArgs: 'bust=' + (new Date()).getTime(),
         paths: {
             'job-contract': extPath,
-            'job-contract/vendor/angular-select': extPath + '/vendor/angular/select',
             'job-contract/vendor/fraction': extPath + '/vendor/fraction',
             'job-contract/vendor/job-summary': extPath + '/vendor/jobsummary'
         },

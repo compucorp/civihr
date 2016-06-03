@@ -16,9 +16,6 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobHealth extends CRM_Hrjobcontra
     $entityParams['jobcontract_id'] = $contractRevision->jobcontract_id;
     $entityParams['jobcontract_revision_id'] = $contractRevision->id;
 
-    $entityParams = $this->normaliseContactReference($entityParams, 'provider');
-    $entityParams = $this->normaliseContactReference($entityParams, 'provider_life_insurance');
-
     return array(CRM_Hrjobcontract_BAO_HRJobHealth::create($entityParams));
   }
 

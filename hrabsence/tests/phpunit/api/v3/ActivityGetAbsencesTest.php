@@ -239,4 +239,49 @@ class api_v3_ActivityGetAbsencesTest extends CiviUnitTestCase {
       }
     }
   }
+
+  public function testStatusIdParameter() {
+    $allActivities = $this->callAPISuccess('Activity', self::ACTION, array('sequential' => 1));
+    $totalNumberOfActivities = $allActivities['count'];
+
+    // Change the status of the first returned Activity
+    // to 3 and filter it out using the != operator
+    $firstActivityId = $allActivities['values'][0]['id'];
+    $this->callAPISuccess('Activity', 'create', array(
+      'id' => $firstActivityId,
+      'status_id' => 3
+    ));
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
+      'status_id' => array('!=' => 3),
+    ));
+    $this->assertCount($totalNumberOfActivities - 1, $activities['values']);
+    foreach($activities['values'] as $activity) {
+      $this->assertNotEquals($firstActivityId, $activity['id']);
+    }
+
+    // Change the status of the first returned Activity
+    // to 4 and filter it out using the != operator
+    $secondActivityId = $allActivities['values'][1]['id'];
+    $this->callAPISuccess('Activity', 'create', array(
+        'id' => $secondActivityId,
+        'status_id' => 4
+    ));
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
+        'status_id' => array('!=' => 4),
+    ));
+    $this->assertCount($totalNumberOfActivities - 1, $activities['values']);
+    foreach($activities['values'] as $activity) {
+      $this->assertNotEquals($secondActivityId, $activity['id']);
+    }
+
+    // Filter out Activities with status 3 or 4, using the NOT IN operator
+    $activities = $this->callAPISuccess('Activity', self::ACTION, array(
+        'status_id' => array('NOT IN' => array(3, 4)),
+    ));
+    $this->assertCount($totalNumberOfActivities - 2, $activities['values']);
+    foreach($activities['values'] as $activity) {
+      $this->assertNotEquals($firstActivityId, $activity['id']);
+      $this->assertNotEquals($secondActivityId, $activity['id']);
+    }
+  }
 }

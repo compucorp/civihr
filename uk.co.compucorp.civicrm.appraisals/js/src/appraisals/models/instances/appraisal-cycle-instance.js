@@ -1,13 +1,16 @@
 define([
     'common/lodash',
     'common/moment',
-    'common/services/api/appraisals',
-    'appraisals/modules/models-instances'
-], function (_, moment, __, instances) {
+    'appraisals/modules/models-instances',
+    'common/services/api/appraisal-cycle',
+    'common/models/instances/instance',
+    'appraisals/models/appraisal'
+], function (_, moment, instances) {
     'use strict';
 
-    instances.factory('AppraisalCycleInstance', ['$q', 'api.appraisals',
-        function ($q, appraisalsAPI) {
+    instances.factory('AppraisalCycleInstance', ['$q', 'Appraisal', 'ModelInstance',
+        'api.appraisal-cycle', 'HR_settings',
+        function ($q, Appraisal, ModelInstance, appraisalCycleAPI, HR_settings) {
 
             var DUE_DATE_FIELD_TO_STATUS_ID = {
                 cycle_self_appraisal_due:    '1',
@@ -24,11 +27,12 @@ define([
              */
             var nextDueDate = _.memoize(function nextDueDates(id, dueDates) {
                 var today, dates, date;
+                var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
 
                 today = moment();
                 dates = _.chain(dueDates)
                     .transform(function (result, date, key) {
-                        result[key] = moment(date, 'DD/MM/YYYY');
+                        result[key] = moment(date, dateFormat);
                     })
                     .pick(function (date) {
                         return date.isSameOrAfter(today, 'day');
@@ -42,7 +46,7 @@ define([
                 date = moment.min.apply(moment, _.values(dates));
 
                 return {
-                    date: date.format('DD/MM/YYYY'),
+                    date: date.format(dateFormat),
                     status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(dates, function (date) {
                         return date === date;
                     })]
@@ -77,36 +81,7 @@ define([
                 }
             }
 
-            return {
-
-                /**
-                 * Creates a new instance, optionally with its data normalized
-                 *
-                 * @param {object} attributes - The instance data
-                 * @param {boolean} fromAPI - If the data comes from the API and needs to be normalized
-                 * @return {object}
-                 */
-                init: function (attributes, fromAPI) {
-                    attributes = _.assign(this.defaultCustomData(), attributes);
-
-                    if (typeof fromAPI !== 'undefined' && fromAPI) {
-                        attributes = this.fromAPI(attributes);
-                    }
-
-                    return _.assign(Object.create(this), attributes);
-                },
-
-                /**
-                 * Creates a plain object (w/o prototype) containing
-                 * only the attributes of this instance
-                 *
-                 * @return {object}
-                 */
-                attributes: function () {
-                    return _.transform(this, function (result, __, key) {
-                        !_.isFunction(this[key]) && (result[key] = this[key]);
-                    }, Object.create(null), this);
-                },
+            return ModelInstance.extend({
 
                 /**
                  * Returns the default custom data (as in, not given by the API)
@@ -116,6 +91,7 @@ define([
                  */
                 defaultCustomData: function () {
                     return {
+                        appraisals: [],
                         appraisals_count: 0,
                         completion_percentage: 0,
                         statuses: {}
@@ -134,24 +110,22 @@ define([
                 },
 
                 /**
-                 * Normalizes the given data in the direction API -> Model
                  *
-                 * @param {object} attributes
-                 * @return {object}
+                 *
                  */
-                fromAPI: function (attributes) {
-                    return _.transform(attributes, function (result, __, key) {
-                        if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                            result[key] = moment(this[key], 'YYYY-MM-DD').format('DD/MM/YYYY');
-                        } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
-                            calculateAppraisalsFigures.call(result, this[key].values);
-                        } else if (key === 'cycle_is_active') {
-                            // must be able to convert '0' to false
-                            result[key] = !!(+this[key]);
-                        } else {
-                            result[key] = this[key];
-                        }
-                    }, Object.create(null), attributes);
+                fromAPIFilter: function (result, __, key) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+
+                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
+                        result[key] = moment(this[key], 'YYYY-MM-DD').format(dateFormat);
+                    } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
+                        calculateAppraisalsFigures.call(result, this[key].values);
+                    } else if (key === 'cycle_is_active') {
+                        // must be able to convert '0' to false
+                        result[key] = !!(+this[key]);
+                    } else {
+                        result[key] = this[key];
+                    }
                 },
 
                 /**
@@ -161,9 +135,31 @@ define([
                  * @return {boolean}
                  */
                 isStatusOverdue: function (id) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
                     var field = _.invert(DUE_DATE_FIELD_TO_STATUS_ID)[id];
 
-                    return moment(this[field], 'DD/MM/YYYY').isBefore(moment());
+                    return moment(this[field], dateFormat).isBefore(moment());
+                },
+
+                /**
+                 * Stores internally its own appraisals
+                 *
+                 * @param {object} options
+                 *   The only supported option is the special "overdue" one, which
+                 *   if passed sets the method to return only the overdue appraisals
+                 * @return {Promise}
+                 */
+                loadAppraisals: function (options) {
+                    var method = 'all';
+
+                    if (typeof options !== 'undefined' && options.overdue === true) {
+                        method = 'overdue';
+                    }
+
+                    return Appraisal[method]({ appraisal_cycle_id: this.id })
+                        .then(function (appraisals) {
+                            this.appraisals = appraisals.list;
+                        }.bind(this));
                 },
 
                 /**
@@ -185,23 +181,21 @@ define([
                 },
 
                 /**
-                 * Normalizes the instance data in the direction Model -> API
                  *
-                 * @return {object}
+                 *
                  */
-                toAPI: function () {
-                    var attributes = this.attributes();
-                    var blacklist = ['appraisals_count', 'completion_percentage'];
+                toAPIFilter: function (result, __, key) {
+                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
+                    var blacklist = ['appraisals', 'appraisals_count',
+                        'completion_percentage'];
 
-                    return _.transform(attributes, function (result, __, key) {
-                        if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                            result[key] = moment(this[key], 'DD/MM/YYYY').format('YYYY-MM-DD');
-                        } else if (_.includes(blacklist, key)) {
-                            return;
-                        } else {
-                            result[key] = this[key];
-                        }
-                    }, Object.create(null), attributes);
+                    if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
+                        result[key] = moment(this[key], dateFormat).format('YYYY-MM-DD');
+                    } else if (_.includes(blacklist, key)) {
+                        return;
+                    } else {
+                        result[key] = this[key];
+                    }
                 },
 
                 /**
@@ -216,7 +210,7 @@ define([
                     var deferred = $q.defer();
 
                     if (!!this.id) {
-                        deferred.resolve(appraisalsAPI.update(this.toAPI()).then(function (attributes) {
+                        deferred.resolve(appraisalCycleAPI.update(this.toAPI()).then(function (attributes) {
                             _.assign(this, this.fromAPI(attributes)); // Updates own attributes
                         }.bind(this)));
                     } else {
@@ -225,7 +219,7 @@ define([
 
                     return deferred.promise;
                 }
-            };
+            });
         }
     ]);
 });
