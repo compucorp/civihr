@@ -258,6 +258,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    */
   public function getNumberOfWorkingDays()
   {
+    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d')) {
+      throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid start date');
+    }
+
+    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d')) {
+      throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid end date');
+    }
+
     $startDate = new DateTime($this->start_date);
     $endDate = new DateTime($this->end_date);
     $oneDayInterval = new DateInterval('P1D');
@@ -283,5 +291,45 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     );
 
     return $numberOfWorkingDays - $numberOfPublicHolidays;
+  }
+
+  /**
+   * Returns the number of working days to work on this AbsencePeriod between
+   * the given start and end dates.
+   *
+   * This method doesn't count days outside the AbsencePeriod. Meaning that,
+   * If the given start date is less than the AbsencePeriod start date, then
+   * the AbsencePeriod's start date will be used. If the given end date is
+   * greater than AbsencePeriod end date, then the AbsencePeriod's end date
+   * will be used.
+   *
+   * @param string $startDate A date in the Y-m-d format
+   * @param string $endDate A date in the Y-m-d format
+   *
+   * @return int
+   */
+  public function getNumberOfWorkingDaysToWork($startDate, $endDate)
+  {
+    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
+      throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid startDate in Y-m-d format');
+    }
+
+    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
+      throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format');
+    }
+
+    if(strtotime($startDate) < strtotime($this->start_date)) {
+      $startDate = $this->start_date;
+    }
+
+    if(strtotime($endDate) > strtotime($this->end_date)) {
+      $endDate = $this->end_date;
+    }
+
+    $periodToWork = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $periodToWork->start_date = $startDate;
+    $periodToWork->end_date = $endDate;
+
+    return $periodToWork->getNumberOfWorkingDays();
   }
 }
