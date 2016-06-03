@@ -1,28 +1,18 @@
 <?php
 
 use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase implements HeadlessInterface {
-
-  protected $_tablesToTruncate = [
-    'civicrm_hrleaveandabsences_absence_period',
-  ];
+class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface, TransactionalInterface {
 
   public function setUpHeadless() {
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
-
-  public function setUp() {
-    parent::setUp();
-  }
-
-  public function tearDown() {
-    parent::tearDown();
   }
 
   /**
@@ -236,6 +226,44 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
     $this->assertEquals('2017-01-01', $date);
   }
 
+  /**
+   * @dataProvider periodsToCalculateNumberOfWorkingDays
+   */
+  public function testCanCalculateTheNumberOfWorkingDays($startDate, $endDate, $expectedNumberOfWorkingDays)
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $startDate;
+    $period->end_date = $endDate;
+    $this->assertEquals($expectedNumberOfWorkingDays, $period->getNumberOfWorkingDays());
+  }
+
+  public function testCanCalculateTheNumberOfWorkingDaysWithPublicHolidays()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-12-31';
+    $this->assertEquals(261, $period->getNumberOfWorkingDays());
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 1',
+      'date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+    $this->assertEquals(260, $period->getNumberOfWorkingDays());
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 2',
+      'date' => CRM_Utils_Date::processDate('2016-05-17')
+    ]);
+    $this->assertEquals(259, $period->getNumberOfWorkingDays());
+
+    // A public holiday on a weekend should not be counted
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday On Weekend',
+      'date' => CRM_Utils_Date::processDate('2016-12-25')
+    ]);
+    $this->assertEquals(259, $period->getNumberOfWorkingDays());
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
@@ -319,6 +347,18 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends CiviUnitTestCase impl
       ['2016-01-01', '2015-01-01'],
       ['2016-01-01', '2016-01-01'],
       ['2016-01-02', '2016-01-01'],
+    ];
+  }
+
+  public function periodsToCalculateNumberOfWorkingDays()
+  {
+    return [
+      ['2016-05-14', '2016-05-20', 5],
+      ['2015-01-01', '2015-01-31', 22],
+      ['2016-07-15', '2016-07-23', 6],
+      ['2016-01-01', '2016-12-31', 261],
+      ['2011-01-01', '2011-12-31', 260],
+      ['2016-07-02', '2016-07-03', 0],
     ];
   }
 }

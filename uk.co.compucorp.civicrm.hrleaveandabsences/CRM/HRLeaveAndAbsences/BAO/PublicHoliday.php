@@ -68,4 +68,39 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     }
   }
 
+  /**
+   * Returns the number of active Public Holidays between the given
+   * start and end dates (inclusive)
+   *
+   * @param $startDate The start date of the period
+   * @param $endDate The end date of the period
+   * @param bool $excludeWeekends When true it will not count Public Holidays that fall on a weekend. It's false by default
+   *
+   * @return int The Number of Public Holidays for the given Period
+   */
+  public static function getNumberOfPublicHolidaysForPeriod($startDate, $endDate, $excludeWeekends = false)
+  {
+    $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Ymd');
+    $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Ymd');
+
+    $tableName = self::getTableName();
+    $query = "
+      SELECT COUNT(*) as public_holidays
+      FROM {$tableName}
+      WHERE date >= %1 AND date <= %2 AND is_active = 1
+    ";
+
+    if($excludeWeekends) {
+      $query .= ' AND DAYOFWEEK(date) BETWEEN 2 AND 6';
+    }
+
+    $queryParams = [
+      1 => [$startDate, 'Date'],
+      2 => [$endDate, 'Date'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
+    $dao->fetch(true);
+
+    return (int)$dao->public_holidays;
+  }
 }

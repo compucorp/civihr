@@ -246,4 +246,42 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
 
     return date('Y-m-d');
   }
+
+  /**
+   * Returns the number of working days for this Absence Period.
+   *
+   * The number is given by "number of ways in period" - "weekends" - "public holidays".
+   *
+   * If a public holiday falls on a weekend, we only count one day.
+   *
+   * @return int
+   */
+  public function getNumberOfWorkingDays()
+  {
+    $startDate = new DateTime($this->start_date);
+    $endDate = new DateTime($this->end_date);
+    $oneDayInterval = new DateInterval('P1D');
+
+    // DatePeriod doesn't include the end date,
+    // so we add one more day for it to be included
+    $endDate->add($oneDayInterval);
+
+    $numberOfWorkingDays = 0;
+    $period = new DatePeriod($startDate, $oneDayInterval, $endDate);
+    foreach($period as $date) {
+      $dayOfTheWeek = $date->format('N');
+      $dayIsWorkingDay = $dayOfTheWeek > 0 && $dayOfTheWeek < 6;
+      if($dayIsWorkingDay) {
+        $numberOfWorkingDays++;
+      }
+    }
+
+    $numberOfPublicHolidays = CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+      $this->start_date,
+      $this->end_date,
+      true
+    );
+
+    return $numberOfWorkingDays - $numberOfPublicHolidays;
+  }
 }
