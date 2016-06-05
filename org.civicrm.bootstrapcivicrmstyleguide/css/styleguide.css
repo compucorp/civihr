@@ -1,0 +1,21 @@
+#bootstrap-theme {
+  padding: 40px 0;
+}
+
+#page {
+  margin: 0;
+  padding: 0;
+}
+
+#bootstrap-theme .styleguide-example-type h1,
+#bootstrap-theme .styleguide-example-type h2,
+#bootstrap-theme .styleguide-example-type h3,
+#bootstrap-theme .styleguide-example-type h4,
+#bootstrap-theme .styleguide-example-type h5,
+#bootstrap-theme .styleguide-example-type label {
+  margin: 0;
+}
+
+#bootstrap-theme .styleguide-example-type td {
+  padding: 15px 0;
+}
