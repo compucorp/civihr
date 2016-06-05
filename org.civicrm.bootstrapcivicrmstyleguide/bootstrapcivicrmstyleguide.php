@@ -128,5 +128,5 @@ function bootstrapcivicrmstyleguide_civicrm_alterSettingsFolders(&$metaDataFolde
  * Implementation of hook_civicrm_pageRun
  */
 function bootstrapcivicrmstyleguide_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrmstyleguide', 'css/styleguide.css');
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrmstyleguide', 'css/bootstrap-civicrm-styleguide.css');
 }

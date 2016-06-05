@@ -53,20 +53,16 @@
         </div>
         <div class="row">
           <div class="col-sm-6">
-            <article class="panel">
-              <div class="panel-body">
-
-              </div>
+            <article class="panel panel-default panel-color panel-color-headings">
+              <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>Headings / Titles / Labels</strong>
               </footer>
             </article>
           </div>
           <div class="col-sm-6">
-            <article class="panel">
-              <div class="panel-body">
-
-              </div>
+            <article class="panel panel-default panel-color panel-color-copy">
+              <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>Body Copy</strong>
               </footer>
@@ -82,7 +78,7 @@
         </div>
         <div class="row">
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-gray-light">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>Mid Grey - Background</strong>
@@ -90,7 +86,7 @@
             </article>
           </div>
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-gray-lighter">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>Light Grey - Modal/Alt Background</strong>
@@ -98,7 +94,7 @@
             </article>
           </div>
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-white">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>White</strong>
@@ -110,56 +106,48 @@
         </div>
         <div class="row">
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-primary">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
-                <strong>Accent - Acqua</strong>
+                <strong>Primary - Acqua</strong>
               </footer>
             </article>
           </div>
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-danger">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
-                <strong>Accent - Red</strong>
+                <strong>Danger - Red</strong>
               </footer>
             </article>
           </div>
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-warning">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
-                <strong>Accent - Orange</strong>
+                <strong>Warning - Orange</strong>
               </footer>
             </article>
           </div>
           <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-success">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
-                <strong>Accent - Green</strong>
+                <strong>Success - Green</strong>
               </footer>
             </article>
           </div>
         </div>
         <div class="row">
           <div class="col-sm-3">
-            <article class="panel">
-              <div class="panel-body"></div>
-              <footer class="panel-footer text-center">
-                <strong>Dark Grey</strong>
-              </footer>
-            </article>
-          </div>
-          <div class="col-sm-3">
-            <article class="panel">
+            <article class="panel panel-default panel-color panel-color-dark-blue">
               <div class="panel-body"></div>
               <footer class="panel-footer text-center">
                 <strong>Dark Blue</strong>
               </footer>
             </article>
           </div>
-          <div class="col-sm-6">
+          <div class="col-sm-9">
           </div>
         </div>
       </div>
