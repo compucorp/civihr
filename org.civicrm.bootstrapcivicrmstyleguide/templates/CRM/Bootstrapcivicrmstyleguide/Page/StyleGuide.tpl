@@ -159,6 +159,97 @@
             <h2 class="panel-title">03. Form Elements</h2>
           </header>
           <div class="panel-body">
+            <form class="form-horizontal">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="text" class="col-sm-3 control-label">Text Field</label>
+                    <div class="col-sm-7">
+                      <input id="text" type="text" class="form-control" placeholder="Lorem ipsum">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="dropdown" class="col-sm-3 control-label">Dropdown</label>
+                    <div class="col-sm-7">
+                      <select id="dropdown" class="form-control">
+                        <option value="">Select Action</option>
+                        <option value="">Lorem</option>
+                        <option value="">Ipsum</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="checkbox" class="col-sm-3 control-label">Checkbox</label>
+                    <div class="col-sm-7">
+                      <input type="checkbox" type="text">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="" class="col-sm-3 control-label">Radio Buttons</label>
+                    <div class="col-sm-7">
+                      <label class="radio-inline">
+                        <input type="radio" name="radio-button" checked value="selected"> Selected
+                      </label>
+                      <label class="radio-inline">
+                        <input type="radio" name="radio-button" value="unselected"> Unselected
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="textbox" class="col-sm-3 control-label">Text Box</label>
+                    <div class="col-sm-7">
+                      <textarea class="form-control" rows="5"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="disabled-text" class="col-sm-3 control-label">Disabled Field</label>
+                    <div class="col-sm-7">
+                      <input id="disabled-text" type="text" disabled class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="disabled-dropdown" class="col-sm-3 control-label">Disabled Dropdown</label>
+                    <div class="col-sm-7">
+                      <select id="disabled-dropdown" disabled class="form-control">
+                        <option value="">Select Action</option>
+                        <option value="">Lorem</option>
+                        <option value="">Ipsum</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group form-required">
+                    <label for="required" class="col-sm-3 control-label">Required Field</label>
+                    <div class="col-sm-7">
+                      <input id="required" type="text" required class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6"></div>
+              </div>
+            </form>
           </div>
         </article>
       </div>
