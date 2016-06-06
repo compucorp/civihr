@@ -159,6 +159,9 @@
             <h2 class="panel-title">03. Form Elements</h2>
           </header>
           <div class="panel-body">
+            <div class="alert alert-danger">
+              Error message
+            </div>
             <form class="form-horizontal">
               <div class="row">
                 <div class="col-sm-6">
@@ -221,7 +224,7 @@
                   <div class="form-group">
                     <label for="disabled-text" class="col-sm-3 control-label">Disabled Field</label>
                     <div class="col-sm-7">
-                      <input id="disabled-text" type="text" disabled class="form-control">
+                      <input id="disabled-text" type="text" disabled class="form-control" value="Lorem ipsum">
                     </div>
                   </div>
                 </div>
@@ -247,7 +250,33 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-6"></div>
+                <div class="col-sm-6">
+                  <div class="form-group has-error">
+                    <label for="required" class="col-sm-3 control-label">Field w/ error</label>
+                    <div class="col-sm-7">
+                      <input id="required" type="text" required class="form-control">
+                      <span id="helpBlock2" class="help-block">A block of help text that breaks onto a new line and may extend beyond one line.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group has-warning">
+                    <label for="required" class="col-sm-3 control-label">Field w/ warning</label>
+                    <div class="col-sm-7">
+                      <input id="required" type="text" required class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group has-success">
+                    <label for="required" class="col-sm-3 control-label">Field w/ success</label>
+                    <div class="col-sm-7">
+                      <input id="required" type="text" required class="form-control">
+                    </div>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
