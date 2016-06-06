@@ -953,22 +953,288 @@
     </div>
     <div class="row">
       <div class="col-sm-12">
+        <div class="page-header">
+          <h1>06. Tables</h1>
+        </div>
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">06. Tables</h2>
+            <h2 class="panel-title">Standard</h2>
           </header>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-6">
         <article class="panel panel-default">
-          <div class="panel-body"></div>
+          <header class="panel-heading">
+            <h2 class="panel-title">Bordered</h2>
+          </header>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+                <tr>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </article>
-      </div>
-      <div class="col-sm-6">
         <article class="panel panel-default">
-          <div class="panel-body"></div>
+          <header class="panel-heading">
+            <h2 class="panel-title">Striped (w/ pagination & dropdown)</h2>
+          </header>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th><input type="checkbox"></th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                  <th>Label</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td class="styleguide-example-dropdown">
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Lorem</a></li>
+                        <li><a href="#">Ipsum</a></li>
+                        <li><a href="#">Dolor</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Sit</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox"></td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>Lorem Ipsum Information</td>
+                  <td>
+                    <div class="dropdown">
+                      <span class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                        Lorem Ipsum Dropdown
+                        <span class="fa fa-caret-down"></span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <footer class="panel-footer text-center">
+              <nav>
+                  <ul class="pagination">
+                      <li><a href=""><strong>« First</strong></a></li>
+                      <li><a href=""><strong>‹ Prev</strong></a></li>
+                      <li><a href="">1</a></li>
+                      <li><a href="">2</a></li>
+                      <li><a href="">3</a></li>
+                      <li><a href="">4</a></li>
+                      <li><a href="">5</a></li>
+                      <li class="active"><a href="">6</a></li>
+                      <li><a href="">7</a></li>
+                      <li><a href="">8</a></li>
+                      <li><a href="">9</a></li>
+                      <li><a href="">10</a></li>
+                      <li><a href=""><strong>Next ›</strong></a></li>
+                      <li><a href=""><strong>Last »</strong></a></li>
+                  </ul>
+              </nav>
+          </footer>
         </article>
       </div>
     </div>
