@@ -237,6 +237,28 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $this->assertEquals($expectedNumberOfWorkingDays, $period->getNumberOfWorkingDays());
   }
 
+  /**
+   * @expectedException UnexpectedValueException
+   * @expectedExceptionMessage You can only get the number of working days for an AbsencePeriod with a valid start date
+   */
+  public function testCannotCalculateTheNumberOfWorkingDaysForAPeriodWithAnEmptyStartDate()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->end_date = date('Y-m-d');
+    $period->getNumberOfWorkingDays();
+  }
+
+  /**
+   * @expectedException UnexpectedValueException
+   * @expectedExceptionMessage You can only get the number of working days for an AbsencePeriod with a valid end date
+   */
+  public function testCannotCalculateTheNumberOfWorkingDaysForAPeriodWithAnEmptyEndDate()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = date('Y-m-d');
+    $period->getNumberOfWorkingDays();
+  }
+
   public function testCanCalculateTheNumberOfWorkingDaysWithPublicHolidays()
   {
     $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
@@ -262,6 +284,80 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
       'date' => CRM_Utils_Date::processDate('2016-12-25')
     ]);
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
+  }
+
+  public function testCanCalculateTheNumberOfWorkingDaysToWork()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-12-31';
+
+    $this->assertEquals(22, $period->getNumberOfWorkingDaysToWork('2016-05-01', '2016-05-31'));
+    $this->assertEquals(1, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
+    $this->assertEquals(5, $period->getNumberOfWorkingDaysToWork('2016-12-25', '2017-12-25'));
+  }
+
+  public function testCanCalculateTheNumberOfWorkingDaysToWorkWithPublicHolidays()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-12-31';
+
+    $this->assertEquals(22, $period->getNumberOfWorkingDaysToWork('2016-05-01', '2016-05-31'));
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 1',
+      'date' => CRM_Utils_Date::processDate('2016-05-02')
+    ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 2',
+      'date' => CRM_Utils_Date::processDate('2016-05-30')
+    ]);
+    $this->assertEquals(20, $period->getNumberOfWorkingDaysToWork('2016-05-01', '2016-05-31'));
+
+    $this->assertEquals(1, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 3',
+      'date' => CRM_Utils_Date::processDate('2015-10-01')
+    ]);
+    $this->assertEquals(1, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Public Holiday 4',
+      'date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+    $this->assertEquals(0, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   * @expectedExceptionMessage getNumberOfWorkingDaysToWork expects a valid startDate in Y-m-d format
+   *
+   * @dataProvider invalidDatesDataProvider
+   */
+  public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidStartDate($startDate)
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-12-31';
+
+    $period->getNumberOfWorkingDaysToWork($startDate, '2016-05-31');
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   * @expectedExceptionMessage getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format
+   *
+   * @dataProvider invalidDatesDataProvider
+   */
+  public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidEndDate($endDate)
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-12-31';
+
+    $period->getNumberOfWorkingDaysToWork('2016-01-01', $endDate);
   }
 
   private function createBasicPeriod($params = array()) {
@@ -359,6 +455,21 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
       ['2016-01-01', '2016-12-31', 261],
       ['2011-01-01', '2011-12-31', 260],
       ['2016-07-02', '2016-07-03', 0],
+    ];
+  }
+
+  public function invalidDatesDataProvider()
+  {
+    return[
+      ['dsaddfadlsfjdsal;kfjdsafdsa'],
+      ['2016-02-30'],
+      ['2016-30-10'],
+      ['2016-03-45'],
+      ['2016-02'],
+      ['2016'],
+      [1233321],
+      [2016],
+      [null]
     ];
   }
 }
