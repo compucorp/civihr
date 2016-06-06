@@ -166,14 +166,16 @@ class CRM_Hrjobcontract_BAO_HRJobDetails extends CRM_Hrjobcontract_DAO_HRJobDeta
           (
             (jcd.period_start_date BETWEEN %2 AND %3)
             OR (jcd.period_end_date IS NOT NULL AND (jcd.period_end_date BETWEEN %2 AND %3))
-            OR (%2 < jcd.period_start_date AND (jcd.period_end_date IS NOT NULL AND %3 > jcd.period_end_date))
+            OR (%2 <= jcd.period_start_date AND (jcd.period_end_date IS NOT NULL AND %3 >= jcd.period_end_date))
+            OR (%2 >= jcd.period_start_date AND (jcd.period_end_date IS NOT NULL AND %3 <= jcd.period_end_date))
             OR (jcd.period_end_date IS NULL AND jcd.period_start_date <= %3)
           )
           AND
           (
             (jcr.effective_date BETWEEN %2 AND %3)
             OR (jcr.effective_end_date IS NOT NULL AND (jcr.effective_end_date BETWEEN %2 AND %3))
-            OR (%2 < jcr.effective_date AND (jcr.effective_end_date IS NOT NULL AND %3 > jcr.effective_end_date))
+            OR (%2 <= jcr.effective_date AND (jcr.effective_end_date IS NOT NULL AND %3 >= jcr.effective_end_date))
+            OR (%2 >= jcr.effective_date AND (jcr.effective_end_date IS NOT NULL AND %3 <= jcr.effective_end_date))
             OR (jcr.effective_end_date IS NULL AND jcr.effective_date <= %3)
           )
         )
