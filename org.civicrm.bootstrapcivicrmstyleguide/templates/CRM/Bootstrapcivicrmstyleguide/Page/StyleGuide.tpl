@@ -322,14 +322,640 @@
           <header class="panel-heading">
             <h2 class="panel-title">04. Buttons</h2>
           </header>
+          <div class="panel-body styleguide-example-button">
+            <h2>Buttons - Flat</h2>
+            <div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-default">default</a>
+                  <a href="#" class="btn btn-primary">primary</a>
+                  <a href="#" class="btn btn-secondary">secondary</a>
+                  <a href="#" class="btn btn-success">success</a>
+                  <a href="#" class="btn btn-info">info</a>
+                  <a href="#" class="btn btn-warning">warning</a>
+                  <a href="#" class="btn btn-danger">danger</a>
+                  <a href="#" class="btn btn-link">link</a>
+                </div>
+              </div>
+              <h3>Sizes</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-lg btn-default">large</a>
+                  <a href="#" class="btn btn-lg btn-primary">large</a>
+                  <a href="#" class="btn btn-lg btn-secondary">large</a>
+                  <a href="#" class="btn btn-lg btn-success">large</a>
+                  <a href="#" class="btn btn-lg btn-info">large</a>
+                  <a href="#" class="btn btn-lg btn-warning">large</a>
+                  <a href="#" class="btn btn-lg btn-danger">large</a>
+                  <a href="#" class="btn btn-lg btn-link">large</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-sm btn-default">small</a>
+                  <a href="#" class="btn btn-sm btn-primary">small</a>
+                  <a href="#" class="btn btn-sm btn-secondary">small</a>
+                  <a href="#" class="btn btn-sm btn-success">small</a>
+                  <a href="#" class="btn btn-sm btn-info">small</a>
+                  <a href="#" class="btn btn-sm btn-warning">small</a>
+                  <a href="#" class="btn btn-sm btn-danger">small</a>
+                  <a href="#" class="btn btn-sm btn-link">small</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-xs btn-default">extra small</a>
+                  <a href="#" class="btn btn-xs btn-primary">extra small</a>
+                  <a href="#" class="btn btn-xs btn-secondary">extra small</a>
+                  <a href="#" class="btn btn-xs btn-success">extra small</a>
+                  <a href="#" class="btn btn-xs btn-info">extra small</a>
+                  <a href="#" class="btn btn-xs btn-warning">extra small</a>
+                  <a href="#" class="btn btn-xs btn-danger">extra small</a>
+                  <a href="#" class="btn btn-xs btn-link">extra small</a>
+                </div>
+              </div>
+              <h3>w/ icons</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-default"><span class="fa fa-plus"></span> default</a>
+                  <a href="#" class="btn btn-primary"><span class="fa fa-plus"></span> primary</a>
+                  <a href="#" class="btn btn-secondary"><span class="fa fa-plus"></span> secondary</a>
+                  <a href="#" class="btn btn-success"><span class="fa fa-plus"></span> success</a>
+                  <a href="#" class="btn btn-info"><span class="fa fa-plus"></span> info</a>
+                  <a href="#" class="btn btn-warning"><span class="fa fa-plus"></span> warning</a>
+                  <a href="#" class="btn btn-danger"><span class="fa fa-plus"></span> danger</a>
+                  <a href="#" class="btn btn-link"><span class="fa fa-plus"></span> link</a>
+                </div>
+              </div>
+              <h3>Active</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-default active">default</a>
+                  <a href="#" class="btn btn-primary active">primary</a>
+                  <a href="#" class="btn btn-secondary active">secondary</a>
+                  <a href="#" class="btn btn-success active">success</a>
+                  <a href="#" class="btn btn-info active">info</a>
+                  <a href="#" class="btn btn-warning active">warning</a>
+                  <a href="#" class="btn btn-danger active">danger</a>
+                  <a href="#" class="btn btn-link active">link</a>
+                </div>
+              </div>
+              <h3>Disabled</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" disabled class="btn btn-default">default</a>
+                  <a href="#" disabled class="btn btn-primary">primary</a>
+                  <a href="#" disabled class="btn btn-secondary">secondary</a>
+                  <a href="#" disabled class="btn btn-success">success</a>
+                  <a href="#" disabled class="btn btn-info">info</a>
+                  <a href="#" disabled class="btn btn-warning">warning</a>
+                  <a href="#" disabled class="btn btn-danger">danger</a>
+                  <a href="#" disabled class="btn btn-link">link</a>
+                </div>
+              </div>
+            </div>
+            <h2>Buttons - Outlined</h2>
+            <div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-primary-outline">primary</a>
+                  <a href="#" class="btn btn-secondary-outline">secondary</a>
+                  <a href="#" class="btn btn-success-outline">success</a>
+                  <a href="#" class="btn btn-info-outline">info</a>
+                  <a href="#" class="btn btn-warning-outline">warning</a>
+                  <a href="#" class="btn btn-danger-outline">danger</a>
+                </div>
+              </div>
+              <h3>Sizes</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-lg btn-primary-outline">large</a>
+                  <a href="#" class="btn btn-lg btn-secondary-outline">large</a>
+                  <a href="#" class="btn btn-lg btn-success-outline">large</a>
+                  <a href="#" class="btn btn-lg btn-info-outline">large</a>
+                  <a href="#" class="btn btn-lg btn-warning-outline">large</a>
+                  <a href="#" class="btn btn-lg btn-danger-outline">large</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-sm btn-primary-outline">small</a>
+                  <a href="#" class="btn btn-sm btn-secondary-outline">small</a>
+                  <a href="#" class="btn btn-sm btn-success-outline">small</a>
+                  <a href="#" class="btn btn-sm btn-info-outline">small</a>
+                  <a href="#" class="btn btn-sm btn-warning-outline">small</a>
+                  <a href="#" class="btn btn-sm btn-danger-outline">small</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-xs btn-primary-outline">extra small</a>
+                  <a href="#" class="btn btn-xs btn-secondary-outline">extra small</a>
+                  <a href="#" class="btn btn-xs btn-success-outline">extra small</a>
+                  <a href="#" class="btn btn-xs btn-info-outline">extra small</a>
+                  <a href="#" class="btn btn-xs btn-warning-outline">extra small</a>
+                  <a href="#" class="btn btn-xs btn-danger-outline">extra small</a>
+                </div>
+              </div>
+              <h3>w/ icons</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-primary-outline"><span class="fa fa-plus"></span> primary</a>
+                  <a href="#" class="btn btn-secondary-outline"><span class="fa fa-plus"></span> secondary</a>
+                  <a href="#" class="btn btn-success-outline"><span class="fa fa-plus"></span> success</a>
+                  <a href="#" class="btn btn-info-outline"><span class="fa fa-plus"></span> info</a>
+                  <a href="#" class="btn btn-warning-outline"><span class="fa fa-plus"></span> warning</a>
+                  <a href="#" class="btn btn-danger-outline"><span class="fa fa-plus"></span> danger</a>
+                  <a href="#" class="btn btn-primary-outline"><span class="fa fa-plus"></span> primary</a>
+                </div>
+              </div>
+              <h3>Active</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" class="btn btn-primary-outline active">primary</a>
+                  <a href="#" class="btn btn-secondary-outline active">secondary</a>
+                  <a href="#" class="btn btn-success-outline active">success</a>
+                  <a href="#" class="btn btn-info-outline active">info</a>
+                  <a href="#" class="btn btn-warning-outline active">warning</a>
+                  <a href="#" class="btn btn-danger-outline active">danger</a>
+                </div>
+              </div>
+              <h3>Disabled</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <a href="#" disabled class="btn btn-primary-outline">primary</a>
+                  <a href="#" disabled class="btn btn-secondary-outline">secondary</a>
+                  <a href="#" disabled class="btn btn-success-outline">success</a>
+                  <a href="#" disabled class="btn btn-info-outline">info</a>
+                  <a href="#" disabled class="btn btn-warning-outline">warning</a>
+                  <a href="#" disabled class="btn btn-danger-outline">danger</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </article>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="panel panel-default">
+          <header class="panel-heading">
+            <h2 class="panel-title">05. Button Groups</h2>
+          </header>
+          <div class="panel-body styleguide-example-button">
+            <h2>Buttons - Flat</h2>
+            <div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-primary">1</button>
+                      <button type="button" class="btn btn-primary">2</button>
+                      <button type="button" class="btn btn-primary">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary">1</button>
+                      <button type="button" class="btn btn-secondary">2</button>
+                      <button type="button" class="btn btn-secondary">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success">1</button>
+                      <button type="button" class="btn btn-success">2</button>
+                      <button type="button" class="btn btn-success">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-info">1</button>
+                      <button type="button" class="btn btn-info">2</button>
+                      <button type="button" class="btn btn-info">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-warning">1</button>
+                      <button type="button" class="btn btn-warning">2</button>
+                      <button type="button" class="btn btn-warning">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-danger">1</button>
+                      <button type="button" class="btn btn-danger">2</button>
+                      <button type="button" class="btn btn-danger">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Sizes</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-primary">1</button>
+                      <button type="button" class="btn btn-primary">2</button>
+                      <button type="button" class="btn btn-primary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-secondary">1</button>
+                      <button type="button" class="btn btn-secondary">2</button>
+                      <button type="button" class="btn btn-secondary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-success">1</button>
+                      <button type="button" class="btn btn-success">2</button>
+                      <button type="button" class="btn btn-success">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-info">1</button>
+                      <button type="button" class="btn btn-info">2</button>
+                      <button type="button" class="btn btn-info">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-warning">1</button>
+                      <button type="button" class="btn btn-warning">2</button>
+                      <button type="button" class="btn btn-warning">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-danger">1</button>
+                      <button type="button" class="btn btn-danger">2</button>
+                      <button type="button" class="btn btn-danger">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-primary">1</button>
+                      <button type="button" class="btn btn-primary">2</button>
+                      <button type="button" class="btn btn-primary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-secondary">1</button>
+                      <button type="button" class="btn btn-secondary">2</button>
+                      <button type="button" class="btn btn-secondary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-success">1</button>
+                      <button type="button" class="btn btn-success">2</button>
+                      <button type="button" class="btn btn-success">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-info">1</button>
+                      <button type="button" class="btn btn-info">2</button>
+                      <button type="button" class="btn btn-info">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-warning">1</button>
+                      <button type="button" class="btn btn-warning">2</button>
+                      <button type="button" class="btn btn-warning">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-danger">1</button>
+                      <button type="button" class="btn btn-danger">2</button>
+                      <button type="button" class="btn btn-danger">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-primary">1</button>
+                      <button type="button" class="btn btn-primary">2</button>
+                      <button type="button" class="btn btn-primary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-secondary">1</button>
+                      <button type="button" class="btn btn-secondary">2</button>
+                      <button type="button" class="btn btn-secondary">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-success">1</button>
+                      <button type="button" class="btn btn-success">2</button>
+                      <button type="button" class="btn btn-success">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-info">1</button>
+                      <button type="button" class="btn btn-info">2</button>
+                      <button type="button" class="btn btn-info">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-warning">1</button>
+                      <button type="button" class="btn btn-warning">2</button>
+                      <button type="button" class="btn btn-warning">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-danger">1</button>
+                      <button type="button" class="btn btn-danger">2</button>
+                      <button type="button" class="btn btn-danger">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Active</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-primary active">1</button>
+                      <button type="button" class="btn btn-primary active">2</button>
+                      <button type="button" class="btn btn-primary active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary active">1</button>
+                      <button type="button" class="btn btn-secondary active">2</button>
+                      <button type="button" class="btn btn-secondary active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success active">1</button>
+                      <button type="button" class="btn btn-success active">2</button>
+                      <button type="button" class="btn btn-success active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-info active">1</button>
+                      <button type="button" class="btn btn-info active">2</button>
+                      <button type="button" class="btn btn-info active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-warning active">1</button>
+                      <button type="button" class="btn btn-warning active">2</button>
+                      <button type="button" class="btn btn-warning active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-danger active">1</button>
+                      <button type="button" class="btn btn-danger active">2</button>
+                      <button type="button" class="btn btn-danger active">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Disabled</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-primary">1</button>
+                      <button type="button" disabled class="btn btn-primary">2</button>
+                      <button type="button" disabled class="btn btn-primary">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-secondary">1</button>
+                      <button type="button" disabled class="btn btn-secondary">2</button>
+                      <button type="button" disabled class="btn btn-secondary">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-success">1</button>
+                      <button type="button" disabled class="btn btn-success">2</button>
+                      <button type="button" disabled class="btn btn-success">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-info">1</button>
+                      <button type="button" disabled class="btn btn-info">2</button>
+                      <button type="button" disabled class="btn btn-info">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-warning">1</button>
+                      <button type="button" disabled class="btn btn-warning">2</button>
+                      <button type="button" disabled class="btn btn-warning">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-danger">1</button>
+                      <button type="button" disabled class="btn btn-danger">2</button>
+                      <button type="button" disabled class="btn btn-danger">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2>Buttons - Outlined</h2>
+            <div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-primary-outline">1</button>
+                      <button type="button" class="btn btn-primary-outline">2</button>
+                      <button type="button" class="btn btn-primary-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary-outline">1</button>
+                      <button type="button" class="btn btn-secondary-outline">2</button>
+                      <button type="button" class="btn btn-secondary-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success-outline">1</button>
+                      <button type="button" class="btn btn-success-outline">2</button>
+                      <button type="button" class="btn btn-success-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-info-outline">1</button>
+                      <button type="button" class="btn btn-info-outline">2</button>
+                      <button type="button" class="btn btn-info-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-warning-outline">1</button>
+                      <button type="button" class="btn btn-warning-outline">2</button>
+                      <button type="button" class="btn btn-warning-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-danger-outline">1</button>
+                      <button type="button" class="btn btn-danger-outline">2</button>
+                      <button type="button" class="btn btn-danger-outline">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Sizes</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-primary-outline">1</button>
+                      <button type="button" class="btn btn-primary-outline">2</button>
+                      <button type="button" class="btn btn-primary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-secondary-outline">1</button>
+                      <button type="button" class="btn btn-secondary-outline">2</button>
+                      <button type="button" class="btn btn-secondary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-success-outline">1</button>
+                      <button type="button" class="btn btn-success-outline">2</button>
+                      <button type="button" class="btn btn-success-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-info-outline">1</button>
+                      <button type="button" class="btn btn-info-outline">2</button>
+                      <button type="button" class="btn btn-info-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-warning-outline">1</button>
+                      <button type="button" class="btn btn-warning-outline">2</button>
+                      <button type="button" class="btn btn-warning-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-lg">
+                      <button type="button" class="btn btn-danger-outline">1</button>
+                      <button type="button" class="btn btn-danger-outline">2</button>
+                      <button type="button" class="btn btn-danger-outline">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-primary-outline">1</button>
+                      <button type="button" class="btn btn-primary-outline">2</button>
+                      <button type="button" class="btn btn-primary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-secondary-outline">1</button>
+                      <button type="button" class="btn btn-secondary-outline">2</button>
+                      <button type="button" class="btn btn-secondary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-success-outline">1</button>
+                      <button type="button" class="btn btn-success-outline">2</button>
+                      <button type="button" class="btn btn-success-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-info-outline">1</button>
+                      <button type="button" class="btn btn-info-outline">2</button>
+                      <button type="button" class="btn btn-info-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-warning-outline">1</button>
+                      <button type="button" class="btn btn-warning-outline">2</button>
+                      <button type="button" class="btn btn-warning-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-danger-outline">1</button>
+                      <button type="button" class="btn btn-danger-outline">2</button>
+                      <button type="button" class="btn btn-danger-outline">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-primary-outline">1</button>
+                      <button type="button" class="btn btn-primary-outline">2</button>
+                      <button type="button" class="btn btn-primary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-secondary-outline">1</button>
+                      <button type="button" class="btn btn-secondary-outline">2</button>
+                      <button type="button" class="btn btn-secondary-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-success-outline">1</button>
+                      <button type="button" class="btn btn-success-outline">2</button>
+                      <button type="button" class="btn btn-success-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-info-outline">1</button>
+                      <button type="button" class="btn btn-info-outline">2</button>
+                      <button type="button" class="btn btn-info-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-warning-outline">1</button>
+                      <button type="button" class="btn btn-warning-outline">2</button>
+                      <button type="button" class="btn btn-warning-outline">3</button>
+                    </div>
+                    <div class="btn-group btn-group-xs">
+                      <button type="button" class="btn btn-danger-outline">1</button>
+                      <button type="button" class="btn btn-danger-outline">2</button>
+                      <button type="button" class="btn btn-danger-outline">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Active</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-primary-outline active">1</button>
+                      <button type="button" class="btn btn-primary-outline active">2</button>
+                      <button type="button" class="btn btn-primary-outline active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary-outline active">1</button>
+                      <button type="button" class="btn btn-secondary-outline active">2</button>
+                      <button type="button" class="btn btn-secondary-outline active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-success-outline active">1</button>
+                      <button type="button" class="btn btn-success-outline active">2</button>
+                      <button type="button" class="btn btn-success-outline active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-info-outline active">1</button>
+                      <button type="button" class="btn btn-info-outline active">2</button>
+                      <button type="button" class="btn btn-info-outline active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-warning-outline active">1</button>
+                      <button type="button" class="btn btn-warning-outline active">2</button>
+                      <button type="button" class="btn btn-warning-outline active">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-danger-outline active">1</button>
+                      <button type="button" class="btn btn-danger-outline active">2</button>
+                      <button type="button" class="btn btn-danger-outline active">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>Disabled</h3>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn-toolbar">
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-primary-outline">1</button>
+                      <button type="button" disabled class="btn btn-primary-outline">2</button>
+                      <button type="button" disabled class="btn btn-primary-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-secondary-outline">1</button>
+                      <button type="button" disabled class="btn btn-secondary-outline">2</button>
+                      <button type="button" disabled class="btn btn-secondary-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-success-outline">1</button>
+                      <button type="button" disabled class="btn btn-success-outline">2</button>
+                      <button type="button" disabled class="btn btn-success-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-info-outline">1</button>
+                      <button type="button" disabled class="btn btn-info-outline">2</button>
+                      <button type="button" disabled class="btn btn-info-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-warning-outline">1</button>
+                      <button type="button" disabled class="btn btn-warning-outline">2</button>
+                      <button type="button" disabled class="btn btn-warning-outline">3</button>
+                    </div>
+                    <div class="btn-group">
+                      <button type="button" disabled class="btn btn-danger-outline">1</button>
+                      <button type="button" disabled class="btn btn-danger-outline">2</button>
+                      <button type="button" disabled class="btn btn-danger-outline">3</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">05. Tables</h2>
+            <h2 class="panel-title">06. Tables</h2>
           </header>
         </article>
       </div>
@@ -350,7 +976,7 @@
       <div class="col-sm-6">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">06. Tabs and Alternate Views</h2>
+            <h2 class="panel-title">07. Tabs and Alternate Views</h2>
           </header>
           <div class="panel-body"></div>
         </article>
@@ -372,7 +998,7 @@
       <div class="col-sm-12">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">07. Modals</h2>
+            <h2 class="panel-title">08. Modals</h2>
           </header>
         </article>
       </div>
@@ -381,7 +1007,7 @@
       <div class="col-sm-12">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">08. Section Headers Toolbars and Dividers</h2>
+            <h2 class="panel-title">09. Section Headers Toolbars and Dividers</h2>
           </header>
         </article>
       </div>
@@ -390,7 +1016,7 @@
       <div class="col-sm-12">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">09. Accordion</h2>
+            <h2 class="panel-title">10. Accordion</h2>
           </header>
         </article>
       </div>
