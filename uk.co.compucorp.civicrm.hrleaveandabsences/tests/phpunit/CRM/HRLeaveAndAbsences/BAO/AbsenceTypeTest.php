@@ -301,26 +301,134 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($entity->id);
     $entity = $this->findTypeByID($entity->id);
     $this->assertNull($entity);
-
   }
 
-  public function testGetValuesArrayShouldReturnAbsenceTypeValues()
-  {
+  public function testGetValuesArrayShouldReturnAbsenceTypeValues() {
     $params = [
-      'title' => 'Title 1',
-      'color' => '#000101',
-      'default_entitlement' => 21,
-      'allow_request_cancelation' => 1,
-      'is_active' => 1,
-      'is_default' => 1,
-      'allow_carry_forward' => 1,
+      'title'                               => 'Title 1',
+      'color'                               => '#000101',
+      'default_entitlement'                 => 21,
+      'allow_request_cancelation'           => 1,
+      'is_active'                           => 1,
+      'is_default'                          => 1,
+      'allow_carry_forward'                 => 1,
       'max_number_of_days_to_carry_forward' => 10,
     ];
     $entity = $this->createBasicType($params);
     $values = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getValuesArray($entity->id);
-    foreach($params as $field => $value) {
+    foreach ($params as $field => $value) {
       $this->assertEquals($value, $values[$field]);
     }
+  }
+
+  public function testHasExpirationDuration()
+  {
+    $absenceType1 = $this->createBasicType([
+      'allow_carry_forward' => true
+    ]);
+
+    $absenceType2 = $this->createBasicType([
+      'allow_carry_forward' => true,
+      'carry_forward_expiration_duration' => 3,
+      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS,
+    ]);
+
+    $this->assertFalse($absenceType1->hasExpirationDuration());
+    $this->assertTrue($absenceType2->hasExpirationDuration());
+  }
+
+  public function testCarryForwardNeverExpiresShouldReturnTrueIfTypeHasNoExpirationDuration()
+  {
+    $absenceType = $this->createBasicType(['allow_carry_forward' => true]);
+    $this->assertTrue($absenceType->carryForwardNeverExpires());
+  }
+
+  public function testCarryForwardNeverExpiresShouldReturnFalseIfTypeHasExpirationDuration()
+  {
+    $absenceType = $this->createBasicType([
+      'allow_carry_forward' => true,
+      'carry_forward_expiration_duration' => 4,
+      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS
+    ]);
+    $this->assertFalse($absenceType->carryForwardNeverExpires());
+  }
+
+  public function testCarryForwardNeverExpiresShouldBeNullIfTypeDoesAllowCarryForward()
+  {
+    $absenceType = $this->createBasicType(['allow_carry_forward' => false]);
+    $this->assertNull($absenceType->carryForwardNeverExpires());
+  }
+
+  public function testCannotCalculateTheExpirationDurationDateForATypeWithoutAllowCarryForward()
+  {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $this->assertNull($absenceType->getExpirationDurationDate('2016-01-01'));
+  }
+
+  public function testCannotCalculateTheExpirationDurationDateForATypeWithoutExpirationDuration()
+  {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->allow_carry_forward = true;
+    $this->assertNull($absenceType->getExpirationDurationDate('2016-01-01'));
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   * @expectedExceptionMessage The startDate should be a valid date in Y-m-d format
+   *
+   * @dataProvider invalidDatesDataProvider
+   */
+  public function testCannotCalculateTheExpirationDurationDateForAnInvalidStartDate($startDate)
+  {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->allow_carry_forward = true;
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
+    $absenceType->carry_forward_expiration_duration = 1;
+    $absenceType->getExpirationDurationDate($startDate);
+  }
+
+  public function testCanCalculateTheExpirationDurationDateForATypeWithExpirationDuration()
+  {
+    $startDate = new DateTimeImmutable('2016-01-01');
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->allow_carry_forward = true;
+
+    //1 day duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P1D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 days duration
+    $absenceType->carry_forward_expiration_duration = 5;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P5D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 months duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P5M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 months duration
+    $absenceType->carry_forward_expiration_duration = 10;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P10M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 years duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P10Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
+
+    //1 year duration
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
+    $expectedDate = $startDate->add(new DateInterval('P1Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
   }
 
   private function createBasicType($params = array()) {
@@ -382,6 +490,32 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
       $data[] = [$option, false];
     }
     return $data;
+  }
+
+  public function carryForwardExpirationDateDataProvider() {
+    return [
+      [12, 12, false],
+      [1, 2, false],
+      [31, 1, false],
+      [30, 2, true],
+      [31, 4, true],
+      [77, 9, true],
+      [12, 31, true],
+    ];
+  }
+
+  public function invalidDatesDataProvider()
+  {
+    return [
+      [date('YmdHis')],
+      [date('Y-m-d H:i:s')],
+      [date('Ymd')],
+      [date('Ym')],
+      [date('Y')],
+      ['dsadsadsadsadsadsa'],
+      [2016],
+      [null]
+    ];
   }
 
   /**

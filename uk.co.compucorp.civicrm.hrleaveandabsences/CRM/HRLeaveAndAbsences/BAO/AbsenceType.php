@@ -52,7 +52,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return CRM_HRLeaveAndAbsences_DAO_AbsenceType|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
+    $className = 'CRM_HRLeaveAndAbsences_BAO_AbsenceType';
     $entityName = 'AbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -378,4 +378,77 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
   }
 
+  /**
+   * The carry forward for an Absence Type never expires if the types has no
+   * expiration duration.
+   *
+   * @return bool|null Returns true if carry forward never expires, false if
+   *                   it does expire, and null if this Absence Types doesn't
+   *                   allow carry forward
+   */
+  public function carryForwardNeverExpires() {
+    if(!$this->allow_carry_forward) {
+      return null;
+    }
+
+    return !$this->hasExpirationDuration();
+  }
+
+  /**
+   * An AbsenceType has an expiration duration if both carry_forward_expiration_duration
+   * and carry_forward_expiration_unit are not empty
+   *
+   * @return bool
+   */
+  public function hasExpirationDuration()
+  {
+    return $this->carry_forward_expiration_duration && $this->carry_forward_expiration_unit;
+  }
+
+  /**
+   * Given a startDate, returns the expiration date calculated from this
+   * AbsenceType expiration duration.
+   *
+   * Example: If the expiration duration is 5 days and the given startDate is
+   * 2016-01-01, the expiration date will be 2016-01-06.
+   *
+   * @param string $startDate A valid date in Y-m-d format
+   *
+   * @return string|null A date in Y-m-d or null if it can not be calculated
+   */
+  public function getExpirationDurationDate($startDate)
+  {
+    if(!$this->allow_carry_forward || !$this->hasExpirationDuration()) {
+      return null;
+    }
+
+    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
+      throw new InvalidArgumentException('The startDate should be a valid date in Y-m-d format');
+    }
+
+    switch($this->carry_forward_expiration_unit) {
+      case self::EXPIRATION_UNIT_DAYS:
+        $unit = 'D';
+        break;
+      case self::EXPIRATION_UNIT_MONTHS:
+        $unit = 'M';
+        break;
+      case self::EXPIRATION_UNIT_YEARS:
+        $unit = 'Y';
+        break;
+      default:
+        $unit = null;
+    }
+
+    if(!$unit) {
+      return null;
+    }
+
+    $intervalSpec = 'P'. $this->carry_forward_expiration_duration . $unit;
+    $interval = new DateInterval($intervalSpec);
+    $expirationDate = new DateTime($startDate);
+    $expirationDate->add($interval);
+
+    return $expirationDate->format('Y-m-d');
+  }
 }
