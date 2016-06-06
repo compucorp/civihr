@@ -12,14 +12,13 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
    * @return CRM_HRLeaveAndAbsences_DAO_Entitlement|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_Entitlement';
     $entityName = 'Entitlement';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     self::validateParams($params);
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new $className();
+    $instance = new self();
     $instance->copyValues($params);
     $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
@@ -77,6 +76,41 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
         ts('The date of the comment should be null if the comment is empty')
       );
     }
+  }
+
+  /**
+   * Returns the calculated entitlement for a JobContract,
+   * AbsencePeriod and AbsenceType with the given IDs
+   *
+   * @param int $contractId The ID of the JobContract
+   * @param int $periodId The ID of the Absence Period
+   * @param int $absenceTypeId The ID of the AbsenceType
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null If there's no entitlement for the given arguments, null will be returned
+   *
+   * @throws \InvalidArgumentException
+   */
+  public static function getContractEntitlementForPeriod($contractId, $periodId, $absenceTypeId) {
+    if(!$contractId) {
+      throw new InvalidArgumentException("You must inform the Contract ID");
+    }
+    if(!$periodId) {
+      throw new InvalidArgumentException("You must inform the AbsencePeriod ID");
+    }
+    if(!$absenceTypeId) {
+      throw new InvalidArgumentException("You must inform the AbsenceType ID");
+    }
+
+    $entitlement = new self();
+    $entitlement->contract_id = (int)$contractId;
+    $entitlement->period_id = (int)$periodId;
+    $entitlement->type_id = (int)$absenceTypeId;
+    $entitlement->find(true);
+    if($entitlement->id) {
+      return $entitlement;
+    }
+
+    return null;
   }
 
 }
