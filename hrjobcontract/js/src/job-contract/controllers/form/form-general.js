@@ -52,7 +52,12 @@ define([
             });
 
             $scope.$watch('entity.details.period_end_date', function(){
-                $scope.dpDateStartMax = entityDetails.period_end_date ? moment(entityDetails.period_end_date).subtract(1, 'day').format() : '';
+                if (entityDetails.period_end_date) {
+                    $scope.dpDateStartMax = moment(entityDetails.period_end_date).subtract(1, 'day').format();  
+                } else {
+                    $scope.dpDateStartMax = null;
+                    entityDetails.end_reason = null;
+                }
                 $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
             });
 

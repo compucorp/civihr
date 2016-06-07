@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>WorkDay</class>
+  <name>civicrm_hrleaveandabsences_work_day</name>
+  <comment>The specific details of day in a Work Week.</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique WorkDay ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>day_of_the_week</name>
+    <type>int unsigned</type>
+    <label>Day of the Week</label>
+    <required>true</required>
+    <comment>A number between 1 and 7, following ISO-8601. 1 is Monday and 7 is Sunday</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>type</name>
+    <type>int unsigned</type>
+    <label>Type</label>
+    <required>true</required>
+    <comment>The type of this day: yes (working day), no (non working day), weekend</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>time_from</name>
+    <type>char</type>
+    <length>5</length>
+    <label>Time from</label>
+    <comment>The start time of this work day. This field is a char because CiviCRM can't handle TIME fields.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>time_to</name>
+    <type>char</type>
+    <length>5</length>
+    <label>Time to</label>
+    <comment>The end time of this work day. This field is a char because CiviCRM can't handle TIME fields.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>break</name>
+    <type>decimal</type>
+    <label>Break</label>
+    <comment>The amount of break time (in hours) allowed for this day. </comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>leave_days</name>
+    <type>int unsigned</type>
+    <label>Leave days</label>
+    <comment>The proportion of a days leave that will be deducted if this day is taken as leave.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>number_of_hours</name>
+    <type>decimal</type>
+    <label>Number of Hours</label>
+    <comment>This is the number of hours between time_from and time_to minus break</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>week_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The Work Week this Day belongs to</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>week_id</name>
+    <table>civicrm_hrleaveandabsences_work_week</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <index>
+    <name>unique_day_for_week</name>
+    <fieldName>week_id</fieldName>
+    <fieldName>day_of_the_week</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+</table>

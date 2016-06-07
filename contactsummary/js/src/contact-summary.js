@@ -6,7 +6,5 @@ require.config({
 });
 
 require(['contact-summary/app'], function () {
-    document.addEventListener('contactsummaryLoad', function () {
-        angular.bootstrap(document.getElementById('contactsummary'), ['contactsummary']);
-    });
+    angular.bootstrap(document.getElementById('contactsummary'), ['contactsummary']);
 });

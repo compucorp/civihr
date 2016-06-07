@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>NotificationReceiver</class>
+  <name>civicrm_hrleaveandabsences_notification_receiver</name>
+  <comment>A contact that will be notified of new leave requests of this type</comment>
+  <add>4.4</add>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique NotificationReceiver ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>type_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to AbsenceType</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>type_id</name>
+    <table>civicrm_hrleaveandabsences_absence_type</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+</table>

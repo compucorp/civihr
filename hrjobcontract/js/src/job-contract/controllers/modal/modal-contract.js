@@ -156,47 +156,61 @@ define([
 
             if ($scope.allowSave) {
                 $scope.save = function () {
-
-                    if (angular.equals(entity,$scope.entity) &&
-                        angular.equals(files,$scope.files) &&
-                        !$scope.uploader.details.contract_file.queue.length &&
-                        !$scope.uploader.pension.evidence_file.queue.length) {
-                        $scope.$broadcast('hrjc-loader-hide');
-                        $modalInstance.dismiss('cancel');
-                        return;
-                    }
-
-                    switch (action){
-                        case 'edit':
-                            if ($scope.entity.contract.is_primary == entity.contract.is_primary) {
-                                confirmEdit().then(function(confirmed){
-                                    switch (confirmed) {
-                                        case 'edit':
-                                            contractEdit();
-                                            break;
-                                        case 'change':
-                                            changeReason().then(function(results){
-                                                contractChange(results.reasonId, results.date);
-                                            });
-                                            break;
-
-                                    }
-                                });
-                            } else {
-                                contractEdit();
+                    $scope.$broadcast('hrjc-loader-show');
+                    ContractDetailsService.validateDates({
+                        contact_id: settings.contactId,
+                        period_start_date: $scope.entity.details.period_start_date,
+                        period_end_date: $scope.entity.details.period_end_date,
+                        jobcontract_id: entity.contract.id
+                    }).then(function(result){
+                        if (result.success) {
+                            if (angular.equals(entity,$scope.entity) &&
+                                angular.equals(files,$scope.files) &&
+                                !$scope.uploader.details.contract_file.queue.length &&
+                                !$scope.uploader.pension.evidence_file.queue.length) {
+                                $scope.$broadcast('hrjc-loader-hide');
+                                $modalInstance.dismiss('cancel');
+                                return;
                             }
-                            break;
-                        case 'change':
-                            changeReason().then(function(results){
-                                contractChange(results.reasonId, results.date);
-                            });
 
-                            break;
-                        default:
+                            switch (action){
+                                case 'edit':
+                                    if ($scope.entity.contract.is_primary == entity.contract.is_primary) {
+                                        confirmEdit().then(function(confirmed){
+                                            switch (confirmed) {
+                                                case 'edit':
+                                                    contractEdit();
+                                                    break;
+                                                case 'change':
+                                                    changeReason().then(function(results){
+                                                        contractChange(results.reasonId, results.date);
+                                                    });
+                                                    break;
+
+                                            }
+                                        });
+                                    } else {
+                                        contractEdit();
+                                    }
+                                    break;
+                                case 'change':
+                                    changeReason().then(function(results){
+                                        contractChange(results.reasonId, results.date);
+                                    });
+
+                                    break;
+                                default:
+                                    $scope.$broadcast('hrjc-loader-hide');
+                                    $modalInstance.dismiss('cancel');
+                                    return;
+                            }
+                        } else {
+                            CRM.alert(result.message, 'Error', 'error');
                             $scope.$broadcast('hrjc-loader-hide');
-                            $modalInstance.dismiss('cancel');
-                            return;
-                    }
+                        }
+                    },function(reason){
+                    });
+                    $scope.$broadcast('hrjc-loader-hide');
                 }
             }
 

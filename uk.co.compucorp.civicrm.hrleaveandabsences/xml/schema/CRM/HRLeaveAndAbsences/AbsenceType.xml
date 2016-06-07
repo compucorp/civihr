@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>AbsenceType</class>
+  <name>civicrm_hrleaveandabsences_absence_type</name>
+  <comment>FIXME</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique AbsenceType ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>title</name>
+    <title>Title</title>
+    <type>varchar</type>
+    <length>127</length>
+    <required>true</required>
+    <unique>true</unique>
+    <comment>The AbsenceType title. There can't be more than one entity with the same title</comment>
+  </field>
+  <field>
+    <name>weight</name>
+    <title>Weight</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The weight value is used to order the types on a list</comment>
+  </field>
+  <field>
+    <name>color</name>
+    <title>Colour</title>
+    <type>varchar</type>
+    <length>7</length>
+    <required>true</required>
+    <comment>The color hex value (including the #) used to display this type on a calendar</comment>
+  </field>
+  <field>
+    <name>is_default</name>
+    <title>Is default?</title>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>There can only be one default entity at any given time</comment>
+  </field>
+  <field>
+    <name>is_reserved</name>
+    <title>Is reserved?</title>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>Reserved entities are used by internal calculations and cannot be deleted.</comment>
+  </field>
+  <field>
+    <name>max_consecutive_leave_days</name>
+    <title>Duration of consecutive leave permitted to be taken at once</title>
+    <type>int unsigned</type>
+  </field>
+  <field>
+    <name>allow_request_cancelation</name>
+    <title>Can staff cancel requests for this leave type after they have been made?</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Can only be one of the values defined in AbsenceType::REQUEST_CANCELATION_OPTIONS</comment>
+  </field>
+  <field>
+    <name>allow_overuse</name>
+    <title>Can employee apply for this leave type even if they have used up their entitlement for the year?</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>must_take_public_holiday_as_leave</name>
+    <title>Must staff take public holiday as leave</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>default_entitlement</name>
+    <title>Default entitlement</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The number of days entitled for this type</comment>
+  </field>
+  <field>
+    <name>add_public_holiday_to_entitlement</name>
+    <title>By default should public holiday be added to the default entitlement?</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>is_active</name>
+    <title>Is enabled?</title>
+    <type>boolean</type>
+    <default>1</default>
+    <comment>Only enabled types can be requested</comment>
+  </field>
+  <field>
+    <name>allow_accruals_request</name>
+    <title>Allow staff to request to accrue additional days leave of this type during the period</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>max_leave_accrual</name>
+    <title>Maximum amount of leave that can be accrued of this absence type during a period</title>
+    <type>int unsigned</type>
+    <comment>Value is the number of days that can be accrued. Null means unlimited</comment>
+  </field>
+  <field>
+    <name>allow_accrue_in_the_past</name>
+    <title>Can staff request to accrue leave for dates in the past?</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>accrual_expiration_duration</name>
+    <title>Default expiry of accrued amounts</title>
+    <type>int unsigned</type>
+    <comment>An amount of accrual_expiration_unit</comment>
+  </field>
+  <field>
+    <name>accrual_expiration_unit</name>
+    <type>int unsigned</type>
+    <comment>The unit (year, month, etc) of accrual_expiration_duration of this type default expiry</comment>
+  </field>
+  <field>
+    <name>allow_carry_forward</name>
+    <title>Allow leave of this type to be carried forward from one period to another?</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
+  <field>
+    <name>max_number_of_days_to_carry_forward</name>
+    <title>Maximum number of days that can be carried forward to a new period?</title>
+    <type>int unsigned</type>
+    <comments>Null means unlimited</comments>
+  </field>
+  <field>
+    <name>carry_forward_expiration_duration</name>
+    <title>Carried forward leave expiry</title>
+    <type>int unsigned</type>
+    <comment>An amount of carry_forward_expiration_unit</comment>
+  </field>
+  <field>
+    <name>carry_forward_expiration_unit</name>
+    <type>int unsigned</type>
+    <comment>The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry</comment>
+  </field>
+  <field>
+    <name>carry_forward_expiration_day</name>
+    <type>int</type>
+    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
+  </field>
+  <field>
+    <name>carry_forward_expiration_month</name>
+    <type>int</type>
+    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
+  </field>
+
+</table>

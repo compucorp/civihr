@@ -270,11 +270,15 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
+          'export' => true,
+          'title' => 'Job Role ID',
+          'where' => 'civicrm_hrjobroles.id'
         ) ,
         'job_contract_id' => array(
           'name' => 'job_contract_id',
           'type' => CRM_Utils_Type::T_INT,
-          'title' => ts('Job Id') ,
+          'title' => ts('Job ID') ,
+          'import' => true,
           'required' => true,
         ) ,
         'title' => array(
@@ -283,12 +287,18 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'title' => ts('Job Role Title') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
+          'import' => true,
           'default' => 'NULL',
+          'export' => true,
+          'where' => 'civicrm_hrjobroles.title'
         ) ,
         'description' => array(
           'name' => 'description',
           'type' => CRM_Utils_Type::T_TEXT,
           'title' => ts('Job Role Description') ,
+          'import' => true,
+          'export' => true,
+          'where' => 'civicrm_hrjobroles.description'
         ) ,
         'status' => array(
           'name' => 'status',
@@ -297,19 +307,22 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'default' => 'NULL',
+          'export' => true,
+          'where' => 'civicrm_hrjobroles.status'
         ) ,
         'hrjc_role_hours' => array(
           'name' => 'hours',
           'type' => CRM_Utils_Type::T_FLOAT,
-          'title' => ts('Amount') ,
+          'title' => ts('Job Role Hours'),
+          'export' => true,
+          'where' => 'civicrm_hrjobroles.hours'
         ) ,
         'hrjc_role_unit' => array(
           'name' => 'role_hours_unit',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Hours Unit') ,
+          'title' => ts('Job Role Hours Unit') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
-          'import' => true,
           'where' => 'civicrm_hrjobroles.role_hours_unit',
           'headerPattern' => '',
           'dataPattern' => '',
@@ -318,7 +331,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_region' => array(
           'name' => 'region',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Region') ,
+          'title' => ts('Job Role Region') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -326,11 +339,14 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_region',
+          ),
         ) ,
         'hrjc_role_department' => array(
           'name' => 'department',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Department') ,
+          'title' => ts('Job Role Department') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -338,11 +354,14 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_department',
+          ),
         ) ,
         'hrjc_level_type' => array(
           'name' => 'level_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Level') ,
+          'title' => ts('Job Role Level') ,
           'maxlength' => 63,
           'size' => CRM_Utils_Type::BIG,
           'import' => true,
@@ -350,6 +369,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_level_type',
+          ),
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -360,21 +382,25 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'functional_area' => array(
           'name' => 'functional_area',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Functional Area') ,
+          'title' => ts('Job Role Functional Area') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'where' => 'civicrm_hrjobroles.functional_area',
+          'export' => true,
         ) ,
         'organization' => array(
           'name' => 'organization',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Organization') ,
+          'title' => ts('Job Role Organization') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
+          'where' => 'civicrm_hrjobroles.organization',
+          'export' => true,
         ) ,
         'hrjc_cost_center' => array(
           'name' => 'cost_center',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Cost Center') ,
+          'title' => ts('Job Role Cost Center') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -386,7 +412,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_cost_center_val_type' => array(
           'name' => 'cost_center_val_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Cost Center value type') ,
+          'title' => ts('Job Role Cost Center value type') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -398,7 +424,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_role_percent_pay_cost_center' => array(
           'name' => 'percent_pay_cost_center',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Percent of Pay Assigned to this cost center') ,
+          'title' => ts('Job Role Percent of Pay Assigned to this cost center') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -410,7 +436,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_role_amount_pay_cost_center' => array(
           'name' => 'amount_pay_cost_center',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Amount of Pay Assigned to this cost center') ,
+          'title' => ts('Job Role Amount of Pay Assigned to this cost center') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -422,14 +448,17 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'funder' => array(
           'name' => 'funder',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Funder Contact ID') ,
+          'title' => ts('Job Role Funders') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
+          'import' => true,
+          'export' => true,
+          'where' => 'civicrm_hrjobroles.funder'
         ) ,
         'hrjc_funder_val_type' => array(
           'name' => 'funder_val_type',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Funder value type') ,
+          'title' => ts('Job Role Funder value type') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -441,7 +470,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_role_percent_pay_funder' => array(
           'name' => 'percent_pay_funder',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Percent of Pay Assigned to this funder') ,
+          'title' => ts('Job Role Percent of Pay Assigned to this funder') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -453,7 +482,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_role_amount_pay_funder' => array(
           'name' => 'amount_pay_funder',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Amount of Pay Assigned to this funder') ,
+          'title' => ts('Job Role Amount of Pay Assigned to this funder') ,
           'maxlength' => 255,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -465,7 +494,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'location' => array(
           'name' => 'location',
           'type' => CRM_Utils_Type::T_STRING,
-          'title' => ts('Location') ,
+          'title' => ts('Job Role Location') ,
           'maxlength' => 127,
           'size' => CRM_Utils_Type::HUGE,
           'import' => true,
@@ -473,11 +502,14 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_location',
+          ),
         ) ,
         'hrjc_role_start_date' => array(
           'name' => 'start_date',
           'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
-          'title' => ts('start_date') ,
+          'title' => ts('Job Role Start Date') ,
           'import' => true,
           'where' => 'civicrm_hrjobroles.start_date',
           'headerPattern' => '',
@@ -488,7 +520,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         'hrjc_role_end_date' => array(
           'name' => 'end_date',
           'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
-          'title' => ts('end_date') ,
+          'title' => ts('Job Role End Date') ,
           'import' => true,
           'where' => 'civicrm_hrjobroles.end_date',
           'headerPattern' => '',

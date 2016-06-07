@@ -2,7 +2,10 @@ define([
     'appraisals/utils/routes',
     'common/angular',
     'common/angularBootstrap',
-    'common/services/dialog',
+    'common/ui-select',
+    'common/modules/dialog',
+    'common/modules/xeditable-civi',
+    'common/services/angular-date/date-format',
     'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
     'appraisals/controllers/appraisals-dashboard-ctrl',
@@ -12,9 +15,14 @@ define([
     'appraisals/controllers/modals/access-settings-modal-ctrl',
     'appraisals/controllers/modals/edit-dates-modal-ctrl',
     'appraisals/controllers/modals/add-contacts-modal-ctrl',
+    'appraisals/controllers/modals/view-cycle-modal-ctrl',
+    'appraisals/controllers/modals/send-notification-reminder-modal-ctrl',
+    'appraisals/controllers/modals/notification-recipients-modal-ctrl',
     'appraisals/directives/show-more',
     'appraisals/directives/grades-chart',
+    'appraisals/models/appraisal',
     'appraisals/models/appraisal-cycle',
+    'appraisals/models/instances/appraisal-instance',
     'appraisals/models/instances/appraisal-cycle-instance',
     'appraisals/vendor/ui-router',
 ], function (routes, angular) {
@@ -22,11 +30,14 @@ define([
         'ngResource',
         'ui.router',
         'ui.bootstrap',
+        'common.angularDate',
         'common.dialog',
         'common.directives',
         'appraisals.controllers',
         'appraisals.directives',
-        'appraisals.models'
+        'appraisals.models',
+        'ui.select',
+        'xeditable-civi'
     ])
     .config(['$stateProvider', '$urlRouterProvider', '$resourceProvider', '$httpProvider', '$logProvider',
         function ($stateProvider, $urlRouterProvider, $resourceProvider, $httpProvider, $logProvider) {
@@ -37,9 +48,13 @@ define([
             routes($urlRouterProvider, $stateProvider);
         }
     ])
-    .run(['$log', function ($log) {
-        $log.debug('app.run');
-    }]);
+    .run(['$log', 'editableOptions', 'editableThemes',
+        function ($log, editableOptions, editableThemes) {
+            $log.debug('app.run');
+
+            editableOptions.theme = 'bs3';
+        }
+    ]);
 
     return angular;
 });

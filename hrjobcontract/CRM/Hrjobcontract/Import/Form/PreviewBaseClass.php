@@ -123,6 +123,7 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
     $invalidRowCount  = $this->get('invalidRowCount');
     $conflictRowCount = $this->get('conflictRowCount');
     $onDuplicate      = $this->get('onDuplicate');
+    $importMode       = $this->get('importMode');
     $entity           = $this->get('_entity');
 
     $config = CRM_Core_Config::singleton();
@@ -161,8 +162,8 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
       $mapperFields,
       $skipColumnHeader,
       CRM_Import_Parser::MODE_IMPORT,
-      $this->get('contactType'),
-      $onDuplicate
+      $onDuplicate,
+      $importMode
     );
 
     // add all the necessary variables to the form

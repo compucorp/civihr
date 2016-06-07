@@ -1,16 +1,30 @@
 define([
     'common/angular',
     'common/angularMocks',
+    'common/mocks/services/hr-settings-mock',
+    'common/mocks/services/api/appraisal-cycle-mock',
     'appraisals/app',
-    'mocks/models/appraisal-cycle'
 ], function (angular) {
     'use strict';
 
     describe('AppraisalsDashboardCtrl', function () {
-        var $controller, $log, $modal, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
+        var $controller, $log, $modal, $provide, $rootScope, $scope, $timeout, ctrl, AppraisalCycle;
 
-        beforeEach(module('appraisals', 'appraisals.mocks'));
-        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycleMock_) {
+        beforeEach(function () {
+            module('appraisals', 'common.mocks', function (_$provide_) {
+                $provide = _$provide_;
+            });
+            // Override api.appraisal-cycle with the mocked version
+            inject([
+                'api.appraisal-cycle.mock', 'HR_settingsMock',
+                function (_appraisalCycleAPIMock_, HR_settingsMock) {
+                    $provide.value('api.appraisal-cycle', _appraisalCycleAPIMock_);
+                    $provide.value('HR_settings', HR_settingsMock);
+                }
+            ]);
+        });
+
+        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
@@ -19,11 +33,12 @@ define([
             $scope = $rootScope.$new();
             $timeout = _$timeout_;
 
-            AppraisalCycle = _AppraisalCycleMock_;
+            AppraisalCycle = _AppraisalCycle_;
         }));
 
         describe('init', function () {
             beforeEach(function () {
+                spyOn(AppraisalCycle, 'all').and.callThrough();
                 initController();
             });
 
@@ -86,13 +101,12 @@ define([
 
         describe('after init', function () {
             beforeEach(function () {
-                AppraisalCycle.statusOverview.and.callFake(function () {
-                    return fakeStatusOverviewResponse()
-                });
-
                 initController();
 
-                AppraisalCycle.all.calls.reset();
+                spyOn(AppraisalCycle, 'all').and.callThrough();
+                spyOn(AppraisalCycle, 'statusOverview').and.callFake(function () {
+                    return fakeStatusOverviewResponse()
+                });
             });
 
             describe('when requesting cycles', function () {

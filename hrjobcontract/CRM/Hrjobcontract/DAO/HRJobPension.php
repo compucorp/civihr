@@ -171,7 +171,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                 'id' => array(
                   'name' => 'id',
                   'type' => CRM_Utils_Type::T_INT,
-                  'title' => ts('Pension Id') ,
+                  'title' => ts('Pension ID') ,
                   'required' => true,
                   'export' => false,
                   'import' => false,

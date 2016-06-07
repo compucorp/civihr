@@ -135,7 +135,7 @@
                             </form>
                         </tab>
                         <tab heading="Funding">
-                            <form editable-form name="tableform" onaftersave="saveTable()" oncancel="cancel()">
+                            <form editable-form name="tableform" onaftersave="onAfterSave('new_role_id', 'funders')" oncancel="onCancel('new_role_id', 'funders')">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableform.$visible" ng-click="tableform.$show()">
                                     <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -190,7 +190,7 @@
                                             </span>
                                         </td>
                                         <td ng-show="tableform.$visible">
-                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'funder', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -203,7 +203,7 @@
                             </form>
                         </tab>
                         <tab heading="Cost Centres">
-                            <form editable-form name="tableformcc" onaftersave="saveTable()" oncancel="cancel()">
+                            <form editable-form name="tableformcc" onaftersave="onAfterSave('new_role_id', 'cost_centers')" oncancel="onCancel('new_role_id', 'cost_centers')">
                                 <!-- buttons -->
                                 <button type="button" class="btn btn-sm btn-tab-action pull-right" ng-show="!tableformcc.$visible" ng-click="tableformcc.$show()">
                                     <span class="glyphicon glyphicon-pencil"></span> Edit
@@ -231,7 +231,7 @@
                                     <tr ng-repeat="(key, cost_centre) in edit_data['new_role_id']['cost_centers']">
                                         <td>
                                             <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
-                                            <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="key as value.title for (key, value) in CostCentreList">
+                                            <span editable-select="cost_centre.cost_centre_id" e-form="tableformcc" e-name="cost-centre" e-ng-options="value.id as value.title for value in CostCentreList | orderBy: 'weight'">
                                                 {{ getCostLabel(cost_centre.cost_centre_id) || 'empty' }}
                                             </span>
                                         </td>
@@ -258,7 +258,7 @@
                                             </span>
                                         </td>
                                         <td ng-show="tableformcc.$visible">
-                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-danger pull-right"><span class="fa fa-remove" aria-hidden="true"></span></button>
+                                            <button type="button" ng-click="deleteAdditionalRow('new_role_id', 'cost_centre', key)" class="btn btn-danger pull-left"><span class="fa fa-remove" aria-hidden="true"></span></button>
                                         </td>
                                     </tr>
                                     <tr>

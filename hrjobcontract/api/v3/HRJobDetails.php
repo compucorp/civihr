@@ -44,3 +44,17 @@ function civicrm_api3_h_r_job_details_get($params) {
   _civicrm_hrjobcontract_api3_set_current_revision($params, _civicrm_get_table_name(_civicrm_api3_get_BAO(__FUNCTION__)));
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * HRJobDetails.validatedates API
+ * Check if given Contract start and end dates are available for given Contact.
+ * See CRM_Hrjobcontract_BAO_HRJobDetails::validateDates() method for details.
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_details_validatedates($params) {
+  $result = CRM_Hrjobcontract_BAO_HRJobDetails::validateDates($params);
+  return civicrm_api3_create_success($result, $params);
+}

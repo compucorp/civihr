@@ -3,7 +3,7 @@
   <item>
     <path>civicrm/job/import</path>
     <page_callback>CRM_Hrjobcontract_Import_Controller</page_callback>
-    <title>JOB Import</title>
+    <title>Import Job Contracts</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
 </menu>

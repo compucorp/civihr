@@ -25,19 +25,32 @@ gulp.task('cache-templates', function (cb) {
     cb();
 });
 
-gulp.task('requirejs-bundle', function (done) {
-    exec('r.js -o build.js', function (_, stdout, stderr) {
+gulp.task('requirejs-bundle', ['cache-templates'], function (done) {
+    exec('r.js -o build.js', function (err, stdout, stderr) {
+        err && err.code && console.log(stdout);
         done();
     });
 });
 
-gulp.task('watch', function () {
-    gulp.watch('src/common/**/*.js', ['requirejs-bundle', 'test']);
-    gulp.watch('src/common/templates/**/*.html', ['cache-templates', 'requirejs-bundle']);
-    gulp.watch(['src/tests/**/*.js', '!src/tests/mocks/**/*.js', '!src/tests/test-main.js'], ['test']);
+gulp.task('requirejs-bundle-mock', function (done) {
+    exec('r.js -o build.mocks.js', function (err, stdout, stderr) {
+       err && err.code && console.log(stdout);
+       done();
+    });
 });
 
-gulp.task('default', ['cache-templates', 'requirejs-bundle', 'watch']);
+gulp.task('watch', function () {
+    gulp.watch('src/common/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+        try { test.for(file.path); } catch (ex) { test.all(); };
+    });
+    gulp.watch('test/mocks/**/*.js', ['requirejs-bundle-mock']);
+    gulp.watch('src/common/templates/**/*.html', ['cache-templates', 'requirejs-bundle']);
+    gulp.watch(['test/**/*.js', '!test/mocks/**/*.js', '!test/test-main.js']).on('change', function (file) {
+        test.single(file.path);
+    });
+});
+
+gulp.task('default', ['cache-templates', 'requirejs-bundle', 'requirejs-bundle-mock', 'test', 'watch']);
 
 gulp.task('test', function (done) {
     test.all(done);
@@ -53,7 +66,7 @@ var test = (function () {
      */
     function runServer(configFile, cb) {
         new karma.Server({
-            configFile: __dirname + '/src/tests/' + configFile,
+            configFile: __dirname + '/' + configFile,
             singleRun: true
         }, function () {
             cb && cb();
@@ -82,7 +95,7 @@ var test = (function () {
         for: function (srcFile) {
             var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
             var testFile = srcFile
-                .replace('common/', 'test/')
+                .replace('src/common/', 'test/')
                 .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
 
             try {
@@ -105,13 +118,13 @@ var test = (function () {
         single: function (testFile) {
             var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
-            gulp.src(__dirname + '/js/karma.conf.js')
+            gulp.src(__dirname + '/karma.conf.js')
                 .pipe(replace('*_test.js', path.basename(testFile)))
                 .pipe(rename(configFile))
-                .pipe(gulp.dest(__dirname + '/js'))
+                .pipe(gulp.dest(__dirname))
                 .on('end', function () {
                     runServer(configFile, function () {
-                        gulp.src(__dirname + '/js/' + configFile, { read: false }).pipe(clean());
+                        gulp.src(__dirname + '/' + configFile, { read: false }).pipe(clean());
                     });
                 });
         }

@@ -6,13 +6,13 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave extends CRM_Hrjobcontrac
   }
 
   public function handle(array $params, CRM_Hrjobcontract_DAO_HRJobContractRevision $contractRevision, array &$previousRevision) {
-    if(!isset($params['HrJobLeave-leave_amount'])) {
+    if(!isset($params['HRJobLeave-leave_amount'])) {
       return null;
     }
 
     $entities = array();
 
-    foreach ($params['HrJobLeave-leave_amount'] as $leaveTypeId => $leaveAmount) {
+    foreach ($params['HRJobLeave-leave_amount'] as $leaveTypeId => $leaveAmount) {
       $entityParams = $this->extractFields($params);
       $entityParams['import'] = 1;
       $entityParams['jobcontract_id'] = $contractRevision->jobcontract_id;

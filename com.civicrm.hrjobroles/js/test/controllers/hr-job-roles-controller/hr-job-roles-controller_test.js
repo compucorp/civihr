@@ -27,6 +27,92 @@ define([
             DateValidation.dateFormats.push('DD/MM/YYYY');
         }));
 
+        describe('getOptionValues', function() {
+          beforeEach(function () {
+            spyOn(HRJobRolesService, 'getOptionValues').and.returnValue($q.resolve({
+               "count":5,
+               "values":[
+                  {
+                     "id":"845",
+                     "option_group_id":"111",
+                     "label":"Senior Manager",
+                     "value":"Senior Manager",
+                     "name":"Senior_Manager",
+                     "is_default":"0",
+                     "weight":"1",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"846",
+                     "option_group_id":"111",
+                     "label":"Junior Manager",
+                     "value":"Junior Manager",
+                     "name":"Junior_Manager",
+                     "is_default":"0",
+                     "weight":"2",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"879",
+                     "option_group_id":"124",
+                     "label":"Other",
+                     "value":"Other",
+                     "name":"Other",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"3",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"1045",
+                     "option_group_id":"124",
+                     "label":"Test A",
+                     "value":"1",
+                     "name":"Test A",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"2",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  },
+                  {
+                     "id":"1046",
+                     "option_group_id":"124",
+                     "label":"Test B",
+                     "value":"2",
+                     "name":"Test B",
+                     "filter":"0",
+                     "is_default":"0",
+                     "weight":"1",
+                     "description":"Test B",
+                     "is_optgroup":"0",
+                     "is_reserved":"0",
+                     "is_active":"1"
+                  }
+               ],
+               "optionGroupData":{
+                  "cost_centres":"124"
+               }
+            }));
+            initController();
+            $rootScope.$digest();
+          });
+
+          it('builds the "CostCentreList" array of objects containing the "weight" property', function(){
+            expect(scope.CostCentreList.length).toBe(3);
+            expect(scope.CostCentreList[0].weight).not.toBeNull();
+            expect(scope.CostCentreList[1].weight).not.toBeNull();
+            expect(scope.CostCentreList[2].weight).not.toBeNull();
+          });
+        });
+
         describe('Basic tests', function () {
             beforeEach(function () {
                 spyOn(HRJobRolesService, 'getContracts').and.callThrough();
@@ -63,34 +149,65 @@ define([
                 var form_data;
 
                 beforeEach(function(){
+                    ctrl.contractsData = angular.copy(Mock.contracts_data);
                     form_data = angular.copy(Mock.form_data);
+                    form_data.contract.$viewValue = '1';
+                    form_data.title.$viewValue = 'test';
                 });
 
                 it('should not pass validation', function(){
-                    form_data.title.$viewValue = 'test';
-
                     expect(scope.validateRole(form_data)).not.toBe(true);
                 });
 
                 it('should pass validation dd/mm/yyyy', function(){
                     form_data.start_date.$viewValue = '31/12/2015';
-                    form_data.title.$viewValue = 'test';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
 
                 it('should pass validation new Date()', function(){
                     form_data.start_date.$viewValue = new Date();
-                    form_data.title.$viewValue = 'test';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
 
                 it('should pass validation new Date()', function(){
                     form_data.start_date.$viewValue = '2005-05-05';
-                    form_data.title.$viewValue = 'test';
 
                     expect(scope.validateRole(form_data)).toBe(true);
+                });
+
+                describe('when job role start date is lower than contract start date', function () {
+                    beforeEach(function () {
+                        form_data.start_date.$viewValue = '2016-05-04';
+                        form_data.end_date.$viewValue = '2017-05-05';
+                    });
+
+                    it('throws a validation error', function () {
+                        expect(scope.validateRole(form_data)).not.toBe(true);
+                    });
+                });
+
+                describe('when job role end date is higher than contract end date', function () {
+                    beforeEach(function () {
+                        form_data.start_date.$viewValue = '2016-06-04';
+                        form_data.end_date.$viewValue = '2017-05-06';
+                    });
+
+                    it('throws a validation error', function () {
+                        expect(scope.validateRole(form_data)).not.toBe(true);
+                    });
+                });
+
+                describe('when job role start date and job role end date is higher than contract end date', function () {
+                    beforeEach(function () {
+                        form_data.start_date.$viewValue = '2016-05-06';
+                        form_data.end_date.$viewValue = '2017-05-06';
+                    });
+
+                    it('throws a validation error', function () {
+                        expect(scope.validateRole(form_data)).not.toBe(true);
+                    });
                 });
             });
 
@@ -244,6 +361,59 @@ define([
                         expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[0].start_date);
                         expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[0].end_date);
                     });
+                });
+
+                describe('When call onAfterSave', function() {
+                  beforeEach(function () {
+                    scope.edit_data = angular.copy(Mock.roles_data);
+                  });
+
+                  it('should remove the funders entries which are without funder_id', function() {
+                    scope.onAfterSave(3, 'funders');
+                    expect(scope.edit_data[3]['funders'].length).toBe(2);
+                  });
+
+                  it('should remove the cost_centers entries which are without cost_centre_id', function() {
+                    scope.onAfterSave(3, 'cost_centers');
+                    expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                  });
+                });
+
+                describe('When call onCancel passing', function() {
+                  beforeEach(function () {
+                    scope.edit_data = angular.copy(Mock.roles_data);
+                  });
+
+                  describe('funders', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'funders');
+                    });
+
+                    it('should remove the funders entries which are without funder_id', function() {
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
+                  });
+
+                  describe('cost_centers', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'cost_centers');
+                    });
+
+                    it('should remove the cost_centers entries which are without cost_centre_id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                    });
+                  });
+
+                  describe('both', function() {
+                    beforeEach(function() {
+                      scope.onCancel(3, 'both');
+                    });
+
+                    it('should remove the funders and cost_centers entries which are without id', function() {
+                      expect(scope.edit_data[3]['cost_centers'].length).toBe(2);
+                      expect(scope.edit_data[3]['funders'].length).toBe(2);
+                    });
+                  });
                 });
 
                 describe('Updating old revision dates', function(){

@@ -56,6 +56,35 @@ class CRM_Hrjobcontract_BAO_HRJobHealth extends CRM_Hrjobcontract_DAO_HRJobHealt
 
 
   /**
+   * Check insurance provider if exist   .
+   *
+   * @param String $searchValue
+   * @param String $providerType
+   * @return Integer ( Provider ID or 0 if not exist)
+   */
+  public static function checkProvider($searchValue, $providerType) {
+    if (is_numeric ($searchValue))  {
+      $searchField = 'id';
+    }
+    else {
+      $searchField = 'display_name';
+    }
+    $queryParam = array(1 => array($searchValue, 'String'));
+    $query = "SELECT id,contact_sub_type FROM civicrm_contact WHERE {$searchField} = %1 " .
+             " AND is_deleted = 0".
+             " LIMIT 1";
+    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
+    if ($result->fetch()) {
+      $entitySubType = explode(CRM_Core_DAO::VALUE_SEPARATOR,
+        trim($result->contact_sub_type, CRM_Core_DAO::VALUE_SEPARATOR)
+      );
+      return in_array($providerType, $entitySubType) ? $result->id : 0;
+    }
+
+    return 0;
+  }
+
+  /**
    * combine all the importable fields from the lower levels object
    *
    * The ordering is important, since currently we do not have a weight
