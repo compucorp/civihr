@@ -74,7 +74,7 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Public Holidays'),
           'name'       => 'leave_and_absence_public_holidays',
-          'url'        => 'civicrm/admin/leaveandabsences/public_holidays',
+          'url'        => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(

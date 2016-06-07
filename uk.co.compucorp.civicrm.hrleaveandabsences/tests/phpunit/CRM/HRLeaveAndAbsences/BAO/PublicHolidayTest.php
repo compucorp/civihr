@@ -36,8 +36,8 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
   }
 
   /**
-   * @expectedException PEAR_Exception
-   * @expectedExceptionMessage DB Error: already exists
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   * @expectedExceptionMessage There is a Public Holiday already existing with given date
    */
   public function testPublicHolidayDateShouldBeUnique() {
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
