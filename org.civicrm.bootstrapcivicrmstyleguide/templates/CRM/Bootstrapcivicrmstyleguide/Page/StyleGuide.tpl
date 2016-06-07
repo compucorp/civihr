@@ -1239,24 +1239,136 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-sm-12">
+        <div class="page-header">
+          <h1>07. Navs</h1>
+        </div>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-sm-6">
         <article class="panel panel-default">
           <header class="panel-heading">
-            <h2 class="panel-title">07. Tabs and Alternate Views</h2>
+            <h2 class="panel-title">Tabs</h2>
           </header>
-          <div class="panel-body"></div>
+          <div class="panel-body">
+            <ul class="nav nav-tabs">
+              <li class="active"><a href="#tab-1">Tab 1</a></li>
+              <li><a href="#tab-2">Tab 2</a></li>
+              <li><a href="#tab-3">Tab 3</a></li>
+              <li><a href="#tab-4">Tab 4</a></li>
+            </ul>
+            <h3>Justified</h3>
+            <ul class="nav nav-tabs nav-justified">
+              <li class="active"><a href="#tab-1">Tab 1</a></li>
+              <li><a href="#tab-2">Tab 2</a></li>
+              <li><a href="#tab-3">Tab 3</a></li>
+              <li><a href="#tab-4">Tab 4</a></li>
+            </ul>
+          </div>
         </article>
       </div>
       <div class="col-sm-6">
         <article class="panel panel-default">
-          <div class="panel-body"></div>
+          <header class="panel-heading">
+            <h2 class="panel-title">Pills</h2>
+          </header>
+          <div class="panel-body">
+            <ul class="nav nav-pills">
+              <li class="active"><a href="#tab-1">Tab 1</a></li>
+              <li><a href="#tab-2">Tab 2</a></li>
+              <li><a href="#tab-3">Tab 3</a></li>
+              <li><a href="#tab-4">Tab 4</a></li>
+            </ul>
+            <h3>Stacked</h3>
+            <ul class="nav nav-pills nav-stacked">
+              <li class="active"><a href="#tab-1">Tab 1</a></li>
+              <li><a href="#tab-2">Tab 2</a></li>
+              <li><a href="#tab-3">Tab 3</a></li>
+              <li><a href="#tab-4">Tab 4</a></li>
+            </ul>
+          </div>
         </article>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12">
         <article class="panel panel-default">
-          <div class="panel-body"></div>
+          <header class="panel-heading">
+            <h2 class="panel-title">Tabs w/ content</h2>
+          </header>
+          <div class="panel-body">
+            <ul class="nav nav-tabs" role="tablist">
+              <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+              <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+              <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+              <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane active" id="tab-1">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Label</th>
+                        <th>Label</th>
+                        <th>Label</th>
+                        <th>Label</th>
+                        <th>Label</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                      <tr>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                        <td>Lorem Ipsum Information</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-2">...</div>
+              <div class="tab-pane" id="tab-3">...</div>
+              <div class="tab-pane" id="tab-4">...</div>
+            </div>
+          </div>
         </article>
       </div>
     </div>
