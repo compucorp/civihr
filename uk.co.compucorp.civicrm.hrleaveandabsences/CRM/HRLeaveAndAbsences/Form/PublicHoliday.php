@@ -44,8 +44,6 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
     $this->assign('deleteUrl', $this->getDeleteUrl());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
-    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/spectrum.css');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/spectrum-min.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     parent::buildQuickForm();
   }
 
@@ -179,8 +177,10 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
     $buttons = [
       [ 'type' => 'next', 'name' => ts('Save'), 'isDefault' => true ],
       [ 'type' => 'cancel', 'name' => ts('Cancel') ],
-      [ 'type' => 'delete', 'name' => ts('Delete') ],
     ];
+    if ($this->_action & CRM_Core_Action::UPDATE) {
+        $buttons[] = [ 'type' => 'delete', 'name' => ts('Delete') ];
+    }
     return $buttons;
   }
 
