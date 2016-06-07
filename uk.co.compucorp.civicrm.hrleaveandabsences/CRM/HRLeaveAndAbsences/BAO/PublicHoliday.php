@@ -99,6 +99,10 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
    */
   private static function checkIfDateIsUnique($params) {
+    // Skip date validation if we are editing an exsisting record and no new date is specified.
+    if (!isset($params['date']) && !empty($params['id'])) {
+      return true;
+    }
     // Check for Public Holiday already existing with given date.
     $duplicateDateParams = array(
       'date' => $params['date'],
