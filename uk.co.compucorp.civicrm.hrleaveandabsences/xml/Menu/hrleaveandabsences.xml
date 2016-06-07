@@ -18,4 +18,10 @@
     <title>Absence Periods</title>
     <access_arguments>administer leave and absences</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/leaveandabsences/public_holidays</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_PublicHoliday</page_callback>
+    <title>Public Holidays</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
 </menu>
