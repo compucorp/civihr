@@ -403,6 +403,75 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $this->assertEquals($period2->weight, $period3PreviousPeriod->weight);
   }
 
+  public function testExpirationDateForAbsenceTypeWithoutCarryForwardShouldBeNull()
+  {
+    $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $type->allow_carry_forward = false;
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+    $this->assertNull($period->getExpirationDateForAbsenceType($type));
+  }
+
+  public function testExpirationDateForAbsenceTypeWithoutCarryForwardThatNeverExpiresShouldBeNull()
+  {
+    $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $type->allow_carry_forward = true;
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+    $this->assertNull($period->getExpirationDateForAbsenceType($type));
+  }
+
+  public function testCanCalculateExpirationDateForAbsenceTypeWithCarryForwardExpirationDuration()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+
+    $startDate = new DateTimeImmutable($period->start_date);
+
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->allow_carry_forward = true;
+
+    //1 day duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P1D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 days duration
+    $absenceType->carry_forward_expiration_duration = 5;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P5D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 months duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P5M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 months duration
+    $absenceType->carry_forward_expiration_duration = 10;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P10M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 years duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P10Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
+
+    //1 year duration
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P1Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),

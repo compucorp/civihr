@@ -359,78 +359,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     $this->assertNull($absenceType->carryForwardNeverExpires());
   }
 
-  public function testCannotCalculateTheExpirationDurationDateForATypeWithoutAllowCarryForward()
-  {
-    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $this->assertNull($absenceType->getExpirationDurationDate('2016-01-01'));
-  }
-
-  public function testCannotCalculateTheExpirationDurationDateForATypeWithoutExpirationDuration()
-  {
-    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $absenceType->allow_carry_forward = true;
-    $this->assertNull($absenceType->getExpirationDurationDate('2016-01-01'));
-  }
-
-  /**
-   * @expectedException InvalidArgumentException
-   * @expectedExceptionMessage The startDate should be a valid date in Y-m-d format
-   *
-   * @dataProvider invalidDatesDataProvider
-   */
-  public function testCannotCalculateTheExpirationDurationDateForAnInvalidStartDate($startDate)
-  {
-    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $absenceType->allow_carry_forward = true;
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
-    $absenceType->carry_forward_expiration_duration = 1;
-    $absenceType->getExpirationDurationDate($startDate);
-  }
-
-  public function testCanCalculateTheExpirationDurationDateForATypeWithExpirationDuration()
-  {
-    $startDate = new DateTimeImmutable('2016-01-01');
-    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $absenceType->allow_carry_forward = true;
-
-    //1 day duration
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
-    $absenceType->carry_forward_expiration_duration = 1;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P1D'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
-
-    //5 days duration
-    $absenceType->carry_forward_expiration_duration = 5;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P5D'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
-
-    //5 months duration
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P5M'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
-
-    //10 months duration
-    $absenceType->carry_forward_expiration_duration = 10;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P10M'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
-
-    //10 years duration
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P10Y'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
-
-    //1 year duration
-    $absenceType->carry_forward_expiration_duration = 1;
-    $expirationDate = $absenceType->getExpirationDurationDate($startDate->format('Y-m-d'));
-    $expectedDate = $startDate->add(new DateInterval('P1Y'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
-  }
-
   private function createBasicType($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
@@ -501,20 +429,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
       [31, 4, true],
       [77, 9, true],
       [12, 31, true],
-    ];
-  }
-
-  public function invalidDatesDataProvider()
-  {
-    return [
-      [date('YmdHis')],
-      [date('Y-m-d H:i:s')],
-      [date('Ymd')],
-      [date('Ym')],
-      [date('Y')],
-      ['dsadsadsadsadsadsa'],
-      [2016],
-      [null]
     ];
   }
 
