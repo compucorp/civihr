@@ -138,6 +138,95 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(5, $calculation->getBroughtForward());
   }
 
+  public function testContractualEntitlementShouldBeZeroIfTheresNoLeaveAmountForAnAbsenceType()
+  {
+    // Just create the absence type but don't create any contractual entitlement
+    $type = $this->createAbsenceType();
+    $currentPeriod = new AbsencePeriod();
+    $currentPeriod->start_date = date('Y-m-d');
+    $currentPeriod->end_date = date('Y-m-d', strtotime('+1 day'));
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $this->assertEquals(0, $calculation->getContractualEntitlement());
+  }
+
+  public function testContractualEntitlementShouldBeEqualToLeaveAmountIfTheresNoPublicHolidayInPeriod()
+  {
+    $type = $this->createAbsenceType();
+
+    $leaveAmount = 10;
+    $this->createJobLeaveEntitlement($type, $leaveAmount);
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 day')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $this->assertEquals($leaveAmount, $calculation->getContractualEntitlement());
+  }
+
+  public function testContractualEntitlementShouldBeEqualToLeaveAmountPlusPublicHolidaysIfThereArePublicHolidayInPeriod()
+  {
+    $type = $this->createAbsenceType();
+
+    $leaveAmount = 10;
+    $addPublicHolidays = true;
+    $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+4 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 2',
+      'date' => date('YmdHis', strtotime('+3 days'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $this->assertEquals(12, $calculation->getContractualEntitlement());
+  }
+
+  public function testContractualEntitlementShouldNotIncludePublicHolidaysIfTheJobLeaveDoesntAllowIt()
+  {
+    $type = $this->createAbsenceType();
+
+    $leaveAmount = 10;
+    $addPublicHolidays = false;
+    $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+4 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 2',
+      'date' => date('YmdHis', strtotime('+3 days'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $this->assertEquals($leaveAmount, $calculation->getContractualEntitlement());
+  }
+
   private function findAbsencePeriodByID($id) {
     $currentPeriod     = new AbsencePeriod();
     $currentPeriod->id = $id;
@@ -172,5 +261,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $params = array_merge($basicRequiredFields, $params);
     return AbsenceType::create($params);
+  }
+
+  private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {
+    CRM_Hrjobcontract_BAO_HRJobLeave::create([
+      'jobcontract_id' => $this->contract->id,
+      'leave_type' => $type->id,
+      'leave_amount' => $leaveAmount,
+      'add_public_holidays' => $addPublicHolidays ? '1' : '0'
+    ]);
   }
 }

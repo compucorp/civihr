@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
 class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
@@ -59,6 +60,35 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     }
 
     return $broughtForward;
+  }
+
+  /**
+   * Returns the Contractual Entitlement for this calculation contract.
+   *
+   * The Contractual Entitlement is given by the leave amount set for this
+   * calculation contract and absence type + the number of public holidays in
+   * the period (if the leave settings on the contract allows this).
+   *
+   * @return int
+   */
+  public function getContractualEntitlement()
+  {
+    $contractualEntitlement = 0;
+
+    $jobLeave = $this->getJobLeaveForAbsenceType();
+    if(!$jobLeave) {
+      return $contractualEntitlement;
+    }
+
+    $contractualEntitlement = $jobLeave['leave_amount'];
+    if($jobLeave['add_public_holidays']) {
+      $contractualEntitlement += PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+        $this->period->start_date,
+        $this->period->end_date
+      );
+    }
+
+    return $contractualEntitlement;
   }
 
   /**
@@ -142,5 +172,24 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private function shouldCalculateBroughtForward() {
     return $this->absenceType->allow_carry_forward &&
            !$this->broughtForwardHasExpired();
+  }
+  /**
+   * Returns an array with the values of the JobLeave of this calculation's
+   * contract and absence type.
+   *
+   * @return array|null An array with the JobLeave fields or null if there's
+   *                    no JobLeave for this AbsenceType
+   */
+  public function getJobLeaveForAbsenceType()
+  {
+    try {
+      return civicrm_api3('HRJobLeave', 'getsingle', array(
+        'sequential' => 1,
+        'jobcontract_id' => (int)$this->contract->id,
+        'leave_type' => (int)$this->absenceType->id
+      ));
+    } catch(CiviCRM_API3_Exception $ex) {
+      return null;
+    }
   }
 }
