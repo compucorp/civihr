@@ -6,13 +6,13 @@
 class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   public function install() {
-      
+
     // $this->executeCustomDataFile('xml/customdata.xml');
     $this->executeSqlFile('sql/install.sql');
     $this->migrateData();
     $this->upgradeBundle();
   }
-  
+
   /*
    * Migrate old HRJob existing data into new HRJobContract entities.
    */
@@ -39,7 +39,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
         ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
-    
+
     $tableExists = $this->checkTableExists(array(
         'civicrm_hrjob',
         'civicrm_hrjob_health',
@@ -50,12 +50,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'civicrm_hrjob_role',
         'civicrm_value_job_summary_10',
     ));
-    
+
     if (!$tableExists['civicrm_hrjob'])
     {
         return false;
     }
-    
+
     $hrJob = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob ORDER BY id ASC');
     while ($hrJob->fetch())
     {
@@ -67,13 +67,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         );
         CRM_Core_DAO::executeQuery($insertContractQuery, $insertContractParams);
         $jobContractId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-        
+
         // Creating Job Contract Revision:
         $insertRevisionQuery = 'INSERT INTO civicrm_hrjobcontract_revision SET jobcontract_id = %1';
         $insertRevisionParams = array(1 => array($jobContractId, 'Integer'));
         CRM_Core_DAO::executeQuery($insertRevisionQuery, $insertRevisionParams);
         $revisionId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-        
+
         // Populating data with existing HRJob entities:
         $this->populateTableWithEntity(
             'civicrm_hrjobcontract_details',
@@ -93,7 +93,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
             ),
             $revisionId
         );
-        
+
         $healthRevisionId = 0;
         if ($tableExists['civicrm_hrjob_health'])
         {
@@ -118,7 +118,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $healthRevisionId = $revisionId;
             }
         }
-        
+
         $hourRevisionId = 0;
         if ($tableExists['civicrm_hrjob_hour'])
         {
@@ -141,7 +141,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $hourRevisionId = $revisionId;
             }
         }
-        
+
         // MULTIPLE
         $leaveRevisionId = 0;
         if ($tableExists['civicrm_hrjob_leave'])
@@ -161,7 +161,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $leaveRevisionId = $revisionId;
             }
         }
-        
+
         $payRevisionId = 0;
         if ($tableExists['civicrm_hrjob_pay'])
         {
@@ -187,7 +187,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $payRevisionId = $revisionId;
             }
         }
-        
+
         $pensionRevisionId = 0;
         if ($tableExists['civicrm_hrjob_pension'])
         {
@@ -210,7 +210,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $pensionRevisionId = $revisionId;
             }
         }
-        
+
         // MULTIPLE
         $roleRevisionId = 0;
         if ($tableExists['civicrm_hrjob_role'])
@@ -243,7 +243,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 $roleRevisionId = $revisionId;
             }
         }
-        
+
         // Creating entities entries with default values for non existing entities.
         if (!$healthRevisionId)
         {
@@ -273,7 +273,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 array(1 => array($revisionId, 'Integer'))
             );
         }
-        
+
         $effectiveDate = null;
         $periodStartDate = explode('-', $hrJob->period_start_date);
         if (count($periodStartDate) === 3)
@@ -284,7 +284,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
                 'year' => $periodStartDate[0],
             );
         }
-        
+
         // Updating Revision:
         $updateRevisionQuery = 'UPDATE civicrm_hrjobcontract_revision SET '
             . 'effective_date = %12,'
@@ -313,26 +313,26 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
             11 => array($revisionId, 'Integer'),
             12 => array(CRM_Utils_Date::getToday($effectiveDate, 'Ymd'), 'Timestamp'),
         );
-        
+
         CRM_Core_DAO::executeQuery($updateRevisionQuery, $updateRevisionParams);
 
     }
 
     return true;
   }
-  
+
   protected function checkTableExists(array $tables)
   {
       $result = array();
-      
+
       foreach ($tables as $table)
       {
           $result[$table] = CRM_Core_DAO::checkTableExists($table);
       }
-      
+
       return $result;
   }
-  
+
   protected function populateTableWithEntity($tableName, $entity, array $fields, $revisionId)
   {
     $insertQuery = "INSERT INTO {$tableName} SET ";
@@ -363,14 +363,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     return CRM_Core_DAO::executeQuery($insertQuery, $insertParams);
   }
-  
+
   public function getPayScaleId($payScale)
   {
     if (!$payScale)
     {
         return null;
     }
-    
+
     $selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 LIMIT 1';
     $selectPayScaleParams = array(
         1 => array($payScale, 'String'),
@@ -387,13 +387,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
         $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
         CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
-        
+
         $payScaleId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
     }
-    
+
     return $payScaleId;
   }
-  
+
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
     $this->executeCustomDataFile('xml/option_group_install.xml');
@@ -419,7 +419,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     //disable trigger
     CRM_Core_DAO::triggerRebuild();*/
-    
+
     //$this->ctx->log->info('Applying update 1202');
     //Add job import navigation menu
     $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
@@ -439,7 +439,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $importJobNavigation->copyValues($params);
     $importJobNavigation->save();
     //$this->ctx->log->info('Applying update 1400');
-    
+
     $i = 4;
     $params = array(
       'option_group_id' => 'hrjc_contract_type',
@@ -473,7 +473,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       );
       $newRegionGroupResult = civicrm_api3('OptionGroup', 'create', $params);
     }
-    
+
     // Migrate old 'hrjob_region' option values into new 'hrjc_region':
     if (!empty($newRegionGroupResult['id'])) {
         $oldRegionGroup = civicrm_api3('OptionGroup', 'get', array(
@@ -611,7 +611,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           civicrm_api3('OptionValue', 'create', $opValueParams);
         }
     }
-    
+
     // benefit_name:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_benefit_name', 'id', 'name');
     if (!$optionGroupID) {
@@ -636,7 +636,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           civicrm_api3('OptionValue', 'create', $opValueParams);
         }
     }
-    
+
     // benefit_type:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_benefit_type', 'id', 'name');
     if (!$optionGroupID) {
@@ -661,7 +661,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           civicrm_api3('OptionValue', 'create', $opValueParams);
         }
     }
-    
+
     // deduction_name:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_deduction_name', 'id', 'name');
     if (!$optionGroupID) {
@@ -686,7 +686,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           civicrm_api3('OptionValue', 'create', $opValueParams);
         }
     }
-    
+
     // deduction_type:
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_deduction_type', 'id', 'name');
     if (!$optionGroupID) {
@@ -715,11 +715,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_pay`  ADD `pay_cycle` INT(4) DEFAULT NULL  AFTER `annual_deductions`,  ADD `pay_per_cycle_gross` DECIMAL(10,2)  DEFAULT NULL  AFTER `pay_cycle`,  ADD `pay_per_cycle_net` DECIMAL(10,2)  DEFAULT NULL  AFTER `pay_per_cycle_gross`");
 
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` ADD `editor_uid` INT(10) NULL DEFAULT NULL AFTER `jobcontract_id`");
-    
+
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract` ADD `deleted` INT(2) UNSIGNED NOT NULL DEFAULT '0'");
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` ADD `deleted` INT(2) UNSIGNED NOT NULL DEFAULT '0'");
-    
-    
+
+
     // Navigation items:
     CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_navigation` WHERE name IN ('hoursType', 'pay_scale', 'hours_location', 'hrjc_contract_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason')");
     // Add administer options
@@ -777,7 +777,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'permission' => 'administer CiviCRM',
           'parent_id'  => $administerNavId,
         );
-        
+
         // Migrating old 'hrjob_location' option values into new 'hrjc_location':
         $oldLocationGroup = civicrm_api3('OptionGroup', 'get', array(
         'sequential' => 1,
@@ -918,7 +918,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     CRM_Core_BAO_Navigation::resetNavigation();
-    
+
     // Delete old HRJob Option Groups:
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name IN ('hrjob_contract_type',
     'hrjob_department',
@@ -931,7 +931,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     'hrjob_pension_type',
     'hrjob_region',
     'hrjob_location')");
-    
+
     $this->upgrade_1001();
     $this->upgrade_1002();
     $this->upgrade_1003();
@@ -944,20 +944,20 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1012();
     $this->upgrade_1014();
   }
-  
+
   function upgrade_1001() {
     // Install JobContract Dates as Contact custom fields
     $this->executeCustomDataFile('xml/jobcontract_dates.xml');
-    
+
     return TRUE;
   }
-  
+
   function upgrade_1002() {
     // Fill JobContract Dates custom fields with start and end dates of contracts
     $jobContracts = CRM_Core_DAO::executeQuery(
         'SELECT id, contact_id FROM civicrm_hrjobcontract ORDER BY id ASC'
     );
-    
+
     $today = date('Y-m-d');
     while ($jobContracts->fetch())
     {
@@ -985,12 +985,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
             );
             $revision->fetch();
         }
-        
+
         if (!$revision->details_revision_id)
         {
             continue;
         }
-        
+
         $details = CRM_Core_DAO::executeQuery(
             'SELECT period_start_date, period_end_date FROM civicrm_hrjobcontract_details '
             . 'WHERE jobcontract_revision_id = %1 '
@@ -1004,10 +1004,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
             CRM_Hrjobcontract_JobContractDates::setDates($jobContracts->contact_id, $jobContracts->id, $details->period_start_date, $details->period_end_date);
         }
     }
-    
+
     return TRUE;
   }
-  
+
   function upgrade_1003() {
     CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_option_value` WHERE name = 'CRM_Hrjobcontract_Report_Form_Summary'");
     $reportTemplateOptionGroup = CRM_Core_DAO::executeQuery("SELECT * FROM civicrm_option_group WHERE name='report_template' AND is_active = 1 LIMIT 1");
@@ -1022,7 +1022,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
   function upgrade_1004() {
     $jobcontractDatesCustomGroup = CRM_Core_DAO::executeQuery("SELECT id FROM `civicrm_custom_group` WHERE name='HRJobContract_Dates' AND is_active = 1 LIMIT 1");
     if ($jobcontractDatesCustomGroup->fetch())
@@ -1036,15 +1036,15 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
     return TRUE;
   }
-  
+
   function upgrade_1005() {
       CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` CHANGE `leave_amount` `leave_amount` DECIMAL( 8, 2 ) UNSIGNED NULL DEFAULT NULL COMMENT 'The number of leave days'");
       return TRUE;
   }
-  
+
   /**
    * Populates old Job Summary dates into Job Contract period_start_date and period_end_date fields.
-   * 
+   *
    * @return boolean
    */
   function upgrade_1006() {
@@ -1087,10 +1087,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         }
       }
     }
-    
+
     return TRUE;
   }
-  
+
   function upgrade_1008() {
       CRM_Core_DAO::executeQuery("ALTER TABLE  `civicrm_hrhours_location` CHANGE  `standard_hours`  `standard_hours` DECIMAL( 8, 2 ) NULL DEFAULT NULL");
       return TRUE;
@@ -1105,12 +1105,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       CRM_Hrjobcontract_JobContractDates::rewriteContactIds();
       return TRUE;
   }
-  
+
   /**
    * Adding 'end_reason' field for Job Contract Details,
-   * 'hrjc_contract_end_reason' Option Group with three Option Values 
+   * 'hrjc_contract_end_reason' Option Group with three Option Values
    * and Administration Menu entry for managing the Option Group values.
-   * 
+   *
    * @return boolean TRUE
    */
   function upgrade_1011() {
@@ -1186,7 +1186,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * Also add 'overrided' field to Job Contract Revisions table
    * telling if the revision is overrided by the other one with the same
    * 'effective_date' value.
-   * 
+   *
    * @return TRUE
    */
   function upgrade_1013() {
@@ -1206,7 +1206,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Create a CiviCRM daily scheduled job which updates Contacts length of service values.
-   * 
+   *
    * @return TRUE
    */
   function upgrade_1014() {
@@ -1228,6 +1228,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $dao->save();
     }
     return TRUE;
+  }
+
+  function upgrade_1015() {
+    // Adding 'add_public_holidays' field to 'civicrm_hrjobcontract_leave' table.
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_leave` ADD `add_public_holidays` TINYINT NOT NULL DEFAULT 0");
+
+    return true;
   }
 
   function decToFraction($fte) {
