@@ -63,6 +63,42 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
+   * Returns the Pro Rata for this calculation contract on the calculation
+   * period.
+   *
+   * The Pro Rata is given by:
+   * (no. working days to work / no. of working days) x contractual entitlement.
+   *
+   * The end result is rounded up to the nearest half day. Example:
+   *
+   * Number of working days to work: 212
+   * Number of working days: 253
+   * Contractual entitlement: 28
+   * Pro rata: (212 / 253) * 28 = 23.46 = 23.5 (rounded)
+   *
+   * @return float|int
+   */
+  public function getProRata()
+  {
+    $contractDates = $this->getContractDates();
+    if(!$contractDates) {
+      return 0;
+    }
+
+    $numberOfWorkingDaysToWork = $this->period->getNumberOfWorkingDaysToWork(
+      $contractDates['start_date'],
+      $contractDates['end_date']
+    );
+    $numberOfWorkingDays = $this->period->getNumberOfWorkingDays();
+    $contractualEntitlement = $this->getContractualEntitlement();
+
+    $proRata = ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
+    $roundedProRata = ceil($proRata * 2) / 2;
+
+    return $roundedProRata;
+  }
+
+  /**
    * Returns the Contractual Entitlement for this calculation contract.
    *
    * The Contractual Entitlement is given by the leave amount set for this
@@ -173,6 +209,31 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     return $this->absenceType->allow_carry_forward &&
            !$this->broughtForwardHasExpired();
   }
+
+  /**
+   * Returns an array containing the Contract's start and end dates.
+   *
+   * To help with the calculation, if the contract doesn't have an end date,
+   * the period end date will be used instead.
+   *
+   * @return array|null The array with the dates or null if the contract details could not be found
+   */
+  private function getContractDates() {
+    $contractDetails = $this->getContractDetails();
+    if(!$contractDetails) {
+      return null;
+    }
+
+    if(!isset($contractDetails['period_end_date'])) {
+      $contractDetails['period_end_date'] = $this->period->end_date;
+    }
+
+    return [
+      'start_date' => $contractDetails['period_start_date'],
+      'end_date' => $contractDetails['period_end_date']
+    ];
+  }
+
   /**
    * Returns an array with the values of the JobLeave of this calculation's
    * contract and absence type.
@@ -184,9 +245,26 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   {
     try {
       return civicrm_api3('HRJobLeave', 'getsingle', array(
-        'sequential' => 1,
         'jobcontract_id' => (int)$this->contract->id,
         'leave_type' => (int)$this->absenceType->id
+      ));
+    } catch(CiviCRM_API3_Exception $ex) {
+      return null;
+    }
+  }
+
+  /**
+   * Returns an array with the values of the JobDetails of this calculation's
+   * contract and absence type.
+   *
+   * @return array|null An array with the JobDetails fields or null if there's
+   *                    no JobDetails for this AbsenceType
+   */
+  public function getContractDetails()
+  {
+    try {
+      return civicrm_api3('HRJobDetails', 'getsingle', array(
+        'jobcontract_id' => (int)$this->contract->id,
       ));
     } catch(CiviCRM_API3_Exception $ex) {
       return null;
