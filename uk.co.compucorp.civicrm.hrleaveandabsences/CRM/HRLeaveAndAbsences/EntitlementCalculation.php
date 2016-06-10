@@ -159,7 +159,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  private function getPreviousPeriodProposedEntitlement()
+  public function getPreviousPeriodProposedEntitlement()
   {
     $previousPeriod = $this->getPreviousPeriod();
 
@@ -167,11 +167,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    $previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
-      $this->contract->id,
-      $previousPeriod->id,
-      $this->absenceType->id
-    );
+    $previousPeriodEntitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$previousPeriodEntitlement) {
       return 0;
@@ -187,8 +183,42 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  private function getNumberOfLeavesTakenOnThePreviousPeriod() {
+  public function getNumberOfLeavesTakenOnThePreviousPeriod() {
     return 0;
+  }
+
+  /**
+   * Return the number of days remaining on the previous period. That is,
+   * the proposed entitlement - the number of leaves taken
+   *
+   * @return int
+   */
+  public function getNumberOfDaysRemainingInThePreviousPeriod()
+  {
+    $leavesTaken = $this->getNumberOfLeavesTakenOnThePreviousPeriod();
+    $proposedEntitlement = $this->getPreviousPeriodProposedEntitlement();
+    return $proposedEntitlement - $leavesTaken;
+  }
+
+  /**
+   * Returns the calculated Entitlement for the previous period.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null
+   *          The entitlement for the previous period or null if there's no previous period or entitlement
+   */
+  private function getPreviousPeriodEntitlement() {
+    $previousPeriod = $this->getPreviousPeriod();
+    if(!$previousPeriod) {
+      return null;
+    }
+
+    $previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
+      $this->contract->id,
+      $previousPeriod->id,
+      $this->absenceType->id
+    );
+
+    return $previousPeriodEntitlement;
   }
 
   /**
@@ -266,7 +296,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return array|null An array with the JobLeave fields or null if there's
    *                    no JobLeave for this AbsenceType
    */
-  public function getJobLeaveForAbsenceType()
+  private function getJobLeaveForAbsenceType()
   {
     try {
       return civicrm_api3('HRJobLeave', 'getsingle', array(
@@ -285,7 +315,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return array|null An array with the JobDetails fields or null if there's
    *                    no JobDetails for this AbsenceType
    */
-  public function getContractDetails()
+  private function getContractDetails()
   {
     try {
       return civicrm_api3('HRJobDetails', 'getsingle', array(
