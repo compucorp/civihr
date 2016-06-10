@@ -284,6 +284,72 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($leaveAmount, $calculation->getContractualEntitlement());
   }
 
+  public function testTheProposedEntitlementForAContractWithoutStartAndEndDatesShouldBeZero()
+  {
+    $type = new AbsenceType();
+    $currentPeriod = new AbsencePeriod();
+    $currentPeriod->start_date = date('Y-m-d');
+    $currentPeriod->end_date = date('Y-m-d', strtotime('+1 days'));
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $this->assertEquals(0, $calculation->getProposedEntitlement());
+  }
+
+  public function testTheProposedEntitlementShouldBeProRataPlusNumberOfDaysBroughtForward()
+  {
+    // To simplify the code, we use an Absence where the carried
+    // forward never expires
+    $type = $this->createAbsenceType([
+      'max_number_of_days_to_carry_forward' => 20,
+    ]);
+
+    $previousPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis', strtotime('2015-01-01')),
+      'end_date' => date('YmdHis', strtotime('2015-12-31')),
+    ]);
+
+    // Set the previous period entitlement as 10 days
+    $this->createEntitlement($previousPeriod, $type, 10);
+
+    // 261 working days
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 2',
+      'start_date' => date('YmdHis', strtotime('2016-01-01')),
+      'end_date' => date('YmdHis', strtotime('2016-12-31')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    // Set the contractual entitlement as 10 days
+    $this->createJobLeaveEntitlement($type, 10);
+
+    // 66 days to work
+    $this->setContractDates(
+      date('YmdHis', strtotime('2016-01-01')),
+      date('YmdHis', strtotime('2016-04-01'))
+    );
+
+    // (66/261) * 10 = 2.52 = 3 rounded
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $this->assertEquals(3, $calculation->getProRata());
+
+    // As the number of leaves taken is 0 at this point,
+    // all of the proposed_entitlement from the previous period
+    // entitlement will be carried to the current period
+    $this->assertEquals(10, $calculation->getBroughtForward());
+
+    // Proposed Entitlement in previous period: 20
+    // Number of days brought from previous period: 10 (the max allowed by the type)
+    // Number of Working days: 261
+    // Number of Days to work: 66
+    // Contractual Entitlement: 10
+    // Pro Rata: (Number of days to work / Number working days) / Contractual Entitlement
+    // Pro Rata: (66/261) * 10 = 2.52 = 3 rounded
+    // Proposed entitlement: Pro Rata + Number of days brought from previous period
+    // Proposed entitlement: 3 + 10
+    $this->assertEquals(13, $calculation->getProposedEntitlement());
+  }
+
   private function findAbsencePeriodByID($id) {
     $currentPeriod     = new AbsencePeriod();
     $currentPeriod->id = $id;

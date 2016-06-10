@@ -6,6 +6,13 @@ use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
+/**
+ * This class encapsulates all of the entitlement calculation logic.
+ *
+ * Based on a set of Absence Period, Job Contract and Absence Type, it can
+ * calculate the Pro Rata, Number of days brought forward, Contractual
+ * Entitlement and a Proposed Entitlement.
+ */
 class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
   /**
@@ -28,6 +35,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   private $previousPeriod;
 
+  /**
+   * Creates a new EntitlementCalculation instance
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
+   * @param \CRM_Hrjobcontract_BAO_HRJobContract $contract
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   */
   public function __construct(AbsencePeriod $period, JobContract $contract, AbsenceType $absenceType) {
     $this->period = $period;
     $this->contract = $contract;
@@ -128,6 +142,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
+   * Returns the calculated proposed entitlement.
+   *
+   * This is basically the Pro Rata + the number of days brought forward
+   *
+   * @return float|int
+   */
+  public function getProposedEntitlement()
+  {
+    return $this->getProRata() + $this->getBroughtForward();
+  }
+
+  /**
    * Returns the proposed entitlement for this AbsenceType and Contract on the
    * previous period.
    *
@@ -153,7 +179,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
     return $previousPeriodEntitlement->proposed_entitlement;
   }
-
 
   /**
    * Return the number of Leaves taken during the Previous Period
