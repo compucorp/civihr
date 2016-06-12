@@ -1,8 +1,7 @@
 define([
-  'common/angular',
-  'common/angularBootstrap'
+  'common/angular'
 ], function (angular) {
   'use strict';
 
-  return angular.module('access-rights.controllers', ['ui.bootstrap']);
+  return angular.module('access-rights.controllers', []);
 });

@@ -1,0 +1,6 @@
+{htxt id="id-leave-days-title"}
+  {ts}Leave Days{/ts}
+{/htxt}
+{htxt id="id-leave-days"}
+{ts}This is the number of days of leave that will be deducted if the staff member is absent for this day within the work pattern.{/ts}
+{/htxt}
