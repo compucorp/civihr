@@ -69,14 +69,14 @@ function civicrm_api3_h_r_job_contract_get($params) {
             }
         }
         $contracts['values'][$key]['is_current'] = (int)$isCurrent;
-        
+
         foreach ($returnFields as $returnField) {
             if (!empty($details[$returnField])) {
                 $contracts['values'][$key][$returnField] = $details[$returnField];
             }
         }
     }
-    
+
     return $contracts;
 }
 
@@ -116,6 +116,32 @@ function civicrm_api3_h_r_job_contract_updatelengthofservice($params) {
   } else {
     $result = CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfService($params['contact_id']);
   }
+  return civicrm_api3_create_success($result, $params);
+}
+
+/**
+ * HRJobContract.getactivecontracts API
+ *
+ * @param array $params The accepted params are: start_date and end_date
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_contract_getactivecontracts($params) {
+  $startDate = null;
+  $endDate = null;
+  if(!empty($params['start_date'])) {
+    if(is_array($params['start_date'])) {
+      return civicrm_api3_create_error('The start date parameter can only be used with the = operator');
+    }
+    $startDate = $params['start_date'];
+  }
+  if(!empty($params['end_date'])) {
+    if(is_array($params['end_date'])) {
+      return civicrm_api3_create_error('The end date parameter can only be used with the = operator');
+    }
+    $endDate = $params['end_date'];
+  }
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts($startDate, $endDate);
   return civicrm_api3_create_success($result, $params);
 }
 
