@@ -113,4 +113,50 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
     return null;
   }
 
+  /**
+   * Returns the number of days of this entitlement remaining to be taken.
+   *
+   * This method takes into account the expiration date of the brought forward
+   * days. That is, if these days have not been taken and expired, they won't
+   * be included in the returned number.
+   *
+   * @return int
+   */
+  public function getNumberOfDaysRemaining() {
+    $leavesTakenInPeriod = $this->getNumberOfLeavesTakenInPeriod();
+    $daysRemaining = $this->proposed_entitlement - $leavesTakenInPeriod;
+
+    $broughtForwardRemaining = $this->brought_forward_days - $leavesTakenInPeriod;
+    if($broughtForwardRemaining > 0 && $this->broughtForwardHasExpired()) {
+      $daysRemaining -= $broughtForwardRemaining;
+    }
+
+    return $daysRemaining;
+  }
+
+  /**
+   * Returns if the brought forward days for this entitlement expired.
+   *
+   * @return bool
+   */
+  private function broughtForwardHasExpired() {
+    // No expiration date means it never expires
+    if(!$this->brought_forward_expiration_date) {
+      return false;
+    }
+
+    return strtotime($this->brought_forward_expiration_date) < strtotime('now');
+  }
+
+  /**
+   * Return the number of Leaves taken during this entitlement period
+   *
+   * @TODO The Leaves Request feature is not yet implemented, so we're only returning 0 for now
+   *
+   * @return int
+   */
+  private function getNumberOfLeavesTakenInPeriod() {
+    return 0;
+  }
+
 }

@@ -65,10 +65,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    $previousPeriodProposedEntitlement = $this->getPreviousPeriodProposedEntitlement();
-    $leavesTaken = $this->getNumberOfLeavesTakenOnThePreviousPeriod();
-
-    $broughtForward = $previousPeriodProposedEntitlement - $leavesTaken;
+    $broughtForward = $this->getNumberOfDaysRemainingInThePreviousPeriod();
     if($broughtForward > $this->absenceType->max_number_of_days_to_carry_forward) {
       return $this->absenceType->max_number_of_days_to_carry_forward;
     }
@@ -195,9 +192,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   public function getNumberOfDaysRemainingInThePreviousPeriod()
   {
-    $leavesTaken = $this->getNumberOfLeavesTakenOnThePreviousPeriod();
-    $proposedEntitlement = $this->getPreviousPeriodProposedEntitlement();
-    return $proposedEntitlement - $leavesTaken;
+    $entitlement = $this->getPreviousPeriodEntitlement();
+
+    if(!$entitlement) {
+      return 0;
+    }
+
+    return $entitlement->getNumberOfDaysRemaining();
   }
 
   /**

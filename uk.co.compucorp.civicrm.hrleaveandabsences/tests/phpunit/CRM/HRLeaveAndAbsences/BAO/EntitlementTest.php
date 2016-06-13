@@ -2,6 +2,10 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_EntitlementTest
@@ -23,25 +27,13 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    * @expectedExceptionMessage DB Error: already exists
    */
   public function testThereCannotBeMoreThanOneEntitlementForTheSameSetOfAbsenceTypeAbsencePeriodAndContract() {
-    $type = CRM_HRLeaveAndAbsences_BAO_AbsenceType::create([
-        'title' => 'Type ' . microtime(),
-        'color' => '#000000',
-        'default_entitlement' => 20,
-        'allow_request_cancelation' => 1,
-    ]);
+    $type = $this->createAbsenceType();
 
-    $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $period = $this->createAbsencePeriod();
 
-    $contract = CRM_Hrjobcontract_BAO_HRJobContract::create([
-      'contact_id' => 2, //Existing contact from civicrm_data.mysql,
-      'is_primary' => 1
-    ]);
+    $contract = $this->createJobContract();
 
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'period_id' => $period->id,
       'type_id' => $type->id,
       'contract_id' => $contract->id,
@@ -50,7 +42,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'pro_rata' => 0
     ]);
 
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'period_id' => $period->id,
       'type_id' => $type->id,
       'contract_id' => $contract->id,
@@ -66,7 +58,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    */
   public function testCommentsShouldHaveAuthor()
   {
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'comment' => 'Lorem ipsum dolor sit....',
       'comment_updated_at' => date('YmdHis')
     ]);
@@ -78,7 +70,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    */
   public function testCommentsShouldHaveDate()
   {
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'comment' => 'Lorem ipsum dolor sit....',
       'comment_author_id' => 2
     ]);
@@ -90,7 +82,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    */
   public function testEmptyCommentsShouldNotHaveDate()
   {
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'comment_updated_at' => date('YmdHis')
     ]);
   }
@@ -101,38 +93,30 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    */
   public function testEmptyCommentsShouldNotHaveAuthor()
   {
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'comment_author_id' => 2
     ]);
   }
 
   public function testGetContractEntitlementForPeriod()
   {
-    $type = CRM_HRLeaveAndAbsences_BAO_AbsenceType::create([
-      'title' => 'Type ' . microtime(),
-      'color' => '#000000',
-      'default_entitlement' => 20,
-      'allow_request_cancelation' => 1,
-    ]);
+    $type = $this->createAbsenceType();
 
-    $period1 = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
+    $period1 = AbsencePeriod::create([
       'title' => 'Period 1',
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
-    $period2 = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
+    $period2 = AbsencePeriod::create([
       'title' => 'Period 2',
       'start_date' => date('YmdHis', strtotime('+2 days')),
       'end_date' => date('YmdHis', strtotime('+3 days'))
     ]);
 
-    $contract = CRM_Hrjobcontract_BAO_HRJobContract::create([
-      'contact_id' => 2, //Existing contact from civicrm_data.mysql,
-      'is_primary' => 1
-    ]);
+    $contract = $this->createJobContract();
 
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'period_id' => $period1->id,
       'type_id' => $type->id,
       'contract_id' => $contract->id,
@@ -141,7 +125,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'pro_rata' => 0
     ]);
 
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::create([
+    Entitlement::create([
       'period_id' => $period2->id,
       'type_id' => $type->id,
       'contract_id' => $contract->id,
@@ -150,7 +134,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'pro_rata' => 0
     ]);
 
-    $entitlementPeriod1 = CRM_HRLeaveAndAbsences_BAO_Entitlement::getContractEntitlementForPeriod(
+    $entitlementPeriod1 = Entitlement::getContractEntitlementForPeriod(
       $contract->id,
       $period1->id,
       $type->id
@@ -160,7 +144,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals(0, $entitlementPeriod1->brought_forward_days);
     $this->assertEquals(0, $entitlementPeriod1->pro_rata);
 
-    $entitlementPeriod2 = CRM_HRLeaveAndAbsences_BAO_Entitlement::getContractEntitlementForPeriod(
+    $entitlementPeriod2 = Entitlement::getContractEntitlementForPeriod(
       $contract->id,
       $period2->id,
       $type->id
@@ -195,6 +179,112 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
    */
   public function testAbsenceTypeIdIsRequiredForGetContractEntitlementForPeriod()
   {
-    CRM_HRLeaveAndAbsences_BAO_Entitlement::getContractEntitlementForPeriod(10, 15, null);
+    CRM_HRLeaveAndAbsences_BAO_Entitlement::getContractEntitlementForPeriod(10, 15, NULL);
+  }
+
+  /**
+   * @TODO include tests with leave requests, which are not yet implemented
+   */
+  public function testNumberOfDaysRemainingShouldNotIncludeExpiredBroughtForward()
+  {
+    $type = $this->createAbsenceType();
+
+    $period = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+10 days'))
+    ]);
+
+    $contract = $this->createJobContract();
+
+    $entitlement = Entitlement::create([
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+      'contract_id' => $contract->id,
+      'proposed_entitlement' => 15,
+      'brought_forward_days' => 10,
+      //set expiration date in the past, so it will be expired
+      'brought_forward_expiration_date' => date('YmdHis', strtotime('-1 day')),
+      'pro_rata' => 0
+    ]);
+
+    $this->assertEquals(5, $entitlement->getNumberOfDaysRemaining());
+  }
+
+  public function testNumberOfDaysRemainingShouldIncludeNonExpiredBroughtForward()
+  {
+    $type = $this->createAbsenceType();
+
+    $period = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+10 days'))
+    ]);
+
+    $contract = $this->createJobContract();
+
+    $entitlement = Entitlement::create([
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+      'contract_id' => $contract->id,
+      'proposed_entitlement' => 15,
+      'brought_forward_days' => 10,
+      'brought_forward_expiration_date' => date('YmdHis', strtotime('+1 day')),
+      'pro_rata' => 0
+    ]);
+
+    $this->assertEquals(15, $entitlement->getNumberOfDaysRemaining());
+  }
+
+  public function testNumberOfDaysRemainingShouldIncludeBroughtForwardThatNeverExpires()
+  {
+    $type = $this->createAbsenceType();
+
+    $period = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+10 days'))
+    ]);
+
+    $contract = $this->createJobContract();
+
+    $entitlement = Entitlement::create([
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+      'contract_id' => $contract->id,
+      'proposed_entitlement' => 15,
+      'brought_forward_days' => 10,
+      'brought_forward_expiration_date' => null,
+      'pro_rata' => 0
+    ]);
+
+    $this->assertEquals(15, $entitlement->getNumberOfDaysRemaining());
+  }
+
+  private function createAbsenceType() {
+    $type = AbsenceType::create([
+      'title'                     => 'Type ' . microtime(),
+      'color'                     => '#000000',
+      'default_entitlement'       => 20,
+      'allow_request_cancelation' => 1,
+    ]);
+    return $type;
+  }
+
+  private function createJobContract() {
+    $contract = JobContract::create([
+      'contact_id' => 2, //Existing contact from civicrm_data.mysql,
+      'is_primary' => 1
+    ]);
+    return $contract;
+  }
+
+  private function createAbsencePeriod() {
+    $period = AbsencePeriod::create([
+      'title'      => 'Period ' . microtime(),
+      'start_date' => date('YmdHis'),
+      'end_date'   => date('YmdHis', strtotime('+1 day'))
+    ]);
+    return $period;
   }
 }

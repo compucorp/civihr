@@ -277,6 +277,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
      `contract_id` int unsigned NOT NULL   COMMENT 'FK to HRJobContract',
      `proposed_entitlement` int unsigned NOT NULL   COMMENT 'The number of days proposed for this entitlement',
      `brought_forward_days` int unsigned   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
+     `brought_forward_expiration_date` date COMMENT 'The date the brought forward days will expire',
      `pro_rata` int unsigned   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
      `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the proposed_entitlement was overridden',
      `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',

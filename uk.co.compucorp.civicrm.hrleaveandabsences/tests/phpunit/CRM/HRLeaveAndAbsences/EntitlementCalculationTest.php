@@ -138,6 +138,37 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(5, $calculation->getBroughtForward());
   }
 
+  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement()
+  {
+    $type = $this->createAbsenceType([
+      'max_number_of_days_to_carry_forward' => 5
+    ]);
+
+    $previousPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis', strtotime('-2 days')),
+      'end_date' => date('YmdHis', strtotime('-1 day')),
+    ]);
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 2',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 day')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->createEntitlement($previousPeriod, $type);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    // As the number of leaves taken is 0 at this point,
+    // all of the proposed_entitlement from the previous period
+    // entitlement will be carried to the current period, but that
+    // is more than the max number of days allowed by the absence type,
+    // so the carried amount should be reduced
+    $this->assertEquals(5, $calculation->getBroughtForward());
+  }
+
   public function testProRataShouldBeZeroIfTheContractDoesntHaveStartAndEndDates()
   {
     $type = new AbsenceType();
