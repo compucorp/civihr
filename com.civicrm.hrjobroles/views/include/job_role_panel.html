@@ -39,7 +39,8 @@
                                       editable-form
                                       name="editableForm"
                                       onbeforesave="validateRole(editableForm)"
-                                      onaftersave="updateRole(job_roles_data.id)">
+                                      onaftersave="updateRole(job_roles_data.id)"
+                                      oncancel="onCancel(job_roles_data.id, 'both')">
                                     <!-- button to show edit form -->
                                     <button type="button" class="btn btn-sm btn-tab-action pull-right"
                                             ng-click="editableForm.$show()"
@@ -258,8 +259,8 @@
                             <uib-tab heading="Funding">
                                 <div ng-init="initData(job_roles_data.id, 'funders', job_roles_data)">
                                     <form editable-form name="tableform"
-                                          onaftersave="updateRole(job_roles_data.id)"
-                                          oncancel="cancel()">
+                                          onaftersave="updateRole(job_roles_data.id, 'funders')"
+                                          oncancel="onCancel(job_roles_data.id, 'funders')">
                                         <!-- buttons -->
                                         <button type="button"
                                                 class="btn btn-sm btn-tab-action pull-right"
@@ -361,8 +362,8 @@
                             <uib-tab heading="Cost Centres">
                                 <div ng-init="initData(job_roles_data.id, 'cost_centers', job_roles_data)">
                                     <form editable-form name="tableformcc"
-                                          onaftersave="updateRole(job_roles_data.id)"
-                                          oncancel="cancel()">
+                                          onaftersave="updateRole(job_roles_data.id, 'cost_centers')"
+                                          oncancel="onCancel(job_roles_data.id, 'cost_centers')">
                                         <!-- buttons -->
                                         <button type="button"
                                                 class="btn btn-sm btn-tab-action pull-right"

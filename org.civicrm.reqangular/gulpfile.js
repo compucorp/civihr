@@ -25,7 +25,7 @@ gulp.task('cache-templates', function (cb) {
     cb();
 });
 
-gulp.task('requirejs-bundle', function (done) {
+gulp.task('requirejs-bundle', ['cache-templates'], function (done) {
     exec('r.js -o build.js', function (err, stdout, stderr) {
         err && err.code && console.log(stdout);
         done();

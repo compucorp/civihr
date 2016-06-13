@@ -1,6 +1,7 @@
 define([
   'common/angular',
   'common/ui-select',
+  'common/angularBootstrap',
   'common/modules/xeditable-civi',
   'common/directives/loading',
   'access-rights/controllers/access-rights-ctrl',
@@ -13,6 +14,7 @@ define([
 
   angular.module('access-rights', [
       'ngAnimate',
+      'ui.bootstrap',
       'ui.select',
       'common.directives',
       'xeditable-civi',

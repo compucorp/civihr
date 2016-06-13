@@ -43,6 +43,14 @@ class CRM_Hrjobcontract_ValidateDatesTest extends HRJobContractTestBase {
     $result = civicrm_api3('HRJobDetails', 'validatedates', array(
       'sequential' => 1,
       'contact_id' => $contactId,
+      'period_start_date' => "2016-01-03",
+      'period_end_date' => "2016-01-05",
+    ));
+    $this->assertFalse($result['values'][0]);
+
+    $result = civicrm_api3('HRJobDetails', 'validatedates', array(
+      'sequential' => 1,
+      'contact_id' => $contactId,
       'period_start_date' => "2016-01-01",
       'period_end_date' => "2016-01-02",
     ));
