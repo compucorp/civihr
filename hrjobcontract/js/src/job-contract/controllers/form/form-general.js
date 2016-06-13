@@ -45,20 +45,25 @@ define([
 
             }
 
+            $scope.datepickerOptions = {
+              start: { maxDate: null },
+              end: { minDate: null }
+            };
+
             $scope.$watch('entity.details.period_start_date', function(){
-                moment(entityDetails.period_start_date);
-                $scope.dpDateEndMin = moment(entityDetails.period_start_date).add(1, 'day').toDate();
-                $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
+              $scope.datepickerOptions.end.minDate = moment(entityDetails.period_start_date).add(1, 'day').toDate();
+              $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
             });
 
             $scope.$watch('entity.details.period_end_date', function(){
-                if (entityDetails.period_end_date) {
-                    $scope.dpDateStartMax = moment(entityDetails.period_end_date).subtract(1, 'day').toDate();  
-                } else {
-                    $scope.dpDateStartMax = null;
-                    entityDetails.end_reason = null;
-                }
-                $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
+              if (entityDetails.period_end_date) {
+                $scope.datepickerOptions.start.maxDate = moment(entityDetails.period_end_date).subtract(1, 'day').toDate();
+              } else {
+                $scope.datepickerOptions.start.maxDate = null;
+                entityDetails.end_reason = null;
+              }
+
+              $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
             });
 
             $scope.$watch('entity.details.position', function(newVal, oldVal){

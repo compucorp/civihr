@@ -81,7 +81,7 @@
                                                name="detailsPeriodStartDate"
                                                uib-datepicker-popup
                                                is-open="dpDateStartOpen"
-                                               datepicker-options="{ maxDate: dpDateStartMax }"
+                                               datepicker-options="datepickerOptions.start"
                                                ng-model="entity.details.period_start_date"
                                                ng-disabled="isDisabled"
                                                required >
@@ -102,7 +102,7 @@
                                                id="{{prefix}}period-end-date"
                                                uib-datepicker-popup
                                                is-open="dpDateEndOpen"
-                                               datepicker-options="{ minDate: dpDateEndMin }"
+                                               datepicker-options="datepickerOptions.end"
                                                ng-model="entity.details.period_end_date"
                                                ng-disabled="isDisabled" >
                                         <span class="input-group-btn">
