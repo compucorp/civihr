@@ -43,48 +43,44 @@
                                                     <i class="fa fa-asterisk" style="vertical-align: text-top; color: red; font-size: 5px;" ng-show="!edit_data['new_role_id']['newStartDate']"></i>
                                                 </label>
                                                 <div class="col-xs-6 control-label">
-                                                    <p class="input-group input-group-unstyled">
-                                                        <input type="text" class="form-control" id="{{prefix}}newStartDate"
-                                                               placeholder="{{format}}"
-                                                               is-open="CalendarShow.newStartDate"
-                                                               uib-datepicker-popup
-                                                               ng-model="edit_data['new_role_id']['newStartDate']"
-                                                               ng-change="select('newStartDate')"
-                                                               ng-disabled="isDisabled"
-                                                               close-text="Close"
-                                                               required>
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default" ng-click="open('newStartDate')">
-                                                                <i class="glyphicon glyphicon-calendar"></i>
-                                                            </button>
-                                                        </span>
-                                                        <div ng-show="errors.newStartDate" style="display: block; color:maroon" role="alert">
-                                                            <div> {{ errors.newStartDate[0] }}</div>
-                                                        </div>
-                                                    </p>
+                                                  <p class="input-group input-group-unstyled">
+                                                    <input type="text" class="form-control" id="{{prefix}}newStartDate"
+                                                      placeholder="{{format}}"
+                                                      is-open="CalendarShow.newStartDate"
+                                                      uib-datepicker-popup
+                                                      ng-model="edit_data['new_role_id']['newStartDate']"
+                                                      ng-change="select('newStartDate')"
+                                                      ng-disabled="isDisabled"
+                                                      close-text="Close"
+                                                      ng-click="open('newStartDate')"
+                                                      required>
+                                                    <span class="input-group-addon fa fa-calendar"></span>
+                                                    <div ng-show="errors.newStartDate" style="display: block; color:maroon" role="alert">
+                                                        <div> {{ errors.newStartDate[0] }}</div>
+                                                    </div>
+                                                  </p>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
-                                                <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
-                                                <div class="col-xs-6 control-label">
-                                                    <p class="input-group input-group-unstyled">
-                                                        <input type="text" class="form-control" id="{{prefix}}newEndDate"
-                                                           placeholder="{{format}}"
-                                                           uib-datepicker-popup
-                                                           is-open="CalendarShow.newEndDate"
-                                                           ng-model="edit_data['new_role_id']['newEndDate']"
-                                                           ng-change="select('newEndDate')"
-                                                           ng-disabled="isDisabled"
-                                                           close-text="Close">
-                                                        <span class="input-group-btn">
-                                                            <button type="button" class="btn btn-default" ng-click="open('newEndDate')"><i class="glyphicon glyphicon-calendar"></i></button>
-                                                        </span>
-                                                        <div ng-show="errors.newEndDate" style="display: block; color:maroon" role="alert">
-                                                            <div> {{ errors.newEndDate[0] }}</div>
-                                                        </div>
-                                                    </p>
-                                                </div>
+                                              <label for="{{prefix}}newEndDate" class="col-xs-4 control-label">End Date: </label>
+                                              <div class="col-xs-6 control-label">
+                                                <p class="input-group input-group-unstyled">
+                                                  <input type="text" class="form-control" id="{{prefix}}newEndDate"
+                                                    placeholder="{{format}}"
+                                                    uib-datepicker-popup
+                                                    is-open="CalendarShow.newEndDate"
+                                                    ng-model="edit_data['new_role_id']['newEndDate']"
+                                                    ng-change="select('newEndDate')"
+                                                    ng-disabled="isDisabled"
+                                                    ng-click="open('newEndDate')"
+                                                    close-text="Close">
+                                                  <span class="input-group-addon fa fa-calendar"></span>
+                                                  <div ng-show="errors.newEndDate" style="display: block; color:maroon" role="alert">
+                                                      <div> {{ errors.newEndDate[0] }}</div>
+                                                  </div>
+                                                </p>
+                                              </div>
                                             </div>
 
                                         </div>
