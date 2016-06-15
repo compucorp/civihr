@@ -17,9 +17,6 @@
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   /*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */
-  background-color: #e8eef0;
-  font-size: 10px;
-  -webkit-tap-highlight-color: transparent;
   /*!
    *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
    *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -29,6 +26,9 @@
   /* makes the font 33% larger relative to the icon container */
   /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
+  background-color: #e8eef0;
+  font-size: 10px;
+  -webkit-tap-highlight-color: transparent;
   /*!
    * ui-select
    * http://github.com/angular-ui/ui-select
@@ -61,6 +61,10 @@
   /* add the styling for the awesomness of the resizer */
   /* copy the popover code from bootstrap so this will work even without it */
   padding: 20px;
+  /**
+   * An extension of Bootstraps' input-group,
+   * so that the addon has no background or border set
+   */
   /*
   .hrjobroles-panel-action {
   
@@ -1104,6 +1108,1669 @@
 }
 #hrjobroles .glyphicon-tree-deciduous:before {
   content: "\e200";
+}
+@font-face {
+  font-family: 'FontAwesome';
+  src: url("../fonts/fontawesome/fontawesome-webfont.eot?v=4.2.0");
+  src: url("../fonts/fontawesome/fontawesome-webfont.eot?#iefix&v=4.2.0") format("embedded-opentype"), url("../fonts/fontawesome/fontawesome-webfont.woff?v=4.2.0") format("woff"), url("../fonts/fontawesome/fontawesome-webfont.ttf?v=4.2.0") format("truetype"), url("../fonts/fontawesome/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+#hrjobroles .fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#hrjobroles .fa-lg {
+  font-size: 1.33333333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+#hrjobroles .fa-2x {
+  font-size: 2em;
+}
+#hrjobroles .fa-3x {
+  font-size: 3em;
+}
+#hrjobroles .fa-4x {
+  font-size: 4em;
+}
+#hrjobroles .fa-5x {
+  font-size: 5em;
+}
+#hrjobroles .fa-fw {
+  width: 1.28571429em;
+  text-align: center;
+}
+#hrjobroles .fa-ul {
+  padding-left: 0;
+  margin-left: 2.14285714em;
+  list-style-type: none;
+}
+#hrjobroles .fa-ul > li {
+  position: relative;
+}
+#hrjobroles .fa-li {
+  position: absolute;
+  left: -2.14285714em;
+  width: 2.14285714em;
+  top: 0.14285714em;
+  text-align: center;
+}
+#hrjobroles .fa-li.fa-lg {
+  left: -1.85714286em;
+}
+#hrjobroles .fa-border {
+  padding: .2em .25em .15em;
+  border: solid 0.08em #eeeeee;
+  border-radius: .1em;
+}
+#hrjobroles .pull-right {
+  float: right;
+}
+#hrjobroles .pull-left {
+  float: left;
+}
+#hrjobroles .fa.pull-left {
+  margin-right: .3em;
+}
+#hrjobroles .fa.pull-right {
+  margin-left: .3em;
+}
+#hrjobroles .fa-spin {
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+#hrjobroles .fa-rotate-90 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+#hrjobroles .fa-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+#hrjobroles .fa-rotate-270 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -webkit-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+#hrjobroles .fa-flip-horizontal {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -webkit-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+#hrjobroles .fa-flip-vertical {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+  -webkit-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+#hrjobroles :root .fa-rotate-90,
+#hrjobroles :root .fa-rotate-180,
+#hrjobroles :root .fa-rotate-270,
+#hrjobroles :root .fa-flip-horizontal,
+#hrjobroles :root .fa-flip-vertical {
+  filter: none;
+}
+#hrjobroles .fa-stack {
+  position: relative;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+}
+#hrjobroles .fa-stack-1x,
+#hrjobroles .fa-stack-2x {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+#hrjobroles .fa-stack-1x {
+  line-height: inherit;
+}
+#hrjobroles .fa-stack-2x {
+  font-size: 2em;
+}
+#hrjobroles .fa-inverse {
+  color: #ffffff;
+}
+#hrjobroles .fa-glass:before {
+  content: "\f000";
+}
+#hrjobroles .fa-music:before {
+  content: "\f001";
+}
+#hrjobroles .fa-search:before {
+  content: "\f002";
+}
+#hrjobroles .fa-envelope-o:before {
+  content: "\f003";
+}
+#hrjobroles .fa-heart:before {
+  content: "\f004";
+}
+#hrjobroles .fa-star:before {
+  content: "\f005";
+}
+#hrjobroles .fa-star-o:before {
+  content: "\f006";
+}
+#hrjobroles .fa-user:before {
+  content: "\f007";
+}
+#hrjobroles .fa-film:before {
+  content: "\f008";
+}
+#hrjobroles .fa-th-large:before {
+  content: "\f009";
+}
+#hrjobroles .fa-th:before {
+  content: "\f00a";
+}
+#hrjobroles .fa-th-list:before {
+  content: "\f00b";
+}
+#hrjobroles .fa-check:before {
+  content: "\f00c";
+}
+#hrjobroles .fa-remove:before,
+#hrjobroles .fa-close:before,
+#hrjobroles .fa-times:before {
+  content: "\f00d";
+}
+#hrjobroles .fa-search-plus:before {
+  content: "\f00e";
+}
+#hrjobroles .fa-search-minus:before {
+  content: "\f010";
+}
+#hrjobroles .fa-power-off:before {
+  content: "\f011";
+}
+#hrjobroles .fa-signal:before {
+  content: "\f012";
+}
+#hrjobroles .fa-gear:before,
+#hrjobroles .fa-cog:before {
+  content: "\f013";
+}
+#hrjobroles .fa-trash-o:before {
+  content: "\f014";
+}
+#hrjobroles .fa-home:before {
+  content: "\f015";
+}
+#hrjobroles .fa-file-o:before {
+  content: "\f016";
+}
+#hrjobroles .fa-clock-o:before {
+  content: "\f017";
+}
+#hrjobroles .fa-road:before {
+  content: "\f018";
+}
+#hrjobroles .fa-download:before {
+  content: "\f019";
+}
+#hrjobroles .fa-arrow-circle-o-down:before {
+  content: "\f01a";
+}
+#hrjobroles .fa-arrow-circle-o-up:before {
+  content: "\f01b";
+}
+#hrjobroles .fa-inbox:before {
+  content: "\f01c";
+}
+#hrjobroles .fa-play-circle-o:before {
+  content: "\f01d";
+}
+#hrjobroles .fa-rotate-right:before,
+#hrjobroles .fa-repeat:before {
+  content: "\f01e";
+}
+#hrjobroles .fa-refresh:before {
+  content: "\f021";
+}
+#hrjobroles .fa-list-alt:before {
+  content: "\f022";
+}
+#hrjobroles .fa-lock:before {
+  content: "\f023";
+}
+#hrjobroles .fa-flag:before {
+  content: "\f024";
+}
+#hrjobroles .fa-headphones:before {
+  content: "\f025";
+}
+#hrjobroles .fa-volume-off:before {
+  content: "\f026";
+}
+#hrjobroles .fa-volume-down:before {
+  content: "\f027";
+}
+#hrjobroles .fa-volume-up:before {
+  content: "\f028";
+}
+#hrjobroles .fa-qrcode:before {
+  content: "\f029";
+}
+#hrjobroles .fa-barcode:before {
+  content: "\f02a";
+}
+#hrjobroles .fa-tag:before {
+  content: "\f02b";
+}
+#hrjobroles .fa-tags:before {
+  content: "\f02c";
+}
+#hrjobroles .fa-book:before {
+  content: "\f02d";
+}
+#hrjobroles .fa-bookmark:before {
+  content: "\f02e";
+}
+#hrjobroles .fa-print:before {
+  content: "\f02f";
+}
+#hrjobroles .fa-camera:before {
+  content: "\f030";
+}
+#hrjobroles .fa-font:before {
+  content: "\f031";
+}
+#hrjobroles .fa-bold:before {
+  content: "\f032";
+}
+#hrjobroles .fa-italic:before {
+  content: "\f033";
+}
+#hrjobroles .fa-text-height:before {
+  content: "\f034";
+}
+#hrjobroles .fa-text-width:before {
+  content: "\f035";
+}
+#hrjobroles .fa-align-left:before {
+  content: "\f036";
+}
+#hrjobroles .fa-align-center:before {
+  content: "\f037";
+}
+#hrjobroles .fa-align-right:before {
+  content: "\f038";
+}
+#hrjobroles .fa-align-justify:before {
+  content: "\f039";
+}
+#hrjobroles .fa-list:before {
+  content: "\f03a";
+}
+#hrjobroles .fa-dedent:before,
+#hrjobroles .fa-outdent:before {
+  content: "\f03b";
+}
+#hrjobroles .fa-indent:before {
+  content: "\f03c";
+}
+#hrjobroles .fa-video-camera:before {
+  content: "\f03d";
+}
+#hrjobroles .fa-photo:before,
+#hrjobroles .fa-image:before,
+#hrjobroles .fa-picture-o:before {
+  content: "\f03e";
+}
+#hrjobroles .fa-pencil:before {
+  content: "\f040";
+}
+#hrjobroles .fa-map-marker:before {
+  content: "\f041";
+}
+#hrjobroles .fa-adjust:before {
+  content: "\f042";
+}
+#hrjobroles .fa-tint:before {
+  content: "\f043";
+}
+#hrjobroles .fa-edit:before,
+#hrjobroles .fa-pencil-square-o:before {
+  content: "\f044";
+}
+#hrjobroles .fa-share-square-o:before {
+  content: "\f045";
+}
+#hrjobroles .fa-check-square-o:before {
+  content: "\f046";
+}
+#hrjobroles .fa-arrows:before {
+  content: "\f047";
+}
+#hrjobroles .fa-step-backward:before {
+  content: "\f048";
+}
+#hrjobroles .fa-fast-backward:before {
+  content: "\f049";
+}
+#hrjobroles .fa-backward:before {
+  content: "\f04a";
+}
+#hrjobroles .fa-play:before {
+  content: "\f04b";
+}
+#hrjobroles .fa-pause:before {
+  content: "\f04c";
+}
+#hrjobroles .fa-stop:before {
+  content: "\f04d";
+}
+#hrjobroles .fa-forward:before {
+  content: "\f04e";
+}
+#hrjobroles .fa-fast-forward:before {
+  content: "\f050";
+}
+#hrjobroles .fa-step-forward:before {
+  content: "\f051";
+}
+#hrjobroles .fa-eject:before {
+  content: "\f052";
+}
+#hrjobroles .fa-chevron-left:before {
+  content: "\f053";
+}
+#hrjobroles .fa-chevron-right:before {
+  content: "\f054";
+}
+#hrjobroles .fa-plus-circle:before {
+  content: "\f055";
+}
+#hrjobroles .fa-minus-circle:before {
+  content: "\f056";
+}
+#hrjobroles .fa-times-circle:before {
+  content: "\f057";
+}
+#hrjobroles .fa-check-circle:before {
+  content: "\f058";
+}
+#hrjobroles .fa-question-circle:before {
+  content: "\f059";
+}
+#hrjobroles .fa-info-circle:before {
+  content: "\f05a";
+}
+#hrjobroles .fa-crosshairs:before {
+  content: "\f05b";
+}
+#hrjobroles .fa-times-circle-o:before {
+  content: "\f05c";
+}
+#hrjobroles .fa-check-circle-o:before {
+  content: "\f05d";
+}
+#hrjobroles .fa-ban:before {
+  content: "\f05e";
+}
+#hrjobroles .fa-arrow-left:before {
+  content: "\f060";
+}
+#hrjobroles .fa-arrow-right:before {
+  content: "\f061";
+}
+#hrjobroles .fa-arrow-up:before {
+  content: "\f062";
+}
+#hrjobroles .fa-arrow-down:before {
+  content: "\f063";
+}
+#hrjobroles .fa-mail-forward:before,
+#hrjobroles .fa-share:before {
+  content: "\f064";
+}
+#hrjobroles .fa-expand:before {
+  content: "\f065";
+}
+#hrjobroles .fa-compress:before {
+  content: "\f066";
+}
+#hrjobroles .fa-plus:before {
+  content: "\f067";
+}
+#hrjobroles .fa-minus:before {
+  content: "\f068";
+}
+#hrjobroles .fa-asterisk:before {
+  content: "\f069";
+}
+#hrjobroles .fa-exclamation-circle:before {
+  content: "\f06a";
+}
+#hrjobroles .fa-gift:before {
+  content: "\f06b";
+}
+#hrjobroles .fa-leaf:before {
+  content: "\f06c";
+}
+#hrjobroles .fa-fire:before {
+  content: "\f06d";
+}
+#hrjobroles .fa-eye:before {
+  content: "\f06e";
+}
+#hrjobroles .fa-eye-slash:before {
+  content: "\f070";
+}
+#hrjobroles .fa-warning:before,
+#hrjobroles .fa-exclamation-triangle:before {
+  content: "\f071";
+}
+#hrjobroles .fa-plane:before {
+  content: "\f072";
+}
+#hrjobroles .fa-calendar:before {
+  content: "\f073";
+}
+#hrjobroles .fa-random:before {
+  content: "\f074";
+}
+#hrjobroles .fa-comment:before {
+  content: "\f075";
+}
+#hrjobroles .fa-magnet:before {
+  content: "\f076";
+}
+#hrjobroles .fa-chevron-up:before {
+  content: "\f077";
+}
+#hrjobroles .fa-chevron-down:before {
+  content: "\f078";
+}
+#hrjobroles .fa-retweet:before {
+  content: "\f079";
+}
+#hrjobroles .fa-shopping-cart:before {
+  content: "\f07a";
+}
+#hrjobroles .fa-folder:before {
+  content: "\f07b";
+}
+#hrjobroles .fa-folder-open:before {
+  content: "\f07c";
+}
+#hrjobroles .fa-arrows-v:before {
+  content: "\f07d";
+}
+#hrjobroles .fa-arrows-h:before {
+  content: "\f07e";
+}
+#hrjobroles .fa-bar-chart-o:before,
+#hrjobroles .fa-bar-chart:before {
+  content: "\f080";
+}
+#hrjobroles .fa-twitter-square:before {
+  content: "\f081";
+}
+#hrjobroles .fa-facebook-square:before {
+  content: "\f082";
+}
+#hrjobroles .fa-camera-retro:before {
+  content: "\f083";
+}
+#hrjobroles .fa-key:before {
+  content: "\f084";
+}
+#hrjobroles .fa-gears:before,
+#hrjobroles .fa-cogs:before {
+  content: "\f085";
+}
+#hrjobroles .fa-comments:before {
+  content: "\f086";
+}
+#hrjobroles .fa-thumbs-o-up:before {
+  content: "\f087";
+}
+#hrjobroles .fa-thumbs-o-down:before {
+  content: "\f088";
+}
+#hrjobroles .fa-star-half:before {
+  content: "\f089";
+}
+#hrjobroles .fa-heart-o:before {
+  content: "\f08a";
+}
+#hrjobroles .fa-sign-out:before {
+  content: "\f08b";
+}
+#hrjobroles .fa-linkedin-square:before {
+  content: "\f08c";
+}
+#hrjobroles .fa-thumb-tack:before {
+  content: "\f08d";
+}
+#hrjobroles .fa-external-link:before {
+  content: "\f08e";
+}
+#hrjobroles .fa-sign-in:before {
+  content: "\f090";
+}
+#hrjobroles .fa-trophy:before {
+  content: "\f091";
+}
+#hrjobroles .fa-github-square:before {
+  content: "\f092";
+}
+#hrjobroles .fa-upload:before {
+  content: "\f093";
+}
+#hrjobroles .fa-lemon-o:before {
+  content: "\f094";
+}
+#hrjobroles .fa-phone:before {
+  content: "\f095";
+}
+#hrjobroles .fa-square-o:before {
+  content: "\f096";
+}
+#hrjobroles .fa-bookmark-o:before {
+  content: "\f097";
+}
+#hrjobroles .fa-phone-square:before {
+  content: "\f098";
+}
+#hrjobroles .fa-twitter:before {
+  content: "\f099";
+}
+#hrjobroles .fa-facebook:before {
+  content: "\f09a";
+}
+#hrjobroles .fa-github:before {
+  content: "\f09b";
+}
+#hrjobroles .fa-unlock:before {
+  content: "\f09c";
+}
+#hrjobroles .fa-credit-card:before {
+  content: "\f09d";
+}
+#hrjobroles .fa-rss:before {
+  content: "\f09e";
+}
+#hrjobroles .fa-hdd-o:before {
+  content: "\f0a0";
+}
+#hrjobroles .fa-bullhorn:before {
+  content: "\f0a1";
+}
+#hrjobroles .fa-bell:before {
+  content: "\f0f3";
+}
+#hrjobroles .fa-certificate:before {
+  content: "\f0a3";
+}
+#hrjobroles .fa-hand-o-right:before {
+  content: "\f0a4";
+}
+#hrjobroles .fa-hand-o-left:before {
+  content: "\f0a5";
+}
+#hrjobroles .fa-hand-o-up:before {
+  content: "\f0a6";
+}
+#hrjobroles .fa-hand-o-down:before {
+  content: "\f0a7";
+}
+#hrjobroles .fa-arrow-circle-left:before {
+  content: "\f0a8";
+}
+#hrjobroles .fa-arrow-circle-right:before {
+  content: "\f0a9";
+}
+#hrjobroles .fa-arrow-circle-up:before {
+  content: "\f0aa";
+}
+#hrjobroles .fa-arrow-circle-down:before {
+  content: "\f0ab";
+}
+#hrjobroles .fa-globe:before {
+  content: "\f0ac";
+}
+#hrjobroles .fa-wrench:before {
+  content: "\f0ad";
+}
+#hrjobroles .fa-tasks:before {
+  content: "\f0ae";
+}
+#hrjobroles .fa-filter:before {
+  content: "\f0b0";
+}
+#hrjobroles .fa-briefcase:before {
+  content: "\f0b1";
+}
+#hrjobroles .fa-arrows-alt:before {
+  content: "\f0b2";
+}
+#hrjobroles .fa-group:before,
+#hrjobroles .fa-users:before {
+  content: "\f0c0";
+}
+#hrjobroles .fa-chain:before,
+#hrjobroles .fa-link:before {
+  content: "\f0c1";
+}
+#hrjobroles .fa-cloud:before {
+  content: "\f0c2";
+}
+#hrjobroles .fa-flask:before {
+  content: "\f0c3";
+}
+#hrjobroles .fa-cut:before,
+#hrjobroles .fa-scissors:before {
+  content: "\f0c4";
+}
+#hrjobroles .fa-copy:before,
+#hrjobroles .fa-files-o:before {
+  content: "\f0c5";
+}
+#hrjobroles .fa-paperclip:before {
+  content: "\f0c6";
+}
+#hrjobroles .fa-save:before,
+#hrjobroles .fa-floppy-o:before {
+  content: "\f0c7";
+}
+#hrjobroles .fa-square:before {
+  content: "\f0c8";
+}
+#hrjobroles .fa-navicon:before,
+#hrjobroles .fa-reorder:before,
+#hrjobroles .fa-bars:before {
+  content: "\f0c9";
+}
+#hrjobroles .fa-list-ul:before {
+  content: "\f0ca";
+}
+#hrjobroles .fa-list-ol:before {
+  content: "\f0cb";
+}
+#hrjobroles .fa-strikethrough:before {
+  content: "\f0cc";
+}
+#hrjobroles .fa-underline:before {
+  content: "\f0cd";
+}
+#hrjobroles .fa-table:before {
+  content: "\f0ce";
+}
+#hrjobroles .fa-magic:before {
+  content: "\f0d0";
+}
+#hrjobroles .fa-truck:before {
+  content: "\f0d1";
+}
+#hrjobroles .fa-pinterest:before {
+  content: "\f0d2";
+}
+#hrjobroles .fa-pinterest-square:before {
+  content: "\f0d3";
+}
+#hrjobroles .fa-google-plus-square:before {
+  content: "\f0d4";
+}
+#hrjobroles .fa-google-plus:before {
+  content: "\f0d5";
+}
+#hrjobroles .fa-money:before {
+  content: "\f0d6";
+}
+#hrjobroles .fa-caret-down:before {
+  content: "\f0d7";
+}
+#hrjobroles .fa-caret-up:before {
+  content: "\f0d8";
+}
+#hrjobroles .fa-caret-left:before {
+  content: "\f0d9";
+}
+#hrjobroles .fa-caret-right:before {
+  content: "\f0da";
+}
+#hrjobroles .fa-columns:before {
+  content: "\f0db";
+}
+#hrjobroles .fa-unsorted:before,
+#hrjobroles .fa-sort:before {
+  content: "\f0dc";
+}
+#hrjobroles .fa-sort-down:before,
+#hrjobroles .fa-sort-desc:before {
+  content: "\f0dd";
+}
+#hrjobroles .fa-sort-up:before,
+#hrjobroles .fa-sort-asc:before {
+  content: "\f0de";
+}
+#hrjobroles .fa-envelope:before {
+  content: "\f0e0";
+}
+#hrjobroles .fa-linkedin:before {
+  content: "\f0e1";
+}
+#hrjobroles .fa-rotate-left:before,
+#hrjobroles .fa-undo:before {
+  content: "\f0e2";
+}
+#hrjobroles .fa-legal:before,
+#hrjobroles .fa-gavel:before {
+  content: "\f0e3";
+}
+#hrjobroles .fa-dashboard:before,
+#hrjobroles .fa-tachometer:before {
+  content: "\f0e4";
+}
+#hrjobroles .fa-comment-o:before {
+  content: "\f0e5";
+}
+#hrjobroles .fa-comments-o:before {
+  content: "\f0e6";
+}
+#hrjobroles .fa-flash:before,
+#hrjobroles .fa-bolt:before {
+  content: "\f0e7";
+}
+#hrjobroles .fa-sitemap:before {
+  content: "\f0e8";
+}
+#hrjobroles .fa-umbrella:before {
+  content: "\f0e9";
+}
+#hrjobroles .fa-paste:before,
+#hrjobroles .fa-clipboard:before {
+  content: "\f0ea";
+}
+#hrjobroles .fa-lightbulb-o:before {
+  content: "\f0eb";
+}
+#hrjobroles .fa-exchange:before {
+  content: "\f0ec";
+}
+#hrjobroles .fa-cloud-download:before {
+  content: "\f0ed";
+}
+#hrjobroles .fa-cloud-upload:before {
+  content: "\f0ee";
+}
+#hrjobroles .fa-user-md:before {
+  content: "\f0f0";
+}
+#hrjobroles .fa-stethoscope:before {
+  content: "\f0f1";
+}
+#hrjobroles .fa-suitcase:before {
+  content: "\f0f2";
+}
+#hrjobroles .fa-bell-o:before {
+  content: "\f0a2";
+}
+#hrjobroles .fa-coffee:before {
+  content: "\f0f4";
+}
+#hrjobroles .fa-cutlery:before {
+  content: "\f0f5";
+}
+#hrjobroles .fa-file-text-o:before {
+  content: "\f0f6";
+}
+#hrjobroles .fa-building-o:before {
+  content: "\f0f7";
+}
+#hrjobroles .fa-hospital-o:before {
+  content: "\f0f8";
+}
+#hrjobroles .fa-ambulance:before {
+  content: "\f0f9";
+}
+#hrjobroles .fa-medkit:before {
+  content: "\f0fa";
+}
+#hrjobroles .fa-fighter-jet:before {
+  content: "\f0fb";
+}
+#hrjobroles .fa-beer:before {
+  content: "\f0fc";
+}
+#hrjobroles .fa-h-square:before {
+  content: "\f0fd";
+}
+#hrjobroles .fa-plus-square:before {
+  content: "\f0fe";
+}
+#hrjobroles .fa-angle-double-left:before {
+  content: "\f100";
+}
+#hrjobroles .fa-angle-double-right:before {
+  content: "\f101";
+}
+#hrjobroles .fa-angle-double-up:before {
+  content: "\f102";
+}
+#hrjobroles .fa-angle-double-down:before {
+  content: "\f103";
+}
+#hrjobroles .fa-angle-left:before {
+  content: "\f104";
+}
+#hrjobroles .fa-angle-right:before {
+  content: "\f105";
+}
+#hrjobroles .fa-angle-up:before {
+  content: "\f106";
+}
+#hrjobroles .fa-angle-down:before {
+  content: "\f107";
+}
+#hrjobroles .fa-desktop:before {
+  content: "\f108";
+}
+#hrjobroles .fa-laptop:before {
+  content: "\f109";
+}
+#hrjobroles .fa-tablet:before {
+  content: "\f10a";
+}
+#hrjobroles .fa-mobile-phone:before,
+#hrjobroles .fa-mobile:before {
+  content: "\f10b";
+}
+#hrjobroles .fa-circle-o:before {
+  content: "\f10c";
+}
+#hrjobroles .fa-quote-left:before {
+  content: "\f10d";
+}
+#hrjobroles .fa-quote-right:before {
+  content: "\f10e";
+}
+#hrjobroles .fa-spinner:before {
+  content: "\f110";
+}
+#hrjobroles .fa-circle:before {
+  content: "\f111";
+}
+#hrjobroles .fa-mail-reply:before,
+#hrjobroles .fa-reply:before {
+  content: "\f112";
+}
+#hrjobroles .fa-github-alt:before {
+  content: "\f113";
+}
+#hrjobroles .fa-folder-o:before {
+  content: "\f114";
+}
+#hrjobroles .fa-folder-open-o:before {
+  content: "\f115";
+}
+#hrjobroles .fa-smile-o:before {
+  content: "\f118";
+}
+#hrjobroles .fa-frown-o:before {
+  content: "\f119";
+}
+#hrjobroles .fa-meh-o:before {
+  content: "\f11a";
+}
+#hrjobroles .fa-gamepad:before {
+  content: "\f11b";
+}
+#hrjobroles .fa-keyboard-o:before {
+  content: "\f11c";
+}
+#hrjobroles .fa-flag-o:before {
+  content: "\f11d";
+}
+#hrjobroles .fa-flag-checkered:before {
+  content: "\f11e";
+}
+#hrjobroles .fa-terminal:before {
+  content: "\f120";
+}
+#hrjobroles .fa-code:before {
+  content: "\f121";
+}
+#hrjobroles .fa-mail-reply-all:before,
+#hrjobroles .fa-reply-all:before {
+  content: "\f122";
+}
+#hrjobroles .fa-star-half-empty:before,
+#hrjobroles .fa-star-half-full:before,
+#hrjobroles .fa-star-half-o:before {
+  content: "\f123";
+}
+#hrjobroles .fa-location-arrow:before {
+  content: "\f124";
+}
+#hrjobroles .fa-crop:before {
+  content: "\f125";
+}
+#hrjobroles .fa-code-fork:before {
+  content: "\f126";
+}
+#hrjobroles .fa-unlink:before,
+#hrjobroles .fa-chain-broken:before {
+  content: "\f127";
+}
+#hrjobroles .fa-question:before {
+  content: "\f128";
+}
+#hrjobroles .fa-info:before {
+  content: "\f129";
+}
+#hrjobroles .fa-exclamation:before {
+  content: "\f12a";
+}
+#hrjobroles .fa-superscript:before {
+  content: "\f12b";
+}
+#hrjobroles .fa-subscript:before {
+  content: "\f12c";
+}
+#hrjobroles .fa-eraser:before {
+  content: "\f12d";
+}
+#hrjobroles .fa-puzzle-piece:before {
+  content: "\f12e";
+}
+#hrjobroles .fa-microphone:before {
+  content: "\f130";
+}
+#hrjobroles .fa-microphone-slash:before {
+  content: "\f131";
+}
+#hrjobroles .fa-shield:before {
+  content: "\f132";
+}
+#hrjobroles .fa-calendar-o:before {
+  content: "\f133";
+}
+#hrjobroles .fa-fire-extinguisher:before {
+  content: "\f134";
+}
+#hrjobroles .fa-rocket:before {
+  content: "\f135";
+}
+#hrjobroles .fa-maxcdn:before {
+  content: "\f136";
+}
+#hrjobroles .fa-chevron-circle-left:before {
+  content: "\f137";
+}
+#hrjobroles .fa-chevron-circle-right:before {
+  content: "\f138";
+}
+#hrjobroles .fa-chevron-circle-up:before {
+  content: "\f139";
+}
+#hrjobroles .fa-chevron-circle-down:before {
+  content: "\f13a";
+}
+#hrjobroles .fa-html5:before {
+  content: "\f13b";
+}
+#hrjobroles .fa-css3:before {
+  content: "\f13c";
+}
+#hrjobroles .fa-anchor:before {
+  content: "\f13d";
+}
+#hrjobroles .fa-unlock-alt:before {
+  content: "\f13e";
+}
+#hrjobroles .fa-bullseye:before {
+  content: "\f140";
+}
+#hrjobroles .fa-ellipsis-h:before {
+  content: "\f141";
+}
+#hrjobroles .fa-ellipsis-v:before {
+  content: "\f142";
+}
+#hrjobroles .fa-rss-square:before {
+  content: "\f143";
+}
+#hrjobroles .fa-play-circle:before {
+  content: "\f144";
+}
+#hrjobroles .fa-ticket:before {
+  content: "\f145";
+}
+#hrjobroles .fa-minus-square:before {
+  content: "\f146";
+}
+#hrjobroles .fa-minus-square-o:before {
+  content: "\f147";
+}
+#hrjobroles .fa-level-up:before {
+  content: "\f148";
+}
+#hrjobroles .fa-level-down:before {
+  content: "\f149";
+}
+#hrjobroles .fa-check-square:before {
+  content: "\f14a";
+}
+#hrjobroles .fa-pencil-square:before {
+  content: "\f14b";
+}
+#hrjobroles .fa-external-link-square:before {
+  content: "\f14c";
+}
+#hrjobroles .fa-share-square:before {
+  content: "\f14d";
+}
+#hrjobroles .fa-compass:before {
+  content: "\f14e";
+}
+#hrjobroles .fa-toggle-down:before,
+#hrjobroles .fa-caret-square-o-down:before {
+  content: "\f150";
+}
+#hrjobroles .fa-toggle-up:before,
+#hrjobroles .fa-caret-square-o-up:before {
+  content: "\f151";
+}
+#hrjobroles .fa-toggle-right:before,
+#hrjobroles .fa-caret-square-o-right:before {
+  content: "\f152";
+}
+#hrjobroles .fa-euro:before,
+#hrjobroles .fa-eur:before {
+  content: "\f153";
+}
+#hrjobroles .fa-gbp:before {
+  content: "\f154";
+}
+#hrjobroles .fa-dollar:before,
+#hrjobroles .fa-usd:before {
+  content: "\f155";
+}
+#hrjobroles .fa-rupee:before,
+#hrjobroles .fa-inr:before {
+  content: "\f156";
+}
+#hrjobroles .fa-cny:before,
+#hrjobroles .fa-rmb:before,
+#hrjobroles .fa-yen:before,
+#hrjobroles .fa-jpy:before {
+  content: "\f157";
+}
+#hrjobroles .fa-ruble:before,
+#hrjobroles .fa-rouble:before,
+#hrjobroles .fa-rub:before {
+  content: "\f158";
+}
+#hrjobroles .fa-won:before,
+#hrjobroles .fa-krw:before {
+  content: "\f159";
+}
+#hrjobroles .fa-bitcoin:before,
+#hrjobroles .fa-btc:before {
+  content: "\f15a";
+}
+#hrjobroles .fa-file:before {
+  content: "\f15b";
+}
+#hrjobroles .fa-file-text:before {
+  content: "\f15c";
+}
+#hrjobroles .fa-sort-alpha-asc:before {
+  content: "\f15d";
+}
+#hrjobroles .fa-sort-alpha-desc:before {
+  content: "\f15e";
+}
+#hrjobroles .fa-sort-amount-asc:before {
+  content: "\f160";
+}
+#hrjobroles .fa-sort-amount-desc:before {
+  content: "\f161";
+}
+#hrjobroles .fa-sort-numeric-asc:before {
+  content: "\f162";
+}
+#hrjobroles .fa-sort-numeric-desc:before {
+  content: "\f163";
+}
+#hrjobroles .fa-thumbs-up:before {
+  content: "\f164";
+}
+#hrjobroles .fa-thumbs-down:before {
+  content: "\f165";
+}
+#hrjobroles .fa-youtube-square:before {
+  content: "\f166";
+}
+#hrjobroles .fa-youtube:before {
+  content: "\f167";
+}
+#hrjobroles .fa-xing:before {
+  content: "\f168";
+}
+#hrjobroles .fa-xing-square:before {
+  content: "\f169";
+}
+#hrjobroles .fa-youtube-play:before {
+  content: "\f16a";
+}
+#hrjobroles .fa-dropbox:before {
+  content: "\f16b";
+}
+#hrjobroles .fa-stack-overflow:before {
+  content: "\f16c";
+}
+#hrjobroles .fa-instagram:before {
+  content: "\f16d";
+}
+#hrjobroles .fa-flickr:before {
+  content: "\f16e";
+}
+#hrjobroles .fa-adn:before {
+  content: "\f170";
+}
+#hrjobroles .fa-bitbucket:before {
+  content: "\f171";
+}
+#hrjobroles .fa-bitbucket-square:before {
+  content: "\f172";
+}
+#hrjobroles .fa-tumblr:before {
+  content: "\f173";
+}
+#hrjobroles .fa-tumblr-square:before {
+  content: "\f174";
+}
+#hrjobroles .fa-long-arrow-down:before {
+  content: "\f175";
+}
+#hrjobroles .fa-long-arrow-up:before {
+  content: "\f176";
+}
+#hrjobroles .fa-long-arrow-left:before {
+  content: "\f177";
+}
+#hrjobroles .fa-long-arrow-right:before {
+  content: "\f178";
+}
+#hrjobroles .fa-apple:before {
+  content: "\f179";
+}
+#hrjobroles .fa-windows:before {
+  content: "\f17a";
+}
+#hrjobroles .fa-android:before {
+  content: "\f17b";
+}
+#hrjobroles .fa-linux:before {
+  content: "\f17c";
+}
+#hrjobroles .fa-dribbble:before {
+  content: "\f17d";
+}
+#hrjobroles .fa-skype:before {
+  content: "\f17e";
+}
+#hrjobroles .fa-foursquare:before {
+  content: "\f180";
+}
+#hrjobroles .fa-trello:before {
+  content: "\f181";
+}
+#hrjobroles .fa-female:before {
+  content: "\f182";
+}
+#hrjobroles .fa-male:before {
+  content: "\f183";
+}
+#hrjobroles .fa-gittip:before {
+  content: "\f184";
+}
+#hrjobroles .fa-sun-o:before {
+  content: "\f185";
+}
+#hrjobroles .fa-moon-o:before {
+  content: "\f186";
+}
+#hrjobroles .fa-archive:before {
+  content: "\f187";
+}
+#hrjobroles .fa-bug:before {
+  content: "\f188";
+}
+#hrjobroles .fa-vk:before {
+  content: "\f189";
+}
+#hrjobroles .fa-weibo:before {
+  content: "\f18a";
+}
+#hrjobroles .fa-renren:before {
+  content: "\f18b";
+}
+#hrjobroles .fa-pagelines:before {
+  content: "\f18c";
+}
+#hrjobroles .fa-stack-exchange:before {
+  content: "\f18d";
+}
+#hrjobroles .fa-arrow-circle-o-right:before {
+  content: "\f18e";
+}
+#hrjobroles .fa-arrow-circle-o-left:before {
+  content: "\f190";
+}
+#hrjobroles .fa-toggle-left:before,
+#hrjobroles .fa-caret-square-o-left:before {
+  content: "\f191";
+}
+#hrjobroles .fa-dot-circle-o:before {
+  content: "\f192";
+}
+#hrjobroles .fa-wheelchair:before {
+  content: "\f193";
+}
+#hrjobroles .fa-vimeo-square:before {
+  content: "\f194";
+}
+#hrjobroles .fa-turkish-lira:before,
+#hrjobroles .fa-try:before {
+  content: "\f195";
+}
+#hrjobroles .fa-plus-square-o:before {
+  content: "\f196";
+}
+#hrjobroles .fa-space-shuttle:before {
+  content: "\f197";
+}
+#hrjobroles .fa-slack:before {
+  content: "\f198";
+}
+#hrjobroles .fa-envelope-square:before {
+  content: "\f199";
+}
+#hrjobroles .fa-wordpress:before {
+  content: "\f19a";
+}
+#hrjobroles .fa-openid:before {
+  content: "\f19b";
+}
+#hrjobroles .fa-institution:before,
+#hrjobroles .fa-bank:before,
+#hrjobroles .fa-university:before {
+  content: "\f19c";
+}
+#hrjobroles .fa-mortar-board:before,
+#hrjobroles .fa-graduation-cap:before {
+  content: "\f19d";
+}
+#hrjobroles .fa-yahoo:before {
+  content: "\f19e";
+}
+#hrjobroles .fa-google:before {
+  content: "\f1a0";
+}
+#hrjobroles .fa-reddit:before {
+  content: "\f1a1";
+}
+#hrjobroles .fa-reddit-square:before {
+  content: "\f1a2";
+}
+#hrjobroles .fa-stumbleupon-circle:before {
+  content: "\f1a3";
+}
+#hrjobroles .fa-stumbleupon:before {
+  content: "\f1a4";
+}
+#hrjobroles .fa-delicious:before {
+  content: "\f1a5";
+}
+#hrjobroles .fa-digg:before {
+  content: "\f1a6";
+}
+#hrjobroles .fa-pied-piper:before {
+  content: "\f1a7";
+}
+#hrjobroles .fa-pied-piper-alt:before {
+  content: "\f1a8";
+}
+#hrjobroles .fa-drupal:before {
+  content: "\f1a9";
+}
+#hrjobroles .fa-joomla:before {
+  content: "\f1aa";
+}
+#hrjobroles .fa-language:before {
+  content: "\f1ab";
+}
+#hrjobroles .fa-fax:before {
+  content: "\f1ac";
+}
+#hrjobroles .fa-building:before {
+  content: "\f1ad";
+}
+#hrjobroles .fa-child:before {
+  content: "\f1ae";
+}
+#hrjobroles .fa-paw:before {
+  content: "\f1b0";
+}
+#hrjobroles .fa-spoon:before {
+  content: "\f1b1";
+}
+#hrjobroles .fa-cube:before {
+  content: "\f1b2";
+}
+#hrjobroles .fa-cubes:before {
+  content: "\f1b3";
+}
+#hrjobroles .fa-behance:before {
+  content: "\f1b4";
+}
+#hrjobroles .fa-behance-square:before {
+  content: "\f1b5";
+}
+#hrjobroles .fa-steam:before {
+  content: "\f1b6";
+}
+#hrjobroles .fa-steam-square:before {
+  content: "\f1b7";
+}
+#hrjobroles .fa-recycle:before {
+  content: "\f1b8";
+}
+#hrjobroles .fa-automobile:before,
+#hrjobroles .fa-car:before {
+  content: "\f1b9";
+}
+#hrjobroles .fa-cab:before,
+#hrjobroles .fa-taxi:before {
+  content: "\f1ba";
+}
+#hrjobroles .fa-tree:before {
+  content: "\f1bb";
+}
+#hrjobroles .fa-spotify:before {
+  content: "\f1bc";
+}
+#hrjobroles .fa-deviantart:before {
+  content: "\f1bd";
+}
+#hrjobroles .fa-soundcloud:before {
+  content: "\f1be";
+}
+#hrjobroles .fa-database:before {
+  content: "\f1c0";
+}
+#hrjobroles .fa-file-pdf-o:before {
+  content: "\f1c1";
+}
+#hrjobroles .fa-file-word-o:before {
+  content: "\f1c2";
+}
+#hrjobroles .fa-file-excel-o:before {
+  content: "\f1c3";
+}
+#hrjobroles .fa-file-powerpoint-o:before {
+  content: "\f1c4";
+}
+#hrjobroles .fa-file-photo-o:before,
+#hrjobroles .fa-file-picture-o:before,
+#hrjobroles .fa-file-image-o:before {
+  content: "\f1c5";
+}
+#hrjobroles .fa-file-zip-o:before,
+#hrjobroles .fa-file-archive-o:before {
+  content: "\f1c6";
+}
+#hrjobroles .fa-file-sound-o:before,
+#hrjobroles .fa-file-audio-o:before {
+  content: "\f1c7";
+}
+#hrjobroles .fa-file-movie-o:before,
+#hrjobroles .fa-file-video-o:before {
+  content: "\f1c8";
+}
+#hrjobroles .fa-file-code-o:before {
+  content: "\f1c9";
+}
+#hrjobroles .fa-vine:before {
+  content: "\f1ca";
+}
+#hrjobroles .fa-codepen:before {
+  content: "\f1cb";
+}
+#hrjobroles .fa-jsfiddle:before {
+  content: "\f1cc";
+}
+#hrjobroles .fa-life-bouy:before,
+#hrjobroles .fa-life-buoy:before,
+#hrjobroles .fa-life-saver:before,
+#hrjobroles .fa-support:before,
+#hrjobroles .fa-life-ring:before {
+  content: "\f1cd";
+}
+#hrjobroles .fa-circle-o-notch:before {
+  content: "\f1ce";
+}
+#hrjobroles .fa-ra:before,
+#hrjobroles .fa-rebel:before {
+  content: "\f1d0";
+}
+#hrjobroles .fa-ge:before,
+#hrjobroles .fa-empire:before {
+  content: "\f1d1";
+}
+#hrjobroles .fa-git-square:before {
+  content: "\f1d2";
+}
+#hrjobroles .fa-git:before {
+  content: "\f1d3";
+}
+#hrjobroles .fa-hacker-news:before {
+  content: "\f1d4";
+}
+#hrjobroles .fa-tencent-weibo:before {
+  content: "\f1d5";
+}
+#hrjobroles .fa-qq:before {
+  content: "\f1d6";
+}
+#hrjobroles .fa-wechat:before,
+#hrjobroles .fa-weixin:before {
+  content: "\f1d7";
+}
+#hrjobroles .fa-send:before,
+#hrjobroles .fa-paper-plane:before {
+  content: "\f1d8";
+}
+#hrjobroles .fa-send-o:before,
+#hrjobroles .fa-paper-plane-o:before {
+  content: "\f1d9";
+}
+#hrjobroles .fa-history:before {
+  content: "\f1da";
+}
+#hrjobroles .fa-circle-thin:before {
+  content: "\f1db";
+}
+#hrjobroles .fa-header:before {
+  content: "\f1dc";
+}
+#hrjobroles .fa-paragraph:before {
+  content: "\f1dd";
+}
+#hrjobroles .fa-sliders:before {
+  content: "\f1de";
+}
+#hrjobroles .fa-share-alt:before {
+  content: "\f1e0";
+}
+#hrjobroles .fa-share-alt-square:before {
+  content: "\f1e1";
+}
+#hrjobroles .fa-bomb:before {
+  content: "\f1e2";
+}
+#hrjobroles .fa-soccer-ball-o:before,
+#hrjobroles .fa-futbol-o:before {
+  content: "\f1e3";
+}
+#hrjobroles .fa-tty:before {
+  content: "\f1e4";
+}
+#hrjobroles .fa-binoculars:before {
+  content: "\f1e5";
+}
+#hrjobroles .fa-plug:before {
+  content: "\f1e6";
+}
+#hrjobroles .fa-slideshare:before {
+  content: "\f1e7";
+}
+#hrjobroles .fa-twitch:before {
+  content: "\f1e8";
+}
+#hrjobroles .fa-yelp:before {
+  content: "\f1e9";
+}
+#hrjobroles .fa-newspaper-o:before {
+  content: "\f1ea";
+}
+#hrjobroles .fa-wifi:before {
+  content: "\f1eb";
+}
+#hrjobroles .fa-calculator:before {
+  content: "\f1ec";
+}
+#hrjobroles .fa-paypal:before {
+  content: "\f1ed";
+}
+#hrjobroles .fa-google-wallet:before {
+  content: "\f1ee";
+}
+#hrjobroles .fa-cc-visa:before {
+  content: "\f1f0";
+}
+#hrjobroles .fa-cc-mastercard:before {
+  content: "\f1f1";
+}
+#hrjobroles .fa-cc-discover:before {
+  content: "\f1f2";
+}
+#hrjobroles .fa-cc-amex:before {
+  content: "\f1f3";
+}
+#hrjobroles .fa-cc-paypal:before {
+  content: "\f1f4";
+}
+#hrjobroles .fa-cc-stripe:before {
+  content: "\f1f5";
+}
+#hrjobroles .fa-bell-slash:before {
+  content: "\f1f6";
+}
+#hrjobroles .fa-bell-slash-o:before {
+  content: "\f1f7";
+}
+#hrjobroles .fa-trash:before {
+  content: "\f1f8";
+}
+#hrjobroles .fa-copyright:before {
+  content: "\f1f9";
+}
+#hrjobroles .fa-at:before {
+  content: "\f1fa";
+}
+#hrjobroles .fa-eyedropper:before {
+  content: "\f1fb";
+}
+#hrjobroles .fa-paint-brush:before {
+  content: "\f1fc";
+}
+#hrjobroles .fa-birthday-cake:before {
+  content: "\f1fd";
+}
+#hrjobroles .fa-area-chart:before {
+  content: "\f1fe";
+}
+#hrjobroles .fa-pie-chart:before {
+  content: "\f200";
+}
+#hrjobroles .fa-line-chart:before {
+  content: "\f201";
+}
+#hrjobroles .fa-lastfm:before {
+  content: "\f202";
+}
+#hrjobroles .fa-lastfm-square:before {
+  content: "\f203";
+}
+#hrjobroles .fa-toggle-off:before {
+  content: "\f204";
+}
+#hrjobroles .fa-toggle-on:before {
+  content: "\f205";
+}
+#hrjobroles .fa-bicycle:before {
+  content: "\f206";
+}
+#hrjobroles .fa-bus:before {
+  content: "\f207";
+}
+#hrjobroles .fa-ioxhost:before {
+  content: "\f208";
+}
+#hrjobroles .fa-angellist:before {
+  content: "\f209";
+}
+#hrjobroles .fa-cc:before {
+  content: "\f20a";
+}
+#hrjobroles .fa-shekel:before,
+#hrjobroles .fa-sheqel:before,
+#hrjobroles .fa-ils:before {
+  content: "\f20b";
+}
+#hrjobroles .fa-meanpath:before {
+  content: "\f20c";
 }
 #hrjobroles * {
   -webkit-box-sizing: border-box;
@@ -6482,1669 +8149,6 @@ fieldset[disabled]
   }
 }
 @font-face {
-  font-family: 'FontAwesome';
-  src: url("../fonts/fontawesome/fontawesome-webfont.eot?v=4.2.0");
-  src: url("../fonts/fontawesome/fontawesome-webfont.eot?#iefix&v=4.2.0") format("embedded-opentype"), url("../fonts/fontawesome/fontawesome-webfont.woff?v=4.2.0") format("woff"), url("../fonts/fontawesome/fontawesome-webfont.ttf?v=4.2.0") format("truetype"), url("../fonts/fontawesome/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-#hrjobroles .fa {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-#hrjobroles .fa-lg {
-  font-size: 1.33333333em;
-  line-height: 0.75em;
-  vertical-align: -15%;
-}
-#hrjobroles .fa-2x {
-  font-size: 2em;
-}
-#hrjobroles .fa-3x {
-  font-size: 3em;
-}
-#hrjobroles .fa-4x {
-  font-size: 4em;
-}
-#hrjobroles .fa-5x {
-  font-size: 5em;
-}
-#hrjobroles .fa-fw {
-  width: 1.28571429em;
-  text-align: center;
-}
-#hrjobroles .fa-ul {
-  padding-left: 0;
-  margin-left: 2.14285714em;
-  list-style-type: none;
-}
-#hrjobroles .fa-ul > li {
-  position: relative;
-}
-#hrjobroles .fa-li {
-  position: absolute;
-  left: -2.14285714em;
-  width: 2.14285714em;
-  top: 0.14285714em;
-  text-align: center;
-}
-#hrjobroles .fa-li.fa-lg {
-  left: -1.85714286em;
-}
-#hrjobroles .fa-border {
-  padding: .2em .25em .15em;
-  border: solid 0.08em #eeeeee;
-  border-radius: .1em;
-}
-#hrjobroles .pull-right {
-  float: right;
-}
-#hrjobroles .pull-left {
-  float: left;
-}
-#hrjobroles .fa.pull-left {
-  margin-right: .3em;
-}
-#hrjobroles .fa.pull-right {
-  margin-left: .3em;
-}
-#hrjobroles .fa-spin {
-  -webkit-animation: fa-spin 2s infinite linear;
-  animation: fa-spin 2s infinite linear;
-}
-@-webkit-keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-@keyframes fa-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
-}
-#hrjobroles .fa-rotate-90 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-  -webkit-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  transform: rotate(90deg);
-}
-#hrjobroles .fa-rotate-180 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-  -webkit-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  transform: rotate(180deg);
-}
-#hrjobroles .fa-rotate-270 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-  -webkit-transform: rotate(270deg);
-  -ms-transform: rotate(270deg);
-  transform: rotate(270deg);
-}
-#hrjobroles .fa-flip-horizontal {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
-  -webkit-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-}
-#hrjobroles .fa-flip-vertical {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
-  -webkit-transform: scale(1, -1);
-  -ms-transform: scale(1, -1);
-  transform: scale(1, -1);
-}
-#hrjobroles :root .fa-rotate-90,
-#hrjobroles :root .fa-rotate-180,
-#hrjobroles :root .fa-rotate-270,
-#hrjobroles :root .fa-flip-horizontal,
-#hrjobroles :root .fa-flip-vertical {
-  filter: none;
-}
-#hrjobroles .fa-stack {
-  position: relative;
-  display: inline-block;
-  width: 2em;
-  height: 2em;
-  line-height: 2em;
-  vertical-align: middle;
-}
-#hrjobroles .fa-stack-1x,
-#hrjobroles .fa-stack-2x {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  text-align: center;
-}
-#hrjobroles .fa-stack-1x {
-  line-height: inherit;
-}
-#hrjobroles .fa-stack-2x {
-  font-size: 2em;
-}
-#hrjobroles .fa-inverse {
-  color: #ffffff;
-}
-#hrjobroles .fa-glass:before {
-  content: "\f000";
-}
-#hrjobroles .fa-music:before {
-  content: "\f001";
-}
-#hrjobroles .fa-search:before {
-  content: "\f002";
-}
-#hrjobroles .fa-envelope-o:before {
-  content: "\f003";
-}
-#hrjobroles .fa-heart:before {
-  content: "\f004";
-}
-#hrjobroles .fa-star:before {
-  content: "\f005";
-}
-#hrjobroles .fa-star-o:before {
-  content: "\f006";
-}
-#hrjobroles .fa-user:before {
-  content: "\f007";
-}
-#hrjobroles .fa-film:before {
-  content: "\f008";
-}
-#hrjobroles .fa-th-large:before {
-  content: "\f009";
-}
-#hrjobroles .fa-th:before {
-  content: "\f00a";
-}
-#hrjobroles .fa-th-list:before {
-  content: "\f00b";
-}
-#hrjobroles .fa-check:before {
-  content: "\f00c";
-}
-#hrjobroles .fa-remove:before,
-#hrjobroles .fa-close:before,
-#hrjobroles .fa-times:before {
-  content: "\f00d";
-}
-#hrjobroles .fa-search-plus:before {
-  content: "\f00e";
-}
-#hrjobroles .fa-search-minus:before {
-  content: "\f010";
-}
-#hrjobroles .fa-power-off:before {
-  content: "\f011";
-}
-#hrjobroles .fa-signal:before {
-  content: "\f012";
-}
-#hrjobroles .fa-gear:before,
-#hrjobroles .fa-cog:before {
-  content: "\f013";
-}
-#hrjobroles .fa-trash-o:before {
-  content: "\f014";
-}
-#hrjobroles .fa-home:before {
-  content: "\f015";
-}
-#hrjobroles .fa-file-o:before {
-  content: "\f016";
-}
-#hrjobroles .fa-clock-o:before {
-  content: "\f017";
-}
-#hrjobroles .fa-road:before {
-  content: "\f018";
-}
-#hrjobroles .fa-download:before {
-  content: "\f019";
-}
-#hrjobroles .fa-arrow-circle-o-down:before {
-  content: "\f01a";
-}
-#hrjobroles .fa-arrow-circle-o-up:before {
-  content: "\f01b";
-}
-#hrjobroles .fa-inbox:before {
-  content: "\f01c";
-}
-#hrjobroles .fa-play-circle-o:before {
-  content: "\f01d";
-}
-#hrjobroles .fa-rotate-right:before,
-#hrjobroles .fa-repeat:before {
-  content: "\f01e";
-}
-#hrjobroles .fa-refresh:before {
-  content: "\f021";
-}
-#hrjobroles .fa-list-alt:before {
-  content: "\f022";
-}
-#hrjobroles .fa-lock:before {
-  content: "\f023";
-}
-#hrjobroles .fa-flag:before {
-  content: "\f024";
-}
-#hrjobroles .fa-headphones:before {
-  content: "\f025";
-}
-#hrjobroles .fa-volume-off:before {
-  content: "\f026";
-}
-#hrjobroles .fa-volume-down:before {
-  content: "\f027";
-}
-#hrjobroles .fa-volume-up:before {
-  content: "\f028";
-}
-#hrjobroles .fa-qrcode:before {
-  content: "\f029";
-}
-#hrjobroles .fa-barcode:before {
-  content: "\f02a";
-}
-#hrjobroles .fa-tag:before {
-  content: "\f02b";
-}
-#hrjobroles .fa-tags:before {
-  content: "\f02c";
-}
-#hrjobroles .fa-book:before {
-  content: "\f02d";
-}
-#hrjobroles .fa-bookmark:before {
-  content: "\f02e";
-}
-#hrjobroles .fa-print:before {
-  content: "\f02f";
-}
-#hrjobroles .fa-camera:before {
-  content: "\f030";
-}
-#hrjobroles .fa-font:before {
-  content: "\f031";
-}
-#hrjobroles .fa-bold:before {
-  content: "\f032";
-}
-#hrjobroles .fa-italic:before {
-  content: "\f033";
-}
-#hrjobroles .fa-text-height:before {
-  content: "\f034";
-}
-#hrjobroles .fa-text-width:before {
-  content: "\f035";
-}
-#hrjobroles .fa-align-left:before {
-  content: "\f036";
-}
-#hrjobroles .fa-align-center:before {
-  content: "\f037";
-}
-#hrjobroles .fa-align-right:before {
-  content: "\f038";
-}
-#hrjobroles .fa-align-justify:before {
-  content: "\f039";
-}
-#hrjobroles .fa-list:before {
-  content: "\f03a";
-}
-#hrjobroles .fa-dedent:before,
-#hrjobroles .fa-outdent:before {
-  content: "\f03b";
-}
-#hrjobroles .fa-indent:before {
-  content: "\f03c";
-}
-#hrjobroles .fa-video-camera:before {
-  content: "\f03d";
-}
-#hrjobroles .fa-photo:before,
-#hrjobroles .fa-image:before,
-#hrjobroles .fa-picture-o:before {
-  content: "\f03e";
-}
-#hrjobroles .fa-pencil:before {
-  content: "\f040";
-}
-#hrjobroles .fa-map-marker:before {
-  content: "\f041";
-}
-#hrjobroles .fa-adjust:before {
-  content: "\f042";
-}
-#hrjobroles .fa-tint:before {
-  content: "\f043";
-}
-#hrjobroles .fa-edit:before,
-#hrjobroles .fa-pencil-square-o:before {
-  content: "\f044";
-}
-#hrjobroles .fa-share-square-o:before {
-  content: "\f045";
-}
-#hrjobroles .fa-check-square-o:before {
-  content: "\f046";
-}
-#hrjobroles .fa-arrows:before {
-  content: "\f047";
-}
-#hrjobroles .fa-step-backward:before {
-  content: "\f048";
-}
-#hrjobroles .fa-fast-backward:before {
-  content: "\f049";
-}
-#hrjobroles .fa-backward:before {
-  content: "\f04a";
-}
-#hrjobroles .fa-play:before {
-  content: "\f04b";
-}
-#hrjobroles .fa-pause:before {
-  content: "\f04c";
-}
-#hrjobroles .fa-stop:before {
-  content: "\f04d";
-}
-#hrjobroles .fa-forward:before {
-  content: "\f04e";
-}
-#hrjobroles .fa-fast-forward:before {
-  content: "\f050";
-}
-#hrjobroles .fa-step-forward:before {
-  content: "\f051";
-}
-#hrjobroles .fa-eject:before {
-  content: "\f052";
-}
-#hrjobroles .fa-chevron-left:before {
-  content: "\f053";
-}
-#hrjobroles .fa-chevron-right:before {
-  content: "\f054";
-}
-#hrjobroles .fa-plus-circle:before {
-  content: "\f055";
-}
-#hrjobroles .fa-minus-circle:before {
-  content: "\f056";
-}
-#hrjobroles .fa-times-circle:before {
-  content: "\f057";
-}
-#hrjobroles .fa-check-circle:before {
-  content: "\f058";
-}
-#hrjobroles .fa-question-circle:before {
-  content: "\f059";
-}
-#hrjobroles .fa-info-circle:before {
-  content: "\f05a";
-}
-#hrjobroles .fa-crosshairs:before {
-  content: "\f05b";
-}
-#hrjobroles .fa-times-circle-o:before {
-  content: "\f05c";
-}
-#hrjobroles .fa-check-circle-o:before {
-  content: "\f05d";
-}
-#hrjobroles .fa-ban:before {
-  content: "\f05e";
-}
-#hrjobroles .fa-arrow-left:before {
-  content: "\f060";
-}
-#hrjobroles .fa-arrow-right:before {
-  content: "\f061";
-}
-#hrjobroles .fa-arrow-up:before {
-  content: "\f062";
-}
-#hrjobroles .fa-arrow-down:before {
-  content: "\f063";
-}
-#hrjobroles .fa-mail-forward:before,
-#hrjobroles .fa-share:before {
-  content: "\f064";
-}
-#hrjobroles .fa-expand:before {
-  content: "\f065";
-}
-#hrjobroles .fa-compress:before {
-  content: "\f066";
-}
-#hrjobroles .fa-plus:before {
-  content: "\f067";
-}
-#hrjobroles .fa-minus:before {
-  content: "\f068";
-}
-#hrjobroles .fa-asterisk:before {
-  content: "\f069";
-}
-#hrjobroles .fa-exclamation-circle:before {
-  content: "\f06a";
-}
-#hrjobroles .fa-gift:before {
-  content: "\f06b";
-}
-#hrjobroles .fa-leaf:before {
-  content: "\f06c";
-}
-#hrjobroles .fa-fire:before {
-  content: "\f06d";
-}
-#hrjobroles .fa-eye:before {
-  content: "\f06e";
-}
-#hrjobroles .fa-eye-slash:before {
-  content: "\f070";
-}
-#hrjobroles .fa-warning:before,
-#hrjobroles .fa-exclamation-triangle:before {
-  content: "\f071";
-}
-#hrjobroles .fa-plane:before {
-  content: "\f072";
-}
-#hrjobroles .fa-calendar:before {
-  content: "\f073";
-}
-#hrjobroles .fa-random:before {
-  content: "\f074";
-}
-#hrjobroles .fa-comment:before {
-  content: "\f075";
-}
-#hrjobroles .fa-magnet:before {
-  content: "\f076";
-}
-#hrjobroles .fa-chevron-up:before {
-  content: "\f077";
-}
-#hrjobroles .fa-chevron-down:before {
-  content: "\f078";
-}
-#hrjobroles .fa-retweet:before {
-  content: "\f079";
-}
-#hrjobroles .fa-shopping-cart:before {
-  content: "\f07a";
-}
-#hrjobroles .fa-folder:before {
-  content: "\f07b";
-}
-#hrjobroles .fa-folder-open:before {
-  content: "\f07c";
-}
-#hrjobroles .fa-arrows-v:before {
-  content: "\f07d";
-}
-#hrjobroles .fa-arrows-h:before {
-  content: "\f07e";
-}
-#hrjobroles .fa-bar-chart-o:before,
-#hrjobroles .fa-bar-chart:before {
-  content: "\f080";
-}
-#hrjobroles .fa-twitter-square:before {
-  content: "\f081";
-}
-#hrjobroles .fa-facebook-square:before {
-  content: "\f082";
-}
-#hrjobroles .fa-camera-retro:before {
-  content: "\f083";
-}
-#hrjobroles .fa-key:before {
-  content: "\f084";
-}
-#hrjobroles .fa-gears:before,
-#hrjobroles .fa-cogs:before {
-  content: "\f085";
-}
-#hrjobroles .fa-comments:before {
-  content: "\f086";
-}
-#hrjobroles .fa-thumbs-o-up:before {
-  content: "\f087";
-}
-#hrjobroles .fa-thumbs-o-down:before {
-  content: "\f088";
-}
-#hrjobroles .fa-star-half:before {
-  content: "\f089";
-}
-#hrjobroles .fa-heart-o:before {
-  content: "\f08a";
-}
-#hrjobroles .fa-sign-out:before {
-  content: "\f08b";
-}
-#hrjobroles .fa-linkedin-square:before {
-  content: "\f08c";
-}
-#hrjobroles .fa-thumb-tack:before {
-  content: "\f08d";
-}
-#hrjobroles .fa-external-link:before {
-  content: "\f08e";
-}
-#hrjobroles .fa-sign-in:before {
-  content: "\f090";
-}
-#hrjobroles .fa-trophy:before {
-  content: "\f091";
-}
-#hrjobroles .fa-github-square:before {
-  content: "\f092";
-}
-#hrjobroles .fa-upload:before {
-  content: "\f093";
-}
-#hrjobroles .fa-lemon-o:before {
-  content: "\f094";
-}
-#hrjobroles .fa-phone:before {
-  content: "\f095";
-}
-#hrjobroles .fa-square-o:before {
-  content: "\f096";
-}
-#hrjobroles .fa-bookmark-o:before {
-  content: "\f097";
-}
-#hrjobroles .fa-phone-square:before {
-  content: "\f098";
-}
-#hrjobroles .fa-twitter:before {
-  content: "\f099";
-}
-#hrjobroles .fa-facebook:before {
-  content: "\f09a";
-}
-#hrjobroles .fa-github:before {
-  content: "\f09b";
-}
-#hrjobroles .fa-unlock:before {
-  content: "\f09c";
-}
-#hrjobroles .fa-credit-card:before {
-  content: "\f09d";
-}
-#hrjobroles .fa-rss:before {
-  content: "\f09e";
-}
-#hrjobroles .fa-hdd-o:before {
-  content: "\f0a0";
-}
-#hrjobroles .fa-bullhorn:before {
-  content: "\f0a1";
-}
-#hrjobroles .fa-bell:before {
-  content: "\f0f3";
-}
-#hrjobroles .fa-certificate:before {
-  content: "\f0a3";
-}
-#hrjobroles .fa-hand-o-right:before {
-  content: "\f0a4";
-}
-#hrjobroles .fa-hand-o-left:before {
-  content: "\f0a5";
-}
-#hrjobroles .fa-hand-o-up:before {
-  content: "\f0a6";
-}
-#hrjobroles .fa-hand-o-down:before {
-  content: "\f0a7";
-}
-#hrjobroles .fa-arrow-circle-left:before {
-  content: "\f0a8";
-}
-#hrjobroles .fa-arrow-circle-right:before {
-  content: "\f0a9";
-}
-#hrjobroles .fa-arrow-circle-up:before {
-  content: "\f0aa";
-}
-#hrjobroles .fa-arrow-circle-down:before {
-  content: "\f0ab";
-}
-#hrjobroles .fa-globe:before {
-  content: "\f0ac";
-}
-#hrjobroles .fa-wrench:before {
-  content: "\f0ad";
-}
-#hrjobroles .fa-tasks:before {
-  content: "\f0ae";
-}
-#hrjobroles .fa-filter:before {
-  content: "\f0b0";
-}
-#hrjobroles .fa-briefcase:before {
-  content: "\f0b1";
-}
-#hrjobroles .fa-arrows-alt:before {
-  content: "\f0b2";
-}
-#hrjobroles .fa-group:before,
-#hrjobroles .fa-users:before {
-  content: "\f0c0";
-}
-#hrjobroles .fa-chain:before,
-#hrjobroles .fa-link:before {
-  content: "\f0c1";
-}
-#hrjobroles .fa-cloud:before {
-  content: "\f0c2";
-}
-#hrjobroles .fa-flask:before {
-  content: "\f0c3";
-}
-#hrjobroles .fa-cut:before,
-#hrjobroles .fa-scissors:before {
-  content: "\f0c4";
-}
-#hrjobroles .fa-copy:before,
-#hrjobroles .fa-files-o:before {
-  content: "\f0c5";
-}
-#hrjobroles .fa-paperclip:before {
-  content: "\f0c6";
-}
-#hrjobroles .fa-save:before,
-#hrjobroles .fa-floppy-o:before {
-  content: "\f0c7";
-}
-#hrjobroles .fa-square:before {
-  content: "\f0c8";
-}
-#hrjobroles .fa-navicon:before,
-#hrjobroles .fa-reorder:before,
-#hrjobroles .fa-bars:before {
-  content: "\f0c9";
-}
-#hrjobroles .fa-list-ul:before {
-  content: "\f0ca";
-}
-#hrjobroles .fa-list-ol:before {
-  content: "\f0cb";
-}
-#hrjobroles .fa-strikethrough:before {
-  content: "\f0cc";
-}
-#hrjobroles .fa-underline:before {
-  content: "\f0cd";
-}
-#hrjobroles .fa-table:before {
-  content: "\f0ce";
-}
-#hrjobroles .fa-magic:before {
-  content: "\f0d0";
-}
-#hrjobroles .fa-truck:before {
-  content: "\f0d1";
-}
-#hrjobroles .fa-pinterest:before {
-  content: "\f0d2";
-}
-#hrjobroles .fa-pinterest-square:before {
-  content: "\f0d3";
-}
-#hrjobroles .fa-google-plus-square:before {
-  content: "\f0d4";
-}
-#hrjobroles .fa-google-plus:before {
-  content: "\f0d5";
-}
-#hrjobroles .fa-money:before {
-  content: "\f0d6";
-}
-#hrjobroles .fa-caret-down:before {
-  content: "\f0d7";
-}
-#hrjobroles .fa-caret-up:before {
-  content: "\f0d8";
-}
-#hrjobroles .fa-caret-left:before {
-  content: "\f0d9";
-}
-#hrjobroles .fa-caret-right:before {
-  content: "\f0da";
-}
-#hrjobroles .fa-columns:before {
-  content: "\f0db";
-}
-#hrjobroles .fa-unsorted:before,
-#hrjobroles .fa-sort:before {
-  content: "\f0dc";
-}
-#hrjobroles .fa-sort-down:before,
-#hrjobroles .fa-sort-desc:before {
-  content: "\f0dd";
-}
-#hrjobroles .fa-sort-up:before,
-#hrjobroles .fa-sort-asc:before {
-  content: "\f0de";
-}
-#hrjobroles .fa-envelope:before {
-  content: "\f0e0";
-}
-#hrjobroles .fa-linkedin:before {
-  content: "\f0e1";
-}
-#hrjobroles .fa-rotate-left:before,
-#hrjobroles .fa-undo:before {
-  content: "\f0e2";
-}
-#hrjobroles .fa-legal:before,
-#hrjobroles .fa-gavel:before {
-  content: "\f0e3";
-}
-#hrjobroles .fa-dashboard:before,
-#hrjobroles .fa-tachometer:before {
-  content: "\f0e4";
-}
-#hrjobroles .fa-comment-o:before {
-  content: "\f0e5";
-}
-#hrjobroles .fa-comments-o:before {
-  content: "\f0e6";
-}
-#hrjobroles .fa-flash:before,
-#hrjobroles .fa-bolt:before {
-  content: "\f0e7";
-}
-#hrjobroles .fa-sitemap:before {
-  content: "\f0e8";
-}
-#hrjobroles .fa-umbrella:before {
-  content: "\f0e9";
-}
-#hrjobroles .fa-paste:before,
-#hrjobroles .fa-clipboard:before {
-  content: "\f0ea";
-}
-#hrjobroles .fa-lightbulb-o:before {
-  content: "\f0eb";
-}
-#hrjobroles .fa-exchange:before {
-  content: "\f0ec";
-}
-#hrjobroles .fa-cloud-download:before {
-  content: "\f0ed";
-}
-#hrjobroles .fa-cloud-upload:before {
-  content: "\f0ee";
-}
-#hrjobroles .fa-user-md:before {
-  content: "\f0f0";
-}
-#hrjobroles .fa-stethoscope:before {
-  content: "\f0f1";
-}
-#hrjobroles .fa-suitcase:before {
-  content: "\f0f2";
-}
-#hrjobroles .fa-bell-o:before {
-  content: "\f0a2";
-}
-#hrjobroles .fa-coffee:before {
-  content: "\f0f4";
-}
-#hrjobroles .fa-cutlery:before {
-  content: "\f0f5";
-}
-#hrjobroles .fa-file-text-o:before {
-  content: "\f0f6";
-}
-#hrjobroles .fa-building-o:before {
-  content: "\f0f7";
-}
-#hrjobroles .fa-hospital-o:before {
-  content: "\f0f8";
-}
-#hrjobroles .fa-ambulance:before {
-  content: "\f0f9";
-}
-#hrjobroles .fa-medkit:before {
-  content: "\f0fa";
-}
-#hrjobroles .fa-fighter-jet:before {
-  content: "\f0fb";
-}
-#hrjobroles .fa-beer:before {
-  content: "\f0fc";
-}
-#hrjobroles .fa-h-square:before {
-  content: "\f0fd";
-}
-#hrjobroles .fa-plus-square:before {
-  content: "\f0fe";
-}
-#hrjobroles .fa-angle-double-left:before {
-  content: "\f100";
-}
-#hrjobroles .fa-angle-double-right:before {
-  content: "\f101";
-}
-#hrjobroles .fa-angle-double-up:before {
-  content: "\f102";
-}
-#hrjobroles .fa-angle-double-down:before {
-  content: "\f103";
-}
-#hrjobroles .fa-angle-left:before {
-  content: "\f104";
-}
-#hrjobroles .fa-angle-right:before {
-  content: "\f105";
-}
-#hrjobroles .fa-angle-up:before {
-  content: "\f106";
-}
-#hrjobroles .fa-angle-down:before {
-  content: "\f107";
-}
-#hrjobroles .fa-desktop:before {
-  content: "\f108";
-}
-#hrjobroles .fa-laptop:before {
-  content: "\f109";
-}
-#hrjobroles .fa-tablet:before {
-  content: "\f10a";
-}
-#hrjobroles .fa-mobile-phone:before,
-#hrjobroles .fa-mobile:before {
-  content: "\f10b";
-}
-#hrjobroles .fa-circle-o:before {
-  content: "\f10c";
-}
-#hrjobroles .fa-quote-left:before {
-  content: "\f10d";
-}
-#hrjobroles .fa-quote-right:before {
-  content: "\f10e";
-}
-#hrjobroles .fa-spinner:before {
-  content: "\f110";
-}
-#hrjobroles .fa-circle:before {
-  content: "\f111";
-}
-#hrjobroles .fa-mail-reply:before,
-#hrjobroles .fa-reply:before {
-  content: "\f112";
-}
-#hrjobroles .fa-github-alt:before {
-  content: "\f113";
-}
-#hrjobroles .fa-folder-o:before {
-  content: "\f114";
-}
-#hrjobroles .fa-folder-open-o:before {
-  content: "\f115";
-}
-#hrjobroles .fa-smile-o:before {
-  content: "\f118";
-}
-#hrjobroles .fa-frown-o:before {
-  content: "\f119";
-}
-#hrjobroles .fa-meh-o:before {
-  content: "\f11a";
-}
-#hrjobroles .fa-gamepad:before {
-  content: "\f11b";
-}
-#hrjobroles .fa-keyboard-o:before {
-  content: "\f11c";
-}
-#hrjobroles .fa-flag-o:before {
-  content: "\f11d";
-}
-#hrjobroles .fa-flag-checkered:before {
-  content: "\f11e";
-}
-#hrjobroles .fa-terminal:before {
-  content: "\f120";
-}
-#hrjobroles .fa-code:before {
-  content: "\f121";
-}
-#hrjobroles .fa-mail-reply-all:before,
-#hrjobroles .fa-reply-all:before {
-  content: "\f122";
-}
-#hrjobroles .fa-star-half-empty:before,
-#hrjobroles .fa-star-half-full:before,
-#hrjobroles .fa-star-half-o:before {
-  content: "\f123";
-}
-#hrjobroles .fa-location-arrow:before {
-  content: "\f124";
-}
-#hrjobroles .fa-crop:before {
-  content: "\f125";
-}
-#hrjobroles .fa-code-fork:before {
-  content: "\f126";
-}
-#hrjobroles .fa-unlink:before,
-#hrjobroles .fa-chain-broken:before {
-  content: "\f127";
-}
-#hrjobroles .fa-question:before {
-  content: "\f128";
-}
-#hrjobroles .fa-info:before {
-  content: "\f129";
-}
-#hrjobroles .fa-exclamation:before {
-  content: "\f12a";
-}
-#hrjobroles .fa-superscript:before {
-  content: "\f12b";
-}
-#hrjobroles .fa-subscript:before {
-  content: "\f12c";
-}
-#hrjobroles .fa-eraser:before {
-  content: "\f12d";
-}
-#hrjobroles .fa-puzzle-piece:before {
-  content: "\f12e";
-}
-#hrjobroles .fa-microphone:before {
-  content: "\f130";
-}
-#hrjobroles .fa-microphone-slash:before {
-  content: "\f131";
-}
-#hrjobroles .fa-shield:before {
-  content: "\f132";
-}
-#hrjobroles .fa-calendar-o:before {
-  content: "\f133";
-}
-#hrjobroles .fa-fire-extinguisher:before {
-  content: "\f134";
-}
-#hrjobroles .fa-rocket:before {
-  content: "\f135";
-}
-#hrjobroles .fa-maxcdn:before {
-  content: "\f136";
-}
-#hrjobroles .fa-chevron-circle-left:before {
-  content: "\f137";
-}
-#hrjobroles .fa-chevron-circle-right:before {
-  content: "\f138";
-}
-#hrjobroles .fa-chevron-circle-up:before {
-  content: "\f139";
-}
-#hrjobroles .fa-chevron-circle-down:before {
-  content: "\f13a";
-}
-#hrjobroles .fa-html5:before {
-  content: "\f13b";
-}
-#hrjobroles .fa-css3:before {
-  content: "\f13c";
-}
-#hrjobroles .fa-anchor:before {
-  content: "\f13d";
-}
-#hrjobroles .fa-unlock-alt:before {
-  content: "\f13e";
-}
-#hrjobroles .fa-bullseye:before {
-  content: "\f140";
-}
-#hrjobroles .fa-ellipsis-h:before {
-  content: "\f141";
-}
-#hrjobroles .fa-ellipsis-v:before {
-  content: "\f142";
-}
-#hrjobroles .fa-rss-square:before {
-  content: "\f143";
-}
-#hrjobroles .fa-play-circle:before {
-  content: "\f144";
-}
-#hrjobroles .fa-ticket:before {
-  content: "\f145";
-}
-#hrjobroles .fa-minus-square:before {
-  content: "\f146";
-}
-#hrjobroles .fa-minus-square-o:before {
-  content: "\f147";
-}
-#hrjobroles .fa-level-up:before {
-  content: "\f148";
-}
-#hrjobroles .fa-level-down:before {
-  content: "\f149";
-}
-#hrjobroles .fa-check-square:before {
-  content: "\f14a";
-}
-#hrjobroles .fa-pencil-square:before {
-  content: "\f14b";
-}
-#hrjobroles .fa-external-link-square:before {
-  content: "\f14c";
-}
-#hrjobroles .fa-share-square:before {
-  content: "\f14d";
-}
-#hrjobroles .fa-compass:before {
-  content: "\f14e";
-}
-#hrjobroles .fa-toggle-down:before,
-#hrjobroles .fa-caret-square-o-down:before {
-  content: "\f150";
-}
-#hrjobroles .fa-toggle-up:before,
-#hrjobroles .fa-caret-square-o-up:before {
-  content: "\f151";
-}
-#hrjobroles .fa-toggle-right:before,
-#hrjobroles .fa-caret-square-o-right:before {
-  content: "\f152";
-}
-#hrjobroles .fa-euro:before,
-#hrjobroles .fa-eur:before {
-  content: "\f153";
-}
-#hrjobroles .fa-gbp:before {
-  content: "\f154";
-}
-#hrjobroles .fa-dollar:before,
-#hrjobroles .fa-usd:before {
-  content: "\f155";
-}
-#hrjobroles .fa-rupee:before,
-#hrjobroles .fa-inr:before {
-  content: "\f156";
-}
-#hrjobroles .fa-cny:before,
-#hrjobroles .fa-rmb:before,
-#hrjobroles .fa-yen:before,
-#hrjobroles .fa-jpy:before {
-  content: "\f157";
-}
-#hrjobroles .fa-ruble:before,
-#hrjobroles .fa-rouble:before,
-#hrjobroles .fa-rub:before {
-  content: "\f158";
-}
-#hrjobroles .fa-won:before,
-#hrjobroles .fa-krw:before {
-  content: "\f159";
-}
-#hrjobroles .fa-bitcoin:before,
-#hrjobroles .fa-btc:before {
-  content: "\f15a";
-}
-#hrjobroles .fa-file:before {
-  content: "\f15b";
-}
-#hrjobroles .fa-file-text:before {
-  content: "\f15c";
-}
-#hrjobroles .fa-sort-alpha-asc:before {
-  content: "\f15d";
-}
-#hrjobroles .fa-sort-alpha-desc:before {
-  content: "\f15e";
-}
-#hrjobroles .fa-sort-amount-asc:before {
-  content: "\f160";
-}
-#hrjobroles .fa-sort-amount-desc:before {
-  content: "\f161";
-}
-#hrjobroles .fa-sort-numeric-asc:before {
-  content: "\f162";
-}
-#hrjobroles .fa-sort-numeric-desc:before {
-  content: "\f163";
-}
-#hrjobroles .fa-thumbs-up:before {
-  content: "\f164";
-}
-#hrjobroles .fa-thumbs-down:before {
-  content: "\f165";
-}
-#hrjobroles .fa-youtube-square:before {
-  content: "\f166";
-}
-#hrjobroles .fa-youtube:before {
-  content: "\f167";
-}
-#hrjobroles .fa-xing:before {
-  content: "\f168";
-}
-#hrjobroles .fa-xing-square:before {
-  content: "\f169";
-}
-#hrjobroles .fa-youtube-play:before {
-  content: "\f16a";
-}
-#hrjobroles .fa-dropbox:before {
-  content: "\f16b";
-}
-#hrjobroles .fa-stack-overflow:before {
-  content: "\f16c";
-}
-#hrjobroles .fa-instagram:before {
-  content: "\f16d";
-}
-#hrjobroles .fa-flickr:before {
-  content: "\f16e";
-}
-#hrjobroles .fa-adn:before {
-  content: "\f170";
-}
-#hrjobroles .fa-bitbucket:before {
-  content: "\f171";
-}
-#hrjobroles .fa-bitbucket-square:before {
-  content: "\f172";
-}
-#hrjobroles .fa-tumblr:before {
-  content: "\f173";
-}
-#hrjobroles .fa-tumblr-square:before {
-  content: "\f174";
-}
-#hrjobroles .fa-long-arrow-down:before {
-  content: "\f175";
-}
-#hrjobroles .fa-long-arrow-up:before {
-  content: "\f176";
-}
-#hrjobroles .fa-long-arrow-left:before {
-  content: "\f177";
-}
-#hrjobroles .fa-long-arrow-right:before {
-  content: "\f178";
-}
-#hrjobroles .fa-apple:before {
-  content: "\f179";
-}
-#hrjobroles .fa-windows:before {
-  content: "\f17a";
-}
-#hrjobroles .fa-android:before {
-  content: "\f17b";
-}
-#hrjobroles .fa-linux:before {
-  content: "\f17c";
-}
-#hrjobroles .fa-dribbble:before {
-  content: "\f17d";
-}
-#hrjobroles .fa-skype:before {
-  content: "\f17e";
-}
-#hrjobroles .fa-foursquare:before {
-  content: "\f180";
-}
-#hrjobroles .fa-trello:before {
-  content: "\f181";
-}
-#hrjobroles .fa-female:before {
-  content: "\f182";
-}
-#hrjobroles .fa-male:before {
-  content: "\f183";
-}
-#hrjobroles .fa-gittip:before {
-  content: "\f184";
-}
-#hrjobroles .fa-sun-o:before {
-  content: "\f185";
-}
-#hrjobroles .fa-moon-o:before {
-  content: "\f186";
-}
-#hrjobroles .fa-archive:before {
-  content: "\f187";
-}
-#hrjobroles .fa-bug:before {
-  content: "\f188";
-}
-#hrjobroles .fa-vk:before {
-  content: "\f189";
-}
-#hrjobroles .fa-weibo:before {
-  content: "\f18a";
-}
-#hrjobroles .fa-renren:before {
-  content: "\f18b";
-}
-#hrjobroles .fa-pagelines:before {
-  content: "\f18c";
-}
-#hrjobroles .fa-stack-exchange:before {
-  content: "\f18d";
-}
-#hrjobroles .fa-arrow-circle-o-right:before {
-  content: "\f18e";
-}
-#hrjobroles .fa-arrow-circle-o-left:before {
-  content: "\f190";
-}
-#hrjobroles .fa-toggle-left:before,
-#hrjobroles .fa-caret-square-o-left:before {
-  content: "\f191";
-}
-#hrjobroles .fa-dot-circle-o:before {
-  content: "\f192";
-}
-#hrjobroles .fa-wheelchair:before {
-  content: "\f193";
-}
-#hrjobroles .fa-vimeo-square:before {
-  content: "\f194";
-}
-#hrjobroles .fa-turkish-lira:before,
-#hrjobroles .fa-try:before {
-  content: "\f195";
-}
-#hrjobroles .fa-plus-square-o:before {
-  content: "\f196";
-}
-#hrjobroles .fa-space-shuttle:before {
-  content: "\f197";
-}
-#hrjobroles .fa-slack:before {
-  content: "\f198";
-}
-#hrjobroles .fa-envelope-square:before {
-  content: "\f199";
-}
-#hrjobroles .fa-wordpress:before {
-  content: "\f19a";
-}
-#hrjobroles .fa-openid:before {
-  content: "\f19b";
-}
-#hrjobroles .fa-institution:before,
-#hrjobroles .fa-bank:before,
-#hrjobroles .fa-university:before {
-  content: "\f19c";
-}
-#hrjobroles .fa-mortar-board:before,
-#hrjobroles .fa-graduation-cap:before {
-  content: "\f19d";
-}
-#hrjobroles .fa-yahoo:before {
-  content: "\f19e";
-}
-#hrjobroles .fa-google:before {
-  content: "\f1a0";
-}
-#hrjobroles .fa-reddit:before {
-  content: "\f1a1";
-}
-#hrjobroles .fa-reddit-square:before {
-  content: "\f1a2";
-}
-#hrjobroles .fa-stumbleupon-circle:before {
-  content: "\f1a3";
-}
-#hrjobroles .fa-stumbleupon:before {
-  content: "\f1a4";
-}
-#hrjobroles .fa-delicious:before {
-  content: "\f1a5";
-}
-#hrjobroles .fa-digg:before {
-  content: "\f1a6";
-}
-#hrjobroles .fa-pied-piper:before {
-  content: "\f1a7";
-}
-#hrjobroles .fa-pied-piper-alt:before {
-  content: "\f1a8";
-}
-#hrjobroles .fa-drupal:before {
-  content: "\f1a9";
-}
-#hrjobroles .fa-joomla:before {
-  content: "\f1aa";
-}
-#hrjobroles .fa-language:before {
-  content: "\f1ab";
-}
-#hrjobroles .fa-fax:before {
-  content: "\f1ac";
-}
-#hrjobroles .fa-building:before {
-  content: "\f1ad";
-}
-#hrjobroles .fa-child:before {
-  content: "\f1ae";
-}
-#hrjobroles .fa-paw:before {
-  content: "\f1b0";
-}
-#hrjobroles .fa-spoon:before {
-  content: "\f1b1";
-}
-#hrjobroles .fa-cube:before {
-  content: "\f1b2";
-}
-#hrjobroles .fa-cubes:before {
-  content: "\f1b3";
-}
-#hrjobroles .fa-behance:before {
-  content: "\f1b4";
-}
-#hrjobroles .fa-behance-square:before {
-  content: "\f1b5";
-}
-#hrjobroles .fa-steam:before {
-  content: "\f1b6";
-}
-#hrjobroles .fa-steam-square:before {
-  content: "\f1b7";
-}
-#hrjobroles .fa-recycle:before {
-  content: "\f1b8";
-}
-#hrjobroles .fa-automobile:before,
-#hrjobroles .fa-car:before {
-  content: "\f1b9";
-}
-#hrjobroles .fa-cab:before,
-#hrjobroles .fa-taxi:before {
-  content: "\f1ba";
-}
-#hrjobroles .fa-tree:before {
-  content: "\f1bb";
-}
-#hrjobroles .fa-spotify:before {
-  content: "\f1bc";
-}
-#hrjobroles .fa-deviantart:before {
-  content: "\f1bd";
-}
-#hrjobroles .fa-soundcloud:before {
-  content: "\f1be";
-}
-#hrjobroles .fa-database:before {
-  content: "\f1c0";
-}
-#hrjobroles .fa-file-pdf-o:before {
-  content: "\f1c1";
-}
-#hrjobroles .fa-file-word-o:before {
-  content: "\f1c2";
-}
-#hrjobroles .fa-file-excel-o:before {
-  content: "\f1c3";
-}
-#hrjobroles .fa-file-powerpoint-o:before {
-  content: "\f1c4";
-}
-#hrjobroles .fa-file-photo-o:before,
-#hrjobroles .fa-file-picture-o:before,
-#hrjobroles .fa-file-image-o:before {
-  content: "\f1c5";
-}
-#hrjobroles .fa-file-zip-o:before,
-#hrjobroles .fa-file-archive-o:before {
-  content: "\f1c6";
-}
-#hrjobroles .fa-file-sound-o:before,
-#hrjobroles .fa-file-audio-o:before {
-  content: "\f1c7";
-}
-#hrjobroles .fa-file-movie-o:before,
-#hrjobroles .fa-file-video-o:before {
-  content: "\f1c8";
-}
-#hrjobroles .fa-file-code-o:before {
-  content: "\f1c9";
-}
-#hrjobroles .fa-vine:before {
-  content: "\f1ca";
-}
-#hrjobroles .fa-codepen:before {
-  content: "\f1cb";
-}
-#hrjobroles .fa-jsfiddle:before {
-  content: "\f1cc";
-}
-#hrjobroles .fa-life-bouy:before,
-#hrjobroles .fa-life-buoy:before,
-#hrjobroles .fa-life-saver:before,
-#hrjobroles .fa-support:before,
-#hrjobroles .fa-life-ring:before {
-  content: "\f1cd";
-}
-#hrjobroles .fa-circle-o-notch:before {
-  content: "\f1ce";
-}
-#hrjobroles .fa-ra:before,
-#hrjobroles .fa-rebel:before {
-  content: "\f1d0";
-}
-#hrjobroles .fa-ge:before,
-#hrjobroles .fa-empire:before {
-  content: "\f1d1";
-}
-#hrjobroles .fa-git-square:before {
-  content: "\f1d2";
-}
-#hrjobroles .fa-git:before {
-  content: "\f1d3";
-}
-#hrjobroles .fa-hacker-news:before {
-  content: "\f1d4";
-}
-#hrjobroles .fa-tencent-weibo:before {
-  content: "\f1d5";
-}
-#hrjobroles .fa-qq:before {
-  content: "\f1d6";
-}
-#hrjobroles .fa-wechat:before,
-#hrjobroles .fa-weixin:before {
-  content: "\f1d7";
-}
-#hrjobroles .fa-send:before,
-#hrjobroles .fa-paper-plane:before {
-  content: "\f1d8";
-}
-#hrjobroles .fa-send-o:before,
-#hrjobroles .fa-paper-plane-o:before {
-  content: "\f1d9";
-}
-#hrjobroles .fa-history:before {
-  content: "\f1da";
-}
-#hrjobroles .fa-circle-thin:before {
-  content: "\f1db";
-}
-#hrjobroles .fa-header:before {
-  content: "\f1dc";
-}
-#hrjobroles .fa-paragraph:before {
-  content: "\f1dd";
-}
-#hrjobroles .fa-sliders:before {
-  content: "\f1de";
-}
-#hrjobroles .fa-share-alt:before {
-  content: "\f1e0";
-}
-#hrjobroles .fa-share-alt-square:before {
-  content: "\f1e1";
-}
-#hrjobroles .fa-bomb:before {
-  content: "\f1e2";
-}
-#hrjobroles .fa-soccer-ball-o:before,
-#hrjobroles .fa-futbol-o:before {
-  content: "\f1e3";
-}
-#hrjobroles .fa-tty:before {
-  content: "\f1e4";
-}
-#hrjobroles .fa-binoculars:before {
-  content: "\f1e5";
-}
-#hrjobroles .fa-plug:before {
-  content: "\f1e6";
-}
-#hrjobroles .fa-slideshare:before {
-  content: "\f1e7";
-}
-#hrjobroles .fa-twitch:before {
-  content: "\f1e8";
-}
-#hrjobroles .fa-yelp:before {
-  content: "\f1e9";
-}
-#hrjobroles .fa-newspaper-o:before {
-  content: "\f1ea";
-}
-#hrjobroles .fa-wifi:before {
-  content: "\f1eb";
-}
-#hrjobroles .fa-calculator:before {
-  content: "\f1ec";
-}
-#hrjobroles .fa-paypal:before {
-  content: "\f1ed";
-}
-#hrjobroles .fa-google-wallet:before {
-  content: "\f1ee";
-}
-#hrjobroles .fa-cc-visa:before {
-  content: "\f1f0";
-}
-#hrjobroles .fa-cc-mastercard:before {
-  content: "\f1f1";
-}
-#hrjobroles .fa-cc-discover:before {
-  content: "\f1f2";
-}
-#hrjobroles .fa-cc-amex:before {
-  content: "\f1f3";
-}
-#hrjobroles .fa-cc-paypal:before {
-  content: "\f1f4";
-}
-#hrjobroles .fa-cc-stripe:before {
-  content: "\f1f5";
-}
-#hrjobroles .fa-bell-slash:before {
-  content: "\f1f6";
-}
-#hrjobroles .fa-bell-slash-o:before {
-  content: "\f1f7";
-}
-#hrjobroles .fa-trash:before {
-  content: "\f1f8";
-}
-#hrjobroles .fa-copyright:before {
-  content: "\f1f9";
-}
-#hrjobroles .fa-at:before {
-  content: "\f1fa";
-}
-#hrjobroles .fa-eyedropper:before {
-  content: "\f1fb";
-}
-#hrjobroles .fa-paint-brush:before {
-  content: "\f1fc";
-}
-#hrjobroles .fa-birthday-cake:before {
-  content: "\f1fd";
-}
-#hrjobroles .fa-area-chart:before {
-  content: "\f1fe";
-}
-#hrjobroles .fa-pie-chart:before {
-  content: "\f200";
-}
-#hrjobroles .fa-line-chart:before {
-  content: "\f201";
-}
-#hrjobroles .fa-lastfm:before {
-  content: "\f202";
-}
-#hrjobroles .fa-lastfm-square:before {
-  content: "\f203";
-}
-#hrjobroles .fa-toggle-off:before {
-  content: "\f204";
-}
-#hrjobroles .fa-toggle-on:before {
-  content: "\f205";
-}
-#hrjobroles .fa-bicycle:before {
-  content: "\f206";
-}
-#hrjobroles .fa-bus:before {
-  content: "\f207";
-}
-#hrjobroles .fa-ioxhost:before {
-  content: "\f208";
-}
-#hrjobroles .fa-angellist:before {
-  content: "\f209";
-}
-#hrjobroles .fa-cc:before {
-  content: "\f20a";
-}
-#hrjobroles .fa-shekel:before,
-#hrjobroles .fa-sheqel:before,
-#hrjobroles .fa-ils:before {
-  content: "\f20b";
-}
-#hrjobroles .fa-meanpath:before {
-  content: "\f20c";
-}
-@font-face {
   font-family: 'Open Sans';
   src: url("../fonts/open-sans/opensans-regular.eot");
   src: url("../fonts/open-sans/opensans-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans/opensans-regular.woff2") format("woff2"), url("../fonts/open-sans/opensans-regular.woff") format("woff"), url("../fonts/open-sans/opensans-regular.ttf") format("truetype"), url("../fonts/open-sans/opensans-regular.svg#open_sansregular") format("svg");
@@ -9324,6 +9328,12 @@ fieldset[disabled]
 #hrjobroles .form-group .editable-empty:hover,
 #hrjobroles .form-group .editable-empty:focus {
   color: #727e8a;
+}
+#hrjobroles .input-group-unstyled .input-group-addon,
+#hrjobroles .input-group-unstyled .input-group-btn > button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 #hrjobroles .hrjobroles-list-role {
   list-style: none;
