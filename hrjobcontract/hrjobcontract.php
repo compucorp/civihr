@@ -50,9 +50,9 @@ function hrjobcontract_civicrm_install() {
       }
     }
   }
-  
+
   // Add Job Contract top menu
-  
+
   $jobContractNavigation = new CRM_Core_DAO_Navigation();
   $jobContractNavigation->name = 'job_contracts';
   $jobContractNavigationResult = $jobContractNavigation->find();
@@ -85,7 +85,7 @@ function hrjobcontract_civicrm_install() {
       CRM_Core_BAO_Navigation::add($menuItems);
     }
   }
-  
+
   return _hrjobcontract_civix_civicrm_install();
 }
 
@@ -105,7 +105,7 @@ function hrjobcontract_civicrm_uninstall() {
       CRM_Contact_BAO_ContactType::del($id);
     }
   }
-  
+
   $jobContractMenu = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'id', 'name');
   if (!empty($jobContractMenu)) {
     CRM_Core_BAO_Navigation::processDelete($jobContractMenu);
@@ -158,7 +158,7 @@ function hrjobcontract_civicrm_enable() {
   $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('job_contracts', 'hoursType', 'hours_location', 'pay_scale', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
-    
+
   _hrjobcontract_setActiveFields(1);
   return _hrjobcontract_civix_civicrm_enable();
 }
@@ -173,7 +173,7 @@ function hrjobcontract_civicrm_disable() {
   $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('job_contracts', 'hoursType', 'hours_location', 'pay_scale', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
-  
+
   _hrjobcontract_setActiveFields(0);
   return _hrjobcontract_civix_civicrm_disable();
 }
@@ -333,6 +333,11 @@ function hrjobcontract_civicrm_buildForm($formName, &$form) {
 
 /**
  * Implementation of hook_civicrm_tabs
+ * this tab should appear after contact summary tab directly
+ * and since contact summary tab weight is
+ * -200 we chose this to be -190
+ * to give some room for other extensions to place
+ * their tabs between these two.
  */
 function hrjobcontract_civicrm_tabs(&$tabs) {
     CRM_Hrjobcontract_Page_JobContractTab::registerScripts();
@@ -340,7 +345,7 @@ function hrjobcontract_civicrm_tabs(&$tabs) {
         'id'        => 'hrjobcontract',
         'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract'),
         'title'     => ts('Job Contract'),
-        'weight'    => 1
+        'weight'    => -190
     );
 
 }
