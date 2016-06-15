@@ -149,12 +149,12 @@ function appraisals_civicrm_entityTypes(&$entityTypes) {
 
 function appraisals_civicrm_tabs(&$tabs) {
     CRM_Appraisals_Page_Appraisals::registerScripts();
-    
+
     $tabs[] = Array(
         'id'        => 'appraisals',
         'url'       => CRM_Utils_System::url('civicrm/contact/view/appraisals'),
         'title'     => ts('Appraisals'),
-        'weight'    => 1,
+        'weight'    => 20,
     );
 }
 

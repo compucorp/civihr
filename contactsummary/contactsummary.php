@@ -157,6 +157,6 @@ function contactsummary_civicrm_tabs(&$tabs) {
     'id'     => 'contactsummary',
     'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
     'title'  => ts('Contact Summary'),
-    'weight' => -1
+    'weight' => -200
   );
 }

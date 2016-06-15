@@ -142,7 +142,7 @@ function hrjobroles_civicrm_tabs(&$tabs, $contactID) {
     $tabs[] = array( 'id' => 'hrjobroles',
         'url' => $url,
         'title' => 'Job Roles',
-        'weight' => 300 );
+        'weight' => -180 );
 }
 
 /**
