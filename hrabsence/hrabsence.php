@@ -454,7 +454,7 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
     )),
     'count' => $absenceDuration/(8*60),
     'title' => ts('Absences'),
-    'weight' => 300
+    'weight' => 10
   );
 }
 

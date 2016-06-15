@@ -59,7 +59,7 @@ function hrui_civicrm_buildForm($formName, &$form) {
     //HR-358 - Set default values
     //set default value to phone location and type
     $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful. 
+    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful.
     //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
     if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
       $phoneType = $form->getElement('phone[2][phone_type_id]');
@@ -418,28 +418,47 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * Implementation of hook_civicrm_tabs
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
-  $newTabs = array();
-
   foreach ($tabs as $i => $tab) {
-    if ($tab['id'] != 'log') {
-      $newTabs[$i] = $tab['title'];
-    }
-    else {
-      $changeLogTabID = $i;
+    switch($tab['title'])  {
+      case 'Assignments':
+        $tabs[$i]['weight'] = 20;
+        break;
+      case 'Identification':
+        $tabs[$i]['weight'] = 50;
+        break;
+      case 'Immigration':
+        $tabs[$i]['weight'] = 60;
+        break;
+      case 'Emergency Contacts':
+        $tabs[$i]['weight'] = 70;
+        break;
+      case 'Relationships':
+        $tabs[$i]['weight'] = 80;
+        $tabs[$i]['title'] = 'Managers';
+        break;
+      case 'Bank Details':
+        $tabs[$i]['weight'] = 90;
+        break;
+      case 'Career History':
+        $tabs[$i]['weight'] = 100;
+        break;
+      case 'Medical & Disability':
+        $tabs[$i]['weight'] = 110;
+        break;
+      case 'Qualifications':
+        $tabs[$i]['weight'] = 120;
+        break;
+      case 'Notes':
+        $tabs[$i]['weight'] = 130;
+        break;
+      case 'Groups':
+        $tabs[$i]['weight'] = 140;
+        break;
+      case 'Change Log':
+        $tabs[$i]['weight'] = 150;
+        break;
     }
   }
-
-  //sort alphabetically
-  asort($newTabs);
-  $weight = 0;
-  //assign the weights based on alphabetic order
-  foreach ($newTabs as $key => $value) {
-    $weight += 10;
-    $tabs[$key]['weight'] = $weight;
-  }
-
-  //Move change log to the end
-  $tabs[$changeLogTabID]['weight'] = $weight + 10;
 }
 
 /**
