@@ -15,7 +15,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     public function setDefaultValues() {
         if(empty($this->defaultValues)) {
             if ($this->_id) {
-                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
+                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getValuesArray($this->_id);
             } else {
                 $this->defaultValues = [
                     'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,

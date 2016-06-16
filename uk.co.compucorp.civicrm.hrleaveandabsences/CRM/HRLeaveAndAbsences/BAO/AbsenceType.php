@@ -10,6 +10,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   const REQUEST_CANCELATION_ALWAYS = 2;
   const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
 
+  /**
+   * The list of colors that can be selected for an AbsenceType
+   * @var array
+   */
   private static $allColors = [
       '#5A6779',
       '#3D4A5E',
@@ -81,6 +85,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return $instance;
   }
 
+  /**
+   * Deletes the AbsenceType with the given ID.
+   *
+   * A reserved AbsenceType cannot be deleted. If the given ID is from a
+   * reserved type, and exception will be thrown.
+   *
+   * @param int $id The ID of the AbsenceType to be deleted
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   */
   public static function del($id)
   {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
@@ -94,6 +108,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $absenceType->delete();
   }
 
+  /**
+   * Returns all the options available to the Allow Request Cancelation dropdown
+   *
+   * @return array
+   */
   public static function getRequestCancelationOptions() {
      return [
          self::REQUEST_CANCELATION_NO                       => ts('No'),
@@ -102,6 +121,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
      ];
   }
 
+  /**
+   * Returns a list of options available to the unit dropdown of the carry
+   * forward and TOIL expiration.
+   *
+   * @return array
+   */
   public static function getExpirationUnitOptions() {
     return [
         self::EXPIRATION_UNIT_DAYS   => ts('Days'),
@@ -110,6 +135,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     ];
   }
 
+  /**
+   * Returns a list of colors that are available to be selected for an
+   * AbsenceType.
+   *
+   * First it will return only the colors that haven't been used yet. When all
+   * the colors have been used once, it will return all the colors.
+   *
+   * @return array
+   */
   public static function getAvailableColors() {
     $colorsInUse = self::getColorsInUse();
     if(count(self::$allColors) == count($colorsInUse)) {
@@ -126,13 +160,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return $availableColors;
   }
 
-  public static function getDefaultValues($id) {
+  /**
+   * Returns an array containing all the fields values for the
+   * AbsenceType with the given ID.
+   *
+   * This method is mainly used by the AbsenceType form, so it
+   * can get the data to fill its fields.
+   *
+   * An empty array is returned if it is not possible to load
+   * the data.
+   *
+   * @param int $id The id of the AbsenceType to retrieve the values
+   *
+   * @return array An array containing the values
+   */
+  public static function getValuesArray($id) {
     $result = civicrm_api3('AbsenceType', 'get', array('id' => $id));
     $absenceType = $result['values'][$id];
     $absenceType['notification_receivers_ids'] = self::getNotificationReceiversIDs($id);
     return $absenceType;
   }
 
+  /**
+   * Unset the is_default flag for every AbsenceType that has it
+   */
   private static function unsetDefaultTypes() {
     $tableName = self::getTableName();
     $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
@@ -140,7 +191,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * @param $params The params array received by the create method
+   * @param array $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
@@ -161,6 +212,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     self::validateCarryForward($params);
   }
 
+  /**
+   * Validates the add_public_holiday_to_entitlement field.
+   *
+   * There can be only one AbsenceType where this field is true. So this
+   * method checks if one such type already exists and throws an error if that
+   * is the case.
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @throws \CiviCRM_API3_Exception
+   */
   private static function validateAddPublicHolidayToEntitlement() {
     $result = civicrm_api3('AbsenceType', 'getcount', array(
         'sequential' => 1,
@@ -174,6 +235,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Validates the TOIL fields
+   *
    * @param $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
@@ -216,6 +279,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Validates the Carry Forward fields
+   *
    * @param $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
