@@ -69,7 +69,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * @return array An array containing all the EntitlementCalculations created
    */
   private function getEntitlementCalculations(AbsencePeriod $absencePeriod) {
-    $contracts    = $this->getActiveContractsForPeriod($absencePeriod);
+    $contracts    = $this->getContractsForCalculation($absencePeriod);
     $calculator   = new EntitlementCalculator($absencePeriod);
     $calculations = [];
     foreach ($contracts as $contract) {
@@ -77,6 +77,25 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         $calculator->calculateEntitlementsFor($contract));
     }
     return $calculations;
+  }
+
+  /**
+   * Returns a list of contracts to run the entitlement calculation for.
+   *
+   * By default, it returns all the Contracts that are active on the given
+   * Absence Period. If the request contains the "cid" parameter, it will only
+   * return the active contracts with the IDs on it.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $absencePeriod
+   *
+   * @return array
+   */
+  private function getContractsForCalculation(AbsencePeriod $absencePeriod) {
+    $contractsIDs = empty($_GET['cid']) ? [] : $_GET['cid'];
+    if(!is_array($contractsIDs)) {
+      $contractsIDs = [$contractsIDs];
+    }
+    return $this->getActiveContractsForPeriod($absencePeriod, $contractsIDs);
   }
 
   /**
@@ -91,11 +110,18 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * is chained with the Contact API in order to retrieve the staff display
    * name. Its value is available as 'contact_display_name'.
    *
+   * It is possible to filter the returned contracts to include only contracts
+   * with specific IDs. For that, you need pass a list of $id to the $filter
+   * parameter.
+   *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $absencePeriod
+   *
+   * @param array $filter
+   *  A list of IDs that will be used to filter the returned contracts
    *
    * @return array
    */
-  private function getActiveContractsForPeriod(AbsencePeriod $absencePeriod) {
+  private function getActiveContractsForPeriod(AbsencePeriod $absencePeriod, $filter = []) {
     try {
       $result = civicrm_api3('HRJobContract', 'getactivecontracts', [
         'start_date' => $absencePeriod->start_date,
@@ -103,10 +129,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         'api.Contact.getvalue' => ['return' => 'display_name']
       ]);
 
-      array_walk($result['values'], function(&$item) {
-        $item['contact_display_name'] = $item['api.Contact.getvalue'];
-        unset($item['api.Contact.getvalue']);
-      });
+      foreach($result['values'] as $i => $contract) {
+        if(!empty($filter) && !in_array($contract['id'], $filter)) {
+          unset($result['values'][$i]);
+        } else {
+          $result['values'][$i]['contact_display_name'] = $contract['api.Contact.getvalue'];
+          unset($result['values'][$i]['api.Contact.getvalue']);
+        }
+      }
 
       return $result['values'];
     } catch(\Exception $e) {
