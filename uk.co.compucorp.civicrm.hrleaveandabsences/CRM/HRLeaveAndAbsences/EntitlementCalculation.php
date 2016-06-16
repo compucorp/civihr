@@ -424,4 +424,35 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
     return $this->numberOfWorkingDays;
   }
+
+
+  /**
+   * Returns a string representation of the calculation in the format:
+   *
+   * ((CE + PH) * (WDTW / WD)) = (PR) + (BF) = PE
+   *
+   * Where:
+   * CE: Contractual Entitlement (Not including public holidays)
+   * PH: Number of Public Holidays
+   * WDTW: Number of Working days to work
+   * WD: Number of Working days
+   * PR: Pro Rata, rounded to the nearest half day
+   * BF: Number of days Brought Forward
+   * PE: Proposed Entitlement
+   *
+   * @return string
+   */
+  public function __toString()
+  {
+    return sprintf(
+      '((%s + %s) * (%s / %s)) = (%s) + (%s) = %s days',
+      $this->getContractualEntitlement() - $this->getNumberOfPublicHolidaysForPeriod(),
+      $this->getNumberOfPublicHolidaysForPeriod(),
+      $this->getNumberOfWorkingDaysToWork(),
+      $this->period->getNumberOfWorkingDays(),
+      $this->getProRata(),
+      $this->getBroughtForward(),
+      $this->getProposedEntitlement()
+    );
+  }
 }

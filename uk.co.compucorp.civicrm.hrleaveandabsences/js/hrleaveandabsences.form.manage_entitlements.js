@@ -16,6 +16,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
   function ManageEntitlements() {
     this._listElement = $('.entitlement-calculation-list');
     this._instantiateProposedEntitlements();
+    this._addEventListeners();
   }
 
   /**
@@ -26,6 +27,46 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
   ManageEntitlements.prototype._instantiateProposedEntitlements = function() {
     this._listElement.find('.proposed-entitlement').each(function(i, element) {
       new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element));
+    });
+  };
+
+  /**
+   * Add event listeners to events triggered by elements of managed by this class
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._addEventListeners = function() {
+    this._listElement.find('tbody > tr').on('click', this._onListRowClick.bind(this));
+  };
+
+  /**
+   * This is the event handler for when the user clicks on a row of the calculations
+   * list.
+   *
+   * It shows the user a popup with details of the selected calculation. Even if the
+   * proposed entitlement was overridden, we display the original calculation.
+   *
+   * @param event
+   * @private
+   */
+  ManageEntitlements.prototype._onListRowClick = function(event) {
+    var calculationDescription = ts('' +
+      '((Base contractual entitlement + Public Holidays) ' +
+      '* ' +
+      '(No. of working days to work / No. of working days in period)) = ' +
+      '(Period pro rata) + (Brought Forward days) = Period Entitlement'
+    );
+    var calculationDetails = event.currentTarget.dataset.calculationDetails;
+
+    if(!calculationDetails) {
+      return;
+    }
+
+    CRM.confirm({
+      title: ts('Calculation details'),
+      message: calculationDescription + '<br /><br />' + calculationDetails,
+      width: '70%',
+      options: {}
     });
   };
 

@@ -22,7 +22,7 @@
     {assign var=absenceType value=$calculation->getAbsenceType()}
     {assign var=absenceTypeID value=$absenceType->id}
     {assign var=contract value=$calculation->getContract()}
-    <tr>
+    <tr data-calculation-details="{$calculation}">
       <td>{$contract.contact_id}</td>
       <td>{$contract.contact_display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
