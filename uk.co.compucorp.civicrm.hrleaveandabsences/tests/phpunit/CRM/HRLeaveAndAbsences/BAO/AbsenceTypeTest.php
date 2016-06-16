@@ -1,13 +1,15 @@
 <?php
 
 use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase implements HeadlessInterface {
+class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface, TransactionalInterface {
 
   private $allColors = [
       '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',
@@ -16,21 +18,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase implem
       '#151D2C', '#B32E2E', '#BF561D', '#377A31', '#803D5E', '#47275C', '#056780'
   ];
 
-  protected $_tablesToTruncate = [
-    'civicrm_hrleaveandabsences_notification_receiver',
-    'civicrm_hrleaveandabsences_absence_type',
-  ];
-
   public function setUpHeadless() {
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
-
-  public function setUp() {
-    parent::setUp();
-  }
-
-  public function tearDown() {
-    parent::tearDown();
   }
 
   /**
@@ -383,15 +372,19 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase implem
    */
   private function createReservedType()
   {
-    $connection = $this->getConnection()->getConnection();
     $title = 'Title ' . microtime();
     $query = "
       INSERT INTO
         civicrm_hrleaveandabsences_absence_type(title, color, default_entitlement, allow_request_cancelation, is_reserved, weight)
         VALUES('{$title}', '#000000', 0, 1, 1, 1)
     ";
-    if($connection->query($query)) {
-      return $connection->lastInsertId();
+    CRM_Core_DAO::executeQuery($query);
+
+    $query = "SELECT id FROM civicrm_hrleaveandabsences_absence_type WHERE title = '{$title}'";
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if($dao->N == 1) {
+      $dao->fetch();
+      return $dao->id;
     }
 
     return null;
