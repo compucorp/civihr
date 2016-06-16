@@ -228,15 +228,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_day = !empty($params['carry_forward_expiration_day']);
-    $has_carry_forward_expiration_month = !empty($params['carry_forward_expiration_month']);
-    $has_carry_forward_expiration_date = $has_carry_forward_expiration_day && $has_carry_forward_expiration_month;
-    if($has_carry_forward_expiration_date && !$allow_carry_forward) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set the Carry Forward Expiration Date you must allow Carry Forward'
-      );
-    }
-
     $has_carry_forward_expiration_duration = !empty($params['carry_forward_expiration_duration']);
     $has_carry_forward_expiration_unit = !empty($params['carry_forward_expiration_unit']);
     if($has_carry_forward_expiration_duration && $has_carry_forward_expiration_unit && !$allow_carry_forward) {
@@ -245,24 +236,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_duration_or_unit = $has_carry_forward_expiration_unit || $has_carry_forward_expiration_duration;
-    if($has_carry_forward_expiration_date && $has_carry_forward_expiration_duration_or_unit) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          "You can't set both the Carry Forward Expiration Date and Period"
-      );
-    }
-
     if($has_carry_forward_expiration_unit xor $has_carry_forward_expiration_duration) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'Invalid Carry Forward Expiration. It should have both Unit and Duration'
-      );
-    }
-
-    if ($has_carry_forward_expiration_date &&
-        !self::isValidDateAndMonth($params['carry_forward_expiration_day'], $params['carry_forward_expiration_month'])
-    ) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date'
       );
     }
 
@@ -273,28 +249,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
           'Invalid Carry Forward Expiration Unit'
       );
     }
-  }
-
-  /**
-   * Checks if a date in dd-mm format is valid.
-   *
-   * @TODO Find a better place to put this method.
-   *
-   */
-  private static function isValidDateAndMonth($day, $month) {
-    if($month < 1 || $month > 12) {
-      return false;
-    }
-
-    if($month == 2 && $day > 29) {
-      return false;
-    }
-
-    if(in_array($month, [4, 6, 9, 11]) && $day > 30) {
-      return false;
-    }
-
-    return true;
   }
 
   /**

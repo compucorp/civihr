@@ -73,52 +73,30 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements Headl
         $this->assertFalse($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
         $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
 
-        // When carry forward is checked, shome fields become visible
+        // When carry forward is checked, some fields become visible
         $this->click('allow_carry_forward');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
         $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertTrue($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
-        $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));
 
         // When expire after a certain duration is checked, the duration fields become visible
         $this->click('carry_forward_expire_after_duration');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertTrue($this->isVisible('carry_forward_expiration_duration'));
         $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_unit'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertFalse($this->isChecked('carry_forward_never_expire'));
         $this->assertTrue($this->isChecked('carry_forward_expire_after_duration'));
-        $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));
 
-        // When expire after date is checked, the date fields become visible
-        $this->click('carry_forward_expire_after_date');
-        $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
-        $this->assertTrue($this->isVisible('carry_forward_expiration_day'));
-        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_month'));
-        $this->assertFalse($this->isChecked('carry_forward_never_expire'));
-        $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
-        $this->assertTrue($this->isChecked('carry_forward_expire_after_date'));
-
-        // When Never expire is checked, the duration and date fields become hidden
+        // When Never expire is checked, the duration fields become hidden
         $this->click('carry_forward_never_expire');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
         $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertTrue($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
-        $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));
     }
 
     public function testAddAnEmptyType()
@@ -228,27 +206,6 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements Headl
         $this->assertElementContainsText($expirationUnitError, 'You must also set the expiration duration');
     }
 
-    public function testCannotSetIncompleteCarryForwardExpirationDate()
-    {
-        $this->loginAsAdmin();
-        $this->openAddForm();
-        $this->click('allow_carry_forward');
-        $this->click('carry_forward_expire_after_date');
-
-        // First we try it without informing the expiration month
-        $this->type('carry_forward_expiration_day', 10);
-        $this->submitAndWait('AbsenceType');
-        $expirationUnitError = "xpath=//select[@id='carry_forward_expiration_month']/following-sibling::span";
-        $this->assertElementContainsText($expirationUnitError, 'You must also set the expiration month');
-
-        // Now we try without informing the expiration day
-        $this->type('carry_forward_expiration_day', '');
-        $this->select('carry_forward_expiration_month', 'label=Ago');
-        $this->submitAndWait('AbsenceType');
-        $expirationUnitError = "xpath=//input[@id='carry_forward_expiration_day']/following-sibling::span";
-        $this->assertElementContainsText($expirationUnitError, 'You must also set the expiration day');
-    }
-
     public function testNumericFieldsShouldOnlyAllowPositiveNumbers()
     {
         $numericFields = [
@@ -277,14 +234,6 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements Headl
             $elementError = "xpath=//input[@id='$field']/following-sibling::span";
             $this->assertElementContainsText($elementError, 'The value should be a positive number');
         }
-
-        // We must test carry forward expiration date separately
-        // Because we can't have both expiration duration and date
-        $this->click('carry_forward_expire_after_date');
-        $this->type('carry_forward_expiration_day', CRM_Utils_String::createRandom(5, 'abcdefghijklmnopqrstuvwxyz'));
-        $this->submitAndWait('AbsenceType');
-        $elementError = "xpath=//input[@id='carry_forward_expiration_day']/following-sibling::span";
-        $this->assertElementContainsText($elementError, 'The value should be a positive number');
     }
 
     private function openAddForm()

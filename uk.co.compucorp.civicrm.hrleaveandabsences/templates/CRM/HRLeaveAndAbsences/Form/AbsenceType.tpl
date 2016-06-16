@@ -125,26 +125,15 @@
                 <div class="crm-section carry-forward-option">
                     <div class="label">{ts}Carry forward leave expiry{/ts}</div>
                     <div class="content">
-                        {assign var="carry_forward_expire_after_duration" value=false }
-                        {assign var="carry_forward_expire_after_date" value=false }
                         {assign var="carry_forward_never_expire" value=false }
-                        {if $form.carry_forward_expiration_duration.value neq '' or $form.carry_forward_expiration_unit.value.0 neq '' }
-                            {assign var="carry_forward_expire_after_duration" value=true }
-                        {/if}
-                        {if $form.carry_forward_expiration_day.value neq '' or $form.carry_forward_expiration_month.value.0 neq '' }
-                            {assign var="carry_forward_expire_after_date" value=true }
-                        {/if}
                         {if not $carry_forward_expire_after_duration and not $carry_forward_expire_after_date }
                             {assign var="carry_forward_never_expire" value=true }
                         {/if}
                         <label><input type="radio" name="carry_forward_expiration" id="carry_forward_never_expire" {if $carry_forward_never_expire}checked{/if}> {ts}Never expire{/ts}</label>
                         <br/>
-                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_duration" {if $carry_forward_expire_after_duration}checked{/if}> {ts}Expire after a certain duration{/ts}</label>
+                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_duration"> {ts}Expire after a certain duration{/ts}</label>
                         <br/>
                         <span class="carry-forward-expiration-duration">{$form.carry_forward_expiration_duration.html}{$form.carry_forward_expiration_unit.html}<br/></span>
-                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_date" {if $carry_forward_expire_after_date}checked{/if}> {ts}Expire on a particular date{/ts}</label>
-                        <br/>
-                        <span class="carry-forward-expiration-date">{$form.carry_forward_expiration_day.html}{$form.carry_forward_expiration_month.html}</span>
                     </div>
                     <div class="clear"></div>
                 </div>
@@ -204,7 +193,6 @@
                     var allow_carry_forward = $('#allow_carry_forward');
                     var carry_forward_never_expire = $('#carry_forward_never_expire');
                     var carry_forward_expire_after_duration = $('#carry_forward_expire_after_duration');
-                    var carry_forward_expire_after_date = $('#carry_forward_expire_after_date');
 
                     if(allow_carry_forward.is(':checked')) {
                         $('.carry-forward-option').show();
@@ -212,10 +200,6 @@
 
                     if(carry_forward_expire_after_duration.is(':checked')) {
                         $('.carry-forward-expiration-duration').show();
-                    }
-
-                    if(carry_forward_expire_after_date.is(':checked')) {
-                        $('.carry-forward-expiration-date').show();
                     }
 
                     allow_carry_forward.on('click', function() {
@@ -229,21 +213,12 @@
                     carry_forward_never_expire.on('click', function() {
                         if(this.checked) {
                             hideCarryForwardExpirationDuration();
-                            hideCarryForwardExpirationDate();
-                        }
-                    })
-
-                    carry_forward_expire_after_duration.on('click', function() {
-                        if(this.checked) {
-                            hideCarryForwardExpirationDate();
-                            $('.carry-forward-expiration-duration').show();
                         }
                     });
 
-                    carry_forward_expire_after_date.on('click', function() {
+                    carry_forward_expire_after_duration.on('click', function() {
                         if(this.checked) {
-                            hideCarryForwardExpirationDuration();
-                            $('.carry-forward-expiration-date').show();
+                            $('.carry-forward-expiration-duration').show();
                         }
                     });
                 }
@@ -256,7 +231,6 @@
                     }
                     carry_forward_expiration_radios.item(0).checked = true;
                     hideCarryForwardExpirationDuration();
-                    hideCarryForwardExpirationDate();
                     $('.carry-forward-option').hide();
                 }
 
@@ -264,12 +238,6 @@
                     document.getElementById('carry_forward_expiration_duration').value = '';
                     $('#carry_forward_expiration_unit').select2('val', '');
                     $('.carry-forward-expiration-duration').hide();
-                }
-
-                function hideCarryForwardExpirationDate() {
-                    document.getElementById('carry_forward_expiration_day').value = '';
-                    $('#carry_forward_expiration_month').select2('val', '');
-                    $('.carry-forward-expiration-date').hide();
                 }
 
                 function initColorPicker() {
