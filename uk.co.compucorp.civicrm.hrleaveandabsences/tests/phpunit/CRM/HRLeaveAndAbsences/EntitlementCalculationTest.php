@@ -213,6 +213,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       date('YmdHis', strtotime('2016-02-15'))
     );
 
+    //Instantiates the calculation again to get the updated contract dates
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
     // (32/261) * 10 = 1.22 = 1.5 rounded
     $this->assertEquals(1.5, $calculation->getProRata());
 
@@ -222,6 +224,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       date('YmdHis', strtotime('2016-04-01'))
     );
 
+    //Instantiates the calculation again to get the updated contract dates
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
     // (66/261) * 10 = 2.52 = 3 rounded
     $this->assertEquals(3, $calculation->getProRata());
   }

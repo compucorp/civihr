@@ -410,11 +410,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
         $unit = 'Y';
         break;
       default:
-        $unit = null;
-    }
-
-    if(!$unit) {
-      return null;
+        return null;
     }
 
     $intervalSpec = 'P'. $absenceType->carry_forward_expiration_duration . $unit;

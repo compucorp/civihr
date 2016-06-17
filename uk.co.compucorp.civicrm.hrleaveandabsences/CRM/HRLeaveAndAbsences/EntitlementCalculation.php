@@ -16,24 +16,68 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
   /**
+   * The AbsencePeriod this calculation is based on
+   *
    * @var \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
    */
   private $period;
 
   /**
+   * The HRJobContract this calculation is based on
+   *
    * @var \CRM_Hrjobcontract_BAO_HRJobContract
    */
   private $contract;
 
   /**
+   * The AbsenceType this calculation is based on
+   *
    * @var \CRM_HRLeaveAndAbsences_BAO_AbsenceType
    */
   private $absenceType;
 
   /**
+   * Variable to cache the return from the getPreviousPeriod method
+   *
    * @var \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
    */
   private $previousPeriod;
+
+  /**
+   * Variable to cache the return from the getPreviousPeriodEntitlement method
+   *
+   * @var \CRM_HRLeaveAndAbsences_BAO_Entitlement
+   */
+  private $previousPeriodEntitlement;
+
+  /**
+   * Variable to cache the return from the getNumberOfWorkingDaysForPeriod method
+   *
+   * @var int
+   */
+  private $numberOfWorkingDays;
+
+  /**
+   * Variable to cache the return from the getNumberOfPublicHolidaysForPeriod method
+   *
+   * @var int
+   */
+  private $numberOfPublicHolidaysInPeriod;
+
+  /**
+   * Variable to cache the return from the getContractDetails method
+   *
+   * @var array
+   */
+  private $contractDetails;
+
+  /**
+   * Variable to cache the return from the getJobLeaveForAbsenceType method
+   *
+   * @var array
+   */
+  private $jobLeave;
+
 
   /**
    * Creates a new EntitlementCalculation instance
@@ -59,8 +103,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  public function getBroughtForward()
-  {
+  public function getBroughtForward() {
     if(!$this->shouldCalculateBroughtForward()) {
       return 0;
     }
@@ -89,18 +132,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return float|int
    */
-  public function getProRata()
-  {
-    $contractDates = $this->getContractDates();
-    if(!$contractDates) {
-      return 0;
-    }
-
-    $numberOfWorkingDaysToWork = $this->period->getNumberOfWorkingDaysToWork(
-      $contractDates['start_date'],
-      $contractDates['end_date']
-    );
-    $numberOfWorkingDays = $this->period->getNumberOfWorkingDays();
+  public function getProRata() {
+    $numberOfWorkingDaysToWork = $this->getNumberOfWorkingDaysToWork();
+    $numberOfWorkingDays = $this->getNumberOfWorkingDays();
     $contractualEntitlement = $this->getContractualEntitlement();
 
     $proRata = ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
@@ -118,8 +152,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  public function getContractualEntitlement()
-  {
+  public function getContractualEntitlement() {
     $contractualEntitlement = 0;
 
     $jobLeave = $this->getJobLeaveForAbsenceType();
@@ -129,10 +162,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
     $contractualEntitlement = $jobLeave['leave_amount'];
     if($jobLeave['add_public_holidays']) {
-      $contractualEntitlement += PublicHoliday::getNumberOfPublicHolidaysForPeriod(
-        $this->period->start_date,
-        $this->period->end_date
-      );
+      $contractualEntitlement += $this->getNumberOfPublicHolidaysForPeriod();
     }
 
     return $contractualEntitlement;
@@ -145,8 +175,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return float|int
    */
-  public function getProposedEntitlement()
-  {
+  public function getProposedEntitlement() {
     return $this->getProRata() + $this->getBroughtForward();
   }
 
@@ -156,14 +185,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  public function getPreviousPeriodProposedEntitlement()
-  {
-    $previousPeriod = $this->getPreviousPeriod();
-
-    if(!$previousPeriod) {
-      return 0;
-    }
-
+  public function getPreviousPeriodProposedEntitlement() {
     $previousPeriodEntitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$previousPeriodEntitlement) {
@@ -190,8 +212,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  public function getNumberOfDaysRemainingInThePreviousPeriod()
-  {
+  public function getNumberOfDaysRemainingInThePreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$entitlement) {
@@ -213,13 +234,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return null;
     }
 
-    $previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
-      $this->contract->id,
-      $previousPeriod->id,
-      $this->absenceType->id
-    );
+    if(!$this->previousPeriodEntitlement) {
+      $this->previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
+        $this->contract->id,
+        $previousPeriod->id,
+        $this->absenceType->id
+      );
+    }
 
-    return $previousPeriodEntitlement;
+    return $this->previousPeriodEntitlement;
   }
 
   /**
@@ -297,16 +320,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return array|null An array with the JobLeave fields or null if there's
    *                    no JobLeave for this AbsenceType
    */
-  private function getJobLeaveForAbsenceType()
-  {
-    try {
-      return civicrm_api3('HRJobLeave', 'getsingle', array(
-        'jobcontract_id' => (int)$this->contract->id,
-        'leave_type' => (int)$this->absenceType->id
-      ));
-    } catch(CiviCRM_API3_Exception $ex) {
-      return null;
+  private function getJobLeaveForAbsenceType() {
+    if(!$this->jobLeave) {
+      try {
+        $this->jobLeave = civicrm_api3('HRJobLeave', 'getsingle', array(
+          'jobcontract_id' => (int)$this->contract->id,
+          'leave_type' => (int)$this->absenceType->id
+        ));
+      } catch(CiviCRM_API3_Exception $ex) {
+        $this->jobLeave = null;
+      }
     }
+
+    return $this->jobLeave;
   }
 
   /**
@@ -316,14 +342,65 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return array|null An array with the JobDetails fields or null if there's
    *                    no JobDetails for this AbsenceType
    */
-  private function getContractDetails()
-  {
-    try {
-      return civicrm_api3('HRJobDetails', 'getsingle', array(
-        'jobcontract_id' => (int)$this->contract->id,
-      ));
-    } catch(CiviCRM_API3_Exception $ex) {
-      return null;
+  private function getContractDetails() {
+    if(!$this->contractDetails) {
+      try {
+        $this->contractDetails = civicrm_api3('HRJobDetails', 'getsingle', array(
+          'jobcontract_id' => (int)$this->contract->id,
+        ));
+      } catch(CiviCRM_API3_Exception $ex) {
+        $this->contractDetails = null;
+      }
     }
+
+    return $this->contractDetails;
+  }
+
+  /**
+   * Returns the number of Public Holidays for this calculation period
+   *
+   * @return int
+   */
+  private function getNumberOfPublicHolidaysForPeriod() {
+    if(!$this->numberOfPublicHolidaysInPeriod) {
+      $this->numberOfPublicHolidaysInPeriod = PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+        $this->period->start_date,
+        $this->period->end_date
+      );
+    }
+
+    return $this->numberOfPublicHolidaysInPeriod;
+  }
+
+  /**
+   * Returns the number of working days to work for the calculation contract on
+   * the calculation period.
+   *
+   * @return int
+   */
+  private function getNumberOfWorkingDaysToWork() {
+    $contractDates = $this->getContractDates();
+    if(!$contractDates) {
+      return 0;
+    }
+
+    return $this->period->getNumberOfWorkingDaysToWork(
+      $contractDates['start_date'],
+      $contractDates['end_date']
+    );
+  }
+
+  /**
+   * Returns the number of working days (excluding public holidays) for this
+   * calculation period
+   *
+   * @return int
+   */
+  private function getNumberOfWorkingDays() {
+    if(!$this->numberOfWorkingDays) {
+      $this->numberOfWorkingDays = $this->period->getNumberOfWorkingDays();
+    }
+
+    return $this->numberOfWorkingDays;
   }
 }
