@@ -23,6 +23,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       ->installMe(__DIR__)
       ->install('org.civicrm.hrjobcontract')
       ->apply();
+    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $jobContractUpgrader->install();
   }
 
   public function setUp()
