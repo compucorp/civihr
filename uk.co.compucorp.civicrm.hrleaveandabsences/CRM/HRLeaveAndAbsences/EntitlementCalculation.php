@@ -224,6 +224,26 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
+   * Returns the AbsenceType instance used to create this calculation
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType
+   */
+  public function getAbsenceType()
+  {
+    return $this->absenceType;
+  }
+
+  /**
+   * Returns the Job Contract array used to create this calculation
+   *
+   * @return array
+   */
+  public function getContract()
+  {
+    return $this->contract;
+  }
+
+  /**
    * Returns the calculated Entitlement for the previous period.
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null
