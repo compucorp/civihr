@@ -28,7 +28,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
 
   /**
    * Delete a PublicHoliday with given ID.
-   * 
+   *
    * @param int $id
    */
   public static function del($id) {
@@ -40,7 +40,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
 
   /**
    * Return an array containing properties of Public Holiday with given ID.
-   * 
+   *
    * @param int $id
    * @return array|NULL
    */
@@ -122,8 +122,8 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Returns the number of active Public Holidays between the given
    * start and end dates (inclusive)
    *
-   * @param $startDate The start date of the period
-   * @param $endDate The end date of the period
+   * @param string $startDate The start date of the period
+   * @param string $endDate The end date of the period
    * @param bool $excludeWeekends When true it will not count Public Holidays that fall on a weekend. It's false by default
    *
    * @return int The Number of Public Holidays for the given Period

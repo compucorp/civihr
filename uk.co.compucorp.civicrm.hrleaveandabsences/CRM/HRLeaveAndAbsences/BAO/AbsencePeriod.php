@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DAO_AbsencePeriod {
 
   /**
@@ -9,7 +11,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * @return CRM_HRLeaveAndAbsences_DAO_AbsencePeriod|NULL
    */
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod';
     $entityName = 'AbsencePeriod';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -20,7 +21,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new $className();
+    $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
@@ -308,28 +309,125 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int
    */
-  public function getNumberOfWorkingDaysToWork($startDate, $endDate)
-  {
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
+  public function getNumberOfWorkingDaysToWork($startDate, $endDate) {
+    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid startDate in Y-m-d format');
     }
 
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
+    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format');
     }
 
-    if(strtotime($startDate) < strtotime($this->start_date)) {
+    if (strtotime($startDate) < strtotime($this->start_date)) {
       $startDate = $this->start_date;
     }
 
-    if(strtotime($endDate) > strtotime($this->end_date)) {
+    if (strtotime($endDate) > strtotime($this->end_date)) {
       $endDate = $this->end_date;
     }
 
-    $periodToWork = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $periodToWork             = new self();
     $periodToWork->start_date = $startDate;
-    $periodToWork->end_date = $endDate;
+    $periodToWork->end_date   = $endDate;
 
     return $periodToWork->getNumberOfWorkingDays();
+  }
+
+  /**
+   * Returns the Absence Period previous to this one. That is, the Absence
+   * Period where weight is equal to this Period weight - 1.
+   *
+   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod - The previous Absence Period or null if there's none
+   */
+  public function getPreviousPeriod()
+  {
+    $previousPeriod = new self();
+    $previousPeriod->weight = $this->weight - 1;
+    $previousPeriod->find(true);
+    if($previousPeriod->id) {
+      return $previousPeriod;
+    }
+
+    return null;
+  }
+
+  /**
+   * Calculates the expiration date for the given AbsenceType within this period.
+   *
+   * If the AbsenceType has an expiration duration (that is,
+   * carry_forward_expiration_duration and carry_forward_expiration_unit are not
+   * empty), its value is used to calculate the expiration date starting from
+   * the period start date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   *
+   * @return null|string A date in Y-m-d or null if it can not be calculated
+   *
+   * @throws \UnexpectedValueException
+   */
+  public function getExpirationDateForAbsenceType(AbsenceType $absenceType)
+  {
+    if(!$this->hasValidDates()) {
+      throw new UnexpectedValueException(
+        'You can only calculate the expiration date for an AbsenceType from an AbsencePeriod with start and end dates'
+      );
+    }
+
+    $expirationDate = null;
+
+    if($absenceType->hasExpirationDuration()) {
+      $expirationDate = $this->getExpirationDurationDate($absenceType);
+    }
+
+    return $expirationDate;
+  }
+
+  /**
+   * Returns the expiration date calculated based on the AbsenceType expiration
+   * duration.
+   *
+   * Example: If the expiration duration is 5 days and this AbsencePeriod
+   * start_date is 2016-01-01, the expiration date will be 2016-01-06.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   *
+   * @return null|string A date in Y-m-d or null if it can not be calculated
+   */
+  private function getExpirationDurationDate(AbsenceType $absenceType)
+  {
+    if(!$absenceType->allow_carry_forward || !$absenceType->hasExpirationDuration()) {
+      return null;
+    }
+
+    switch($absenceType->carry_forward_expiration_unit) {
+      case AbsenceType::EXPIRATION_UNIT_DAYS:
+        $unit = 'D';
+        break;
+      case AbsenceType::EXPIRATION_UNIT_MONTHS:
+        $unit = 'M';
+        break;
+      case AbsenceType::EXPIRATION_UNIT_YEARS:
+        $unit = 'Y';
+        break;
+      default:
+        return null;
+    }
+
+    $intervalSpec = 'P'. $absenceType->carry_forward_expiration_duration . $unit;
+    $interval = new DateInterval($intervalSpec);
+    $expirationDate = new DateTime($this->start_date);
+    $expirationDate->add($interval);
+
+    return $expirationDate->format('Y-m-d');
+  }
+
+  /**
+   * Returns if this AbsencePeriod has valid start and end dates.
+   *
+   * @return bool
+   */
+  private function hasValidDates() {
+    return CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d') &&
+           CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d');
   }
 }

@@ -52,7 +52,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return CRM_HRLeaveAndAbsences_DAO_AbsenceType|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
+    $className = 'CRM_HRLeaveAndAbsences_BAO_AbsenceType';
     $entityName = 'AbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -378,4 +378,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
   }
 
+  /**
+   * The carry forward for an Absence Type never expires if the types has no
+   * expiration duration.
+   *
+   * @return bool|null Returns true if carry forward never expires, false if
+   *                   it does expire, and null if this Absence Types doesn't
+   *                   allow carry forward
+   */
+  public function carryForwardNeverExpires() {
+    if(!$this->allow_carry_forward) {
+      return null;
+    }
+
+    return !$this->hasExpirationDuration();
+  }
+
+  /**
+   * An AbsenceType has an expiration duration if both carry_forward_expiration_duration
+   * and carry_forward_expiration_unit are not empty
+   *
+   * @return bool
+   */
+  public function hasExpirationDuration()
+  {
+    return $this->carry_forward_expiration_duration && $this->carry_forward_expiration_unit;
+  }
 }

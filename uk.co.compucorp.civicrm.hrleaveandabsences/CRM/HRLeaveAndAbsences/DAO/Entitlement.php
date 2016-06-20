@@ -117,6 +117,12 @@ class CRM_HRLeaveAndAbsences_DAO_Entitlement extends CRM_Core_DAO
    */
   public $brought_forward_days;
   /**
+   * The date the brought forward days will expire
+   *
+   * @var date
+   */
+  public $brought_forward_expiration_date;
+  /**
    * The pro rata calculated for this entitlement period
    *
    * @var int unsigned
@@ -220,6 +226,12 @@ class CRM_HRLeaveAndAbsences_DAO_Entitlement extends CRM_Core_DAO
           'title' => ts('Brought Forward Days') ,
           'description' => 'The number of days brought forward from the previous period',
         ) ,
+        'brought_forward_expiration_date' => array(
+          'name' => 'brought_forward_expiration_date',
+          'type' => CRM_Utils_Type::T_DATE,
+          'title' => ts('Brought Forward Expiration Date') ,
+          'description' => 'The date the brought forward days will expire',
+        ) ,
         'pro_rata' => array(
           'name' => 'pro_rata',
           'type' => CRM_Utils_Type::T_INT,
@@ -271,6 +283,7 @@ class CRM_HRLeaveAndAbsences_DAO_Entitlement extends CRM_Core_DAO
         'contract_id' => 'contract_id',
         'proposed_entitlement' => 'proposed_entitlement',
         'brought_forward_days' => 'brought_forward_days',
+        'brought_forward_expiration_date' => 'brought_forward_expiration_date',
         'pro_rata' => 'pro_rata',
         'overridden' => 'overridden',
         'comment' => 'comment',
