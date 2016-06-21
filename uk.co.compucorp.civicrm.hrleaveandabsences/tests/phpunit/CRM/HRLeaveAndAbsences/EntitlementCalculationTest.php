@@ -515,6 +515,62 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($this->contract, $calculation->getContract());
   }
 
+  public function testCalculationCanReturnItsStringRepresentation()
+  {
+    // To simplify the code, we use an Absence where the carried
+    // forward never expires
+    $type = $this->createAbsenceType([
+      'max_number_of_days_to_carry_forward' => 5,
+    ]);
+
+    $previousPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis', strtotime('2015-01-01')),
+      'end_date' => date('YmdHis', strtotime('2015-12-31')),
+    ]);
+
+    // Set the previous period entitlement as 20 days
+    $this->createEntitlement($previousPeriod, $type, 20);
+
+    // 261 working days - 2 public holidays = 259 working days
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 2',
+      'start_date' => date('YmdHis', strtotime('2016-01-01')),
+      'end_date' => date('YmdHis', strtotime('2016-12-31')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('2016-05-02'))
+    ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+      'title' => 'Holiday 2',
+      'date' => date('YmdHis', strtotime('2016-05-30'))
+    ]);
+
+    // Set the contractual entitlement as 10 days
+    $this->createJobLeaveEntitlement($type, 20, true);
+
+    // 64 days to work
+    $this->setContractDates(
+      date('YmdHis', strtotime('2016-01-01')),
+      date('YmdHis', strtotime('2016-03-30'))
+    );
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    //Contractual Entitlement = 20
+    //Number of Public Holidays = 2
+    //Number of days to work = 64
+    //Number of working days = 259
+    //Pro rata = 5.5
+    //Brought forward = 5
+    //Proposed Entitlement = 10.5
+    $expected = '((20 + 2) * (64 / 259)) = (5.5) + (5) = 10.5 days';
+    $calculationDetails = sprintf('%s', $calculation);
+    $this->assertEquals($expected, $calculationDetails);
+  }
+
   private function findAbsencePeriodByID($id) {
     $currentPeriod     = new AbsencePeriod();
     $currentPeriod->id = $id;
