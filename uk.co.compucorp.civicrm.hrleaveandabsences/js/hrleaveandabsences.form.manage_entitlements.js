@@ -17,6 +17,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
     this._filtersElement = $('.entitlement-calculation-filters');
     this._listElement = $('.entitlement-calculation-list');
     this._overrideFilter = this.OVERRIDE_FILTER_BOTH;
+    this._absenceTypeFilter = [];
     this._setUpOverrideFilters();
     this._instantiateProposedEntitlements();
     this._addEventListeners();
@@ -54,6 +55,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    */
   ManageEntitlements.prototype._addEventListeners = function() {
     this._filtersElement.find('.override-filter').on('change', this._onOverrideFilterChange.bind(this));
+    this._filtersElement.find('.absence-type-filter select').on('change', this._onAbsenceTypeFilterChange.bind(this));
     this._listElement.find('tbody > tr').on('click', this._onListRowClick.bind(this));
   };
 
@@ -75,22 +77,25 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
   };
 
   /**
+   * This is the event listener for when the value of the Absence Type filter changes.
+   *
+   * @param {Object} event
+   * @private
+   */
+  ManageEntitlements.prototype._onAbsenceTypeFilterChange = function(event) {
+    this._absenceTypeFilter = $(event.target).val() || [];
+    this._updateList();
+  };
+
+  /**
    * Updates the entitlements list to reflect the actual filter selection
    *
    * @private
    */
   ManageEntitlements.prototype._updateList = function() {
-    switch(this._overrideFilter) {
-      case this.OVERRIDE_FILTER_OVERRIDDEN:
-        this._showOnlyOverridden();
-        break;
-      case this.OVERRIDE_FILTER_NON_OVERRIDDEN:
-        this._showOnlyNonOverridden();
-        break;
-      default:
-        this._showOverriddenAndNonOverridden();
-        break;
-    }
+    this._showAll();
+    this._filterEntitlementsByAbsenceType();
+    this._filterEntitlementsByOverride();
   };
 
   /**
@@ -98,28 +103,69 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._showOverriddenAndNonOverridden = function() {
-    this._listElement.find('tr').show();
+  ManageEntitlements.prototype._showAll = function() {
+    this._listElement.find('tr').removeClass('hidden');
   };
 
   /**
-   * Makes visible only the entitlements where the proposed entitlement was not overridden
+   * Filters the list of entitlements according to the selected values of the
+   * Absence Type filter.
    *
    * @private
    */
-  ManageEntitlements.prototype._showOnlyOverridden = function() {
-    this._showOverriddenAndNonOverridden();
-    this._listElement.find('.proposed-entitlement .override-checkbox:not(:checked)').parents('tr').hide();
+  ManageEntitlements.prototype._filterEntitlementsByAbsenceType = function() {
+    if(this._absenceTypeFilter.length > 0) {
+      var selectors = [];
+      this._absenceTypeFilter.forEach(function(absenceTypeID) {
+        selectors.push("tr[data-absence-type='" + absenceTypeID + "']");
+      });
+
+      this._listElement
+        .find('tr:not(.hidden)')  // finds all the visible rows
+        .not(selectors.join(',')) // that doesn't match the select types
+        .addClass('hidden');      // and hide them
+    }
   };
 
   /**
-   * Makes visible only the entitlements where the proposed entitlement was overridden
+   * Filters the list of entitlements according to the selected value of the
+   * Override Filter.
    *
    * @private
    */
-  ManageEntitlements.prototype._showOnlyNonOverridden = function() {
-    this._showOverriddenAndNonOverridden();
-    this._listElement.find('.proposed-entitlement .override-checkbox:checked').parents('tr').hide();
+  ManageEntitlements.prototype._filterEntitlementsByOverride = function() {
+    switch(this._overrideFilter) {
+      case this.OVERRIDE_FILTER_OVERRIDDEN:
+        this._hideNonOverriddenEntitlements();
+        break;
+      case this.OVERRIDE_FILTER_NON_OVERRIDDEN:
+        this._hideOverriddenEntitlements();
+        break;
+    }
+  };
+
+  /**
+   * Hides every entitlement that was not overridden
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._hideNonOverriddenEntitlements = function() {
+    this._listElement
+      .find('.proposed-entitlement .override-checkbox:not(:checked)')
+      .parents('tr:not(.hidden)')
+      .addClass('hidden');
+  };
+
+  /**
+   * Hides every entitlement that was overridden
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._hideOverriddenEntitlements = function() {
+    this._listElement
+      .find('.proposed-entitlement .override-checkbox:checked')
+      .parents('tr')
+      .addClass('hidden');
   };
 
   /**
@@ -133,6 +179,12 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @private
    */
   ManageEntitlements.prototype._onListRowClick = function(event) {
+    // If the user clicked on one of the override proposed entitlement
+    // controls, we don't show the calculationDescription
+    if($(event.target).parents('.proposed-entitlement').length > 0) {
+      return;
+    }
+
     var calculationDescription = ts('' +
       '((Base contractual entitlement + Public Holidays) ' +
       '* ' +

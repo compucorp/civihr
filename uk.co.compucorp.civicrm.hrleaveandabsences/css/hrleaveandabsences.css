@@ -77,6 +77,14 @@
   display: inline-block;
 }
 
+.entitlement-calculation-filters .absence-type-filter {
+  float: right;
+}
+
+.entitlement-calculation-list tr.hidden {
+  display: none;
+}
+
 .entitlement-calculation-list .absence-type {
   display: inline-block;
   color: #fff;
