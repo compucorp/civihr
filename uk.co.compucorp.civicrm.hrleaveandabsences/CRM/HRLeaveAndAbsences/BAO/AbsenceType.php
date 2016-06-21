@@ -404,4 +404,21 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   {
     return $this->carry_forward_expiration_duration && $this->carry_forward_expiration_unit;
   }
+
+  /**
+   * Returns a list of all enabled Absence Types, ordered by weight
+   */
+  public static function getEnabledAbsenceTypes()
+  {
+    $absenceTypes = [];
+    $absenceType = new self();
+    $absenceType->is_active = 1;
+    $absenceType->orderBy('weight');
+    $absenceType->find();
+    while($absenceType->fetch()) {
+      $absenceTypes[] = clone $absenceType;
+    }
+
+    return $absenceTypes;
+  }
 }

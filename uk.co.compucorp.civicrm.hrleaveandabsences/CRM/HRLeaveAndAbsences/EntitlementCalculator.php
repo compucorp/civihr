@@ -62,12 +62,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculator {
    */
   private function getEnabledAbsenceTypes() {
     if(empty($this->absenceTypes)) {
-      $absenceType = new AbsenceType();
-      $absenceType->is_active = 1;
-      $absenceType->find();
-      while($absenceType->fetch()) {
-        $this->absenceTypes[] = clone $absenceType;
-      }
+      $this->absenceTypes = AbsenceType::getEnabledAbsenceTypes();
     }
 
     return $this->absenceTypes;
