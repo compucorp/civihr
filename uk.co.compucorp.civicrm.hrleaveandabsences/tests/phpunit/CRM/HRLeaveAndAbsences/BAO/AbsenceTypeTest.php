@@ -245,6 +245,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
   }
 
   public function testShouldHaveAllTheColorsAvailableIfTheresNotTypeCreated() {
+    $this->deleteAllAbsenceTypes();
     $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
     foreach($this->allColors as $color) {
       $this->assertContains($color, $availableColors);
@@ -252,6 +253,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
   }
 
   public function testShouldNotAllowColorToBeReusedUntilAllColorsHaveBeenUsed() {
+    $this->deleteAllAbsenceTypes();
     $usedColors = [];
     $numberOfColors = count($this->allColors);
     for($i = 0; $i < $numberOfColors; $i++) {
@@ -455,5 +457,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     }
 
     return null;
+  }
+
+  private function deleteAllAbsenceTypes() {
+    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_hrleaveandabsences_absence_type');
   }
 }
