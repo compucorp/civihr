@@ -11,10 +11,10 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ContractListCtrl',['$scope','$rootElement','$rootScope','$modal','$q', '$filter', 'contractList','ContractService',
-        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
-        'ContractPensionService', 'UtilsService','settings', '$log',
-        function($scope, $rootElement, $rootScope, $modal, $q, $filter, contractList, ContractService, ContractDetailsService,
+    controllers.controller('ContractListCtrl',['$scope','$rootElement','$rootScope','$uibModal','$q', '$filter', '$sce',
+        'contractList','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService',
+        'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService','settings', '$log',
+        function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, contractList, ContractService, ContractDetailsService,
                  ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
                  UtilsService, settings, $log){
             $log.debug('Controller: ContractListCtrl');
@@ -38,6 +38,20 @@ define([
             $scope.contractPast = [];
             $scope.utils = {
                 contractListLen: contractList.length
+            };
+
+            $scope.tooltips = {
+                changeContractTerms: $sce.trustAsHtml('<div>' +
+                    '<p class="text-left"><strong>Change Contract Terms:</strong><br>' +
+                    'When an employeees job or role changes, i.e. promotion, secondment or move,' +
+                    'you can use this wizard to update the details of the contract and record a new' +
+                    'revision of the contract. A contract history is kept so you can always see the' +
+                    'previous version of the contract.</p>' +
+                    '<p class="text-left"><strong>Correct an error on the contract record:</strong><br>' +
+                    'If you notice an issue or error with the job terms you can correct these without' +
+                    'creating a new job history record. These changes are not stored as a new revision' +
+                    'of the contract.</p>' +
+                '</div>')
             };
 
             for (entityName in entityServices) {
@@ -115,7 +129,7 @@ define([
 
                 var modalInstance,
                     options = {
-                        targetDomEl: $rootElement.find('div').eq(0),
+                        appendTo: $rootElement.find('div').eq(0),
                         templateUrl: settings.pathApp+'views/modalForm.html?v=2222',
                         size: 'lg',
                         controller: 'ModalContractNewCtrl',
@@ -161,7 +175,7 @@ define([
                 }
 
                 var modalInstance = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalDialog.html',
                     size: 'sm',
                     controller: 'ModalDialogCtrl',

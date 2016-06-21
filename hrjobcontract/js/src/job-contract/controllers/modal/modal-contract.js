@@ -1,4 +1,5 @@
 define([
+    'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/services/contract',
     'job-contract/services/contract-details',
@@ -9,10 +10,10 @@ define([
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
     'job-contract/services/utils'
-], function (controllers) {
+], function (angular, controllers) {
     'use strict';
 
-    controllers.controller('ModalContractCtrl',['$scope','$modal', '$modalInstance','$q', '$rootElement','$rootScope','$filter',
+    controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
         'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'action', 'entity',
         'content', 'files', 'UtilsService', 'utils', 'settings', '$log',
@@ -53,6 +54,9 @@ define([
             angular.copy(entity,$scope.entity);
             angular.copy(files,$scope.files);
 
+            $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
+            $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+
             angular.forEach($scope.files, function(entityFiles, entityName){
                 $scope.filesTrash[entityName] = [];
             });
@@ -87,7 +91,7 @@ define([
                 }
 
                 var modalInstance = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
                     size: 'sm',
                     controller: 'ModalDialogCtrl',
@@ -214,9 +218,23 @@ define([
                 }
             }
 
+            /**
+             * # TO DO: This should probably happen inside the service that returns the data #
+             *
+             * Converts a date string into a Date object (if string is not empty)
+             *
+             * @param {string} dateString
+             * @param {Date/null}
+             */
+            function convertToDateObject(dateString) {
+                var dateObj = $filter('formatDate')(dateString, Date);
+
+                return dateObj !== 'Unspecified' ? dateObj : dateString;
+            }
+
             function changeReason(){
                 var modalChangeReason = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalChangeReason.html?v='+(new Date()).getTime(),
                     controller: 'ModalChangeReasonCtrl',
                     resolve: {
@@ -237,7 +255,7 @@ define([
 
             function confirmEdit() {
                 var modalConfirmEdit = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalConfirmEdit.html?v='+(new Date()).getTime(),
                     controller: 'ModalDialogCtrl',
                     resolve: {
@@ -255,7 +273,7 @@ define([
             function contractEdit(){
                 $scope.$broadcast('hrjc-loader-show');
 
-                var entityNew = $scope.entity,
+                var entityNew = angular.copy($scope.entity),
                     filesTrash = $scope.filesTrash,
                     uploader = $scope.uploader,
                     entityName, file, i, len, modalInstance;
@@ -314,7 +332,7 @@ define([
 
                     if (promiseFilesEditUpload.length) {
                         modalInstance  = $modal.open({
-                            targetDomEl: $rootElement.find('div').eq(0),
+                            appendTo: $rootElement.find('div').eq(0),
                             templateUrl: settings.pathApp+'views/modalProgress.html?v='+(new Date()).getTime(),
                             size: 'sm',
                             controller: 'ModalProgressCtrl',
@@ -347,7 +365,7 @@ define([
             function contractChange(reasonId, date){
                 $scope.$broadcast('hrjc-loader-show');
 
-                var entityNew = $scope.entity,
+                var entityNew = angular.copy($scope.entity),
                     filesTrash = $scope.filesTrash,
                     uploader = $scope.uploader,
                     entityName, field, fieldName, file, entityChangedList = [], entityChangedListLen = 0,
@@ -487,7 +505,7 @@ define([
 
                         if (promiseFilesChangeUpload.length) {
                             modalInstance  = $modal.open({
-                                targetDomEl: $rootElement.find('div').eq(0),
+                                appendTo: $rootElement.find('div').eq(0),
                                 templateUrl: settings.pathApp+'views/modalProgress.html',
                                 size: 'sm',
                                 controller: 'ModalProgressCtrl',

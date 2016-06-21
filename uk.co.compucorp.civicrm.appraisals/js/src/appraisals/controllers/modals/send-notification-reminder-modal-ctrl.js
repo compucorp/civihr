@@ -4,12 +4,12 @@ define([
     'use strict';
 
     controllers.controller('SendNotificationReminderModalCtrl', [
-        '$log', '$controller', '$modal', '$modalInstance', '$rootElement',
+        '$log', '$controller', '$uibModal', '$uibModalInstance', '$rootElement',
         function ($log, $controller, $modal, $modalInstance, $rootElement) {
             $log.debug('SendNotificationReminderModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
 
             /**
@@ -17,7 +17,7 @@ define([
              */
             vm.openNotificationRecipientsModal = function () {
                 $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                    appendTo: $rootElement.children().eq(0),
                     controller: 'NotificationRecipientsModalCtrl',
                     controllerAs: 'modal',
                     bindToController: true,

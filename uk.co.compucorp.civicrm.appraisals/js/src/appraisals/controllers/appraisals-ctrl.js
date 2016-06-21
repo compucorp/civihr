@@ -4,14 +4,14 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsCtrl',
-        ['$log', '$rootElement', '$modal', 'AppraisalCycle',
+        ['$log', '$rootElement', '$uibModal', 'AppraisalCycle',
         function ($log, $rootElement, $modal, AppraisalCycle) {
             $log.debug('AppraisalsCtrl');
 
             return {
                 openAppraisalCycleModal: function () {
                     $modal.open({
-                        targetDomEl: $rootElement.children().eq(0),
+                        appendTo: $rootElement.children().eq(0),
                         controller: 'AppraisalCycleModalCtrl',
                         controllerAs: 'modal',
                         bindToController: true,

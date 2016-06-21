@@ -4,7 +4,7 @@ define([
 ], function (moment, controllers) {
     'use strict';
 
-    controllers.controller('ModalChangeReasonCtrl',['$scope','$modalInstance', 'content', 'date', 'reasonId', '$log',
+    controllers.controller('ModalChangeReasonCtrl',['$scope','$uibModalInstance', 'content', 'date', 'reasonId', '$log',
         function ($scope, $modalInstance, content, date, reasonId, $log) {
             $log.debug('Controller: ModalChangeReasonCtrl');
 
