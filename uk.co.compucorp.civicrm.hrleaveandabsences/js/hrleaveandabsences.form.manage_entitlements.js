@@ -14,10 +14,27 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @constructor
    */
   function ManageEntitlements() {
+    this._filtersElement = $('.entitlement-calculation-filters');
     this._listElement = $('.entitlement-calculation-list');
+    this._overrideFilter = this.OVERRIDE_FILTER_BOTH;
+    this._setUpOverrideFilters();
     this._instantiateProposedEntitlements();
     this._addEventListeners();
   }
+
+  //Constants for the Override Filter values
+  ManageEntitlements.prototype.OVERRIDE_FILTER_OVERRIDDEN = 1;
+  ManageEntitlements.prototype.OVERRIDE_FILTER_NON_OVERRIDDEN = 2;
+  ManageEntitlements.prototype.OVERRIDE_FILTER_BOTH = 3;
+
+  /**
+   * Transforms the radios of the Override Filter into a jQuery UI button set
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._setUpOverrideFilters = function() {
+    this._filtersElement.find('.override-filters').buttonset();
+  };
 
   /**
    * Creates new ProposedEntitlement instances for every calculation on the list
@@ -36,7 +53,73 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @private
    */
   ManageEntitlements.prototype._addEventListeners = function() {
+    this._filtersElement.find('.override-filter').on('change', this._onOverrideFilterChange.bind(this));
     this._listElement.find('tbody > tr').on('click', this._onListRowClick.bind(this));
+  };
+
+  /**
+   * This is the event listener for when the value of the Override Filter changes.
+   *
+   * If the new value is different from the previous one, the list is updated to
+   * reflect the option selected.
+   *
+   * @param {Object} event
+   * @private
+   */
+  ManageEntitlements.prototype._onOverrideFilterChange = function(event) {
+    var newOverrideFilterValue = parseInt(event.target.value);
+    if(newOverrideFilterValue != this._overrideFilter) {
+      this._overrideFilter = newOverrideFilterValue;
+      this._updateList();
+    }
+  };
+
+  /**
+   * Updates the entitlements list to reflect the actual filter selection
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._updateList = function() {
+    switch(this._overrideFilter) {
+      case this.OVERRIDE_FILTER_OVERRIDDEN:
+        this._showOnlyOverridden();
+        break;
+      case this.OVERRIDE_FILTER_NON_OVERRIDDEN:
+        this._showOnlyNonOverridden();
+        break;
+      default:
+        this._showOverriddenAndNonOverridden();
+        break;
+    }
+  };
+
+  /**
+   * Makes all the entitlements visible
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._showOverriddenAndNonOverridden = function() {
+    this._listElement.find('tr').show();
+  };
+
+  /**
+   * Makes visible only the entitlements where the proposed entitlement was not overridden
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._showOnlyOverridden = function() {
+    this._showOverriddenAndNonOverridden();
+    this._listElement.find('.proposed-entitlement .override-checkbox:not(:checked)').parents('tr').hide();
+  };
+
+  /**
+   * Makes visible only the entitlements where the proposed entitlement was overridden
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._showOnlyNonOverridden = function() {
+    this._showOverriddenAndNonOverridden();
+    this._listElement.find('.proposed-entitlement .override-checkbox:checked').parents('tr').hide();
   };
 
   /**

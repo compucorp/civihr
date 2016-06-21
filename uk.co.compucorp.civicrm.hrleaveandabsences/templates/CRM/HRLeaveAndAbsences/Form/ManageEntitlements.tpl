@@ -1,6 +1,18 @@
 <div class="help">
   <p>&nbsp;{ts}WARNING: Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
 </div>
+<div class="entitlement-calculation-filters">
+  <div class="override-filters">
+    <input type="radio" id="override-filter-overridden" name="override-filter" class="override-filter" value="1">
+    <label for="override-filter-overridden">Overridden</label>
+
+    <input type="radio" id="override-filter-not-overridden" name="override-filter" class="override-filter" value="2">
+    <label for="override-filter-not-overridden">Not Overridden</label>
+
+    <input type="radio" id="override-filter-both" name="override-filter" class="override-filter" value="3" checked="checked">
+    <label for="override-filter-both">Both</label>
+  </div>
+</div>
 <table class="entitlement-calculation-list">
   <thead>
   <tr>
@@ -37,7 +49,9 @@
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
           {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
           <button type="button"><i class="fa fa-pencil"></i></button>
-          <label for=""><input type="checkbox"> Override</label>
+          <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
+            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}" type="checkbox" class="override-checkbox"> Override
+          </label>
         </div>
       </td>
       <td></td>
