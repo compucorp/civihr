@@ -67,3 +67,19 @@
   border-top: 1px solid rgba(0, 0, 0, .2);
   border-bottom: 1px solid rgba(0, 0, 0, .2);
 }
+
+.entitlement-calculation-list .absence-type {
+  display: inline-block;
+  color: #fff;
+  padding: 5px;
+}
+
+.entitlement-calculation-list .proposed-entitlement .overridden-proposed-entitlement {
+  display: none;
+  width: 20px;
+}
+
+.entitlement-calculation-list .proposed-entitlement button {
+  border: 0;
+  background-color: transparent;
+}

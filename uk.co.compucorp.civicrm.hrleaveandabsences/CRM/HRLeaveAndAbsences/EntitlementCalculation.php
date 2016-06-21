@@ -2,7 +2,6 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
-use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
@@ -23,9 +22,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private $period;
 
   /**
-   * The HRJobContract this calculation is based on
+   * The Job Contract this calculation is based on
+   * This is expected to be an array, just like the one returned from an API
+   * call
    *
-   * @var \CRM_Hrjobcontract_BAO_HRJobContract
+   * @var array
    */
   private $contract;
 
@@ -83,10 +84,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Creates a new EntitlementCalculation instance
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
-   * @param \CRM_Hrjobcontract_BAO_HRJobContract $contract
+   * @param array $contract The contract in array format, like when it's returned by an API call
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
    */
-  public function __construct(AbsencePeriod $period, JobContract $contract, AbsenceType $absenceType) {
+  public function __construct(AbsencePeriod $period, $contract, AbsenceType $absenceType) {
     $this->period = $period;
     $this->contract = $contract;
     $this->absenceType = $absenceType;
@@ -223,6 +224,26 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
+   * Returns the AbsenceType instance used to create this calculation
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType
+   */
+  public function getAbsenceType()
+  {
+    return $this->absenceType;
+  }
+
+  /**
+   * Returns the Job Contract array used to create this calculation
+   *
+   * @return array
+   */
+  public function getContract()
+  {
+    return $this->contract;
+  }
+
+  /**
    * Returns the calculated Entitlement for the previous period.
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null
@@ -236,7 +257,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
     if(!$this->previousPeriodEntitlement) {
       $this->previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
-        $this->contract->id,
+        $this->contract['id'],
         $previousPeriod->id,
         $this->absenceType->id
       );
@@ -324,7 +345,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     if(!$this->jobLeave) {
       try {
         $this->jobLeave = civicrm_api3('HRJobLeave', 'getsingle', array(
-          'jobcontract_id' => (int)$this->contract->id,
+          'jobcontract_id' => (int)$this->contract['id'],
           'leave_type' => (int)$this->absenceType->id
         ));
       } catch(CiviCRM_API3_Exception $ex) {
@@ -346,7 +367,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     if(!$this->contractDetails) {
       try {
         $this->contractDetails = civicrm_api3('HRJobDetails', 'getsingle', array(
-          'jobcontract_id' => (int)$this->contract->id,
+          'jobcontract_id' => (int)$this->contract['id'],
         ));
       } catch(CiviCRM_API3_Exception $ex) {
         $this->contractDetails = null;

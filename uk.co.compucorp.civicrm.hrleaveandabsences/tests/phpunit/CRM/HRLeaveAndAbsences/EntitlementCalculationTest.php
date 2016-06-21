@@ -23,6 +23,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       ->installMe(__DIR__)
       ->install('org.civicrm.hrjobcontract')
       ->apply();
+    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $jobContractUpgrader->install();
   }
 
   public function setUp()
@@ -493,6 +495,26 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(10, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
+  public function testGetAbsenceTypeShouldReturnTheAbsenceTypeUsedToCreateTheCalculation()
+  {
+    $type = new AbsenceType();
+    $type->title = 'Absence Type 1';
+
+    $period = new AbsencePeriod();
+
+    $calculation = new EntitlementCalculation($period, [], $type);
+    $this->assertEquals($type, $calculation->getAbsenceType());
+  }
+
+  public function testGetContractShouldReturnTheContractUsedToCreateTheCalculation()
+  {
+    $type = new AbsenceType();
+    $period = new AbsencePeriod();
+
+    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $this->assertEquals($this->contract, $calculation->getContract());
+  }
+
   private function findAbsencePeriodByID($id) {
     $currentPeriod     = new AbsencePeriod();
     $currentPeriod->id = $id;
@@ -501,16 +523,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   private function createContract() {
-    $this->contract = JobContract::create([
+    $result = civicrm_api3('HRJobContract', 'create', [
       'contact_id' => 2, //Existing contact from civicrm_data.mysql,
-      'is_primary' => 1
+      'is_primary' => 1,
+      'sequential' => 1
     ]);
+    $this->contract = $result['values'][0];
   }
 
   private function createEntitlement($period, $type, $proposedEntitlement = 20) {
     Entitlement::create([
       'period_id'            => $period->id,
-      'contract_id'          => $this->contract->id,
+      'contract_id'          => $this->contract['id'],
       'type_id'              => $type->id,
       'proposed_entitlement' => $proposedEntitlement,
     ]);
@@ -531,7 +555,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {
     CRM_Hrjobcontract_BAO_HRJobLeave::create([
-      'jobcontract_id' => $this->contract->id,
+      'jobcontract_id' => $this->contract['id'],
       'leave_type' => $type->id,
       'leave_amount' => $leaveAmount,
       'add_public_holidays' => $addPublicHolidays ? '1' : '0'
@@ -540,7 +564,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   private function setContractDates($startDate, $endDate) {
     CRM_Hrjobcontract_BAO_HRJobDetails::create([
-      'jobcontract_id' => $this->contract->id,
+      'jobcontract_id' => $this->contract['id'],
       'period_start_date' => $startDate,
       'period_end_date' => $endDate,
     ]);
