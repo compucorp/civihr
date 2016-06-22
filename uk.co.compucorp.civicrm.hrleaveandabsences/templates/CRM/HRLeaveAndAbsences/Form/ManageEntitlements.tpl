@@ -1,6 +1,16 @@
 <div class="help">
   <p>&nbsp;{ts}WARNING: Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
 </div>
+
+{* These hidden fields are used when we submit the form to export the CSV file *}
+{* The id is used so we know from which period we are exporting the CSV *}
+{* The cid is used so can export calculations only for the specified contracts *}
+<input type="hidden" name="export_csv" id="export_csv" value="0">
+<input type="hidden" name="id" id="period_id" value="{$period->id}">
+{foreach from=$contractsIDs item=id}
+  <input type="hidden" name="cid[]" value="{$id}">
+{/foreach}
+
 <div class="entitlement-calculation-filters row">
   <div class="col-sm-4">
   </div>
@@ -24,6 +34,7 @@
         {/foreach}
       </select>
     </div>
+    <a href="{crmURL q="id=`$period->id`&csv=1&reset=1"}" class="export-csv-action">{ts}Export to CSV{/ts}</a>
   </div>
 </div>
 <table class="entitlement-calculation-list">

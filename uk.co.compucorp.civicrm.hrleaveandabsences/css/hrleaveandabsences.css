@@ -78,7 +78,12 @@
 }
 
 .entitlement-calculation-filters .absence-type-filter {
-  float: right;
+  display: inline;
+  margin-right: 10px;
+}
+
+.entitlement-calculation-filters .col-sm-4:last-child {
+  text-align: right;
 }
 
 .entitlement-calculation-list tr.hidden {

@@ -23,7 +23,13 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     $this->addProposedEntitlementsFields($calculations);
 
+    $exportCSV = CRM_Utils_Request::retrieve('export_csv', 'Integer');
+    if($exportCSV) {
+      $this->exportCSV($calculations);
+    }
+
     $this->assign('period', $absencePeriod);
+    $this->assign('contractsIDs', $this->getContractsIDsFromRequest());
     $this->assign('calculations', $calculations);
     $this->assign('enabledAbsenceTypes', $this->getEnabledAbsenceTypes());
 
@@ -92,10 +98,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * @return array
    */
   private function getContractsForCalculation(AbsencePeriod $absencePeriod) {
-    $contractsIDs = empty($_GET['cid']) ? [] : $_GET['cid'];
-    if(!is_array($contractsIDs)) {
-      $contractsIDs = [$contractsIDs];
-    }
+    $contractsIDs = $this->getContractsIDsFromRequest();
     return $this->getActiveContractsForPeriod($absencePeriod, $contractsIDs);
   }
 
@@ -181,5 +184,76 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   private function getEnabledAbsenceTypes() {
     return CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+  }
+
+  /**
+   * Returns all the Contracts IDs passed through the cid request parameter
+   *
+   * @return array
+   */
+  private function getContractsIDsFromRequest() {
+    $contractsIDs = empty($_REQUEST['cid']) ? [] : $_REQUEST['cid'];
+    if (!is_array($contractsIDs)) {
+      $contractsIDs = [$contractsIDs];
+    }
+
+    return $contractsIDs;
+  }
+
+  /**
+   * Exports a CSV File containing all the given calculations.
+   *
+   * This function takes into account if any of the proposed entitlements were
+   * overridden on the page and will include the overridden value in the CSV.
+   *
+   * @param array $calculations
+   *   An array of CRM_HRLeaveAndAbsences_EntitlementCalculation objects
+   */
+  private function exportCSV($calculations) {
+    $headers = [
+      'employee_id',
+      'employee_name',
+      'leave_type',
+      'prev_year_entitlement',
+      'days_taken',
+      'remaining',
+      'brought_forward',
+      'contractual_entitlement',
+      'period_pro_rata',
+      'proposed_entitlement',
+      'overridden'
+    ];
+
+    $formValues = $this->exportValues();
+
+    $rows = [];
+    foreach($calculations as $calculation) {
+      $contractID = $calculation->getContract()['id'];
+      $absenceTypeID = $calculation->getAbsenceType()->id;
+
+      $row = [
+        'employee_id' => $contractID,
+        'employee_name' => $calculation->getContract()['contact_display_name'],
+        'leave_type' => $calculation->getAbsenceType()->title,
+        'prev_year_entitlement' => $calculation->getPreviousPeriodProposedEntitlement(),
+        'days_taken' => $calculation->getNumberOfLeavesTakenOnThePreviousPeriod(),
+        'remaining' => $calculation->getNumberOfDaysRemainingInThePreviousPeriod(),
+        'brought_forward' => $calculation->getBroughtForward(),
+        'contractual_entitlement' => $calculation->getContractualEntitlement(),
+        'period_pro_rata' => $calculation->getProRata(),
+        'proposed_entitlement' => $calculation->getProposedEntitlement(),
+        'overridden' => 0
+      ];
+
+      if(!empty($formValues['proposed_entitlement'][$contractID][$absenceTypeID])) {
+        $row['proposed_entitlement'] = $formValues['proposed_entitlement'][$contractID][$absenceTypeID];
+        $row['overridden'] = 1;
+      }
+
+      $rows[] = $row;
+    }
+
+    CRM_Core_Report_Excel::writeCSVFile('entitlement_calculations', $headers, $rows);
+    CRM_Utils_System::civiExit();
   }
 }
