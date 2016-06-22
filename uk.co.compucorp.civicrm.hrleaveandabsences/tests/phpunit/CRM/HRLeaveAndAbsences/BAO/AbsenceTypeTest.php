@@ -245,6 +245,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
   }
 
   public function testShouldHaveAllTheColorsAvailableIfTheresNotTypeCreated() {
+    $this->deleteAllAbsenceTypes();
     $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
     foreach($this->allColors as $color) {
       $this->assertContains($color, $availableColors);
@@ -252,6 +253,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
   }
 
   public function testShouldNotAllowColorToBeReusedUntilAllColorsHaveBeenUsed() {
+    $this->deleteAllAbsenceTypes();
     $usedColors = [];
     $numberOfColors = count($this->allColors);
     for($i = 0; $i < $numberOfColors; $i++) {
@@ -359,6 +361,40 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     $this->assertNull($absenceType->carryForwardNeverExpires());
   }
 
+  public function testGetEnabledAbsenceTypesShouldReturnAListOfEnabledAbsenceTypesOrderedByWeight()
+  {
+    $this->deleteAllAbsenceTypes();
+    $absenceType1 = $this->createBasicType();
+    $absenceType2 = $this->createBasicType();
+    $absenceType3 = $this->createBasicType();
+
+    // Let's change the types order
+    $absenceType2 = $this->updateBasicType($absenceType2->id, ['weight' => 1]);
+    $absenceType3 = $this->updateBasicType($absenceType3->id, ['weight' => 2]);
+    $absenceType1 = $this->updateBasicType($absenceType1->id, ['weight' => 3]);
+
+    $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+    $this->assertCount(3, $absenceTypes);
+
+    $this->assertEquals($absenceType2->id, $absenceTypes[0]->id);
+    $this->assertEquals($absenceType2->title, $absenceTypes[0]->title);
+
+    $this->assertEquals($absenceType3->id, $absenceTypes[1]->id);
+    $this->assertEquals($absenceType3->title, $absenceTypes[1]->title);
+
+    $this->assertEquals($absenceType1->id, $absenceTypes[2]->id);
+    $this->assertEquals($absenceType1->title, $absenceTypes[2]->title);
+  }
+
+  public function testGetEnabledAbsenceTypesShouldNotIncludeDisabledTypes() {
+    $this->deleteAllAbsenceTypes();
+    $this->createBasicType(['is_active' => 1]);
+    $this->createBasicType(['is_active' => 0]);
+
+    $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+    $this->assertCount(1, $absenceTypes);
+  }
+
   private function createBasicType($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
@@ -455,5 +491,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     }
 
     return null;
+  }
+
+  private function deleteAllAbsenceTypes() {
+    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_hrleaveandabsences_absence_type');
   }
 }

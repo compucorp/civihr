@@ -25,6 +25,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     $this->assign('period', $absencePeriod);
     $this->assign('calculations', $calculations);
+    $this->assign('enabledAbsenceTypes', $this->getEnabledAbsenceTypes());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.manage_entitlements.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
@@ -171,5 +172,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         ['class' => 'overridden-proposed-entitlement']
       );
     }
+  }
+
+  /**
+   * Returns a list of enabled Absence Types
+   *
+   * @return array
+   */
+  private function getEnabledAbsenceTypes() {
+    return CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
   }
 }

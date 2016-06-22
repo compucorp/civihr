@@ -1,6 +1,31 @@
 <div class="help">
   <p>&nbsp;{ts}WARNING: Please note that any currently stored annual entitlement allowance for the selected staff member(s) will be overwritten by this process{/ts}</p>
 </div>
+<div class="entitlement-calculation-filters row">
+  <div class="col-sm-4">
+  </div>
+  <div class="col-sm-4">
+    <div class="override-filters">
+      <input type="radio" id="override_filter_overridden" name="override-filter" class="override-filter" value="1">
+      <label for="override_filter_overridden">Overridden</label>
+
+      <input type="radio" id="override_filter_not_overridden" name="override-filter" class="override-filter" value="2">
+      <label for="override_filter_not_overridden">Not Overridden</label>
+
+      <input type="radio" id="override_filter_both" name="override-filter" class="override-filter" value="3" checked="checked">
+      <label for="override_filter_both">Both</label>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="absence-type-filter">
+      <select name="absence-type-filter" id="absence_type_filter" class="crm-select2" multiple="multiple" data-placeholder="{ts}Leave Type{/ts}">
+        {foreach from=$enabledAbsenceTypes item=absenceType}
+          <option value="{$absenceType->id}">{$absenceType->title}</option>
+        {/foreach}
+      </select>
+    </div>
+  </div>
+</div>
 <table class="entitlement-calculation-list">
   <thead>
   <tr>
@@ -22,7 +47,7 @@
     {assign var=absenceType value=$calculation->getAbsenceType()}
     {assign var=absenceTypeID value=$absenceType->id}
     {assign var=contract value=$calculation->getContract()}
-    <tr data-calculation-details="{$calculation}">
+    <tr data-calculation-details="{$calculation}" data-absence-type="{$absenceTypeID}">
       <td>{$contract.contact_id}</td>
       <td>{$contract.contact_display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
@@ -37,7 +62,9 @@
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
           {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
           <button type="button"><i class="fa fa-pencil"></i></button>
-          <label for=""><input type="checkbox"> Override</label>
+          <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
+            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}" type="checkbox" class="override-checkbox"> Override
+          </label>
         </div>
       </td>
       <td></td>
