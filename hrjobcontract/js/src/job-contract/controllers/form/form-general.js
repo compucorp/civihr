@@ -5,7 +5,7 @@ define([
 ], function (moment, controllers){
   'use strict';
 
-  controllers.controller('FormGeneralCtrl',['$scope','$log', 'HR_settings',
+  controllers.controller('FormGeneralCtrl',['$scope', '$log', 'HR_settings',
     function ($scope, $log, HR_settings) {
       $log.debug('Controller: FormGeneralCtrl');
 
@@ -38,7 +38,7 @@ define([
       });
 
       $scope.$watch('entity.details.position', function(newVal, oldVal){
-        if (newVal != oldVal && entityDetails.title == oldVal) {
+        if (newVal !== oldVal && entityDetails.title === oldVal) {
           $scope.contractForm.detailsTitle.$setViewValue(newVal);
           $scope.contractForm.detailsTitle.$render();
         }
@@ -50,7 +50,7 @@ define([
           $scope.contractForm.detailsNoticeUnit.$dirty = true;
         }
 
-        if (newVal != oldVal && entityDetails.notice_amount_employee == oldVal) {
+        if (newVal !== oldVal && entityDetails.notice_amount_employee === oldVal) {
           entityDetails.notice_amount_employee = newVal;
         }
       });
@@ -63,7 +63,7 @@ define([
       });
 
       $scope.$watch('entity.details.notice_unit', function(newVal, oldVal){
-        if (newVal != oldVal && entityDetails.notice_unit_employee == oldVal) {
+        if (newVal !== oldVal && entityDetails.notice_unit_employee === oldVal) {
           entityDetails.notice_unit_employee = newVal;
         }
       });
@@ -77,7 +77,7 @@ define([
        */
       function duration(dateStart, dateEnd){
         if (!dateStart || !dateEnd) {
-          return 'Unspecified';
+          return null;
         }
 
         var days, months, m, years;

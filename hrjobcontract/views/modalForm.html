@@ -126,8 +126,9 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">Contract Duration</label>
 
-                                <div class="col-sm-8">
-                                    <p class="form-control-static">{{duration}}</p>
+                                <div class="col-sm-8" ng-switch="duration !== null">
+                                  <p class="form-control-static" ng-switch-when="true">{{duration}}</p>
+                                  <p class="form-control-static" ng-switch-default>Unspecified</p>
                                 </div>
                             </div>
                             <div class="form-group" hrjc-validate>
