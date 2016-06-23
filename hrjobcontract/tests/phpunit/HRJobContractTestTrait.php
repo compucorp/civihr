@@ -22,10 +22,11 @@ trait HRJobContractTestTrait {
    * @param $contactID
    * @param null $startDate
    * @param null $endDate
+   * @param array $extraParams
    *
    * @return \CRM_HRJob_DAO_HRJobContract|NULL
    */
-  protected function createJobContract($contactID, $startDate = null, $endDate = null) {
+  protected function createJobContract($contactID, $startDate = null, $endDate = null, $extraParams = array()) {
     $contract = CRM_Hrjobcontract_BAO_HRJobContract::create(['contact_id' => $contactID]);
     if($startDate) {
       $params = [
@@ -37,10 +38,28 @@ trait HRJobContractTestTrait {
       if($endDate) {
         $params['period_end_date'] = CRM_Utils_Date::processDate($endDate);
       }
+      $params = array_merge($params, $extraParams);
       CRM_Hrjobcontract_BAO_HRJobDetails::create($params);
     }
 
     return $contract;
+  }
+
+  /**
+   * Creates single (Individuals) contact from the provided data.
+   *
+   * @param array $params should contain first_name and last_name
+   * @return int return the contact ID
+   * @throws \CiviCRM_API3_Exception
+   */
+  protected function createContact($params) {
+    $result = civicrm_api3('Contact', 'create', array(
+      'contact_type' => "Individual",
+      'first_name' => $params['first_name'],
+      'last_name' => $params['last_name'],
+      'display_name' => $params['first_name'] . ' ' . $params['last_name'],
+    ));
+    return $result['id'];
   }
 
   /**
@@ -65,6 +84,7 @@ trait HRJobContractTestTrait {
     }
   }
 
+
   /**
    * Deletes the contract with the given ID.
    *
@@ -79,4 +99,5 @@ trait HRJobContractTestTrait {
   protected function deleteContract($id) {
     civicrm_api3('HRJobContract', 'deletecontract', ['id' => $id]);
   }
+
 }

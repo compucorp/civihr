@@ -59,7 +59,7 @@ function hrui_civicrm_buildForm($formName, &$form) {
     //HR-358 - Set default values
     //set default value to phone location and type
     $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful. 
+    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful.
     //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
     if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
       $phoneType = $form->getElement('phone[2][phone_type_id]');
@@ -506,6 +506,29 @@ function hrui_civicrm_navigationMenu( &$params ) {
  */
 function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   $smarty = CRM_Core_Smarty::singleton();
+
+  // fetch data to the new summary page UI
+  if($context == 'page' && $tplName == "CRM/Contact/Page/View/Summary.tpl" ) {
+    $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
+    /* $currentContractDetails contain current contact data including
+     * Current ( Position = $currentContractDetails->position ) and
+     * ( Normal Place of work =  $currentContractDetails->location )
+    */
+    $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
+    // $departmentsList contain current roles departments list separated by comma
+    $departmentsList = null;
+    if ($currentContractDetails)  {
+      $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+      $departmentsList = implode(', ', $departmentsArray);
+    }
+    // $managersList contain current line managers list separated by comma
+    $managersList = null;
+    if ($currentContractDetails)  {
+      $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
+      $managersList = implode(', ', $managersArray);
+    }
+  }
+
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
     $columnToHide = array(
       'formal_title',
@@ -594,3 +617,4 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
    </script>";
   }
 }
+
