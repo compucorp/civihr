@@ -1,7 +1,49 @@
 .crm-tooltip table td {
-    width: 50%;
-    word-wrap: break-word;
+  width: 50%;
+  word-wrap: break-word;
 }
 #crm-main-content-wrapper #contactDetails #govID span {
-    margin-right: 1%;
+  margin-right: 1%;
 }
+
+/*Vertical Tabs for Contacts Summary*/
+
+#crm-container .crm-contact-page {
+  position: relative;
+  padding: 4px;
+}
+
+.crm-contact-page  #mainTabContainer {
+  background-color: transparent;
+  padding: 0;
+}
+
+.crm-contact-page #mainTabContainer .ui-tabs-nav {
+  width: 15%;
+  float: left;
+  padding: 4px;
+  background: #CCC;
+}
+
+.crm-contact-page #mainTabContainer li.crm-tab-button {
+  display: block;
+  width: 100%;
+  font-size: 12px;
+  white-space: normal;
+}
+
+.crm-contact-page .ui-tabs-panel {
+  float: right;
+  width: 83%;
+  background-color: #FFF;
+}
+
+/* override of jquery-ui.css that creates weird white background */
+.crm-contact-page .ui-widget-content {
+  background: transparent;
+}
+
+.crm-contact-page .ui-dialog {
+  background: #FFF;
+}
+/*End - Vertical Tabs for Contacts Summary*/
