@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     $calculations = $this->getEntitlementCalculations($absencePeriod);
 
-    $this->addProposedEntitlementsFields($calculations);
+    $this->addProposedEntitlementAndCommentFields($calculations);
 
     $exportCSV = CRM_Utils_Request::retrieve('export_csv', 'Integer');
     if($exportCSV) {
@@ -151,20 +151,21 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   }
 
   /**
-   * Adds the Proposed Entitlements fields to this form.
+   * Adds the Proposed Entitlements and the Comments fields to this form.
    *
-   * These fields are hidden by default, and are visible only if the user chose
-   * to override the calculated proposed entitlement.
+   * These fields are hidden by default. The Proposed Entitlement field is
+   * visible only if the user chose to override the calculated proposed
+   * entitlement.
    *
-   * As this is a list of calculations, the field name contains the contract id
+   * As this is a list of calculations, the field names contains the contract id
    * and the absence type id, in order to make it possible to related the fields
    * to the right calculation.
    *
    * @param $calculations
    */
-  private function addProposedEntitlementsFields($calculations) {
+  private function addProposedEntitlementAndCommentFields($calculations) {
     foreach($calculations as $calculation) {
-      $fieldName = sprintf(
+      $proposedEntitlementFieldName = sprintf(
         'proposed_entitlement[%d][%d]',
         $calculation->getContract()['id'],
         $calculation->getAbsenceType()->id
@@ -172,12 +173,24 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
       $this->add(
         'text',
-        $fieldName,
+        $proposedEntitlementFieldName,
         '',
         [
           'class' => 'overridden-proposed-entitlement',
           'maxlength' => 4
         ]
+      );
+
+      $commentFieldName = sprintf(
+        'comment[%d][%d]',
+        $calculation->getContract()['id'],
+        $calculation->getAbsenceType()->id
+      );
+      $this->add(
+        'textarea',
+        $commentFieldName,
+        '',
+        ['class' => 'comment-text']
       );
     }
   }

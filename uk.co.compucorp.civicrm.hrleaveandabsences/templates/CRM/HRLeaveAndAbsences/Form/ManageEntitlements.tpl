@@ -78,21 +78,26 @@
       <td>{$calculation->getBroughtForward()}</td>
       <td>{$calculation->getContractualEntitlement()}</td>
       <td>{$calculation->getProRata()}</td>
-      <td>
-        <div class="proposed-entitlement">
+      <td class="proposed-entitlement">
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
           {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
-          <button type="button"><i class="fa fa-pencil"></i></button>
+          <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
           <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
             <input id="override_checkbox_{$contract.id}_{$absenceTypeID}" type="checkbox" class="override-checkbox"> Override
           </label>
-        </div>
       </td>
-      <td></td>
+      <td class="comment">
+        {$form.comment[$contract.id][$absenceTypeID].html}
+        <button type="button" class="borderless-button add-comment"><i class="fa fa-share-square-o"></i></button>
+      </td>
     </tr>
   {/foreach}
   </tbody>
 </table>
+<div id="add-comment-dialog" title="{ts}Add/Edit comment{/ts}">
+  <p>{ts}You can leave a comment as a record of your calculation for the leave entitlement for this period. Comments are then shown as tooltips on the leave entitlement on the contact record for administrators to refer back to.{/ts}</p>
+  <textarea name="calculation_comment" class="calculation_comment" cols="30" rows="10"></textarea>
+</div>
 <script type="text/javascript">
   {literal}
   CRM.$(function($) {
