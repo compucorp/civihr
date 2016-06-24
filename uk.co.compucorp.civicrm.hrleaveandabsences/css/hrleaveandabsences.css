@@ -86,6 +86,15 @@
   text-align: right;
 }
 
+.entitlement-calculation-list .proposed-entitlement-header .title {
+  width: 65%;
+  float: left;
+}
+
+.entitlement-calculation-list .proposed-entitlement-header .actions {
+  float: right;
+}
+
 .entitlement-calculation-list tr.hidden {
   display: none;
 }

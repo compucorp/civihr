@@ -49,7 +49,17 @@
     <th>{ts}Brought Forward from previous period{/ts}</th>
     <th>{ts}Current Contractual Entitlement{/ts}</th>
     <th>{ts}New Period Pro rata{/ts}</th>
-    <th>{ts}New Proposed Period Entitlement{/ts}</th>
+    <th class="proposed-entitlement-header">
+      <div class="title">{ts}New Proposed Period Entitlement{/ts}</div>
+      <div class="actions">
+        <button type="button" class="add-one-day" title="{ts}Add an extra day to all contacts listed{/ts}">
+          <i class="fa fa-plus-square"></i>
+        </button>
+        <button type="button" class="copy-to-all" title="{ts}Copy the new proposed entitlement from top row to all others{/ts}">
+          <i class="fa fa-copy"></i>
+        </button>
+      </div>
+    </th>
     <th>{ts}Comment{/ts}</th>
   </tr>
   </thead>
