@@ -1,8 +1,13 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
 
-class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
+/**
+ * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
+ *
+ * @group headless
+ */
+class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase implements HeadlessInterface {
 
   private $allColors = [
       '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',
@@ -15,6 +20,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends CiviUnitTestCase {
     'civicrm_hrleaveandabsences_notification_receiver',
     'civicrm_hrleaveandabsences_absence_type',
   ];
+
+  public function setUpHeadless() {
+    return \Civi\Test::headless()->installMe(__DIR__)->apply();
+  }
 
   public function setUp() {
     parent::setUp();

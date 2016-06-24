@@ -1,12 +1,21 @@
 <?php
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
+use Civi\Test\HeadlessInterface;
 
-class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
+/**
+ * Class WebTest_AbsenceType_FormTest
+ *
+ * @group headless
+ */
+class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements HeadlessInterface {
 
     private $formUrl = 'admin/leaveandabsences/types';
     private $addUrlParams = 'action=add&reset=1';
     private $editUrlParams = 'action=update&reset=1';
+
+    public function setUpHeadless() {
+      return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    }
 
     private function loginAsAdmin()
     {
@@ -26,14 +35,14 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->assertFalse($this->isVisible('max_leave_accrual'));
         $this->assertFalse($this->isVisible('allow_accrue_in_the_past'));
         $this->assertFalse($this->isVisible('accrual_expiration_duration'));
-        $this->assertFalse($this->isVisible('accrual_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_accrual_expiration_unit'));
 
         // When allow accruals request is checked, some fields become visible
         $this->click('allow_accruals_request');
         $this->assertTrue($this->isVisible('max_leave_accrual'));
         $this->assertTrue($this->isVisible('allow_accrue_in_the_past'));
         $this->assertFalse($this->isVisible('accrual_expiration_duration'));
-        $this->assertFalse($this->isVisible('accrual_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_accrual_expiration_unit'));
         $this->assertTrue($this->isChecked('accrual_never_expire'));
 
         // When Never expire is not checked, the expiration fields become visible
@@ -41,7 +50,7 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->assertTrue($this->isVisible('max_leave_accrual'));
         $this->assertTrue($this->isVisible('allow_accrue_in_the_past'));
         $this->assertTrue($this->isVisible('accrual_expiration_duration'));
-        $this->assertTrue($this->isVisible('accrual_expiration_unit'));
+        $this->assertTrue($this->isVisible('s2id_accrual_expiration_unit'));
         $this->assertElementValueEquals('accrual_expiration_duration', '');
         $this->select('accrual_expiration_unit', "value=1");
 
@@ -50,7 +59,7 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->assertTrue($this->isVisible('max_leave_accrual'));
         $this->assertTrue($this->isVisible('allow_accrue_in_the_past'));
         $this->assertFalse($this->isVisible('accrual_expiration_duration'));
-        $this->assertFalse($this->isVisible('accrual_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_accrual_expiration_unit'));
     }
 
     public function testCarryForwardFieldsVisibility()
@@ -63,17 +72,17 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->assertFalse($this->isChecked('allow_carry_forward'));
         $this->assertFalse($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_month'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
 
         // When carry forward is checked, shome fields become visible
         $this->click('allow_carry_forward');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_month'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertTrue($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));
@@ -82,9 +91,9 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->click('carry_forward_expire_after_duration');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertTrue($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertTrue($this->isVisible('carry_forward_expiration_unit'));
+        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_month'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertFalse($this->isChecked('carry_forward_never_expire'));
         $this->assertTrue($this->isChecked('carry_forward_expire_after_duration'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));
@@ -93,9 +102,9 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->click('carry_forward_expire_after_date');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertTrue($this->isVisible('carry_forward_expiration_day'));
-        $this->assertTrue($this->isVisible('carry_forward_expiration_month'));
+        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertFalse($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
         $this->assertTrue($this->isChecked('carry_forward_expire_after_date'));
@@ -104,9 +113,9 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase {
         $this->click('carry_forward_never_expire');
         $this->assertTrue($this->isVisible('max_number_of_days_to_carry_forward'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_duration'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_unit'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertFalse($this->isVisible('carry_forward_expiration_day'));
-        $this->assertFalse($this->isVisible('carry_forward_expiration_month'));
+        $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_month'));
         $this->assertTrue($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_date'));

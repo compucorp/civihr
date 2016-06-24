@@ -23,8 +23,8 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{* Activity Import Wizard - Data Mapping table used by MapFields.tpl and Preview.tpl *}
-<div class="crm-block crm-form-block crm-activity_map_table-form-block">
+{* Job Roles Import Wizard - Data Mapping table used by MapFields.tpl and Preview.tpl *}
+<div class="crm-block crm-form-block crm-jobroles_map_table-form-block">
 
  <div id="map-field">
     {strip}
@@ -45,7 +45,7 @@
                 {/if}
             {/section}
 
-            <th>{ts}Matching CiviCRM Field{/ts}</th>
+            <th>{ts}Matching CiviHR Field{/ts}</th>
         </tr>
 
         {*Loop on columns parsed from the import data rows*}
@@ -83,11 +83,11 @@
       <span>{$form.saveMapping.html} &nbsp;&nbsp; {$form.saveMapping.label}</span>
       <div id="saveDetails" class="form-item">
           <table>
-                  <tr class="crm-activity_map_table-form-block-saveMappingName">
+                  <tr class="crm-jobroles_map_table-form-block-saveMappingName">
              <td>{$form.saveMappingName.label}</td>
                      <td>{$form.saveMappingName.html}</td>
                   </tr>
-                  <tr class="crm-activity_map_table-form-block-saveMappingDesc">
+                  <tr class="crm-jobroles_map_table-form-block-saveMappingDesc">
              <td>{$form.saveMappingDesc.label}</td>
                      <td>{$form.saveMappingDesc.html}</td>
                  </tr>

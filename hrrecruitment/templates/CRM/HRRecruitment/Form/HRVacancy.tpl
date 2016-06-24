@@ -57,11 +57,11 @@
     </tr>
     <tr>
       <td class="label">{$form.start_date.label}</td>
-      <td>{include file="CRM/common/jcalendar.tpl" elementName=start_date}</td>
+      <td>{$form.start_date.html}</td>
     </tr>
     <tr>
       <td class="label">{$form.end_date.label}</td>
-      <td>{include file="CRM/common/jcalendar.tpl" elementName=end_date}</td>
+      <td>{$form.end_date.html}</td>
     </tr>
     <tr>
       <td class="label">{$form.status_id.label}</td>

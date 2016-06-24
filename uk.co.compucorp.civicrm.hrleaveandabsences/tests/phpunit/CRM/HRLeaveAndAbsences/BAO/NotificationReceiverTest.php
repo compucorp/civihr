@@ -1,14 +1,23 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
 
-class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends CiviUnitTestCase {
+/**
+ * Class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest
+ *
+ * @group headless
+ */
+class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends CiviUnitTestCase implements HeadlessInterface {
 
   private $absenceType = null;
 
   protected $_tablesToTruncate = [
     'civicrm_hrleaveandabsences_notification_receiver'
   ];
+
+  public function setUpHeadless() {
+    return \Civi\Test::headless()->installMe(__DIR__)->apply();
+  }
 
   public function setUp()
   {

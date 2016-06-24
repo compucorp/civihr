@@ -224,10 +224,69 @@ VALUES(1, 1, 1);
 
 INSERT INTO civicrm_hrleaveandabsences_work_day(week_id, day_of_the_week, type, time_from, time_to, break, leave_days, number_of_hours)
 VALUES
-  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5), -- Monday
-  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5), -- Tuesday
-  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5), -- Wednesday
-  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5), -- Thursday
-  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5), -- Friday
-  (1, 6, 3, NULL, NULL, NULL, NULL, NULL), -- Saturday
-  (1, 7, 3, NULL, NULL, NULL, NULL, NULL); -- Sunday
+  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, 6, 3, NULL, NULL, NULL, NULL, NULL),
+  (1, 7, 3, NULL, NULL, NULL, NULL, NULL);
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_absence_period
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_absence_period` (
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique AbsencePeriod ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The AbsencePeriod title. There cannot be more than one entity with the same title',
+     `start_date` date NOT NULL   COMMENT 'The date this Absence Period starts',
+     `end_date` date NOT NULL   COMMENT 'The date this Absence Period ends',
+     `weight` int unsigned NOT NULL   COMMENT 'The weight value is used to order the types on a list',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_absence_period`(title)
+
+
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_public_holiday
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_public_holiday` (
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Public Holiday ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The Public Holiday title',
+     `date` date NOT NULL   COMMENT 'The date of Public Holiday. There can\'t be more than one Public Holiday on the same date',
+     `is_active` tinyint   DEFAULT 1 COMMENT 'Determines if Public Holiday entry is active. The is_active name is used to follow Civi\'s conventions',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_public_holiday`(date)
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_entitlement
+-- *
+-- * A proposed entitlement for an specific set of contract, absence type and absence period
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Entitlement ID',
+     `period_id` int unsigned NOT NULL   COMMENT 'FK to AbsencePeriod',
+     `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
+     `contract_id` int unsigned NOT NULL   COMMENT 'FK to HRJobContract',
+     `proposed_entitlement` int unsigned NOT NULL   COMMENT 'The number of days proposed for this entitlement',
+     `brought_forward_days` int unsigned   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
+     `pro_rata` int unsigned   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
+     `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the proposed_entitlement was overridden',
+     `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
+     `comment_author_id` int unsigned  COMMENT 'FK to Contact. The contact that represents the used the added the comment to this entitlement',
+     `comment_updated_at` datetime    COMMENT 'The date and time the comment for this entitlement was added/updated',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_entitlement`(period_id, contract_id, type_id),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

@@ -59,7 +59,8 @@ function hrui_civicrm_buildForm($formName, &$form) {
     //HR-358 - Set default values
     //set default value to phone location and type
     $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    $result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
+    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful. 
+    //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
     if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
       $phoneType = $form->getElement('phone[2][phone_type_id]');
       $phoneValue = CRM_Core_OptionGroup::values('phone_type');
