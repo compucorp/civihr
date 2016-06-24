@@ -287,6 +287,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     this._overrideCheckbox = element.find('input[type="checkbox"]');
     this._overrideField = element.find('input[type="text"]');
     this._proposedValue = element.find('.proposed-value');
+    this._setupOverrideFieldMask();
     this._addEventListeners();
   }
 
@@ -343,6 +344,15 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     }
 
     return currentValue;
+  };
+
+  ProposedEntitlement.prototype._setupOverrideFieldMask = function() {
+    var mask = Inputmask({
+      'alias': 'decimal',
+      'rightAlign': false
+    });
+
+    mask.mask(this._overrideField);
   };
 
   /**
