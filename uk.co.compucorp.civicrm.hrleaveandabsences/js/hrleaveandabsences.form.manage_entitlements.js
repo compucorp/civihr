@@ -16,6 +16,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
   function ManageEntitlements() {
     this._filtersElement = $('.entitlement-calculation-filters');
     this._listElement = $('.entitlement-calculation-list');
+    this._formElement = $('.CRM_HRLeaveAndAbsences_Form_ManageEntitlements');
     this._overrideFilter = this.OVERRIDE_FILTER_BOTH;
     this._absenceTypeFilter = [];
     this._setUpOverrideFilters();
@@ -56,6 +57,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
   ManageEntitlements.prototype._addEventListeners = function() {
     this._filtersElement.find('.override-filter').on('change', this._onOverrideFilterChange.bind(this));
     this._filtersElement.find('.absence-type-filter select').on('change', this._onAbsenceTypeFilterChange.bind(this));
+    this._filtersElement.find('.export-csv-action').on('click', this._onExportCSVClick.bind(this));
     this._listElement.find('tbody > tr').on('click', this._onListRowClick.bind(this));
   };
 
@@ -203,6 +205,27 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
       width: '70%',
       options: {}
     });
+  };
+
+  /**
+   * This is the event handler for when the user clicks on the "Export to CSV"
+   * link.
+   *
+   * The CSV is basically the entitlement calculation page in a CSV format, so
+   * we get it by submitting the form with a "export_csv" flag set. Another
+   * reason for getting the CSV by submitting the form is that, this way, we
+   * can get any entitlement that was overridden and include it in the exported
+   * file.
+   *
+   * @param event
+   * @private
+   */
+  ManageEntitlements.prototype._onExportCSVClick = function(event) {
+    event.preventDefault();
+
+    this._formElement.find('#export_csv').val(1); //set the export csv flag
+    this._formElement.submit();
+    this._formElement.find('#export_csv').val(''); //resets the export csv flag
   };
 
   return ManageEntitlements;
