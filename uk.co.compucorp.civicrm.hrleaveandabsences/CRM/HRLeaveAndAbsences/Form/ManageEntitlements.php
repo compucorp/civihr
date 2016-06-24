@@ -34,6 +34,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     $this->assign('enabledAbsenceTypes', $this->getEnabledAbsenceTypes());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.min.js');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.numeric.extensions.min.js');
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.manage_entitlements.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     parent::buildQuickForm();
   }
@@ -172,7 +174,10 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         'text',
         $fieldName,
         '',
-        ['class' => 'overridden-proposed-entitlement']
+        [
+          'class' => 'overridden-proposed-entitlement',
+          'maxlength' => 4
+        ]
       );
     }
   }

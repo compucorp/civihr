@@ -19,6 +19,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
     this._formElement = $('.CRM_HRLeaveAndAbsences_Form_ManageEntitlements');
     this._overrideFilter = this.OVERRIDE_FILTER_BOTH;
     this._absenceTypeFilter = [];
+    this._proposedEntitlements = [];
     this._setUpOverrideFilters();
     this._instantiateProposedEntitlements();
     this._addEventListeners();
@@ -44,8 +45,11 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @private
    */
   ManageEntitlements.prototype._instantiateProposedEntitlements = function() {
+    var that = this;
     this._listElement.find('.proposed-entitlement').each(function(i, element) {
-      new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element));
+      that._proposedEntitlements.push(
+        new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element))
+      );
     });
   };
 
@@ -58,6 +62,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
     this._filtersElement.find('.override-filter').on('change', this._onOverrideFilterChange.bind(this));
     this._filtersElement.find('.absence-type-filter select').on('change', this._onAbsenceTypeFilterChange.bind(this));
     this._filtersElement.find('.export-csv-action').on('click', this._onExportCSVClick.bind(this));
+    this._listElement.find('thead .proposed-entitlement-header .add-one-day').on('click', this._onAddOneDayClick.bind(this));
+    this._listElement.find('thead .proposed-entitlement-header .copy-to-all').on('click', this._onCopyToAllClick.bind(this));
     this._listElement.find('tbody > tr').on('click', this._onListRowClick.bind(this));
   };
 
@@ -228,6 +234,37 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
     this._formElement.find('#export_csv').val(''); //resets the export csv flag
   };
 
+  /**
+   * This is the event handler for when the user clicks on the "Add one day" button,
+   * on the "New Proposed Entitlement" header.
+   *
+   * It loops through all the Proposed Entitlements, and overrides them adding one
+   * more day to its current value.
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._onAddOneDayClick = function() {
+    this._proposedEntitlements.forEach(function(proposedEntitlement) {
+      proposedEntitlement.addOneDay();
+    });
+  };
+
+  /**
+   * This is the event handler for when the user clicks on the "Copy to All" button,
+   * on the "New Proposed Entitlement" header.
+   *
+   * It gets the value of the proposed entitlement on the first row and then loops
+   * through all the Proposed Entitlements setting them to this value.
+   *
+   * @private
+   */
+  ManageEntitlements.prototype._onCopyToAllClick = function() {
+    var firsEntitlementValue = this._proposedEntitlements[0].getCurrentValue();
+    this._proposedEntitlements.forEach(function(proposedEntitlement) {
+      proposedEntitlement.setValue(firsEntitlementValue);
+    });
+  };
+
   return ManageEntitlements;
 
 })($);
@@ -250,8 +287,73 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     this._overrideCheckbox = element.find('input[type="checkbox"]');
     this._overrideField = element.find('input[type="text"]');
     this._proposedValue = element.find('.proposed-value');
+    this._setupOverrideFieldMask();
     this._addEventListeners();
   }
+
+  /**
+   * Sets the proposed entitlement value to the one given.
+   *
+   * If this proposed entitlement is not overridden, it will be
+   * marked as so.
+   *
+   * @param {float} newValue
+   */
+  ProposedEntitlement.prototype.setValue = function(newValue) {
+    if(!this._isOverridden) {
+      this._makeEntitlementEditable();
+    }
+
+    this._overrideField.val(newValue);
+  };
+
+  /**
+   * Adds one day to the current Proposed Entitlement value.
+   *
+   * If this proposed entitlement is not overridden, it will be
+   * marked as so.
+   */
+  ProposedEntitlement.prototype.addOneDay = function() {
+    var currentEntitlement = this.getCurrentValue();
+    this.setValue(currentEntitlement + 1);
+  };
+
+  /**
+   * Returns the current value of this Proposed Entitlement.
+   *
+   * If it has been overridden, the overridden value will be returned,
+   * otherwise the original value will be returned.
+   *
+   * If the overridden value is an invalid number, 0 will be returned.
+   *
+   * @returns {float}
+   */
+  ProposedEntitlement.prototype.getCurrentValue = function() {
+    var currentValue;
+
+    if(this._isOverridden) {
+      currentValue = this._overrideField.val();
+    } else {
+      currentValue = this._proposedValue.text();
+    }
+
+    currentValue = parseFloat(currentValue);
+
+    if(isNaN(currentValue)) {
+      currentValue = 0;
+    }
+
+    return currentValue;
+  };
+
+  ProposedEntitlement.prototype._setupOverrideFieldMask = function() {
+    var mask = Inputmask({
+      'alias': 'decimal',
+      'rightAlign': false
+    });
+
+    mask.mask(this._overrideField);
+  };
 
   /**
    * Add event listeners to the override button and the checkbox
@@ -308,6 +410,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
       .show()
       .focus();
     this._overrideCheckbox.prop('checked', true);
+    this._isOverridden = true;
   };
 
   /**
@@ -323,6 +426,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
       .val('')
       .hide();
     this._overrideCheckbox.prop('checked', false);
+    this._isOverridden = false;
   };
 
   return ProposedEntitlement;
