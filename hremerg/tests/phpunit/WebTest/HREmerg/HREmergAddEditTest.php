@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HREmerg_HREmergAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {

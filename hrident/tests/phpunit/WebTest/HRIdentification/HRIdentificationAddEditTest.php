@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRIdentification_HRIdentificationAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {

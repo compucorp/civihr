@@ -23,7 +23,6 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 */
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 
 class WebTest_HRVacancy_HRAddEditVacancyTest extends CiviSeleniumTestCase {
 

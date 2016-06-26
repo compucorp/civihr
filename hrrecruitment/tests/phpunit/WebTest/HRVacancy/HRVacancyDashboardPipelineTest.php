@@ -23,7 +23,6 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 */
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 require_once 'CRM/Core/DAO/UFJoin.php';
 require_once 'CRM/Core/Session.php';
 

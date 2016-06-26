@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRQualification_HRQualificationAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {

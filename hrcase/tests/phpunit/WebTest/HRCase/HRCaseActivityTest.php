@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRCase_HRCaseActivityTest extends CiviSeleniumTestCase {
 
   protected function setUp() {
