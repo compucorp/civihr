@@ -13,24 +13,38 @@ use CRM_HRLeaveAndAbsences_EntitlementCalculator as EntitlementCalculator;
 class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
   /**
+   * The Entitlement Calculations for this form AbsencePeriod
+   *
+   * @var CRM_HRLeaveAndAbsences_EntitlementCalculation[]
+   */
+  private $calculations;
+
+  /**
+   * The AbsencePeriod loaded with the ID passed to this form
+   *
+   * @var CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   */
+  private $absencePeriod;
+
+  /**
    * {@inheritdoc}
    */
   public function buildQuickForm() {
-    $absencePeriod = $this->getAbsencePeriodFromRequest();
-    $this->setFormPageTitle($absencePeriod);
+    $this->absencePeriod = $this->getAbsencePeriodFromRequest();
+    $this->setFormPageTitle($this->absencePeriod);
 
-    $calculations = $this->getEntitlementCalculations($absencePeriod);
+    $this->calculations = $this->getEntitlementCalculations($this->absencePeriod);
 
-    $this->addProposedEntitlementAndCommentFields($calculations);
+    $this->addProposedEntitlementAndCommentFields();
 
     $exportCSV = CRM_Utils_Request::retrieve('export_csv', 'Integer');
     if($exportCSV) {
-      $this->exportCSV($calculations);
+      $this->exportCSV();
     }
 
-    $this->assign('period', $absencePeriod);
+    $this->assign('period', $this->absencePeriod);
     $this->assign('contractsIDs', $this->getContractsIDsFromRequest());
-    $this->assign('calculations', $calculations);
+    $this->assign('calculations', $this->calculations);
     $this->assign('enabledAbsenceTypes', $this->getEnabledAbsenceTypes());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
@@ -38,6 +52,34 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.numeric.extensions.min.js');
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.manage_entitlements.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     parent::buildQuickForm();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function postProcess()
+  {
+    $values = $this->exportValues();
+    foreach($this->calculations as $calculation) {
+      $absenceTypeID = $calculation->getAbsenceType()->id;
+      $contractID = $calculation->getContract()['id'];
+
+      CRM_HRLeaveAndAbsences_BAO_Entitlement::saveFromCalculation(
+        $calculation,
+        $values['proposed_entitlement'][$contractID][$absenceTypeID],
+        $values['comment'][$contractID][$absenceTypeID]
+      );
+    }
+
+    CRM_Core_Session::setStatus(ts('Entitlements successfully updated'), 'Success', 'success');
+
+    $contractsIDs = $this->getContractsIDsFromRequest();
+    $url = CRM_Utils_System::url(
+      'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+      'reset=1&id='.$this->absencePeriod->id . '&' . http_build_query(['cid' => $contractsIDs])
+    );
+    $session = CRM_Core_Session::singleton();
+    $session->replaceUserContext($url);
   }
 
   /**
@@ -172,10 +214,9 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * and the absence type id, in order to make it possible to related the fields
    * to the right calculation.
    *
-   * @param $calculations
    */
-  private function addProposedEntitlementAndCommentFields($calculations) {
-    foreach($calculations as $calculation) {
+  private function addProposedEntitlementAndCommentFields() {
+    foreach($this->calculations as $calculation) {
       $proposedEntitlementFieldName = sprintf(
         'proposed_entitlement[%d][%d]',
         $calculation->getContract()['id'],
@@ -230,15 +271,12 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   }
 
   /**
-   * Exports a CSV File containing all the given calculations.
+   * Exports a CSV File containing all this form's calculations.
    *
    * This function takes into account if any of the proposed entitlements were
    * overridden on the page and will include the overridden value in the CSV.
-   *
-   * @param array $calculations
-   *   An array of CRM_HRLeaveAndAbsences_EntitlementCalculation objects
    */
-  private function exportCSV($calculations) {
+  private function exportCSV() {
     $headers = [
       'employee_id',
       'employee_name',
@@ -256,7 +294,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     $formValues = $this->exportValues();
 
     $rows = [];
-    foreach($calculations as $calculation) {
+    foreach($this->calculations as $calculation) {
       $contractID = $calculation->getContract()['id'];
       $absenceTypeID = $calculation->getAbsenceType()->id;
 

@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
+use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_EntitlementTest
@@ -261,6 +262,129 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals(15, $entitlement->getNumberOfDaysRemaining());
   }
 
+  public function testCanSaveAnEntitlementFromAnEntitlementCalculation()
+  {
+    $type = $this->createAbsenceType();
+    $period = $this->createAbsencePeriodForEntitlementCalculation();
+    $contract = $this->createJobContractForEntitlementCalculation();
+
+    $entitlement = Entitlement::getContractEntitlementForPeriod(
+      $contract['id'],
+      $period->id,
+      $type->id
+    );
+    $this->assertNull($entitlement);
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $proposedEntitlement = 25;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contract,
+      $type,
+      $broughtForward,
+      $proRata,
+      $proposedEntitlement
+    );
+
+    Entitlement::saveFromCalculation($calculation);
+
+    $entitlement = Entitlement::getContractEntitlementForPeriod(
+      $contract['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($entitlement);
+    $this->assertEquals($period->id, $entitlement->period_id);
+    $this->assertEquals($type->id, $entitlement->type_id);
+    $this->assertEquals($contract['id'], $entitlement->contract_id);
+    $this->assertEquals(1, $entitlement->brought_forward_days);
+    $this->assertEquals(10, $entitlement->pro_rata);
+    $this->assertEquals(25, $entitlement->proposed_entitlement);
+  }
+
+  public function testSaveFromEntitlementCalculationWillReplaceExistingEntitlement()
+  {
+    $type = $this->createAbsenceType();
+    $period = $this->createAbsencePeriodForEntitlementCalculation();
+    $contract = $this->createJobContractForEntitlementCalculation();
+
+    $entitlement = Entitlement::create([
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+      'contract_id' => $contract['id'],
+      'brought_forward_days' => 10,
+      'brought_forward_expiration_date' => null,
+      'pro_rata' => 20,
+      'proposed_entitlement' => 23.5,
+    ]);
+
+    $this->assertNotNull($entitlement->id);
+
+    $broughtForward = 3;
+    $proRata = 12;
+    $proposedEntitlement = 24.5;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contract,
+      $type,
+      $broughtForward,
+      $proRata,
+      $proposedEntitlement
+    );
+
+    Entitlement::saveFromCalculation($calculation);
+
+    $entitlement = Entitlement::getContractEntitlementForPeriod(
+      $contract['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($entitlement);
+    $this->assertEquals($period->id, $entitlement->period_id);
+    $this->assertEquals($type->id, $entitlement->type_id);
+    $this->assertEquals($contract['id'], $entitlement->contract_id);
+    $this->assertEquals($broughtForward, $entitlement->brought_forward_days);
+    $this->assertEquals($proRata, $entitlement->pro_rata);
+    $this->assertEquals($proposedEntitlement, $entitlement->proposed_entitlement);
+  }
+
+  public function testSaveFromEntitlementCalculationCanSaveOverriddenValues()
+  {
+    $type = $this->createAbsenceType();
+    $period = $this->createAbsencePeriodForEntitlementCalculation();
+    $contract = $this->createJobContractForEntitlementCalculation();
+
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contract,
+      $type
+    );
+
+    $overriddenEntitlement = 15;
+    Entitlement::saveFromCalculation(
+      $calculation,
+      $overriddenEntitlement
+    );
+
+    $entitlement = Entitlement::getContractEntitlementForPeriod(
+      $contract['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($entitlement);
+    $this->assertEquals($period->id, $entitlement->period_id);
+    $this->assertEquals($type->id, $entitlement->type_id);
+    $this->assertEquals($contract['id'], $entitlement->contract_id);
+    $this->assertEquals(0, $entitlement->brought_forward_days);
+    $this->assertEquals(0, $entitlement->pro_rata);
+    $this->assertEquals($overriddenEntitlement, $entitlement->proposed_entitlement);
+    $this->assertEquals(1, $entitlement->overridden);
+  }
+
   private function createAbsenceType() {
     $type = AbsenceType::create([
       'title'                     => 'Type ' . microtime(),
@@ -286,5 +410,70 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'end_date'   => date('YmdHis', strtotime('+1 day'))
     ]);
     return $period;
+  }
+
+  /**
+   * Mock the calculation, as we only need to test
+   * if the Entitlement BAO can create an Entitlement from a calculation
+   * instance
+   *
+   * @param $period
+   * @param $contract
+   * @param $type
+   * @param int $broughtForward
+   * @param int $proRata
+   * @param int $proposedEntitlement
+   *
+   * @return mixed
+   * @internal param int $broughForward
+   */
+  private function getEntitlementCalculationMock(
+    $period,
+    $contract,
+    $type,
+    $broughtForward = 0,
+    $proRata = 0,
+    $proposedEntitlement = 0
+  ) {
+    $calculation = $this->getMockBuilder(EntitlementCalculation::class)
+                        ->setConstructorArgs([$period, $contract, $type])
+                        ->setMethods([
+                          'getBroughtForward',
+                          'getProRata',
+                          'getProposedEntitlement'
+                        ])
+                        ->getMock();
+
+    $calculation->expects($this->once())
+                ->method('getBroughtForward')
+                ->will($this->returnValue($broughtForward));
+
+    $calculation->expects($this->once())
+                ->method('getProRata')
+                ->will($this->returnValue($proRata));
+
+    $calculation->expects($this->once())
+                ->method('getProposedEntitlement')
+                ->will($this->returnValue($proposedEntitlement));
+
+    return $calculation;
+  }
+
+  private function createAbsencePeriodForEntitlementCalculation() {
+    $period = $this->createAbsencePeriod();
+    //EntitlementCalculation needs the period dates in Y-m-d format
+    $period->start_date = date('Y-m-d', strtotime($period->start_date));
+    $period->end_date   = date('Y-m-d', strtotime($period->end_date));
+    return $period;
+  }
+
+  private function createJobContractForEntitlementCalculation() {
+    $contract = $this->createJobContract();
+    // EntitlementCalculation expects the job contract as an array
+    $contract = [
+      'id'         => $contract->id,
+      'contact_id' => $contract->contact_id
+    ];
+    return $contract;
   }
 }

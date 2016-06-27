@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_Entitlement
  */
@@ -24,6 +26,68 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  /**
+   * This method saves a new Entitlement based on the given Entitlement Calculation.
+   *
+   * If there's already an Entitlement for calculation's Absence Period, Absence
+   * Type, and Contract, it will be replaced by a new one.
+   *
+   * If an overridden entitlement is given, the created Entitlement will be marked
+   * as overridden and the given value will be stored.
+   *
+   * If a calculation comment is given, the current logged in user will be stored
+   * as the comment's author.
+   *
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param float|null $overriddenEntitlement
+   *  A value to override the calculation's proposed entitlement
+   * @param string|null $calculationComment
+   *  A comment describing the calculation
+   */
+  public static function saveFromCalculation(EntitlementCalculation $calculation, $overriddenEntitlement = null, $calculationComment = null) {
+    global $user;
+
+    $absenceTypeID = $calculation->getAbsenceType()->id;
+    $contractID = $calculation->getContract()['id'];
+    $absencePeriodID = $calculation->getAbsencePeriod()->id;
+    $broughtForwardExpirationDate = $calculation->getAbsencePeriod()->getExpirationDateForAbsenceType(
+      $calculation->getAbsenceType()
+    );
+    $broughtForwardExpirationDate = CRM_Utils_Date::processDate($broughtForwardExpirationDate);
+
+    $params = [
+      'type_id' => $absenceTypeID,
+      'contract_id' => $contractID,
+      'period_id' => $absencePeriodID,
+      'brought_forward_days' => $calculation->getBroughtForward(),
+      'brought_forward_expiration_date' => $broughtForwardExpirationDate,
+      'pro_rata' => $calculation->getProRata(),
+      'proposed_entitlement' => $calculation->getProposedEntitlement(),
+      'overridden' => false,
+    ];
+
+    if($overriddenEntitlement) {
+      $params['overridden'] = true;
+      $params['proposed_entitlement'] = (float)$overriddenEntitlement;
+    }
+
+    if($calculationComment) {
+      $params['comment'] = $calculationComment;
+      $params['comment_author_id'] = $user->uid;
+      $params['comment_updated_at'] = date('YmdHis');
+    }
+
+    $transaction = new CRM_Core_Transaction();
+    try {
+      self::deleteEntitlement($absencePeriodID, $absenceTypeID, $contractID);
+      self::create($params);
+
+      $transaction->commit();
+    } catch(\Exception $ex) {
+      $transaction->rollback();
+    }
   }
 
   /**
@@ -111,6 +175,29 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     return null;
+  }
+
+  /**
+   * Deletes the Entitlement with the given Absence Period ID, Absence Type ID
+   * and Contract ID
+   *
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   * @param int $contractID
+   */
+  private static function deleteEntitlement($absencePeriodID, $absenceTypeID, $contractID) {
+    $tableName = self::getTableName();
+    $query = "
+      DELETE FROM {$tableName}
+      WHERE period_id = %1 AND type_id = %2 AND contract_id = %3
+    ";
+    $params = [
+      1 => [$absencePeriodID, 'Positive'],
+      2 => [$absenceTypeID, 'Positive'],
+      3 => [$contractID, 'Positive'],
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
   }
 
   /**

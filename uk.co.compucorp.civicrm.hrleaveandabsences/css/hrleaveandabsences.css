@@ -133,3 +133,7 @@
   width: 100%;
   padding: 10px;
 }
+
+.save-new-entitlements-button {
+  float: right;
+}
