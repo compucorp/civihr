@@ -142,7 +142,7 @@ define([
                 });
 
                 it('should pass validation dd/mm/yyyy', function(){
-                    form_data.start_date.$viewValue = '31/12/2015';
+                    form_data.start_date.$viewValue = '31/12/2016';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
@@ -154,7 +154,7 @@ define([
                 });
 
                 it('should pass validation new Date()', function(){
-                    form_data.start_date.$viewValue = '2005-05-05';
+                    form_data.start_date.$viewValue = '2016-05-05';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
@@ -163,6 +163,17 @@ define([
                     beforeEach(function () {
                         form_data.start_date.$viewValue = '2016-05-04';
                         form_data.end_date.$viewValue = '2017-05-05';
+                    });
+
+                    it('throws a validation error', function () {
+                        expect(scope.validateRole(form_data)).not.toBe(true);
+                    });
+                });
+
+                describe('when job role start date is lower than contract start date and doesn\'t inform end_date', function () {
+                    beforeEach(function () {
+                        form_data.start_date.$viewValue = '2016-01-01';
+                        form_data.contract.$viewValue = '2';
                     });
 
                     it('throws a validation error', function () {
