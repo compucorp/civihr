@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRVisa_HRVisaAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {
