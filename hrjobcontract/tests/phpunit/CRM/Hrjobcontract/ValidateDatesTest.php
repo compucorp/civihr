@@ -5,9 +5,11 @@ require_once 'HRJobContractTestBase.php';
 /**
  * Class tests dates validation against currently exsisting Job Contracts by
  * doing checks if there is no dates overlapping.
- * 
+ *
  * Run by executing: civix test CRM/Hrjobcontract/ValidateDatesTest
- * from hrjobcontract extension's main directory.
+ * from hrjobcontract extension's main directory
+ *
+ * @group headless.
  */
 class CRM_Hrjobcontract_ValidateDatesTest extends HRJobContractTestBase {
   function setUp() {
@@ -15,10 +17,6 @@ class CRM_Hrjobcontract_ValidateDatesTest extends HRJobContractTestBase {
     parent::setUp();
     $upgrader = CRM_Hrjobcontract_Upgrader::instance();
     $upgrader->install();
-  }
-
-  function tearDown() {
-    parent::tearDown();
   }
 
   /**
@@ -114,7 +112,7 @@ class CRM_Hrjobcontract_ValidateDatesTest extends HRJobContractTestBase {
    * Create two test Job Contracts for given $contactId Contact. First one has
    * it's 'period_start_date' and 'period_end_date' defined. Second one
    * has only 'period_start_date' defined.
-   * 
+   *
    * @param int $contactId
    * @return boolean
    */
