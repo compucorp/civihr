@@ -110,7 +110,26 @@
   width: 24px;
 }
 
-.entitlement-calculation-list .proposed-entitlement button {
+.entitlement-calculation-list .borderless-button {
   border: 0;
   background-color: transparent;
+  cursor: pointer;
+}
+
+.entitlement-calculation-list .add-comment {
+  font-size: 1.1em;
+}
+
+.entitlement-calculation-list .comment-text {
+  display: none;
+}
+
+#add-comment-dialog {
+  display: none;
+}
+
+#add-comment-dialog .calculation_comment {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
 }
