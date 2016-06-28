@@ -106,7 +106,7 @@
                                                         <input type="text" class="form-control" id="{{prefix}}start_date"
                                                           placeholder="{{format}}"
                                                           name="start_date"
-                                                          is-open="!!(CalendarShow.start_date)"
+                                                          is-open="CalendarShow.start_date"
                                                           uib-datepicker-popup
                                                           ng-model="edit_data[job_roles_data.id]['start_date']"
                                                           ng-change="select('start_date')"
@@ -135,7 +135,7 @@
                                                         <input type="text" class="form-control" id="{{prefix}}end_date"
                                                           placeholder="{{format}}"
                                                           name="end_date"
-                                                          is-open="!!(CalendarShow.end_date)"
+                                                          is-open="CalendarShow.end_date"
                                                           uib-datepicker-popup
                                                           ng-model="edit_data[job_roles_data.id]['end_date']"
                                                           ng-change="select('end_date')"
