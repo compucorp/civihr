@@ -8,7 +8,7 @@ use Civi\Test\TransactionalInterface;
  *
  * @group headless
  */
-class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
+class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends PHPUnit_Framework_TestCase implements HeadlessInterface , TransactionalInterface {
 
   use HRRecruitmentTestTrait;
 
@@ -70,17 +70,6 @@ class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends CiviUnitTestCase impleme
       'permission_contact_id' => array($permissionIndividual1Id, $permissionIndividual2Id),
     );
     $this->seniorPosition = CRM_HRRecruitment_BAO_HRVacancy::create($this->seniorParams);
-  }
-
-  function teardown() {
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-    self::phpunitPopulateDB();
-    return TRUE;
   }
 
   /*

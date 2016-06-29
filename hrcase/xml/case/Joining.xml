@@ -107,7 +107,7 @@
 
   <CaseRoles>
     <RelationshipType>
-        <name>HR Manager</name>
+      <name>HR Manager</name>
       <creator>1</creator>
       <manager>1</manager>
     </RelationshipType>

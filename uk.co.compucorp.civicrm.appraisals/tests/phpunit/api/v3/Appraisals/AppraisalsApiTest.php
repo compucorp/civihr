@@ -9,7 +9,7 @@ use Civi\Test\TransactionalInterface;
  * @group headless
  */
 class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
-    const DAY = 86400;
+    const SECONDS_IN_DAY = 86400;
 
     protected $_contacts = array(
         array(
@@ -69,10 +69,10 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
         }
 
         $cycleStartDate = $time;
-        $cycleEndDate = $time + 30 * self::DAY;
-        $selfAppraisalDue = $time + 5 * self::DAY;
-        $managerAppraisalDue = $time + 15 * self::DAY;
-        $gradeDue = $time + 25 * self::DAY;
+        $cycleEndDate = $time + 30 * self::SECONDS_IN_DAY;
+        $selfAppraisalDue = $time + 5 * self::SECONDS_IN_DAY;
+        $managerAppraisalDue = $time + 15 * self::SECONDS_IN_DAY;
+        $gradeDue = $time + 25 * self::SECONDS_IN_DAY;
 
         ////////// Create Test Appraisal Cycle 1: //////////////////////////////
         civicrm_api3('AppraisalCycle', 'create', array(
@@ -109,21 +109,21 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
         civicrm_api3('AppraisalCycle', 'create', array(
             'sequential' => 1,
             'name' => "Test Appraisal Cycle 2",
-            'cycle_start_date' => date('Y-m-d', $cycleStartDate + 30 * self::DAY),
-            'cycle_end_date' => date('Y-m-d', $cycleEndDate + 30 * self::DAY),
-            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 30 * self::DAY),
-            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 30 * self::DAY),
-            'grade_due' => date('Y-m-d', $gradeDue + 30 * self::DAY),
+            'cycle_start_date' => date('Y-m-d', $cycleStartDate + 30 * self::SECONDS_IN_DAY),
+            'cycle_end_date' => date('Y-m-d', $cycleEndDate + 30 * self::SECONDS_IN_DAY),
+            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 30 * self::SECONDS_IN_DAY),
+            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 30 * self::SECONDS_IN_DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 30 * self::SECONDS_IN_DAY),
             'type_id' => 2,
         ));
         $expected['AppraisalCycle2'] = array(
             'id' => 2,
             'name' => "Test Appraisal Cycle 2",
-            'cycle_start_date' => date('Y-m-d', $cycleStartDate + 30 * self::DAY),
-            'cycle_end_date' => date('Y-m-d', $cycleEndDate + 30 * self::DAY),
-            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 30 * self::DAY),
-            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 30 * self::DAY),
-            'grade_due' => date('Y-m-d', $gradeDue + 30 * self::DAY),
+            'cycle_start_date' => date('Y-m-d', $cycleStartDate + 30 * self::SECONDS_IN_DAY),
+            'cycle_end_date' => date('Y-m-d', $cycleEndDate + 30 * self::SECONDS_IN_DAY),
+            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 30 * self::SECONDS_IN_DAY),
+            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 30 * self::SECONDS_IN_DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 30 * self::SECONDS_IN_DAY),
             'type_id' => 2,
         );
 
@@ -148,7 +148,7 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
             'manager_appraisal_due' => "",
             'grade_due' => "",
             'due_changed' => "0",
-            'meeting_date' => date('Y-m-d', $cycleEndDate - 2 * self::DAY),
+            'meeting_date' => date('Y-m-d', $cycleEndDate - 2 * self::SECONDS_IN_DAY),
             'meeting_completed' => "0",
             'approved_by_employee' => "0",
             'grade' => "",
@@ -166,7 +166,7 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
             "manager_appraisal_due" => date('Y-m-d', $managerAppraisalDue),
             "grade_due" => date('Y-m-d', $gradeDue),
             "due_changed" => "0",
-            "meeting_date" => date('Y-m-d', $cycleEndDate - 2 * self::DAY),
+            "meeting_date" => date('Y-m-d', $cycleEndDate - 2 * self::SECONDS_IN_DAY),
             "meeting_completed" => "0",
             "approved_by_employee" => "0",
             //"grade" => "",
@@ -189,7 +189,7 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
             'appraisal_cycle_id' => 1,
             'contact_id' => $this->_contacts[1]['id'],
             'manager_id' => $this->_contacts[2]['id'],
-            'meeting_date' => date('Y-m-d', $cycleEndDate - 2 * self::DAY),
+            'meeting_date' => date('Y-m-d', $cycleEndDate - 2 * self::SECONDS_IN_DAY),
             'notes' => "Test Notes of Test Appraisal 2",
         ));
         $expected['Appraisal2'] = array(
@@ -201,7 +201,7 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
             "manager_appraisal_due" => date('Y-m-d', $managerAppraisalDue),
             "grade_due" => date('Y-m-d', $gradeDue),
             "due_changed" => "0",
-            "meeting_date" => date('Y-m-d', $cycleEndDate - 2 * self::DAY),
+            "meeting_date" => date('Y-m-d', $cycleEndDate - 2 * self::SECONDS_IN_DAY),
             "meeting_completed" => "0",
             "approved_by_employee" => "0",
             "notes" => "Test Notes of Test Appraisal 2",
@@ -221,24 +221,24 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
         civicrm_api3('Appraisal', 'create', array(
             'sequential' => 1,
             'id' => 2,
-            'grade_due' => date('Y-m-d', $gradeDue + 1 * self::DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 1 * self::SECONDS_IN_DAY),
         ));
 
         ////////// Change Due Dates for Appraisal Cycle 1: /////////////////////
         civicrm_api3('AppraisalCycle', 'create', array(
             'sequential' => 1,
             'id' => 1,
-            "self_appraisal_due" => date('Y-m-d', $selfAppraisalDue + 2 * self::DAY),
-            "manager_appraisal_due" => date('Y-m-d', $managerAppraisalDue + 2 * self::DAY),
-            'grade_due' => date('Y-m-d', $gradeDue + 2 * self::DAY),
+            "self_appraisal_due" => date('Y-m-d', $selfAppraisalDue + 2 * self::SECONDS_IN_DAY),
+            "manager_appraisal_due" => date('Y-m-d', $managerAppraisalDue + 2 * self::SECONDS_IN_DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 2 * self::SECONDS_IN_DAY),
         ));
         // Checking Due Dates for Appraisal 1.
         // They should be changed according to the AppraisalCycle create call above.
         $expected['Appraisal1DueDates'] = array(
             'id' => "1",
-            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 2 * self::DAY),
-            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 2 * self::DAY),
-            'grade_due' => date('Y-m-d', $gradeDue + 2 * self::DAY),
+            'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue + 2 * self::SECONDS_IN_DAY),
+            'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue + 2 * self::SECONDS_IN_DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 2 * self::SECONDS_IN_DAY),
         );
 
         $appraisal1DueDates = civicrm_api3('Appraisal', 'get', array(
@@ -257,7 +257,7 @@ class api_v3_Appraisals_AppraisalsApiTest extends CiviUnitTestCase implements He
             'id' => "2",
             'self_appraisal_due' => date('Y-m-d', $selfAppraisalDue),
             'manager_appraisal_due' => date('Y-m-d', $managerAppraisalDue),
-            'grade_due' => date('Y-m-d', $gradeDue + 1 * self::DAY),
+            'grade_due' => date('Y-m-d', $gradeDue + 1 * self::SECONDS_IN_DAY),
         );
 
         $appraisal2DueDates = civicrm_api3('Appraisal', 'get', array(

@@ -8,7 +8,7 @@ use Civi\Test\TransactionalInterface;
  *
  * @group headless
  */
-class CRM_HRRecruitment_BAO_HRVacancyTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
+class CRM_HRRecruitment_BAO_HRVacancyTest extends PHPUnit_Framework_TestCase implements HeadlessInterface , TransactionalInterface {
 
   use HRRecruitmentTestTrait;
 
@@ -16,20 +16,6 @@ class CRM_HRRecruitment_BAO_HRVacancyTest extends CiviUnitTestCase implements He
     return \Civi\Test::headless()
       ->installMe(__DIR__)
       ->apply();
-  }
-
-  function setUp() {
-  }
-
-  function teardown() {
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-    self::phpunitPopulateDB();
-    return TRUE;
   }
 
   /**

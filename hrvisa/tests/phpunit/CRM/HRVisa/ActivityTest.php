@@ -13,7 +13,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
   protected $customFields;
 
   public function setUpHeadless() {
-    // check _hrvisa_phpunit_populateDB to know why org.civicrm.hrdemog is installed here
+    // check phpunitPopulateDB() to know why org.civicrm.hrdemog is installed here
     return \Civi\Test::headless()
       ->installMe(__DIR__)
       ->install('org.civicrm.hrdemog')
@@ -43,7 +43,7 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
   }
 
   protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    _hrvisa_phpunit_populateDB();
+    self::phpunitPopulateDB();
 
     //also create 'Visa Expiration' actvity type
     $params = array(
@@ -166,5 +166,21 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterf
       $count++;
     }
     return array($count, $activityId);
+  }
+
+  /**
+   * Helper function to load data into DB between iterations of the unit-test
+   */
+  private static function phpunitPopulateDB() {
+    $import = new CRM_Utils_Migrate_Import();
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrvisa')
+      . '/xml/auto_install.xml'
+    );
+    // this had to be done as demographics consists of is_visa_required field (used in unit test)
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrdemog')
+      . '/xml/auto_install.xml'
+    );
   }
 }

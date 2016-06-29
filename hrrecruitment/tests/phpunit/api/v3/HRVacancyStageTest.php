@@ -22,9 +22,6 @@ class api_v3_HRVacancyStageTest extends CiviUnitTestCase implements HeadlessInte
 
     parent::setUp();
     $this->_apiversion = 3;
-    $this->createLoggedInUser();
-    $session = CRM_Core_Session::singleton();
-    $this->_loggedInUser = $session->get('userID');
 
     //Create Vacancy
     $vacancyParams = array(
@@ -33,7 +30,7 @@ class api_v3_HRVacancyStageTest extends CiviUnitTestCase implements HeadlessInte
       'start_date' => '2014-05-08 00:00:00',
       'end_date' => '2014-05-27 00:00:00',
       'status_id' => 'Draft',
-      'created_id' => $this->_loggedInUser,
+      'created_id' => 1, // 1 = default organization ID
     );
 
     $vacancyResult = $this->callAPISuccess('HRVacancy', 'create', $vacancyParams);
