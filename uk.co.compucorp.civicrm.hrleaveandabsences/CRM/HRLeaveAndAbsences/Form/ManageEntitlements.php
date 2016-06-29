@@ -129,22 +129,33 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   private function getActiveContractsForPeriod(AbsencePeriod $absencePeriod, $filter = []) {
     try {
-      $result = civicrm_api3('HRJobContract', 'getactivecontracts', [
-        'start_date' => $absencePeriod->start_date,
-        'end_date' => $absencePeriod->end_date,
-        'api.Contact.getvalue' => ['return' => 'display_name']
-      ]);
+      $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts(
+        $absencePeriod->start_date,
+        $absencePeriod->end_date
+      );
 
-      foreach($result['values'] as $i => $contract) {
-        if(!empty($filter) && !in_array($contract['id'], $filter)) {
-          unset($result['values'][$i]);
-        } else {
-          $result['values'][$i]['contact_display_name'] = $contract['api.Contact.getvalue'];
-          unset($result['values'][$i]['api.Contact.getvalue']);
+      foreach($contracts as $i => $contract) {
+        if(!empty($filter) && !in_array($contract['contact_id'], $filter)) {
+          unset($contracts[$i]);
         }
       }
 
-      return $result['values'];
+      $contactsIDs = array_column($contracts, 'contact_id');
+      $result = civicrm_api3('Contact', 'get', [
+        'return' => ['display_name'],
+        'id' => ['IN' => $contactsIDs],
+        'options' => ['limit' => count($contactsIDs)],
+      ]);
+
+      $contacts = $result['values'];
+      foreach($contracts as $i => $contract) {
+        $contactID = $contract['contact_id'];
+        if(isset($contacts[$contactID])) {
+          $contracts[$i]['contact_display_name'] = $contacts[$contactID]['display_name'];
+        }
+      }
+
+      return $contracts;
     } catch(\Exception $e) {
       return [];
     }

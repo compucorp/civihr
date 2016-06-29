@@ -261,21 +261,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
 
   public function testCanCalculateTheNumberOfWorkingDaysWithPublicHolidays()
   {
+    $start_date = '2016-01-01';
+    $end_date = '2016-12-31';
+
     $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
-    $period->start_date = '2016-01-01';
-    $period->end_date = '2016-12-31';
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(261, $period->getNumberOfWorkingDays());
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(260, $period->getNumberOfWorkingDays());
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-05-17')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
 
     // A public holiday on a weekend should not be counted
@@ -283,6 +292,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
       'title' => 'Public Holiday On Weekend',
       'date' => CRM_Utils_Date::processDate('2016-12-25')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
   }
 
