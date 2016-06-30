@@ -32,7 +32,7 @@ define([
                 today = moment();
                 dates = _.chain(dueDates)
                     .transform(function (result, date, key) {
-                        result[key] = moment(date, dateFormat);
+                        result[key] = moment(date);
                     })
                     .pick(function (date) {
                         return date.isSameOrAfter(today, 'day');
@@ -46,7 +46,7 @@ define([
                 date = moment.min.apply(moment, _.values(dates));
 
                 return {
-                    date: date.format(dateFormat),
+                    date: date.toDate(),
                     status_id: DUE_DATE_FIELD_TO_STATUS_ID[_.findKey(dates, function (date) {
                         return date === date;
                     })]
@@ -114,10 +114,8 @@ define([
                  *
                  */
                 fromAPIFilter: function (result, __, key) {
-                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
-
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        result[key] = moment(this[key], 'YYYY-MM-DD').format(dateFormat);
+                        result[key] = moment(this[key], 'YYYY-MM-DD').toDate();
                     } else if (key === 'api.AppraisalCycle.getappraisalsperstep') {
                         calculateAppraisalsFigures.call(result, this[key].values);
                     } else if (key === 'cycle_is_active') {
@@ -135,10 +133,9 @@ define([
                  * @return {boolean}
                  */
                 isStatusOverdue: function (id) {
-                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
                     var field = _.invert(DUE_DATE_FIELD_TO_STATUS_ID)[id];
 
-                    return moment(this[field], dateFormat).isBefore(moment());
+                    return moment(this[field]).isBefore(moment());
                 },
 
                 /**
@@ -185,12 +182,11 @@ define([
                  *
                  */
                 toAPIFilter: function (result, __, key) {
-                    var dateFormat = HR_settings.DATE_FORMAT.toUpperCase();
                     var blacklist = ['appraisals', 'appraisals_count',
                         'completion_percentage'];
 
                     if (_.endsWith(key, '_date') || _.endsWith(key, '_due')) {
-                        result[key] = moment(this[key], dateFormat).format('YYYY-MM-DD');
+                        result[key] = moment(this[key]).format('YYYY-MM-DD');
                     } else if (_.includes(blacklist, key)) {
                         return;
                     } else {

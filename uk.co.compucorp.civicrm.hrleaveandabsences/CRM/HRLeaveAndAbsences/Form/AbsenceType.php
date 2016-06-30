@@ -15,7 +15,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     public function setDefaultValues() {
         if(empty($this->defaultValues)) {
             if ($this->_id) {
-                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getDefaultValues($this->_id);
+                $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getValuesArray($this->_id);
             } else {
                 $this->defaultValues = [
                     'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
@@ -93,24 +93,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     public function getDefaultEntity()
     {
       return 'AbsenceType';
-    }
-
-    private function getMonthsOptions()
-    {
-        return [
-            1 => ts('Jan'),
-            2 => ts('Feb'),
-            3 => ts('Mar'),
-            4 => ts('Apr'),
-            5 => ts('May'),
-            6 => ts('Jun'),
-            7 => ts('Jul'),
-            8 => ts('Ago'),
-            9 => ts('Sep'),
-            10 => ts('Oct'),
-            11 => ts('Nov'),
-            12 => ts('Dec'),
-        ];
     }
 
     private function addBasicDetailsFields()
@@ -242,16 +224,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
             'carry_forward_expiration_unit',
             ['options' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::getExpirationUnitOptions()]
         );
-        $this->add(
-            'text',
-            'carry_forward_expiration_day',
-            '',
-            $this->getDAOFieldAttributes('carry_forward_expiration_day')
-        );
-        $this->addSelect(
-            'carry_forward_expiration_month',
-            ['options' => $this->getMonthsOptions()]
-        );
     }
 
     private function getDAOFieldAttributes($field)
@@ -269,7 +241,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
         $this->addRule('accrual_expiration_duration', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('max_number_of_days_to_carry_forward', $positiveNumberMessage, 'positiveInteger');
         $this->addRule('carry_forward_expiration_duration', $positiveNumberMessage, 'positiveInteger');
-        $this->addRule('carry_forward_expiration_day', $positiveNumberMessage, 'positiveInteger');
         $this->addFormRule([$this, 'formRules']);
     }
 
@@ -300,8 +271,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
     {
         $expiration_unit = CRM_Utils_Array::value('carry_forward_expiration_unit', $values);
         $expiration_duration = CRM_Utils_Array::value('carry_forward_expiration_duration', $values);
-        $expiration_day = CRM_Utils_Array::value('carry_forward_expiration_day', $values);
-        $expiration_month = CRM_Utils_Array::value('carry_forward_expiration_month', $values);
 
         if($expiration_unit && !$expiration_duration) {
             $errors['carry_forward_expiration_duration'] = ts('You must also set the expiration duration');
@@ -309,14 +278,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form
 
         if($expiration_duration && !$expiration_unit) {
             $errors['carry_forward_expiration_unit'] = ts('You must also set the expiration unit');
-        }
-
-        if($expiration_day && !$expiration_month) {
-            $errors['carry_forward_expiration_month'] = ts('You must also set the expiration month');
-        }
-
-        if($expiration_month && !$expiration_day) {
-            $errors['carry_forward_expiration_day'] = ts('You must also set the expiration day');
         }
     }
 

@@ -28,8 +28,6 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `max_number_of_days_to_carry_forward` int unsigned    ,
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry',
-     `carry_forward_expiration_day` int    COMMENT 'If expiration_unit + expiration_duration is not informed, the expiration day and month should be',
-     `carry_forward_expiration_month` int    COMMENT 'If expiration_unit + expiration_duration is not informed, the expiration day and month should be',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -277,9 +275,10 @@ CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
      `period_id` int unsigned NOT NULL   COMMENT 'FK to AbsencePeriod',
      `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
      `contract_id` int unsigned NOT NULL   COMMENT 'FK to HRJobContract',
-     `proposed_entitlement` int unsigned NOT NULL   COMMENT 'The number of days proposed for this entitlement',
-     `brought_forward_days` int unsigned   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
-     `pro_rata` int unsigned   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
+     `proposed_entitlement` decimal(20,2) NOT NULL   COMMENT 'The number of days proposed for this entitlement',
+     `brought_forward_days` decimal(20,2)   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
+     `brought_forward_expiration_date` date COMMENT 'The date the brought forward days will expire',
+     `pro_rata` decimal(20,2)   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
      `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the proposed_entitlement was overridden',
      `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
      `comment_author_id` int unsigned  COMMENT 'FK to Contact. The contact that represents the used the added the comment to this entitlement',

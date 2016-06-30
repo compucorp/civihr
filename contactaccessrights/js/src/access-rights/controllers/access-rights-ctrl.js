@@ -3,7 +3,7 @@ define([
 ], function (controllers) {
   'use strict';
 
-  controllers.controller('AccessRightsCtrl', ['$rootElement', '$modal',
+  controllers.controller('AccessRightsCtrl', ['$rootElement', '$uibModal',
     function ($rootElement, $modal) {
       return {
 
@@ -12,7 +12,7 @@ define([
          */
         openModal: function () {
           $modal.open({
-            targetDomEl: $rootElement.children().eq(0),
+            appendTo: $rootElement.children().eq(0),
             controller: 'AccessRightsModalCtrl',
             controllerAs: 'modalCtrl',
             bindToController: true,

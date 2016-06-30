@@ -1,5 +1,6 @@
 define([
-    'common/modules/directives'
+    'common/modules/directives',
+    'common/directives/prevent-animations',
 ], function (directives) {
     'use strict';
 

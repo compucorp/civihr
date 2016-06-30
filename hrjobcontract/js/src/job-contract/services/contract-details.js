@@ -4,8 +4,8 @@ define([
 ], function (services) {
     'use strict';
 
-    services.factory('ContractDetailsService', ['$resource', 'settings', '$q', 'UtilsService', '$log',
-        function ($resource, settings, $q, UtilsService, $log) {
+    services.factory('ContractDetailsService', ['$filter', '$resource', 'settings', '$q', 'UtilsService', '$log',
+        function ($filter, $resource, settings, $q, UtilsService, $log) {
             $log.debug('Service: ContractDetailsService');
 
         var ContractDetails = $resource(settings.pathRest, {
@@ -14,6 +14,18 @@ define([
             json: {}
         });
 
+        /**
+         * If parameter passed is a Date object, it converts it into a string
+         *
+         * @param {Date} dateObj
+         * @param {string/any}
+         */
+        function convertToDateString(dateObj) {
+            var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
+
+            return dateString !== 'Unspecified' ? dateString : dateObj;
+        }
+
         return {
             validateDates: function(params) {
                 if ((!params || typeof params !== 'object') ||
@@ -21,6 +33,9 @@ define([
                     (!params.period_start_date)) {
                     return null;
                 }
+
+                params.period_start_date = convertToDateString(params.period_start_date);
+                params.period_end_date = convertToDateString(params.period_end_date);
 
                 params.sequential = 0;
                 params.debug = settings.debug;
@@ -129,6 +144,9 @@ define([
                 if (!contractDetails || typeof contractDetails !== 'object') {
                     return null;
                 }
+
+                contractDetails.period_start_date = convertToDateString(contractDetails.period_start_date);
+                contractDetails.period_end_date = convertToDateString(contractDetails.period_end_date);
 
                 var deffered = $q.defer(),
                     params = angular.extend({

@@ -59,7 +59,8 @@ function hrui_civicrm_buildForm($formName, &$form) {
     //HR-358 - Set default values
     //set default value to phone location and type
     $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    $result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
+    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful.
+    //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
     if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
       $phoneType = $form->getElement('phone[2][phone_type_id]');
       $phoneValue = CRM_Core_OptionGroup::values('phone_type');
@@ -418,27 +419,60 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
   $newTabs = array();
-
+  /*
+   * 1) we alter the weights for these tabs here
+   * since these tabs are not created by hook_civicrm_tab
+   * and the only way to alter their weights is here
+   * by taking advantage of &$tabs variable.
+   * 2) we set assignments tab to 30 since it should appear
+   * after appraisals tab directly which have the weight of 20.
+   * 3) we jump to weight of 60 in identifications tab since 40 & 50
+   * are occupied by tasks & assignments extension tabs .
+   * 4) the weight increased by 10 between every tab
+   * to give a large space for other tabs to be inserted
+   * between any two without altering other tabs weights.
+   */
   foreach ($tabs as $i => $tab) {
-    if ($tab['id'] != 'log') {
-      $newTabs[$i] = $tab['title'];
-    }
-    else {
-      $changeLogTabID = $i;
+    switch($tab['title'])  {
+      case 'Assignments':
+        $tabs[$i]['weight'] = 30;
+        break;
+      case 'Identification':
+        $tabs[$i]['weight'] = 60;
+        break;
+      case 'Immigration':
+        $tabs[$i]['weight'] = 70;
+        break;
+      case 'Emergency Contacts':
+        $tabs[$i]['weight'] = 80;
+        break;
+      case 'Relationships':
+        $tabs[$i]['weight'] = 90;
+        $tabs[$i]['title'] = 'Managers';
+        break;
+      case 'Bank Details':
+        $tabs[$i]['weight'] = 100;
+        break;
+      case 'Career History':
+        $tabs[$i]['weight'] = 110;
+        break;
+      case 'Medical & Disability':
+        $tabs[$i]['weight'] = 120;
+        break;
+      case 'Qualifications':
+        $tabs[$i]['weight'] = 130;
+        break;
+      case 'Notes':
+        $tabs[$i]['weight'] = 140;
+        break;
+      case 'Groups':
+        $tabs[$i]['weight'] = 150;
+        break;
+      case 'Change Log':
+        $tabs[$i]['weight'] = 160;
+        break;
     }
   }
-
-  //sort alphabetically
-  asort($newTabs);
-  $weight = 0;
-  //assign the weights based on alphabetic order
-  foreach ($newTabs as $key => $value) {
-    $weight += 10;
-    $tabs[$key]['weight'] = $weight;
-  }
-
-  //Move change log to the end
-  $tabs[$changeLogTabID]['weight'] = $weight + 10;
 }
 
 /**
@@ -505,6 +539,29 @@ function hrui_civicrm_navigationMenu( &$params ) {
  */
 function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   $smarty = CRM_Core_Smarty::singleton();
+
+  // fetch data to the new summary page UI
+  if($context == 'page' && $tplName == "CRM/Contact/Page/View/Summary.tpl" ) {
+    $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
+    /* $currentContractDetails contain current contact data including
+     * Current ( Position = $currentContractDetails->position ) and
+     * ( Normal Place of work =  $currentContractDetails->location )
+    */
+    $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
+    // $departmentsList contain current roles departments list separated by comma
+    $departmentsList = null;
+    if ($currentContractDetails)  {
+      $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+      $departmentsList = implode(', ', $departmentsArray);
+    }
+    // $managersList contain current line managers list separated by comma
+    $managersList = null;
+    if ($currentContractDetails)  {
+      $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
+      $managersList = implode(', ', $managersArray);
+    }
+  }
+
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
     $columnToHide = array(
       'formal_title',
@@ -593,3 +650,4 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
    </script>";
   }
 }
+

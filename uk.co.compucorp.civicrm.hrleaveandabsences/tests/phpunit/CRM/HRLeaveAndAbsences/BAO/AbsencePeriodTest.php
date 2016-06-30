@@ -261,21 +261,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
 
   public function testCanCalculateTheNumberOfWorkingDaysWithPublicHolidays()
   {
+    $start_date = '2016-01-01';
+    $end_date = '2016-12-31';
+
     $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
-    $period->start_date = '2016-01-01';
-    $period->end_date = '2016-12-31';
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(261, $period->getNumberOfWorkingDays());
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(260, $period->getNumberOfWorkingDays());
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-05-17')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
 
     // A public holiday on a weekend should not be counted
@@ -283,6 +292,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
       'title' => 'Public Holiday On Weekend',
       'date' => CRM_Utils_Date::processDate('2016-12-25')
     ]);
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = $start_date;
+    $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
   }
 
@@ -353,11 +365,123 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
    */
   public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidEndDate($endDate)
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period             = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
     $period->start_date = '2016-01-01';
-    $period->end_date = '2016-12-31';
+    $period->end_date   = '2016-12-31';
 
     $period->getNumberOfWorkingDaysToWork('2016-01-01', $endDate);
+  }
+
+  public function testPreviousPeriodShouldReturnNullIfTheresNoPreviousPeriod()
+  {
+    $period = $this->createBasicPeriod();
+    $this->assertNull($period->getPreviousPeriod());
+  }
+
+  public function testPreviousPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsAPreviousPeriod()
+  {
+    $period1 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
+    ]);
+
+    $period2 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
+    ]);
+
+    $period3 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
+    ]);
+
+    $period2PreviousPeriod = $period2->getPreviousPeriod();
+    $period3PreviousPeriod = $period3->getPreviousPeriod();
+
+    $period1 = $this->findPeriodByID($period1->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period2PreviousPeriod);
+    $this->assertEquals($period1->id, $period2PreviousPeriod->id);
+    $this->assertEquals($period1->title, $period2PreviousPeriod->title);
+    $this->assertEquals($period1->start_date, $period2PreviousPeriod->start_date);
+    $this->assertEquals($period1->end_date, $period2PreviousPeriod->end_date);
+    $this->assertEquals($period1->weight, $period2PreviousPeriod->weight);
+
+    $period2 = $this->findPeriodByID($period2->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period3PreviousPeriod);
+    $this->assertEquals($period2->id, $period3PreviousPeriod->id);
+    $this->assertEquals($period2->title, $period3PreviousPeriod->title);
+    $this->assertEquals($period2->start_date, $period3PreviousPeriod->start_date);
+    $this->assertEquals($period2->end_date, $period3PreviousPeriod->end_date);
+    $this->assertEquals($period2->weight, $period3PreviousPeriod->weight);
+  }
+
+  public function testExpirationDateForAbsenceTypeWithoutCarryForwardShouldBeNull()
+  {
+    $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $type->allow_carry_forward = false;
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+    $this->assertNull($period->getExpirationDateForAbsenceType($type));
+  }
+
+  public function testExpirationDateForAbsenceTypeWithoutCarryForwardThatNeverExpiresShouldBeNull()
+  {
+    $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $type->allow_carry_forward = true;
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+    $this->assertNull($period->getExpirationDateForAbsenceType($type));
+  }
+
+  public function testCanCalculateExpirationDateForAbsenceTypeWithCarryForwardExpirationDuration()
+  {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period->start_date = '2016-01-01';
+    $period->end_date = '2016-02-01';
+
+    $startDate = new DateTimeImmutable($period->start_date);
+
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->allow_carry_forward = true;
+
+    //1 day duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS;
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P1D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 days duration
+    $absenceType->carry_forward_expiration_duration = 5;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P5D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //5 months duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P5M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 months duration
+    $absenceType->carry_forward_expiration_duration = 10;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P10M'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //10 years duration
+    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P10Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
+
+    //1 year duration
+    $absenceType->carry_forward_expiration_duration = 1;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P1Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
   }
 
   private function createBasicPeriod($params = array()) {

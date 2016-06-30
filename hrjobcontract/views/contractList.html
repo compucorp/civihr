@@ -45,15 +45,7 @@
                     </button>
                     <a class="btn btn-sm"
                        tooltip-placement="left"
-                       tooltip-html-unsafe="<p class='text-left'><strong>Change Contract Terms:</strong><br>
-                                                   When an employeees job or role changes, i.e. promotion, secondment or move,
-                                                   you can use this wizard to update the details of the contract and record a new
-                                                   revision of the contract. A contract history is kept so you can always see the
-                                                   previous version of the contract.</p>
-                                                   <p class='text-left'><strong>Correct an error on the contract record:</strong><br>
-                                                   If you notice an issue or error with the job terms you can correct these without
-                                                   creating a new job history record. These changes are not stored as a new revision
-                                                   of the contract.</p>">
+                       uib-tooltip-html="tooltips.changeContractTerms">
                         <i class="fa fa-question-circle fa-lg"></i>
                     </a>
                 </div>
@@ -90,18 +82,18 @@
                     </a>
                 </div>
             </div>
-            <div collapse="isCollapsed">
+            <div uib-collapse="isCollapsed">
                 <div class="{{prefix}}contract-details">
                     <div class="row">
                         <div class="col-xs-12">
-                            <tabset>
-                                <tab heading="Summary">
+                            <uib-tabset>
+                                <uib-tab heading="Summary">
                                     <div ng-include src="pathTpl + 'contractSummary.html?v=446466'"></div>
-                                </tab>
-                                <tab heading="Full History" disabled="!revisionDataList.length">
+                                </uib-tab>
+                                <uib-tab heading="Full History" disabled="!revisionDataList.length">
                                     <div ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
-                                </tab>
-                            </tabset>
+                                </uib-tab>
+                            </uib-tabset>
                         </div>
                     </div>
                     <div class="row">

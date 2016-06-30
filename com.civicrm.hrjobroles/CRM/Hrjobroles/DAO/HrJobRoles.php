@@ -339,6 +339,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_region',
+          ),
         ) ,
         'hrjc_role_department' => array(
           'name' => 'department',
@@ -351,6 +354,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_department',
+          ),
         ) ,
         'hrjc_level_type' => array(
           'name' => 'level_type',
@@ -363,6 +369,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_level_type',
+          ),
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -493,6 +502,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrjc_location',
+          ),
         ) ,
         'hrjc_role_start_date' => array(
           'name' => 'start_date',

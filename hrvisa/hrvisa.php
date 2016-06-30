@@ -255,20 +255,3 @@ function hrvisa_civicrm_custom($op, $groupID, $entityID, &$params) {
     CRM_HRVisa_Activity::sync($entityID);
   }
 }
-
-
-/**
- * Helper function to load data into DB between iterations of the unit-test
- */
-function _hrvisa_phpunit_populateDB() {
-  $import = new CRM_Utils_Migrate_Import();
-  $import->run(
-    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrvisa')
-      . '/xml/auto_install.xml'
-  );
-  // this had to be done as demographics consists of is_visa_required field (used in unit test)
-  $import->run(
-    CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrdemog')
-      . '/xml/auto_install.xml'
-  );
-}

@@ -26,6 +26,7 @@
   @include normalize;
   @import "bootstrap/print";
   @import "civihr/bootstrap/glyphicons-custom";
+  @import "civihr/modules/fontawesome";
 
   // Core CSS
   @import "civihr/bootstrap/scaffolding-custom";
@@ -74,7 +75,6 @@
   // ==========================================================================
   @import "civihr/modules/variables";
   @import "civihr/modules/print";
-  @import "civihr/modules/fontawesome";
   @import "civihr/modules/fonts";
   @import "civihr/modules/angular";
   @import "civihr/modules/utils";
@@ -107,6 +107,7 @@
   // ==========================================================================
   @import "hrjc/modules/print";
   @import "hrjc/modules/animate";
+  @import "hrjc/modules/ui-bootstrap";
 
   @import "hrjc/partials/global";
   @include global;

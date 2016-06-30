@@ -12,7 +12,7 @@ define([
       modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
       ctrl = _$controller_('AccessRightsCtrl', {
         $scope: _$rootScope_.$new(),
-        $modal: modalSpy
+        $uibModal: modalSpy
       });
     }));
 

@@ -12,7 +12,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ContractCtrl',['$scope', '$route', '$filter', '$modal', '$rootElement', '$q', 'settings',
+    controllers.controller('ContractCtrl',['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', 'settings',
         'API', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService','ContractFilesService','ContactService','$log',
         function ($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractDetailsService,
@@ -144,7 +144,7 @@ define([
                 var modalInstance,
                     options = {
                         controller: 'ModalContractCtrl',
-                        targetDomEl: $rootElement.find('div').eq(0),
+                        appendTo: $rootElement.find('div').eq(0),
                         templateUrl: settings.pathApp+'views/modalForm.html?v=4448',
                         windowClass: 'modal-contract',
                         size: 'lg',
@@ -348,7 +348,7 @@ define([
                 }
 
                 var options = {
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     size: 'lg',
                     controller: 'ModalRevisionCtrl',
                     templateUrl: settings.pathApp+'views/modalRevision.html?v=1234',

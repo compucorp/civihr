@@ -3,7 +3,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ModalProgressCtrl',['$scope','$modalInstance', '$q', '$timeout', 'uploader',
+    controllers.controller('ModalProgressCtrl',['$scope','$uibModalInstance', '$q', '$timeout', 'uploader',
         'promiseFilesUpload', '$log',
         function ($scope, $modalInstance, $q, $timeout, uploader, promiseFilesUpload, $log) {
             $log.debug('Controller: ModalProgressCtrl');

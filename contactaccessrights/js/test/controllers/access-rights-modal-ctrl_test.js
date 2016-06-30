@@ -17,7 +17,7 @@ define([
       initSpies();
       ctrl = _$controller_('AccessRightsModalCtrl', {
         $scope: $scope,
-        $modalInstance: modalInstanceSpy,
+        $uibModalInstance: modalInstanceSpy,
         Region: regionSpy,
         Location: locationSpy,
         Right: rightSpy

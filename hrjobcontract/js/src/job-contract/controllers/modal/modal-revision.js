@@ -3,7 +3,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ModalRevisionCtrl',['$scope', '$rootScope', '$modalInstance', '$filter','$q','settings',
+    controllers.controller('ModalRevisionCtrl',['$scope', '$rootScope', '$uibModalInstance', '$filter','$q','settings',
         'revisionDataList', 'revisionList', 'entity', 'fields', 'model', 'modalContract','utils','ContactService','$log',
         function ($scope, $rootScope, $modalInstance, $filter, $q, settings, revisionDataList, revisionList, entity,
                  fields, model, modalContract, utils, ContactService, $log) {
