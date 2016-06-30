@@ -3,12 +3,12 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('NotificationRecipientsModalCtrl', ['$log', '$controller', '$modalInstance',
+    controllers.controller('NotificationRecipientsModalCtrl', ['$log', '$controller', '$uibModalInstance',
         function ($log, $controller, $modalInstance) {
             $log.debug('NotificationRecipientsModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
 
             return vm;

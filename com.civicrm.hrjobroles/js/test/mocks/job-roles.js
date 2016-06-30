@@ -87,6 +87,88 @@ define(function () {
                 "end_date": "2016-01-31",
                 "funders": [],
                 "cost_centers": []
+            },
+            "3": {
+              "title": "Test filter",
+              "job_contract_id": "1",
+              "start_date": "2015-12-30 00:00:00",
+              "funders": [
+                {
+                  $$hashKey: "object:565",
+                  amount: "0",
+                  funder_id: "",
+                  id: 2,
+                  percentage: "2",
+                  type: "1"
+                },
+                {
+                  $$hashKey: "object:565",
+                  amount: "0",
+                  funder_id: {
+                    id:"1",
+                    sort_name:"Default Organization"
+                  },
+                  id: 1,
+                  percentage: "1",
+                  type: "1"
+                },
+                {
+                  $$hashKey: "object:565",
+                  amount: "0",
+                  funder_id: {
+                    id:"1",
+                    sort_name:"Default Organization"
+                  },
+                  id: 1,
+                  percentage: "0",
+                  type: "1"
+                },
+                {
+                  $$hashKey: "object:565",
+                  amount: "1",
+                  funder_id: {
+                    id:"1",
+                    sort_name:"Default Organization"
+                  },
+                  id: 1,
+                  percentage: "0",
+                  type: "0"
+                }
+              ],
+              "cost_centers": [
+                {
+                  $$hashKey:"object:845",
+                  amount:"0",
+                  cost_centre_id:"879",
+                  id:1,
+                  percentage:"1",
+                  type:"1",
+                },
+                {
+                  $$hashKey:"object:845",
+                  amount:"0",
+                  cost_centre_id:"890",
+                  id:1,
+                  percentage:"0",
+                  type:"1",
+                },
+                {
+                  $$hashKey:"object:845",
+                  amount:"2",
+                  cost_centre_id:"",
+                  id:1,
+                  percentage:"0",
+                  type:"0",
+                },
+                {
+                  $$hashKey:"object:845",
+                  amount:"2",
+                  cost_centre_id:"123",
+                  id:1,
+                  percentage:"0",
+                  type:"0",
+                }
+              ]
             }
         }
     };

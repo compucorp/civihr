@@ -8,7 +8,7 @@
     paths: {
         'common/angular': 'common/vendor/angular/angular.min',
         'common/angularAnimate': 'common/vendor/angular/angular-animate.min',
-        'common/angularBootstrap': 'common/vendor/angular/ui-bootstrap-tpls',
+        'common/angularBootstrap': 'common/vendor/angular/ui-bootstrap',
         'common/angularFileUpload': 'common/vendor/angular/angular-file-upload',
         'common/angularMocks': 'common/vendor/angular/angular-mocks',
         'common/angularResource': 'common/vendor/angular/angular-resource.min',
@@ -25,7 +25,8 @@
         'common/d3': 'common/vendor/d3.min',
         'common/lodash': 'common/vendor/lodash.min',
         'common/moment': 'common/vendor/moment.min',
-        'common/mocks': '../test/mocks'
+        'common/mocks': '../test/mocks',
+        'common/vendor/perfect-scrollbar': 'common/vendor/perfect-scrollbar.min'
     },
     shim: {
         'common/angular': {

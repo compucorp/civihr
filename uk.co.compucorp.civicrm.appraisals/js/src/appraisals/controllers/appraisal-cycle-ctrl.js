@@ -6,7 +6,7 @@ define([
     'use strict';
 
     controllers.controller('AppraisalCycleCtrl', [
-        '$log', '$modal', '$rootElement', '$rootScope', '$stateParams', '$timeout',
+        '$log', '$uibModal', '$rootElement', '$rootScope', '$stateParams', '$timeout',
         'AppraisalCycle', 'dialog', 'statuses', 'types',
         function ($log, $modal, $rootElement, $rootScope, $stateParams, $timeout, AppraisalCycle, dialog, statuses, types) {
             $log.debug('AppraisalCycleCtrl');
@@ -169,7 +169,7 @@ define([
              */
             function openModal(options) {
                 return $modal.open(_.assign({
-                    targetDomEl: $rootElement.children().eq(0),
+                    appendTo: $rootElement.children().eq(0),
                     controller: options.controller,
                     controllerAs: 'modal',
                     bindToController: true,

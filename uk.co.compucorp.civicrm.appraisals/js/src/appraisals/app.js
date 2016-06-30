@@ -5,6 +5,7 @@ define([
     'common/ui-select',
     'common/modules/dialog',
     'common/modules/xeditable-civi',
+    'common/filters/angular-date/format-date',
     'common/services/angular-date/date-format',
     'common/directives/loading',
     'appraisals/controllers/appraisals-ctrl',
@@ -27,6 +28,7 @@ define([
     'appraisals/vendor/ui-router',
 ], function (routes, angular) {
     angular.module('appraisals', [
+        'ngAnimate',
         'ngResource',
         'ui.router',
         'ui.bootstrap',

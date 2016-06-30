@@ -419,27 +419,60 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrui_civicrm_tabs(&$tabs, $contactID) {
   $newTabs = array();
-
+  /*
+   * 1) we alter the weights for these tabs here
+   * since these tabs are not created by hook_civicrm_tab
+   * and the only way to alter their weights is here
+   * by taking advantage of &$tabs variable.
+   * 2) we set assignments tab to 30 since it should appear
+   * after appraisals tab directly which have the weight of 20.
+   * 3) we jump to weight of 60 in identifications tab since 40 & 50
+   * are occupied by tasks & assignments extension tabs .
+   * 4) the weight increased by 10 between every tab
+   * to give a large space for other tabs to be inserted
+   * between any two without altering other tabs weights.
+   */
   foreach ($tabs as $i => $tab) {
-    if ($tab['id'] != 'log') {
-      $newTabs[$i] = $tab['title'];
-    }
-    else {
-      $changeLogTabID = $i;
+    switch($tab['title'])  {
+      case 'Assignments':
+        $tabs[$i]['weight'] = 30;
+        break;
+      case 'Identification':
+        $tabs[$i]['weight'] = 60;
+        break;
+      case 'Immigration':
+        $tabs[$i]['weight'] = 70;
+        break;
+      case 'Emergency Contacts':
+        $tabs[$i]['weight'] = 80;
+        break;
+      case 'Relationships':
+        $tabs[$i]['weight'] = 90;
+        $tabs[$i]['title'] = 'Managers';
+        break;
+      case 'Bank Details':
+        $tabs[$i]['weight'] = 100;
+        break;
+      case 'Career History':
+        $tabs[$i]['weight'] = 110;
+        break;
+      case 'Medical & Disability':
+        $tabs[$i]['weight'] = 120;
+        break;
+      case 'Qualifications':
+        $tabs[$i]['weight'] = 130;
+        break;
+      case 'Notes':
+        $tabs[$i]['weight'] = 140;
+        break;
+      case 'Groups':
+        $tabs[$i]['weight'] = 150;
+        break;
+      case 'Change Log':
+        $tabs[$i]['weight'] = 160;
+        break;
     }
   }
-
-  //sort alphabetically
-  asort($newTabs);
-  $weight = 0;
-  //assign the weights based on alphabetic order
-  foreach ($newTabs as $key => $value) {
-    $weight += 10;
-    $tabs[$key]['weight'] = $weight;
-  }
-
-  //Move change log to the end
-  $tabs[$changeLogTabID]['weight'] = $weight + 10;
 }
 
 /**

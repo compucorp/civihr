@@ -8,12 +8,12 @@ define([
         var $modal, $modalInstance, ctrl;
 
         beforeEach(module('appraisals'));
-        beforeEach(inject(function (_$modal_, $controller, $rootScope) {
-            ($modal = _$modal_) && spyOn($modal, 'open');
+        beforeEach(inject(function (_$uibModal_, $controller, $rootScope) {
+            ($modal = _$uibModal_) && spyOn($modal, 'open');
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
 
             ctrl = $controller('SendNotificationReminderModalCtrl', {
-                $modalInstance: $modalInstance,
+                $uibModalInstance: $modalInstance,
                 $scope: $rootScope.$new()
             });
         }));

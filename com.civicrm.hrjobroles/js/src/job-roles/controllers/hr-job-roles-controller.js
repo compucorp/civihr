@@ -6,13 +6,15 @@ define([
 ], function (angular, controllers, moment) {
     'use strict';
 
-    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation',
-        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation) {
+    controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
+        function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters) {
             $log.debug('Controller: HRJobRolesController');
 
             $scope.format = HR_settings.DATE_FORMAT;
 
             var me = this;
+            var formatDate = $filter('formatDate');
+            var roles_type = ['funders', 'cost_centers'];
 
             $scope.present_job_roles = [];
             $scope.past_job_roles = [];
@@ -38,22 +40,17 @@ define([
              * Method responsible for updating new JobRole with dates from Contract
              */
             $scope.onContractSelected = function () {
-                var contract = getContractData($scope.edit_data['new_role_id']['job_contract_id']);
-                var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data['new_role_id']['newStartDate'], $scope.edit_data['new_role_id']['newEndDate']);
+                var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
+                var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate);
 
-                if (!areDatesCustom) {
-                    if (!!contract.start_date) {
-                        $scope.edit_data['new_role_id']['newStartDate'] = contract.start_date;
-                    } else {
-                        $scope.edit_data['new_role_id']['newStartDate'] = null;
-                    }
-
-                    if (!!contract.end_date) {
-                        $scope.edit_data['new_role_id']['newEndDate'] = contract.end_date;
-                    } else {
-                        $scope.edit_data['new_role_id']['newEndDate'] = null;
-                    }
-                }
+                formatRoleDates($scope.edit_data.new_role_id, {
+                    start: areDatesCustom ? $scope.edit_data.new_role_id.newStartDate : contract.start_date,
+                    end: areDatesCustom ? $scope.edit_data.new_role_id.newEndDate : contract.end_date
+                },
+                {
+                    start: 'newStartDate',
+                    end: 'newEndDate'
+                });
             };
 
             /**
@@ -72,8 +69,8 @@ define([
 
 
                 angular.forEach(me.contractsData, function (value) {
-                    if ($filter('formatDate')(start) === $filter('formatDate')(value.start_date)
-                        && $filter('formatDate')(end) === $filter('formatDate')(value.end_date))
+                    if (formatDate(start) === formatDate(value.start_date)
+                        && formatDate(end) === formatDate(value.end_date))
                         custom = false;
                 });
 
@@ -87,23 +84,19 @@ define([
              */
             $scope.onContractEdited = function (jobContractId, role_id) {
                 var id = jobContractId || $scope.edit_data[role_id]['job_contract_id'];
-
                 var contract = getContractData(id);
-
                 var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data[role_id]['start_date'], $scope.edit_data[role_id]['end_date']);
 
                 if (!areDatesCustom) {
-                    if (!!contract.start_date) {
-                        $scope.edit_data[role_id]['start_date'] = contract.start_date;
-                    } else {
-                        $scope.edit_data[role_id]['start_date'] = null;
-                    }
-
-                    if (!!contract.end_date) {
-                        $scope.edit_data[role_id]['end_date'] = contract.end_date;
-                    } else {
-                        $scope.edit_data[role_id]['end_date'] = null;
-                    }
+                    formatRoleDates($scope.edit_data[role_id], {
+                        start: contract.start_date,
+                        end: contract.end_date
+                    });
+                } else {
+                    formatRoleDates($scope.edit_data[role_id], {
+                        start: $scope.edit_data[role_id].start_date,
+                        end: $scope.edit_data[role_id].end_date
+                    });
                 }
             };
 
@@ -238,7 +231,7 @@ define([
                     $scope.edit_data[role_id]['funders'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var funder_contact_ids = data['funder'].split("|");
+                    var funder_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['funder'].split("|"));
 
                     // Split the funder types
                     var funder_types = data['funder_val_type'].split("|");
@@ -272,7 +265,7 @@ define([
                     $scope.edit_data[role_id]['cost_centers'] = [];
 
                     // Split data from the stored funder contact IDs
-                    var cost_center_contact_ids = data['cost_center'].split("|");
+                    var cost_center_contact_ids = HRJobRolesServiceFilters.isNotUndefined(data['cost_center'].split("|"));
 
                     // Split the cost_centers types
                     var cost_center_types = data['cost_center_val_type'].split("|");
@@ -321,6 +314,11 @@ define([
                                 $scope.$apply();
                                 return $scope.updateRole(role_id);
                             });
+                        } else {
+                            formatRoleDates($scope.edit_data[role_id], {
+                                start: $scope.edit_data[role_id].start_date,
+                                end: $scope.edit_data[role_id].end_date
+                            });
                         }
                     }
                 }
@@ -339,6 +337,21 @@ define([
             };
 
             /**
+             * Sets the values of the given role's start and end date properties
+             * to the Date objects representing the given start and end dates
+             *
+             * @param {Object} role - The job role
+             * @param {Object} dates - An object with `start` and `end ` dates
+             * @param {Object} keys - Custom names of the role's start and end date properties
+             */
+            function formatRoleDates(role, dates, keys) {
+                var keys = keys ? keys : { start: 'start_date', end: 'end_date' };
+
+                role[keys.start] = !!dates.start ? formatDate(dates.start, Date) : null;
+                role[keys.end]   = !!dates.end   ? formatDate(dates.end, Date)   : null;
+            }
+
+            /**
              * Checks if JobRole dates are actual, if not checks if they exist in any of contract's revisions.
              * @param role_id
              */
@@ -350,17 +363,24 @@ define([
 
                     // search for revision containing these dates
                     var revision = contract.revisions.some(function (rev) {
-                        return rev.period_start_date === $filter('formatDate')($scope.edit_data[role_id]['start_date'])
-                            && rev.period_end_date === $filter('formatDate')($scope.edit_data[role_id]['end_date']);
+                        return rev.period_start_date === formatDate($scope.edit_data[role_id]['start_date'])
+                            && rev.period_end_date === formatDate($scope.edit_data[role_id]['end_date']);
                     });
 
                     // check if dates match with revision
                     if (revision) {
-                        $scope.edit_data[role_id]['start_date'] = contract.start_date;
-                        $scope.edit_data[role_id]['end_date'] = contract.end_date;
+                        formatRoleDates($scope.edit_data[role_id], {
+                            start: contract.start_date,
+                            end: contract.end_date
+                        });
 
                         $scope.updateRole(role_id);
                     }
+                } else {
+                    formatRoleDates($scope.edit_data[role_id], {
+                        start: $scope.edit_data[role_id].start_date,
+                        end: $scope.edit_data[role_id].end_date
+                    });
                 }
             }
 
@@ -397,30 +417,11 @@ define([
             };
 
             /**
-             * Parse dates so they can be correctly read by server.
-             *
-             * @param {string|Date} date
-             * @returns {string|null}
-             */
-            $scope.parseDate = function (date) {
-
-                if (date instanceof Date) {
-                    date = date.getTime();
-                }
-
-                var formatted = moment(date, [
-                    'DD/MM/YYYY',
-                    'x',
-                    'YYYY-MM-DD'
-                ]);
-
-                return (formatted.isValid()) ? formatted.format('YYYY-MM-DD') : null;
-            };
-
-            /**
              * Validates Dates and saves the new Job Role
              */
             $scope.saveNewRole = function saveNewRole() {
+                var newRole;
+
                 $log.debug('Add New Role');
 
                 $scope.errors = {};
@@ -440,17 +441,18 @@ define([
                 });
 
                 if (validateResponse) {
+                    newRole = angular.copy($scope.edit_data.new_role_id);
 
-                    $scope.edit_data.new_role_id.newStartDate = $scope.parseDate($scope.edit_data.new_role_id.newStartDate);
+                    newRole.newStartDate = convertDateToServerFormat(newRole.newStartDate);
 
-                    if ($scope.edit_data.new_role_id.newEndDate) {
-                        $scope.edit_data.new_role_id.newEndDate = $scope.parseDate($scope.edit_data.new_role_id.newEndDate);
+                    if (newRole.newEndDate) {
+                        newRole.newEndDate = convertDateToServerFormat(newRole.newEndDate);
                     } else {
-                        delete $scope.edit_data.new_role_id.newEndDate;
+                        delete newRole.newEndDate;
                     }
 
                     // Create the new job role
-                    createJobRole($scope.edit_data.new_role_id).then(function () {
+                    createJobRole(newRole).then(function () {
                         // Hide the add new form
                         $scope.add_new = false;
 
@@ -497,19 +499,26 @@ define([
              * Prepares data and updates existing role
              * @param role_id
              */
-            $scope.updateRole = function (role_id) {
+            $scope.updateRole = function (role_id, role_type) {
+                var updatedRole;
+
                 $log.debug('Update Role');
 
-                $scope.edit_data[role_id].start_date = $scope.parseDate($scope.edit_data[role_id].start_date);
+                if (typeof role_type === 'string') {
+                  filterEmptyData(role_id, role_type);
+                }
 
-                if ($scope.edit_data[role_id].end_date) {
-                    $scope.edit_data[role_id].end_date = $scope.parseDate($scope.edit_data[role_id].end_date);
+                updatedRole = angular.copy($scope.edit_data[role_id]);
+                updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
+
+                if (updatedRole.end_date) {
+                    updatedRole.end_date = convertDateToServerFormat(updatedRole.end_date);
                 } else {
-                    delete $scope.edit_data[role_id].end_date;
+                    delete updatedRole.end_date;
                 }
 
                 // Update the job role
-                updateJobRole(role_id, $scope.edit_data[role_id]).then(function () {
+                updateJobRole(role_id, updatedRole).then(function () {
                     return getJobRolesList($scope.$parent.contactId);
                 });
             };
@@ -613,6 +622,53 @@ define([
                     $scope.edit_data[role_id]['funders'].splice(row_id, 1);
                 }
             };
+
+            /**
+             * Called on angular-xeditable's onaftersave callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onAfterSave = function (role_id, role_type) {
+              filterEmptyData(role_id, role_type);
+            }
+
+            /**
+             * Called on angular-xeditable's cancel callback.
+             * It'll filter the rows which are without data.
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            $scope.onCancel = function (role_id, role_type) {
+              if (role_type === 'both') {
+                roles_type.map(function (type) {
+                  filterEmptyData(role_id, type);
+                });
+              } else {
+                filterEmptyData(role_id, role_type);
+              }
+            }
+
+            /**
+             * Filter the edit_data property to remove
+             * the funders/cost_centers entries which are empty
+             *
+             * @param  {string|int} role_id
+             * @param  {string} role_type
+             */
+            function filterEmptyData(role_id, role_type) {
+              if ($scope.edit_data.hasOwnProperty(role_id)) {
+                if (role_type === 'funders') {
+                  $scope.edit_data[role_id][role_type] = HRJobRolesServiceFilters.issetFunder($scope.edit_data[role_id][role_type]);
+                }
+
+                if (role_type === 'cost_centers') {
+                  $scope.edit_data[role_id][role_type] = HRJobRolesServiceFilters.issetCostCentre($scope.edit_data[role_id][role_type]);
+                }
+              }
+            }
 
             // Variable to check if we adding new job role
             var job_roles = this;
@@ -823,8 +879,8 @@ define([
                                 revisions: data.values[i]['revisions']
                             };
 
-                            var optionalEndDate = $filter('formatDate')(contract.end_date) || 'Unspecified';
-                            contract.label = contract.title + ' (' + $filter('formatDate')(contract.start_date) + ' - ' + optionalEndDate + ')';
+                            var optionalEndDate = formatDate(contract.end_date) || 'Unspecified';
+                            contract.label = contract.title + ' (' + formatDate(contract.start_date) + ' - ' + optionalEndDate + ')';
 
                             contractsData[data.values[i]['id']] = contract;
                         }
@@ -943,10 +999,6 @@ define([
 
             // Implements the "updateJobRole" service
             function updateJobRole(role_id, job_roles_data) {
-
-                job_roles_data.end_date = $scope.parseDate(job_roles_data.end_date);
-                job_roles_data.start_date = $scope.parseDate(job_roles_data.start_date);
-
                 return HRJobRolesService.updateJobRole(role_id, job_roles_data).then(function (data) {
 
                     if (data.is_error === 1) {
@@ -997,6 +1049,18 @@ define([
              */
             function getContractData(contractId) {
               return me.contractsData[contractId];
+            }
+
+            /**
+             * Parse dates so they can be correctly read by server.
+             *
+             * @param {string|Date} date
+             * @returns {string|null}
+             */
+            function convertDateToServerFormat(date) {
+                var dateString = formatDate(date, 'YYYY-MM-DD');
+
+                return dateString !== 'Unspecified' ? dateString : null;
             }
         }
     ]);
