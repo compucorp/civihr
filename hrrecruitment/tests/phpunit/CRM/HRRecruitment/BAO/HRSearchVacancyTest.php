@@ -1,37 +1,29 @@
 <?php
-/*
- +--------------------------------------------------------------------+
- | CiviHR version 1.4                                                 |
- +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2014                                |
- +--------------------------------------------------------------------+
- | This file is a part of CiviCRM.                                    |
- |                                                                    |
- | CiviCRM is free software; you can copy, modify, and distribute it  |
- | under the terms of the GNU Affero General Public License           |
- | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
- |                                                                    |
- | CiviCRM is distributed in the hope that it will be useful, but     |
- | WITHOUT ANY WARRANTY; without even the implied warranty of         |
- | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
- | See the GNU Affero General Public License for more details.        |
- |                                                                    |
- | You should have received a copy of the GNU Affero General Public   |
- | License along with this program; if not, contact CiviCRM LLC       |
- | at info[AT]civicrm[DOT]org. If you have questions about the        |
- | GNU Affero General Public License or the licensing of CiviCRM,     |
- | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
- +--------------------------------------------------------------------+
-*/
 
-require_once 'CiviTest/CiviUnitTestCase.php';
-require_once 'CiviTest/Contact.php';
-class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends CiviUnitTestCase {
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
+
+/**
+ * Class CRM_HRRecruitment_BAO_HRSearchVacancyTest
+ *
+ * @group headless
+ */
+class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends PHPUnit_Framework_TestCase implements HeadlessInterface , TransactionalInterface {
+
+  use HRRecruitmentTestTrait;
+
+  public function setUpHeadless() {
+    return \Civi\Test::headless()
+      ->installMe(__DIR__)
+      ->apply();
+  }
 
   function setUp() {
-    parent::setUp();
-    $permissionIndividual1Id = Contact::createIndividual();
-    $permissionIndividual2Id = Contact::createIndividual();
+    $params1 = array('first_name' => 'micky', 'last_name' => 'mouse');
+    $permissionIndividual1Id = $this->createContact($params1);
+    $params2 = array('first_name' => 'john', 'last_name' => 'snow');
+    $permissionIndividual2Id = $this->createContact($params2);
+
     $juniorposition = 'Junior Support Specialist ' . substr(sha1(rand()), 0, 7);
     $this->juniorParams = array(
       'position' => $juniorposition,
@@ -78,17 +70,6 @@ class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends CiviUnitTestCase {
       'permission_contact_id' => array($permissionIndividual1Id, $permissionIndividual2Id),
     );
     $this->seniorPosition = CRM_HRRecruitment_BAO_HRVacancy::create($this->seniorParams);
-  }
-
-  function teardown() {
-  }
-
-  protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-    _hrrecruitment_phpunit_populateDB();
-    return TRUE;
   }
 
   /*

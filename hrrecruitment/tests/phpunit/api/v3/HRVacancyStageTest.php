@@ -1,48 +1,27 @@
 <?php
-/*
-+--------------------------------------------------------------------+
-| CiviHR version 1.4                                                 |
-+--------------------------------------------------------------------+
-| Copyright CiviCRM LLC (c) 2004-2014                                |
-+--------------------------------------------------------------------+
-| This file is a part of CiviCRM.                                    |
-|                                                                    |
-| CiviCRM is free software; you can copy, modify, and distribute it  |
-| under the terms of the GNU Affero General Public License           |
-| Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
-|                                                                    |
-| CiviCRM is distributed in the hope that it will be useful, but     |
-| WITHOUT ANY WARRANTY; without even the implied warranty of         |
-| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
-| See the GNU Affero General Public License for more details.        |
-|                                                                    |
-| You should have received a copy of the GNU Affero General Public   |
-| License and the CiviCRM Licensing Exception along                  |
-| with this program; if not, contact CiviCRM LLC                     |
-| at info[AT]civicrm[DOT]org. If you have questions about the        |
-| GNU Affero General Public License or the licensing of CiviCRM,     |
-| see the CiviCRM license FAQ at http://civicrm.org/licensing        |
-+--------------------------------------------------------------------+
-*/
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
- * Class api_v3_HRVacancyStageTest
+ * Class api_v3_HRVacancyTest
+ *
+ * @group headless
  */
-class api_v3_HRVacancyStageTest extends CiviUnitTestCase {
+class api_v3_HRVacancyStageTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
   protected $_apiversion = 3;
+
+  public function setUpHeadless() {
+    return \Civi\Test::headless()
+      ->installMe(__DIR__)
+      ->apply();
+  }
 
   function setUp() {
     $this->_entity = 'HRVacancy';
 
     parent::setUp();
     $this->_apiversion = 3;
-    $this->tablesToTruncate = array( 'civicrm_hrvacancy', 'civicrm_hrvacancy_stage' );
-    $this->quickCleanup($this->tablesToTruncate);
-    $this->createLoggedInUser();
-    $session = CRM_Core_Session::singleton();
-    $this->_loggedInUser = $session->get('userID');
 
     //Create Vacancy
     $vacancyParams = array(
@@ -51,7 +30,7 @@ class api_v3_HRVacancyStageTest extends CiviUnitTestCase {
       'start_date' => '2014-05-08 00:00:00',
       'end_date' => '2014-05-27 00:00:00',
       'status_id' => 'Draft',
-      'created_id' => $this->_loggedInUser,
+      'created_id' => 1, // 1 = default organization ID
     );
 
     $vacancyResult = $this->callAPISuccess('HRVacancy', 'create', $vacancyParams);
@@ -108,13 +87,7 @@ class api_v3_HRVacancyStageTest extends CiviUnitTestCase {
     return TRUE;
   }
 
-  /**
-   * Tears down the fixture, for example, closes a network connection.
-   * This method is called after a test is executed.
-   *
-   */
   function tearDown() {
-    $this->quickCleanup($this->tablesToTruncate, TRUE);
   }
 
   /**

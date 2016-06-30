@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRStaffDir_HRStaffDirProfile extends CiviSeleniumTestCase {
 
   protected function setUp() {

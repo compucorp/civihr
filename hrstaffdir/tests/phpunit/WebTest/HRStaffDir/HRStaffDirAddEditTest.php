@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRStaffDir_HRStaffDirAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {
@@ -34,7 +33,7 @@ class WebTest_HRStaffDir_HRStaffDirAddEditTest extends CiviSeleniumTestCase {
   function testMedCreateEdit() {
     $this->webtestLogin();
     $this->openCiviPage("dashboard", "reset=1");
-    
+
     // Check if Directory menu item exists
     $this->assertTrue($this->isElementPresent("xpath=//ul[@id='civicrm-menu']/li/a[text()='Directory']"), 'Directory not appearing in the top nav bar');
 
