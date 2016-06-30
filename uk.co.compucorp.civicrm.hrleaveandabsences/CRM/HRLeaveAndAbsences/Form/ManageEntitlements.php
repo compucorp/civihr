@@ -42,6 +42,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       $this->exportCSV();
     }
 
+    $this->addButtons($this->getAvailableButtons());
     $this->assign('period', $this->absencePeriod);
     $this->assign('contractsIDs', $this->getContractsIDsFromRequest());
     $this->assign('calculations', $this->calculations);
@@ -322,5 +323,23 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     CRM_Core_Report_Excel::writeCSVFile('entitlement_calculations', $headers, $rows);
     CRM_Utils_System::civiExit();
+  }
+
+  /**
+   * Get the list of action buttons available to this form
+   *
+   * @return array
+   */
+  private function getAvailableButtons() {
+    $buttons = [
+      [
+        'type'      => 'next',
+        'class'     => 'save-new-entitlements-button',
+        'name'      => ts('Save new entitlements'),
+        'isDefault' => TRUE
+      ],
+    ];
+
+    return $buttons;
   }
 }

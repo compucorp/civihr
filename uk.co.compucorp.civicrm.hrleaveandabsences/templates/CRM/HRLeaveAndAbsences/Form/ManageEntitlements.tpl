@@ -94,9 +94,9 @@
   {/foreach}
   </tbody>
 </table>
-<div class="action-link">
+<div class="crm-submit-buttons">
   <a href="javascript:history.back()" class="button"><span>{ts}Back{/ts}</span></a>
-  <button class="crm-button save-new-entitlements-button"><i class="fa fa-check"></i>Save new entitlements</button>
+  {include file="CRM/common/formButtons.tpl" location="bottom"}
 </div>
 <div id="add-comment-dialog" title="{ts}Add/Edit comment{/ts}">
   <p>{ts}You can leave a comment as a record of your calculation for the leave entitlement for this period. Comments are then shown as tooltips on the leave entitlement on the contact record for administrators to refer back to.{/ts}</p>
