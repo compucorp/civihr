@@ -244,6 +244,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
+   * Returns the AbsencePeriod instance used to create this calculation
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   */
+  public function getAbsencePeriod()
+  {
+    return $this->period;
+  }
+
+  /**
    * Returns the calculated Entitlement for the previous period.
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null

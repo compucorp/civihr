@@ -60,7 +60,7 @@
 
   <field>
     <name>proposed_entitlement</name>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <required>true</required>
     <comment>The number of days proposed for this entitlement</comment>
     <add>4.4</add>
@@ -68,7 +68,7 @@
 
   <field>
     <name>brought_forward_days</name>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <default>0</default>
     <comment>The number of days brought forward from the previous period</comment>
     <add>4.4</add>
@@ -83,7 +83,7 @@
 
   <field>
     <name>pro_rata</name>
-    <type>int unsigned</type>
+    <type>decimal</type>
     <default>0</default>
     <comment>The pro rata calculated for this entitlement period</comment>
     <add>4.4</add>

@@ -5,6 +5,15 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DAO_AbsencePeriod {
 
   /**
+   * The number of working days in this AbsencePeriod.
+   *
+   * This is used to cache the result of getNumberOfWorkingDays().
+   *
+   * @var int
+   */
+  private $numberOfWorkingDays = 0;
+
+  /**
    * Create a new AbsencePeriod based on array-data
    *
    * @param array $params key-value pairs
@@ -259,39 +268,43 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    */
   public function getNumberOfWorkingDays()
   {
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d')) {
-      throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid start date');
-    }
-
-    if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d')) {
-      throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid end date');
-    }
-
-    $startDate = new DateTime($this->start_date);
-    $endDate = new DateTime($this->end_date);
-    $oneDayInterval = new DateInterval('P1D');
-
-    // DatePeriod doesn't include the end date,
-    // so we add one more day for it to be included
-    $endDate->add($oneDayInterval);
-
-    $numberOfWorkingDays = 0;
-    $period = new DatePeriod($startDate, $oneDayInterval, $endDate);
-    foreach($period as $date) {
-      $dayOfTheWeek = $date->format('N');
-      $dayIsWorkingDay = $dayOfTheWeek > 0 && $dayOfTheWeek < 6;
-      if($dayIsWorkingDay) {
-        $numberOfWorkingDays++;
+    if(!$this->numberOfWorkingDays) {
+      if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d')) {
+        throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid start date');
       }
+
+      if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d')) {
+        throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid end date');
+      }
+
+      $startDate = new DateTime($this->start_date);
+      $endDate = new DateTime($this->end_date);
+      $oneDayInterval = new DateInterval('P1D');
+
+      // DatePeriod doesn't include the end date,
+      // so we add one more day for it to be included
+      $endDate->add($oneDayInterval);
+
+      $numberOfWorkingDays = 0;
+      $period = new DatePeriod($startDate, $oneDayInterval, $endDate);
+      foreach($period as $date) {
+        $dayOfTheWeek = $date->format('N');
+        $dayIsWorkingDay = $dayOfTheWeek > 0 && $dayOfTheWeek < 6;
+        if($dayIsWorkingDay) {
+          $numberOfWorkingDays++;
+        }
+      }
+
+      $numberOfPublicHolidays = CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+        $this->start_date,
+        $this->end_date,
+        true
+      );
+
+      $this->numberOfWorkingDays = $numberOfWorkingDays - $numberOfPublicHolidays;
     }
 
-    $numberOfPublicHolidays = CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod(
-      $this->start_date,
-      $this->end_date,
-      true
-    );
-
-    return $numberOfWorkingDays - $numberOfPublicHolidays;
+    return $this->numberOfWorkingDays;
   }
 
   /**
