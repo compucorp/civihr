@@ -12,8 +12,7 @@ define([
          */
         openModal: function () {
           $modal.open({
-            appendTo: $rootElement.children()
-              .eq(0),
+            appendTo: $rootElement.children().eq(0),
             controller: 'AccessRightsModalCtrl',
             controllerAs: 'modalCtrl',
             bindToController: true,
