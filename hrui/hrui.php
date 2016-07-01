@@ -543,7 +543,7 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
 
   // fetch data to the new summary page UI
   if($context == 'page' && $tplName == "CRM/Contact/Page/View/Summary.tpl" ) {
-    $content = _hrui_updateContactSummaryUI($content);
+    $content .= _hrui_updateContactSummaryUI();
   }
 
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
@@ -639,10 +639,11 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
  * Add new information in the contact header as the contact photo,
  * phone, department. All changes are made via Javascript.
  *
- * @param  [String] $content
  * @return [String] Updated content markup
  */
-function _hrui_updateContactSummaryUI($content) {
+function _hrui_updateContactSummaryUI() {
+  $content = '';
+
   $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
   /* $currentContractDetails contain current contact data including
    * Current ( Position = $currentContractDetails->position ) and
