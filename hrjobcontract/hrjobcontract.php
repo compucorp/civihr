@@ -588,9 +588,10 @@ function hrjobcontract_civicrm_searchColumns( $objectName, &$headers, &$rows, &$
 
   // replace location options values with label
   foreach($rows as &$row){
-    $location = $row['hrjobcontract_details_location'];
-    if(!empty($location)){
-      $row['hrjobcontract_details_location'] = $options[$location];
+    if(!empty($row['hrjobcontract_details_location']) && isset($options[$row['hrjobcontract_details_location']])){
+      $row['hrjobcontract_details_location'] = $options[$row['hrjobcontract_details_location']];
+    } else {
+      $row['hrjobcontract_details_location'] = '';
     }
   }
 }
