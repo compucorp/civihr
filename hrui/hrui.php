@@ -543,98 +543,7 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
 
   // fetch data to the new summary page UI
   if($context == 'page' && $tplName == "CRM/Contact/Page/View/Summary.tpl" ) {
-    $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
-    /* $currentContractDetails contain current contact data including
-     * Current ( Position = $currentContractDetails->position ) and
-     * ( Normal Place of work =  $currentContractDetails->location )
-    */
-    $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
-    // $departmentsList contain current roles departments list separated by comma
-    $departmentsList = null;
-    if ($currentContractDetails)  {
-      $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
-      $departmentsList = implode(', ', $departmentsArray);
-    }
-    // $managersList contain current line managers list separated by comma
-    $managersList = null;
-    if ($currentContractDetails)  {
-      $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
-      $managersList = implode(', ', $managersArray);
-    }
-
-    try {
-      $contactDetails = civicrm_api3('Contact', 'getsingle', array(
-        'sequential' => 1,
-        'return' => array("phone", "email", "image_URL"),
-        'id' => $contact_id,
-      ));
-    }
-    catch (CiviCRM_API3_Exception $e) {
-    }
-
-    $content .="<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');
-      });
-    </script>";
-
-    if (!empty($contactDetails['image_URL'])) {
-      $content .= "<script type=\"text/javascript\">
-        CRM.$(function($) {
-          $('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $contactDetails['image_URL'] . " />');
-        });
-      </script>";
-    }
-
-    if (empty($currentContractDetails)) {
-      $content .= "<script type=\"text/javascript\">
-        CRM.$(function($) {
-          $('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
-        });
-      </script>";
-    }
-
-    $content .="<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('.crm-summary-block-wrap').append(\"<div class='crm-contact-detail-wrap' />\");
-      });
-    </script>";
-
-    $contactDetailHTML = '';
-
-    if (!empty($contactDetails['phone'])) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Phone:</strong> " . $contactDetails['phone'] . "</span>";
-    }
-
-    if (!empty($contactDetails['email'])) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Email:</strong> " . $contactDetails['email'] . "</span>";
-    }
-
-    $contactDetailHTML .= "<br />";
-
-    if (isset($currentContractDetails)) {
-      if (!empty($currentContractDetails->position)) {
-        $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
-      }
-
-      if (!empty($currentContractDetails->location)) {
-        $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
-      }
-
-      if (!empty($departmentsList)) {
-        $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $departmentsList . "</span>";
-      }
-
-      if (!empty($managersList)) {
-        $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $managersList . "</span>";
-      }
-    }
-
-    $content .="<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('.crm-contact-detail-wrap').append(\"" . $contactDetailHTML . "\");
-      });
-    </script>";
+    $content = _hrui_updateContactSummaryUI($content);
   }
 
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
@@ -724,4 +633,108 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
      });
    </script>";
   }
+}
+
+/**
+ * Add new information in the contact header as the contact photo,
+ * phone, department. All changes are made via Javascript.
+ *
+ * @param  [String] $content
+ * @return [String] Updated content markup
+ */
+function _hrui_updateContactSummaryUI($content) {
+  $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
+  /* $currentContractDetails contain current contact data including
+   * Current ( Position = $currentContractDetails->position ) and
+   * ( Normal Place of work =  $currentContractDetails->location )
+  */
+  $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
+  // $departmentsList contain current roles departments list separated by comma
+  $departmentsList = null;
+  if ($currentContractDetails)  {
+    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+    $departmentsList = implode(', ', $departmentsArray);
+  }
+  // $managersList contain current line managers list separated by comma
+  $managersList = null;
+  if ($currentContractDetails)  {
+    $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
+    $managersList = implode(', ', $managersArray);
+  }
+
+  try {
+    $contactDetails = civicrm_api3('Contact', 'getsingle', array(
+      'sequential' => 1,
+      'return' => array("phone", "email", "image_URL"),
+      'id' => $contact_id,
+    ));
+  }
+  catch (CiviCRM_API3_Exception $e) {
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');
+    });
+  </script>";
+
+  if (!empty($contactDetails['image_URL'])) {
+    $content .= "<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $contactDetails['image_URL'] . " />');
+      });
+    </script>";
+  }
+
+  if (empty($currentContractDetails)) {
+    $content .= "<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
+      });
+    </script>";
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('.crm-summary-block-wrap').append(\"<div class='crm-contact-detail-wrap' />\");
+    });
+  </script>";
+
+  $contactDetailHTML = '';
+
+  if (!empty($contactDetails['phone'])) {
+    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Phone:</strong> " . $contactDetails['phone'] . "</span>";
+  }
+
+  if (!empty($contactDetails['email'])) {
+    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Email:</strong> " . $contactDetails['email'] . "</span>";
+  }
+
+  $contactDetailHTML .= "<br />";
+
+  if (isset($currentContractDetails)) {
+    if (!empty($currentContractDetails->position)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
+    }
+
+    if (!empty($currentContractDetails->location)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
+    }
+
+    if (!empty($departmentsList)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $departmentsList . "</span>";
+    }
+
+    if (!empty($managersList)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $managersList . "</span>";
+    }
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('.crm-contact-detail-wrap').append(\"" . $contactDetailHTML . "\");
+    });
+  </script>";
+
+  return $content;
 }
