@@ -30,8 +30,8 @@ define([
         describe('Add Appraisal Cycle modal', function () {
             var $modal;
 
-            beforeEach(inject(function (_$modal_) {
-                ($modal = _$modal_) && spyOn($modal, 'open');
+            beforeEach(inject(function (_$uibModal_) {
+                ($modal = _$uibModal_) && spyOn($modal, 'open');
             }));
 
             it('opens the modal', function () {

@@ -7,13 +7,13 @@ define([
     'use strict';
 
     controllers.controller('AddContactsModalCtrl', [
-        '$q', '$log', '$controller', '$modalInstance', '$rootScope', '$scope',
+        '$q', '$log', '$controller', '$uibModalInstance', '$rootScope', '$scope',
         '$state', 'Appraisal', 'Contact', 'Group', 'OptionGroup',
         function ($q, $log, $controller, $modalInstance, $rootScope, $scope, $state, Appraisal, Contact, Group, OptionGroup) {
             $log.debug('AddContactsModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
 
             vm.confirmScreen = false;

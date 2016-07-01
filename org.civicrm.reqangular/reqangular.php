@@ -117,7 +117,7 @@ function reqangular_civicrm_pageRun($page) {
         'baseUrl' => $url,
         'angular' => "$url/src/common/vendor/angular/angular.min",
         'angularAnimate' => "$url/src/common/vendor/angular/angular-animate.min",
-        'angularBootstrap' => "$url/src/common/vendor/angular/ui-bootstrap-tpls",
+        'angularBootstrap' => "$url/src/common/vendor/angular/ui-bootstrap",
         'angularFileUpload' => "$url/src/common/vendor/angular/angular-file-upload",
         'angularResource' => "$url/src/common/vendor/angular/angular-resource.min",
         'angularRoute' => "$url/src/common/vendor/angular/angular-route.min",

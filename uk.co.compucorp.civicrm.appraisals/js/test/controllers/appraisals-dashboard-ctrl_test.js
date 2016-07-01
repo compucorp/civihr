@@ -24,11 +24,11 @@ define([
             ]);
         });
 
-        beforeEach(inject(function (_$rootScope_, _$log_, _$modal_, _$timeout_, _$controller_, _AppraisalCycle_) {
+        beforeEach(inject(function (_$rootScope_, _$log_, _$uibModal_, _$timeout_, _$controller_, _AppraisalCycle_) {
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;
-            $modal = _$modal_;
+            $modal = _$uibModal_;
             $rootScope = _$rootScope_;
             $scope = $rootScope.$new();
             $timeout = _$timeout_;

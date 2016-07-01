@@ -12,7 +12,7 @@ define([
             $modalInstance = jasmine.createSpyObj('modalInstance', ['close']);
 
             ctrl = $controller('ViewCycleModalCtrl', {
-                $modalInstance: $modalInstance,
+                $uibModalInstance: $modalInstance,
                 $scope: $rootScope.$new()
             });
         }));

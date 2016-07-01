@@ -12,7 +12,7 @@ var fs = require('fs');
 gulp.task('sass', function (done) {
     // The app style relies on compass's gems, so we need to rely on it
     // for the time being
-    exec('compass watch', function (_, stdout, stderr) {
+    exec('compass compile', function (_, stdout, stderr) {
         console.log(stdout);
         done();
     });

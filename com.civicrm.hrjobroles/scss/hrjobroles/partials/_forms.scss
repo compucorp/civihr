@@ -1,1 +1,29 @@
-.form-group {  .form-group.editable-controls {    margin: 0;  }    .editable-textarea {    display: block;  }  .editable-empty,  .editable-empty:hover,  .editable-empty:focus {    color: $text-color;  }}
+.form-group {
+  .form-group.editable-controls {
+    margin: 0;
+  }
+
+  .editable-textarea {
+    display: block;
+  }
+
+  .editable-empty,
+  .editable-empty:hover,
+  .editable-empty:focus {
+    color: $text-color;
+  }
+}
+
+/**
+ * An extension of Bootstraps' input-group,
+ * so that the addon has no background or border set
+ */
+.input-group-unstyled {
+
+  .input-group-addon,
+  .input-group-btn > button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
