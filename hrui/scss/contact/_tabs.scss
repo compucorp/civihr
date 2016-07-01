@@ -1,48 +1,46 @@
 @import "variables";
 
-.page-civicrm-contact {
-  .crm-contact-page {
-    position: relative;
-    padding: 4px;
+.crm-contact-page {
+  position: relative;
+  padding: 4px;
 
-    #mainTabContainer {
-      background-color: transparent;
-      padding: 0;
+  #mainTabContainer {
+    background-color: transparent;
+    padding: 0;
 
-      .ui-tabs-nav {
-        width: 15%;
-        float: left;
-        padding: 4px;
-        background: #CCC;
-      }
-
-      li.crm-tab-button {
-        display: block;
-        width: 100%;
-        font-size: 12px;
-        white-space: normal;
-      }
-
-      .ui-tabs-panel {
-        float: right;
-        width: 83%;
-        background-color: $white;
-      }
+    .ui-tabs-nav {
+      width: 15%;
+      float: left;
+      padding: 4px;
+      background: #CCC;
     }
 
-    /* override of jquery-ui.css that creates weird white background */
-    .ui-widget-content {
-      background: transparent;
+    li.crm-tab-button {
+      display: block;
+      width: 100%;
+      font-size: 12px;
+      white-space: normal;
     }
 
-    .ui-dialog {
-      background: $white;
+    .ui-tabs-panel {
+      float: right;
+      width: 83%;
+      background-color: $white;
     }
+  }
 
-    /* overriding ui-widget-content class from jquery-ui.css */
-    .ui-widget-content {
-      border: 0 !important;
-      color: #222222;
-    }
+  /* override of jquery-ui.css that creates weird white background */
+  .ui-widget-content {
+    background: transparent;
+  }
+
+  .ui-dialog {
+    background: $white;
+  }
+
+  /* overriding ui-widget-content class from jquery-ui.css */
+  .ui-widget-content {
+    border: 0 !important;
+    color: #222222;
   }
 }
