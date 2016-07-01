@@ -1,0 +1,86 @@
+@import "variables";
+
+.page-civicrm-contact {
+  .crm-summary-block-wrap {
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+    margin: 10px 0 0 45px;
+  }
+
+  .crm-summary-contactphoto {
+    width: 82px;
+    border-radius: 50%;
+    margin: 10px 0 0 45px;
+  }
+
+  .crm-summary-contactname-block-without-contract {
+    background: $light-red !important;
+  }
+
+  .crm-contact-detail {
+    margin-right: 15px;
+    color: $light-gray;
+
+    strong {
+      color: $white;
+    }
+  }
+
+  .crm-contact-detail-wrap {
+    margin-top: 8px;
+    line-height: 20px;
+  }
+
+  #crm-container {
+    div.crm-summary-contactname-block {
+      position: relative;
+      background: $darker-gray;
+      color: $white;
+      height: 100px;
+      box-sizing: border-box;
+    }
+
+    .crm-contact-page {
+      padding: 0;
+    }
+  }
+
+  .crm-actions-ribbon {
+    color: $white;
+    background: $dark-gray;
+    padding: 15px 10px;
+    margin-bottom: 0 !important;
+
+    .button {
+      border: 0 !important;
+      background-color: $light-blue !important;
+
+      &.delete {
+        background-color: $light-red !important;
+      }
+    }
+
+    .crm-next-action,
+    .crm-previous-action {
+      .button {
+        background-color: transparent !important;
+        border: 1px solid $white !important;
+        padding-left: 4px !important;
+
+        .crm-i {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .crm-summary-display_name {
+    font-size: 24px !important;
+    font-weight: 600;
+
+    .crm-summary-link {
+      display: none;
+    }
+  }
+}
