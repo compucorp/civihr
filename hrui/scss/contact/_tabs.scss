@@ -10,7 +10,14 @@
       width: 15%;
       float: left;
       padding: 4px;
-      background: #CCC;
+
+      background: #FFFFFF;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: $box-shadow;
+
+      height: 100%;
+      position: absolute;
     }
 
     li.crm-tab-button {
@@ -18,12 +25,42 @@
       width: 100%;
       font-size: 12px;
       white-space: normal;
+
+      border: 0;
+      padding: 10px;
+      font-family: 'Open Sans';
+      font-size: 13px;
+      font-weight: 600;
+      background: transparent;
+      border-radius: 0;
+      top: 0;
+      box-sizing: border-box;
+
+      &.ui-tabs-active {
+        background: $background-color;
+
+        a,
+        em {
+          color: $brand-primary !important;
+        }
+      }
+
+      a {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      a,
+      em {
+        cursor: default;
+        color: $gray-darker !important;
+      }
     }
 
     .ui-tabs-panel {
       float: right;
       width: 83%;
-      background-color: #FFFFFF;
     }
   }
 
