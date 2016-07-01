@@ -142,6 +142,62 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
     );
   }
 
+  public function testGetNumberOfPublicHolidaysForCurrentPeriod()
+  {
+    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
+      'title' => 'Current Period',
+      'start_date' => date('YmdHis', strtotime('first day of January')),
+      'end_date' => date('YmdHis', strtotime('last day of December')),
+    ]);
+
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('2015-01-01'))
+    ]);
+
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('first monday of January'))
+    ]);
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('first tuesday of February'))
+    ]);
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('last thursday of May'))
+    ]);
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('last monday of May'))
+    ]);
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('last friday of December'))
+    ]);
+
+    $this->assertEquals(
+      5,
+      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod()
+    );
+  }
+
+  public function testGetNumberOfPublicHolidaysForCurrentPeriodCanExcludeWeekendsFromCount()
+  {
+    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
+      'title' => 'Current Period',
+      'start_date' => date('YmdHis', strtotime('first day of January')),
+      'end_date' => date('YmdHis', strtotime('last day of December')),
+    ]);
+
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('first monday of January'))
+    ]);
+    $this->createBasicPublicHoliday([
+      'date' => date('YmdHis', strtotime('first sunday of February'))
+    ]);
+
+    $excludeWeekends = true;
+    $this->assertEquals(
+      1,
+      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends)
+    );
+  }
+
   private function createBasicPublicHoliday($params)
   {
     $basicRequiredFields = [

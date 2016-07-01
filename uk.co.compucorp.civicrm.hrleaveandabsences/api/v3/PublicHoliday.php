@@ -43,3 +43,26 @@ function civicrm_api3_public_holiday_delete($params) {
 function civicrm_api3_public_holiday_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * PublicHoliday.getcountforcurrentperiod API specification
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
+ */
+function _civicrm_api3_public_holiday_getcountforcurrentperiod_spec(&$spec) {
+  $spec['exclude_weekends']['api.default'] = 0;
+}
+
+/**
+ * PublicHoliday.getcountforcurrentperiod API
+ *
+ * @param $params
+ * @param array $params
+ * @return array API result descriptor
+ */
+function civicrm_api3_public_holiday_getcountforcurrentperiod($params) {
+  $excludeWeekends = empty($params['exclude_weekends']) ? false : true;
+  return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends);
+}

@@ -152,4 +152,26 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
 
     return (int)$dao->public_holidays;
   }
+
+  /**
+   * Returns the number of Public Holidays in the Current Period
+   *
+   * @param bool $excludeWeekends
+   *  If true, public holidays that falls on a weekend won't be counted. Default is false
+   *
+   * @return int
+   */
+  public static function getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends = false) {
+    $currentPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod();
+
+    if(!$currentPeriod) {
+      return 0;
+    }
+
+    return self::getNumberOfPublicHolidaysForPeriod(
+      $currentPeriod->start_date,
+      $currentPeriod->end_date,
+      $excludeWeekends
+    );
+  }
 }

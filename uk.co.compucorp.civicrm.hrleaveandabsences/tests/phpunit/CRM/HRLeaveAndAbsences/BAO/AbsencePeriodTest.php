@@ -484,6 +484,52 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
   }
 
+  public function testGetCurrentPeriodShouldReturnTheCurrentPeriod()
+  {
+    $currentPeriod = $this->createBasicPeriod([
+      'start_date' => date('YmdHis', strtotime('-2 days')),
+      'end_date' => date('YmdHis', strtotime('+2 days')),
+    ]);
+    // Load the period from the database to make sure it was stored and
+    // to get the dates in the Y-m-d format
+    $currentPeriod = $this->findPeriodByID($currentPeriod->id);
+
+    $this->createBasicPeriod([
+      'start_date' => date('YmdHis', strtotime('-5 days')),
+      'end_date' => date('YmdHis', strtotime('-3 days')),
+    ]);
+
+    $this->createBasicPeriod([
+      'start_date' => date('YmdHis', strtotime('+3 days')),
+      'end_date' => date('YmdHis', strtotime('+5 days')),
+    ]);
+
+    $returnedPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod();
+    $this->assertEquals($currentPeriod->id, $returnedPeriod->id);
+    $this->assertEquals($currentPeriod->title, $returnedPeriod->title);
+    $this->assertEquals($currentPeriod->start_date, $returnedPeriod->start_date);
+    $this->assertEquals($currentPeriod->end_date, $returnedPeriod->end_date);
+  }
+
+  public function testGetCurrentPeriodShouldReturnNullIfThereIsNoPeriod()
+  {
+    $this->createBasicPeriod([
+      'start_date' => date('YmdHis', strtotime('-5 days')),
+      'end_date' => date('YmdHis', strtotime('-3 days')),
+    ]);
+
+    $this->createBasicPeriod([
+      'start_date' => date('YmdHis', strtotime('+3 days')),
+      'end_date' => date('YmdHis', strtotime('+5 days')),
+    ]);
+    $this->assertNull(CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod());
+  }
+
+  public function testGetCurrentPeriodShouldReturnNullIfThereIsNoCurrentPeriod()
+  {
+    $this->assertNull(CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod());
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
