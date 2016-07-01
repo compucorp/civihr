@@ -29,13 +29,13 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
 function hrui_civicrm_pageRun($page) {
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/contact.css');
 
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrui', 'css/contact.css')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
     //set government field value for individual page
