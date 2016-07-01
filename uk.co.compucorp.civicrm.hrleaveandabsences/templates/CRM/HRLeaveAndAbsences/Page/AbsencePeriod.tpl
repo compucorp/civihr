@@ -35,7 +35,7 @@
   {literal}
     <script type="text/javascript">
       CRM.$(function () {
-        var listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list'));
+        var list = new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod(CRM.$('.hrleaveandabsences-entity-list'));
       });
     </script>
   {/literal}

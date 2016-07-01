@@ -30,6 +30,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * {@inheritdoc}
    */
   public function buildQuickForm() {
+    $this->setReturnUrl();
     $this->absencePeriod = $this->getAbsencePeriodFromRequest();
     $this->setFormPageTitle($this->absencePeriod);
 
@@ -42,6 +43,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       $this->exportCSV();
     }
 
+    $this->addButtons($this->getAvailableButtons());
     $this->assign('period', $this->absencePeriod);
     $this->assign('contractsIDs', $this->getContractsIDsFromRequest());
     $this->assign('calculations', $this->calculations);
@@ -73,12 +75,18 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     CRM_Core_Session::setStatus(ts('Entitlements successfully updated'), 'Success', 'success');
 
-    $contractsIDs = $this->getContractsIDsFromRequest();
-    $url = CRM_Utils_System::url(
-      'civicrm/admin/leaveandabsences/periods/manage_entitlements',
-      'reset=1&id='.$this->absencePeriod->id . '&' . http_build_query(['cid' => $contractsIDs])
-    );
     $session = CRM_Core_Session::singleton();
+    $url =  $session->get('ManageEntitlementsReturnUrl');
+    //We won't need this value anymore, so let's remove it from the session
+    $session->set('ManageEntitlementsReturnUrl', null);
+
+    if(!$url) {
+      $contractsIDs = $this->getContractsIDsFromRequest();
+      $url = CRM_Utils_System::url(
+        'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+        'reset=1&id='.$this->absencePeriod->id . '&' . http_build_query(['cid' => $contractsIDs])
+      );
+    }
     $session->replaceUserContext($url);
   }
 
@@ -322,5 +330,57 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     CRM_Core_Report_Excel::writeCSVFile('entitlement_calculations', $headers, $rows);
     CRM_Utils_System::civiExit();
+  }
+
+  /**
+   * Get the list of action buttons available to this form
+   *
+   * @return array
+   */
+  private function getAvailableButtons() {
+    $buttons = [
+      [
+        'type'      => 'next',
+        'class'     => 'save-new-entitlements-button',
+        'name'      => ts('Save new entitlements'),
+        'isDefault' => TRUE
+      ],
+    ];
+
+    return $buttons;
+  }
+
+  /**
+   * To be able to return to the URL the user was before comming to this form,
+   * we store the Referer in the session.
+   *
+   */
+  private function setReturnUrl() {
+    $session = CRM_Core_Session::singleton();
+    $referer = CRM_Utils_System::refererPath();
+    $vars = [];
+    parse_str(parse_url($referer, PHP_URL_QUERY), $vars);
+    if(!empty($vars['q']) && $this->isValidReturnPath($vars['q'])) {
+      $q = $vars['q'];
+      unset($vars['q']);
+      $url = CRM_Utils_System::url($q, http_build_query($vars));
+      $session->set('ManageEntitlementsReturnUrl', $url);
+    }
+  }
+
+  /**
+   * Checks if the given path is valid to be used as part of the return URL.
+   *
+   * A path is valid to be used as a return URL if it is a CiviCRM path (that
+   * is, the q parameter starts with "civicrm/") and is different from the form
+   * path.
+   *
+   * @param string $path
+   *
+   * @return bool
+   */
+  private function isValidReturnPath($path) {
+    return strpos($path, 'civicrm/') === 0 &&
+           $path != 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
   }
 }

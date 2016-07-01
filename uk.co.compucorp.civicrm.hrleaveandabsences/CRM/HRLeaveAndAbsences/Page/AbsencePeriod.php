@@ -47,6 +47,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsencePeriod extends CRM_Core_Page_Basic {
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod', 'id', $returnURL);
 
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.list.absenceperiod.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     $this->assign('rows', $rows);
   }
@@ -79,6 +80,13 @@ class CRM_HRLeaveAndAbsences_Page_AbsencePeriod extends CRM_Core_Page_Basic {
           'name'  => ts('Delete'),
           'class' => 'civihr-delete',
           'title' => ts('Delete Absence Period'),
+        ],
+        CRM_Core_Action::BASIC => [
+          'name'  => ts('Manage Entitlements'),
+          'url'   => 'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+          'qs'    => 'id=%%id%%&reset=1',
+          'class' => 'civihr-manage-entitlements',
+          'title' => ts('Manage entitlements for this Absence Period'),
         ]
       ];
     }
