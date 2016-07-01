@@ -258,6 +258,25 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
+   * Returns the current AbsencePeriod. That is, the period that contains the
+   * current date. If no such period is found, null will be returned.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  public static function getCurrentPeriod()
+  {
+    $period = new self();
+    $period->whereAdd("start_date <= CURDATE()");
+    $period->whereAdd("end_date >= CURDATE()");
+    $period->limit(1);
+    if($period->find(true)) {
+      return $period;
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the number of working days for this Absence Period.
    *
    * The number is given by "number of ways in period" - "weekends" - "public holidays".
