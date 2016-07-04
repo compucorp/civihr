@@ -86,6 +86,33 @@ function hrjobcontract_civicrm_install() {
     }
   }
 
+  /* on civicrm 4.7.7 this activity type (Contact Deleted by Merge) is not created
+ * as a part of civicrm installation but it should be, since it's used in
+ * contact merge code in core civicrm files. So here we just insure that it will
+ * be created .
+ */
+  try {
+    $result = civicrm_api3('OptionValue', 'getsingle', array(
+      'sequential' => 1,
+      'name' => "Contact Deleted by Merge",
+    ));
+    $is_error = $result['is_error'];
+  } catch (CiviCRM_API3_Exception $e) {
+    $is_error = true;
+  }
+
+  if ($is_error)  {
+    civicrm_api3('OptionValue', 'create', array(
+      'sequential' => 1,
+      'option_group_id' => "activity_type",
+      'name' => "Contact Deleted by Merge",
+      'label' => "Contact Deleted by Merge",
+      'filter' => 1,
+      'description' => "Contact was merged into another contact",
+      'is_reserved' => 1,
+    ));
+  }
+
   return _hrjobcontract_civix_civicrm_install();
 }
 
