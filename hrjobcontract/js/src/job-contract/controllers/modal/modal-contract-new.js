@@ -49,6 +49,15 @@ define([
                 is_primary: 0
             };
 
+            // Since we are adding a new Contract, we set the values for each leave type
+            // with the AbsenceTypes values
+            $scope.entity.leave.forEach(function (leave, index) {
+              var absenceTypeID = $scope.entity.leave[index].leave_type;
+
+              $scope.entity.leave[index].leave_amount = utils.absenceTypes[absenceTypeID].default_entitlement;
+              $scope.entity.leave[index].add_public_holidays = utils.absenceTypes[absenceTypeID].add_public_holiday_to_entitlement;
+            });
+
             $scope.tooltips = {
                 fileSize: $sce.trustAsHtml('<p>' +
                     'THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.' +
@@ -79,7 +88,7 @@ define([
                     'headcount for the organisation would be 20 while the FTE' +
                     'headcount would be 15.' +
                 '</div>')
-            }
+            };
 
             $scope.filesValidate = function() {
                 var entityName,
