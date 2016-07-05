@@ -8,12 +8,13 @@ define([
     'use strict';
 
     describe('HRJobRolesController', function () {
-        var $controller, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope;
+        var $controller, $filter, $q, $rootScope, DateValidation, HRJobRolesService, ctrl, scope;
         var contactId = '123';
 
         beforeEach(module('hrjobroles'));
-        beforeEach(inject(function ($httpBackend, _$controller_, _$q_, _$rootScope_, _DateValidation_, _HRJobRolesService_) {
+        beforeEach(inject(function ($httpBackend, _$controller_, _$filter_, _$q_, _$rootScope_, _DateValidation_, _HRJobRolesService_) {
             $controller = _$controller_;
+            $filter = _$filter_;
             $q = _$q_;
             $rootScope = _$rootScope_;
 
@@ -126,25 +127,6 @@ define([
                 });
             });
 
-            describe('$scope.parseDate()', function () {
-                it('should correctly parse valid date', function () {
-                    // dd/mm/yyyy
-                    expect(scope.parseDate('01/01/2005')).toBe('2005-01-01');
-                    // yyyy-mm-dd
-                    expect(scope.parseDate('2005-01-01')).toBe('2005-01-01');
-                    // date object
-                    expect(scope.parseDate(new Date(2005, 0, 1))).toBe('2005-01-01');
-                    // timestamp
-                    expect(scope.parseDate(new Date(2005, 0, 1).getTime())).toBe('2005-01-01');
-                });
-
-                it('should not parse invalid date', function () {
-                    expect(scope.parseDate(null)).toBe(null);
-                    expect(scope.parseDate(undefined)).toBe(null);
-                    expect(scope.parseDate(false)).toBe(null);
-                });
-            });
-
             describe('Validate role', function(){
                 var form_data;
 
@@ -160,7 +142,7 @@ define([
                 });
 
                 it('should pass validation dd/mm/yyyy', function(){
-                    form_data.start_date.$viewValue = '31/12/2015';
+                    form_data.start_date.$viewValue = '31/12/2016';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
@@ -172,7 +154,7 @@ define([
                 });
 
                 it('should pass validation new Date()', function(){
-                    form_data.start_date.$viewValue = '2005-05-05';
+                    form_data.start_date.$viewValue = '2016-05-05';
 
                     expect(scope.validateRole(form_data)).toBe(true);
                 });
@@ -181,6 +163,17 @@ define([
                     beforeEach(function () {
                         form_data.start_date.$viewValue = '2016-05-04';
                         form_data.end_date.$viewValue = '2017-05-05';
+                    });
+
+                    it('throws a validation error', function () {
+                        expect(scope.validateRole(form_data)).not.toBe(true);
+                    });
+                });
+
+                describe('when job role start date is lower than contract start date and doesn\'t inform end_date', function () {
+                    beforeEach(function () {
+                        form_data.start_date.$viewValue = '2016-01-01';
+                        form_data.contract.$viewValue = '2';
                     });
 
                     it('throws a validation error', function () {
@@ -248,48 +241,48 @@ define([
                     it('should set dates', function () {
                         scope.edit_data['new_role_id'].job_contract_id = 0;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data['new_role_id'].newEndDate).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
                     });
 
                     it('should not modify if dates were edited manually', function () {
                         scope.edit_data['new_role_id'].newStartDate = '2005-01-01';
                         scope.edit_data['new_role_id'].job_contract_id = 1;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe('2005-01-01');
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject('2005-01-01'));
                         expect(scope.edit_data['new_role_id'].newEndDate).toBe(null);
                     });
 
                     it('should set only start date if contract has no end date', function () {
                         scope.edit_data['new_role_id'].job_contract_id = 2;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[2].start_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
                         expect(scope.edit_data['new_role_id'].newEndDate).toBe(null);
                     });
 
                     it('should change dates whenever contract change', function () {
                         scope.edit_data['new_role_id'].job_contract_id = 0;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data['new_role_id'].newEndDate).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
 
                         // change contract
                         scope.edit_data['new_role_id'].job_contract_id = 1;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[1].start_date);
-                        expect(scope.edit_data['new_role_id'].newEndDate).toBe(Mock.contracts_data[1].end_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[1].start_date));
+                        expect(scope.edit_data['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[1].end_date));
 
                         // change contract
                         scope.edit_data['new_role_id'].job_contract_id = 2;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[2].start_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
                         expect(scope.edit_data['new_role_id'].newEndDate).toBe(null);
 
                         // change contract
                         scope.edit_data['new_role_id'].job_contract_id = 0;
                         scope.onContractSelected();
-                        expect(scope.edit_data['new_role_id'].newStartDate).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data['new_role_id'].newEndDate).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
                     });
 
                     it('form should be validated', function () {
@@ -311,8 +304,8 @@ define([
                         scope.edit_data[0].job_contract_id = 0;
                         scope.onContractEdited(0, 0);
 
-                        expect(scope.edit_data[0].start_date).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data[0].end_date).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data[0].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data[0].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
                     });
 
                     it('should not modify if dates were edited manually', function(){
@@ -320,8 +313,8 @@ define([
                         scope.edit_data[2].job_contract_id = 1;
                         scope.onContractEdited(1, 2);
 
-                        expect(scope.edit_data[2].start_date).toBe('2005-01-01');
-                        expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[3].end_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject('2005-01-01'));
+                        expect(scope.edit_data[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[3].end_date));
                     });
 
                     it('should set only start date if contract has no end date', function(){
@@ -330,7 +323,7 @@ define([
 
                         scope.edit_data[2].job_contract_id = 2;
                         scope.onContractEdited(2, 2);
-                        expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[2].start_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
                         expect(scope.edit_data[2].end_date).toBe(null);
                     });
 
@@ -340,26 +333,26 @@ define([
 
                         scope.edit_data[2].job_contract_id = 0;
                         scope.onContractEdited(0, 2);
-                        expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
 
                         // change contract
                         scope.edit_data[2].job_contract_id = 1;
                         scope.onContractEdited(1, 2);
-                        expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[1].start_date);
-                        expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[1].end_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[1].start_date));
+                        expect(scope.edit_data[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[1].end_date));
 
                         // change contract
                         scope.edit_data[2].job_contract_id = 2;
                         scope.onContractEdited(2, 2);
-                        expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[2].start_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
                         expect(scope.edit_data[2].end_date).toBe(null);
 
                         // change contract
                         scope.edit_data[2].job_contract_id = 0;
                         scope.onContractEdited(0, 2);
-                        expect(scope.edit_data[2].start_date).toBe(Mock.contracts_data[0].start_date);
-                        expect(scope.edit_data[2].end_date).toBe(Mock.contracts_data[0].end_date);
+                        expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
+                        expect(scope.edit_data[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
                     });
                 });
 
@@ -492,6 +485,14 @@ define([
                 return deferred.promise;
             }
         });
+
+        /**
+         *
+         *
+         */
+        function convertToDateObject(dateString) {
+            return $filter('formatDate')(dateString, Date);
+        }
 
         /**
          * Initializes the controller

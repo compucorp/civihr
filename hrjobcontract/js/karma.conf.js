@@ -28,6 +28,9 @@ module.exports = function (config) {
             // all the common/ dependencies
             civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
 
+            // all the common/ mocked dependencies
+            civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
+
             // the application modules
             { pattern: extPath + 'js/src/job-contract/**/*.js', included: false },
 

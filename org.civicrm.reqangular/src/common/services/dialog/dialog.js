@@ -1,7 +1,7 @@
 define([], function () {
     'use strict';
 
-    return ['$modal', '$rootElement', '$templateCache',
+    return ['$uibModal', '$rootElement', '$templateCache',
         function ($modal, $rootElement, $templateCache) {
 
             return {
@@ -15,13 +15,16 @@ define([], function () {
                  * @return {Promise}
                  */
                 open: function (options) {
+                    var $children;
 
                     if (options && typeof options !== 'object') {
                         return;
                     }
 
+                    $children = $rootElement.children();
+
                     return $modal.open({
-                        targetDomEl: $rootElement.children().eq(0),
+                        appendTo: $children.length ? $children.eq(0) : $rootElement,
                         size: 'sm',
                         controller: 'DialogCtrl',
                         template: $templateCache.get('dialog.html'),

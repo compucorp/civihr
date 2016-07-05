@@ -5,13 +5,13 @@ define([
     'use strict';
 
     controllers.controller('EditDatesModalCtrl', [
-        '$filter', '$log', '$rootScope', '$scope', '$controller', '$modalInstance',
+        '$filter', '$log', '$rootScope', '$scope', '$controller', '$uibModalInstance',
         'HR_settings', 'dialog',
         function ($filter, $log, $rootScope, $scope, $controller, $modalInstance, HR_settings, dialog) {
             $log.debug('EditDatesModalCtrl');
 
             var vm = Object.create($controller('BasicModalCtrl', {
-                $modalInstance: $modalInstance
+                $uibModalInstance: $modalInstance
             }));
             var oldDueDates = {};
 
@@ -24,8 +24,6 @@ define([
              */
             vm.submit = function () {
                 vm.formSubmitted = true;
-
-                formatDates();
 
                 if (!vm.form.$valid) {
                     vm.formErrors = formErrors();
@@ -42,18 +40,6 @@ define([
             };
 
             init();
-
-            /**
-             * Formats all the dates in the current date format
-             *
-             * (Necessary because the date picker directives always return
-             * a Date object instead of simply a string in the specified format)
-             */
-            function formatDates() {
-                Object.keys(vm.cycle.dueDates()).forEach(function (key) {
-                    vm.cycle[key] = $filter('date')(vm.cycle[key], HR_settings.DATE_FORMAT);
-                });
-            }
 
             /**
              * Extracts from the AngularJS form object all the current errors

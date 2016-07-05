@@ -5,12 +5,12 @@
             <a ng-href="{{urlCSV}}" class="btn btn-default btn-sm">
                 <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
             </a>
-            <div class="btn-group btn-group-sm" dropdown>
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" dropdown-toggle
+            <div class="btn-group btn-group-sm" uib-dropdown>
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" uib-dropdown-toggle
                         ng-disabled="disabled">
                     Fields <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
+                <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
                     <li ng-repeat="field in fields" ng-if="field.display"><div class="checkbox"><label><input type="checkbox"
                                                                                         ng-checked="!!field.selected"
                                                                                         ng-click="toggleFieldsSelected(field)"> {{field.title}}</label></div></li>

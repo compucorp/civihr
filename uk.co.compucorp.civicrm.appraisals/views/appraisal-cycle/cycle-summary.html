@@ -68,11 +68,11 @@
                 <div class="panel-body">
                     <dl class="dl-inline">
                         <dt>Self Appraisal Due:</dt>
-                        <dd>{{cycle.cycle.cycle_self_appraisal_due}}</dd>
+                        <dd>{{cycle.cycle.cycle_self_appraisal_due | formatDate}}</dd>
                         <dt>Manager Appraisal Due:</dt>
-                        <dd>{{cycle.cycle.cycle_manager_appraisal_due}}</dd>
+                        <dd>{{cycle.cycle.cycle_manager_appraisal_due | formatDate}}</dd>
                         <dt>Grade Due:</dt>
-                        <dd>{{cycle.cycle.cycle_grade_due}}</dd>
+                        <dd>{{cycle.cycle.cycle_grade_due | formatDate}}</dd>
                     </dl>
                 </div>
             </section>
@@ -119,11 +119,11 @@
                                         <td>{{cycle.statuses[appraisal.status_id - 1].label}}</td>
                                         <td class="text-center">-</td>
                                         <td>
-                                            <div class="dropdown" dropdown>
-                                                <a href dropdown-toggle>
+                                            <div class="dropdown" uib-dropdown>
+                                                <a href uib-dropdown-toggle>
                                                     <i class="text-default-darker fa fa-ellipsis-v"></i>
                                                 </a>
-                                                <ul class="dropdown-menu dropdown-menu-right">
+                                                <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                                     <li>
                                                         <a href ng-click="cycle.openViewCycleModal()">View</a>
                                                     </li>

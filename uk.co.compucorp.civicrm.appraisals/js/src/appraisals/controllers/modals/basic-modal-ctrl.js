@@ -2,7 +2,7 @@ define([
     'appraisals/modules/controllers'
 ], function (controllers) {
     controllers.controller('BasicModalCtrl',
-        ['$log', '$modalInstance',
+        ['$log', '$uibModalInstance',
         function ($log, $modalInstance) {
             $log.debug('BasicModalCtrl');
 

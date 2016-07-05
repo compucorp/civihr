@@ -47,7 +47,7 @@ require.config({
         'common/angularRoute': srcPath + '/vendor/angular/angular-route.min',
         'common/angularUiRouter': srcPath + '/vendor/angular/angular-ui-router.min',
         'common/angularMocks': srcPath + '/vendor/angular/angular-mocks',
-        'common/angularBootstrap': srcPath + '/vendor/angular/ui-bootstrap-tpls',
+        'common/angularBootstrap': srcPath + '/vendor/angular/ui-bootstrap',
         'common/lodash': srcPath + '/vendor/lodash.min'
     },
     callback: function () {

@@ -434,6 +434,11 @@ function hrabsence_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 
 /**
  * Implementation of hook_civicrm_tabs
+ * this tab should appear after summary (personal details) tab directly
+ * and since personal details tab weight is
+ * hardcoded to 0 we chose this to be 10
+ * to give some room for other extensions to place
+ * their tabs between these two.
  */
 function hrabsence_civicrm_tabs(&$tabs, $contactID) {
   $contactType = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'contact_type', 'id');
@@ -454,7 +459,7 @@ function hrabsence_civicrm_tabs(&$tabs, $contactID) {
     )),
     'count' => $absenceDuration/(8*60),
     'title' => ts('Absences'),
-    'weight' => 300
+    'weight' => 10
   );
 }
 

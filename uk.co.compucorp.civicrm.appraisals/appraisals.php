@@ -145,16 +145,21 @@ function appraisals_civicrm_entityTypes(&$entityTypes) {
 
 /**
  * Implementation of hook_civicrm_tabs
+ * this tab should appear after absences tab directly
+ * and since absences tab weight is
+ * set to 10 we chose this to be 20
+ * to give some room for other extensions to place
+ * their tabs between these two.
  */
 
 function appraisals_civicrm_tabs(&$tabs) {
     CRM_Appraisals_Page_Appraisals::registerScripts();
-    
+
     $tabs[] = Array(
         'id'        => 'appraisals',
         'url'       => CRM_Utils_System::url('civicrm/contact/view/appraisals'),
         'title'     => ts('Appraisals'),
-        'weight'    => 1,
+        'weight'    => 20,
     );
 }
 

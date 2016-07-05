@@ -5,28 +5,25 @@ define([
 ], function (moment, module) {
     'use strict';
 
-    module.filter('formatDate', ['$filter', 'HR_settings', function ($filter, HR_settings) {
+    module.filter('formatDate', ['HR_settings', function (HR_settings) {
+
+        var validFormats = ['DD-MM-YYYY', 'DD-MM-YYYY HH:mm:ss', 'YYYY-MM-DD',
+            'YYYY-MM-DD HH:mm:ss', 'DD/MM/YYYY', 'x'];
+
         return function (datetime, format) {
             var date;
             var dateFormat = format || HR_settings.DATE_FORMAT || 'YYYY-MM-DD';
+            var beginningOfEra = moment(0);
 
-            if (typeof datetime == 'object') {
-                datetime = $filter('date')(datetime, 'dd/MM/yyyy');
+            if (datetime instanceof Date) {
+                datetime = moment(datetime).format('YYYY-MM-DD HH:mm:ss');
             }
 
-            date = moment(datetime, [
-                'DD-MM-YYYY',
-                'DD-MM-YYYY HH:mm:ss',
-                'YYYY-MM-DD',
-                'YYYY-MM-DD HH:mm:ss',
-                'DD/MM/YYYY',
-                'x'
-            ], true);
+            date = moment(datetime, validFormats, true);
 
-            var beginningOfEra = moment(0);
-            var notEmpty = !date.isSame(beginningOfEra);
-
-            if (date.isValid() && notEmpty) return date.format(dateFormat.toUpperCase());
+            if (date.isValid() && !date.isSame(beginningOfEra)) {
+                return format === Date ? date.toDate() : date.format(dateFormat.toUpperCase());
+            }
 
             return 'Unspecified';
         };

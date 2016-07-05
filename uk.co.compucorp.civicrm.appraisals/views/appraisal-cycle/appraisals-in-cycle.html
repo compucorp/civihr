@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <div class="panel--appraisals-in-cycle__filters">
-                            <div collapse="cycle.filtersCollapsed">
+                            <div uib-collapse="cycle.filtersCollapsed">
                             <form class="panel--appraisals-in-cycle__filters__form form-horizontal">
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -138,7 +138,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="self-due-from"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_self_appraisal_due.from"
                                                         ng-init="dashboard.calendars.selfFrom = false"
                                                         ng-click="dashboard.calendars.selfFrom = !dashboard.calendars.selfFrom"
@@ -159,7 +159,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="self-due-to"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_self_appraisal_due.to"
                                                         ng-init="dashboard.calendars.selfTo = false"
                                                         ng-click="dashboard.calendars.selfTo = !dashboard.calendars.selfTo"
@@ -180,7 +180,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="manager-due-from"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_manager_appraisal_due.from"
                                                         ng-init="dashboard.calendars.managerFrom = false"
                                                         ng-click="dashboard.calendars.managerFrom = !dashboard.calendars.managerFrom"
@@ -201,7 +201,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="manager-due-to"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_manager_appraisal_due.to"
                                                         ng-init="dashboard.calendars.managerTo = false"
                                                         ng-click="dashboard.calendars.managerTo = !dashboard.calendars.managerTo"
@@ -224,7 +224,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="grade-due-from"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_grade_due.from"
                                                         ng-init="dashboard.calendars.gradeFrom = false"
                                                         ng-click="dashboard.calendars.gradeFrom = !dashboard.calendars.gradeFrom"
@@ -245,7 +245,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="grade-due-to"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_grade_due.to"
                                                         ng-init="dashboard.calendars.gradeTo = false"
                                                         ng-click="dashboard.calendars.gradeTo = !dashboard.calendars.gradeTo"
@@ -266,7 +266,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="appraisal-due-from"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_start_date.from"
                                                         ng-init="dashboard.calendars.periodFrom = false"
                                                         ng-click="dashboard.calendars.periodFrom = !dashboard.calendars.periodFrom"
@@ -287,7 +287,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         id="appraisal-due-to"
-                                                        datepicker-popup="dd/MM/yyyy"
+                                                        uib-datepicker-popup="dd/MM/yyyy"
                                                         ng-model="dashboard.filters.cycle_end_date.to"
                                                         ng-init="dashboard.calendars.periodTo = false"
                                                         ng-click="dashboard.calendars.periodTo = !dashboard.calendars.periodTo"
@@ -364,11 +364,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">1</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -398,11 +398,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">2</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -432,11 +432,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">3</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -466,11 +466,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">4</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -500,11 +500,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">1</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -534,11 +534,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">2</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -568,11 +568,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">3</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -602,11 +602,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">4</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -636,11 +636,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">1</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
@@ -670,11 +670,11 @@
                                 <td>Status Lorem Ipusm</td>
                                 <td class="text-center">2</td>
                                 <td>
-                                    <div class="dropdown" dropdown>
-                                        <a href dropdown-toggle>
+                                    <div class="dropdown" uib-dropdown>
+                                        <a href uib-dropdown-toggle>
                                             <i class="text-default-darker fa fa-ellipsis-v"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-right">
+                                        <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
                                             <li>
                                                 <a href ng-click="cycle.openViewCycleModal()">View</a>
                                             </li>
