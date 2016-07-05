@@ -1,0 +1,73 @@
+.ui-tabs-panel {
+  padding-right: 0 !important;
+  padding-top: 10px !important;
+
+  // Remove the space from the angular's container
+  > div {
+    padding: 0 !important;
+  }
+
+  .crm-summary-block {
+    margin-bottom: 14px;
+    background: #FFF;
+    box-shadow: $box-shadow;
+  }
+
+  div.crm-clear {
+    font-family: 'Open Sans';
+    font-size: 13px;
+    padding: 12.5px 20px;
+
+    &,
+    a {
+      color: $gray-dark;
+    }
+  }
+
+  div.crm-summary-row {
+    div.crm-label {
+      font-weight: 600;
+
+      &,
+      a {
+        color: $gray-darker !important;
+      }
+    }
+  }
+
+  div.crm-clear,
+  div.crm-summary-row,
+  div.crm-summary-row div.crm-label {
+    background-color: #FFF !important;
+  }
+
+  // Fix the row width when has the .container class
+  .container.crm-summary-row {
+    width: auto;
+    padding: 0;
+  }
+}
+
+// Edit label
+#crm-container {
+  .crm-inline-edit {
+    border-width: 1px !important;
+
+    .crm-edit-help {
+      border-radius: 0;
+      background: $crm-accordion-header-color !important;
+      color: $gray-dark;
+      padding: .2em .9em;
+    }
+
+    &:hover {
+      border-style: solid;
+      border-color: $gray-dark;
+
+      .crm-edit-help {
+        border-left: 1px solid $gray-dark;
+        border-bottom: 1px solid $gray-dark;
+      }
+    }
+  }
+}
