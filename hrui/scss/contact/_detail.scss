@@ -62,6 +62,10 @@
 
 // Edit label
 #crm-container {
+  .crm-inline-edit-form {
+    background-color: transparent !important;
+  }
+
   .crm-inline-edit {
     border-width: 1px !important;
 
@@ -79,6 +83,62 @@
       .crm-edit-help {
         border-left: 1px solid $gray-dark;
         border-bottom: 1px solid $gray-dark;
+      }
+    }
+
+    &.form {
+      font-family: 'Open Sans';
+      border: 1px solid $brand-primary !important;
+
+      .crm-button {
+        border: 0;
+
+        .crm-i {
+          display: none;
+        }
+
+        input {
+          padding-left: 12px;
+
+          &.default {
+            padding-left: 0;
+            padding-right: 0;
+          }
+        }
+      }
+
+      .delete-button {
+        background: $brand-danger !important;
+        color: #FFF !important;
+        border-color: $brand-danger !important;
+
+        &:hover {
+          background: darken($brand-danger, 10%) !important;
+        }
+
+        .icon {
+          display: none;
+        }
+      }
+
+      .crm-button-type-cancel,
+      .crm-button_qf_Address_1_cancel {
+        input {
+          color: $gray-darker !important;
+          border: 1px solid $gray-darker !important;
+        }
+
+        &:hover {
+          input {
+            color: #fff !important;
+            background-color: $gray-dark;
+            border-color: $gray-darker;
+          }
+        }
+      }
+
+      td {
+        background-color: transparent !important;
       }
     }
   }
