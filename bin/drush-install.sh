@@ -20,7 +20,9 @@ org.civicrm.hrmed,\
 org.civicrm.hrqual,\
 org.civicrm.hrvisa,\
 org.civicrm.hremergency,\
-org.civicrm.hrcareer
+org.civicrm.hrcareer,\
+uk.co.compucorp.contactaccessrights,\
+uk.co.compucorp.civicrm.tasksassignments
 
 ## List of extensions defining applications/UIs on top of the basic entity types
 APP_EXTS=\
@@ -32,7 +34,11 @@ org.civicrm.hrim,\
 org.civicrm.hrprofile,\
 org.civicrm.hrcaseutils,\
 org.civicrm.hrrecruitment,\
-org.civicrm.reqangular
+org.civicrm.reqangular,\
+org.civicrm.contactsummary,\
+org.civicrm.bootstrapcivicrm,\
+org.civicrm.bootstrapcivihr,\
+uk.co.compucorp.civicrm.hrnavigation
 
 ##################################
 ## Main
