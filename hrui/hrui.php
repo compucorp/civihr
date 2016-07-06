@@ -36,6 +36,7 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addStyleFile('org.civicrm.hrui', 'css/contact.css')
+      ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
     //set government field value for individual page

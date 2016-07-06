@@ -64,6 +64,7 @@
 #crm-container {
   .crm-inline-edit-form {
     background-color: transparent !important;
+    padding: 10px;
   }
 
   .crm-inline-edit {
@@ -112,6 +113,9 @@
         color: #FFF !important;
         border-color: $brand-danger !important;
 
+        float: right !important;
+        margin-right: 15px;
+
         &:hover {
           background: darken($brand-danger, 10%) !important;
         }
@@ -122,7 +126,8 @@
       }
 
       .crm-button-type-cancel,
-      .crm-button_qf_Address_1_cancel {
+      .crm-button_qf_Address_1_cancel,
+      .crm-button_qf_Address_2_cancel {
         input {
           color: $gray-darker !important;
           border: 1px solid $gray-darker !important;
@@ -140,6 +145,95 @@
       td {
         background-color: transparent !important;
       }
+    }
+  }
+
+  .form-layout-compressed {
+    width: 100% !important;
+  }
+
+  .crm-address-element {
+    .helpicon {
+      right: -16px !important;
+    }
+  }
+
+  .crm-container .twelve {
+    width: 10em;
+  }
+
+  .crm-inline-button,
+  .crm-submit-buttons {
+    height: 35px;
+    margin-bottom: 10px !important;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  div.contact_panel td {
+    border: 0;
+  }
+}
+
+#Address_1,
+#Address_2 {
+  padding: 10px;
+
+  .form {
+    overflow-x: hidden;
+  }
+
+  .crm-form-select {
+    width: 39% !important;
+  }
+
+  .crm-form-text {
+    min-width: auto !important;
+    max-width: 100% !important;
+    width: 94% !important;
+  }
+
+  #address_1_geo_code_1,
+  #address_1_geo_code_2,
+  #address_2_geo_code_1,
+  #address_2_geo_code_2 {
+    width: 18% !important;
+  }
+
+  input[type="checkbox"] {
+    margin: 6.5px 5px 7.5px 0 !important;
+  }
+
+  label {
+    font-weight: normal !important;
+
+    &[for="address_1_location_type_id"],
+    &[for="address_2_location_type_id"] {
+      font-weight: bold !important;
+    }
+  }
+
+  .crm-submit-buttons,
+  .crm-inline-button {
+    margin-bottom: 20px;
+  }
+
+  .form-layout-compressed {
+    label,
+    br {
+      display: none;
+    }
+
+    .helpicon {
+      position: relative;
+      top: 15px;
+      right: 7px;
+      float: right;
+    }
+
+    .crm-form-select {
+      width: 95% !important;
+      min-width: auto !important;
     }
   }
 }
