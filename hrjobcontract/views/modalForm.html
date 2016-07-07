@@ -560,33 +560,51 @@
                 </div>
             </uib-tab>
             <uib-tab heading="Leave">
+              <div ng-controller="FormLeaveCtrl as leaveCtrl">
                 <div class="row">
-                    <div class="col-xs-12">
-                        <h4>Leave</h4>
-                        <hr>
-                    </div>
+                  <div class="col-xs-12">
+                    <h4>Leave</h4>
+                    <hr>
+                  </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <div class="col-sm-4 text-right">
-                                Leave type
-                            </div>
-                            <div class="col-sm-4">
-                                Days per year
-                            </div>
-                        </div>
-                        <div class="form-group" ng-repeat="leaveEntry in entity.leave">
-                            <label for="{{prefix}}leave-{{leaveEntry.leave_type}}" class="col-sm-4 control-label">{{options.leave.leave_type[leaveEntry.leave_type]}}</label>
-
-                            <div class="col-sm-2">
-                                <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}" name="leave-{{leaveEntry.leave_type}}" class="form-control"
-                                       hrjc-number="2"
-                                       ng-model="leaveEntry.leave_amount" ng-disabled="isDisabled">
-                            </div>
-                        </div>
-                    </div>
+                  <div class="col-xs-12">
+                    <p>Enter in here the contractual entitlement of leave of each type that the employee will receive for a full leave period. The system will automatically pro-rate this for joiners and leavers during the leave period. For employees who work flexible hours please enter the pro rata amount of leave they would receive if they worked for a full leave period.</p>
+                    <p>When entering in the amount for annual leave or vacation, you can chose to either enter the amount including public holidays or ask the system to add them automatically.</p>
+                  </div>
                 </div>
+                <div class="row">
+                  <div class="col-xs-12">
+                    <div class="form-group">
+                      <div class="col-sm-3 control-label">Leave type</div>
+                      <div class="col-sm-3 control-label">Basic Annual Contractual Leave Entitlement</div>
+                      <div class="col-sm-3 control-label">Add Public Holidays?</div>
+                      <div class="col-sm-3 control-label">Estimated Annual Contractual Leave Entitlement</div>
+                    </div>
+                    <div class="form-group" ng-repeat="leaveEntry in entity.leave">
+                      <label for="{{prefix}}leave-{{leaveEntry.leave_type}}" class="col-sm-3 control-label">
+                        {{options.leave.leave_type[leaveEntry.leave_type]}}
+                      </label>
+                      <div class="col-sm-3">
+                        <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}"
+                               name="leave-{{leaveEntry.leave_type}}"
+                               class="form-control"
+                               hrjc-number="2"
+                               ng-model="leaveEntry.leave_amount" ng-disabled="isDisabled">
+                      </div>
+                      <div class="col-sm-3">
+                        <div class="btn-group">
+                          <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="true">Yes</label>
+                          <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="false">No</label>
+                        </div>
+                      </div>
+                      <div class="col-sm-3">
+                        {{ leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays) }} Days
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </uib-tab>
             <uib-tab heading="Insurance">
                 <div ng-controller="FormHealthCtrl">

@@ -28,8 +28,9 @@ define([
                     pension: ContractPensionService
                 },
                 promiseUtils = {
-                    hoursLocation: UtilsService.getHoursLocation(),
-                    payScaleGrade: UtilsService.getPayScaleGrade()
+                  hoursLocation: UtilsService.getHoursLocation(),
+                  payScaleGrade: UtilsService.getPayScaleGrade(),
+                  absenceTypes: UtilsService.getAbsenceTypes()
                 },
                 entityName, promiseFields = {}, promiseModel = {};
 
