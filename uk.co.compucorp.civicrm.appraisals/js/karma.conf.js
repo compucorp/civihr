@@ -9,11 +9,12 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
         files: [
             // the global dependencies
-            'packages/jquery/jquery-1.11.1.js',
-            'packages/jquery/jquery-ui/jquery-ui.js',
-            'packages/backbone/lodash.compat.js',
-            'packages/jquery/plugins/jquery.mousewheel.js',
-            'packages/jquery/plugins/select2/select2.js',
+            'bower_components/jquery/dist/jquery.min.js',
+            'bower_components/jquery-ui/jquery-ui.js',
+            'bower_components/lodash-compat/lodash.min.js',
+            'bower_components/select2/select2.min.js',
+            'bower_components/jquery-validation/dist/jquery.validate.min.js',
+            'packages/jquery/plugins/jquery.mousewheel.min.js',
             'packages/jquery/plugins/jquery.blockUI.js',
             'js/Common.js',
             'js/crm.ajax.js',
