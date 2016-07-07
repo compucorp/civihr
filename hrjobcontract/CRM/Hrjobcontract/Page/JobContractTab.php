@@ -13,7 +13,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
 //    self::registerScripts();
     parent::run();
   }
-  
+
   static function registerScripts() {
     static $loaded = FALSE;
     if ($loaded) {
@@ -108,9 +108,6 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
         'provider_life_insurance',
         'plan_type_life_insurance',
       ),
-//      'HRJobLeave' => array(
-//        'leave_type',
-//      ),
       'HRJobRole' => array(
         'location',
         'department',
@@ -125,21 +122,25 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
         $fieldOptions[$entityName][$fieldName] = CRM_Core_PseudoConstant::get("CRM_Hrjobcontract_DAO_{$entityName}", $fieldName);
       }
     }
-    
-    $absenceTypeResult = civicrm_api3('HRAbsenceType', 'get', array(
+
+    $absenceTypeResult = civicrm_api3('AbsenceType', 'get', array(
         'sequential' => 1,
+        'is_active' => 1,
+        'options' => array(
+          'sort' => 'weight'
+        ),
         'return' => 'id,title',
     ));
-    
+
     foreach ($absenceTypeResult['values'] as $value) {
         $fieldOptions['HRJobLeave']['leave_type'][$value['id']] = $value['title'];
     }
-    
+
     $fieldOptions['HRJobPay']['benefit_name'] = CRM_Hrjobcontract_Page_JobContractTab::getCustomOptions('hrjc_benefit_name');
     $fieldOptions['HRJobPay']['benefit_type'] = CRM_Hrjobcontract_Page_JobContractTab::getCustomOptions('hrjc_benefit_type');
     $fieldOptions['HRJobPay']['deduction_name'] = CRM_Hrjobcontract_Page_JobContractTab::getCustomOptions('hrjc_deduction_name');
     $fieldOptions['HRJobPay']['deduction_type'] = CRM_Hrjobcontract_Page_JobContractTab::getCustomOptions('hrjc_deduction_type');
-    
+
     return $fieldOptions;
   }
 
@@ -204,7 +205,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
     $days['perMonth'] = $settings['work_days_per_month'];//DAYS_PER_MONTH;
     return $days;
   }
-  
+
   /**
    * Get a reasons for creating new revision
    */
@@ -218,7 +219,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
     }
     return $change_reason;
   }
-  
+
   /**
    * Get a reasons for job contract end
    */
@@ -232,7 +233,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
     }
     return $end_reason;
   }
-  
+
   /**
    * Get custom options by option group name
    */

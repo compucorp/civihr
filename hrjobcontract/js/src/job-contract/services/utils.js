@@ -87,19 +87,36 @@ define([
 
     services.factory('UtilsService', ['API','testAPI','settings','$q','$log', '$timeout', function (API, testAPI, settings, $q, $log, $timeout) {
         return {
-            getAbsenceType: function(){
+
+            /**
+             * Returns a promise that resolves to an array with including all of the Absence Types.
+             *
+             * Each returned Absence Type includes these fields:
+             * - id
+             * - title
+             * - default_entitlement
+             * - add_public_holiday_to_entitlement
+             *
+             * @returns {Promise}
+             */
+            getAbsenceTypes: function(){
                 var deffered = $q.defer();
 
-                API.resource('HRAbsenceType','get', {
-                    "return": "id,name,title"
-                }).get(function(data){
-                    deffered.resolve(data.values);
-                },function(){
-                    deffered.reject('Unable to fetch absence types');
+                API.resource('AbsenceType','get', {
+                  "return": "id,title,default_entitlement,add_public_holiday_to_entitlement"
+                }).get(function (data) {
+                  angular.forEach(data.values, function (value) {
+                    value.add_public_holiday_to_entitlement = !!parseInt(value.add_public_holiday_to_entitlement);
+                  });
+
+                  deffered.resolve(data.values);
+                },function () {
+                  deffered.reject('Unable to fetch absence types');
                 });
 
                 return deffered.promise;
             },
+
             getHoursLocation: function(){
                 var deffered = $q.defer();
 
@@ -127,6 +144,29 @@ define([
 
                 return deffered.promise;
             },
+
+            /**
+             * Returns a promise that resolves the an int with the number of Public Holidays in the
+             * current Absence Period
+             *
+             * @returns {Promise}
+             */
+            getNumberOfPublicHolidaysInCurrentPeriod: function() {
+              var deffered = $q.defer();
+
+              API.resource('PublicHoliday', 'getcountforcurrentperiod', {
+                sequential: 1
+              }).get(function (data) {
+                var number = parseInt(data.result) || 0;
+
+                deffered.resolve(number);
+              }, function () {
+                deffered.reject('Unable to fetch the number of public holidays in current period');
+              });
+
+              return deffered.promise;
+            },
+
             prepareEntityIds: function(entityObj, contractId, revisionId){
 
                 function setIds(entityObj){
