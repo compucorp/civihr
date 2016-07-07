@@ -1,14 +1,24 @@
+#branding {
+  display: none;
+}
+
+#page {
+  padding: 0;
+  margin: 0;
+}
+
 .crm-summary-block-wrap {
   display: inline-block;
   vertical-align: top;
   height: 100%;
-  margin: 10px 0 0 45px;
+  margin: 10px 0 0 10px;
 }
 
 .crm-summary-contactphoto {
   width: 82px;
   border-radius: 50%;
-  margin: 10px 0 0 45px;
+  margin: 10px 45px 0 35px;
+  padding-top: 5px;
 }
 
 .crm-summary-contactname-block-without-contract {
@@ -75,6 +85,7 @@
 .crm-summary-display_name {
   font-size: 24px !important;
   font-weight: 600;
+  padding-top: 12px;
 
   .crm-summary-link {
     display: none;
