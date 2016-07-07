@@ -161,7 +161,11 @@
 
     .ui-tabs-panel {
       float: right;
-      width: 83%;
+      width: 84%;
+
+      #contactsummary, #hrjob-contract, #hrjobroles, #civitasks, #cividocuments {
+        padding: 15px 15px 0 0 !important;
+      }
     }
   }
 
