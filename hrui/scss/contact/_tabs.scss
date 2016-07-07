@@ -5,6 +5,7 @@
   #mainTabContainer {
     background-color: transparent;
     padding: 0;
+    overflow: hidden;
 
     .ui-tabs-nav {
       width: 15%;
@@ -16,8 +17,8 @@
       border-radius: 0;
       box-shadow: $box-shadow;
 
-      min-height: 100%;
-      position: absolute;
+      padding-bottom: 99999px;
+      margin-bottom: -99999px;
     }
 
     li.crm-tab-button {
