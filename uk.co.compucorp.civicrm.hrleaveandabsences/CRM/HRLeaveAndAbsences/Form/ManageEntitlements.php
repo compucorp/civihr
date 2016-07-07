@@ -27,6 +27,36 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   private $absencePeriod;
 
   /**
+   * An array used to store the values processed by the setDefaultValues method
+   *
+   * @var array
+   */
+  private $defaultValues = [];
+
+  /**
+   * If any contract has a previously calculated entitlement, and it has a
+   * comment, we add the comment to the array of default values, so it will be
+   * available/visible on the form
+   *
+   * @return array
+   */
+  public function setDefaultValues()
+  {
+    if(!empty($this->calculations) && empty($this->defaultValues)) {
+      $this->defaultValues = [];
+      foreach($this->calculations as $calculation) {
+        if($calculation->getCurrentPeriodEntitlementComment()) {
+          $contractID = $calculation->getContract()['id'];
+          $absenceTypeID = $calculation->getAbsenceType()->id;
+          $this->defaultValues['comment'][$contractID][$absenceTypeID] = $calculation->getCurrentPeriodEntitlementComment();
+        }
+      }
+    }
+
+    return $this->defaultValues;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildQuickForm() {
