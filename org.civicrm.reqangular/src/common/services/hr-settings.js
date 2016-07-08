@@ -5,7 +5,7 @@ define([
 
     module.factory('HR_settings', function () {
         return {
-            DATE_FORMAT: null
+            DATE_FORMAT: 'dd/MM/yyyy'
         };
     });
 });
