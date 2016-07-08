@@ -14,6 +14,11 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
 
+  public function setUp()
+  {
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
    * @expectedExceptionMessage Date value is required

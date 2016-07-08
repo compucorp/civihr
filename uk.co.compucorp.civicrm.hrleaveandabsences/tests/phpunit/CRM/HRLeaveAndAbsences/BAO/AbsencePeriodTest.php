@@ -269,6 +269,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $period->end_date = $end_date;
     $this->assertEquals(261, $period->getNumberOfWorkingDays());
 
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01')
@@ -278,6 +279,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $period->end_date = $end_date;
     $this->assertEquals(260, $period->getNumberOfWorkingDays());
 
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-05-17')
@@ -287,6 +289,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
 
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
     // A public holiday on a weekend should not be counted
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday On Weekend',
@@ -325,20 +328,25 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
       'title' => 'Public Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-05-30')
     ]);
-    $this->assertEquals(20, $period->getNumberOfWorkingDaysToWork('2016-05-01', '2016-05-31'));
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
 
+    $this->assertEquals(20, $period->getNumberOfWorkingDaysToWork('2016-05-01', '2016-05-31'));
     $this->assertEquals(1, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 3',
       'date' => CRM_Utils_Date::processDate('2015-10-01')
     ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
+
     $this->assertEquals(1, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
 
     CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
       'title' => 'Public Holiday 4',
       'date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
+
     $this->assertEquals(0, $period->getNumberOfWorkingDaysToWork('2015-10-01', '2016-01-02'));
   }
 

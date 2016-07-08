@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 
 /**
@@ -278,11 +279,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Holiday 2',
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
@@ -307,11 +308,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Holiday 2',
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
@@ -641,14 +642,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+
+    PublicHoliday::create([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('2016-05-02'))
     ]);
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Holiday 2',
       'date' => date('YmdHis', strtotime('2016-05-30'))
     ]);
+    // We need to clear the cache to avoid returning a number of public holidays
+    // counted on previous tests
+    PublicHoliday::clearNumberOfPublicHolidaysForPeriodCache();
 
     // Set the contractual entitlement as 10 days
     $this->createJobLeaveEntitlement($type, 20, true);
