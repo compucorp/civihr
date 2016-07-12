@@ -141,7 +141,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Contractual entitlement: 28
    * Pro rata: (212 / 253) * 28 = 23.46 = 23.5 (rounded)
    *
-   * @return float|int
+   * @return float
    */
   public function getProRata() {
     $numberOfWorkingDaysToWork = $this->getNumberOfWorkingDaysToWork();
@@ -161,7 +161,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * calculation contract and absence type + the number of public holidays in
    * the period (if the leave settings on the contract allows this).
    *
-   * @return int
+   * @return float
    */
   public function getContractualEntitlement() {
     $contractualEntitlement = 0;
@@ -184,7 +184,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * This is basically the Pro Rata + the number of days brought forward
    *
-   * @return float|int
+   * @return float
    */
   public function getProposedEntitlement() {
     $periodEntitlement = $this->getPeriodEntitlement();
@@ -199,7 +199,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns the proposed entitlement for this AbsenceType and Contract on the
    * previous period.
    *
-   * @return int
+   * @return float
    */
   public function getPreviousPeriodProposedEntitlement() {
     $previousPeriodEntitlement = $this->getPreviousPeriodEntitlement();
@@ -226,7 +226,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns the entitlement balance for this calculation's absence type during
    * the previous period.
    *
-   * @return int
+   * @return float
    */
   public function getNumberOfDaysRemainingInThePreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
@@ -351,7 +351,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Check if, based on the AbsenceType expiration duration, if
+   * Check if, based on the AbsenceType expiration duration, 
    * the brought forward has expired for this calculation period.
    *
    * @return bool
