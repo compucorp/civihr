@@ -108,11 +108,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Period.
    *
    * This number of days is given by the proposed entitlement of the previous
-   * period - the number of leaves taken on the previous period. It may be
-   * limited by the max number of days allowed to be carried forward for this
-   * calculation's absence type.
+   * period minus the number of leaves taken on the previous period, minus the
+   * expired brought forward, if any. It may be limited by the max number of
+   * days allowed to be carried forward for this calculation's absence type.
    *
-   * @return int
+   * @return float
    */
   public function getBroughtForward() {
     if(!$this->shouldCalculateBroughtForward()) {
@@ -223,8 +223,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Return the number of days remaining on the previous period. That is,
-   * the proposed entitlement - the number of leaves taken
+   * Returns the entitlement balance for this calculation's absence type during
+   * the previous period.
    *
    * @return int
    */
@@ -235,7 +235,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    return $entitlement->getNumberOfDaysRemaining();
+    return $entitlement->getBalance();
   }
 
   /**

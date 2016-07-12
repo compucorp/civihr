@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_BroughtForward as BroughtForward;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 
 /**
@@ -52,17 +53,11 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
     $absenceTypeID = $calculation->getAbsenceType()->id;
     $contractID = $calculation->getContract()['id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
-    $broughtForwardExpirationDate = $calculation->getAbsencePeriod()->getExpirationDateForAbsenceType(
-      $calculation->getAbsenceType()
-    );
-    $broughtForwardExpirationDate = CRM_Utils_Date::processDate($broughtForwardExpirationDate);
 
     $params = [
       'type_id' => $absenceTypeID,
       'contract_id' => $contractID,
       'period_id' => $absencePeriodID,
-      'brought_forward_days' => $calculation->getBroughtForward(),
-      'brought_forward_expiration_date' => $broughtForwardExpirationDate,
       'pro_rata' => $calculation->getProRata(),
       'proposed_entitlement' => $calculation->getProposedEntitlement(),
       'overridden' => false,
@@ -79,10 +74,28 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
       $params['comment_updated_at'] = date('YmdHis');
     }
 
+    $broughtForwardParams = [];
+    $broughtForward = $calculation->getBroughtForward();
+    if($broughtForward) {
+      $broughtForwardExpirationDate = $calculation->getAbsencePeriod()->getExpirationDateForAbsenceType(
+        $calculation->getAbsenceType()
+      );
+      $broughtForwardExpirationDate = CRM_Utils_Date::processDate($broughtForwardExpirationDate);
+
+      $broughtForwardParams = [
+        'balance' => $broughtForward,
+        'expiration_date' => $broughtForwardExpirationDate
+      ];
+    }
+
     $transaction = new CRM_Core_Transaction();
     try {
       self::deleteEntitlement($absencePeriodID, $absenceTypeID, $contractID);
-      self::create($params);
+      $entitlement = self::create($params);
+      if(!empty($broughtForwardParams)) {
+        $broughtForwardParams['entitlement_id'] = $entitlement->id;
+        BroughtForward::create($broughtForwardParams);
+      }
 
       $transaction->commit();
     } catch(\Exception $ex) {
@@ -201,48 +214,49 @@ class CRM_HRLeaveAndAbsences_BAO_Entitlement extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * Returns the number of days of this entitlement remaining to be taken.
+   * Returns the current balance for this entitlement, which is given by:
    *
-   * This method takes into account the expiration date of the brought forward
-   * days. That is, if these days have not been taken and expired, they won't
-   * be included in the returned number.
+   * Pro Rata + Brought Forward Balance + Leave Requests Balance
    *
    * @return int
    */
-  public function getNumberOfDaysRemaining() {
-    $leavesTakenInPeriod = $this->getNumberOfLeavesTakenInPeriod();
-    $daysRemaining = $this->proposed_entitlement - $leavesTakenInPeriod;
+  public function getBalance() {
+    $leaveRequestBalance = $this->getLeaveRequestBalance();
+    $broughtForwardBalance = $this->getBroughtForwardBalance();
 
-    $broughtForwardRemaining = $this->brought_forward_days - $leavesTakenInPeriod;
-    if($broughtForwardRemaining > 0 && $this->broughtForwardHasExpired()) {
-      $daysRemaining -= $broughtForwardRemaining;
-    }
-
-    return $daysRemaining;
+    return $this->pro_rata + $broughtForwardBalance + $leaveRequestBalance;
   }
 
   /**
-   * Returns if the brought forward days for this entitlement expired.
+   * Returns the Brought Forward balance for this entitlement
    *
-   * @return bool
+   * @return int
    */
-  private function broughtForwardHasExpired() {
-    // No expiration date means it never expires
-    if(!$this->brought_forward_expiration_date) {
-      return false;
-    }
+  public function getBroughtForwardBalance()
+  {
+    $query = "
+      SELECT SUM(balance) as balance
+      FROM civicrm_hrleaveandabsences_brought_forward
+      WHERE entitlement_id = %1
+    ";
 
-    return strtotime($this->brought_forward_expiration_date) < strtotime('now');
+    $params = [
+      '1' => [$this->id, 'Integer']
+    ];
+
+    $dao = CRM_Core_DAO::executeQuery($query, $params);
+    $dao->fetch();
+    return (int)$dao->balance;
   }
 
   /**
-   * Return the number of Leaves taken during this entitlement period
+   * Returns the Leave Request balance for this entitlement
    *
    * @TODO The Leaves Request feature is not yet implemented, so we're only returning 0 for now
    *
    * @return int
    */
-  private function getNumberOfLeavesTakenInPeriod() {
+  private function getLeaveRequestBalance() {
     return 0;
   }
 

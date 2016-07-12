@@ -9,4 +9,5 @@
     <xi:include href="AbsencePeriod.xml" parse="xml" />
     <xi:include href="PublicHoliday.xml" parse="xml" />
     <xi:include href="Entitlement.xml" parse="xml" />
+    <xi:include href="BroughtForward.xml" parse="xml" />
 </tables>
