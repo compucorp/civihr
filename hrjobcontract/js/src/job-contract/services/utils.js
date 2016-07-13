@@ -85,7 +85,9 @@ define([
         }
     }]);
 
-    services.factory('UtilsService', ['API','testAPI','settings','$q','$log', '$timeout', function (API, testAPI, settings, $q, $log, $timeout) {
+    services.factory('UtilsService', [
+      'API', 'testAPI', 'settings', '$q', '$log', '$window',
+      function (API, testAPI, settings, $q, $log, $window) {
         return {
 
             /**
@@ -211,6 +213,18 @@ define([
                     }
                     return true;
                 }
+            },
+
+            /**
+             * Returns the URL to the Manage Entitlement page.
+             *
+             * The given contact ID is added to the URL, as the cid parameter.
+             *
+             * @param {int} contactId
+             */
+            getManageEntitlementsPageURL: function(contactId) {
+              var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
+              return CRM.url(path, { cid: contactId });
             }
         }
     }]);

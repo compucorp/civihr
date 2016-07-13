@@ -12,12 +12,15 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ContractCtrl',['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', 'settings',
-        'API', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
-        'ContractHealthService', 'ContractPensionService','ContractFilesService','ContactService','$log',
-        function ($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractDetailsService,
-                 ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-                 ContractPensionService, ContractFilesService, ContactService, $log) {
+    controllers.controller('ContractCtrl', [
+        '$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window', 'settings', 'API',
+        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
+        'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', '$log',
+        'UtilsService',
+        function ($scope, $route, $filter, $modal, $rootElement, $q, $window, settings, API,
+                  ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
+                  ContractHealthService, ContractPensionService, ContractFilesService, ContactService, $log,
+                  UtilsService) {
             $log.debug('Controller: ContractCtrl');
 
             var contractId = $scope.contract.id,
@@ -327,7 +330,7 @@ define([
                     }
 
                     CRM.refreshParent('#hrjobroles');
-
+                    $window.location.assign(UtilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
                 });
             };
 
