@@ -79,6 +79,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   private $jobLeave;
 
+  /**
+   * Variable to cache the return from the getPeriodEntitlement method.
+   *
+   * If false, it means the entitlement was never loaded. If null, it means there's
+   * no stored entitlement for the current period.
+   *
+   * @var bool|null
+   */
+  private $periodEntitlement = false;
+
 
   /**
    * Creates a new EntitlementCalculation instance
@@ -98,11 +108,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Period.
    *
    * This number of days is given by the proposed entitlement of the previous
-   * period - the number of leaves taken on the previous period. It may be
-   * limited by the max number of days allowed to be carried forward for this
-   * calculation's absence type.
+   * period minus the number of leaves taken on the previous period, minus the
+   * expired brought forward, if any. It may be limited by the max number of
+   * days allowed to be carried forward for this calculation's absence type.
    *
-   * @return int
+   * @return float
    */
   public function getBroughtForward() {
     if(!$this->shouldCalculateBroughtForward()) {
@@ -131,7 +141,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Contractual entitlement: 28
    * Pro rata: (212 / 253) * 28 = 23.46 = 23.5 (rounded)
    *
-   * @return float|int
+   * @return float
    */
   public function getProRata() {
     $numberOfWorkingDaysToWork = $this->getNumberOfWorkingDaysToWork();
@@ -151,7 +161,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * calculation contract and absence type + the number of public holidays in
    * the period (if the leave settings on the contract allows this).
    *
-   * @return int
+   * @return float
    */
   public function getContractualEntitlement() {
     $contractualEntitlement = 0;
@@ -174,9 +184,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * This is basically the Pro Rata + the number of days brought forward
    *
-   * @return float|int
+   * @return float
    */
   public function getProposedEntitlement() {
+    $periodEntitlement = $this->getPeriodEntitlement();
+    if($periodEntitlement && $periodEntitlement->overridden) {
+      return $periodEntitlement->proposed_entitlement;
+    }
+
     return $this->getProRata() + $this->getBroughtForward();
   }
 
@@ -184,7 +199,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns the proposed entitlement for this AbsenceType and Contract on the
    * previous period.
    *
-   * @return int
+   * @return float
    */
   public function getPreviousPeriodProposedEntitlement() {
     $previousPeriodEntitlement = $this->getPreviousPeriodEntitlement();
@@ -208,10 +223,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Return the number of days remaining on the previous period. That is,
-   * the proposed entitlement - the number of leaves taken
+   * Returns the entitlement balance for this calculation's absence type during
+   * the previous period.
    *
-   * @return int
+   * @return float
    */
   public function getNumberOfDaysRemainingInThePreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
@@ -220,7 +235,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    return $entitlement->getNumberOfDaysRemaining();
+    return $entitlement->getBalance();
   }
 
   /**
@@ -251,6 +266,52 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   public function getAbsencePeriod()
   {
     return $this->period;
+  }
+
+  /**
+   * Returns the previously calculated entitlement for the calculation period.
+   *
+   * If there's no such entitlement, returns null.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null
+   */
+  private function getPeriodEntitlement()
+  {
+    if($this->periodEntitlement === false) {
+      $this->periodEntitlement = Entitlement::getContractEntitlementForPeriod(
+        $this->contract['id'],
+        $this->period->id,
+        $this->absenceType->id
+      );
+    }
+
+    return $this->periodEntitlement;
+  }
+
+  /**
+   * Returns if the there's a previously calculated entitlement for this
+   * calculation's period and if it is overridden.
+   *
+   * @return bool
+   */
+  public function isCurrentPeriodEntitlementOverridden()
+  {
+    $periodEntitlement = $this->getPeriodEntitlement();
+
+    return $periodEntitlement && $periodEntitlement->overridden;
+  }
+
+  /**
+   * Returns the comment for the previously calculated entitlement for this
+   * calculation's period, if it exists.
+   *
+   * @return bool
+   */
+  public function getCurrentPeriodEntitlementComment()
+  {
+    $periodEntitlement = $this->getPeriodEntitlement();
+
+    return $periodEntitlement ? $periodEntitlement->comment : '';
   }
 
   /**
@@ -290,7 +351,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Check if, based on the AbsenceType expiration duration, if
+   * Check if, based on the AbsenceType expiration duration, 
    * the brought forward has expired for this calculation period.
    *
    * @return bool

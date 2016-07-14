@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>BroughtForward</class>
+  <name>civicrm_hrleaveandabsences_brought_forward</name>
+  <comment>Store Brought Forward information</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique BroughtForward ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>entitlement_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Entitlement</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>entitlement_id</name>
+    <table>civicrm_hrleaveandabsences_entitlement</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>expiration_date</name>
+    <type>date</type>
+    <comment>The date the brought forward will expired (or has expired, if balance is negative). If null, it means this never expires</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>balance</name>
+    <type>decimal</type>
+    <required>true</required>
+    <comment>The amount of days this brought forward represents on the balance. Can be negative to represent expired days</comment>
+    <add>4.4</add>
+  </field>
+</table>

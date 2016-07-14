@@ -67,21 +67,6 @@
   </field>
 
   <field>
-    <name>brought_forward_days</name>
-    <type>decimal</type>
-    <default>0</default>
-    <comment>The number of days brought forward from the previous period</comment>
-    <add>4.4</add>
-  </field>
-
-  <field>
-    <name>brought_forward_expiration_date</name>
-    <type>date</type>
-    <comment>The date the brought forward days will expire</comment>
-    <add>4.4</add>
-  </field>
-
-  <field>
     <name>pro_rata</name>
     <type>decimal</type>
     <default>0</default>

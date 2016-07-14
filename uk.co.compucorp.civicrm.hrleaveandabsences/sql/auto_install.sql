@@ -276,8 +276,6 @@ CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
      `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
      `contract_id` int unsigned NOT NULL   COMMENT 'FK to HRJobContract',
      `proposed_entitlement` decimal(20,2) NOT NULL   COMMENT 'The number of days proposed for this entitlement',
-     `brought_forward_days` decimal(20,2)   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
-     `brought_forward_expiration_date` date COMMENT 'The date the brought forward days will expire',
      `pro_rata` decimal(20,2)   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
      `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the proposed_entitlement was overridden',
      `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
@@ -288,4 +286,25 @@ CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
     CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_brought_forward
+-- *
+-- * Store Brought Forward information
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_brought_forward` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique BroughtForward ID',
+     `entitlement_id` int unsigned NOT NULL   COMMENT 'FK to Entitlement',
+     `expiration_date` date    COMMENT 'The date the brought forward will expired (or has expired, if balance is negative)',
+     `balance` decimal(20,2) NOT NULL   COMMENT 'The amount of days this brought forward represents on the balance. Can be negative to represent expired days'
+,
+    PRIMARY KEY ( `id` )
+
+
+,          CONSTRAINT FK_civicrm_hrleaveandabsences_brought_forward_entitlement_id FOREIGN KEY (`entitlement_id`) REFERENCES `civicrm_hrleaveandabsences_entitlement`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

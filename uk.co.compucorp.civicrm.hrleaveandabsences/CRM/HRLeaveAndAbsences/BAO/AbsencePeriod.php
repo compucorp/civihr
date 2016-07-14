@@ -14,6 +14,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   private $numberOfWorkingDays = 0;
 
   /**
+   * Variable to cache the return from the getPreviousPeriod method
+   *
+   * If false, it means the period was never loaded. If null, it means there's
+   * no previous period.
+   *
+   * @var \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   */
+  private $previousPeriod = false;
+
+  /**
    * Create a new AbsencePeriod based on array-data
    *
    * @param array $params key-value pairs
@@ -373,14 +383,19 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    */
   public function getPreviousPeriod()
   {
-    $previousPeriod = new self();
-    $previousPeriod->weight = $this->weight - 1;
-    $previousPeriod->find(true);
-    if($previousPeriod->id) {
-      return $previousPeriod;
+    if($this->previousPeriod === false) {
+      $this->previousPeriod = null;
+
+      $previousPeriod = new self();
+      $previousPeriod->weight = $this->weight - 1;
+      $previousPeriod->find(true);
+
+      if($previousPeriod->id) {
+        $this->previousPeriod = $previousPeriod;
+      }
     }
 
-    return null;
+    return $this->previousPeriod;
   }
 
   /**

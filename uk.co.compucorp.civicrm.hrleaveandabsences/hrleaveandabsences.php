@@ -317,6 +317,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_Entitlement',
     'table' => 'civicrm_hrleaveandabsences_entitlement',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'BroughtForward',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_BroughtForward',
+    'table' => 'civicrm_hrleaveandabsences_brought_forward',
+  );
 }
 
 /**

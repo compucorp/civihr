@@ -5,6 +5,7 @@ use Civi\Test\TransactionalInterface;
 use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_BroughtForward as BroughtForward;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 
@@ -122,8 +123,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'type_id' => $type->id,
       'contract_id' => $contract->id,
       'proposed_entitlement' => 20,
-      'brought_forward_days' => 0,
-      'pro_rata' => 0
+      'pro_rata' => 20
     ]);
 
     Entitlement::create([
@@ -131,7 +131,6 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'type_id' => $type->id,
       'contract_id' => $contract->id,
       'proposed_entitlement' => 15,
-      'brought_forward_days' => 10,
       'pro_rata' => 0
     ]);
 
@@ -142,8 +141,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     );
 
     $this->assertEquals(20, $entitlementPeriod1->proposed_entitlement);
-    $this->assertEquals(0, $entitlementPeriod1->brought_forward_days);
-    $this->assertEquals(0, $entitlementPeriod1->pro_rata);
+    $this->assertEquals(20, $entitlementPeriod1->pro_rata);
 
     $entitlementPeriod2 = Entitlement::getContractEntitlementForPeriod(
       $contract->id,
@@ -152,7 +150,6 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     );
 
     $this->assertEquals(15, $entitlementPeriod2->proposed_entitlement);
-    $this->assertEquals(10, $entitlementPeriod2->brought_forward_days);
     $this->assertEquals(0, $entitlementPeriod2->pro_rata);
   }
 
@@ -186,7 +183,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
   /**
    * @TODO include tests with leave requests, which are not yet implemented
    */
-  public function testNumberOfDaysRemainingShouldNotIncludeExpiredBroughtForward()
+  public function testBalanceShouldNotIncludeExpiredBroughtForward()
   {
     $type = $this->createAbsenceType();
 
@@ -203,16 +200,21 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'type_id' => $type->id,
       'contract_id' => $contract->id,
       'proposed_entitlement' => 15,
-      'brought_forward_days' => 10,
-      //set expiration date in the past, so it will be expired
-      'brought_forward_expiration_date' => date('YmdHis', strtotime('-1 day')),
-      'pro_rata' => 0
+      'pro_rata' => 15
     ]);
 
-    $this->assertEquals(5, $entitlement->getNumberOfDaysRemaining());
+    // Any brought forward with a negative balance is
+    // considered expired
+    BroughtForward::create([
+      'entitlement_id' => $entitlement->id,
+      'expiration_date' => date('YmdHis'),
+      'balance' => -4
+    ]);
+
+    $this->assertEquals(11, $entitlement->getBalance());
   }
 
-  public function testNumberOfDaysRemainingShouldIncludeNonExpiredBroughtForward()
+  public function testBalanceShouldIncludeNonExpiredBroughtForward()
   {
     $type = $this->createAbsenceType();
 
@@ -229,15 +231,19 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'type_id' => $type->id,
       'contract_id' => $contract->id,
       'proposed_entitlement' => 15,
-      'brought_forward_days' => 10,
-      'brought_forward_expiration_date' => date('YmdHis', strtotime('+1 day')),
-      'pro_rata' => 0
+      'pro_rata' => 5
     ]);
 
-    $this->assertEquals(15, $entitlement->getNumberOfDaysRemaining());
+    BroughtForward::create([
+      'entitlement_id' => $entitlement->id,
+      'expiration_date' => date('YmdHis'),
+      'balance' => 10
+    ]);
+
+    $this->assertEquals(15, $entitlement->getBalance());
   }
 
-  public function testNumberOfDaysRemainingShouldIncludeBroughtForwardThatNeverExpires()
+  public function testBalanceShouldIncludeBroughtForwardThatNeverExpires()
   {
     $type = $this->createAbsenceType();
 
@@ -254,12 +260,18 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'type_id' => $type->id,
       'contract_id' => $contract->id,
       'proposed_entitlement' => 15,
-      'brought_forward_days' => 10,
-      'brought_forward_expiration_date' => null,
-      'pro_rata' => 0
+      'pro_rata' => 10
     ]);
 
-    $this->assertEquals(15, $entitlement->getNumberOfDaysRemaining());
+    // A Brought Forward without expiration date
+    // will never expire
+    BroughtForward::create([
+      'entitlement_id' => $entitlement->id,
+      'expiration_date' => null,
+      'balance' => 5
+    ]);
+
+    $this->assertEquals(15, $entitlement->getBalance());
   }
 
   public function testCanSaveAnEntitlementFromAnEntitlementCalculation()
@@ -275,7 +287,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     );
     $this->assertNull($entitlement);
 
-    $broughtForward = 1;
+    $broughtForward = 15;
     $proRata = 10;
     $proposedEntitlement = 25;
     $calculation = $this->getEntitlementCalculationMock(
@@ -299,9 +311,9 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals($period->id, $entitlement->period_id);
     $this->assertEquals($type->id, $entitlement->type_id);
     $this->assertEquals($contract['id'], $entitlement->contract_id);
-    $this->assertEquals(1, $entitlement->brought_forward_days);
     $this->assertEquals(10, $entitlement->pro_rata);
     $this->assertEquals(25, $entitlement->proposed_entitlement);
+    $this->assertEquals($broughtForward, $entitlement->getBroughtForwardBalance());
   }
 
   public function testSaveFromEntitlementCalculationWillReplaceExistingEntitlement()
@@ -314,8 +326,6 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
       'period_id' => $period->id,
       'type_id' => $type->id,
       'contract_id' => $contract['id'],
-      'brought_forward_days' => 10,
-      'brought_forward_expiration_date' => null,
       'pro_rata' => 20,
       'proposed_entitlement' => 23.5,
     ]);
@@ -346,7 +356,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals($period->id, $entitlement->period_id);
     $this->assertEquals($type->id, $entitlement->type_id);
     $this->assertEquals($contract['id'], $entitlement->contract_id);
-    $this->assertEquals($broughtForward, $entitlement->brought_forward_days);
+    $this->assertEquals($broughtForward, $entitlement->getBroughtForwardBalance());
     $this->assertEquals($proRata, $entitlement->pro_rata);
     $this->assertEquals($proposedEntitlement, $entitlement->proposed_entitlement);
   }
@@ -379,7 +389,7 @@ class CRM_HRLeaveAndAbsences_BAO_EntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals($period->id, $entitlement->period_id);
     $this->assertEquals($type->id, $entitlement->type_id);
     $this->assertEquals($contract['id'], $entitlement->contract_id);
-    $this->assertEquals(0, $entitlement->brought_forward_days);
+    $this->assertEquals(0, $entitlement->getBroughtForwardBalance());
     $this->assertEquals(0, $entitlement->pro_rata);
     $this->assertEquals($overriddenEntitlement, $entitlement->proposed_entitlement);
     $this->assertEquals(1, $entitlement->overridden);
