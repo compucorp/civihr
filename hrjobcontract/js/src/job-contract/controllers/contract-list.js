@@ -11,11 +11,14 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ContractListCtrl',['$scope','$rootElement','$rootScope','$uibModal','$q', '$filter', '$sce',
-        'contractList','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService',
-        'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService','settings', '$log',
-        function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, contractList, ContractService, ContractDetailsService,
-                 ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
+    controllers.controller('ContractListCtrl', [
+        '$scope', '$rootElement', '$rootScope', '$uibModal', '$q', '$filter', '$sce', '$window',
+        'contractList', 'ContractService', 'ContractDetailsService', 'ContractHourService',
+        'ContractPayService', 'ContractLeaveService', 'ContractHealthService', 'ContractPensionService',
+        'UtilsService', 'settings', '$log',
+        function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, $window,
+                 contractList, ContractService, ContractDetailsService, ContractHourService,
+                 ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
                  UtilsService, settings, $log){
             $log.debug('Controller: ContractListCtrl');
 
@@ -150,13 +153,15 @@ define([
                 modalInstance = $modal.open(options);
 
                 modalInstance.result.then(function(contract){
-                    +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+                  +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
 
-                    if (+contract.is_primary) {
-                        $scope.toggleIsPrimary(contract.id);
-                    }
+                  if (+contract.is_primary) {
+                      $scope.toggleIsPrimary(contract.id);
+                  }
+
+                  $window.location.assign(UtilsService.getManageEntitlementsPageURL(contract.contact_id));
                 });
-            }
+            };
 
             $scope.delete = function(contractId) {
 
