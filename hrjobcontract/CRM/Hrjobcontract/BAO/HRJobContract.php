@@ -1,7 +1,7 @@
 <?php
 
 class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobContract {
-    
+
     static $_importableFields = array();
 
   /**
@@ -15,30 +15,30 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $className = 'CRM_HRJobContract_DAO_HRJobContract';
     $entityName = 'HRJobContract';
     $hook = empty($params['id']) ? 'create' : 'edit';
-    
+
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new self();
     $instance->copyValues($params);
     $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
-    
+
     if ((is_numeric(CRM_Utils_Array::value('is_primary', $params)) || $hook === 'create') && empty($params['import'])) {
         CRM_Hrjobcontract_DAO_HRJobContract::handlePrimary($instance, $params);
     }
-    
+
     $deleted = isset($params['deleted']) ? $params['deleted'] : 0;
     if ($deleted)
     {
         CRM_Hrjobcontract_JobContractDates::removeDates($instance->id);
     }
-    
+
     if (function_exists('module_exists') && module_exists('rules')) {
         rules_invoke_event('hrjobcontract_after_create', $instance);
     }
 
     return $instance;
   }
-  
+
   /**
    * Delete current HRJobContract based on array-data
    *
@@ -53,7 +53,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
           rules_invoke_event('hrjobcontract_after_delete', $id);
       }
   }
-  
+
   /**
    * Get a count of records with the given property
    *
@@ -112,11 +112,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   /**
    * Return 'length_of_service' in days for given Contact ID, and optionally
    * Date and Break (allowed number of days between Contracts).
-   * 
+   *
    * @param int     $contactId  CiviCRM Contact ID
    * @param string  $date       Y-m-d format of a date for which we calculate the result
    * @param int     $break      Allowed number of days between Contracts
-   * 
+   *
    * @throws Exception
    * @return int
    */
@@ -177,9 +177,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Return an assotiative array with Contracts dates.
-   * 
+   *
    * @param array $contracts
-   * 
+   *
    * @return array
    */
   protected static function getContractDates($contracts) {
@@ -219,10 +219,10 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Return an array with calculated Service Start Date and Service End Date.
-   * 
+   *
    * @param array   $dates
    * @param int     $break  Number of Break days
-   * 
+   *
    * @return array
    */
   protected static function getServiceDates($dates, $break) {
@@ -255,11 +255,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Return a difference of Service dates in days (including break days).
-   * 
+   *
    * @param array   $serviceDates   Array containing 'startDate' and 'endDate' keys
    * @param string   $date          Date in Y-m-d format for which we calculate the result
    * @param int      $break         Allowed number of days between Contracts
-   * 
+   *
    * @return int
    */
   protected static function calculateLength($serviceDates, $date, $break) {
@@ -282,10 +282,10 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   /**
    * Calculate a new Date which is sum of given Date and number of Break days.
    * Returns null if given date is null.
-   * 
+   *
    * @param string  $date   Date in Y-m-d format
    * @param int     $break  Number of Break days
-   * 
+   *
    * @return string|null
    */
   protected static function sumDateAndBreak($date, $break) {
@@ -296,10 +296,10 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $newDate->add(new DateInterval('P' . $break . 'D'));
     return $newDate->format('Y-m-d');
   }
-  
+
   /**
    * Update Length of Service for specific Contact.
-   * 
+   *
    * @return bool
    */
   public static function updateLengthOfService($contactId) {
@@ -326,7 +326,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Update Length of Service for all Individual Contacts.
-   * 
+   *
    * @return bool
    */
   public static function updateLengthOfServiceAllContacts() {
@@ -363,6 +363,39 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
+   * Get the total number of staff (Individual contacts with active contracts).
+   *
+   * @return int
+   */
+  public static function getStaffCount() {
+
+    $currentDate = date('Y-m-d');
+
+    $query = "
+      SELECT COUNT(DISTINCT c.id) count
+      FROM civicrm_contact c
+      LEFT JOIN civicrm_hrjobcontract hrjc ON (c.id = hrjc.contact_id)
+      LEFT JOIN civicrm_hrjobcontract_revision hrjr ON hrjr.jobcontract_id = hrjc.id
+      LEFT JOIN civicrm_hrjobcontract_details hrjd
+      ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
+      WHERE c.contact_type = 'Individual'
+      AND hrjd.period_start_date <= '{$currentDate}'
+      AND ( hrjd.period_end_date >= '{$currentDate}' OR hrjd.period_end_date IS NULL)
+      AND c.is_deleted = 0
+      AND hrjc.deleted = 0
+      AND hrjr.deleted = 0";
+
+    $total = 0;
+
+    $dao = CRM_Core_DAO::executeQuery($query);
+    if ($dao->fetch()) {
+      $total = $dao->count;
+    }
+
+    return $total;
+  }
+
+  /**
    * combine all the importable fields from the lower levels object
    *
    * The ordering is important, since currently we do not have a weight
@@ -385,14 +418,14 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $checkPermission = TRUE,
     $withMultiCustomFields = FALSE
   ) {
-      
+
      $contactType = 'Individual';
-     
+
      $fields = CRM_Hrjobcontract_DAO_HRJobContract::import();
-     
+
       $tmpContactField = $contactFields = array();
       $contactFields = array( );
-      
+
         $contactFields = CRM_Contact_BAO_Contact::importableFields($contactType, NULL);
 
         // Using new Dedupe rule.
@@ -420,7 +453,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
             $tmpContactField[trim($value)]['title'] = $title;
           }
         }
-        
+
       $extIdentifier = CRM_Utils_Array::value('external_identifier', $contactFields);
       if ($extIdentifier) {
         $tmpContactField['external_identifier'] = $extIdentifier;
