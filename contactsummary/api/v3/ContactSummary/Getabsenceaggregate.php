@@ -29,10 +29,10 @@ function civicrm_api3_contact_summary_GetAbsenceAggregate($params) {
   $aggregateType = !empty($params['aggregate_type'])
     ? $params['aggregate_type'] : CRM_Contactsummary_Utils_Aggregate::TYPE_AVERAGE;
 
-  $absenceTypes = !empty($params['absence_types']) ? (array) $params['absence_types'] : array();
+  $absenceTypes = !empty($params['absence_types']) ? $params['absence_types'] : null;
   $periodId = !empty($params['period_id']) ? $params['period_id'] : 0;
 
-  $numStaff = CRM_Contactsummary_Utils_Staff::getStaffNum();
+  $numStaff = CRM_Hrjobcontract_BAO_HRJobContract::getStaffCount();
   $totalAbsences = CRM_Contactsummary_Utils_Absences::getTotalAbsences($absenceTypes, $periodId);
 
   $values = array('staff' => $numStaff, 'absences' => $totalAbsences);
