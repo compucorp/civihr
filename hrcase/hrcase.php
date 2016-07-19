@@ -22,6 +22,11 @@ function hrcase_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrcase_civicrm_install() {
+  // PCHR-1263 : hrcase should not be installed without Task & Assignments extension
+  if (empty(hrcase_checkTasksassignments()))  {
+    hrcase_extensionsPageRedirect();
+  }
+
   //update query to replace Case with Assignment
   $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
   $sql = "UPDATE civicrm_option_value SET label= replace(label,'Case','Assignment') WHERE label like '%Case%' and option_group_id=$optionGroupID and label <> 'Open Case'";
@@ -144,6 +149,10 @@ function hrcase_example_caseType($is_active) {
  * Implementation of hook_civicrm_enable
  */
 function hrcase_civicrm_enable() {
+  // PCHR-1263 : hrcase should not be installed/enabled without Task & Assignments extension
+  if (empty(hrcase_checkTasksassignments()))  {
+    hrcase_extensionsPageRedirect();
+  }
   _hrcase_setActiveFields(1);
   return _hrcase_civix_civicrm_enable();
 }
@@ -487,4 +496,35 @@ function updateEntityColumnValues()  {
   CRM_Core_DAO::executeQuery($sql);
   $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$joiningValue}' WHERE extends_entity_column_value = 'Joining'";
   CRM_Core_DAO::executeQuery($sql);
+}
+
+/**
+ * check if tasks and assignments extension is installed or enabled
+ *
+ * @return int
+ */
+function hrcase_checkTasksassignments()  {
+  $isEnabled = CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_Extension',
+    'uk.co.compucorp.civicrm.tasksassignments',
+    'is_active',
+    'full_name'
+  );
+  return $isEnabled;
+}
+
+/**
+ * redirect to extension list page and show error notification if T&A isn't installed/enabled
+ *
+ */
+function hrcase_extensionsPageRedirect()  {
+  $message = ts("You should Install/Enable Task & Assignments extension first");
+  CRM_Core_Session::setStatus($message, ts('Cannot install/enable extension'), 'error');
+  $url = CRM_Utils_System::url(
+    'civicrm/admin/extensions',
+    http_build_query([
+      'reset' => 1
+    ])
+  );
+  CRM_Utils_System::redirect($url);
 }
