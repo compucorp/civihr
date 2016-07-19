@@ -197,7 +197,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function validateParams($params) {
     if(!empty($params['add_public_holiday_to_entitlement'])) {
-      self::validateAddPublicHolidayToEntitlement();
+      self::validateAddPublicHolidayToEntitlement($params);
     }
 
     if (!empty($params['allow_request_cancelation']) &&
@@ -219,15 +219,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * method checks if one such type already exists and throws an error if that
    * is the case.
    *
+   * @param array $params The params array received by the create method
+   *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @throws \CiviCRM_API3_Exception
    */
-  private static function validateAddPublicHolidayToEntitlement() {
-    $result = civicrm_api3('AbsenceType', 'getcount', array(
-        'sequential' => 1,
-        'add_public_holiday_to_entitlement' => 1,
-    ));
-    if(!isset($result['result']) || $result['result'] > 0) {
+  private static function validateAddPublicHolidayToEntitlement($params) {
+    $dao = new self();
+    $dao->add_public_holiday_to_entitlement = 1;
+
+    $id = empty($params['id']) ? null : intval($params['id']);
+    if($id) {
+      $dao->whereAdd("id <> {$id}");
+    }
+
+    if($dao->count() > 0) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
       );
