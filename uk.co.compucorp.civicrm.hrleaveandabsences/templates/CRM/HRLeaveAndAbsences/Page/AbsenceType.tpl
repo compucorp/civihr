@@ -17,7 +17,7 @@
                             <th>{ts}Is default?{/ts}</th>
                             <th>{ts}Order{/ts}</th>
                             <th>{ts}Enabled/Disabled{/ts}</th>
-                            <th></th>
+                            <th>{ts}Actions{/ts}</th>
                         </thead>
                         {foreach from=$rows item=row}
                             <tr id="AbsenceType-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if NOT $row.is_active} disabled{/if}">
