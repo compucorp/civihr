@@ -23,7 +23,6 @@
     <ActivityType>
       <name>Link Cases</name>
     </ActivityType>
-
     <ActivityType>
       <name>Schedule Exit Interview</name>
     </ActivityType>
@@ -55,24 +54,26 @@
       <ActivityTypes>
         <ActivityType>
           <name>Schedule Exit Interview</name>
-          <reference_offset>0</reference_offset>
+          <reference_offset>-10</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Get "No Dues" certification</name>
-          <reference_offset>3</reference_offset>
+          <reference_offset>-7</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
         <ActivityType>
           <name>Conduct Exit interview</name>
-          <reference_offset>7</reference_offset>
+          <reference_offset>-3</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
-	<ActivityType>
-          <name>Revoke access to databases</name>         
+        <ActivityType>
+          <name>Revoke access to databases</name>
+          <reference_offset>0</reference_offset>
         </ActivityType>
-	<ActivityType>
+        <ActivityType>
           <name>Block work email ID</name>
-        </ActivityType>	
+          <reference_offset>0</reference_offset>
+        </ActivityType>
       </ActivityTypes>
     </ActivitySet>
   </ActivitySets>
@@ -85,4 +86,4 @@
     </RelationshipType>
   </CaseRoles>
 
-  </CaseType>
+</CaseType>
