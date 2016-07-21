@@ -1,14 +1,14 @@
 <?php
 
-require_once 'bootstrapcivicrmstyleguide.civix.php';
+require_once 'styleguide.civix.php';
 
 /**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
-function bootstrapcivicrmstyleguide_civicrm_config(&$config) {
-  _bootstrapcivicrmstyleguide_civix_civicrm_config($config);
+function styleguide_civicrm_config(&$config) {
+  _styleguide_civix_civicrm_config($config);
 }
 
 /**
@@ -18,8 +18,8 @@ function bootstrapcivicrmstyleguide_civicrm_config(&$config) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
  */
-function bootstrapcivicrmstyleguide_civicrm_xmlMenu(&$files) {
-  _bootstrapcivicrmstyleguide_civix_civicrm_xmlMenu($files);
+function styleguide_civicrm_xmlMenu(&$files) {
+  _styleguide_civix_civicrm_xmlMenu($files);
 }
 
 /**
@@ -27,8 +27,8 @@ function bootstrapcivicrmstyleguide_civicrm_xmlMenu(&$files) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
-function bootstrapcivicrmstyleguide_civicrm_install() {
-  _bootstrapcivicrmstyleguide_civix_civicrm_install();
+function styleguide_civicrm_install() {
+  _styleguide_civix_civicrm_install();
 }
 
 /**
@@ -36,8 +36,8 @@ function bootstrapcivicrmstyleguide_civicrm_install() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
-function bootstrapcivicrmstyleguide_civicrm_uninstall() {
-  _bootstrapcivicrmstyleguide_civix_civicrm_uninstall();
+function styleguide_civicrm_uninstall() {
+  _styleguide_civix_civicrm_uninstall();
 }
 
 /**
@@ -45,8 +45,8 @@ function bootstrapcivicrmstyleguide_civicrm_uninstall() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
-function bootstrapcivicrmstyleguide_civicrm_enable() {
-  _bootstrapcivicrmstyleguide_civix_civicrm_enable();
+function styleguide_civicrm_enable() {
+  _styleguide_civix_civicrm_enable();
 }
 
 /**
@@ -54,8 +54,8 @@ function bootstrapcivicrmstyleguide_civicrm_enable() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
-function bootstrapcivicrmstyleguide_civicrm_disable() {
-  _bootstrapcivicrmstyleguide_civix_civicrm_disable();
+function styleguide_civicrm_disable() {
+  _styleguide_civix_civicrm_disable();
 }
 
 /**
@@ -70,8 +70,8 @@ function bootstrapcivicrmstyleguide_civicrm_disable() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
-function bootstrapcivicrmstyleguide_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  return _bootstrapcivicrmstyleguide_civix_civicrm_upgrade($op, $queue);
+function styleguide_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  return _styleguide_civix_civicrm_upgrade($op, $queue);
 }
 
 /**
@@ -82,8 +82,8 @@ function bootstrapcivicrmstyleguide_civicrm_upgrade($op, CRM_Queue_Queue $queue 
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_managed
  */
-function bootstrapcivicrmstyleguide_civicrm_managed(&$entities) {
-  _bootstrapcivicrmstyleguide_civix_civicrm_managed($entities);
+function styleguide_civicrm_managed(&$entities) {
+  _styleguide_civix_civicrm_managed($entities);
 }
 
 /**
@@ -97,8 +97,8 @@ function bootstrapcivicrmstyleguide_civicrm_managed(&$entities) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
-function bootstrapcivicrmstyleguide_civicrm_caseTypes(&$caseTypes) {
-  _bootstrapcivicrmstyleguide_civix_civicrm_caseTypes($caseTypes);
+function styleguide_civicrm_caseTypes(&$caseTypes) {
+  _styleguide_civix_civicrm_caseTypes($caseTypes);
 }
 
 /**
@@ -111,8 +111,8 @@ function bootstrapcivicrmstyleguide_civicrm_caseTypes(&$caseTypes) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
-function bootstrapcivicrmstyleguide_civicrm_angularModules(&$angularModules) {
-_bootstrapcivicrmstyleguide_civix_civicrm_angularModules($angularModules);
+function styleguide_civicrm_angularModules(&$angularModules) {
+_styleguide_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -120,13 +120,13 @@ _bootstrapcivicrmstyleguide_civix_civicrm_angularModules($angularModules);
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
-function bootstrapcivicrmstyleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  _bootstrapcivicrmstyleguide_civix_civicrm_alterSettingsFolders($metaDataFolders);
+function styleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _styleguide_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
 /**
  * Implementation of hook_civicrm_pageRun
  */
-function bootstrapcivicrmstyleguide_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrmstyleguide', 'css/bootstrap-civicrm-styleguide.css');
+function styleguide_civicrm_pageRun($page) {
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.styleguide', 'css/styleguide.css');
 }
