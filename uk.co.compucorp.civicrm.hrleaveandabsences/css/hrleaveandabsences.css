@@ -67,3 +67,73 @@
   border-top: 1px solid rgba(0, 0, 0, .2);
   border-bottom: 1px solid rgba(0, 0, 0, .2);
 }
+
+.entitlement-calculation-filters {
+  text-align: center;
+  padding: 15px 0;
+}
+
+.entitlement-calculation-filters .override-filters label {
+  display: inline-block;
+}
+
+.entitlement-calculation-filters .absence-type-filter {
+  display: inline;
+  margin-right: 10px;
+}
+
+.entitlement-calculation-filters .col-sm-4:last-child {
+  text-align: right;
+}
+
+.entitlement-calculation-list .proposed-entitlement-header .title {
+  width: 65%;
+  float: left;
+}
+
+.entitlement-calculation-list .proposed-entitlement-header .actions {
+  float: right;
+}
+
+.entitlement-calculation-list tr.hidden {
+  display: none;
+}
+
+.entitlement-calculation-list .absence-type {
+  display: inline-block;
+  color: #fff;
+  padding: 5px;
+}
+
+.entitlement-calculation-list .proposed-entitlement .overridden-proposed-entitlement {
+  display: none;
+  width: 24px;
+}
+
+.entitlement-calculation-list .borderless-button {
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.entitlement-calculation-list .add-comment {
+  font-size: 1.1em;
+}
+
+.entitlement-calculation-list .comment-text {
+  display: none;
+}
+
+#add-comment-dialog {
+  display: none;
+}
+
+#add-comment-dialog .calculation_comment {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+}
+
+.crm-container .CRM_HRLeaveAndAbsences_Form_ManageEntitlements .crm-button-type-next  {
+  float: right !important;
+}

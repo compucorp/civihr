@@ -10,6 +10,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   const REQUEST_CANCELATION_ALWAYS = 2;
   const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
 
+  /**
+   * The list of colors that can be selected for an AbsenceType
+   * @var array
+   */
   private static $allColors = [
       '#5A6779',
       '#3D4A5E',
@@ -48,7 +52,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return CRM_HRLeaveAndAbsences_DAO_AbsenceType|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
+    $className = 'CRM_HRLeaveAndAbsences_BAO_AbsenceType';
     $entityName = 'AbsenceType';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
@@ -81,6 +85,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return $instance;
   }
 
+  /**
+   * Deletes the AbsenceType with the given ID.
+   *
+   * A reserved AbsenceType cannot be deleted. If the given ID is from a
+   * reserved type, and exception will be thrown.
+   *
+   * @param int $id The ID of the AbsenceType to be deleted
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
+   */
   public static function del($id)
   {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
@@ -94,6 +108,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $absenceType->delete();
   }
 
+  /**
+   * Returns all the options available to the Allow Request Cancelation dropdown
+   *
+   * @return array
+   */
   public static function getRequestCancelationOptions() {
      return [
          self::REQUEST_CANCELATION_NO                       => ts('No'),
@@ -102,6 +121,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
      ];
   }
 
+  /**
+   * Returns a list of options available to the unit dropdown of the carry
+   * forward and TOIL expiration.
+   *
+   * @return array
+   */
   public static function getExpirationUnitOptions() {
     return [
         self::EXPIRATION_UNIT_DAYS   => ts('Days'),
@@ -110,6 +135,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     ];
   }
 
+  /**
+   * Returns a list of colors that are available to be selected for an
+   * AbsenceType.
+   *
+   * First it will return only the colors that haven't been used yet. When all
+   * the colors have been used once, it will return all the colors.
+   *
+   * @return array
+   */
   public static function getAvailableColors() {
     $colorsInUse = self::getColorsInUse();
     if(count(self::$allColors) == count($colorsInUse)) {
@@ -126,13 +160,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return $availableColors;
   }
 
-  public static function getDefaultValues($id) {
+  /**
+   * Returns an array containing all the fields values for the
+   * AbsenceType with the given ID.
+   *
+   * This method is mainly used by the AbsenceType form, so it
+   * can get the data to fill its fields.
+   *
+   * An empty array is returned if it is not possible to load
+   * the data.
+   *
+   * @param int $id The id of the AbsenceType to retrieve the values
+   *
+   * @return array An array containing the values
+   */
+  public static function getValuesArray($id) {
     $result = civicrm_api3('AbsenceType', 'get', array('id' => $id));
     $absenceType = $result['values'][$id];
     $absenceType['notification_receivers_ids'] = self::getNotificationReceiversIDs($id);
     return $absenceType;
   }
 
+  /**
+   * Unset the is_default flag for every AbsenceType that has it
+   */
   private static function unsetDefaultTypes() {
     $tableName = self::getTableName();
     $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
@@ -140,7 +191,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * @param $params The params array received by the create method
+   * @param array $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
@@ -161,6 +212,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     self::validateCarryForward($params);
   }
 
+  /**
+   * Validates the add_public_holiday_to_entitlement field.
+   *
+   * There can be only one AbsenceType where this field is true. So this
+   * method checks if one such type already exists and throws an error if that
+   * is the case.
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @throws \CiviCRM_API3_Exception
+   */
   private static function validateAddPublicHolidayToEntitlement() {
     $result = civicrm_api3('AbsenceType', 'getcount', array(
         'sequential' => 1,
@@ -174,6 +235,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Validates the TOIL fields
+   *
    * @param $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
@@ -216,6 +279,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Validates the Carry Forward fields
+   *
    * @param $params The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
@@ -228,15 +293,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_day = !empty($params['carry_forward_expiration_day']);
-    $has_carry_forward_expiration_month = !empty($params['carry_forward_expiration_month']);
-    $has_carry_forward_expiration_date = $has_carry_forward_expiration_day && $has_carry_forward_expiration_month;
-    if($has_carry_forward_expiration_date && !$allow_carry_forward) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set the Carry Forward Expiration Date you must allow Carry Forward'
-      );
-    }
-
     $has_carry_forward_expiration_duration = !empty($params['carry_forward_expiration_duration']);
     $has_carry_forward_expiration_unit = !empty($params['carry_forward_expiration_unit']);
     if($has_carry_forward_expiration_duration && $has_carry_forward_expiration_unit && !$allow_carry_forward) {
@@ -245,24 +301,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    $has_carry_forward_expiration_duration_or_unit = $has_carry_forward_expiration_unit || $has_carry_forward_expiration_duration;
-    if($has_carry_forward_expiration_date && $has_carry_forward_expiration_duration_or_unit) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          "You can't set both the Carry Forward Expiration Date and Period"
-      );
-    }
-
     if($has_carry_forward_expiration_unit xor $has_carry_forward_expiration_duration) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'Invalid Carry Forward Expiration. It should have both Unit and Duration'
-      );
-    }
-
-    if ($has_carry_forward_expiration_date &&
-        !self::isValidDateAndMonth($params['carry_forward_expiration_day'], $params['carry_forward_expiration_month'])
-    ) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Date'
       );
     }
 
@@ -273,28 +314,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
           'Invalid Carry Forward Expiration Unit'
       );
     }
-  }
-
-  /**
-   * Checks if a date in dd-mm format is valid.
-   *
-   * @TODO Find a better place to put this method.
-   *
-   */
-  private static function isValidDateAndMonth($day, $month) {
-    if($month < 1 || $month > 12) {
-      return false;
-    }
-
-    if($month == 2 && $day > 29) {
-      return false;
-    }
-
-    if(in_array($month, [4, 6, 9, 11]) && $day > 30) {
-      return false;
-    }
-
-    return true;
   }
 
   /**
@@ -359,4 +378,47 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
   }
 
+  /**
+   * The carry forward for an Absence Type never expires if the types has no
+   * expiration duration.
+   *
+   * @return bool|null Returns true if carry forward never expires, false if
+   *                   it does expire, and null if this Absence Types doesn't
+   *                   allow carry forward
+   */
+  public function carryForwardNeverExpires() {
+    if(!$this->allow_carry_forward) {
+      return null;
+    }
+
+    return !$this->hasExpirationDuration();
+  }
+
+  /**
+   * An AbsenceType has an expiration duration if both carry_forward_expiration_duration
+   * and carry_forward_expiration_unit are not empty
+   *
+   * @return bool
+   */
+  public function hasExpirationDuration()
+  {
+    return $this->carry_forward_expiration_duration && $this->carry_forward_expiration_unit;
+  }
+
+  /**
+   * Returns a list of all enabled Absence Types, ordered by weight
+   */
+  public static function getEnabledAbsenceTypes()
+  {
+    $absenceTypes = [];
+    $absenceType = new self();
+    $absenceType->is_active = 1;
+    $absenceType->orderBy('weight');
+    $absenceType->find();
+    while($absenceType->fetch()) {
+      $absenceTypes[] = clone $absenceType;
+    }
+
+    return $absenceTypes;
+  }
 }

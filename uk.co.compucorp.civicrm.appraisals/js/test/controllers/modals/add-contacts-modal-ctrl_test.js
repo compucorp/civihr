@@ -255,7 +255,7 @@ define([
             scope.cycleId = '9';
 
             ctrl = $controller('AddContactsModalCtrl', {
-                $modalInstance: $modalInstance,
+                $uibModalInstance: $modalInstance,
                 $scope: scope
             });
         }

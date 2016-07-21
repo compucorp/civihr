@@ -24,7 +24,6 @@
  +--------------------------------------------------------------------+
 */
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
 class WebTest_HRMed_HRMedAddEditTest extends CiviSeleniumTestCase {
 
   protected function setUp() {

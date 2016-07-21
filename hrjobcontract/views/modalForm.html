@@ -5,8 +5,8 @@
         <h4 class="modal-title">{{copy.title}}</h4>
     </div>
     <div class="modal-body clearfix">
-        <tabset class="tabs-left">
-            <tab heading="General">
+        <uib-tabset class="tabs-left">
+            <uib-tab heading="General">
                 <div ng-controller="FormGeneralCtrl">
                     <div class="row">
                         <div class="col-xs-12">
@@ -75,20 +75,18 @@
                                 <div class="col-sm-4">
                                     <div class="input-group input-group-unstyled">
                                         <input placeholder="{{format}}"
-                                               type="text"
-                                               class="form-control"
-                                               id="{{prefix}}period-start-date"
-                                               name="detailsPeriodStartDate"
-                                               datepicker-popup
-                                               is-open="dpDateStartOpen"
-                                               max-date="dpDateStartMax"
-                                               ng-model="entity.details.period_start_date"
-                                               ng-disabled="isDisabled"
-                                               date-input
-                                               required />
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateStartOpen')"  ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
-                                        </span>
+                                          type="text"
+                                          class="form-control"
+                                          id="{{prefix}}period-start-date"
+                                          name="detailsPeriodStartDate"
+                                          uib-datepicker-popup
+                                          is-open="dpDateStartOpen"
+                                          datepicker-options="datepickerOptions.start"
+                                          ng-model="entity.details.period_start_date"
+                                          ng-disabled="isDisabled"
+                                          ng-click="dpOpen($event, 'dpDateStartOpen')"
+                                          required>
+                                        <span class="input-group-addon fa fa-calendar"></span>
                                     </div>
                                 </div>
                             </div>
@@ -97,17 +95,17 @@
 
                                 <div class="col-sm-4">
                                     <div class="input-group input-group-unstyled">
-                                        <input placeholder="{{format}}" type="text" class="form-control" id="{{prefix}}period-end-date"
-                                               datepicker-popup
-                                               is-open="dpDateEndOpen"
-                                               min-date="dpDateEndMin"
-                                               ng-model="entity.details.period_end_date"
-                                               ng-disabled="isDisabled"
-                                               date-input
-                                        >
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-default" ng-class="{disabled: isDisabled}" ng-click="dpOpen($event, 'dpDateEndOpen')" ng-disabled="isDisabled"><i class="fa fa-calendar"></i></button>
-                                        </span>
+                                        <input placeholder="{{format}}"
+                                          type="text"
+                                          class="form-control"
+                                          id="{{prefix}}period-end-date"
+                                          uib-datepicker-popup
+                                          is-open="dpDateEndOpen"
+                                          datepicker-options="datepickerOptions.end"
+                                          ng-model="entity.details.period_end_date"
+                                          ng-click="dpOpen($event, 'dpDateEndOpen')"
+                                          ng-disabled="isDisabled">
+                                        <span class="input-group-addon fa fa-calendar"></span>
                                     </div>
                                 </div>
                             </div>
@@ -128,8 +126,9 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">Contract Duration</label>
 
-                                <div class="col-sm-8">
-                                    <p class="form-control-static">{{duration}}</p>
+                                <div class="col-sm-8" ng-switch="duration !== null">
+                                  <p class="form-control-static" ng-switch-when="true">{{duration}}</p>
+                                  <p class="form-control-static" ng-switch-default>Unspecified</p>
                                 </div>
                             </div>
                             <div class="form-group" hrjc-validate>
@@ -212,7 +211,7 @@
                                             <tr ng-repeat="item in uploader.details.contract_file.queue" ng-class="{'danger':(item.file.size > fileMaxSize)}">
                                                 <td><strong>{{files.details.length + $index+1}}</strong>
                                                     <span ng-if="(item.file.size > fileMaxSize)">
-                                                        <a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                        <a uib-tooltip-html="tooltips.fileSize">
                                                             <i class="fa fa-question-circle"></i>
                                                         </a>
                                                     </span>
@@ -232,8 +231,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Hours">
+            </uib-tab>
+            <uib-tab heading="Hours">
                 <div ng-controller="FormHourCtrl">
                     <div class="row">
                         <div class="col-xs-12">
@@ -287,30 +286,7 @@
                                 <div class="form-group required" ng-show="+entity.hour.hours_type">
                                     <label for="{{prefix}}fte" class="col-sm-4 control-label">FTE
                                         <a tooltip-placement="right"
-                                           tooltip-html-unsafe="<strong>FTE</strong> stands for
-                                                   Full Time Equivalent. This is a useful measure for
-                                                   an organisation that has peopleworking part-time.
-                                                   For a full-time person, FTE is always equal to
-                                                   1.0, whereas for a part-time person, the FTE will represent
-                                                   the fraction of standard hours that the person works on a
-                                                   regular basis.<br>
-                                                   E.g. if the standard working day at an organisation
-                                                   comprises of 8 hours, then a person who regularly works for
-                                                   8 hours each day would be considered to be full- time and
-                                                   would have an FTE value of 1.0. A person who regularly works
-                                                   for only 4 hours each day would be considered to be a
-                                                   part-time person and would have an FTE value of 0.5. If the
-                                                   organisation had 10 people, each with an FTE of 1.0 the
-                                                   actual headcount of full-time people would be 10 and the
-                                                   FTE headcount (equal to actual headcount multiplied by the
-                                                   FTE value) would also be 10. However, if the organisation
-                                                   had another 10 people who each worked part-time with an FTE
-                                                   value of 0.5 the actual headcount of part-time people would
-                                                   be 10 while the FTE headcount would only be 5. Thus for an
-                                                   organisation that had a total of 10 full-time people, and 10
-                                                   part-time people (each with an FTE of 0.5) the actual
-                                                   headcount for the organisation would be 20 while the FTE
-                                                   headcount would be 15.">
+                                           uib-tooltip-html="tooltips.fte">
                                             <i class="fa fa-question-circle"></i>
                                         </a></label>
                                     <div class="col-sm-8">
@@ -331,8 +307,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Pay">
+            </uib-tab>
+            <uib-tab heading="Pay">
                 <div ng-controller="FormPayCtrl">
                     <div class="row">
                         <div class="col-xs-12">
@@ -354,7 +330,7 @@
                             </div>
                         </div>
                     </div>
-                    <div collapse="entity.pay.is_paid == '0'">
+                    <div uib-collapse="entity.pay.is_paid == '0'">
                         <hr>
                         <div class="form-group">
                             <label for="{{prefix}}pay-scale-grade" class="col-sm-4 control-label">Pay Scale / Grade</label>
@@ -428,7 +404,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div collapse="collapseBenDed">
+                        <div uib-collapse="collapseBenDed">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="panel panel-default">
@@ -582,8 +558,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Leave">
+            </uib-tab>
+            <uib-tab heading="Leave">
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Leave</h4>
@@ -611,8 +587,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Insurance">
+            </uib-tab>
+            <uib-tab heading="Insurance">
                 <div ng-controller="FormHealthCtrl">
                     <div class="row">
                         <div class="col-xs-12">
@@ -625,7 +601,7 @@
                             <div class="form-group">
                                 <label class="col-sm-4 control-label">Provider
                                     <a tooltip-placement="right"
-                                       tooltip="The name of the health insurance company.">
+                                       uib-tooltip="The name of the health insurance company.">
                                         <i class="fa fa-question-circle"></i>
                                     </a></label>
                                 <div class="col-sm-6">
@@ -677,7 +653,7 @@
                             <div class="form-group">
                                 <label for="health-health-deps" class="col-sm-4 control-label">Dependents
                                     <a tooltip-placement="right"
-                                       tooltip="For a family plan, please list
+                                       uib-tooltip="For a family plan, please list
                                                            the names of all dependents who are also covered, along
                                                            with their relationships to the individual.">
                                         <i class="fa fa-question-circle"></i>
@@ -750,7 +726,7 @@
                             <div class="form-group">
                                 <label for="health-life-deps" class="col-sm-4 control-label">Dependents
                                     <a tooltip-placement="right"
-                                       tooltip="For a family plan, please list
+                                       uib-tooltip="For a family plan, please list
                                                            the names of all dependents who are also covered, along
                                                            with their relationships to the individual.">
                                         <i class="fa fa-question-circle"></i>
@@ -765,8 +741,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Pension">
+            </uib-tab>
+            <uib-tab heading="Pension">
                 <div ng-controller="FormPensionCtrl">
                     <div class="row">
                         <div class="col-xs-12">
@@ -806,7 +782,7 @@
                             <div class="form-group">
                                 <label for="pension-contrib-emplr" class="col-sm-4 control-label">
                                     Employer Contribution (%)
-                                    <a tooltip-placement="right" tooltip="The contribution paid by the employer as a percentage of gross salary.">
+                                    <a tooltip-placement="right" uib-tooltip="The contribution paid by the employer as a percentage of gross salary.">
                                         <i class="fa fa-question-circle"></i>
                                     </a>
                                 </label>
@@ -822,7 +798,7 @@
                             <div class="form-group">
                                 <label for="pension-contrib-emple" class="col-sm-4 control-label">
                                     Employee Contribution (%)
-                                    <a tooltip-placement="right" tooltip="The contribution paid by the employee as a percentage of gross salary.">
+                                    <a tooltip-placement="right" uib-tooltip="The contribution paid by the employee as a percentage of gross salary.">
                                         <i class="fa fa-question-circle"></i>
                                     </a>
                                 </label>
@@ -883,7 +859,7 @@
                                             <td>
                                                 <strong>{{$index+1}}</strong>
                                                 <span ng-if="(item.file.size > fileMaxSize)">
-                                                    <a tooltip-html-unsafe="THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.">
+                                                    <a uib-tooltip-html="tooltips.fileSize">
                                                         <i class="fa fa-question-circle"></i>
                                                     </a>
                                                 </span>
@@ -911,8 +887,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-            <tab heading="Funding">
+            </uib-tab>
+            <uib-tab heading="Funding">
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Funding</h4>
@@ -930,8 +906,8 @@
                         </div>
                     </div>
                 </div>
-            </tab>
-        </tabset>
+            </uib-tab>
+        </uib-tabset>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" ng-click="cancel()">{{copy.close}}</button>

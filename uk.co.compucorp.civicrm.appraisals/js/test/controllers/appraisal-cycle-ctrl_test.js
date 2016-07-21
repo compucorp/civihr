@@ -29,8 +29,8 @@ define([
             ]);
         });
 
-        beforeEach(inject(function (_$log_, _$modal_, _$q_, _$rootScope_, _$controller_, _dialog_, _AppraisalCycle_) {
-            ($modal = _$modal_) && spyOn($modal, 'open');
+        beforeEach(inject(function (_$log_, _$uibModal_, _$q_, _$rootScope_, _$controller_, _dialog_, _AppraisalCycle_) {
+            ($modal = _$uibModal_) && spyOn($modal, 'open');
             ($log = _$log_) && spyOn($log, 'debug');
 
             $controller = _$controller_;

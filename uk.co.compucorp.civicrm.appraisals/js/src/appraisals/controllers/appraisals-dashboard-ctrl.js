@@ -7,7 +7,7 @@ define([
     'use strict';
 
     controllers.controller('AppraisalsDashboardCtrl',
-        ['$filter', '$log', '$modal', '$rootElement', '$rootScope', '$scope', '$timeout',
+        ['$filter', '$log', '$uibModal', '$rootElement', '$rootScope', '$scope', '$timeout',
         'AppraisalCycle', 'activeCycles', 'HR_settings', 'totalCycles', 'statusOverview',
         'statuses', 'types',
         function ($filter, $log, $modal, $rootElement, $rootScope, $scope, $timeout, AppraisalCycle, activeCycles, HR_settings, totalCycles, statusOverview, statuses, types) {
@@ -60,7 +60,7 @@ define([
                 modalScope.cycleId = id;
 
                 $modal.open({
-                    targetDomEl: $rootElement.children().eq(0),
+                    appendTo: $rootElement.children().eq(0),
                     controller: 'AppraisalCycleModalCtrl',
                     controllerAs: 'modal',
                     bindToController: true,

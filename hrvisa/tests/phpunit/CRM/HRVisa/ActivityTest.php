@@ -1,45 +1,26 @@
 <?php
-/*
-+--------------------------------------------------------------------+
-| CiviHR version 1.4                                                 |
-+--------------------------------------------------------------------+
-| Copyright CiviCRM LLC (c) 2004-2014                                |
-+--------------------------------------------------------------------+
-| This file is a part of CiviCRM.                                    |
-|                                                                    |
-| CiviCRM is free software; you can copy, modify, and distribute it  |
-| under the terms of the GNU Affero General Public License           |
-| Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
-|                                                                    |
-| CiviCRM is distributed in the hope that it will be useful, but     |
-| WITHOUT ANY WARRANTY; without even the implied warranty of         |
-| MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
-| See the GNU Affero General Public License for more details.        |
-|                                                                    |
-| You should have received a copy of the GNU Affero General Public   |
-| License and the CiviCRM Licensing Exception along                  |
-| with this program; if not, contact CiviCRM LLC                     |
-| at info[AT]civicrm[DOT]org. If you have questions about the        |
-| GNU Affero General Public License or the licensing of CiviCRM,     |
-| see the CiviCRM license FAQ at http://civicrm.org/licensing        |
-+--------------------------------------------------------------------+
-*/
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
-class CRM_HRVisa_ActivityTest extends CiviUnitTestCase {
+/**
+ * Class CRM_HRVisa_ActivityTest
+ *
+ * @group headless
+ */
+class CRM_HRVisa_ActivityTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
 
   protected $customFields;
-  function get_info() {
-    return array(
-      'name'      => 'Activity Test',
-      'description' => 'Test activity contact sync for visa required field',
-      'group'      => 'CiviCRM BAO Tests',
-    );
+
+  public function setUpHeadless() {
+    // check phpunitPopulateDB() to know why org.civicrm.hrdemog is installed here
+    return \Civi\Test::headless()
+      ->installMe(__DIR__)
+      ->install('org.civicrm.hrdemog')
+      ->apply();
   }
 
   function setUp() {
-    parent::setUp();
     // call after parent invocation as fields populated in parent
     $customFields = array(
       'Extended_Demographics:Is_Visa_Required' => 'Is_Visa_Required',
@@ -56,11 +37,13 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase {
     $this->createLoggedInUser();
   }
 
+  function tearDown()
+  {
+
+  }
+
   protected static function _populateDB($perClass = FALSE, &$object = NULL) {
-    if (!parent::_populateDB($perClass, $object)) {
-      return FALSE;
-    }
-    _hrvisa_phpunit_populateDB();
+    self::phpunitPopulateDB();
 
     //also create 'Visa Expiration' actvity type
     $params = array(
@@ -183,5 +166,21 @@ class CRM_HRVisa_ActivityTest extends CiviUnitTestCase {
       $count++;
     }
     return array($count, $activityId);
+  }
+
+  /**
+   * Helper function to load data into DB between iterations of the unit-test
+   */
+  private static function phpunitPopulateDB() {
+    $import = new CRM_Utils_Migrate_Import();
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrvisa')
+      . '/xml/auto_install.xml'
+    );
+    // this had to be done as demographics consists of is_visa_required field (used in unit test)
+    $import->run(
+      CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrdemog')
+      . '/xml/auto_install.xml'
+    );
   }
 }

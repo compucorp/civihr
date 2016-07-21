@@ -6,4 +6,7 @@
     <xi:include href="WorkPattern.xml" parse="xml" />
     <xi:include href="WorkWeek.xml" parse="xml" />
     <xi:include href="WorkDay.xml" parse="xml" />
+    <xi:include href="AbsencePeriod.xml" parse="xml" />
+    <xi:include href="PublicHoliday.xml" parse="xml" />
+    <xi:include href="Entitlement.xml" parse="xml" />
 </tables>

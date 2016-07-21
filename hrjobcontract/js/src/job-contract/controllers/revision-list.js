@@ -4,7 +4,7 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('RevisionListCtrl',['$scope', '$filter', '$q', '$modal', '$rootElement', 'settings', 'ContractService',
+    controllers.controller('RevisionListCtrl',['$scope', '$filter', '$q', '$uibModal', '$rootElement', 'settings', 'ContractService',
         'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log',
         function ($scope, $filter, $q, $modal, $rootElement, settings, ContractService,
                  ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log) {
@@ -177,7 +177,7 @@ define([
                 }
 
                 var modalInstance = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalDialog.html',
                     size: 'sm',
                     controller: 'ModalDialogCtrl',
@@ -226,7 +226,7 @@ define([
                     reasonId = revisionEntityIdObj.change_reason;
 
                 var modalChangeReason = $modal.open({
-                    targetDomEl: $rootElement.find('div').eq(0),
+                    appendTo: $rootElement.find('div').eq(0),
                     templateUrl: settings.pathApp+'views/modalChangeReason.html?v='+(new Date()).getTime(),
                     controller: 'ModalChangeReasonCtrl',
                     resolve: {

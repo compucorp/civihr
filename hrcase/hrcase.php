@@ -71,6 +71,9 @@ function hrcase_civicrm_postInstall() {
       $import->run($file);
     }
   }
+
+  updateEntityColumnValues();
+
   $scheduleActions = hrcase_getActionsSchedule();
   foreach($scheduleActions as $actionName=>$scheduleAction) {
   	$result = civicrm_api3('action_schedule', 'get', array('name' => $actionName));
@@ -367,19 +370,6 @@ function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
  */
 function hrcase_civicrm_caseTypes(&$caseTypes) {
   _hrcase_civix_civicrm_caseTypes($caseTypes);
-  /* Here we fetch all current case types and remove the ones
-   * that that already exist , for example task assignment extension
-   * create a case type called "joining" and since hrcase extension try to create
-   * a case type with similar name A database exception thrown
-   * and the installation of hrcase extension fail in case task
-   * assignment extension enabled before it
-  */
-  $caseTypesList = CRM_Case_PseudoConstant::caseType('name');
-  foreach($caseTypes as $key => $item)  {
-    if (in_array($key, $caseTypesList))  {
-      unset($caseTypes[$key]);
-    }
-  }
 }
 
 function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
@@ -478,4 +468,23 @@ function activityCreatedByTaskandAssignments($activity_type_id) {
   }
 
   return FALSE;
+}
+
+/**
+ * Update extends_entity_column_value values in civicrm_custom_group table for both (Exiting & Joining)
+ * custom groups to point for related case ID instead of its name since using the name only
+ * is no longer work with civicrm 4.7.7+.
+ *
+ */
+function updateEntityColumnValues()  {
+  $caseTypes = CRM_Case_PseudoConstant::caseType('name');
+  $exitingValue = array_search('Exiting', $caseTypes);
+  $exitingValue = CRM_Core_DAO::VALUE_SEPARATOR . $exitingValue . CRM_Core_DAO::VALUE_SEPARATOR;
+  $joiningValue = array_search('Joining', $caseTypes);
+  $joiningValue = CRM_Core_DAO::VALUE_SEPARATOR . $joiningValue . CRM_Core_DAO::VALUE_SEPARATOR;
+
+  $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$exitingValue}' WHERE extends_entity_column_value = 'Exiting'";
+  CRM_Core_DAO::executeQuery($sql);
+  $sql = "UPDATE civicrm_custom_group SET extends_entity_column_value = '{$joiningValue}' WHERE extends_entity_column_value = 'Joining'";
+  CRM_Core_DAO::executeQuery($sql);
 }

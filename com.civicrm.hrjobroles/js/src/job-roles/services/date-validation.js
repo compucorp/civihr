@@ -119,6 +119,7 @@ define([
 
                 checkIfValuesAreValid(start, ['start_date']);
                 checkIfStartIsLowerThanContractEnd(start, contractEnd);
+                checkIfStartIsLowerThanContractStart(start, contractStart);
 
                 if (end === 0 || end) {
                   end = formatDate(end, this.dateFormats);
@@ -127,7 +128,6 @@ define([
                   checkIfEndIsEqualOrLowerThanContractEnd(end, contractEnd);
 
                   checkIfStartDateIsLower(start, end);
-                  checkIfStartIsLowerThanContractStart(start, contractStart);
                 }
             }
         };
