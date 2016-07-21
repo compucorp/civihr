@@ -57,7 +57,7 @@
       <name>Confirm End of Probation Date</name>
     </ActivityType>
     <ActivityType>
-      <name>Start Probation workflow Day</name>
+      <name>Start Probation workflow</name>
     </ActivityType>
   </ActivityTypes>
 
