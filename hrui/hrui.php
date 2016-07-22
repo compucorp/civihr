@@ -150,7 +150,7 @@ function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviReport','CiviCase'),
+    'enable_components' => array('CiviCase'),
   );
   $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
@@ -178,29 +178,6 @@ function hrui_civicrm_install() {
     if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
       CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
       throw new CRM_Core_Exception('Failed to disable contact type');
-    }
-  }
-
-  // Delete unnecessary reports
-  $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
-  if (!empty($reports)) {
-    foreach ($reports as $reportTitle) {
-      $reportID = CRM_Core_DAO::getFieldValue(
-        'CRM_Report_DAO_ReportInstance',
-        $reportTitle,
-        'id',
-        'title'
-      );
-      if ($reportID) {
-        $paramsReport = array(
-          'id' => $reportID,
-        );
-        $resultContactType = civicrm_api3('report_instance', 'delete', $paramsReport);
-        if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
-          CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
-          throw new CRM_Core_Exception('Failed to disable contact type');
-        }
-      }
     }
   }
 
