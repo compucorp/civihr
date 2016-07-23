@@ -1,25 +1,60 @@
 {
-    "rules": {
-        "indent": [
-            2,
-            4
-        ],
-        "quotes": [
-            2,
-            "single"
-        ],
-        "linebreak-style": [
-            2,
-            "unix"
-        ],
-        "semi": [
-            2,
-            "always"
-        ]
-    },
-    "env": {
-        "es6": true,
-        "browser": true
-    },
-    "extends": "eslint:recommended"
+  "parserOptions": {
+    "sourceType": "script"
+  },
+  "extends": [
+    "eslint:recommended",
+    "google",
+    "angular",
+    "plugin:jasmine/recommended"
+  ],
+  "env": {
+    "amd": true,
+    "jasmine": true
+  },
+  "globals": {
+    "CRM": true,
+    "inject": true
+  },
+  "plugins": [
+    "requirejs",
+    "jasmine"
+  ],
+  "rules": {
+    "camelcase": 0,
+    "max-nested-callbacks": [2, {
+      "maximum": 10
+    }],
+    "strict": [2, "function"],
+    "one-var": 0,
+    "max-len": 0,
+    "object-curly-spacing": 0,
+    "no-else-return": 0,
+    "no-trailing-spaces": 0,
+    "newline-per-chained-call": [2, {
+      "ignoreChainWithDepth": 2
+    }],
+    "space-before-function-paren": 0,
+    "space-before-blocks": [2, {
+      "functions": "always"
+    }],
+    "eol-last": 2,
+    "quotes": [
+      2,
+      "single"
+    ],
+    "require-jsdoc": 2,
+    "requirejs/no-invalid-define": 2,
+    "requirejs/no-multiple-define": 2,
+    "requirejs/no-named-define": 2,
+    "requirejs/no-commonjs-wrapper": 2,
+    "requirejs/no-object-define": 1,
+    "requirejs/one-dependency-per-line": [2, {
+      "paths": "always",
+      "names": 3
+    }],
+    "angular/module-getter": 0,
+    "angular/controller-name": 0,
+    "angular/di": [2, "array"]
+  }
 }
