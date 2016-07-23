@@ -1,13 +1,15 @@
 define([
     'common/lodash',
     'contact-summary/modules/services',
+    'common/moment',
     'contact-summary/services/api',
     'contact-summary/services/model',
     'contact-summary/services/contactDetails'
-], function (_, services) {
+], function (_, services, moment) {
     'use strict';
 
     /**
+    *
     * @param {ApiService} Api
     * @param {ModelService} Model
     * @param {ContactDetailsService} ContactDetails
@@ -16,6 +18,7 @@ define([
     * @returns {ModelService|Object|*}
     * @constructor
     */
+
     function LeaveService($q, $log, $filter, Api, Model, ContactDetails) {
         $log.debug('Service: LeaveService');
 
@@ -382,8 +385,8 @@ define([
                 // Because we don't want to show entitlements for TOIL - they will only include
                 // accrued TOIL days.
                 if (data[typeId].title.toLowerCase() !== 'toil') {
-                    data[typeId].entitled = +entitlement.amount;    
-                }                
+                    data[typeId].entitled = +entitlement.amount;
+                }
             });
 
             factory.collection.insertItem(periodId, data);
@@ -426,7 +429,7 @@ define([
                         }
                     } else {
                         data[typeId].taken += days;
-                    }                    
+                    }
                 }
             });
 

@@ -57,7 +57,7 @@ class CRM_Contactsummary_Utils_Absences {
       ON (a.id = a1.source_record_id AND a1.activity_type_id = %1 AND a1.status_id = %2)
 
       WHERE
-        a.id IN (" . implode(',', $absenceTypeIds) . ")
+        a.id IN (" . (count($absenceTypeIds) > 0 ? implode(',', $absenceTypeIds) : 'NULL') . ")
         AND a.status_id = %2
     ";
 
