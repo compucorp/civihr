@@ -22,7 +22,7 @@ define([
         }
       };
     };
-    
+
     return $delegate;
   }];
 });
