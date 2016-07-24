@@ -63,4 +63,4 @@ VALUES
 (@option_group_id_activity_type, 'Complete contract revisions','Complete contract revisions',
   (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @compId ),
 (@option_group_id_activity_type, 'Confirm End of Probation Date','Confirm End of Probation Date',
-  (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @compId ),
+  (SELECT @max_val := @max_val+1), NULL, 0,  0, (SELECT @max_val := @max_val+1), '',  0, 0, 1, @compId );
