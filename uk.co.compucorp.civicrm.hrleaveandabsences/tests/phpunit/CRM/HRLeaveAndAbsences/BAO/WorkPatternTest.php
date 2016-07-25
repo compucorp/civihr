@@ -204,6 +204,25 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends PHPUnit_Framework_TestC
         $this->assertEmpty($values);
     }
 
+    /**
+     * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+     * @expectedExceptionMessage You cannot disable a Work Pattern if it's the last one
+     */
+    public function testCannotDisablePatternIfItIsTheLastWorkPatternEnabled() {
+      $workPattern = $this->createBasicWorkPattern(['is_active' => 1]);
+      $this->updateBasicWorkPattern($workPattern->id, ['is_active' => 0]);
+    }
+
+    public function testCanDisablePatternIfItIsNotTheLastWorkPatternEnabled() {
+      $workPattern1 = $this->createBasicWorkPattern(['is_active' => 1]);
+      $this->createBasicWorkPattern(['is_active' => 1]);
+
+      $this->updateBasicWorkPattern($workPattern1->id, ['is_active' => 0]);
+
+      $workPattern1 = $this->findWorkPatternByID($workPattern1->id);
+      $this->assertEquals(0, $workPattern1->is_active);
+    }
+
     private function createBasicWorkPattern($params = [])
     {
         $basicRequiredFields = ['label' => 'Pattern ' . microtime() ];

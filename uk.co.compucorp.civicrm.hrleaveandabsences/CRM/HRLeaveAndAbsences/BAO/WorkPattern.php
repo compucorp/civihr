@@ -41,8 +41,12 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
       self::unsetDefaultWorkPatterns();
     }
 
-    if(empty($params['id'])) {
+    if($hook == 'create') {
       $params['weight'] = self::getMaxWeight() + 1;
+    }
+
+    if($hook == 'edit' && isset($params['is_active']) && !$params['is_active']) {
+      self::checkIfPatternCanBeDisabled($params['id']);
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
@@ -79,6 +83,38 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     $workPattern->id = $id;
     $workPattern->find(true);
     $workPattern->delete();
+  }
+
+  /**
+   * This method checks if a Work Pattern can be disabled.
+   *
+   * A Work Pattern can be disabled only if it's not the last enabled pattern.
+   *
+   * @param int $id
+   *  The ID of the WorkPattern to be checked
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException
+   */
+  private static function checkIfPatternCanBeDisabled($id) {
+    $tableName = self::getTableName();
+    $id = (int)$id;
+
+    $query = "
+        SELECT COUNT(*) as total
+        FROM {$tableName}
+        WHERE is_active = 1 AND id <> $id
+    ";
+
+    $dao = CRM_Core_DAO::executeQuery($query);
+    $dao->fetch();
+
+    $total = (int)$dao->total;
+
+    if($total == 0) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
+        "You cannot disable a Work Pattern if it's the last one"
+      );
+    }
   }
 
   /**
