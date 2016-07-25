@@ -350,7 +350,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     $absenceType = $this->createBasicType([
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 4,
-      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS
+      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS
     ]);
     $this->assertFalse($absenceType->carryForwardNeverExpires());
   }

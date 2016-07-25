@@ -438,9 +438,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       case AbsenceType::EXPIRATION_UNIT_MONTHS:
         $unit = 'M';
         break;
-      case AbsenceType::EXPIRATION_UNIT_YEARS:
-        $unit = 'Y';
-        break;
       default:
         return null;
     }

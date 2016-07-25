@@ -23,11 +23,11 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `max_leave_accrual` int unsigned    COMMENT 'Value is the number of days that can be accrued. Null means unlimited',
      `allow_accrue_in_the_past` tinyint   DEFAULT 0 ,
      `accrual_expiration_duration` int unsigned    COMMENT 'An amount of accrual_expiration_unit',
-     `accrual_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of accrual_expiration_duration of this type default expiry',
+     `accrual_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of accrual_expiration_duration of this type default expiry',
      `allow_carry_forward` tinyint   DEFAULT 0 ,
      `max_number_of_days_to_carry_forward` int unsigned    ,
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
-     `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry',
+     `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -67,8 +67,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   0,
   1,
   5,
-  1,
-  3, -- Years
+  12,
+  2, -- Months
   1,
   1,
   1
