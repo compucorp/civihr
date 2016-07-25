@@ -48,7 +48,7 @@ trait WebTest_WorkPattern_FormHelpersTrait {
     $this->openCiviPage($this->formUrl, $this->addUrlParams);
   }
 
-  public function addWorkPatternWithMinimumRequiredFields() {
+  public function addWorkPatternWithOneWeekAnd40Hours() {
     $this->openAddForm();
     $label = 'Label ' . microtime();
     $this->type('label', $label);

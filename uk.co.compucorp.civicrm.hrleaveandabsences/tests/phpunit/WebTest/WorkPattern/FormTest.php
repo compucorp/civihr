@@ -40,7 +40,7 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
     public function testCanAddTypeWithMinimumRequiredFields()
     {
         $this->loginAsAdmin();
-        $label = $this->addWorkPatternWithMinimumRequiredFields();
+        $label = $this->addWorkPatternWithOneWeekAnd40Hours();
         $firstTdOfLastRow = 'xpath=//div[@class="form-item"]/table/tbody/tr[last()]/td[1]';
         $this->assertElementContainsText($firstTdOfLastRow, $label);
     }
@@ -55,7 +55,7 @@ class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
     public function testDeleteButtonIsAvailableOnEdit()
     {
         $this->loginAsAdmin();
-        $this->addWorkPatternWithMinimumRequiredFields();
+        $this->addWorkPatternWithOneWeekAnd40Hours();
         $this->editLastInsertedWorkPattern();
         $this->assertEquals(1, $this->getXpathCount("id('_qf_WorkPattern_delete-bottom')"));
     }
