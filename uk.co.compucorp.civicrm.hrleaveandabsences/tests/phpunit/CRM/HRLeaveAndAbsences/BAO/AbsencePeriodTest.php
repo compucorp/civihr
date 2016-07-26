@@ -459,7 +459,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $expectedDate = $startDate->add(new DateInterval('P5D'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
 
+    //485 days duration
+    $absenceType->carry_forward_expiration_duration = 485;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P485D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
     //5 months duration
+    $absenceType->carry_forward_expiration_duration = 5;
     $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
     $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
     $expectedDate = $startDate->add(new DateInterval('P5M'));
@@ -471,16 +478,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $expectedDate = $startDate->add(new DateInterval('P10M'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
 
-    //10 years duration
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
-    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
-    $expectedDate = $startDate->add(new DateInterval('P10Y'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
-
-    //1 year duration
-    $absenceType->carry_forward_expiration_duration = 1;
+    //12 months duration
+    $absenceType->carry_forward_expiration_duration = 12;
     $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
     $expectedDate = $startDate->add(new DateInterval('P1Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //27 months duration
+    $absenceType->carry_forward_expiration_duration = 27;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P27M'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
   }
 

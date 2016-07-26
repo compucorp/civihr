@@ -177,7 +177,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
    */
   public $accrual_expiration_duration;
   /**
-   * The unit (year, month, etc) of accrual_expiration_duration of this type default expiry
+   * The unit (months or days) of accrual_expiration_duration of this type default expiry
    *
    * @var int unsigned
    */
@@ -199,7 +199,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
    */
   public $carry_forward_expiration_duration;
   /**
-   * The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry
+   * The unit (months or days) of carry_forward_expiration_duration of this type default expiry
    *
    * @var int unsigned
    */
@@ -333,7 +333,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
           'name' => 'accrual_expiration_unit',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Accrual Expiration Unit') ,
-          'description' => 'The unit (year, month, etc) of accrual_expiration_duration of this type default expiry',
+          'description' => 'The unit (months or days) of accrual_expiration_duration of this type default expiry',
         ) ,
         'allow_carry_forward' => array(
           'name' => 'allow_carry_forward',
@@ -355,7 +355,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
           'name' => 'carry_forward_expiration_unit',
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Carry Forward Expiration Unit') ,
-          'description' => 'The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry',
+          'description' => 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
         ) ,
       );
     }
