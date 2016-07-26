@@ -47,21 +47,21 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
-   * Get options for a given job roles field along with their database IDs.
+   * Get option values for specific option group.
    *
    * @param String $fieldName
    *
-   * @return Array
+   * @return array
    */
   public static function buildDbOptions($fieldName) {
     $queryParam = array(1 => array($fieldName, 'String'));
-    $query = "SELECT cpv.id, cpv.label from civicrm_option_value cpv
+    $query = "SELECT cpv.value, cpv.label from civicrm_option_value cpv
               LEFT JOIN civicrm_option_group cpg on cpv.option_group_id = cpg.id
               WHERE cpg.name = %1";
     $options = array();
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
     while ($result->fetch()) {
-      $options[] =  array( 'id'=>$result->id, 'label'=>strtolower($result->label) );
+      $options[] =  array( 'value'=>$result->value, 'label'=>strtolower($result->label) );
     }
     return $options;
   }

@@ -166,7 +166,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
       foreach($optionValues as $key)  {
         if (!empty($params[$key])) {
           $optionID = $this->getOptionKey($key, $params[$key]);
-          if ($optionID !== 0) {
+          if ($optionID !== NULL) {
             $params[$key] = $optionID;
           } else {
             CRM_Contact_Import_Parser_Contact::addToErrorMsg($fields[$key]['title'].' is not found', $errorMessage);
@@ -177,7 +177,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
       $cost_center_error = FALSE;
       if (!empty($params['hrjc_cost_center'])) {
         $optionID = $this->getOptionKey('hrjc_cost_center', $params['hrjc_cost_center']);
-        if ($optionID !== 0) {
+        if ($optionID !== NULL) {
           $params['hrjc_cost_center'] = $optionID;
           if (!empty($params['hrjc_cost_center_val_type']))  {
             $val = strtolower($params['hrjc_cost_center_val_type']);
@@ -418,26 +418,20 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
 
 
   /**
-   * get the option database ID given its label or ID
+   * get the Option Value database value given its label
    * @param String|Integer $option
-   * @param String|Integer $value
-   * @return Integer
+   * @param String $value
+   * @return String|NULL
    * @access private
    */
-   private function getOptionKey($option, $value)  {
-     if (is_numeric ($value)) {
-       $search_field = 'id';
-     }
-     else {
-       $search_field = 'label';
-     }
-     $index = array_search(strtolower($value), array_column($this->_optionsList[$option], $search_field));
-     if ($index !== FALSE)  {
-       return (int) $this->_optionsList[$option][$index]['id'];
-     }
-     else {
-       return 0;
-     }
+  private function getOptionKey($option, $value)  {
+    $index = array_search(strtolower($value), array_column($this->_optionsList[$option], 'label'));
+    if ($index !== FALSE)  {
+      return $this->_optionsList[$option][$index]['value'];
+    }
+    else {
+      return NULL;
+    }
   }
 
 }
