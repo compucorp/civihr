@@ -6,9 +6,16 @@ require.config({
 });
 
 require(['contact-summary/app'], function () {
-  // In order to avoid conflicts with other components being loaded,
-  // we're delaying the bootstrapping a little
-  setTimeout(function () {
+  function bootstrap() {
     angular.bootstrap(document.getElementById('contactsummary'), ['contactsummary']);
-  }, 10);
+  }
+  angular.element(document).ready(function () {
+    if(window.contactsummaryLoad) {
+      bootstrap();
+    } else {
+      document.addEventListener('contactsummaryLoad', function() {
+        bootstrap();
+      });
+    }
+  });
 });
