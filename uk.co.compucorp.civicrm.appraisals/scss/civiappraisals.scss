@@ -2,7 +2,7 @@
 @import "../../org.civicrm.bootstrapcivicrm/scss/bootstrap/overrides/variables";
 @import "../../org.civicrm.bootstrap/scss/overrides/variables";
 @import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/variables";
-@import "../../org.civicrm.bootstrapcivicrm/scss/mixins/*";
+@import "../../org.civicrm.bootstrapcivicrm/scss/bootstrap/mixins/*";
 
 .page-civicrm-appraisals-dashboard {
 
@@ -88,7 +88,7 @@
     }
 
     .panel--appraisals-in-cycle__filters {
-        background: $brand-primary-light;
+        background: $crm-brand-primary-light;
         margin: 15px -20px;
     }
 
