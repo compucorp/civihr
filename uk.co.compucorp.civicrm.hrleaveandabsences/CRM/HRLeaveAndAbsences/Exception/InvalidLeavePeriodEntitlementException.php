@@ -1,0 +1,2 @@
+<?php
+class CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementException extends Exception {}
