@@ -914,6 +914,7 @@ define([
           data.values.forEach(function (object_data) {
             var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
             var todaysDate = moment().startOf('day');
+            end_date =  moment(end_date).startOf('day');
 
             if (!end_date || moment(end_date).isSameOrAfter(todaysDate)) {
               job_roles.present_job_roles.push(object_data);
