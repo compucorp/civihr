@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.styleguide" type="module">
   <file>styleguide</file>
-  <name>CiviCRM Bootstrap theme style guide</name>
-  <description>Style Guide of the CiviCRM theme based on Bootstrap</description>
+  <name>Bootstrap theme style guide</name>
+  <description>Style Guide for themes based on Bootstrap</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Alessandro Verdura</author>
