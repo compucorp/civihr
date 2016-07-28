@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_leave_balance_change`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_leave_period_entitlement`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_entitlement`;
 DROP TABLE IF EXISTS `civicrm_hrleaveandabsences_notification_receiver`;
