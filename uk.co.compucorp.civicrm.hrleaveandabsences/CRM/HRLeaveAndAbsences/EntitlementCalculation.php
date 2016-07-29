@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   /**
    * Variable to cache the return from the getPreviousPeriodEntitlement method
    *
-   * @var \CRM_HRLeaveAndAbsences_BAO_Entitlement
+   * @var \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
    */
   private $previousPeriodEntitlement;
 
@@ -193,7 +193,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    return $previousPeriodEntitlement->proposed_entitlement;
+    return $previousPeriodEntitlement->getEntitlement();
   }
 
   /**
@@ -208,10 +208,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Return the number of days remaining on the previous period. That is,
-   * the proposed entitlement - the number of leaves taken
+   * Return the number of days remaining on the previous period. That is, the
+   * balance of that period, which is given by the sum of all days added to the
+   * entitlement plus the days deducted
    *
-   * @return int
+   * @return float
    */
   public function getNumberOfDaysRemainingInThePreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
@@ -220,7 +221,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0;
     }
 
-    return $entitlement->getNumberOfDaysRemaining();
+    return $entitlement->getBalance();
   }
 
   /**
@@ -256,7 +257,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   /**
    * Returns the calculated Entitlement for the previous period.
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_Entitlement|null
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|null
    *          The entitlement for the previous period or null if there's no previous period or entitlement
    */
   private function getPreviousPeriodEntitlement() {
@@ -266,7 +267,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     }
 
     if(!$this->previousPeriodEntitlement) {
-      $this->previousPeriodEntitlement = Entitlement::getContractEntitlementForPeriod(
+      $this->previousPeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
         $this->contract['id'],
         $previousPeriod->id,
         $this->absenceType->id
