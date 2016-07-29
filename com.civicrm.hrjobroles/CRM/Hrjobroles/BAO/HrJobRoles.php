@@ -47,26 +47,6 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
-   * Get option values for specific option group.
-   *
-   * @param String $fieldName
-   *
-   * @return array
-   */
-  public static function buildDbOptions($fieldName) {
-    $queryParam = array(1 => array($fieldName, 'String'));
-    $query = "SELECT cpv.value, cpv.label from civicrm_option_value cpv
-              LEFT JOIN civicrm_option_group cpg on cpv.option_group_id = cpg.id
-              WHERE cpg.name = %1";
-    $options = array();
-    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
-    while ($result->fetch()) {
-      $options[] =  array( 'value'=>$result->value, 'label'=>strtolower($result->label) );
-    }
-    return $options;
-  }
-
-  /**
    * Check Contact if exist   .
    *
    * @param String $searchValue
@@ -78,6 +58,26 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
     $query = "SELECT id from civicrm_contact where ".$searchField." = %1";
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
     return $result->fetch() ? $result->id : 0;
+  }
+
+  /**
+   * Get option values for specific option group.
+   *
+   * @param String $fieldName
+   *
+   * @return array
+   */
+  public static function buildDbOptions($fieldName) {
+    $queryParam = array(1 => array($fieldName, 'String'));
+    $query = "SELECT cpv.value, cpv.label from civicrm_option_value cpv
+              LEFT JOIN civicrm_option_group cpg on cpv.option_group_id = cpg.id
+              WHERE cpg.name = %1";
+    $options = [];
+    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
+    while ($result->fetch()) {
+      $options[$result->value] = strtolower($result->label);
+    }
+    return $options;
   }
 
   public static function importableFields() {

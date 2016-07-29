@@ -31,6 +31,7 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
    */
   public function createJobContract($contactID, $startDate = null, $endDate = null, $extraParams = array()) {
     $contract = CRM_Hrjobcontract_BAO_HRJobContract::create(['contact_id' => $contactID]);
+
     if($startDate) {
       $params = [
         'jobcontract_id' => $contract->id,
@@ -41,8 +42,10 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
         $params['period_end_date'] = CRM_Utils_Date::processDate($endDate);
       }
       $params = array_merge($params, $extraParams);
+
       CRM_Hrjobcontract_BAO_HRJobDetails::create($params);
     }
+
     return $contract;
   }
 
@@ -62,9 +65,8 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
    *
    */
   public function createSampleOptionGroupsAndValues()  {
-    // Create required Option Groups
-    CRM_Core_DAO::executeQuery('UPDATE civicrm_option_group SET is_active = 1');
 
+    // Create required Option Groups
     $optionGroupsValuesList = [
       'hrjc_location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -72,11 +74,19 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
       'hrjc_level_type' => 'guru',
       'cost_centres' => 'abdali'
     ];
+
     $optionGroupsList = array_keys($optionGroupsValuesList);
     $INList = implode("','", $optionGroupsList );
+
+    CRM_Core_DAO::executeQuery(
+      "UPDATE civicrm_option_group SET is_active = 1
+       WHERE name IN ('$INList')"
+    );
+
     $query = "SELECT id,name FROM civicrm_option_group WHERE
               name IN ('$INList')";
     $optionGroups = CRM_Core_DAO::executeQuery($query);
+
     $existingGroups = [];
     while($optionGroups->fetch())  {
       $existingGroups[$optionGroups->id] = $optionGroups->name;
@@ -98,6 +108,27 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
       $params = ['option_group_id' => $groupID, 'name' => $value, 'value' => $value ];
       CRM_Core_BAO_OptionValue::create($params);
     }
+
+  }
+
+  /**
+   * Find and retrieve job role by any of its properties
+   *
+   * @param int|string $value
+   * @param string $identifier
+   *
+   * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
+   */
+  public function findRoleByProperty($value, $identifier = 'id')  {
+    $entity = new CRM_Hrjobroles_BAO_HrJobRoles();
+    $entity->$identifier = $value;
+    $entity->find(true);
+
+    if($entity->N == 0) {
+      return NULL;
+    }
+
+    return $entity;
   }
 
 }
