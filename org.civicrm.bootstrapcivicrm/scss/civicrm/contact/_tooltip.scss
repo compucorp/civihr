@@ -21,7 +21,7 @@
     padding: 10px 0 !important;
 
     .crm-contact_actions-list {
-      border-color: $background-color !important;
+      border-color: $crm-background !important;
     }
 
     ul {
@@ -32,10 +32,10 @@
         padding: 10px !important;
 
         &:hover {
-          background: $background-color !important;
+          background: $crm-background !important;
 
           a {
-            background: $background-color !important;
+            background: $crm-background !important;
           }
         }
       }
