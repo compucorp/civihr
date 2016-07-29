@@ -329,6 +329,18 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange',
     'table' => 'civicrm_hrleaveandabsences_leave_balance_change',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'LeaveRequest',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequest',
+    'table' => 'civicrm_hrleaveandabsences_leave_request',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'LeaveRequestDate',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate',
+    'table' => 'civicrm_hrleaveandabsences_leave_request_date',
+  );
 }
 
 /**

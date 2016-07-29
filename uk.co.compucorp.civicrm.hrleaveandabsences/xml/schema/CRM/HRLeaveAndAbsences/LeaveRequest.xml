@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveRequest</class>
+  <name>civicrm_hrleaveandabsences_leave_request</name>
+  <comment>Leave Requests</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveRequest ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>entitlement_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to LeavePeriodEntitlement</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>entitlement_id</name>
+    <table>civicrm_hrleaveandabsences_leave_period_entitlement</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>status_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Request Status option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_status</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>from_date</name>
+    <type>date</type>
+    <required>true</required>
+    <comment>The date the leave request starts.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>from_date_type</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Request Day Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>to_date</name>
+    <type>date</type>
+    <comment>The date the leave request ends. If null, it means is starts and ends at the same date</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>to_date_type</name>
+    <type>int unsigned</type>
+    <comment>One of the values of the Leave Request Day Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+</table>
