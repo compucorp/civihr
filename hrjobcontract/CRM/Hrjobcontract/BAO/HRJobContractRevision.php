@@ -94,6 +94,14 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
           );
           CRM_Core_DAO::executeQuery($updateOverridedQuery, $updateOverridedParams);
         }
+      } else {
+        $clearEffectiveEndDateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
+                "effective_end_date = NULL " .
+                "WHERE id = %1";
+        $clearEffectiveEndDateParams = array(
+          1 => array($revisions->id, 'Integer'),
+        );
+        CRM_Core_DAO::executeQuery($clearEffectiveEndDateQuery, $clearEffectiveEndDateParams);
       }
       $previousEffectiveDate = $revisions->effective_date;
     }
