@@ -29,9 +29,10 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
       'job_contract_id' => $contract->id,
       'title' => 'test import role'
     ];
-    $this->runImport($importParams);
+    $importResponse = $this->runImport($importParams);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
 
-    $roleEntity = $this->findRoleByProperty($importParams['title'], 'title');
+    $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
   }
 
@@ -40,7 +41,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
     $importParams = [
       'title' => 'test import role'
     ];
-    $this->runImport($importParams, 'assert_fail');
+    $importResponse = $this->runImport($importParams);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
   function testImportWithValidOptionValues() {
@@ -60,9 +62,10 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru'
     ];
-    $this->runImport($importParams);
+    $importResponse = $this->runImport($importParams);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
 
-    $roleEntity = $this->findRoleByProperty($importParams['title'], 'title');
+    $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
     $this->assertEquals($importParams['location'], $roleEntity->location);
     $this->assertEquals($importParams['hrjc_region'], $roleEntity->region);
@@ -87,7 +90,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru'
     ];
-    $this->runImport($importParams, 'assert_fail');
+    $importResponse = $this->runImport($importParams);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);;
   }
 
   function testImportWithEmptyOptionValues() {
@@ -107,19 +111,19 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
       'hrjc_role_department' => '',
       'hrjc_level_type' => ''
     ];
-    $this->runImport($importParams);
+    $importResponse = $this->runImport($importParams);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
 
-    $roleEntity = $this->findRoleByProperty($importParams['title'], 'title');
+    $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
   }
 
-  private function runImport($params, $code = 'assert_success')  {
+  private function runImport($params)  {
     $fields = array_keys($params);
     $values = array_values($params);
     $importObject = new CRM_Hrjobroles_Import_Parser_HrJobRoles($fields);
     $importObject->init();
-    ($code == 'assert_success') ? $code = CRM_Import_Parser::VALID : $code = CRM_Import_Parser::ERROR;
-    $this->assertEquals($code, $importObject->import(NULL, $values));
+    return $importObject->import(NULL, $values);
   }
 
 }

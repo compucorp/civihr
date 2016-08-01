@@ -28,7 +28,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
     ];
     $jobRole = $this->createJobRole($roleParams);
 
-    $roleEntity = $this->findRoleByProperty($jobRole->id);
+    $roleEntity = $this->findRole(['id' => $jobRole->id]);
     $this->assertEquals($roleParams['title'], $roleEntity->title);
   }
 
@@ -66,7 +66,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
     ];
     $jobRole = $this->createJobRole($roleParams);
 
-    $roleEntity = $this->findRoleByProperty($jobRole->id);
+    $roleEntity = $this->findRole(['id' => $jobRole->id]);
     $this->assertEquals($roleParams['title'], $roleEntity->title);
   }
 

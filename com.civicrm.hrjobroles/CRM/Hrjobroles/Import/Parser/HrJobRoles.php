@@ -257,7 +257,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         else {
           $search_field = 'display_name';
         }
-        $result = CRM_Hrjobroles_BAO_HrJobRoles::checkContact($funder_value, $search_field);
+        $result = CRM_Hrjobroles_BAO_HrJobRoles::contactExists($funder_value, $search_field);
         if ($result !== 0)  {
           $params['funder'] = $result;
           if (!empty($params['hrjc_funder_val_type']))  {
@@ -406,7 +406,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $newJobRole = civicrm_api('HrJobRoles', 'create', $params);
 
       if (!empty($newJobRole['is_error'])) {
-        var_dump($newJobRole['error_message']);exit;
         array_unshift($values, $newJobRole['error_message']);
         return CRM_Import_Parser::ERROR;
       }

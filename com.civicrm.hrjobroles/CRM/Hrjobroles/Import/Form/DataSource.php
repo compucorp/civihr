@@ -58,12 +58,7 @@ class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Core_Form {
   public function buildQuickForm() {
     //Setting Upload File Size
     $config = CRM_Core_Config::singleton();
-    if ($config->maxImportFileSize >= 8388608) {
-      $uploadFileSize = 8388608;
-    }
-    else {
-      $uploadFileSize = $config->maxImportFileSize;
-    }
+    $uploadFileSize = $config->maxImportFileSize;
     $uploadSize = round(($uploadFileSize / (1024 * 1024)), 2);
 
     $this->assign('uploadSize', $uploadSize);

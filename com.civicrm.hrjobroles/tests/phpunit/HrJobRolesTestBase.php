@@ -114,21 +114,17 @@ class HrJobRolesTestBase extends CiviUnitTestCase {
   /**
    * Find and retrieve job role by any of its properties
    *
-   * @param int|string $value
-   * @param string $identifier
+   * @param array $params
    *
    * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
    */
-  public function findRoleByProperty($value, $identifier = 'id')  {
-    $entity = new CRM_Hrjobroles_BAO_HrJobRoles();
-    $entity->$identifier = $value;
-    $entity->find(true);
-
-    if($entity->N == 0) {
-      return NULL;
-    }
-
-    return $entity;
+  public function findRole($params)  {
+    $default = NUll;
+    return CRM_Hrjobroles_BAO_HrJobRoles::commonRetrieve(
+      'CRM_Hrjobroles_BAO_HrJobRoles',
+      $params,
+      $default
+    );
   }
 
 }
