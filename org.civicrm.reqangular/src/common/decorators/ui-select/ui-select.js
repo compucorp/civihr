@@ -10,7 +10,6 @@ define([], function () {
     var origTemplateUrl = directive.templateUrl;
 
     directive.templateUrl = function(tElem, tAttrs){
-      console.log(tAttrs);
       if(angular.isDefined(tAttrs['contacts'])){
         return 'civihr-ui-select/select-contacts.tpl.html';
       }
