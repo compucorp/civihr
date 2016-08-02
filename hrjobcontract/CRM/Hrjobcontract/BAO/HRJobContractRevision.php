@@ -71,37 +71,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     // of the next (newer) revision.
     while ($revisions->fetch()) {
       if ($previousEffectiveDate) {
-        $effectiveEndDate = $revisions->effective_date;
-        if ($previousEffectiveDate !== $revisions->effective_date) {
-          $effectiveEndDate = date('Y-m-d', strtotime($previousEffectiveDate) - 3600 * 24);
-        }
-        $updateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
-                       "effective_end_date = %1 " .
-                       "WHERE id = %2";
-        $updateParams = array(
-          1 => array($effectiveEndDate, 'String'),
-          2 => array($revisions->id, 'Integer'),
-        );
-        CRM_Core_DAO::executeQuery($updateQuery, $updateParams);
-        // If 'effective_date' is equal to previous effective date
-        // we mark this revision as overrided by the one newly created.
-        if ($previousEffectiveDate === $revisions->effective_date) {
-          $updateOverridedQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
-                  "overrided = 1 " .
-                  "WHERE id = %1";
-          $updateOverridedParams = array(
-            1 => array($revisions->id, 'Integer'),
-          );
-          CRM_Core_DAO::executeQuery($updateOverridedQuery, $updateOverridedParams);
-        }
+        self::_updateRevisionByEffectiveDates($revisions->id, $previousEffectiveDate, $revisions->effective_date);
       } else {
-        $clearEffectiveEndDateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
-                "effective_end_date = NULL " .
-                "WHERE id = %1";
-        $clearEffectiveEndDateParams = array(
-          1 => array($revisions->id, 'Integer'),
-        );
-        CRM_Core_DAO::executeQuery($clearEffectiveEndDateQuery, $clearEffectiveEndDateParams);
+        self::_clearEffectiveEndDate($revisions->id);
       }
       $previousEffectiveDate = $revisions->effective_date;
     }
@@ -128,7 +100,6 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
     if (!$fields) {
       $fields = CRM_Hrjobcontract_DAO_HRJobContractRevision::import();
-
       $fields = array_merge($fields, CRM_Hrjobcontract_DAO_HRJobContractRevision::import());
 
       //Sorting fields in alphabetical order(CRM-1507)
@@ -147,5 +118,54 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     }
     return $fields;
   }
-  
+
+  /**
+   * Helper function used in updateEffectiveEndDates() loop.
+   * It updates revision entry with calculated 'effective_end_date'
+   * and 'overrided' values basing on specified date of previously iterated
+   * revision and date of currenly iterated revision.
+   * 
+   * @param int $revisionId
+   * @param string $previousEffectiveDate
+   * @param string $currentEffectiveDate
+   */
+  protected static function _updateRevisionByEffectiveDates($revisionId, $previousEffectiveDate, $currentEffectiveDate) {
+    $overrided = 0;
+    $effectiveEndDate = $currentEffectiveDate;
+    if ($previousEffectiveDate === $currentEffectiveDate) {
+      // If 'effective_date' is equal to previously iterated revision's
+      // effective date we mark this revision as overrided by the one newly
+      // created.
+      $overrided = 1;
+    } else {
+      // Else, we set current's revision effective day to a day before the
+      // previously iterated (newer) one.
+      $effectiveEndDate = date('Y-m-d', strtotime($previousEffectiveDate) - 3600 * 24);
+    }
+    $updateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
+                   "effective_end_date = %1, " .
+                   "overrided = %2 " .
+                   "WHERE id = %3";
+    $updateParams = array(
+      1 => array($effectiveEndDate, 'String'),
+      2 => array($overrided, 'Integer'),
+      3 => array($revisionId, 'Integer'),
+    );
+    CRM_Core_DAO::executeQuery($updateQuery, $updateParams);
+  }
+
+  /**
+   * Set effective_end_date to NULL for given revision ID.
+   * 
+   * @param int $revisionId
+   */
+  protected static function _clearEffectiveEndDate($revisionId) {
+    $clearEffectiveEndDateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
+                                  "effective_end_date = NULL " .
+                                  "WHERE id = %1";
+    $clearEffectiveEndDateParams = array(
+      1 => array($revisionId, 'Integer'),
+    );
+    CRM_Core_DAO::executeQuery($clearEffectiveEndDateQuery, $clearEffectiveEndDateParams);
+  }
 }
