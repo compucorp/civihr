@@ -71,9 +71,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     // of the next (newer) revision.
     while ($revisions->fetch()) {
       if ($previousEffectiveDate) {
-        self::_updateRevisionByEffectiveDates($revisions->id, $previousEffectiveDate, $revisions->effective_date);
+        self::updateRevisionByEffectiveDates($revisions->id, $previousEffectiveDate, $revisions->effective_date);
       } else {
-        self::_clearEffectiveEndDate($revisions->id);
+        self::clearEffectiveEndDate($revisions->id);
       }
       $previousEffectiveDate = $revisions->effective_date;
     }
@@ -129,7 +129,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @param string $previousEffectiveDate
    * @param string $currentEffectiveDate
    */
-  protected static function _updateRevisionByEffectiveDates($revisionId, $previousEffectiveDate, $currentEffectiveDate) {
+  protected static function updateRevisionByEffectiveDates($revisionId, $previousEffectiveDate, $currentEffectiveDate) {
     $overrided = 0;
     $effectiveEndDate = $currentEffectiveDate;
     if ($previousEffectiveDate === $currentEffectiveDate) {
@@ -159,7 +159,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * 
    * @param int $revisionId
    */
-  protected static function _clearEffectiveEndDate($revisionId) {
+  protected static function clearEffectiveEndDate($revisionId) {
     $clearEffectiveEndDateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
                                   "effective_end_date = NULL " .
                                   "WHERE id = %1";
