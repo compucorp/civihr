@@ -140,7 +140,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     } else {
       // Else, we set current's revision effective day to a day before the
       // previously iterated (newer) one.
-      $effectiveEndDate = date('Y-m-d', strtotime($previousEffectiveDate) - 3600 * 24);
+      $effectiveEndDate = (new Datetime($previousEffectiveDate))->modify('-1 day')->format('Y-m-d');
     }
     $updateQuery = "UPDATE civicrm_hrjobcontract_revision SET " .
                    "effective_end_date = %1, " .
