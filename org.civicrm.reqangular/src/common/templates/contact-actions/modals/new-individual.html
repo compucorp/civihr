@@ -6,7 +6,7 @@
     <h2 class="modal-title">New Individual</h2>
   </div>
   <div class="modal-body">
-    <p>
+    <section class="container">
       <div class="alert alert-danger" ng-show="$ctrl.errorMsg">
         {{$ctrl.errorMsg}}
       </div>
@@ -43,12 +43,14 @@
           <span class="label label-danger" ng-show="newIndividualForm.email.$error.email">Invalid email address.</span>
         </div>
       </div>
-    </p>
+    </section>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="$ctrl.cancel()">cancel</button>
+    <button type="button" class="btn btn-default text-uppercase" data-dismiss="modal" ng-click="$ctrl.cancel()">
+      <span class="fa fa-remove" aria-hidden="true"></span> cancel
+    </button>
     <button type="button" class="btn btn-primary text-uppercase" ng-click="$ctrl.submit()" ng-disabled="!newIndividualForm.$valid">
-      save
+      <span class="fa fa-check" aria-hidden="true"></span> save
     </button>
   </div>
 </form>

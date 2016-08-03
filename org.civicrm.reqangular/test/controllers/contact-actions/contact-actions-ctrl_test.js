@@ -1,4 +1,4 @@
-/* eslint angular/di: 0 */
+/* eslint angular/di: 0, jasmine/no-spec-dupes: 0 */
 
 define([
   'common/angularMocks',
@@ -21,6 +21,26 @@ define([
     describe('showNewIndividualModal', function () {
       beforeEach(function () {
         ctrl.showNewIndividualModal();
+      });
+
+      it('opens the modal', function () {
+        expect(modalSpy.open).toHaveBeenCalled();
+      });
+    });
+
+    describe('showNewHouseholdModal', function () {
+      beforeEach(function () {
+        ctrl.showNewHouseholdModal();
+      });
+
+      it('opens the modal', function () {
+        expect(modalSpy.open).toHaveBeenCalled();
+      });
+    });
+
+    describe('showNewOrganizationModal', function () {
+      beforeEach(function () {
+        ctrl.showNewOrganizationModal();
       });
 
       it('opens the modal', function () {

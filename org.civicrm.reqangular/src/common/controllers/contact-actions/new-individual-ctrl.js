@@ -1,11 +1,11 @@
 define([
   'common/modules/controllers',
-  'common/services/api/contact'
+  'common/services/api/contact-actions'
 ], function(controllers) {
   'use strict';
 
   controllers.controller('NewIndividualModalCtrl', ['$rootScope', '$uibModalInstance',
-    'api.contact', function($rootScope, $modalInstance, contact) {
+    'api.contactActions', function($rootScope, $modalInstance, contactActions) {
       var vm = this;
 
       vm.errorMsg = '';
@@ -24,7 +24,7 @@ define([
        * Saves data and closes the modal
        */
       vm.submit = function() {
-        contact.saveNewIndividual(vm.firstName, vm.lastName, vm.email)
+        contactActions.saveNewIndividual(vm.firstName, vm.lastName, vm.email)
           .then(function(data) {
             $rootScope.$broadcast('newIndividualCreated', data);
             $modalInstance.dismiss('cancel');
