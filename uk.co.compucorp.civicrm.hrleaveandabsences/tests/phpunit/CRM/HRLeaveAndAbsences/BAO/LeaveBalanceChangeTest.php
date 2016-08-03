@@ -251,6 +251,93 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(35.5, $breakdownBalance);
   }
 
+  public function testLeaveRequestBalanceForEntitlementOnlySumBalanceChangesCreatedByLeaveRequestsWithSpecificStatus() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlement();
+
+    $this->createLeaveBalanceChange($entitlement->id, 23.5);
+    $this->createBroughtForwardBalanceChange($entitlement->id, 4);
+    $this->createPublicHolidayBalanceChange($entitlement->id, 8);
+
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(0, $leaveRequestBalanceChange);
+
+    // This will deduct 11 days
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    // 1 day deducted
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Admin Approved'],
+      date('Y-m-d', strtotime('+11 days'))
+    );
+
+    // 1 day deducted
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Cancelled'],
+      date('Y-m-d', strtotime('+12 days'))
+    );
+
+    // 1 day deducted
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Rejected'],
+      date('Y-m-d', strtotime('+13 days'))
+    );
+
+    // 1 day deducted
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Waiting Approval'],
+      date('Y-m-d', strtotime('+14 days'))
+    );
+
+    // 1 day deducted
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['More Information Requested'],
+      date('Y-m-d', strtotime('+15 days'))
+    );
+
+    // Balance include all the leave requests
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(-16, $leaveRequestBalanceChange);
+
+    // Balance including only approved leave requests
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [ $leaveRequestStatuses['Approved'], $leaveRequestStatuses['Admin Approved'] ]
+    );
+    $this->assertEquals(-12, $leaveRequestBalanceChange);
+
+    // Balance including only cancelled or rejected leave requests
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [ $leaveRequestStatuses['Cancelled'], $leaveRequestStatuses['Rejected'] ]
+    );
+    $this->assertEquals(-2, $leaveRequestBalanceChange);
+
+    // Balance including only leave requests waiting approval
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [ $leaveRequestStatuses['Waiting Approval'] ]
+    );
+    $this->assertEquals(-1, $leaveRequestBalanceChange);
+
+    // Balance including only leave requests waiting for more information
+    $leaveRequestBalanceChange = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [ $leaveRequestStatuses['More Information Requested'] ]
+    );
+    $this->assertEquals(-1, $leaveRequestBalanceChange);
+  }
+
   private function createLeavePeriodEntitlement() {
     return LeavePeriodEntitlement::create([
       'type_id' => 1,

@@ -151,4 +151,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   public function getEntitlement() {
     return LeaveBalanceChange::getBreakdownBalanceForEntitlement($this->id);
   }
+
+  /**
+   * Returns the current LeaveRequest balance for this LeavePeriodEntitlement. That
+   * is, a balance that sums up only the balance changes caused by Leave Requests.
+   *
+   * Since LeaveRequests generates negative balance changes, the returned number
+   * will be negative as well.
+   *
+   * This method only accounts for Approved LeaveRequests.
+   *
+   * @return float
+   */
+  public function getLeaveRequestBalance() {
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $filterStatuses = [
+      $leaveRequestStatus['Approved'],
+      $leaveRequestStatus['Admin Approved'],
+    ];
+
+    return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this->id, $filterStatuses);
+  }
 }

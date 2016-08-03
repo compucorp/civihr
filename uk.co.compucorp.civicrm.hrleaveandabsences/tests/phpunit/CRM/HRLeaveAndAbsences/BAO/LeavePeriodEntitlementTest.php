@@ -294,6 +294,35 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertEquals(17, $periodEntitlement->getEntitlement());
   }
 
+  public function testTheLeaveRequestBalanceShouldOnlyIncludeDaysDeductedByApprovedLeaveRequests() {
+    $periodEntitlement = $this->createPeriodEntitlement();
+
+    // Neither of these won't be included in the Leave Request balance
+    $this->createLeaveBalanceChange($periodEntitlement->id, 6);
+    $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
+    $this->createPublicHolidayBalanceChange($periodEntitlement->id, 8);
+
+    // 3 days Leave Request
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->id,
+      $this->leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+2 days'))
+    );
+
+    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
+
+    // 6 day Leave Request
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->id,
+      $this->leaveRequestStatuses['Approved'],
+      date('Y-m-d', strtotime('+3 days')),
+      date('Y-m-d', strtotime('+8 days'))
+    );
+
+    $this->assertEquals(-9, $periodEntitlement->getLeaveRequestBalance());
+  }
+
   private function createPeriodEntitlement() {
     return LeavePeriodEntitlement::create([
       'type_id'     => 1,
