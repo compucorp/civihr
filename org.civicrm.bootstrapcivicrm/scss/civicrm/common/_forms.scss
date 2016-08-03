@@ -144,7 +144,7 @@ $control-height: 30px;
         padding-right: 10px !important;
         position: relative;
         top: 1px;
-        background: url('../svgs/drop-down-arrow.svg') no-repeat right !important;
+        background: url('../svgs/drop-down-arrow.svg') no-repeat right #FFFFFF !important;
 
         option {
           @extend %custom-form-control;

@@ -76,6 +76,35 @@
         margin-top: 0 !important;
       }
     }
+
+    &.selector {
+      width: 100% !important;
+      margin-bottom: 15px;
+
+      tr {
+        border-color: $crm-background !important;
+
+        td {
+          color: $crm-copy !important;
+          border: none;
+          padding: 10px !important;
+          vertical-align: middle !important;
+          background-color: #fcfdfd !important;
+        }
+
+        &:nth-child(odd) {
+          td {
+            background: $crm-table-striped-bg !important;
+          }
+        }
+
+        &.columnheader {
+          td {
+            color: #525966 !important;
+          }
+        }
+      }
+    }
   }
 
   // Help box
