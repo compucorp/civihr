@@ -197,7 +197,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Return the number of Leaves taken during the Previous Period.
+   * Return the number of days taken as leave during the Previous Period.
    *
    * This is, basically, the LeaveRequest balance from the previous period, but
    * returned as a positive number
@@ -206,7 +206,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return float
    */
-  public function getNumberOfLeavesTakenOnThePreviousPeriod() {
+  public function getNumberOfDaysTakenOnThePreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$entitlement) {

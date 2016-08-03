@@ -314,7 +314,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         'employee_name' => $calculation->getContract()['contact_display_name'],
         'leave_type' => $calculation->getAbsenceType()->title,
         'prev_year_entitlement' => $calculation->getPreviousPeriodProposedEntitlement(),
-        'days_taken' => $calculation->getNumberOfLeavesTakenOnThePreviousPeriod(),
+        'days_taken' => $calculation->getNumberOfDaysTakenOnThePreviousPeriod(),
         'remaining' => $calculation->getNumberOfDaysRemainingInThePreviousPeriod(),
         'brought_forward' => $calculation->getBroughtForward(),
         'contractual_entitlement' => $calculation->getContractualEntitlement(),

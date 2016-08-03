@@ -450,15 +450,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(10, $calculation->getPreviousPeriodProposedEntitlement());
   }
 
-  public function testNumberOfLeavesTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod() {
+  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod() {
     $type = new AbsenceType();
     $period = new AbsencePeriod();
 
     $calculation = new EntitlementCalculation($period, $this->contract, $type);
-    $this->assertEquals(0, $calculation->getNumberOfLeavesTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
-  public function testNumberOfLeavesTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPeriodEntitlementForThePreviousPeriod() {
+  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPeriodEntitlementForThePreviousPeriod() {
     $type = $this->createAbsenceType();
 
     $previousPeriod = AbsencePeriod::create([
@@ -475,10 +475,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
-    $this->assertEquals(0, $calculation->getNumberOfLeavesTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
-  public function testNumberOfLeavesTakenOnThePreviousPeriodShouldBeZeroIfThereIsLeaveRequestsOnThePeriod() {
+  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsLeaveRequestsOnThePeriod() {
     $type = $this->createAbsenceType();
 
     $previousPeriod = AbsencePeriod::create([
@@ -496,10 +496,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
-    $this->assertEquals(0, $calculation->getNumberOfLeavesTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
-  public function testNumberOfLeavesTakenOnThePreviousPeriodShouldBeTheTotalAmountOfDaysFromAllApprovedLeaveRequestsOnThePeriod() {
+  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeTheTotalAmountOfDaysFromAllApprovedLeaveRequestsOnThePeriod() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $type = $this->createAbsenceType();
@@ -535,7 +535,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
-    $this->assertEquals(12, $calculation->getNumberOfLeavesTakenOnThePreviousPeriod());
+    $this->assertEquals(12, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
   public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod()
