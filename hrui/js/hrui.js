@@ -12,6 +12,10 @@
       }
     });
   }
+
+  var title = jQuery('.crm-form-block h2').text();
+  jQuery('.page-title').text('Import - ' + title);
+
   $(document).on('crmLoad', function(e) {
     //change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
