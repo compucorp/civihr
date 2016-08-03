@@ -77,4 +77,17 @@
       }
     }
   }
+
+  // Help box
+  // ============================
+  .help {
+    background: transparent;
+    border: none;
+    color: $crm-copy;
+    padding: 15px 15px 0 15px;
+
+    > p {
+      margin-bottom: 20px;
+    }
+  }
 }
