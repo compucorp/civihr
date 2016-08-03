@@ -575,6 +575,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(10, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
+  public function testGetAbsencePeriodShouldReturnTheAbsencePeriodUsedToCreateTheCalculation() {
+    $type = new AbsenceType();
+    $period = new AbsencePeriod();
+    $period->title = 'Period 1';
+    $period->start_date = date('Y-m-d');
+
+    $calculation = new EntitlementCalculation($period, [], $type);
+    $this->assertEquals($period, $calculation->getAbsencePeriod());
+  }
+
   public function testGetAbsenceTypeShouldReturnTheAbsenceTypeUsedToCreateTheCalculation()
   {
     $type = new AbsenceType();
