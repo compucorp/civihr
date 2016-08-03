@@ -7,6 +7,73 @@
     display: none;
   }
 
+  #data-source-form-block {
+    table {
+      td {
+        &.label:first-child {
+          vertical-align: top !important;
+        }
+      }
+    }
+
+    .crm-form-file {
+      width: 300px;
+    	height: 120px;
+    	opacity: 0 !important;
+    	overflow: hidden;
+    	z-index: 20;
+      padding: 0;
+    }
+
+    label[for="uploadFile"] {
+      position: relative;
+
+      &:after {
+        content: 'Drop file here \A or click to browse';
+        white-space: pre;
+        position: absolute;
+        left: 108%;
+        top: 0;
+        display: block;
+        width: 300px;
+        height: 70px;
+        border: 1px dashed $crm-page-topbar-bg;
+        text-align: center;
+        color: $crm-page-topbar-bg;
+        padding-top: 50px;
+        font-weight: bold;
+      }
+
+      &:before {
+        content: "\f0ee";
+        font-family: "FontAwesome";
+        font-size: 23px;
+        position: absolute;
+        left: 108%;
+        color: $crm-page-topbar-bg;
+        top: 0;
+        display: block;
+        width: 300px;
+        text-align: center;
+        line-height: 70px;
+        font-weight: 100;
+      }
+    }
+
+    .uploaded-file {
+      min-width: 300px;
+      display: inline-block;
+      cursor: pointer;
+      margin-bottom: 10px;
+
+      .uploaded-file-icon-trash {
+        color: $brand-danger;
+        float: right;
+        margin-left: 20px;
+      }
+    }
+  }
+
   // Input radio/checkbox
   // ============================
   input[type="radio"] {

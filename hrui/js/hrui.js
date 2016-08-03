@@ -17,6 +17,44 @@
   jQuery('.page-title').text('Import - ' + title);
 
   $(document).on('crmLoad', function(e) {
+    var isDataSourceOK = false;
+
+    $('#data-source-form-block').on('DOMSubtreeModified', addUploadFileListener);
+
+    /**
+     * Add an event listener on #uploadFile
+     */
+    function addUploadFileListener() {
+      if ($('#uploadFile').length === 1 && !isDataSourceOK) {
+        isDataSourceOK = true;
+        $('#uploadFile').on('change', insertFile);
+      }
+    }
+
+    /**
+     * Insert a DOM node after #uploadFile
+     * with the filename
+     */
+    function insertFile() {
+      var fileName = $(this)[0].files[0];
+
+      $('#js-uploaded-file').remove();
+      if (fileName !== undefined) {
+        $(this).after('<span id="js-uploaded-file" class="uploaded-file">' + fileName.name + ' <span class="uploaded-file-icon-trash"><i class="fa fa-trash-o"></i> Remove</span>');
+
+        $('.uploaded-file-icon-trash').on('click', removeFile);
+      }
+    }
+
+    /**
+     * Remove the #js-uploaded-file DIV and
+     * clean #uploadFile value
+     */
+    function removeFile() {
+      $('#js-uploaded-file').remove();
+      $('#uploadFile').val('');
+    }
+
     //change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
     if (CRM.formName == 'contactForm' || CRM.pageName == 'viewSummary') {
