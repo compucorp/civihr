@@ -1,4 +1,4 @@
-.crm-container {
+.page-civicrm-import .crm-container {
   #wizard-steps {
     display: none;
   }
@@ -20,7 +20,7 @@
       width: 10px;
       height: 10px;
       border: 2px solid $crm-copy;
-      background: #ffffff;
+      background: #FFFFFF;
       border-radius: 50%;
     }
 
@@ -88,6 +88,44 @@
 
     > p {
       margin-bottom: 20px;
+    }
+
+    + .crm-submit-buttons {
+      display: none;
+    }
+  }
+
+  // Submit buttons
+  // ============================
+  .crm-form-block.crm-form-block {
+    box-shadow: none !important;
+
+    .crm-submit-buttons {
+      background: #FFFFFF !important;
+      border-top: 1px solid $gray-lighter;
+      margin: 0 15px 0 15px;
+      padding: 15px 0 10px 0;
+
+      .crm-button {
+        &:first-child {
+          margin-left: 0;
+        }
+
+        .crm-i {
+          display: none;
+        }
+
+        > input.crm-form-submit {
+          border: 1px solid $crm-copy !important;
+          padding-left: 12px;
+
+          &.default {
+            background-color: $brand-primary !important;
+            border-color: $brand-primary !important;
+            color: #FFFFFF !important;
+          }
+        }
+      }
     }
   }
 }
