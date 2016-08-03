@@ -1,9 +1,80 @@
-#DataSource {
+.crm-container {
   #wizard-steps {
     display: none;
   }
 
   h2 {
     display: none;
+  }
+
+  // Input radio/checkbox
+  // ============================
+  input[type="radio"] {
+    position: relative;
+    margin: 0 !important;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border: 2px solid $crm-copy;
+      background: #ffffff;
+      border-radius: 50%;
+    }
+
+    &:checked {
+      &:after {
+        content: '';
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 6px;
+        height: 6px;
+        background: $crm-copy;
+        border-radius: 50%;
+      }
+    }
+
+    + label {
+      margin: 0 20px 0 10px;
+      color: $crm-copy;
+      font-weight: normal !important;
+    }
+  }
+
+  input[type="checkbox"] {
+    position: relative;
+    top: 2px;
+    margin-top: 0 !important;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 10px;
+      height: 10px;
+      background: #FFFFFF;
+      border: 1px solid $crm-copy;
+      border-radius: 3px;
+    }
+
+    &:checked {
+      &:after {
+        content: '\2713';
+        color: $crm-copy;
+        font-weight: bold;
+      }
+    }
+  }
+
+  table {
+    td {
+      > input[type="checkbox"] {
+        margin-top: 0 !important;
+      }
+    }
   }
 }
