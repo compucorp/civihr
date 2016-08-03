@@ -144,7 +144,8 @@
       }
     }
 
-    &.selector {
+    &.selector,
+    &.report {
       width: 100% !important;
       margin-bottom: 15px;
 
@@ -157,6 +158,7 @@
           padding: 10px !important;
           vertical-align: middle !important;
           background-color: #fcfdfd !important;
+          border-color: $crm-background !important;
         }
 
         &:nth-child(odd) {
@@ -171,6 +173,19 @@
           }
         }
       }
+
+      .action-link {
+        background: transparent !important;
+      }
+    }
+  }
+
+  #preview-info {
+    padding: 15px;
+
+    .crm-import-maptable-form-block {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
   }
 
