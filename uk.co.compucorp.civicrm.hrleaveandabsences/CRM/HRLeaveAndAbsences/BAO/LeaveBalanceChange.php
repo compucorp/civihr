@@ -139,14 +139,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Since balance changes caused by LeaveRequests are negative, this method
    * will return a negative number.
    *
+   * It's also possible to get the balance only for leave requests taken between
+   * a given date range. For this, one can use the $dateLimit and $dateStart params.
+   *
    * @param int $entitlementID
    *    The ID of the entitlement to get the balance
    * @param array $leaveRequestStatus
    *    An array of values from Leave Request Status option list
+   * @param \DateTime $dateLimit
+   *    When given, will make the method count only days taken as leave up to this date
+   * @param \DateTime $dateStart
+   *    When given, will make the method count only days taken as leave starting from this date
    *
    * @return float
    */
-  public static function getLeaveRequestBalanceForEntitlement($entitlementID, $leaveRequestStatus = []) {
+  public static function getLeaveRequestBalanceForEntitlement(
+    $entitlementID,
+    $leaveRequestStatus = [],
+    DateTime $dateLimit = NULL,
+    DateTime $dateStart = NULL
+  ) {
     $entitlementID = (int)$entitlementID;
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
@@ -165,9 +177,111 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $query .= ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .')';
     }
 
+    if($dateLimit) {
+      $query .= " AND leave_request_date.date <= '{$dateLimit->format('Y-m-d')}'";
+    }
+
+    if($dateStart) {
+      $query .= " AND leave_request_date.date >= '{$dateStart->format('Y-m-d')}'";
+    }
+
     $result = CRM_Core_DAO::executeQuery($query);
     $result->fetch();
 
     return (float)$result->balance;
+  }
+
+  /**
+   * This method checks every leave balance change record with an expiry_date in
+   * the past and that still don't have a record for the expired days (that is,
+   * a balance change record of this same type and with an expired_balance_id
+   * pointing to the expired record), and creates it.
+   *
+   * @return int The number of records created
+   */
+  public static function createExpirationRecords() {
+    $numberOfRecordsCreated = 0;
+
+    $tableName = self::getTableName();
+    $query = "
+      SELECT balance_to_expire.*
+      FROM {$tableName} balance_to_expire
+      LEFT JOIN {$tableName} expired_balance
+             ON balance_to_expire.id = expired_balance.expired_balance_id
+      WHERE balance_to_expire.expiry_date IS NOT NULL AND
+            balance_to_expire.expiry_date < CURDATE() AND
+            balance_to_expire.expired_balance_id IS NULL AND
+            expired_balance.id IS NULL
+      ORDER BY balance_to_expire.entitlement_id ASC, balance_to_expire.expiry_date ASC
+    ";
+
+    $startDate = null;
+    $entitlementID = null;
+
+    $dao = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+    while($dao->fetch()) {
+      if($dao->entitlement_id != $entitlementID) {
+        $startDate = null;
+        $entitlementID = $dao->entitlement_id;
+      }
+
+      $expiredAmount = self::calculateExpiredAmount($dao, $startDate);
+      // Since these days should be deducted from the entitlement,
+      // We need to store the expired amount as a negative number
+      $expiredAmount *= -1;
+
+      self::create([
+        'entitlement_id' => $dao->entitlement_id,
+        'type_id' => $dao->type_id,
+        'amount' => $expiredAmount,
+        'expiration_date' => date('YmdHis', strtotime($dao->expiry_date)),
+        'expired_balance_id' => $dao->id
+      ]);
+
+      $numberOfRecordsCreated++;
+      $startDate = (new DateTime($dao->expiry_date))->modify('+1 day');
+    }
+    return $numberOfRecordsCreated;
+  }
+
+  /**
+   * This method calculates how many days of the given LeaveBalanceChange have
+   * expired.
+   *
+   * To do this, we get the leave request balance (in other words, the number of
+   * days taken as leave) up to the balance change expiry date and subtracts it
+   * from the balance change amount.
+   *
+   * This method also supports a $startDate param. When given, the method will
+   * calculate the expired amount counting only days taken as leave between the
+   * $startDate and the balance change expiry date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange $balanceChange
+   * @param \DateTime|NULL $startDate
+   *
+   * @return float
+   */
+  private static function calculateExpiredAmount(
+    CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange $balanceChange,
+    DateTime $startDate = NULL
+  ) {
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $approvedStatuses = [
+      $leaveRequestStatus['Approved'],
+      $leaveRequestStatus['Admin Approved']
+    ];
+
+    $balanceChange->amount = (float)$balanceChange->amount;
+
+    $expiredAmount = self::getLeaveRequestBalanceForEntitlement(
+      $balanceChange->entitlement_id,
+      $approvedStatuses,
+      new DateTime($balanceChange->expiry_date),
+      $startDate
+    );
+
+    // Since the the Leave Request Balance is negative, when we add it
+    // to the amount we're actually subtracting the value
+    return $balanceChange->amount + $expiredAmount;
   }
 }

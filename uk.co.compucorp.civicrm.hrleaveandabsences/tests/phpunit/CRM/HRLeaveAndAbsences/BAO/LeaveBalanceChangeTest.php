@@ -338,11 +338,268 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(-1, $leaveRequestBalanceChange);
   }
 
+  public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsUpToASpecificDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlement();
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(0, $balance);
+
+    // This will deduct 11 days
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    // Balance including the whole leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(-11, $balance);
+
+    // Balance including only the first day of leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('now')
+    );
+    $this->assertEquals(-1, $balance);
+
+    // Balance including only the two first days of leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('+1 day')
+    );
+    $this->assertEquals(-2, $balance);
+
+    // Balance including only the five first days of leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('+4 days')
+    );
+    $this->assertEquals(-5, $balance);
+
+    // The limit date is after the leave request end date, so the whole request
+    // will be included
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('+12 days')
+    );
+    $this->assertEquals(-11, $balance);
+  }
+
+  public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsOnASpecificDateRange() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlement();
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(0, $balance);
+
+    // This will deduct 11 days
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    // Balance including the whole leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement->id);
+    $this->assertEquals(-11, $balance);
+
+    // Balance including only the third and fourth days of leave request
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('+3 days'),
+      new Datetime('+2 days')
+    );
+    $this->assertEquals(-2, $balance);
+
+    // The start date is before the leave request start date and the limit date
+    // is exactly the same day as the request start date, so the balance will
+    // include only 1 day
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('now'),
+      new Datetime('-1 day')
+    );
+    $this->assertEquals(-1, $balance);
+
+    // The start date is exactly the same as the  leave request end date
+    // and the limit date is one day after the request end date, so the balance
+    // will include only 1 day
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement->id,
+      [],
+      new Datetime('+11 days'),
+      new Datetime('+10 days')
+    );
+    $this->assertEquals(-1, $balance);
+  }
+
+  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
+    $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('-1 day')));
+    $this->createBroughtForwardBalanceChange(2, 7, date('YmdHis', strtotime('-8 days')));
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(2, $numberOfCreatedRecords);
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(0, $numberOfCreatedRecords);
+  }
+
+  public function testCreateExpirationRecordsCreatesRecordsEntitlementsWithMultipleExpiredBalanceChanges() {
+    // The entitlement with ID 1 has 2 balance changes to expire
+    $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('-1 day')));
+    $this->createBroughtForwardBalanceChange(1, 7, date('YmdHis', strtotime('-8 days')));
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(2, $numberOfCreatedRecords);
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(0, $numberOfCreatedRecords);
+  }
+
+  public function testCreateExpirationRecordsCalculatesTheExpiredAmountBasedOnTheApprovedLeaveRequestBalance() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange = $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('-1 day')));
+
+    //This 1 day approved leave request will be counted
+    $this->createLeaveRequestBalanceChange(
+      1,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d', strtotime('-10 days'))
+    );
+
+    // This 2 days cancelled leave request won't counted
+    $this->createLeaveRequestBalanceChange(
+      1,
+      $leaveRequestStatuses['Cancelled'],
+      date('Y-m-d', strtotime('-20 days')),
+      date('Y-m-d', strtotime('-21 days'))
+    );
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(1, $numberOfCreatedRecords);
+
+    $expirationRecord = $this->getExpirationRecordForBalanceChange($balanceChange->id);
+    $this->assertNotNull($expirationRecord);
+    // Since only the 1 day leave request was counted, 4 days expired
+    // 5 - 1 = 4 (we store expired days as a negative number)
+    $this->assertEquals(-4, $expirationRecord->amount);
+  }
+
+  public function testCreateExpirationRecordsCalculatesPrioritizesAccordingToTheBalanceChangeExpiryDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $balanceChange1 = $this->createBroughtForwardBalanceChange(
+      1,
+      5,
+      date('YmdHis', strtotime('-1 day'))
+    );
+    $balanceChange2 = $this->createBroughtForwardBalanceChange(
+      1,
+      5,
+      date('YmdHis', strtotime('-5 days'))
+    );
+
+    // A 7 days approved leave request
+    $this->createLeaveRequestBalanceChange(
+      1,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d', strtotime('-7 days')),
+      date('Y-m-d', strtotime('-1 day'))
+    );
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(2, $numberOfCreatedRecords);
+
+    $expirationRecord2 = $this->getExpirationRecordForBalanceChange($balanceChange2->id);
+    // Balance change 2 expires first, so we also handle it first
+    // 3 days of leave request are deducted from it, so 2 days should expire
+    $this->assertEquals(-2, $expirationRecord2->amount);
+
+    $expirationRecord1 = $this->getExpirationRecordForBalanceChange($balanceChange1->id);
+    // Now we handle the balance change 1, which expires after balance change 2
+    // Since we already deducted 3 days, now we just deduct the remaining 4 days
+    // meaning only 1 day will expire
+    $this->assertEquals(-1, $expirationRecord1->amount);
+  }
+
+  public function testCreateExpirationRecordsCalculatesTheExpiredAmountBasedOnlyOnTheApprovedLeaveRequestBalancePriorToTheExpiryDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $balanceChange = $this->createBroughtForwardBalanceChange(
+      1,
+      5,
+      date('YmdHis', strtotime('-1 day'))
+    );
+
+    // This leave request has 7 days, but only two of them
+    // were taken before the brought forward expiry date
+    $this->createLeaveRequestBalanceChange(
+      1,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d', strtotime('-2 days')),
+      date('Y-m-d', strtotime('+5 days'))
+    );
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(1, $numberOfCreatedRecords);
+
+    $expirationRecord = $this->getExpirationRecordForBalanceChange($balanceChange->id);
+    $this->assertNotNull($expirationRecord);
+    // Since only two days were taken before the brought forward
+    // expiry date, the other 3 days will expire
+    $this->assertEquals(-3, $expirationRecord->amount);
+  }
+
+
+
+  public function testCreateExpirationRecordsDoesNotCreateRecordsForBalanceChangesThatNeverExpire() {
+    // A Brought Forward without an expiry date will never expire
+    $this->createBroughtForwardBalanceChange(1, 5);
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(0, $numberOfCreatedRecords);
+  }
+
+  public function testCreateExpirationRecordsDoesNotCreateRecordsForNonExpiredBalanceChanges() {
+    $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('+1 day')));
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(0, $numberOfCreatedRecords);
+  }
+
+  public function testCreateExpirationRecordsDoesCreatesRecordsForExpiredBalanceChanges() {
+    $this->createExpiredBroughtForwardBalanceChange(1, 5, 10);
+
+    $numberOfCreatedRecords = LeaveBalanceChange::createExpirationRecords();
+    $this->assertEquals(0, $numberOfCreatedRecords);
+  }
+
   private function createLeavePeriodEntitlement() {
     return LeavePeriodEntitlement::create([
       'type_id' => 1,
       'period_id' => 1,
       'contract_id' => 1
     ]);
+  }
+
+  private function getExpirationRecordForBalanceChange($balanceChangeID) {
+    $record = new LeaveBalanceChange();
+    $record->expired_balance_id = $balanceChangeID;
+    $record->find();
+    if($record->N == 1) {
+      $record->fetch();
+      return $record;
+    }
+
+    return null;
   }
 }

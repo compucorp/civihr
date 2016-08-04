@@ -16,32 +16,39 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     return $this->balanceChangeTypes[$type];
   }
 
-  public function createSourcelessBalanceChange($entitlementID, $amount, $type) {
-    LeaveBalanceChange::create([
+  public function createSourcelessBalanceChange($entitlementID, $amount, $type, $expiryDate = null) {
+    $params = [
       'type_id' => $type,
       'entitlement_id' => $entitlementID,
       'amount' => $amount
-    ]);
+    ];
+
+    if($expiryDate) {
+      $params['expiry_date'] = $expiryDate;
+    }
+
+    return LeaveBalanceChange::create($params);
   }
 
   public function createLeaveBalanceChange($entitlementID, $amount) {
-    $this->createSourcelessBalanceChange(
+    return $this->createSourcelessBalanceChange(
       $entitlementID,
       $amount,
       $this->getBalanceChangeTypeValue('Leave')
     );
   }
 
-  public function createBroughtForwardBalanceChange($entitlementID, $amount) {
-    $this->createSourcelessBalanceChange(
+  public function createBroughtForwardBalanceChange($entitlementID, $amount, $expiryDate = null) {
+    return $this->createSourcelessBalanceChange(
       $entitlementID,
       $amount,
-      $this->getBalanceChangeTypeValue('Brought Forward')
+      $this->getBalanceChangeTypeValue('Brought Forward'),
+      $expiryDate
     );
   }
 
   public function createPublicHolidayBalanceChange($entitlementID, $amount) {
-    $this->createSourcelessBalanceChange(
+    return $this->createSourcelessBalanceChange(
       $entitlementID,
       $amount,
       $this->getBalanceChangeTypeValue('Public Holiday')
