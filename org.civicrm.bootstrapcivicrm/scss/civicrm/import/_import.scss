@@ -1,241 +1,257 @@
-.page-civicrm-import .crm-container {
-  #wizard-steps {
-    display: none;
-  }
+.page-civicrm-import {
+  .crm-container {
+    #wizard-steps {
+      display: none;
+    }
 
-  h2 {
-    display: none;
-  }
+    h2 {
+      display: none;
+    }
 
-  #data-source-form-block {
-    table {
-      td {
-        &.label:first-child {
-          vertical-align: top !important;
+    #data-source-form-block {
+      table {
+        td {
+          &.label:first-child {
+            vertical-align: top !important;
+          }
+        }
+      }
+
+      .crm-form-file {
+        width: 300px;
+      	height: 120px;
+      	opacity: 0 !important;
+      	overflow: hidden;
+      	z-index: 20;
+        padding: 0;
+      }
+
+      label[for="uploadFile"] {
+        position: relative;
+
+        &:after {
+          content: 'Drop file here \A or click to browse';
+          white-space: pre;
+          position: absolute;
+          left: 108%;
+          top: 0;
+          display: block;
+          width: 300px;
+          height: 70px;
+          border: 1px dashed $crm-page-topbar-bg;
+          text-align: center;
+          color: $crm-page-topbar-bg;
+          padding-top: 50px;
+          font-weight: bold;
+        }
+
+        &:before {
+          content: "\f0ee";
+          font-family: "FontAwesome";
+          font-size: 23px;
+          position: absolute;
+          left: 108%;
+          color: $crm-page-topbar-bg;
+          top: 0;
+          display: block;
+          width: 300px;
+          text-align: center;
+          line-height: 70px;
+          font-weight: 100;
+        }
+      }
+
+      .uploaded-file {
+        min-width: 300px;
+        display: inline-block;
+        cursor: pointer;
+        margin-bottom: 10px;
+
+        .uploaded-file-icon-trash {
+          color: $brand-danger;
+          float: right;
+          margin-left: 20px;
         }
       }
     }
 
-    .crm-form-file {
-      width: 300px;
-    	height: 120px;
-    	opacity: 0 !important;
-    	overflow: hidden;
-    	z-index: 20;
-      padding: 0;
-    }
-
-    label[for="uploadFile"] {
+    // Input radio/checkbox
+    // ============================
+    input[type="radio"] {
       position: relative;
-
-      &:after {
-        content: 'Drop file here \A or click to browse';
-        white-space: pre;
-        position: absolute;
-        left: 108%;
-        top: 0;
-        display: block;
-        width: 300px;
-        height: 70px;
-        border: 1px dashed $crm-page-topbar-bg;
-        text-align: center;
-        color: $crm-page-topbar-bg;
-        padding-top: 50px;
-        font-weight: bold;
-      }
+      margin: 0 !important;
 
       &:before {
-        content: "\f0ee";
-        font-family: "FontAwesome";
-        font-size: 23px;
+        content: '';
         position: absolute;
-        left: 108%;
-        color: $crm-page-topbar-bg;
         top: 0;
-        display: block;
-        width: 300px;
-        text-align: center;
-        line-height: 70px;
-        font-weight: 100;
+        width: 10px;
+        height: 10px;
+        border: 2px solid $crm-copy;
+        background: #FFFFFF;
+        border-radius: 50%;
+      }
+
+      &:checked {
+        &:after {
+          content: '';
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 6px;
+          height: 6px;
+          background: $crm-copy;
+          border-radius: 50%;
+        }
+      }
+
+      + label {
+        margin: 0 20px 0 10px;
+        color: $crm-copy;
+        font-weight: normal !important;
       }
     }
 
-    .uploaded-file {
-      min-width: 300px;
-      display: inline-block;
-      cursor: pointer;
-      margin-bottom: 10px;
+    input[type="checkbox"] {
+      position: relative;
+      top: 2px;
+      margin-top: 0 !important;
 
-      .uploaded-file-icon-trash {
-        color: $brand-danger;
-        float: right;
-        margin-left: 20px;
-      }
-    }
-  }
-
-  // Input radio/checkbox
-  // ============================
-  input[type="radio"] {
-    position: relative;
-    margin: 0 !important;
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      width: 10px;
-      height: 10px;
-      border: 2px solid $crm-copy;
-      background: #FFFFFF;
-      border-radius: 50%;
-    }
-
-    &:checked {
       &:after {
         content: '';
         position: absolute;
-        top: 4px;
-        left: 4px;
-        width: 6px;
-        height: 6px;
-        background: $crm-copy;
-        border-radius: 50%;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: #FFFFFF;
+        border: 1px solid $crm-copy;
+        border-radius: 3px;
+      }
+
+      &:checked {
+        &:after {
+          content: '\2713';
+          color: $crm-copy;
+          font-weight: bold;
+        }
       }
     }
 
-    + label {
-      margin: 0 20px 0 10px;
-      color: $crm-copy;
-      font-weight: normal !important;
-    }
-  }
-
-  input[type="checkbox"] {
-    position: relative;
-    top: 2px;
-    margin-top: 0 !important;
-
-    &:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 10px;
-      height: 10px;
-      background: #FFFFFF;
-      border: 1px solid $crm-copy;
-      border-radius: 3px;
-    }
-
-    &:checked {
-      &:after {
-        content: '\2713';
-        color: $crm-copy;
-        font-weight: bold;
+    table {
+      td {
+        > input[type="checkbox"] {
+          margin-top: 0 !important;
+        }
       }
-    }
-  }
 
-  table {
-    td {
-      > input[type="checkbox"] {
-        margin-top: 0 !important;
-      }
-    }
+      &.selector,
+      &.report {
+        width: 100% !important;
+        margin-bottom: 20px;
 
-    &.selector,
-    &.report {
-      width: 100% !important;
-      margin-bottom: 15px;
-
-      tr {
-        border-color: $crm-background !important;
-
-        td {
-          color: $crm-copy !important;
-          border: none;
-          padding: 10px !important;
-          vertical-align: middle !important;
-          background-color: #fcfdfd !important;
+        tr {
           border-color: $crm-background !important;
-        }
 
-        &:nth-child(odd) {
           td {
-            background: $crm-table-striped-bg !important;
+            color: $crm-copy !important;
+            border: none;
+            padding: 10px !important;
+            vertical-align: middle !important;
+            background-color: #fcfdfd !important;
+            border-color: $crm-background !important;
+          }
+
+          &:nth-child(odd) {
+            td {
+              background: $crm-table-striped-bg !important;
+            }
+          }
+
+          &.columnheader {
+            td {
+              color: #525966 !important;
+            }
           }
         }
 
-        &.columnheader {
-          td {
-            color: #525966 !important;
+        .action-link {
+          background: transparent !important;
+        }
+      }
+    }
+
+    #preview-info {
+      padding: 20px;
+
+      .crm-import-maptable-form-block {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+
+    // Help box
+    // ============================
+    .help {
+      background: transparent;
+      border: none;
+      color: $crm-copy;
+      padding: 20px 20px 0 20px;
+
+      > p {
+        margin-bottom: 20px;
+      }
+
+      + .crm-submit-buttons {
+        display: none;
+      }
+    }
+
+    // Submit buttons
+    // ============================
+    .crm-form-block.crm-form-block {
+      box-shadow: none !important;
+
+      .crm-submit-buttons {
+        background: #FFFFFF !important;
+        border-top: 1px solid $gray-lighter;
+        margin: 0 20px 0 20px;
+        padding: 20px 0 10px 0;
+
+        .crm-button {
+          &:first-child {
+            margin-left: 0;
+          }
+
+          .crm-i {
+            display: none;
+          }
+
+          > input.crm-form-submit {
+            border: 1px solid $crm-copy !important;
+            padding-left: 12px;
+
+            &.default {
+              background-color: $brand-primary !important;
+              border-color: $brand-primary !important;
+              color: #FFFFFF !important;
+            }
           }
         }
       }
+    }
 
-      .action-link {
-        background: transparent !important;
+    .CRM_Contact_Import_Form_Summary {
+      .crm-import-summary-form-block {
+        padding: 0 20px;
       }
-    }
-  }
 
-  #preview-info {
-    padding: 15px;
+      .help {
+        padding: 20px 0 0 0 !important;
+      }
 
-    .crm-import-maptable-form-block {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  }
-
-  // Help box
-  // ============================
-  .help {
-    background: transparent;
-    border: none;
-    color: $crm-copy;
-    padding: 15px 15px 0 15px;
-
-    > p {
-      margin-bottom: 20px;
-    }
-
-    + .crm-submit-buttons {
-      display: none;
-    }
-  }
-
-  // Submit buttons
-  // ============================
-  .crm-form-block.crm-form-block {
-    box-shadow: none !important;
-
-    .crm-submit-buttons {
-      background: #FFFFFF !important;
-      border-top: 1px solid $gray-lighter;
-      margin: 0 15px 0 15px;
-      padding: 15px 0 10px 0;
-
-      .crm-button {
-        &:first-child {
-          margin-left: 0;
-        }
-
-        .crm-i {
-          display: none;
-        }
-
-        > input.crm-form-submit {
-          border: 1px solid $crm-copy !important;
-          padding-left: 12px;
-
-          &.default {
-            background-color: $brand-primary !important;
-            border-color: $brand-primary !important;
-            color: #FFFFFF !important;
-          }
-        }
+      .crm-submit-buttons {
+        margin: 0 !important;
       }
     }
   }
