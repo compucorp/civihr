@@ -408,6 +408,9 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'cost_centres',
+          ),
         ) ,
         'hrjc_cost_center_val_type' => array(
           'name' => 'cost_center_val_type',
