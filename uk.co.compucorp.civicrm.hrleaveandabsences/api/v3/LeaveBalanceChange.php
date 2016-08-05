@@ -44,3 +44,13 @@ function civicrm_api3_leave_balance_change_delete($params) {
 function civicrm_api3_leave_balance_change_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * LeaveBalanceChange.createexpirationrecords API
+ *
+ * @return int The number of records created
+ * @throws API_Exception
+ */
+function civicrm_api3_leave_balance_change_createexpirationrecords() {
+  return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::createExpirationRecords();
+}

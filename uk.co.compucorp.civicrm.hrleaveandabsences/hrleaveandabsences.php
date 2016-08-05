@@ -30,6 +30,7 @@ function hrleaveandabsences_civicrm_xmlMenu(&$files) {
 function hrleaveandabsences_civicrm_install() {
   _hrleavesandabsences_create_main_menu();
   _hrleaveandabsences_create_administer_menu();
+  _hrleaveandabsences_add_scheduled_jobs();
 
   _hrleaveandabsences_civix_civicrm_install();
 }
@@ -134,7 +135,7 @@ function _hrleavesandabsences_create_main_menu() {
 /**
  * Creates a new navigation menu with the given parameters
  *
- * @param $reportWeight
+ * @param array $params
  *
  * @return array
  */
@@ -148,6 +149,33 @@ function _hrleaveandabsences_add_navigation_menu($params)
   $navigationMenu->save();
 
   return $navigationMenu;
+}
+
+/**
+ * Adds the scheduled jobs for this extension
+ */
+function _hrleaveandabsences_add_scheduled_jobs() {
+  _hrleaveandabsences_add_create_expiration_records_scheduled_job();
+}
+
+/**
+ * Adds the "Create expiration records for expired LeaveBalanceChange records" scheduled job.
+ */
+function _hrleaveandabsences_add_create_expiration_records_scheduled_job() {
+  $dao             = new CRM_Core_DAO_Job();
+  $dao->api_entity = 'LeaveBalanceChange';
+  $dao->api_action = 'createexpirationrecords';
+  $dao->find(TRUE);
+  if (!$dao->id) {
+    $dao                = new CRM_Core_DAO_Job();
+    $dao->domain_id     = CRM_Core_Config::domainID();
+    $dao->run_frequency = 'Daily';
+    $dao->parameters    = NULL;
+    $dao->name          = 'Create expiration records for expired LeaveBalanceChange records';
+    $dao->description   = 'Creates a record with a negative balance for any balance change';
+    $dao->is_active     = 1;
+    $dao->save();
+  }
 }
 
 /**
