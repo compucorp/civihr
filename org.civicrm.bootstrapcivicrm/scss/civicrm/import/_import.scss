@@ -1,4 +1,18 @@
 .page-civicrm-import {
+  #branding h1.page-title {
+    padding-left: 20px !important;
+  }
+
+  #choose-data-source,
+  #data-source-form-block .crm-block,
+  #common-form-controls {
+    padding: 5px 20px !important;
+
+    h3 {
+      padding: 0 !important;
+    }
+  }
+
   .crm-container {
     #wizard-steps {
       display: none;
@@ -33,7 +47,7 @@
           content: 'Drop file here \A or click to browse';
           white-space: pre;
           position: absolute;
-          left: 108%;
+          left: 180%;
           top: 0;
           display: block;
           width: 300px;
@@ -50,7 +64,7 @@
           font-family: "FontAwesome";
           font-size: 23px;
           position: absolute;
-          left: 108%;
+          left: 180%;
           color: $crm-page-topbar-bg;
           top: 0;
           display: block;
@@ -143,6 +157,12 @@
         > input[type="checkbox"] {
           margin-top: 0 !important;
         }
+
+        &.label {
+          text-align: left !important;
+          width: 200px !important;
+          padding-left: 0 !important;
+        }
       }
 
       &.selector,
@@ -188,6 +208,10 @@
         padding-left: 0 !important;
         padding-right: 0 !important;
       }
+
+      #map-field {
+        padding: 0 !important;
+      }
     }
 
     // Help box
@@ -197,6 +221,7 @@
       border: none;
       color: $crm-copy;
       padding: 20px 20px 0 20px;
+      margin-bottom: 20px !important;
 
       > p {
         margin-bottom: 20px;
@@ -211,6 +236,10 @@
     // ============================
     .crm-form-block.crm-form-block {
       box-shadow: none !important;
+
+      #map-field {
+        padding: 0 7px;
+      }
 
       .crm-submit-buttons {
         background: #FFFFFF !important;
