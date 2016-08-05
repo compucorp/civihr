@@ -310,7 +310,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return false;
     }
 
-    $expirationDate = $this->period->getExpirationDateForAbsenceType($this->absenceType);
+    $expirationDate = $this->getBroughtForwardExpirationDate();
 
     if($expirationDate) {
       return strtotime($expirationDate) < strtotime('now');
@@ -474,5 +474,41 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       $this->getBroughtForward(),
       $this->getProposedEntitlement()
     );
+  }
+
+  /**
+   * Returns the expiration date for a brought forward, based on the
+   * AbsencePeriod start date and the AbsenceType carry forward rules
+   *
+   * @return null|string
+   */
+  public function getBroughtForwardExpirationDate() {
+    return $this->period->getExpirationDateForAbsenceType($this->absenceType);
+  }
+
+  /**
+   * Returns a list of PublicHolidays instances representing the Public Holidays
+   * added to the entitlement.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
+   */
+  public function getPublicHolidaysInEntitlement() {
+    $jobLeave = $this->getJobLeaveForAbsenceType();
+
+    if(!$jobLeave) {
+      return [];
+    }
+
+    if(!$jobLeave['add_public_holidays']) {
+      return [];
+    }
+
+    $contractDates = $this->getContractDates();
+    list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+      $contractDates['start_date'],
+      $contractDates['end_date']
+    );
+
+    return PublicHoliday::getPublicHolidaysForPeriod($startDate, $endDate);
   }
 }

@@ -350,13 +350,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format');
     }
 
-    if (strtotime($startDate) < strtotime($this->start_date)) {
-      $startDate = $this->start_date;
-    }
-
-    if (strtotime($endDate) > strtotime($this->end_date)) {
-      $endDate = $this->end_date;
-    }
+    list($startDate, $endDate) = $this->adjustDatesToMatchPeriodDates($startDate, $endDate);
 
     $periodToWork             = new self();
     $periodToWork->start_date = $startDate;
@@ -461,5 +455,45 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   private function hasValidDates() {
     return CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d') &&
            CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d');
+  }
+
+  /**
+   * This method will adjust the date range given by $startDate and $endDate
+   * to be inside this period date range.
+   *
+   * If the given $startDate is less than the period start date, it will be
+   * changed to be equals the period start date. If the given $endDate is greater
+   * than the period end date, it will be changed to be equals to the period
+   * end date.
+   *
+   * Example:
+   * Period start date: 2016-01-01
+   * Period end date: 2016-12-31
+   * $startDate: 2015-10-01
+   * $endDate: 2016-07-01
+   *
+   * Adjusted values:
+   * $startDate: 2016-01-01 (Adjusted to be equals to the period start date)
+   * $endDate: 2016-07-01 (Not adjusted since it's less then the period end date)
+   *
+   * @param string $startDate
+   *    A date in the Y-m-d format
+   * @param string $endDate
+   *    A date in the Y-m-d format
+   *
+   * @return array
+   *    An array containing the adjusted dates. The first item is the
+   *    $startDate and second one is the $endDate
+   */
+  public function adjustDatesToMatchPeriodDates($startDate, $endDate) {
+    if (strtotime($startDate) < strtotime($this->start_date)) {
+      $startDate = $this->start_date;
+    }
+
+    if (strtotime($endDate) > strtotime($this->end_date)) {
+      $endDate = $this->end_date;
+    }
+
+    return [$startDate, $endDate];
   }
 }

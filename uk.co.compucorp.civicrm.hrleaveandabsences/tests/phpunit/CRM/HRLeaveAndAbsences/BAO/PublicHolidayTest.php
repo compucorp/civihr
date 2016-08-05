@@ -2,6 +2,7 @@
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest
@@ -19,7 +20,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
    * @expectedExceptionMessage Date value is required
    */
   public function testPublicHolidayDateShouldNotBeEmpty() {
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Public holiday 1',
     ]);
   }
@@ -29,7 +30,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
    * @expectedExceptionMessage Date value should be valid
    */
   public function testPublicHolidayDateShouldBeValid() {
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Public holiday 1',
       'date' => '2016-06-01',
     ]);
@@ -40,11 +41,11 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
    * @expectedExceptionMessage There is a Public Holiday already existing with given date
    */
   public function testPublicHolidayDateShouldBeUnique() {
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Public holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-06-01'),
     ]);
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'title' => 'Public holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-06-01'),
     ]);
@@ -55,7 +56,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
    * @expectedExceptionMessage Title value is required
    */
   public function testPublicHolidayTitleShouldNotBeEmpty() {
-    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create([
+    PublicHoliday::create([
       'date' => CRM_Utils_Date::processDate('2016-07-01'),
     ]);
   }
@@ -73,32 +74,32 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
 
     $this->assertEquals(
       8,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-01-01', '2016-12-31')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-01-01', '2016-12-31')
     );
 
     $this->assertEquals(
       1,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-01-01', '2016-01-31')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-01-01', '2016-01-31')
     );
 
     $this->assertEquals(
       0,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-02-29')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-02-29')
     );
 
     $this->assertEquals(
       1,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-02', '2016-03-31')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-02', '2016-03-31')
     );
 
     $this->assertEquals(
       3,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-04-01', '2016-08-30')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-04-01', '2016-08-30')
     );
 
     $this->assertEquals(
       3,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-08-30', '2016-12-28')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-08-30', '2016-12-28')
     );
   }
 
@@ -117,7 +118,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
 
     $this->assertEquals(
       2,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-12-31')
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-12-31')
     );
   }
 
@@ -138,7 +139,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
 
     $this->assertEquals(
       2,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-12-31', true)
+      PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-02-01', '2016-12-31', true)
     );
   }
 
@@ -172,7 +173,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
 
     $this->assertEquals(
       5,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod()
+      PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod()
     );
   }
 
@@ -194,8 +195,90 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
     $excludeWeekends = true;
     $this->assertEquals(
       1,
-      CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends)
+      PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends)
     );
+  }
+
+  public function testGetPublicHolidaysForPeriod() {
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 1',
+      'date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 2',
+      'date' => CRM_Utils_Date::processDate('2016-03-25')
+    ]);
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 3',
+      'date' => CRM_Utils_Date::processDate('2016-12-26')
+    ]);
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 4',
+      'date' => CRM_Utils_Date::processDate('2016-12-27')
+    ]);
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-12-31');
+    $this->assertCount(4, $publicHolidays);
+    $this->assertEquals('Holiday 1', $publicHolidays[0]->title);
+    $this->assertEquals('Holiday 2', $publicHolidays[1]->title);
+    $this->assertEquals('Holiday 3', $publicHolidays[2]->title);
+    $this->assertEquals('Holiday 4', $publicHolidays[3]->title);
+
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-01-31');
+    $this->assertCount(1, $publicHolidays);
+    $this->assertEquals('Holiday 1', $publicHolidays[0]->title);
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-02-01', '2016-02-29');
+    $this->assertCount(0, $publicHolidays);
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-12-01', '2016-12-29');
+    $this->assertCount(2, $publicHolidays);
+    $this->assertEquals('Holiday 3', $publicHolidays[0]->title);
+    $this->assertEquals('Holiday 4', $publicHolidays[1]->title);
+  }
+
+  public function testGetPublicHolidaysForPeriodShouldOnlyReturnActivePublicHolidays() {
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 1',
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'is_active' => false,
+    ]);
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 2',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 3',
+      'date' => CRM_Utils_Date::processDate('2016-01-03')
+    ]);
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-01-31');
+    $this->assertCount(2, $publicHolidays);
+    $this->assertEquals('Holiday 2', $publicHolidays[0]->title);
+    $this->assertEquals('Holiday 3', $publicHolidays[1]->title);
+  }
+
+  public function testGetPublicHolidaysForPeriodCanExcludeWeekends() {
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 1',
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+    // 2016-01-02 is a Saturday
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 2',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+    // 2016-01-02 is a Sunday
+    $this->createBasicPublicHoliday([
+      'title' => 'Holiday 3',
+      'date' => CRM_Utils_Date::processDate('2016-01-03')
+    ]);
+
+    $excludeWeekends = true;
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-01-31', $excludeWeekends);
+    $this->assertCount(1, $publicHolidays);
+    $this->assertEquals('Holiday 1', $publicHolidays[0]->title);
   }
 
   private function createBasicPublicHoliday($params)
@@ -206,7 +289,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_Tes
     ];
 
     $params = array_merge($basicRequiredFields, $params);
-    return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create($params);
+    return PublicHoliday::create($params);
   }
 
 }

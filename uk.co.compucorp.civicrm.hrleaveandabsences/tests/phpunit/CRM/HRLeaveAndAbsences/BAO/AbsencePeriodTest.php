@@ -530,6 +530,44 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $this->assertNull(CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod());
   }
 
+  public function testAdjustDatesToMatchPeriodDatesShouldAdjustStartDateIfItsLessThanThePeriodStartDate() {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+
+    $yesterday = date('Y-m-d', strtotime('-1 day'));
+    $today = date('Y-m-d');
+    $tomorrow = date('Y-m-d', strtotime('+1 day'));
+
+    $period->start_date = $today;
+    $period->end_date = $tomorrow;
+
+    list($startDate, $endDate) = $period->adjustDatesToMatchPeriodDates(
+      $yesterday,
+      $today
+    );
+
+    $this->assertEquals($period->start_date, $startDate);
+    $this->assertEquals($today, $endDate);
+  }
+
+  public function testAdjustDatesToMatchPeriodDatesShouldAdjustEndDateIfItsGreaterThanThePeriodEndDate() {
+    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+
+    $yesterday = date('Y-m-d', strtotime('-1 day'));
+    $today = date('Y-m-d');
+    $tomorrow = date('Y-m-d', strtotime('+1 day'));
+
+    $period->start_date = $yesterday;
+    $period->end_date = $today;
+
+    list($startDate, $endDate) = $period->adjustDatesToMatchPeriodDates(
+      $today,
+      $tomorrow
+    );
+
+    $this->assertEquals($period->start_date, $yesterday);
+    $this->assertEquals($today, $endDate);
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),

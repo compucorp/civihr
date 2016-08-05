@@ -661,6 +661,173 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($expected, $calculationDetails);
   }
 
+  public function testCalculationCanUseTheAbsencePeriodToCalculateTheBroughtForwardExpirationDate() {
+    $absenceType = new AbsenceType();
+
+    // The getBroughtForwardExpirationDate just relays the work to
+    // the AbsencePeriod::getExpirationDateForAbsenceType method.
+    // So, since all the logic is on AbsencePeriod, all that's left
+    // to be done on the EntitlementCalculation is to test if it
+    // calls the AbsencePeriod method with the right argument and returns
+    // it's value. For this, a mock or more than enough
+    $mockExpirationDate = '2016-01-01';
+    $absencePeriod = $this->getMockBuilder(AbsencePeriod::class)
+                        ->setMethods([
+                          'getExpirationDateForAbsenceType',
+                        ])
+                        ->getMock();
+
+    $absencePeriod->expects($this->once())
+                ->method('getExpirationDateForAbsenceType')
+                ->with($this->identicalTo($absenceType))
+                ->will($this->returnValue($mockExpirationDate));
+
+    $calculation = new EntitlementCalculation($absencePeriod, [], $absenceType);
+
+    $this->assertEquals($mockExpirationDate, $calculation->getBroughtForwardExpirationDate());
+  }
+
+  public function testGetPublicHolidaysShouldReturnAListOfPublicHolidaysAddedToTheEntitlement() {
+    $type = $this->createAbsenceType();
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+50 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->setContractDates(
+      date('YmdHis', strtotime('-5 days')),
+      date('YmdHis', strtotime('+30 days'))
+    );
+
+    $leaveAmount = 10;
+    $addPublicHolidays = true;
+    $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
+
+    $publicHoliday1 = PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+    $publicHoliday2 = PublicHoliday::create([
+      'title' => 'Holiday 2',
+      'date' => date('YmdHis', strtotime('+3 days'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $this->assertCount(2, $publicHolidays);
+    $this->assertEquals($publicHoliday1->title, $publicHolidays[0]->title);
+    $this->assertEquals($publicHoliday2->title, $publicHolidays[1]->title);
+  }
+
+  public function testGetPublicHolidaysShouldOnlyReturnPublicHolidaysWithDatesBetweenTheContractDatesAndAbsencePeriod() {
+    $type = $this->createAbsenceType();
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+50 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    // The contract starts 5 days prior to the AbsencePeriod and
+    // ends before the AbsencePeriod
+    $this->setContractDates(
+      date('YmdHis', strtotime('-5 days')),
+      date('YmdHis', strtotime('+30 days'))
+    );
+
+    $leaveAmount = 10;
+    $addPublicHolidays = true;
+    $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
+
+    // This is between both the AbsencePeriod and the Contract dates,
+    // so it should be returned
+    $publicHoliday1 = PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+
+    // This is between the contract dates but prior to the AbsencePeriod
+    // start_date, so it shouldn't be returned
+    $publicHoliday2 = PublicHoliday::create([
+      'title' => 'Holiday 2',
+      'date' => date('YmdHis', strtotime('-3 days'))
+    ]);
+
+    // This is between the AbsencePeriod dates but after the contract end date,
+    // so it shouldn't be returned
+    PublicHoliday::create([
+      'title' => 'Holiday 3',
+      'date' => date('YmdHis', strtotime('+31 days'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $this->assertCount(1, $publicHolidays);
+    $this->assertEquals($publicHoliday1->title, $publicHolidays[0]->title);
+  }
+
+  public function testGetPublicHolidaysShouldReturnEmptyIfTheContractHasNoJobLeaveInformation() {
+    $type = $this->createAbsenceType();
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+50 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->setContractDates(
+      date('YmdHis'),
+      date('YmdHis', strtotime('+30 days'))
+    );
+
+    PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $this->assertEmpty($publicHolidays);
+  }
+
+  public function testGetPublicHolidaysShouldReturnEmptyIfJobLeaveDoesNotAllowPublicHolidaysToBeAdded() {
+    $type = $this->createAbsenceType();
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+50 days')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $leaveAmount = 10;
+    $addPublicHolidays = false;
+    $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
+
+    $this->setContractDates(
+      date('YmdHis'),
+      date('YmdHis', strtotime('+30 days'))
+    );
+
+    PublicHoliday::create([
+      'title' => 'Holiday 1',
+      'date' => date('YmdHis', strtotime('+1 day'))
+    ]);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+
+    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $this->assertEmpty($publicHolidays);
+  }
+
   private function findAbsencePeriodByID($id) {
     $currentPeriod     = new AbsencePeriod();
     $currentPeriod->id = $id;
