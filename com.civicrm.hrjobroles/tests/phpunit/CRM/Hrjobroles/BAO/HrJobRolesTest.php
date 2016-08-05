@@ -61,7 +61,8 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
       'location' => "amman",
       'region' => "south amman",
       'department' => "amman devs",
-      'level_type' => "guru"
+      'level_type' => "guru",
+      'cost_center' => "abdali"
     ];
     $jobRole = $this->createJobRole($roleParams);
 
