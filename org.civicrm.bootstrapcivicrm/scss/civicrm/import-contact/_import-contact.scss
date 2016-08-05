@@ -3,6 +3,12 @@
     padding-left: 20px !important;
   }
 
+  .crm-form-select,
+  .crm-form-text,
+  .crm-form-textarea {
+    min-width: 300px !important;
+  }
+
   #choose-data-source,
   #data-source-form-block .crm-block,
   #common-form-controls {
