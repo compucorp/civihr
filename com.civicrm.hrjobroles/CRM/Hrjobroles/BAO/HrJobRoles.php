@@ -53,7 +53,7 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
    * @param String $searchField
    * @return Integer ( Contact ID or 0 if not exist)
    */
-  public static function checkContact($searchValue, $searchField) {
+  public static function contactExists($searchValue, $searchField) {
     $queryParam = array(1 => array($searchValue, 'String'));
     $query = "SELECT id from civicrm_contact where ".$searchField." = %1";
     $result = CRM_Core_DAO::executeQuery($query, $queryParam);
