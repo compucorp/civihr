@@ -1,0 +1,303 @@
+.page-civicrm-import {
+  #branding h1.page-title {
+    padding-left: 20px !important;
+  }
+
+  .crm-form-select,
+  .crm-form-text,
+  .crm-form-textarea {
+    min-width: 300px !important;
+  }
+
+  .crm-import-datasource-form-block-fieldSeparator {
+    .helpicon {
+      margin-left: 15px !important;
+    }
+  }
+
+  #choose-data-source,
+  #data-source-form-block .crm-block,
+  #common-form-controls {
+    padding: 5px 20px !important;
+
+    h3 {
+      padding: 0 !important;
+    }
+  }
+
+  #data-source-form-block .crm-block .crm-import_sql-form-block {
+    padding: 0 !important;
+  }
+
+  .crm-container {
+    #wizard-steps {
+      display: none;
+    }
+
+    h2 {
+      display: none;
+    }
+
+    #data-source-form-block {
+      table {
+        td {
+          &.label:first-child {
+            vertical-align: top !important;
+          }
+        }
+      }
+
+      .crm-form-file {
+        width: 300px;
+        height: 120px;
+        opacity: 0 !important;
+        overflow: hidden;
+        z-index: 20;
+        padding: 0;
+      }
+
+      label[for='uploadFile'] {
+        position: relative;
+
+        &:after {
+          content: 'Drop file here \A or click to browse';
+          white-space: pre;
+          position: absolute;
+          left: 180%;
+          top: 0;
+          display: block;
+          width: 300px;
+          height: 70px;
+          border: 1px dashed $crm-page-topbar-bg;
+          text-align: center;
+          color: $crm-page-topbar-bg;
+          padding-top: 50px;
+          font-weight: bold;
+        }
+
+        &:before {
+          content: '\f0ee';
+          font-family: 'FontAwesome';
+          font-size: 23px;
+          position: absolute;
+          left: 180%;
+          color: $crm-page-topbar-bg;
+          top: 0;
+          display: block;
+          width: 300px;
+          text-align: center;
+          line-height: 70px;
+          font-weight: 100;
+        }
+      }
+
+      .uploaded-file {
+        min-width: 300px;
+        display: inline-block;
+        cursor: pointer;
+        margin-bottom: 10px;
+
+        .uploaded-file-icon-trash {
+          color: $brand-danger;
+          float: right;
+          margin-left: 20px;
+        }
+      }
+    }
+
+    // Input radio/checkbox
+    // ============================
+    input[type='radio'] {
+      position: relative;
+      margin: 0 !important;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        border: 2px solid $crm-copy;
+        background: #FFFFFF;
+        border-radius: 50%;
+      }
+
+      &:checked {
+        &:after {
+          content: '';
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 6px;
+          height: 6px;
+          background: $crm-copy;
+          border-radius: 50%;
+        }
+      }
+
+      + label {
+        margin: 0 20px 0 10px;
+        color: $crm-copy;
+        font-weight: normal !important;
+      }
+    }
+
+    input[type='checkbox'] {
+      position: relative;
+      top: 2px;
+      margin-top: 0 !important;
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: #FFFFFF;
+        border: 1px solid $crm-copy;
+        border-radius: 3px;
+      }
+
+      &:checked {
+        &:after {
+          content: '\2713';
+          color: $crm-copy;
+          font-weight: bold;
+        }
+      }
+    }
+
+    table {
+      td {
+        > input[type='checkbox'] {
+          margin-top: 0 !important;
+        }
+
+        &.label {
+          text-align: left !important;
+          width: 200px !important;
+          padding-left: 0 !important;
+        }
+      }
+
+      &.selector,
+      &.report {
+        width: 100% !important;
+        margin-bottom: 20px;
+
+        tr {
+          border-color: $crm-background !important;
+
+          td {
+            color: $crm-copy !important;
+            border: none;
+            padding: 10px !important;
+            vertical-align: middle !important;
+            background-color: #fcfdfd !important;
+            border-color: $crm-background !important;
+          }
+
+          &:nth-child(odd) {
+            td {
+              background: $crm-table-striped-bg !important;
+            }
+          }
+
+          &.columnheader {
+            td {
+              color: #525966 !important;
+            }
+          }
+        }
+
+        .action-link {
+          background: transparent !important;
+        }
+      }
+    }
+
+    #preview-info {
+      padding: 20px;
+
+      .crm-import-maptable-form-block {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      #map-field {
+        padding: 0 !important;
+      }
+    }
+
+    // Help box
+    // ============================
+    .help {
+      background: transparent;
+      border: none;
+      color: $crm-copy;
+      padding: 20px 20px 0 20px;
+      margin-bottom: 20px !important;
+
+      > p {
+        margin-bottom: 20px;
+      }
+
+      + .crm-submit-buttons {
+        display: none;
+      }
+    }
+
+    // Submit buttons
+    // ============================
+    .crm-form-block.crm-form-block {
+      box-shadow: none !important;
+
+      #map-field {
+        padding: 0 7px;
+      }
+
+      .crm-submit-buttons {
+        background: #FFFFFF !important;
+        border-top: 1px solid $gray-lighter;
+        margin: 0 20px 0 20px;
+        padding: 20px 0 10px 0;
+
+        .crm-button {
+          &:first-child {
+            margin-left: 0;
+          }
+
+          .crm-i {
+            display: none;
+          }
+
+          > input.crm-form-submit {
+            border: 1px solid $crm-copy !important;
+            padding-left: 12px;
+
+            &.default {
+              background-color: $brand-primary !important;
+              border-color: $brand-primary !important;
+              color: #FFFFFF !important;
+            }
+          }
+        }
+      }
+    }
+
+    .CRM_Contact_Import_Form_Summary {
+      .crm-import-summary-form-block {
+        padding: 0 20px;
+      }
+
+      .help {
+        padding: 20px 0 0 0 !important;
+      }
+
+      .crm-submit-buttons {
+        margin: 0 !important;
+      }
+    }
+  }
+}
