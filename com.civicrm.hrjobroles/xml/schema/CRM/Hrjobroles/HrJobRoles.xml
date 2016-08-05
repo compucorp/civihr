@@ -96,9 +96,6 @@
         <import>true</import>
         <comment>Role region value.</comment>
         <uniqueName>hrjc_region</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_region</optionGroupName>
-        </pseudoconstant>
     </field>
     <index>
         <name>index_region</name>
@@ -114,9 +111,6 @@
         <import>true</import>
         <comment>Role department.</comment>
         <uniqueName>hrjc_role_department</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_department</optionGroupName>
-        </pseudoconstant>
     </field>
     <index>
         <name>index_department</name>
@@ -132,9 +126,6 @@
         <export>true</export>
         <import>true</import>
         <uniqueName>hrjc_level_type</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>hrjc_level_type</optionGroupName>
-        </pseudoconstant>
     </field>
     <index>
         <name>index_level_type</name>
@@ -187,9 +178,6 @@
         <export>true</export>
         <import>true</import>
         <uniqueName>hrjc_cost_center</uniqueName>
-        <pseudoconstant>
-            <optionGroupName>cost_centres</optionGroupName>
-        </pseudoconstant>
     </field>
     <index>
         <name>index_cost_center</name>
@@ -292,9 +280,6 @@
         <comment>Main work location</comment>
         <export>true</export>
         <import>true</import>
-        <pseudoconstant>
-            <optionGroupName>hrjc_location</optionGroupName>
-        </pseudoconstant>
     </field>
     <index>
         <name>index_location</name>

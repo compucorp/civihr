@@ -47,6 +47,8 @@ class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Core_Form {
   public function preProcess() {
     $session = CRM_Core_Session::singleton();
     $session->pushUserContext(CRM_Utils_System::url('civicrm/jobroles/import'));
+    // check for post max size
+    CRM_Core_Config_Defaults::formatUnitSize(ini_get('post_max_size'), TRUE);
   }
 
   /**
@@ -58,7 +60,8 @@ class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Core_Form {
   public function buildQuickForm() {
     //Setting Upload File Size
     $config = CRM_Core_Config::singleton();
-    $uploadFileSize = $config->maxImportFileSize;
+
+    $uploadFileSize = CRM_Core_Config_Defaults::formatUnitSize($config->maxFileSize.'m');
     $uploadSize = round(($uploadFileSize / (1024 * 1024)), 2);
 
     $this->assign('uploadSize', $uploadSize);
