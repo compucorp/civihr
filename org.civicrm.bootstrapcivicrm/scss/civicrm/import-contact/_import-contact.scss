@@ -33,10 +33,10 @@
 
       .crm-form-file {
         width: 300px;
-      	height: 120px;
-      	opacity: 0 !important;
-      	overflow: hidden;
-      	z-index: 20;
+        height: 120px;
+        opacity: 0 !important;
+        overflow: hidden;
+        z-index: 20;
         padding: 0;
       }
 
@@ -60,7 +60,7 @@
         }
 
         &:before {
-          content: "\f0ee";
+          content: '\f0ee';
           font-family: "FontAwesome";
           font-size: 23px;
           position: absolute;
