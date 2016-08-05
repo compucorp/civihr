@@ -1,16 +1,16 @@
-define([], function () {
+define([], function() {
   'use strict';
 
   /**
-   * Decorates ui-select-choices directive, in order for it to have custom scrollbars,
-   * using the "perfect-scrollbar" plugin.
+   * Decorates ui-select-choices directive, making
+   * it possible to add the "contact actions" template
    */
-  return ['$delegate', function ($delegate) {
+  return ['$delegate', function($delegate) {
     var directive = $delegate[0];
     var origTemplateUrl = directive.templateUrl;
 
-    directive.templateUrl = function(tElem, tAttrs){
-      if(angular.isDefined(tAttrs['contacts'])){
+    directive.templateUrl = function(elem, attrs) {
+      if (angular.isDefined(attrs.contacts)) {
         return 'civihr-ui-select/select-contacts.tpl.html';
       }
       return origTemplateUrl.apply(this, arguments);

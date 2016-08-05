@@ -5,7 +5,44 @@ define([
   'use strict';
 
   apis.factory('api.contactActions', ['api', function (api) {
+    /**
+    * Fetches the possible "refine search" values for the given field
+    * @param  {string} entity The entity name
+    * @param  {string} field  The field name to fetch options for
+    * @return {Promise}       Resolves to the possible values
+    */
+    function getRefineSearchOptions(entity, field) {
+      return this.sendGET(entity, 'getoptions', {
+        field: field,
+        context: 'search'
+      }).then(function(data) {
+        return data.values;
+      });
+    }
+
     return api.extend({
+      getContactTypeOptions: function() {
+        return getRefineSearchOptions.call(this, 'Contact', 'contact_type');
+      },
+      getGroupOptions: function() {
+        return getRefineSearchOptions.call(this, 'GroupContact', 'group_id');
+      },
+      getTagOptions: function() {
+        return getRefineSearchOptions.call(this, 'EntityTag', 'tag_id');
+      },
+      getStateProvinceOptions: function() {
+        return getRefineSearchOptions.call(this, 'Address', 'state_province_id');
+      },
+      getCountryOptions: function() {
+        return getRefineSearchOptions.call(this, 'Address', 'country_id');
+      },
+      getGenderOptions: function() {
+        return getRefineSearchOptions.call(this, 'Contact', 'gender_id');
+      },
+      getDeceasedOptions: function() {
+        return getRefineSearchOptions.call(this, 'Contact', 'is_deceased');
+      },
+
       saveNewIndividual: function (firstName, lastName, email) {
         return this.sendPOST('Contact', 'create', {
           first_name: firstName,
