@@ -187,6 +187,9 @@
         <export>true</export>
         <import>true</import>
         <uniqueName>hrjc_cost_center</uniqueName>
+        <pseudoconstant>
+            <optionGroupName>cost_centres</optionGroupName>
+        </pseudoconstant>
     </field>
     <index>
         <name>index_cost_center</name>
