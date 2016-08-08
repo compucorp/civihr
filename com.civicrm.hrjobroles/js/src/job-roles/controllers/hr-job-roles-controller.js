@@ -44,13 +44,13 @@ define([
         var areDatesCustom = $scope.checkIfDatesAreCustom($scope.edit_data.new_role_id.newStartDate, $scope.edit_data.new_role_id.newEndDate);
 
         formatRoleDates($scope.edit_data.new_role_id, {
-          start: areDatesCustom ? $scope.edit_data.new_role_id.newStartDate : contract.start_date,
-          end: areDatesCustom ? $scope.edit_data.new_role_id.newEndDate : contract.end_date
-        },
-        {
-          start: 'newStartDate',
-          end: 'newEndDate'
-        });
+            start: areDatesCustom ? $scope.edit_data.new_role_id.newStartDate : contract.start_date,
+            end: areDatesCustom ? $scope.edit_data.new_role_id.newEndDate : contract.end_date
+          },
+          {
+            start: 'newStartDate',
+            end: 'newEndDate'
+          });
       };
 
       /**
@@ -125,15 +125,15 @@ define([
         var contract = getContractData(data.contract.$viewValue);
 
         var validateResponse = validateDates({
-          'start': data.start_date.$viewValue,
-          'end': data.end_date.$viewValue,
-          'contractStart': contract.start_date,
-          'contractEnd': contract.end_date,
-        },
-        {
-          'start': data.start_date.$error.custom,
-          'end': data.end_date.$error.custom
-        });
+            'start': data.start_date.$viewValue,
+            'end': data.end_date.$viewValue,
+            'contractStart': contract.start_date,
+            'contractEnd': contract.end_date,
+          },
+          {
+            'start': data.start_date.$error.custom,
+            'end': data.end_date.$error.custom
+          });
 
         return (validateResponse ? true : 'Error');
       };
@@ -430,15 +430,15 @@ define([
 
         var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
         var validateResponse = validateDates({
-          'start': $scope.edit_data.new_role_id.newStartDate,
-          'end': $scope.edit_data.new_role_id.newEndDate,
-          'contractStart': contract.start_date,
-          'contractEnd': contract.end_date,
-        },
-        {
-          'start': $scope.errors.newStartDate,
-          'end': $scope.errors.newEndDate
-        });
+            'start': $scope.edit_data.new_role_id.newStartDate,
+            'end': $scope.edit_data.new_role_id.newEndDate,
+            'contractStart': contract.start_date,
+            'contractEnd': contract.end_date,
+          },
+          {
+            'start': $scope.errors.newStartDate,
+            'end': $scope.errors.newEndDate
+          });
 
         if (validateResponse) {
           newRole = angular.copy($scope.edit_data.new_role_id);
@@ -686,44 +686,44 @@ define([
 
         HRJobRolesService.getContactList().then(function (data) {
 
-          if (data.is_error === 1) {
-            job_roles.message_type = 'alert-danger';
-            job_roles.message = 'Cannot get contact lit!';
-          }
-          else {
+            if (data.is_error === 1) {
+              job_roles.message_type = 'alert-danger';
+              job_roles.message = 'Cannot get contact lit!';
+            }
+            else {
 
-            // Pass the contact list to the scope
-            var contactList = [];
-            var contactListObject = {};
+              // Pass the contact list to the scope
+              var contactList = [];
+              var contactListObject = {};
 
-            for (var i = 0; i < data.count; i++) {
+              for (var i = 0; i < data.count; i++) {
 
-              // Build the contact list
-              contactList.push({ id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] });
-              contactListObject[data.values[i]['id']] = {
-                id: data.values[i]['id'],
-                sort_name: data.values[i]['sort_name']
-              };
+                // Build the contact list
+                contactList.push({ id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] });
+                contactListObject[data.values[i]['id']] = {
+                  id: data.values[i]['id'],
+                  sort_name: data.values[i]['sort_name']
+                };
+              }
+
+              // Store the ContactList as Array as typeahead needs array what we can reuse later
+              job_roles.contactList = contactList;
+
+              // Store the object too, so we can point to right values by Contact ID
+              job_roles.contactListObject = contactListObject;
+
+              job_roles.message_type = 'alert-success';
+              job_roles.message = 'Contact list OK!';
             }
 
-            // Store the ContactList as Array as typeahead needs array what we can reuse later
-            job_roles.contactList = contactList;
-
-            // Store the object too, so we can point to right values by Contact ID
-            job_roles.contactListObject = contactListObject;
-
-            job_roles.message_type = 'alert-success';
-            job_roles.message = 'Contact list OK!';
-          }
-
-          // Hide the message after some seconds
-          $timeout(function () {
+            // Hide the message after some seconds
+            $timeout(function () {
               job_roles.message = null;
-          }, 3000);
-        },
-        function (errorMessage) {
-          $scope.error = errorMessage;
-        });
+            }, 3000);
+          },
+          function (errorMessage) {
+            $scope.error = errorMessage;
+          });
       }
 
       function getOptionValues() {
@@ -733,123 +733,123 @@ define([
 
         HRJobRolesService.getOptionValues(option_groups).then(function (data) {
 
-          if (data.is_error === 1) {
-            job_roles.message_type = 'alert-danger';
-            job_roles.message = 'Cannot get option values!';
-          }
-          else {
+            if (data.is_error === 1) {
+              job_roles.message_type = 'alert-danger';
+              job_roles.message = 'Cannot get option values!';
+            }
+            else {
 
-            // Pass the department option group list to the scope
-            var DepartmentList = {};
+              // Pass the department option group list to the scope
+              var DepartmentList = {};
 
-            // Pass the region option group list to the scope
-            var RegionList = {};
+              // Pass the region option group list to the scope
+              var RegionList = {};
 
-            // Pass the location option group list to the scope
-            var LocationList = {};
+              // Pass the location option group list to the scope
+              var LocationList = {};
 
-            // Pass the level option group list to the scope
-            var LevelList = {};
+              // Pass the level option group list to the scope
+              var LevelList = {};
 
-            // Pass the Cost Centers option group list to the scope
-            var CostCentreList = [];
+              // Pass the Cost Centers option group list to the scope
+              var CostCentreList = [];
 
-            angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
+              angular.forEach(data['optionGroupData'], function (option_group_id, option_group_name) {
 
-              for (var i = 0; i < data.count; i++) {
+                for (var i = 0; i < data.count; i++) {
 
-                switch (option_group_name) {
-                  case 'hrjc_department':
+                  switch (option_group_name) {
+                    case 'hrjc_department':
 
-                    if (option_group_id === data.values[i]['option_group_id']) {
-                      // Build the department list
-                      DepartmentList[data.values[i]['id']] = {
-                        id: data.values[i]['id'],
-                        title: data.values[i]['label']
-                      };
-                    }
+                      if (option_group_id === data.values[i]['option_group_id']) {
+                        // Build the department list
+                        DepartmentList[data.values[i]['value']] = {
+                          id: data.values[i]['value'],
+                          title: data.values[i]['label']
+                        };
+                      }
 
-                    break;
-                  case 'hrjc_region':
+                      break;
+                    case 'hrjc_region':
 
-                    if (option_group_id === data.values[i]['option_group_id']) {
-                      // Build the region list
-                      RegionList[data.values[i]['id']] = {
-                        id: data.values[i]['id'],
-                        title: data.values[i]['label']
-                      };
-                    }
+                      if (option_group_id === data.values[i]['option_group_id']) {
+                        // Build the region list
+                        RegionList[data.values[i]['value']] = {
+                          id: data.values[i]['value'],
+                          title: data.values[i]['label']
+                        };
+                      }
 
-                    break;
-                  case 'hrjc_location':
+                      break;
+                    case 'hrjc_location':
 
-                    if (option_group_id === data.values[i]['option_group_id']) {
-                      // Build the contact list
-                      LocationList[data.values[i]['id']] = {
-                        id: data.values[i]['id'],
-                        title: data.values[i]['label']
-                      };
-                    }
+                      if (option_group_id === data.values[i]['option_group_id']) {
+                        // Build the contact list
+                        LocationList[data.values[i]['value']] = {
+                          id: data.values[i]['value'],
+                          title: data.values[i]['label']
+                        };
+                      }
 
-                    break;
-                  case 'hrjc_level_type':
+                      break;
+                    case 'hrjc_level_type':
 
-                    if (option_group_id === data.values[i]['option_group_id']) {
-                      // Build the contact list
-                      LevelList[data.values[i]['id']] = {
-                        id: data.values[i]['id'],
-                        title: data.values[i]['label']
-                      };
+                      if (option_group_id === data.values[i]['option_group_id']) {
+                        // Build the contact list
+                        LevelList[data.values[i]['value']] = {
+                          id: data.values[i]['value'],
+                          title: data.values[i]['label']
+                        };
 
-                    }
+                      }
 
-                    break;
-                  case 'cost_centres':
-                    if (option_group_id === data.values[i]['option_group_id']) {
-                      // Build the contact list
-                      CostCentreList.push({
-                        id: data.values[i]['id'],
-                        title: data.values[i]['label'],
-                        weight: data.values[i]['weight']
-                      });
-                    }
+                      break;
+                    case 'cost_centres':
+                      if (option_group_id === data.values[i]['option_group_id']) {
+                        // Build the contact list
+                        CostCentreList.push({
+                          id: data.values[i]['value'],
+                          title: data.values[i]['label'],
+                          weight: data.values[i]['weight']
+                        });
+                      }
 
-                    break;
+                      break;
+                  }
+
+
                 }
 
+              });
 
-              }
+              // Store the Department types what we can reuse later
+              job_roles.DepartmentsData = DepartmentList;
 
-            });
+              // Store the Region types what we can reuse later
+              job_roles.RegionsData = RegionList;
 
-            // Store the Department types what we can reuse later
-            job_roles.DepartmentsData = DepartmentList;
+              // Store the Location types what we can reuse later
+              job_roles.LocationsData = LocationList;
 
-            // Store the Region types what we can reuse later
-            job_roles.RegionsData = RegionList;
+              // Store the Level types what we can reuse later
+              job_roles.LevelsData = LevelList;
 
-            // Store the Location types what we can reuse later
-            job_roles.LocationsData = LocationList;
+              // Store the Level types what we can reuse later
+              $scope.CostCentreList = CostCentreList;
+              $log.info($scope.CostCentreList);
 
-            // Store the Level types what we can reuse later
-            job_roles.LevelsData = LevelList;
+              job_roles.message_type = 'alert-success';
+              job_roles.message = 'Option values list OK!';
+            }
 
-            // Store the Level types what we can reuse later
-            $scope.CostCentreList = CostCentreList;
-            $log.info($scope.CostCentreList);
-
-            job_roles.message_type = 'alert-success';
-            job_roles.message = 'Option values list OK!';
-          }
-
-          // Hide the message after some seconds
-          $timeout(function () {
-            job_roles.message = null;
-          }, 3000);
-        },
-        function (errorMessage) {
-          $scope.error = errorMessage;
-        });
+            // Hide the message after some seconds
+            $timeout(function () {
+              job_roles.message = null;
+            }, 3000);
+          },
+          function (errorMessage) {
+            $scope.error = errorMessage;
+          });
       }
 
 
@@ -960,22 +960,22 @@ define([
       function deleteJobRole(job_role_id) {
 
         return HRJobRolesService.deleteJobRole(job_role_id).then(function (data) {
-          if (data.is_error === 1) {
-            job_roles.message_type = 'alert-danger';
-            job_roles.message = 'Role delete failure!';
-          } else {
-            job_roles.message_type = 'alert-success';
-            job_roles.message = 'Role deleted successfully!';
-          }
+            if (data.is_error === 1) {
+              job_roles.message_type = 'alert-danger';
+              job_roles.message = 'Role delete failure!';
+            } else {
+              job_roles.message_type = 'alert-success';
+              job_roles.message = 'Role deleted successfully!';
+            }
 
-          // Hide the message after some seconds
-          $timeout(function () {
-            job_roles.message = null;
-          }, 3000);
-        },
-        function (errorMessage) {
-          $scope.error = errorMessage;
-        });
+            // Hide the message after some seconds
+            $timeout(function () {
+              job_roles.message = null;
+            }, 3000);
+          },
+          function (errorMessage) {
+            $scope.error = errorMessage;
+          });
 
       }
 
