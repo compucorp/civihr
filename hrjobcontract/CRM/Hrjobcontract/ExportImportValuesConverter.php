@@ -3,7 +3,7 @@
 class CRM_Hrjobcontract_ExportImportValuesConverter
 {
     static private $_singleton = NULL;
-    
+
     protected $_annualOptions = array();
     protected $_annualOptionsFlipped = array();
     protected $_contractTypeOptions = array();
@@ -11,6 +11,8 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     protected $_hoursLocationOptions = array();
     protected $_hoursTypeOptions = array();
     protected $_hoursTypeOptionsFlipped = array();
+    protected $_endReasonOptions = array();
+    protected $_endReasonOptionsFlipped = array();
     protected $_leaveTypes = array();
     protected $_leaveTypesFlipped = array();
     protected $_locationOptions = array();
@@ -20,12 +22,12 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     protected $_payScaleOptions = array();
     protected $_pensionTypeOptions = array();
     protected $_pensionTypeOptionsFlipped = array();
-    
+
     private function __construct()
     {
         $this->_initialize();
     }
-    
+
     /**
      * singleton function used to manage this object
      *
@@ -40,7 +42,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return self::$_singleton;
     }
-    
+
     protected function _initialize()
     {
         // annual benefits options:
@@ -54,7 +56,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         {
             $this->_annualOptionsFlipped['benefit']['type'][$value] = $key;
         }
-        
+
         // annual deductions options:
         CRM_Core_OptionGroup::getAssoc('hrjc_deduction_name', $this->_annualOptions['deduction']['name']);
         CRM_Core_OptionGroup::getAssoc('hrjc_deduction_type', $this->_annualOptions['deduction']['type']);
@@ -66,7 +68,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         {
             $this->_annualOptionsFlipped['deduction']['type'][$value] = $key;
         }
-        
+
         // contract type options:
         $contractTypeOptions = array();
         CRM_Core_OptionGroup::getAssoc('hrjc_contract_type', $contractTypeOptions, true);
@@ -74,14 +76,21 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_contractTypeOptions[$contractType['value']] = $contractType;
             $this->_contractTypeOptionsFlipped[$contractType['label']] = $contractType['value'];
         }
-        
+
+        // end reason type options:
+        CRM_Core_OptionGroup::getAssoc('hrjc_contract_end_reason', $endReasons, true);
+        foreach ($endReasons as $endReason) {
+          $this->_endReasonOptions[$endReason['value']] = $endReason;
+          $this->_endReasonOptionsFlipped[$endReason['label']] = $endReason['value'];
+        }
+
         // hours location options:
         $hoursLocation = new CRM_Hrjobcontract_BAO_HoursLocation();
         $hoursLocation->find();
         while ($hoursLocation->fetch()) {
             $this->_hoursLocationOptions[$hoursLocation->id] = (array)$hoursLocation;
         }
-        
+
         // hours type options:
         $hoursTypeOptions = array();
         CRM_Core_OptionGroup::getAssoc('hrjc_hours_type', $hoursType, true);
@@ -89,7 +98,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_hoursTypeOptions[$hourType['value']] = $hourType;
             $this->_hoursTypeOptionsFlipped[$hourType['label']] = $hourType['value'];
         }
-        
+
         // leave types options:
         $absenceType = new CRM_HRAbsence_BAO_HRAbsenceType();
         $absenceType->find();
@@ -98,7 +107,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_leaveTypes[$absenceType->id] = $absenceTypeArray;
             $this->_leaveTypesFlipped[$absenceTypeArray['title']] = $absenceType->id;
         }
-        
+
         // location options:
         $locationOptions = array();
         CRM_Core_OptionGroup::getAssoc('hrjc_location', $locationOptions, true);
@@ -106,7 +115,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_locationOptions[$location['value']] = $location;
             $this->_locationOptionsFlipped[$location['label']] = $location['value'];
         }
-        
+
         // pay cycle options:
         $payCycleOptions = array();
         CRM_Core_OptionGroup::getAssoc('hrjc_pay_cycle', $payCycleOptions, true);
@@ -114,14 +123,14 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_payCycleOptions[$payCycle['value']] = $payCycle;
             $this->_payCycleOptionsFlipped[$payCycle['label']] = $payCycle['value'];
         }
-        
+
         // pay scale options:
         $payScale = new CRM_Hrjobcontract_BAO_PayScale();
         $payScale->find();
         while ($payScale->fetch()) {
             $this->_payScaleOptions[$payScale->id] = (array)$payScale;
         }
-        
+
         // pension type options:
         $pensionTypeOptions = array();
         CRM_Core_OptionGroup::getAssoc('hrjc_pension_type', $pensionTypeOptions, true);
@@ -130,7 +139,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             $this->_pensionTypeOptionsFlipped[$pensionType['label']] = $pensionType['value'];
         }
     }
-    
+
     public function export($entityName, $fieldName, $value)
     {
         $functionName = $entityName . '_' . $fieldName . '_export';
@@ -140,7 +149,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return $value;
     }
-    
+
     public function import($entityName, $fieldName, $value)
     {
         $functionName = $entityName . '_' . $fieldName . '_import';
@@ -150,7 +159,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return $value;
     }
-    
+
     public function contract_is_primary_export($value)
     {
         return (int)$value ? 'Yes' : 'No';
@@ -159,7 +168,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return strtolower($value) === 'yes' ? 1 : 0;
     }
-    
+
     public function details_contract_type_export($value)
     {
         return isset($this->_contractTypeOptions[$value]['label']) ? $this->_contractTypeOptions[$value]['label'] : $value;
@@ -168,7 +177,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return $this->_contractTypeOptionsFlipped[$value];
     }
-    
+
     public function details_location_export($value)
     {
         return $this->_locationOptions[$value]['label'];
@@ -181,7 +190,16 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
 
         return $this->_locationOptionsFlipped[$value];
     }
-    
+
+    public function details_end_reason_export($value)
+    {
+      return isset($value) ? $this->_endReasonOptions[$value]['label'] : null;
+    }
+    public function details_end_reason_import($value)
+    {
+      return !empty($value) ? $this->_endReasonOptionsFlipped[$value] : null;
+    }
+
     public function hour_hours_type_export($value)
     {
         return isset($value) ? $this->_hoursTypeOptions[$value]['label'] : null;
@@ -190,7 +208,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return !empty($value) ? $this->_hoursTypeOptionsFlipped[$value] : null;
     }
-    
+
     public function hour_location_standard_hours_export($value)
     {
         return isset($value) ? $this->_hoursLocationOptions[$value]['location'] . ' - ' .
@@ -215,7 +233,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return $value;
     }
-    
+
     public function leave_leave_amount_export($value)
     {
         $leaves = explode(',', $value);
@@ -233,7 +251,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         {
             $value = $value[0]['leave_amount'];
         }
-        
+
         $leaves = explode(',', $value);
         $output = array();
         foreach ($leaves as $leave)
@@ -241,10 +259,10 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             list($typeTitle, $leaveAmount) = explode(':', $leave);
             $output[$this->_leaveTypesFlipped[trim($typeTitle)]] = trim($leaveAmount);
         }
-        
+
         return $output;
     }
-    
+
     public function leave_leave_type_export($value)
     {
         $typeIds = explode(',', $value);
@@ -260,7 +278,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         //return isset($value) ? $this->_leaveTypesFlipped[$value] : null;
         return null;
     }
-    
+
     public function pay_annual_benefits_export($value)
     {
         return isset($value) ? $this->_getAnnualReadableValues('benefit', $value) : null;
@@ -269,7 +287,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return !empty($value) ? $this->_getAnnualValues('benefit', $value) : null;
     }
-    
+
     public function pay_annual_deductions_export($value)
     {
         return isset($value) ? $this->_getAnnualReadableValues('deduction', $value) : null;
@@ -278,7 +296,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return !empty($value) ? $this->_getAnnualValues('deduction', $value) : null;
     }
-    
+
     public function pay_pay_cycle_export($value)
     {
         return isset($value) ? $this->_payCycleOptions[$value]['label'] : null;
@@ -287,7 +305,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return !empty($value) ? $this->_payCycleOptionsFlipped[$value] : null;
     }
-    
+
     public function pay_pay_is_auto_est_export($value)
     {
         return (int)$value ? 'Yes' : 'No';
@@ -296,7 +314,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return strtolower($value) === 'yes' ? 1 : 0;
     }
-    
+
     public function pay_is_paid_export($value)
     {
         return (int)$value ? 'Yes' : 'No';
@@ -305,7 +323,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return strtolower($value) === 'yes' ? 1 : 0;
     }
-    
+
     public function pay_pay_scale_export($value)
     {
         $result = '';
@@ -334,7 +352,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         {
             $parts = explode(' ', $keys[2]);
         }
-        
+
         if (count($keys) === 4 && count($parts) === 2)
         {
             $result = civicrm_api3('HRPayScale', 'get', array(
@@ -393,10 +411,10 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
                 return $result['id'];
             }
         }
-        
+
         return null;
     }
-    
+
     public function pension_is_enrolled_export($value)
     {
         $result = '';
@@ -431,7 +449,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
         return $result;
     }
-    
+
     public function pension_pension_type_export($value)
     {
         return $this->_pensionTypeOptions[$value]['label'];
@@ -440,7 +458,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return $this->_pensionTypeOptionsFlipped[$value];
     }
-    
+
     public function role_location_export($value)
     {
         return $this->details_location_export($value);
@@ -449,7 +467,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
     {
         return $this->details_location_import($value);
     }
-    
+
     protected function _getAnnualReadableValues($field, $json)
     {
         $list = json_decode($json, true);
@@ -468,10 +486,10 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
                 $output .= 'amount abs: ' . $row['amount_abs'] . '; ';
             }
         }
-        
+
         return $output;
     }
-    
+
     protected function _getAnnualValues($field, $value)
     {
         if (empty($value))
@@ -513,14 +531,14 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
             }
             $outputArray[] = $outputRow;
         }
-        
+
         return $outputArray;
     }
-    
+
     public function getContactByLookup($data)
     {
         $contactId = null;
-        
+
         // external_identifier:
         if (!empty($data['external_identifier']) && !$contactId) {
           $checkCid = new CRM_Contact_DAO_Contact();
@@ -530,7 +548,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
               $contactId = $checkCid->id;
           }
         }
-        
+
         // email:
         if (!empty($data['email']) && !$contactId)
         {
@@ -542,7 +560,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
                 $contactId = $checkEmail->contact_id;
             }
         }
-        
+
         // id:
         if (!empty($data['id']) && !$contactId) {
           $checkId = new CRM_Contact_DAO_Contact();
@@ -552,7 +570,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
               $contactId = $checkId->id;
           }
         }
-        
+
         return $contactId;
     }
 }
