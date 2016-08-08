@@ -1,10 +1,11 @@
 define([
     'common/angular',
     'common/lodash',
+    'common/moment',
     'mocks/job-roles',
     'common/angularMocks',
     'job-roles/app'
-], function (angular, _, Mock) {
+], function (angular, _, moment, Mock) {
     'use strict';
 
     describe('HRJobRolesController', function () {
@@ -354,6 +355,8 @@ define([
                         expect(scope.edit_data[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
                         expect(scope.edit_data[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
                     });
+
+
                 });
 
                 describe('When call onAfterSave', function() {
@@ -484,6 +487,45 @@ define([
 
                 return deferred.promise;
             }
+        });
+
+        describe('When call updateRole passing a job contract with end date equals todays date', function() {
+          beforeEach(function () {
+            var todaysDate = moment().format('YYYY-MM-DD');
+
+            spyOn(HRJobRolesService, 'getAllJobRoles').and.returnValue($q.resolve({
+              values: [{
+                title:"Test",
+                id:"19",
+                job_contract_id:"22",
+                end_date:todaysDate,
+                start_date:"2016-04-01 00:00:00",
+              }],
+            }));
+
+            spyOn(HRJobRolesService, 'getContracts').and.returnValue($q.resolve({
+              count:1,
+              values: [{
+                contact_id:"158",
+                deleted:"0",
+                id:"22",
+                is_current:"1",
+                period_end_date:"2016-08-31",
+                period_start_date:"2916-04-01",
+                revisions:[],
+                title:"Test",
+              }],
+            }));
+
+            initController();
+            scope.edit_data = angular.copy(Mock.roles_data);
+            $rootScope.$digest();
+            scope.updateRole(1);
+          });
+
+          it('the present_job_roles.length should be 1', function() {
+            expect(ctrl.present_job_roles.length).toBe(1);
+          });
         });
 
         /**
