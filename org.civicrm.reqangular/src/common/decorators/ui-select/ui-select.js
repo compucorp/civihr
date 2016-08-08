@@ -1,14 +1,12 @@
 define([], function() {
   'use strict';
 
-  /**
-   * Decorates ui-select-choices directive, making
-   * it possible to add the "contact actions" template
-   */
   return ['$delegate', function($delegate) {
     var directive = $delegate[0];
     var origTemplateUrl = directive.templateUrl;
 
+    // In order to add the "contact actions" the the dropdown, the template file
+    // is changed depending on the presence of the "contacts" attribute
     directive.templateUrl = function(elem, attrs) {
       if (angular.isDefined(attrs.contacts)) {
         return 'civihr-ui-select/select-contacts.tpl.html';

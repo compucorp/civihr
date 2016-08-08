@@ -9,6 +9,7 @@ define([
       var vm = this;
 
       vm.errorMsg = '';
+      vm.loading = false;
       vm.organizationName = '';
       vm.email = '';
 
@@ -23,12 +24,15 @@ define([
        * Saves data and closes the modal
        */
       vm.submit = function() {
+        vm.loading = true;
         contactActions.saveNewOrganization(vm.organizationName, vm.email)
           .then(function(data) {
+            vm.loading = false;
             $rootScope.$broadcast('newOrganizationCreated', data);
             $modalInstance.dismiss('cancel');
           })
           .catch(function() {
+            vm.loading = false;
             vm.errorMsg = 'Error while saving data';
           });
       };

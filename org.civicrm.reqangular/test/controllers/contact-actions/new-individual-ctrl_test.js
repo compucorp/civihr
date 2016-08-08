@@ -50,40 +50,55 @@ define([
 
       describe('when there are no errors', function () {
         beforeEach(function () {
-          ctrl.submit();
           spyOn($rootScope, '$broadcast');
-          $rootScope.$digest();
+          ctrl.submit();
         });
 
         it('saves the new contact', function () {
+          $rootScope.$digest();
           expect(contactActionsSpy.saveNewIndividual.calls.count()).toBe(1);
           expect(contactActionsSpy.saveNewIndividual).toHaveBeenCalledWith('First Name', 'Last Name', 'Email');
         });
 
         it('broadcasts the "newIndividualCreated" event', function () {
+          $rootScope.$digest();
           expect($rootScope.$broadcast).toHaveBeenCalledWith('newIndividualCreated', resultMock);
         });
 
         it('doesn\'t set the error message', function () {
+          $rootScope.$digest();
           expect(ctrl.errorMsg.length).toBe(0);
+        });
+
+        it('changes the "loading" property', function () {
+          expect(ctrl.loading).toBeTruthy();
+          $rootScope.$digest();
+          expect(ctrl.loading).toBeFalsy();
         });
       });
 
       describe('when there are errors', function () {
         beforeEach(function () {
           contactActionsSpy.saveNewIndividual.and.returnValue($q.reject());
-          ctrl.submit();
           spyOn($rootScope, '$broadcast');
-          $rootScope.$digest();
+          ctrl.submit();
         });
 
         it('doesn\'t broadcast events', function () {
+          $rootScope.$digest();
           expect($rootScope.$broadcast).not.toHaveBeenCalled();
         });
 
         it('sets the error message', function () {
+          $rootScope.$digest();
           expect(contactActionsSpy.saveNewIndividual.calls.count()).toBe(1);
           expect(ctrl.errorMsg.length).not.toBe(0);
+        });
+
+        it('changes the "loading" property', function () {
+          expect(ctrl.loading).toBeTruthy();
+          $rootScope.$digest();
+          expect(ctrl.loading).toBeFalsy();
         });
       });
     });
