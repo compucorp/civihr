@@ -83,7 +83,10 @@
           {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
           <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
           <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
-            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}" type="checkbox" class="override-checkbox"> Override
+            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}"
+                   type="checkbox"
+                   class="override-checkbox"
+                   {if $calculation->isCurrentPeriodEntitlementOverridden()}checked{/if}> Override
           </label>
       </td>
       <td class="comment">
