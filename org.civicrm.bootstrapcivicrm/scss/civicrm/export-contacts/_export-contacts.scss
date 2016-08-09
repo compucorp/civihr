@@ -1,0 +1,40 @@
+.CRM_Export_Form_Select {
+	position: relative;
+	#export-type {
+		padding: 0 20px;
+		position: relative;
+		top: -15px;
+	}
+	#wizard-steps {
+		display: none;
+	}
+	.help {
+    @extend %block-with-shadow;
+		position: absolute;
+		width: calc(100% - 49px);
+		top: 60px;
+		left: 20px;
+		border-radius: 0;
+		border-color: $gray;
+		background-color: #ffffff;
+	}
+	.crm-exportOption-section {
+		h3 {
+			padding-bottom: 65px;
+		}
+	}
+	h2 {
+		+ {
+			.crm-submit-buttons {
+				display: none;
+			}
+		}
+		position: relative;
+		z-index: 1;
+		top: -63px !important;
+		left: 170px;
+		&::before {
+			content: ' - ';
+		}
+	}
+}

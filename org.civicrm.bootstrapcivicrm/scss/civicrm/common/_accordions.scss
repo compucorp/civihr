@@ -14,7 +14,7 @@
     font-weight: normal !important;
 
     &::before {
-      @include fa-icon(.8em);
+      @include fa-icon($font-size: .8em);
       padding-right: 10px;
     }
 
