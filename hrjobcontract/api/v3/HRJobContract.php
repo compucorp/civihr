@@ -179,3 +179,22 @@ function _civicrm_api3_h_r_job_contract_getlist_output($result, $request) {
   }
   return $output;
 }
+
+/**
+ * HRJobContract.getcurrentcontract API
+ *
+ * @param array $params The accepted params are: contact_id
+ * @return array API result descriptor
+ */
+function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
+  $contactID = !empty($params['contact_id']) ? (int) $params['contact_id'] : 0;
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contactID);
+  $return = null;
+  if (!empty($result)) {
+    $fields = ['contract_id', 'position', 'title', 'period_start_date', 'period_end_date'];
+    foreach($fields as $field) {
+      $return->$field = $result->$field;
+    }
+  }
+  return civicrm_api3_create_success($return, $params);
+}
