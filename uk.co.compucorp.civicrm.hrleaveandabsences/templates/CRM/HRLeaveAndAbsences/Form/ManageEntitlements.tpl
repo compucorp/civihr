@@ -73,7 +73,7 @@
       <td>{$contract.contact_display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
       <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
-      <td>{$calculation->getNumberOfLeavesTakenOnThePreviousPeriod()}</td>
+      <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>
       <td>{$calculation->getContractualEntitlement()}</td>
