@@ -530,26 +530,24 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @return array|null
    */
   public static function getCurrentContract($contactID)  {
-    try  {
-      $queryParam = array(1 => array($contactID, 'Integer'));
-      $query = "SELECT hrjc.id as contract_id , hrjd.*
+    $currentDate = date('Y-m-d');
+    $queryParam = array(1 => array($contactID, 'Integer'));
+    $query = "SELECT hrjc.id as contract_id , hrjd.*
                 FROM civicrm_hrjobcontract hrjc
                 LEFT JOIN civicrm_hrjobcontract_revision hrjr
                 ON hrjr.jobcontract_id = hrjc.id
                 LEFT JOIN civicrm_hrjobcontract_details hrjd
                 ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
                 WHERE hrjc.contact_id = %1
-                AND hrjr.effective_date <= CURDATE()
-                AND ( hrjr.effective_end_date > CURDATE() OR hrjr.effective_end_date IS NULL)
-                AND ( hrjd.period_end_date > CURDATE() OR hrjd.period_end_date IS NULL)
+                AND hrjr.effective_date <= '{$currentDate}'
+                AND ( hrjr.effective_end_date > '{$currentDate}' OR hrjr.effective_end_date IS NULL)
+                AND ( hrjd.period_end_date > '{$currentDate}' OR hrjd.period_end_date IS NULL)
                 AND hrjc.deleted = 0
                 AND hrjr.deleted = 0
+                AND hrjr.overrided = 0
                 LIMIT 1";
-      $response = CRM_Core_DAO::executeQuery($query, $queryParam);
-      $result =  $response->fetch() ? $response : null;
-    } catch(CiviCRM_API3_Exception $ex)  {
-      $result =  null;
-    }
-    return $result;
+    $response = CRM_Core_DAO::executeQuery($query, $queryParam);
+
+    return $response->fetch() ? $response : null;
   }
 }
