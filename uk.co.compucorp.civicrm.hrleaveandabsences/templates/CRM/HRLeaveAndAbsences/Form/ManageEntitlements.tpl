@@ -73,7 +73,7 @@
       <td>{$contract.contact_display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
       <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
-      <td>{$calculation->getNumberOfLeavesTakenOnThePreviousPeriod()}</td>
+      <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>
       <td>{$calculation->getContractualEntitlement()}</td>
@@ -83,7 +83,10 @@
           {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
           <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
           <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
-            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}" type="checkbox" class="override-checkbox"> Override
+            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}"
+                   type="checkbox"
+                   class="override-checkbox"
+                   {if $calculation->isCurrentPeriodEntitlementOverridden()}checked{/if}> Override
           </label>
       </td>
       <td class="comment">

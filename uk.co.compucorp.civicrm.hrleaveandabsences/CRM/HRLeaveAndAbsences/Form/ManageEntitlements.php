@@ -3,6 +3,7 @@
 require_once 'CRM/Core/Form.php';
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_EntitlementCalculator as EntitlementCalculator;
 
 /**
@@ -25,6 +26,35 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * @var CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
    */
   private $absencePeriod;
+
+  /**
+   * An array used to store the values processed by the setDefaultValues method
+   *
+   * @var array
+   */
+  private $defaultValues = [];
+
+  /**
+   * If any contract has a previously calculated entitlement, and it has a
+   * comment, we add the comment to the array of default values, so it will be
+   * available/visible on the form
+   *
+   * @return array
+   */
+  public function setDefaultValues()
+  {
+    if(!empty($this->calculations) && empty($this->defaultValues)) {
+      $this->defaultValues = [];
+      foreach($this->calculations as $calculation) {
+        if($calculation->getCurrentPeriodEntitlementComment()) {
+          $contractID = $calculation->getContract()['id'];
+          $absenceTypeID = $calculation->getAbsenceType()->id;
+          $this->defaultValues['comment'][$contractID][$absenceTypeID] = $calculation->getCurrentPeriodEntitlementComment();
+        }
+      }
+    }
+    return $this->defaultValues;
+  }
 
   /**
    * {@inheritdoc}
@@ -66,7 +96,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contractID = $calculation->getContract()['id'];
 
-      CRM_HRLeaveAndAbsences_BAO_Entitlement::saveFromCalculation(
+      LeavePeriodEntitlement::saveFromCalculation(
         $calculation,
         $values['proposed_entitlement'][$contractID][$absenceTypeID],
         $values['comment'][$contractID][$absenceTypeID]

@@ -174,4 +174,53 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
       $excludeWeekends
     );
   }
+
+  /**
+   * This method returns s list of active PublicHoliday instances between the
+   * given start and end dates (inclusive)
+   *
+   * @param string
+   *    $startDate The start date of the period
+   * @param string
+   *    $endDate The end date of the period
+   * @param bool $excludeWeekends
+   *    When true it will not include Public Holidays that fall on a weekend. It's false by default
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
+   */
+  public static function getPublicHolidaysForPeriod($startDate, $endDate, $excludeWeekends = false) {
+    $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Ymd');
+    $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Ymd');
+
+    $tableName = self::getTableName();
+
+    $where = 'date >= %1 AND date <= %2 AND is_active = 1';
+
+    // Weekends are Saturday and Sunday
+    // So, to exclude them we return only the public holidays
+    // between monday (2) and friday (6)
+    if($excludeWeekends) {
+      $where .= ' AND DAYOFWEEK(date) BETWEEN 2 AND 6';
+    }
+
+    $query = "
+      SELECT *
+      FROM {$tableName}
+      WHERE {$where}
+      ORDER BY date ASC
+    ";
+
+    $queryParams = [
+      1 => [$startDate, 'Date'],
+      2 => [$endDate, 'Date'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $queryParams, true, self::class);
+
+    $publicHolidays = [];
+    while($dao->fetch(true)) {
+      $publicHolidays[] = clone $dao;
+    }
+
+    return $publicHolidays;
+  }
 }

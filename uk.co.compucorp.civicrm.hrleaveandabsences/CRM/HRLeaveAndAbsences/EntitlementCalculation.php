@@ -79,6 +79,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   private $jobLeave;
 
+  /**
+   * Variable to cache the return from the getPeriodEntitlement method.
+   *
+   * If false, it means the entitlement was never loaded. If null, it means there's
+   * no stored entitlement for the current period.
+   *
+   * @var bool|null
+   */
+  private $periodEntitlement = FALSE;
 
   /**
    * Creates a new EntitlementCalculation instance
@@ -177,7 +186,55 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return float|int
    */
   public function getProposedEntitlement() {
+    $periodEntitlement = $this->getPeriodEntitlement();
+
+    if($periodEntitlement && $periodEntitlement->overridden) {
+      return $periodEntitlement->getEntitlement();
+    }
+
     return $this->getProRata() + $this->getBroughtForward();
+  }
+
+  /**
+   * Returns the previously calculated entitlement for the calculation period.
+   *
+   * If there's no such entitlement, returns null.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|null
+   */
+  private function getPeriodEntitlement() {
+    if($this->periodEntitlement === false) {
+      $this->periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
+        $this->contract['id'],
+        $this->period->id,
+        $this->absenceType->id
+      );
+    }
+
+    return $this->periodEntitlement;
+  }
+
+  /**
+   * Returns if the there's a previously calculated entitlement for this
+   * calculation's period and if it is overridden.
+   *
+   * @return bool
+   */
+  public function isCurrentPeriodEntitlementOverridden() {
+    $periodEntitlement = $this->getPeriodEntitlement();
+    return $periodEntitlement && $periodEntitlement->overridden;
+  }
+
+  /**
+   * Returns the comment for the previously calculated entitlement for this
+   * calculation's period, if it exists.
+   *
+   * @return bool
+   */
+  public function getCurrentPeriodEntitlementComment()
+  {
+    $periodEntitlement = $this->getPeriodEntitlement();
+    return $periodEntitlement ? $periodEntitlement->comment : '';
   }
 
   /**
@@ -310,7 +367,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return false;
     }
 
-    $expirationDate = $this->period->getExpirationDateForAbsenceType($this->absenceType);
+    $expirationDate = $this->getBroughtForwardExpirationDate();
 
     if($expirationDate) {
       return strtotime($expirationDate) < strtotime('now');
@@ -474,5 +531,41 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       $this->getBroughtForward(),
       $this->getProposedEntitlement()
     );
+  }
+
+  /**
+   * Returns the expiration date for a brought forward, based on the
+   * AbsencePeriod start date and the AbsenceType carry forward rules
+   *
+   * @return null|string
+   */
+  public function getBroughtForwardExpirationDate() {
+    return $this->period->getExpirationDateForAbsenceType($this->absenceType);
+  }
+
+  /**
+   * Returns a list of PublicHolidays instances representing the Public Holidays
+   * added to the entitlement.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
+   */
+  public function getPublicHolidaysInEntitlement() {
+    $jobLeave = $this->getJobLeaveForAbsenceType();
+
+    if(!$jobLeave) {
+      return [];
+    }
+
+    if(!$jobLeave['add_public_holidays']) {
+      return [];
+    }
+
+    $contractDates = $this->getContractDates();
+    list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+      $contractDates['start_date'],
+      $contractDates['end_date']
+    );
+
+    return PublicHoliday::getPublicHolidaysForPeriod($startDate, $endDate);
   }
 }

@@ -300,9 +300,21 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     this._overrideCheckbox = element.find('input[type="checkbox"]');
     this._overrideField = element.find('input[type="text"]');
     this._proposedValue = element.find('.proposed-value');
+    this._init();
+  }
+
+  /**
+   * Initializes the component
+   *
+   * @private
+   */
+  ProposedEntitlement.prototype._init = function() {
+    if(this._overrideCheckbox.is(':checked')) {
+      this._makeEntitlementEditable();
+    }
     this._setupOverrideFieldMask();
     this._addEventListeners();
-  }
+  };
 
   /**
    * Sets the proposed entitlement value to the one given.

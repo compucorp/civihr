@@ -1,7 +1,10 @@
 <?php
+use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementException as InvalidPeriodEntitlementException;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
@@ -54,6 +57,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $hasComment = !empty($params['comment']);
     $hasCommentAuthor = !empty($params['comment_author_id']);
     $hasCommentDate = !empty($params['comment_date']);
+
     if($hasComment) {
       if(!$hasCommentAuthor) {
         throw new InvalidPeriodEntitlementException(
@@ -115,6 +119,218 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     }
 
     return null;
+  }
+
+  /**
+   * This method saves a new LeavePeriodEntitlement and the respective
+   * LeaveBalanceChanges based on the given EntitlementCalculation.
+   *
+   * If there's already an LeavePeriodEntitlement for the calculation's Absence
+   * Period, Absence Type, and Contract, it will be replaced by a new one.
+   *
+   * If an overridden entitlement is given, the created Entitlement will be marked
+   * as overridden.
+   *
+   * If a calculation comment is given, the current logged in user will be stored
+   * as the comment's author.
+   *
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param float|null $overriddenEntitlement
+   *  A value to override the calculation's proposed entitlement
+   * @param string|null $calculationComment
+   *  A comment describing the calculation
+   */
+  public static function saveFromCalculation(EntitlementCalculation $calculation, $overriddenEntitlement = null, $calculationComment = null) {
+    $transaction = new CRM_Core_Transaction();
+    try {
+      $absencePeriodID = $calculation->getAbsencePeriod()->id;
+      $absenceTypeID = $calculation->getAbsenceType()->id;
+      $contractID = $calculation->getContract()['id'];
+      self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contractID);
+
+      $periodEntitlement = self::create(self::buildLeavePeriodParamsFromCalculation(
+        $calculation,
+        $overriddenEntitlement,
+        $calculationComment
+      ));
+
+      self::saveLeaveBalanceChange($calculation, $periodEntitlement, $overriddenEntitlement);
+
+      if(!$periodEntitlement->overridden) {
+        self::saveBroughtForwardBalanceChange($calculation, $periodEntitlement);
+        self::savePublicHolidaysBalanceChanges($calculation, $periodEntitlement);
+      }
+
+      $transaction->commit();
+    } catch(\Exception $ex) {
+      $transaction->rollback();
+    }
+  }
+
+  /**
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param boolean $overriddenEntitlement
+   * @param string $calculationComment
+   *
+   * @return array
+   */
+  private static function buildLeavePeriodParamsFromCalculation(
+    EntitlementCalculation $calculation,
+    $overriddenEntitlement,
+    $calculationComment
+  ) {
+    global $user;
+    $absenceTypeID   = $calculation->getAbsenceType()->id;
+    $contractID      = $calculation->getContract()['id'];
+    $absencePeriodID = $calculation->getAbsencePeriod()->id;
+
+    $params = [
+      'type_id'     => $absenceTypeID,
+      'contract_id' => $contractID,
+      'period_id'   => $absencePeriodID,
+      'overridden'  => (boolean)$overriddenEntitlement,
+    ];
+
+    if ($calculationComment) {
+      $params['comment']            = $calculationComment;
+      $params['comment_author_id']  = $user->uid;
+      $params['comment_date'] = date('YmdHis');
+    }
+
+    return $params;
+  }
+
+  /**
+   * Saves the Entitlement Calculation Pro Rata as a Balance Change of the "Leave
+   * Type".
+   *
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   * @param int $overriddenEntitlement
+   */
+  private static function saveLeaveBalanceChange(
+    EntitlementCalculation $calculation,
+    LeavePeriodEntitlement $periodEntitlement,
+    $overriddenEntitlement = null
+  ) {
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    if($periodEntitlement->overridden && !is_null($overriddenEntitlement)) {
+      $amount = (float)$overriddenEntitlement;
+    } else {
+      $amount = $calculation->getProRata();
+    }
+
+    LeaveBalanceChange::create([
+      'type_id' => $balanceChangeTypes['Leave'],
+      'entitlement_id' => $periodEntitlement->id,
+      'amount' => $amount
+    ]);
+  }
+
+  /**
+   * Saves the Entitlement Calculation Brought Forward as a Balance Change of the
+   * "Brought Forward" type.
+   *
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   */
+  private static function saveBroughtForwardBalanceChange(
+    EntitlementCalculation $calculation,
+    LeavePeriodEntitlement $periodEntitlement
+  ) {
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $broughtForward = $calculation->getBroughtForward();
+
+    if ($broughtForward) {
+      $broughtForwardExpirationDate = $calculation->getBroughtForwardExpirationDate();
+
+      LeaveBalanceChange::create([
+        'type_id' => $balanceChangeTypes['Brought Forward'],
+        'entitlement_id' => $periodEntitlement->id,
+        'amount' => $broughtForward,
+        'expiry_date' => CRM_Utils_Date::processDate($broughtForwardExpirationDate)
+      ]);
+    }
+  }
+
+  /**
+   * Saves the Entitlement Calculation Public Holiday as Leave Requests and
+   * Balance Changes.
+   *
+   * On Balance Change, of type "Public Holiday", will be created with the amount
+   * equals to the number of Public Holidays in the entitlement. Next, for each of
+   * the Public Holidays, a LeaveRequest will be created, including it's respective
+   * LeaveRequestDates and LeaveBalanceChanges.
+   *
+   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   *
+   * @TODO Once we get a way to related a job contract to a work pattern, we'll
+   *       need to take that in consideration to calculate the amount added/deducted
+   *       by public holidays
+   *
+   * @throws \Exception
+   */
+  private static function savePublicHolidaysBalanceChanges(
+    EntitlementCalculation $calculation,
+    LeavePeriodEntitlement $periodEntitlement
+  ) {
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequestDateTypes  = array_flip(LeaveRequest::buildOptions('from_date_type'));
+
+    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+
+    if (!empty($publicHolidays)) {
+      LeaveBalanceChange::create([
+        'type_id'        => $balanceChangeTypes['Public Holiday'],
+        'entitlement_id' => $periodEntitlement->id,
+        'amount'         => count($publicHolidays)
+      ]);
+
+      foreach ($publicHolidays as $publicHoliday) {
+        $leaveRequest = LeaveRequest::create([
+          'entitlement_id' => $periodEntitlement->id,
+          'status_id'      => $leaveRequestStatuses['Admin Approved'],
+          'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
+          'from_date_type' => $leaveRequestDateTypes['All Day']
+        ]);
+
+        $requestDate  = LeaveRequestDate::getDatesForLeaveRequest($leaveRequest->id)[0];
+
+        LeaveBalanceChange::create([
+          'type_id'        => $balanceChangeTypes['Debit'],
+          'entitlement_id' => $periodEntitlement->id,
+          'amount'         => -1,
+          'source_id'      => $requestDate->id
+        ]);
+      }
+    }
+  }
+
+  /**
+   * Deletes the LeavePeriodEntitlement with the given Absence Period ID, Absence Type ID
+   * and Contract ID
+   *
+   * @param int $absencePeriodID
+   * @param int $absenceTypeID
+   * @param int $contractID
+   */
+  private static function deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contractID) {
+    $tableName = self::getTableName();
+    $query     = "
+      DELETE FROM {$tableName}
+      WHERE period_id = %1 AND type_id = %2 AND contract_id = %3
+    ";
+    $params    = [
+      1 => [$absencePeriodID, 'Positive'],
+      2 => [$absenceTypeID, 'Positive'],
+      3 => [$contractID, 'Positive'],
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
   }
 
   /**
