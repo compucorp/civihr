@@ -540,8 +540,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
                 ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
                 WHERE hrjc.contact_id = %1
                 AND hrjr.effective_date <= '{$currentDate}'
-                AND ( hrjr.effective_end_date > '{$currentDate}' OR hrjr.effective_end_date IS NULL)
-                AND ( hrjd.period_end_date > '{$currentDate}' OR hrjd.period_end_date IS NULL)
+                AND ( hrjr.effective_end_date >= '{$currentDate}' OR hrjr.effective_end_date IS NULL)
+                AND ( hrjd.period_end_date >= '{$currentDate}' OR hrjd.period_end_date IS NULL)
                 AND hrjc.deleted = 0
                 AND hrjr.deleted = 0
                 AND hrjr.overrided = 0

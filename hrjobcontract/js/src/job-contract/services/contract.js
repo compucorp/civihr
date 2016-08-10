@@ -58,6 +58,29 @@ define([
 
                 return deffered.promise;
             },
+            getCurrentContract: function(contactId) {
+              var deffered = $q.defer();
+
+                Contract.get({action: 'getcurrentcontract', json: {'contact_id': contactId} }, function(data){
+                  deffered.resolve(data.values);
+                },function(){
+                  deffered.reject('Unable to fetch the current contract');
+                });
+
+
+              return deffered.promise;
+            },
+            changeHeaderColor: function() {
+              this.getCurrentContract(settings.contactId).then(function(currentContract){
+                if(currentContract)  {
+                  console.log('there is current contract');
+                } else {
+                  console.log('no current contract');
+                }
+              }).catch(function(error){
+                console.log(error);
+              });
+            },
             getOne: function(contractId, contactId){
 
                 if (!contractId || typeof +contractId !== 'number') {
