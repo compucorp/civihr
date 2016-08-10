@@ -8,14 +8,8 @@
     <author>gregmeszaros</author>
     <email>meszaros275@gmail.com</email>
   </maintainer>
-  <urls>
-    <url desc="Main Extension Page">https://civicrm.org/extensions/civihr</url>
-    <url desc="Documentation">https://civicrm.org/extensions/civihr</url>
-    <url desc="Support">http://compucorp.co.uk</url>
-    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
-  </urls>
-  <releaseDate>2015-03-04</releaseDate>
-  <version>1.5.0</version>
+  <releaseDate>2016-08-09</releaseDate>
+  <version>1.5.7</version>
   <develStage>alpha</develStage>
   <compatibility>
     <ver>4.5</ver>

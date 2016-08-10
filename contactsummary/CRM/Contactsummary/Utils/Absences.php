@@ -1,72 +1,75 @@
 <?php
 
 class CRM_Contactsummary_Utils_Absences {
-  const TYPE_MATERNITY = 'maternity';
-  const TYPE_OTHER = 'other';
-  const TYPE_PATERNITY = 'paternity';
-  const TYPE_SICKNESS = 'sick';
-  const TYPE_TOIL = 'toil';
-  const TYPE_VACATION = 'vacation';
 
   /**
-   * todo: review if this method is needed at all
+   * Get duration of absences for specific absence type, in minutes.
    *
-   * @param array $absenceTypes
-   * @param       $periodId
-   *
+   * @param string $absenceTypeName
+   * @param int $periodId
    * @return int
    */
-  public static function getTotalAbsences($absenceTypes = array(), $periodId) {
-    $total = static::getAbsenceDuration($absenceTypes, $periodId);
+  public static function getTotalAbsences($absenceTypeName, $periodId) {
 
-    return $total;
-  }
+    // Nature of this contact's role in the activity: 1 assignee, 2 creator, 3 focus or target.
+    $RECORD_TYPE = 3;
 
-  /**
-   * Get duration of absences, in minutes.
-   *
-   * @param array $absenceTypeNames
-   * @param       $periodId
-   *
-   * @return int
-   */
-  private static function getAbsenceDuration($absenceTypeNames = array(), $periodId) {
-    $absenceTypeIds = static::getActivityIdsForAbsenceTypeNames($absenceTypeNames, $periodId);
-    $activityStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
+    $currentDate = date('Y-m-d');
 
     $sql = "
-      SELECT SUM(a1.duration) duration
+      SELECT SUM(duration) AS duration from (
+      SELECT a.duration
       FROM civicrm_activity a
-
-      INNER JOIN civicrm_activity_contact ac
-      ON a.id = ac.activity_id
-
-      INNER JOIN civicrm_contact c
-      ON (ac.contact_id = c.id AND c.contact_type = 'Individual')
-
-      INNER JOIN civicrm_hrjobcontract jc
-      ON c.id = jc.contact_id AND jc.is_primary = 1
-
-      INNER JOIN civicrm_hrjobcontract_revision jcr
-      ON (jc.id = jcr.jobcontract_id AND jcr.effective_date <= NOW())
-
-      INNER JOIN civicrm_hrjobcontract_details jcd
-      ON (jcr.id = jcd.jobcontract_revision_id AND (jcd.period_end_date >= NOW() OR jcd.period_end_date IS NULL))
-
-      INNER JOIN civicrm_activity a1
-      ON (a.id = a1.source_record_id AND a1.activity_type_id = %1 AND a1.status_id = %2)
+      LEFT JOIN civicrm_activity a2 ON a.source_record_id = a2.id
+      LEFT JOIN civicrm_activity_contact ac ON a2.id = ac.activity_id
+      LEFT JOIN civicrm_contact c ON ac.contact_id = c.id
+      LEFT JOIN civicrm_hrjobcontract hrjc ON (c.id = hrjc.contact_id)
+      LEFT JOIN civicrm_hrjobcontract_revision hrjr ON hrjr.jobcontract_id = hrjc.id
+      LEFT JOIN civicrm_hrjobcontract_details hrjd ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
 
       WHERE
-        a.id IN (" . (count($absenceTypeIds) > 0 ? implode(',', $absenceTypeIds) : 'NULL') . ")
-        AND a.status_id = %2
+      a.source_record_id
+      IN (
+      SELECT t2.id
+      FROM civicrm_activity_contact t1
+      LEFT JOIN civicrm_activity t2 ON t1.activity_id = t2.id
+      WHERE t2.activity_type_id = %1
+      AND t1.record_type_id = {$RECORD_TYPE}
+      )
+
+      AND a.status_id = %2
+      AND (a.activity_date_time >= %3 AND a.activity_date_time < %4)
+      AND a.is_deleted = 0
+
+      AND ac.record_type_id ={$RECORD_TYPE}
+
+      AND c.contact_type = 'Individual'
+
+      AND hrjc.deleted = 0
+      AND hrjr.deleted = 0
+      AND hrjd.period_start_date <= '{$currentDate}'
+      AND ( hrjd.period_end_date >= '{$currentDate}' OR hrjd.period_end_date IS NULL)
+      group by a.id
+      ) AS total_minutes
     ";
 
+    $duration = 0;
+
+    $activityStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
+    $periodDetails    = CRM_HRAbsence_BAO_HRAbsencePeriod::getDefaultValues($periodId);
+
+    $absenceID = static::getAbsenceTypeId($absenceTypeName);
+    if ($absenceID == null)  {
+      return $duration;
+    }
+
     $params = array(
-        1 => array(static::getAbsenceActivityTypeId(), 'Integer'),
-        2 => array(CRM_Utils_Array::key('Completed', $activityStatuses), 'Integer'),
+      1 => array($absenceID, 'Integer'),
+      2 => array(CRM_Utils_Array::key('Completed', $activityStatuses), 'Integer'),
+      3 => array($periodDetails['start_date'], 'String'),
+      4 => array($periodDetails['end_date'], 'String'),
     );
 
-    $duration = 0;
 
     $dao = CRM_Core_DAO::executeQuery($sql, $params);
     if ($dao->fetch()) {
@@ -77,64 +80,31 @@ class CRM_Contactsummary_Utils_Absences {
   }
 
   /**
-   * Get an array of activity IDs for absences, corresponding to a given array of absence type names.
+   * Get the ID for the requested absence type using its name
    *
-   * @param array $absenceTypeNames
-   * @param       $periodId
+   * @param string $absenceTypeName
    *
-   * @return array
+   * @return int|NULL
    */
-  private static function getActivityIdsForAbsenceTypeNames($absenceTypeNames = array(), $periodId) {
-    $ids = array();
+  private static function getAbsenceTypeId($absenceTypeName)  {
+    $sql = "
+      SELECT cov.value from civicrm_option_group cog
+      LEFT JOIN civicrm_option_value cov ON cov.option_group_id = cog.id
+      WHERE cog.name = 'activity_type'
+      AND cov.name = %1
+      AND cov.is_active = 1
+    ";
 
-    $absenceTypeIds = array();
-    foreach (static::getAbsenceTypes() as $type) {
-      if (in_array(strtolower($type['name']), $absenceTypeNames) || !$absenceTypeNames) {
-        $absenceTypeIds[] = $type['debit_activity_type_id'];
-      }
+    $params = array(
+      1 => array($absenceTypeName, 'String'),
+    );
+
+    $dao = CRM_Core_DAO::executeQuery($sql, $params);
+    if ($dao->fetch()) {
+      return $dao->value;
     }
 
-    $absences = static::getAbsences($periodId);
-
-    foreach ($absences as $id => $absence) {
-      if (in_array($absence['activity_type_id'], $absenceTypeIds)) {
-        $ids[] = $id;
-      }
-    }
-
-    return array_filter($ids);
+    return null;
   }
 
-  /**
-   * Get a list of all absence types.
-   *
-   * @return mixed
-   * @throws \CiviCRM_API3_Exception
-   */
-  private static function getAbsenceTypes() {
-    $result = civicrm_api3('HRAbsenceType', 'get');
-
-    return $result['values'];
-  }
-
-  /**
-   * Get a list of all absences.
-   *
-   * @param $periodId
-   *
-   * @return
-   * @throws \CiviCRM_API3_Exception
-   */
-  private static function getAbsences($periodId) {
-    $result = civicrm_api3('Activity', 'getabsences', array('period_id' => $periodId));
-
-    return $result['values'];
-  }
-
-  /**
-   * Get the activity type ID for absences.
-   */
-  private static function getAbsenceActivityTypeId() {
-    return array_search('Absence', CRM_Core_PseudoConstant::activityType());
-  }
 }
