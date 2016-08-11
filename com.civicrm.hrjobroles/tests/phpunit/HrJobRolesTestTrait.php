@@ -6,12 +6,65 @@
 trait HrJobRolesTestTrait {
 
   /**
-   * Creates a new Job role from the given data
+   * Creates a new Job Role with specified parameters
    *
-   * @param array $params
+   * @param $params
+   *
+   * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
    */
-  protected function createJobRole($params = array()) {
-    CRM_Hrjobroles_BAO_HrJobRoles::create($params);
+  public function createJobRole($params = []) {
+    return CRM_Hrjobroles_BAO_HrJobRoles::create($params);
+  }
+
+  /**
+   * Creates sample option group and values to be used in tests
+   *
+   */
+  public function createSampleOptionGroupsAndValues()  {
+
+    // Create required Option Groups
+    $optionGroupsValuesList = [
+      'hrjc_location' => 'amman',
+      'hrjc_region' => 'south amman',
+      'hrjc_department' => 'amman devs',
+      'hrjc_level_type' => 'guru',
+      'cost_centres' => 'abdali'
+    ];
+
+    $optionGroupsList = array_keys($optionGroupsValuesList);
+    $INList = implode("','", $optionGroupsList );
+
+    CRM_Core_DAO::executeQuery(
+      "UPDATE civicrm_option_group SET is_active = 1
+       WHERE name IN ('$INList')"
+    );
+
+    $query = "SELECT id,name FROM civicrm_option_group WHERE
+              name IN ('$INList')";
+    $optionGroups = CRM_Core_DAO::executeQuery($query);
+
+    $existingGroups = [];
+    while($optionGroups->fetch())  {
+      $existingGroups[$optionGroups->id] = $optionGroups->name;
+    }
+
+    $newGroups = [];
+    foreach($optionGroupsList as $neededGroup) {
+      if(array_search($neededGroup, $existingGroups) === FALSE)  {
+        $params = ['name' => $neededGroup, 'is_active' => 1];
+        $newGroup = CRM_Core_BAO_OptionGroup::add($params);
+        $newGroups[$newGroup->id] = $newGroup->name;
+      }
+    }
+
+    $finalGroupList = $existingGroups + $newGroups;
+    // Create sample option values
+    foreach ($optionGroupsValuesList as $group => $value)  {
+      $groupID = array_search($group, $finalGroupList);
+      $params = ['option_group_id' => $groupID, 'name' => $value, 'value' => $value ];
+      CRM_Core_BAO_OptionValue::create($params);
+    }
+
   }
 
   /**
@@ -79,6 +132,22 @@ trait HrJobRolesTestTrait {
     ));
 
     return $newDepartment['id'];
+  }
+
+  /**
+   * Find and retrieve job role by any of its properties
+   *
+   * @param array $params
+   *
+   * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
+   */
+  public function findRole($params)  {
+    $default = NUll;
+    return CRM_Hrjobroles_BAO_HrJobRoles::commonRetrieve(
+      'CRM_Hrjobroles_BAO_HrJobRoles',
+      $params,
+      $default
+    );
   }
 
 }
