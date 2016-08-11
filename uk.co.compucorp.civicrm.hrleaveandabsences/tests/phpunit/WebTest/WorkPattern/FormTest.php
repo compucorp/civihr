@@ -1,7 +1,10 @@
 <?php
 
-require_once 'CiviTest/CiviSeleniumTestCase.php';
-
+/**
+ * Class WebTest_WorkPattern_FormTest
+ *
+ * @group headless
+ */
 class WebTest_WorkPattern_FormTest extends CiviSeleniumTestCase {
 
     private $formUrl = 'admin/leaveandabsences/work_patterns';

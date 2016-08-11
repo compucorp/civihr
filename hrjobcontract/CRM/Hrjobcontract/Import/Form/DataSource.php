@@ -36,18 +36,11 @@
 /**
  * This class gets the name of the file to upload
  */
-class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Hrjobcontract_Import_Form_DataSourceBaseClass {
-  public $_parser = 'CRM_Hrjobcontract_Import_Parser_Api';
-  protected $_enableContactOptions = FALSE;
-  protected $_userContext = 'civicrm/job/import';
-  protected $_mappingType = 'Import Job';
-  protected $_entity = array('HRJobContract', 'HRJobContractRevision', 'HRJobDetails', 'HRJobPay', 'HRJobHealth', 'HRJobPension', 'HRJobHour', 'HRJobLeave');
-  /**
-  * Include duplicate options
-  */
-  protected $isDuplicateOptions = FALSE;
+class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Import_Form_DataSource {
+  const PATH = 'civicrm/job/import';
+  const IMPORT_ENTITY = 'Import Contracts';
 
-    /**
+  /**
    * Function to actually build the form - this appears to be entirely code that should be in a shared baseclass in core
    *
    * @return None
@@ -55,5 +48,51 @@ class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Hrjobcontract_Import_
    */
   public function buildQuickForm() {
     parent::buildQuickForm();
+
+    $importModeOptions = array();
+    $importModeOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Import Contracts'), CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS
+    );
+    $importModeOptions[] = $this->createElement('radio',
+      NULL, NULL, ts('Import Contracts Revision'), CRM_Hrjobcontract_Import_Parser::IMPORT_REVISIONS
+    );
+
+    $this->addGroup($importModeOptions, 'importMode',
+      ts('Import Mode')
+    );
+
+    $this->setDefaults(array(
+      'importMode' =>
+        CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS,
+    ));
+
+    $this->setDefaults(array(
+      'onDuplicate' =>
+        CRM_Import_Parser::DUPLICATE_SKIP,
+    ));
+
+    $this->setDefaults(array(
+        'contactType' =>
+          CRM_Import_Parser::CONTACT_INDIVIDUAL,
+      )
+    );
+  }
+
+  /**
+   * Process the uploaded file
+   *
+   * @return void
+   * @access public
+   */
+  public function postProcess() {
+    $this->storeFormValues(array(
+      'onDuplicate',
+      'dateFormats',
+      'savedMapping',
+      'importMode',
+      'contactType',
+    ));
+
+    $this->submitFileForMapping('CRM_Hrjobcontract_Import_Parser_Api');
   }
 }

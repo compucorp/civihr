@@ -35,6 +35,7 @@ function hrui_civicrm_pageRun($page) {
   }
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
+      ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
     //set government field value for individual page
@@ -56,17 +57,11 @@ function hrui_civicrm_buildForm($formName, &$form) {
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
-    //HR-358 - Set default values
-    //set default value to phone location and type
-    $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    $result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
-    if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
-      $phoneType = $form->getElement('phone[2][phone_type_id]');
-      $phoneValue = CRM_Core_OptionGroup::values('phone_type');
-      $phoneKey = CRM_Utils_Array::key('Mobile', $phoneValue);
-      $phoneType->setSelected($phoneKey);
-      $phoneLocation = $form->getElement('phone[2][location_type_id]');
-      $phoneLocation->setSelected($locationId);
+
+    $phoneIndex = 2;
+    if (_hrui_phone_is_empty($phoneIndex, $form)) {
+      _hrui_set_phone_type_as_mobile($phoneIndex, $form);
+      _hrui_set_phone_location_to_the_default_location($phoneIndex, $form);
     }
   }
 
@@ -93,6 +88,78 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
     $form->setDefaults($default);
   }
+}
+
+/**
+ * Sets the location type of the phone with the given index to the default
+ * location type.
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_location_to_the_default_location($phoneIndex, $form) {
+  $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 1, 'id', 'is_default');
+
+  if($locationId) {
+    $form->setDefaults([
+      "phone[{$phoneIndex}][location_type_id]" => $locationId
+    ]);
+  }
+}
+
+/**
+ * Sets the phone type of the phone with the given index as 'Mobile'.
+ *
+ * @param $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_type_as_mobile($phoneIndex, $form) {
+  _hrui_set_phone_type($phoneIndex, $form, 'Mobile');
+}
+
+/**
+ * Sets the phone type of the phone with the given index to the type given by
+ * $type.
+ *
+ * @param int $phoneIndex
+ *   The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *   The Contact Form instance
+ * @param string $type
+ *   The new phone type. Valid values are those from the phone_type option list
+ */
+function _hrui_set_phone_type($phoneIndex, $form, $type) {
+  $elementName = "phone[{$phoneIndex}][phone_type_id]";
+
+  if(!$form->elementExists($elementName)) {
+    return;
+  }
+
+  $phoneType  = $form->getElement($elementName);
+  $phoneValue = CRM_Core_OptionGroup::values('phone_type');
+  $phoneKey   = CRM_Utils_Array::key($type, $phoneValue);
+  if($phoneKey) {
+    $phoneType->setSelected($phoneKey);
+  }
+}
+
+/**
+ * Returns if the contact form has a phone with the given index and it's empty
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ *
+ * @return bool
+ */
+function _hrui_phone_is_empty($phoneIndex, $form) {
+  return $form->elementExists("phone[{$phoneIndex}][phone]") &&
+         empty($form->getElementValue("phone[{$phoneIndex}][phone]"));
 }
 
 /**
@@ -148,7 +215,7 @@ function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviReport','CiviCase'),
+    'enable_components' => array('CiviCase'),
   );
   $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
@@ -176,29 +243,6 @@ function hrui_civicrm_install() {
     if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
       CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
       throw new CRM_Core_Exception('Failed to disable contact type');
-    }
-  }
-
-  // Delete unnecessary reports
-  $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
-  if (!empty($reports)) {
-    foreach ($reports as $reportTitle) {
-      $reportID = CRM_Core_DAO::getFieldValue(
-        'CRM_Report_DAO_ReportInstance',
-        $reportTitle,
-        'id',
-        'title'
-      );
-      if ($reportID) {
-        $paramsReport = array(
-          'id' => $reportID,
-        );
-        $resultContactType = civicrm_api3('report_instance', 'delete', $paramsReport);
-        if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
-          CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
-          throw new CRM_Core_Exception('Failed to disable contact type');
-        }
-      }
     }
   }
 
@@ -538,6 +582,12 @@ function hrui_civicrm_navigationMenu( &$params ) {
  */
 function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   $smarty = CRM_Core_Smarty::singleton();
+
+  // fetch data to the new summary page UI
+  if($context == 'page' && $tplName == "CRM/Contact/Page/View/Summary.tpl" ) {
+    $content .= _hrui_updateContactSummaryUI();
+  }
+
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
     $columnToHide = array(
       'formal_title',
@@ -625,4 +675,109 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
      });
    </script>";
   }
+}
+
+/**
+ * Add new information in the contact header as the contact photo,
+ * phone, department. All changes are made via Javascript.
+ *
+ * @return [String] Updated content markup
+ */
+function _hrui_updateContactSummaryUI() {
+  $content = '';
+
+  $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
+  /* $currentContractDetails contain current contact data including
+   * Current ( Position = $currentContractDetails->position ) and
+   * ( Normal Place of work =  $currentContractDetails->location )
+  */
+  $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
+  // $departmentsList contain current roles departments list separated by comma
+  $departmentsList = null;
+  if ($currentContractDetails)  {
+    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+    $departmentsList = implode(', ', $departmentsArray);
+  }
+  // $managersList contain current line managers list separated by comma
+  $managersList = null;
+  if ($currentContractDetails)  {
+    $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
+    $managersList = implode(', ', $managersArray);
+  }
+
+  try {
+    $contactDetails = civicrm_api3('Contact', 'getsingle', array(
+      'sequential' => 1,
+      'return' => array("phone", "email", "image_URL"),
+      'id' => $contact_id,
+    ));
+  }
+  catch (CiviCRM_API3_Exception $e) {
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');
+    });
+  </script>";
+
+  if (!empty($contactDetails['image_URL'])) {
+    $content .= "<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $contactDetails['image_URL'] . " />');
+      });
+    </script>";
+  }
+
+  if (empty($currentContractDetails)) {
+    $content .= "<script type=\"text/javascript\">
+      CRM.$(function($) {
+        $('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
+      });
+    </script>";
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('.crm-summary-block-wrap').append(\"<div class='crm-contact-detail-wrap' />\");
+    });
+  </script>";
+
+  $contactDetailHTML = '';
+
+  if (!empty($contactDetails['phone'])) {
+    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Phone:</strong> " . $contactDetails['phone'] . "</span>";
+  }
+
+  if (!empty($contactDetails['email'])) {
+    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Email:</strong> " . $contactDetails['email'] . "</span>";
+  }
+
+  $contactDetailHTML .= "<br />";
+
+  if (isset($currentContractDetails)) {
+    if (!empty($currentContractDetails->position)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
+    }
+
+    if (!empty($currentContractDetails->location)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
+    }
+
+    if (!empty($departmentsList)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $departmentsList . "</span>";
+    }
+
+    if (!empty($managersList)) {
+      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $managersList . "</span>";
+    }
+  }
+
+  $content .="<script type=\"text/javascript\">
+    CRM.$(function($) {
+      $('.crm-contact-detail-wrap').append(\"" . $contactDetailHTML . "\");
+    });
+  </script>";
+
+  return $content;
 }

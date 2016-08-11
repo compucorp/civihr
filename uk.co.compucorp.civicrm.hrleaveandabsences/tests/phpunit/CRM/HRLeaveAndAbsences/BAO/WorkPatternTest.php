@@ -1,14 +1,23 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
 
-class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase
+/**
+ * Class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest
+ *
+ * @group headless
+ */
+class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends CiviUnitTestCase implements HeadlessInterface
 {
     protected $_tablesToTruncate = [
         'civicrm_hrleaveandabsences_work_pattern',
         'civicrm_hrleaveandabsences_work_week',
         'civicrm_hrleaveandabsences_work_day',
     ];
+
+    public function setUpHeadless() {
+      return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    }
 
     public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
     {

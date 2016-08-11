@@ -3,22 +3,17 @@
 require_once 'HRJobContractTestBase.php';
 
 /**
- * FIXME
+ * Class CRM_Hrjobcontract_CreateRevisionTest
+ *
+ * @group headless
  */
 class CRM_Hrjobcontract_CreateRevisionTest extends HRJobContractTestBase {
-  function setUp() {
-    parent::setUp();
-  }
-
-  function tearDown() {
-    parent::tearDown();
-  }
 
   /**
    * Test Job Contract Revision after creating Job Contract and its entities.
    */
   function testCreateRevision() {
-    
+
     $expected = array(
         "id" => "8",
         "jobcontract_id" => "1",
@@ -30,16 +25,16 @@ class CRM_Hrjobcontract_CreateRevisionTest extends HRJobContractTestBase {
         "leave_revision_id" => "7",
         "pension_revision_id" => "8",
     );
-    
-    
+
+
     $this->createJobContract();
     $this->createJobContractEntities(1);
-      
+
     $current_revision = civicrm_api3('HRJobContractRevision', 'getcurrentrevision', array(
         'sequential' => 1,
         'jobcontract_id' => 1,
     ));
-    
+
     $this->assertAPIArrayComparison($current_revision['values'], $expected);
   }
 }

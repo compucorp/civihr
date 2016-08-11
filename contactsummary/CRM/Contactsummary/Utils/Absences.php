@@ -53,17 +53,23 @@ class CRM_Contactsummary_Utils_Absences {
       ) AS total_minutes
     ";
 
+    $duration = 0;
+
     $activityStatuses = CRM_HRAbsence_BAO_HRAbsenceType::getActivityStatus('name');
     $periodDetails    = CRM_HRAbsence_BAO_HRAbsencePeriod::getDefaultValues($periodId);
 
+    $absenceID = static::getAbsenceTypeId($absenceTypeName);
+    if ($absenceID == null)  {
+      return $duration;
+    }
+
     $params = array(
-      1 => array(static::getAbsenceTypeId($absenceTypeName), 'Integer'),
+      1 => array($absenceID, 'Integer'),
       2 => array(CRM_Utils_Array::key('Completed', $activityStatuses), 'Integer'),
       3 => array($periodDetails['start_date'], 'String'),
       4 => array($periodDetails['end_date'], 'String'),
     );
 
-    $duration = 0;
 
     $dao = CRM_Core_DAO::executeQuery($sql, $params);
     if ($dao->fetch()) {

@@ -23,22 +23,21 @@
     <ActivityType>
       <name>Link Cases</name>
     </ActivityType>
-
-     <ActivityType>
+    <ActivityType>
       <name>Conduct appraisal</name>
-     </ActivityType>
-     <ActivityType>
-       <name>Collection of appraisal paperwork</name>
-     </ActivityType>
-     <ActivityType>
-       <name>Issue confirmation/warning letter</name>
-     </ActivityType>
-     <ActivityType>
-       <name>Background Check</name>
-     </ActivityType>
-     <ActivityType>
-       <name>References Check</name>
-     </ActivityType>
+    </ActivityType>
+    <ActivityType>
+      <name>Collection of appraisal paperwork</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Issue confirmation/warning letter</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Background Check</name>
+    </ActivityType>
+    <ActivityType>
+      <name>References Check</name>
+    </ActivityType>
   </ActivityTypes>
 
   <ActivitySets>
@@ -49,17 +48,17 @@
       <ActivityTypes>
         <ActivityType>
           <name>Conduct appraisal</name>
-          <reference_offset>1</reference_offset>
+          <reference_offset>-24</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
         <ActivityType>
           <name>Collection of appraisal paperwork</name>
-          <reference_offset>21</reference_offset>
+          <reference_offset>-3</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
         <ActivityType>
           <name>Issue confirmation/warning letter</name>
-          <reference_offset>24</reference_offset>
+          <reference_offset>0</reference_offset>
           <reference_select>newest</reference_select>
         </ActivityType>
       </ActivityTypes>
@@ -77,4 +76,4 @@
     </RelationshipType>
   </CaseRoles>
 
-  </CaseType>
+</CaseType>

@@ -1,11 +1,22 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
-class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
+/**
+ * Class CRM_HRVisa_ActivityTest
+ *
+ * @group headless
+ */
+class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
+
+  public function setUpHeadless() {
+    return \Civi\Test::headless()
+      ->installMe(__DIR__)
+      ->apply();
+  }
+
   public function setUp() {
-    parent::setUp(); 
-
     // create a logged in USER since the code references it for source_contact_id
     $this->createLoggedInUser();
 
@@ -71,7 +82,7 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
         'is_optgroup' => 1,
         'is_default' => 0,
       );
-      
+
       $result = civicrm_api3('activity_type', 'create', $params);
       $this->activityIds[$result['values'][$result['id']]['name']] = $result['values'][$result['id']]['value'];
 
@@ -86,10 +97,10 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
       }
     }
   }
- 
-  public function testPipeline() { 
-             
-    $contact = $this->callAPISuccess('contact', 'create', array( 
+
+  public function testPipeline() {
+
+    $contact = $this->callAPISuccess('contact', 'create', array(
       'first_name' => 'JohnHR',
       'contact_type' => 'Individual',
       'last_name' => 'Smith',
@@ -131,7 +142,7 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
       'is_current_revision' => 1,
     );
     $resultActivity = civicrm_api3('activity', 'create', $paramsActivity);
-    
+
     $opencase_activityIds = $resultActivity['id'];
     $analyzer = new CRM_HRCaseUtils_Analyzer($caseBAO->id,$resultActivity['id']);
     $analyzer->case_id = $caseBAO->id;
@@ -145,7 +156,7 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
     $this->assertEquals('1', $activityCheck[1]['status_id']); // Check activity stauts id
     $this->assertFalse($analyzer->hasActivity('Interview Prospect'));
     $this->assertFalse($analyzer->hasActivity('Background Check'));
-      
+
     $paramsActivity = array(
       'id' => $opencase_activityIds,
       'source_contact_id' =>$contact['id'],
@@ -160,14 +171,14 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
       'case_id' => $caseBAO->id,
       'is_current_revision' => 1,
       'original_id' => $opencase_activityIds,
-    ); 
+    );
     $resultActivity = civicrm_api3('activity', 'create', $paramsActivity);
 
     $paramsActivityGet = array(
       'activity_type_id' => $this->activityIds['Interview Prospect'],
       'version' => 3,
     );
-    $resultActivityGet = civicrm_api3('activity', 'get', $paramsActivityGet);    
+    $resultActivityGet = civicrm_api3('activity', 'get', $paramsActivityGet);
 
     $analyzer = new CRM_HRCaseUtils_Analyzer($caseBAO->id, $resultActivityGet['values'][$resultActivityGet['id']]['id']);
     $ActivityIP = $analyzer->getSingleActivity($this->activityIds['Interview Prospect']);
@@ -175,7 +186,7 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
     $this->assertEquals('2', $resultActivity['values'][$resultActivity['id']]['status_id']);
     $this->assertEquals('1', $ActivityIP[1]['status_id']);
     $this->assertFalse($analyzer->hasActivity('Background Check'));
-        
+
     // get second activity
     $params = array(
       'activity_type_id' => $this->activityIds['Interview Prospect'],
@@ -191,13 +202,13 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
      'case_id' => $caseBAO->id,
      'activity_type_id' => $this->activityIds['Interview Prospect'],
      'original_id' => $result['id'],
-    );  
+    );
     $resultActivity2 = civicrm_api3('activity', 'create', $paramsActivity2);
 
     $paramsActivityGet1 = array(
       'activity_type_id' => $this->activityIds['Background Check'],
       'version' => 3,
-    );   
+    );
 
     $resultActivityGet1 = civicrm_api3('activity', 'get', $paramsActivityGet1);
 
@@ -221,10 +232,14 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase{
       'case_id' => $caseBAO->id,
       'activity_type_id' => $this->activityIds['Background Check'],
       'original_id' => $result['id'],
-    );  
+    );
     $resultActivity3 = civicrm_api3('activity', 'create', $paramsActivity3);
-    
+
     $this->assertEquals('2', $resultActivity3['values'][$resultActivity3['id']]['status_id']);
-       
-  } 
+
+  }
+
+  function tearDown() {
+
+  }
 }

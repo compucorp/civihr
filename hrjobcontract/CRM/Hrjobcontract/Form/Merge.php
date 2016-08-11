@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.5                                                |
+ | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2014                                |
+ | Copyright CiviCRM LLC (c) 2004-2016                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -23,20 +23,16 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
-*/
+ */
 
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2014
- * $Id$
- *
+ * @copyright CiviCRM LLC (c) 2004-2016
  */
 
-require_once 'api/api.php';
-
 /**
- * Class CRM_Contact_Form_Merge
+ * Class CRM_Hrjobcontract_Form_Merge.
  */
 class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
   // the id of the contact that tere's a duplicate for; this one will
@@ -48,27 +44,24 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
 
   var $_contactType = NULL;
 
-  // variable to keep all location block ids.
-  protected $_locBlockIds = array();
-
   // FIXME: QuickForm can't create advcheckboxes with value set to 0 or '0' :(
   // see HTML_QuickForm_advcheckbox::setValues() - but patching that doesn't
   // help, as QF doesn't put the 0-value elements in exportValues() anyway...
   // to side-step this, we use the below UUID as a (re)placeholder
   var $_qfZeroBug = 'e8cddb72-a257-11dc-b9cc-0016d3330ee9';
 
-  function preProcess() {
+  public function preProcess() {
     if (!CRM_Core_Permission::check('merge duplicate contacts')) {
       CRM_Core_Error::fatal(ts('You do not have access to this page'));
     }
 
     $rows = array();
-    $cid  = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
-    $oid  = CRM_Utils_Request::retrieve('oid', 'Positive', $this, TRUE);
+    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
+    $oid = CRM_Utils_Request::retrieve('oid', 'Positive', $this, TRUE);
     $flip = CRM_Utils_Request::retrieve('flip', 'Positive', $this, FALSE);
 
-    $this->_rgid    = $rgid = CRM_Utils_Request::retrieve('rgid', 'Positive', $this, FALSE);
-    $this->_gid     = $gid = CRM_Utils_Request::retrieve('gid', 'Positive', $this, FALSE);
+    $this->_rgid = $rgid = CRM_Utils_Request::retrieve('rgid', 'Positive', $this, FALSE);
+    $this->_gid = $gid = CRM_Utils_Request::retrieve('gid', 'Positive', $this, FALSE);
     $this->_mergeId = CRM_Utils_Request::retrieve('mergeId', 'Positive', $this, FALSE);
 
     // Sanity check
@@ -94,8 +87,9 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
 
     // Block access if user does not have EDIT permissions for both contacts.
     if (!(CRM_Contact_BAO_Contact_Permission::allow($cid, CRM_Core_Permission::EDIT) &&
-        CRM_Contact_BAO_Contact_Permission::allow($oid, CRM_Core_Permission::EDIT)
-      )) {
+      CRM_Contact_BAO_Contact_Permission::allow($oid, CRM_Core_Permission::EDIT)
+    )
+    ) {
       CRM_Utils_System::permissionDenied();
     }
 
@@ -129,7 +123,9 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
 
     $this->prev = $this->next = NULL;
     foreach (array(
-      'prev', 'next') as $position) {
+               'prev',
+               'next',
+             ) as $position) {
       if (!empty($pos[$position])) {
         if ($pos[$position]['id1'] && $pos[$position]['id2']) {
           $urlParam = "reset=1&cid={$pos[$position]['id1']}&oid={$pos[$position]['id2']}&mergeId={$pos[$position]['mergeId']}&action=update";
@@ -209,19 +205,14 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
     $this->assign('other_cid', $other['contact_id']);
     $this->assign('rgid', $rgid);
 
-    $this->_cid         = $cid;
-    $this->_oid         = $oid;
-    $this->_rgid        = $rgid;
+    $this->_cid = $cid;
+    $this->_oid = $oid;
+    $this->_rgid = $rgid;
     $this->_contactType = $main['contact_type'];
     $this->addElement('checkbox', 'toggleSelect', NULL, NULL, array('class' => 'select-rows'));
 
     $this->assign('mainLocBlock', json_encode($rowsElementsAndInfo['main_loc_block']));
     $this->assign('rows', $rowsElementsAndInfo['rows']);
-
-    $this->_locBlockIds = array(
-      'main' => $rowsElementsAndInfo['main_details']['loc_block_ids'],
-      'other' => $rowsElementsAndInfo['other_details']['loc_block_ids']
-    );
 
     // add elements
     foreach ($rowsElementsAndInfo['elements'] as $element) {
@@ -250,62 +241,49 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
    *
    * access        public
    *
-   * @return array reference to the array of default values
-   *
+   * @return array
+   *   reference to the array of default values
    */
   /**
    * @return array
    */
-  function setDefaultValues() {
+  public function setDefaultValues() {
     return array('deleteOther' => 1);
   }
 
-  function addRules() {}
+  public function addRules() {
+  }
 
   public function buildQuickForm() {
-    CRM_Utils_System::setTitle(ts('Merge %1s', array(1 => $this->_contactType)));
-    $name = ts('Merge');
-    if ($this->next) {
-      $name = ts('Merge and Goto Next Pair');
-    }
+    CRM_Utils_System::setTitle(ts('Merge %1 contacts', array(1 => $this->_contactType)));
+    $buttons = array();
+
+    $buttons[] = array(
+      'type' => 'next',
+      'name' => $this->next ? ts('Merge and go to Next Pair') : ts('Merge'),
+      'isDefault' => TRUE,
+      'icon' => $this->next ? 'circle-triangle-e' : 'check',
+    );
 
     if ($this->next || $this->prev) {
-      $button = array(
-        array(
-          'type' => 'next',
-          'name' => $name,
-          'isDefault' => TRUE,
-        ),
-        array(
-          'type' => 'submit',
-          'name' => ts('Merge and Goto Listing'),
-        ),
-        array(
-          'type' => 'done',
-          'name' => ts('Merge and View Result'),
-        ),
-        array(
-          'type' => 'cancel',
-          'name' => ts('Cancel'),
-        ),
+      $buttons[] = array(
+        'type' => 'submit',
+        'name' => ts('Merge and go to Listing'),
       );
-    }
-    else {
-      $button = array(
-        array(
-          'type' => 'next',
-          'name' => $name,
-          'isDefault' => TRUE,
-        ),
-        array(
-          'type' => 'cancel',
-          'name' => ts('Cancel'),
-        ),
+      $buttons[] = array(
+        'type' => 'done',
+        'name' => ts('Merge and View Result'),
+        'icon' => 'fa-check-circle',
       );
     }
 
-    $this->addButtons($button);
-    $this->addFormRule(array('CRM_Contact_Form_Merge', 'formRule'), $this);
+    $buttons[] = array(
+      'type' => 'cancel',
+      'name' => ts('Cancel'),
+    );
+
+    $this->addButtons($buttons);
+    $this->addFormRule(array('CRM_Hrjobcontract_Form_Merge', 'formRule'), $this);
   }
 
   /**
@@ -315,7 +293,7 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
    *
    * @return array
    */
-  static function formRule($fields, $files, $self) {
+  public static function formRule($fields, $files, $self) {
     $errors = array();
     $link = CRM_Utils_System::href(ts('Flip between the original and duplicate contacts.'),
       'civicrm/contact/merge',
@@ -366,7 +344,7 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
       );
       CRM_Utils_System::redirect($lisitingURL);
     }
-     if (!empty($formValues['_qf_Merge_done'])) {
+    if (!empty($formValues['_qf_Merge_done'])) {
       CRM_Utils_System::redirect($url);
     }
 
@@ -400,5 +378,5 @@ class CRM_Hrjobcontract_Form_Merge extends CRM_Core_Form {
 
     CRM_Utils_System::redirect($url);
   }
-}
 
+}

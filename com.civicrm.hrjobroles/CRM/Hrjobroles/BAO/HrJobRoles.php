@@ -61,6 +61,28 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
+   * Returns an array containing the list of departments
+   * for specific contact based on the current contract ID
+   *
+   * @param int $contractID contract ID
+   * @return array
+   */
+  public static function getDepartmentsList($contractID)  {
+    $queryParam = array(1 => array($contractID, 'Integer'));
+    $query = "SELECT cov.id, cov.label
+            FROM civicrm_hrjobroles hrjr
+            LEFT JOIN civicrm_option_value cov
+            ON hrjr.department = cov.id
+            WHERE hrjr.job_contract_id = %1";
+    $response = CRM_Core_DAO::executeQuery($query, $queryParam);
+    $result = array();
+    while($response->fetch())  {
+      $result[$response->id] = $response->label;
+    }
+    return  $result;
+  }
+
+  /**
    * Get option values for specific option group.
    *
    * @param String $fieldName
@@ -84,6 +106,5 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
     $fields = array('' => array('title' => ts('- do not import -')));
     return array_merge($fields, static::import());
   }
-
 
 }

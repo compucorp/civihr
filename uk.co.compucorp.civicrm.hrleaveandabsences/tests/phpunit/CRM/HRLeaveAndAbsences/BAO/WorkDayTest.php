@@ -1,10 +1,14 @@
 <?php
 
+use Civi\Test\HeadlessInterface;
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+/**
+ * Class CRM_HRLeaveAndAbsences_BAO_WorkDayTest
+ *
+ * @group headless
+ */
+class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase implements HeadlessInterface {
 
-class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
-{
     protected $_tablesToTruncate = [
         'civicrm_hrleaveandabsences_work_day',
         'civicrm_hrleaveandabsences_work_week',
@@ -12,6 +16,10 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
 
     protected $workPattern = null;
     protected $workWeek = null;
+
+    public function setUpHeadless() {
+      return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    }
 
     public function setUp()
     {
@@ -55,7 +63,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
     {
         $this->createBasicWorkDay(['time_to' => $time]);
     }
-    
+
     /**
      * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
      * @expectedExceptionMessage Time From, Time To and Break are required for Working Days
@@ -89,7 +97,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase
         ];
         $this->createBasicWorkDay($params);
     }
-    
+
     /**
      * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
      * @expectedExceptionMessage Time From should be less than Time To
