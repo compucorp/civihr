@@ -1,25 +1,39 @@
 <?php
 
-require_once 'HrJobRolesTestBase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
-class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
+/**
+ * Class CRM_Hrjobroles_Import_Parser_HrJobRolesTest
+ *
+ * @group headless
+ */
+class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
 
+  use HrJobRolesTestTrait;
 
-  function setUp() {
-    parent::setUp();
-    $session = CRM_Core_Session::singleton();
-    $session->set('dateTypes', 1);
-    $this->createSampleOptionGroupsAndValues();
+  public function setUpHeadless() {
+    // job contract is installed before job roles since job roles is depend on it
+    // otherwise the installation of job roles will fail.
+    return \Civi\Test::headless()
+      ->install('org.civicrm.hrjobcontract')
+      ->installMe(__DIR__)
+      ->apply();
+    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $jobContractUpgrader->install();
   }
 
-  function tearDown() {
-    parent::tearDown();
+  public function setUp() {
+    $session = CRM_Core_Session::singleton();
+    $session->set('dateTypes', 1);
+
+    $this->createSampleOptionGroupsAndValues();
   }
 
   function testBasicImport() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -48,7 +62,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportWithValidOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -76,7 +90,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportWithInvalidOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -97,7 +111,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportWithEmptyOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -121,7 +135,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderByIDAndPercent() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -151,7 +165,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderByIDAndAmount() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -183,11 +197,9 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
     $contactParams = [
       'first_name'=>'walter',
       'last_name'=>'white',
-      'display_name' => 'walter white',
-      'prefix_id' => '',
-      'suffix_id' => ''
+      'display_name' => 'walter white'
     ];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -217,7 +229,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderWithInvalidID() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -240,10 +252,10 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
 
   // I commented out these tests because I didn't had the chance to run them before the release
   // and I run and uncomment them if the passed in other PR later
-  /*function testImportFunderWithInvalidDisplayName() {
+  function testImportFunderWithInvalidDisplayName() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -267,7 +279,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderWithInvalidValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -291,7 +303,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderWithInvalidPercentPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -315,7 +327,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderWithInvalidAmountPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -339,7 +351,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
   function testImportFunderWithoutValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -357,7 +369,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends HrJobRolesTestBase {
     ];
     $importResponse = $this->runImport($importParams);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
-  }*/
+  }
 
   private function runImport($params)  {
     $fields = array_keys($params);

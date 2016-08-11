@@ -23,27 +23,27 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{* Activity Import Wizard - Step 3 (preview import results prior to actual data loading) *}
+{* Job roles Import Wizard - Step 3 (preview import results prior to actual data loading) *}
 {* @var $form Contains the array for the form elements and other form associated information assigned to the template by the controller *}
-<div class="crm-block crm-form-block crm-activity-import-preview-form-block">
+<div class="crm-block crm-form-block crm-jobroles-import-preview-form-block">
 
  {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
  {include file="CRM/common/WizardHeader.tpl"}
 
- <div id="help">
+ <div class="help">
     <p>
-    {ts}The information below previews the results of importing your data in CiviCRM. Review the totals to ensure that they represent your expected results.{/ts}
+    {ts}The information below previews the results of importing your data in CiviHR. Review the totals to ensure that they represent your expected results.{/ts}
     </p>
 
     {if $invalidRowCount}
         <p class="error">
-        {ts 1=$invalidRowCount 2=$downloadErrorRecordsUrl}CiviCRM has detected invalid data or formatting errors in %1 records. If you continue, these records will be skipped. OR, you can download a file with just these problem records - <a href='%2'>Download Errors</a>. Then correct them in the original import file, cancel this import and begin again at step 1.{/ts}
+        {ts 1=$invalidRowCount 2=$downloadErrorRecordsUrl}CiviHR has detected invalid data or formatting errors in %1 records. If you continue, these records will be skipped. OR, you can download a file with just these problem records - <a href='%2'>Download Errors</a>. Then correct them in the original import file, cancel this import and begin again at step 1.{/ts}
         </p>
     {/if}
 
     {if $conflictRowCount}
         <p class="error">
-        {ts 1=$conflictRowCount 2=$downloadConflictRecordsUrl}CiviCRM has detected %1 records with conflicting transaction ids within this data file. If you continue, these records will be skipped. OR, you can download a file with just these problem records - <a href='%2'>Download Conflicts</a>. Then correct them in the original import file, cancel this import and begin again at step 1.{/ts}
+        {ts 1=$conflictRowCount 2=$downloadConflictRecordsUrl}CiviHR has detected %1 records with conflicting transaction ids within this data file. If you continue, these records will be skipped. OR, you can download a file with just these problem records - <a href='%2'>Download Conflicts</a>. Then correct them in the original import file, cancel this import and begin again at step 1.{/ts}
         </p>
     {/if}
 
@@ -55,7 +55,7 @@
  <table id="preview-counts" class="report">
     <tr><td class="label">{ts}Total Rows{/ts}</td>
         <td class="data">{$totalRowCount}</td>
-        <td class="explanation">{ts}Total rows (activity records) in uploaded file.{/ts}</td>
+        <td class="explanation">{ts}Total rows (Job Role records) in uploaded file.{/ts}</td>
     </tr>
 
     {if $invalidRowCount}
@@ -88,7 +88,7 @@
  <br />
 
  {* Table for mapping preview *}
- {include file="CRM/Activity/Import/Form/MapTable.tpl}
+ {include file="CRM/Hrjobroles/Import/Form/MapTable.tpl"}
  <br />
 
  <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="bottom"}</div>

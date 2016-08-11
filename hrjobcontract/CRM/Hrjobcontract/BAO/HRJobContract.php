@@ -472,4 +472,117 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       self::$_importableFields = $fields;
     return self::$_importableFields;//$fields;
   }
+
+  /**
+   * Returns a list of active contracts.
+   *
+   * If no startDate is given, the current date will be used. If no endDate is
+   * given, the startDate will be used for it.
+   *
+   * A contract is active if:
+   * - The effective date of current revision is less or equal the startDate OR
+   *   it is starts someday between the start and end dates
+   * - The contract start date and end dates overlaps with the start and end
+   *   dates passed to the period OR
+   *   it doesn't have an end date and starts before the given start date OR
+   *   it doesn't have an end date and starts between the given start and end
+   *   dates
+   * - The contract is not deleted
+   *
+   * @param null $startDate
+   * @param null $endDate
+   *
+   * @return array
+   */
+  public static function getActiveContracts($startDate = null, $endDate = null)
+  {
+    if($startDate) {
+      $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
+    } else {
+      $startDate = date('Y-m-d');
+    }
+
+    if($endDate) {
+      $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Y-m-d');
+    } else {
+      $endDate = $startDate;
+    }
+
+    $query = "
+      SELECT c.*
+      FROM civicrm_hrjobcontract c
+        INNER JOIN civicrm_hrjobcontract_revision r
+          ON r.id = (SELECT id
+                     FROM civicrm_hrjobcontract_revision r2
+                     WHERE
+                      r2.jobcontract_id = c.id AND
+                      (
+                        r2.effective_date <= '{$startDate}'
+                         OR
+                        ( r2.effective_date >= '{$startDate}' AND
+                          r2.effective_date <= '{$endDate}'
+                        )
+                      )
+                     ORDER BY r2.effective_date DESC, r2.id DESC
+                     LIMIT 1
+        )
+        INNER JOIN civicrm_hrjobcontract_details d ON d.jobcontract_revision_id = r.id
+      WHERE c.deleted = 0 AND
+        (
+          (d.period_end_date IS NOT NULL AND d.period_start_date <= '{$endDate}' AND d.period_end_date >= '{$startDate}')
+            OR
+          (d.period_end_date IS NULL
+            AND
+            (
+              (d.period_start_date >= '{$startDate}' AND d.period_start_date <= '{$endDate}')
+              OR
+              d.period_start_date <= '{$endDate}'
+            )
+          )
+        );
+    ";
+
+    $dao = CRM_Core_DAO::executeQuery($query);
+    $contracts = [];
+    while($dao->fetch()) {
+      $contracts[] = [
+        'id' => $dao->id,
+        'contact_id' => $dao->contact_id,
+        'id_primary' => $dao->is_primary,
+        'deleted' => $dao->deleted
+      ];
+    }
+
+    return $contracts;
+  }
+
+  /**
+   * Return the current contract for the contact if exist.
+   *
+   * @param int $contactID
+   * @return array|null
+   */
+  public static function getCurrentContract($contactID)  {
+    try  {
+      $queryParam = array(1 => array($contactID, 'Integer'));
+      $query = "SELECT hrjc.id as contract_id , hrjd.*
+                FROM civicrm_hrjobcontract hrjc
+                LEFT JOIN civicrm_hrjobcontract_revision hrjr
+                ON hrjr.jobcontract_id = hrjc.id
+                LEFT JOIN civicrm_hrjobcontract_details hrjd
+                ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
+                WHERE hrjc.contact_id = %1
+                AND hrjr.effective_date <= CURDATE()
+                AND ( hrjr.effective_end_date > CURDATE() OR hrjr.effective_end_date IS NULL)
+                AND ( hrjd.period_end_date > CURDATE() OR hrjd.period_end_date IS NULL)
+                AND hrjc.deleted = 0
+                AND hrjr.deleted = 0
+                LIMIT 1";
+      $response = CRM_Core_DAO::executeQuery($query, $queryParam);
+      $result =  $response->fetch() ? $response : null;
+    } catch(CiviCRM_API3_Exception $ex)  {
+      $result =  null;
+    }
+    return $result;
+  }
 }

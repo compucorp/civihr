@@ -30,10 +30,11 @@
  {* WizardHeader.tpl provides visual display of steps thru the wizard as well as title for current step *}
  {include file="CRM/common/WizardHeader.tpl"}
 
- <div id="help">
-    {ts}The API Import Wizard allows you to easily upload data against any API create method from other applications into CiviCRM.{/ts}
-    {ts}Files to be imported must be in the 'comma-separated-values' format (CSV) and must contain data needed to match the data to an existing record in your CiviCRM database.{/ts} {help id='upload'}
- </div>
+  <div class="help">
+    <p>
+      {ts}The Job Contracts Import Wizard allows you to easily upload Job Contracts from other applications into CiviHR. Contacts must already exist in your CiviHR database prior to importing Job Contracts.{/ts}
+    </p>
+  </div>
  <div id="upload-file" class="form-item">
  <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="top"}</div>
    <table class="form-layout">
@@ -61,6 +62,10 @@
                 </span>
             </td>
   </tr>
+     <tr class="crm-import-datasource-form-block-fieldSeparator">
+       <td class="label">{$form.fieldSeparator.label} {help id='id-fieldSeparator' file='CRM/Contact/Import/Form/DataSource'}</td>
+       <td>{$form.fieldSeparator.html}</td>
+     </tr>
    <tr class="crm-import-form-block-importMode">
        <td class="label">{$form.importMode.label}</td>
        <td>{$form.importMode.html}</td>

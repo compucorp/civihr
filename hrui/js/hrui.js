@@ -1,6 +1,5 @@
 // Copyright CiviCRM LLC 2013. See http://civicrm.org/licensing
 (function ($, _) {
-
   function callGovern() {
     $.ajax({
       url: CRM.url('civicrm/contact/government/detail'),

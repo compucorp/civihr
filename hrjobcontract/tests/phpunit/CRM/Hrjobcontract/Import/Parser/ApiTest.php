@@ -1,48 +1,36 @@
 <?php
 
-/**
- *
- */
-
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
- *  Test CRM/Member/BAO Membership Log add , delete functions
+ * Class CRM_Hrjobcontract_Import_Parser_ApiTest
  *
- *  @package   CiviCRM
+ * @group headless
  */
-class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase {
+class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implements HeadlessInterface, TransactionalInterface {
 
   public $_contractTypeID;
 
-  protected $_tablesToTruncate = array(
-    'civicrm_hrjobcontract',
-    'civicrm_hrjobcontract_details',
-    'civicrm_hrjobcontract_health',
-    'civicrm_hrjobcontract_hour',
-    'civicrm_hrjobcontract_leave',
-    'civicrm_hrjobcontract_pay',
-    'civicrm_hrjobcontract_pension',
-    'civicrm_hrjobcontract_revision',
-    'civicrm_hrjobcontract_role');
-
-  function setUp() {
-    parent::setUp();
-    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $upgrader->install();
-    $this->_contractTypeID = $this->creatTestContractType();
-    $session = CRM_Core_Session::singleton();
-    $session->set('dateTypes', 1);
+  public function setUpHeadless() {
+    return \Civi\Test::headless()
+      ->installMe(__DIR__)
+      ->install('org.civicrm.hrabsence')
+      ->apply();
   }
 
-  /**
-   * Tears down the fixture, for example, closes a network connection.
-   * This method is called after a test is executed.
-   *
-   */
+  function setUp()
+  {
+    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $upgrader->install();
+    $session = CRM_Core_Session::singleton();
+    $session->set('dateTypes', 1);
+    $this->_contractTypeID = $this->creatTestContractType();
+  }
+
+
   function tearDown() {
-    parent::tearDown();
-    $this->cleanDB();
+
   }
 
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>AbsencePeriod</class>
+  <name>civicrm_hrleaveandabsences_absence_period</name>
+  <comment></comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique AbsencePeriod ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>title</name>
+    <title>Title</title>
+    <type>varchar</type>
+    <length>127</length>
+    <required>true</required>
+    <unique>true</unique>
+    <comment>The AbsencePeriod title. There cannot be more than one entity with the same title</comment>
+  </field>
+
+  <field>
+    <name>start_date</name>
+    <title>Start Date</title>
+    <type>date</type>
+    <required>true</required>
+    <comment>The date this Absence Period starts</comment>
+  </field>
+
+  <field>
+    <name>end_date</name>
+    <title>End Date</title>
+    <type>date</type>
+    <required>true</required>
+    <comment>The date this Absence Period ends</comment>
+  </field>
+
+  <field>
+    <name>weight</name>
+    <title>Weight</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The weight value is used to order the types on a list</comment>
+  </field>
+
+  <index>
+    <name>unique_absence_period</name>
+    <fieldName>title</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+</table>
