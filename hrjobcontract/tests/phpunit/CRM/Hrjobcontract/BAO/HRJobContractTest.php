@@ -145,4 +145,23 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('spiders boss2', $currentContract->title);
   }
 
+  public function testGetStaffCount() {
+    // create contacts
+    $contact1 = array('first_name'=>'walter', 'last_name'=>'white');
+    $contactID1 = $this->createContact($contact1);
+    $contact2 = array('first_name'=>'walter1', 'last_name'=>'white1');
+    $contactID2 = $this->createContact($contact2);
+    $contact3 = array('first_name'=>'walter2', 'last_name'=>'white2');
+    $contactID3 = $this->createContact($contact3);
+    $contact4 = array('first_name'=>'walter3', 'last_name'=>'white3');
+    $contactID4 = $this->createContact($contact4);
+
+    // create contracts
+    $this->createJobContract($contactID1, date('Y-m-d', strtotime('-14 days')));
+    $this->createJobContract($contactID2, date('Y-m-d', strtotime('-5 days')));
+    $this->createJobContract($contactID3, date('Y-m-d', strtotime('+3 years')));
+
+    $this->assertEquals(2, CRM_Hrjobcontract_BAO_HRJobContract::getStaffCount());
+  }
+
 }

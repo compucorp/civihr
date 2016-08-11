@@ -17,13 +17,16 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       ->installMe(__DIR__)
       ->install('org.civicrm.hrabsence')
       ->apply();
-    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $upgrader->install();
-    $this->_contractTypeID = $this->creatTestContractType();
-    $session = CRM_Core_Session::singleton();
-    $session->set('dateTypes', 1);
   }
 
+  function setUp()
+  {
+    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $upgrader->install();
+    $session = CRM_Core_Session::singleton();
+    $session->set('dateTypes', 1);
+    $this->_contractTypeID = $this->creatTestContractType();
+  }
 
 
   function tearDown() {

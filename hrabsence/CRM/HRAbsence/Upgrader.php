@@ -58,8 +58,8 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       $params = array(
         'name' => $currentYear,
         'title' => $currentYear.' (Jan 1 to Dec 31)',
-        'start_date' => $currentYear.'-01-01 00:00:00',
-        'end_date' => $currentYear.'-12-31 23:59:59',
+        'start_date' => $currentYear.'0101000000',
+        'end_date' => $currentYear.'1231235959',
       );
       CRM_HRAbsence_BAO_HRAbsencePeriod::create($params);
     }
@@ -130,7 +130,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       ),
       'is_active' => 1,
     );
-    
+
     $customGroup = civicrm_api3('CustomGroup', 'get', array(
       'sequential' => 1,
       'title' => $paramsCGroup['title'],
@@ -163,7 +163,7 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
       ),
       'is_active' => 1,
     );
-    
+
     $sickGroup = civicrm_api3('CustomGroup', 'get', array(
       'sequential' => 1,
       'title' => $paramsSGroup['title'],
