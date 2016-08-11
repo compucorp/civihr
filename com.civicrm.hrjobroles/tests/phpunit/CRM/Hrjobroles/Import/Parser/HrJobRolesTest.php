@@ -21,9 +21,12 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
       ->apply();
     $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
     $jobContractUpgrader->install();
+  }
 
+  public function setUp() {
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
+
     $this->createSampleOptionGroupsAndValues();
   }
 
@@ -249,10 +252,10 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
 
   // I commented out these tests because I didn't had the chance to run them before the release
   // and I run and uncomment them if the passed in other PR later
-  /*function testImportFunderWithInvalidDisplayName() {
+  function testImportFunderWithInvalidDisplayName() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -276,7 +279,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
   function testImportFunderWithInvalidValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -300,7 +303,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
   function testImportFunderWithInvalidPercentPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -324,7 +327,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
   function testImportFunderWithInvalidAmountPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -348,7 +351,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
   function testImportFunderWithoutValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -366,7 +369,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     ];
     $importResponse = $this->runImport($importParams);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
-  }*/
+  }
 
   private function runImport($params)  {
     $fields = array_keys($params);
