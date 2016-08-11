@@ -56,10 +56,11 @@ $button-border-radius: 2px;
           background: none !important;
         }
 
-        &:hover {
-          border: 1px solid $gray-darker;
+    .crm-button.crm-i-button input.crm-form-submit {
+      padding-left: 12px;
         }
-      }
+    .crm-submit-buttons {
+      background: #ffffff !important;
 
       .crm-i {
         color: $gray-darker !important;
@@ -67,24 +68,18 @@ $button-border-radius: 2px;
       }
     }
 
-    .crm-submit-buttons {
-      %btn {
-        .crm-form-submit:not(.cancel) {
-          @extend .btn-primary;
-        }
 
-        .crm-button-type-cancel input,
-        .crm-form-submit.cancel {
-          @extend .btn-secondary;
-        }
-      }
 
       .crm-button-type-cancel input {
-        @extend .btn-secondary;
+        @extend .btn-secondary-outline;
         ///The default theme uses "!important"
+        color: $gray !important;
+
+        &:hover {
         color: #ffffff !important;
       }
     }
+  }
   }
 
   .crm-i-button,
@@ -220,8 +215,8 @@ $button-border-radius: 2px;
   }
 
   ul.wizard-bar {
-    $height: 25px;
     @extend .btn-group;
+    $height: 25px;
     height: $height;
     border: 0 !important;
 

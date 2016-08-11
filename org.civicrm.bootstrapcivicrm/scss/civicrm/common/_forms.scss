@@ -31,8 +31,9 @@ $control-height: 30px;
     }
   }
 
-  &.select2-container,
-  &.select2-choice {
+
+    &.select2-container,
+    &.select2-choice {
     @extend %responsive;
   }
 
@@ -51,7 +52,7 @@ $control-height: 30px;
   @at-root .page-civicrm-contact & {
     td:not(.html-adjust) .select2-container + select + .crm-option-edit-link {
       @media (min-width: 1330px) {
-        //Compensate the ".select2-container" right margin
+        //Compensate the '.select2-container' right margin
         position: relative;
         left: -$control-spacing;
       }
@@ -81,7 +82,7 @@ $control-height: 30px;
       }
 
       tr td.label + td {
-        > input:not([type="radio"]):not([type="checkbox"]),
+        > input:not([type='radio']):not([type='checkbox']),
         > div.select2-container {
           @extend %responsive;
           margin-right: 0 !important;
@@ -105,11 +106,10 @@ $control-height: 30px;
       @extend %responsive;
     }
 
-    input[type="checkbox"],
-    input[type="radio"] {
+    input[type='checkbox'],
+    input[type='radio'] {
       margin: 0 5px 0 0;
       vertical-align: middle;
-
       &:not(:first-of-type) {
         margin-left: 15px !important;
       }
@@ -161,8 +161,9 @@ $control-height: 30px;
       @extend %custom-form-control, %open-sans-font-family;
     }
 
-    // "Select2" Drop-downs
+    // 'Select2' Drop-downs
     .select2-container {
+
       %arrow {
         @include fa-icon($font-size: 13px, $content: '\f0d7');
         display: block;
@@ -223,6 +224,7 @@ $control-height: 30px;
 
             input {
               padding-left: 10px;
+              margin: 0;
             }
           }
         }
@@ -340,10 +342,6 @@ $control-height: 30px;
         }
       }
 
-      &.select2-container-multi .select2-choices .select2-search-field input {
-        margin: 0;
-      }
-
       .select2-input {
         border: 0 !important;
       }
@@ -365,7 +363,7 @@ $control-height: 30px;
         margin-left: 5px;
       }
 
-      // "Edit options" ("wrench") buttons besides the dropdowns
+      // 'Edit options' ('wrench') buttons besides the dropdowns
       .crm-option-edit-link {
         margin-left: 5px;
       }
@@ -378,7 +376,7 @@ $control-height: 30px;
         height: auto !important;
       }
 
-      > input[type="text"]:not(:only-of-type) {
+      > input[type='text']:not(:only-of-type) {
         @extend %control-half-width;
       }
 
@@ -402,7 +400,7 @@ $control-height: 30px;
     }
 
     input + label {
-      display: block;
+      display: inline-block;
     }
 
     input.crm-form-text:not(.crm-form-date) {
