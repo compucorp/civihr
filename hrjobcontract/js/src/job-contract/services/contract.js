@@ -75,7 +75,7 @@ define([
                 if(currentContract)  {
                   cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');
                   cj('.crm-contact-detail-position').html('<strong>Position:</strong> '+ currentContract.position);
-                  cj('.crm-contact-detail-location').html('<strong>Position:</strong> '+ currentContract.location);
+                  cj('.crm-contact-detail-location').html('<strong>Normal place of work:</strong> '+ currentContract.location);
                 } else {
                   cj('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
                   cj('.crm-contact-detail-position').html('');
