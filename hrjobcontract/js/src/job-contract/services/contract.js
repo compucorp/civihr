@@ -73,9 +73,13 @@ define([
             changeHeaderColor: function() {
               this.getCurrentContract(settings.contactId).then(function(currentContract){
                 if(currentContract)  {
-                  console.log('there is current contract');
+                  cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');
+                  cj('.crm-contact-detail-position').html('<strong>Position:</strong> '+ currentContract.position);
+                  cj('.crm-contact-detail-location').html('<strong>Position:</strong> '+ currentContract.location);
                 } else {
-                  console.log('no current contract');
+                  cj('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
+                  cj('.crm-contact-detail-position').html('');
+                  cj('.crm-contact-detail-location').html('');
                 }
               }).catch(function(error){
                 console.log(error);

@@ -692,11 +692,11 @@ function _hrui_updateContactSummaryUI() {
 
   if (isset($currentContractDetails)) {
     if (!empty($currentContractDetails->position)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
+      $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-position'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
     }
 
     if (!empty($currentContractDetails->location)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
+      $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-location'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
     }
 
     if (!empty($departmentsList)) {

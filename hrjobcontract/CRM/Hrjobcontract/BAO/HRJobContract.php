@@ -524,7 +524,15 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Return the current contract for the contact if exist.
+   * Return the current revision for current contract for the contact if exist.
+   * which is the contract with current revision start date is
+   * on or before the current date and end date
+   * (is more than or equal the current date) or (null/empty).
+   *
+   * also note :
+   * 1) two contracts can't overlap.
+   * 2) two revision can't have the same effective date (not implement yet -
+   *  but when it does ( TODO: remove create_date DESC from the query ) ).
    *
    * @param int $contactID
    * @return array|null
@@ -533,20 +541,25 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $currentDate = date('Y-m-d');
     $queryParam = array(1 => array($contactID, 'Integer'));
     $query = "SELECT hrjc.id as contract_id , hrjd.*
-                FROM civicrm_hrjobcontract hrjc
-                LEFT JOIN civicrm_hrjobcontract_revision hrjr
-                ON hrjr.jobcontract_id = hrjc.id
-                LEFT JOIN civicrm_hrjobcontract_details hrjd
-                ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
-                WHERE hrjc.contact_id = %1
-                AND hrjr.effective_date <= '{$currentDate}'
-                AND ( hrjd.period_end_date >= '{$currentDate}' OR hrjd.period_end_date IS NULL)
-                AND hrjc.deleted = 0
-                AND hrjr.deleted = 0
-                ORDER BY hrjr.effective_date DESC , created_date DESC
-                LIMIT 1";
+      FROM civicrm_hrjobcontract hrjc
+      LEFT JOIN civicrm_hrjobcontract_revision hrjr
+      ON hrjr.jobcontract_id = hrjc.id
+      LEFT JOIN civicrm_hrjobcontract_details hrjd
+      ON hrjr.details_revision_id = hrjd.jobcontract_revision_id
+      WHERE hrjc.contact_id = %1
+      AND hrjr.effective_date <= '{$currentDate}'
+      AND hrjc.deleted = 0
+      AND hrjr.deleted = 0
+      ORDER BY hrjr.effective_date DESC , created_date DESC
+      LIMIT 1";
     $response = CRM_Core_DAO::executeQuery($query, $queryParam);
-
-    return $response->fetch() ? $response : null;
+    if ($response->fetch())  {
+      if (empty($response->period_end_date) || $response->period_end_date >= $currentDate )  {
+        $baoName = 'CRM_Hrjobcontract_BAO_HRJobDetails';
+        $response->location = CRM_Core_Pseudoconstant::getLabel($baoName, 'location', $response->location);
+        return $response;
+      }
+    }
+    return null;
   }
 }

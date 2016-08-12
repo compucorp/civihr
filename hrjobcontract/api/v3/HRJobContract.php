@@ -191,7 +191,7 @@ function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
   $result = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contactID);
   $return = null;
   if (!empty($result)) {
-    $fields = ['contract_id', 'position', 'title', 'period_start_date', 'period_end_date'];
+    $fields = ['contract_id', 'position', 'title', 'period_start_date', 'period_end_date', 'location'];
     foreach($fields as $field) {
       $return->$field = $result->$field;
     }
