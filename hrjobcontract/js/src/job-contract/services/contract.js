@@ -58,6 +58,13 @@ define([
 
                 return deffered.promise;
             },
+            /**
+             * Perform an ajax request and call HrJobContract => getcurrentcontract
+             * API method which is used to get the current contract for the contact
+             * or null if it is not exist.
+             *
+             * @param  int contactId the current contact ID
+             */
             getCurrentContract: function(contactId) {
               var deffered = $q.defer();
 
@@ -70,7 +77,20 @@ define([
 
               return deffered.promise;
             },
-            changeHeaderColor: function() {
+            /**
+             * called adding/editing/deleting a contract and check if there
+             * is an active contract for that contact
+             * if yes then the header color will be changed to blue and contract
+             * info in the header will be updated .
+             * if no , then the header color will be changed to red and contract info
+             * in the header will be updated.
+             *
+             * Though it is not an optimal solution since I use JQuery here
+             * inside angular app but this is the only available way currently
+             * since the header is not in the scope of the angular app.
+             *
+             */
+            changeHeaderInfo: function() {
               this.getCurrentContract(settings.contactId).then(function(currentContract){
                 if(currentContract)  {
                   cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');

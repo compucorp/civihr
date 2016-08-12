@@ -254,7 +254,7 @@ define([
                         return;
                     }
 
-                  ContractService.changeHeaderColor();
+                  ContractService.changeHeaderInfo();
 
                     if (results.revisionCreated) {
 
