@@ -21,6 +21,16 @@ hrsampledata \
 hrstaffdir \
 hrui \
 hrvisa \
+org.civicrm.bootstrapcivihr \
+hrjobcontract \
+contactsummary \
+contactaccessrights \
+org.civicrm.hremergency \
+com.civicrm.hrjobroles \
+hrjobcontract \
+org.civicrm.reqangular \
+hrabsence \
+uk.co.compucorp.civicrm.hrnavigation
 )
 
 set -e
