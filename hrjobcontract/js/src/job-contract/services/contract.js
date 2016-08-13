@@ -69,6 +69,9 @@ define([
               var deffered = $q.defer();
 
                 Contract.get({action: 'getcurrentcontract', json: {'contact_id': contactId} }, function(data){
+                  if (data.is_error)  {
+                    deffered.reject('Unable to fetch the current contract');
+                  }
                   deffered.resolve(data.values);
                 },function(){
                   deffered.reject('Unable to fetch the current contract');

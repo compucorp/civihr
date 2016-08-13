@@ -185,9 +185,14 @@ function _civicrm_api3_h_r_job_contract_getlist_output($result, $request) {
  *
  * @param array $params The accepted params are: contact_id
  * @return array API result descriptor
+ * @throws API_Exception
  */
 function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
-  $contactID = !empty($params['contact_id']) ? (int) $params['contact_id'] : 0;
+  if (empty($params['contact_id']))  {
+    throw new API_Exception('contact_id ' . ts("can't be empty."));
+  }
+
+  $contactID = (int) $params['contact_id'];
   $result = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contactID);
   $return = null;
   if (!empty($result)) {
