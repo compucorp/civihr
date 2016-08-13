@@ -691,13 +691,17 @@ function _hrui_updateContactSummaryUI() {
   $contactDetailHTML .= "<br />";
 
   if (isset($currentContractDetails)) {
+    $position = $location =  '';
+
     if (!empty($currentContractDetails->position)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-position'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
+      $position = "<strong>Position:</strong> " . $currentContractDetails->position;
     }
+    $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-position'>{$position}</span>";
 
     if (!empty($currentContractDetails->location)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-location'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
+      $location .= "<strong>Normal place of work:</strong> " . $currentContractDetails->location;
     }
+    $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-location'>{$location}</span>";
 
     if (!empty($departmentsList)) {
       $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $departmentsList . "</span>";
@@ -706,6 +710,10 @@ function _hrui_updateContactSummaryUI() {
     if (!empty($managersList)) {
       $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $managersList . "</span>";
     }
+  }
+  else {
+    $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-position'></span>";
+    $contactDetailHTML .= "<span class='crm-contact-detail crm-contact-detail-location'></span>";
   }
 
   $content .="<script type=\"text/javascript\">
