@@ -149,6 +149,7 @@ define([
                 modalInstance = $modal.open(options);
 
                 modalInstance.result.then(function(contract){
+                    ContractService.changeHeaderInfo();
                     +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
 
                     if (+contract.is_primary) {
@@ -194,6 +195,7 @@ define([
                         ContractService.delete(contractId).then(function(result){
 
                             if (!result.is_error) {
+                                ContractService.changeHeaderInfo();
                                 removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
                             }
                         });

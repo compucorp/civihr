@@ -13,9 +13,9 @@ define([
     'use strict';
 
     controllers.controller('ContractCtrl',['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', 'settings',
-        'API', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
+        'API', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService','ContractFilesService','ContactService','$log',
-        function ($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractDetailsService,
+        function ($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractService, ContractDetailsService,
                  ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
                  ContractPensionService, ContractFilesService, ContactService, $log) {
             $log.debug('Controller: ContractCtrl');
@@ -243,6 +243,8 @@ define([
                     if (!results) {
                         return;
                     }
+
+                    ContractService.changeHeaderInfo();
 
                     if (results.revisionCreated) {
 
