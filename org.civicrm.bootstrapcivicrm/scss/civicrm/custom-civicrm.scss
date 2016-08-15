@@ -1,3 +1,4 @@
+@import 'variables';
 @import '../bootstrap/overrides/variables';
 @import '../../../org.civicrm.bootstrap/scss/overrides/variables';
 @import '../../../org.civicrm.bootstrap/scss/vendor/bootstrap/variables';
@@ -11,6 +12,7 @@
 @import 'contact/contact';
 @import 'advanced-search/advanced-search';
 @import 'import-contact/import-contact';
+@import 'vacancies/vacancies';
 
 body,
 %open-sans-font-family {
