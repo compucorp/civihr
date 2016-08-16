@@ -8,7 +8,9 @@ use Civi\Test\TransactionalInterface;
  *
  * @group headless
  */
-class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase implements HeadlessInterface , TransactionalInterface {
+class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface,
+  TransactionalInterface {
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -18,89 +20,60 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase implem
 
   public function setUp() {
     // create a logged in USER since the code references it for source_contact_id
-    $this->createLoggedInUser();
+    $params = array(
+      'first_name' => 'Logged In',
+      'last_name' => 'User ' . rand(),
+    );
+    $contactID = $this->createContact($params);
 
-    $caseTypes = CRM_Case_PseudoConstant::caseType();
-    self::mocktest($caseTypes);
+    civicrm_api3('UFMatch', 'create', array(
+      'sequential' => 1,
+      'uf_id' => 6,
+      'uf_name' => 'superman',
+      'contact_id' => $contactID,
+    ));
+
+    $session = CRM_Core_Session::singleton();
+    $session->set('userID', $contactID);
+
+    $this->mocktest();
+
   }
 
-  public function mocktest(&$caseTypes) {
+  public function mocktest() {
 
-    $paramsAct = array(
-      'option_group_id' => 2,
-      'version' => 3,
-    );
+    $openCaseActivityType = civicrm_api3('OptionValue', 'getsingle', array(
+      'sequential' => 1,
+      'option_group_id' => "activity_type",
+      'name' => "Open Case",
+    ));
+    $this->opencase_activityId = $openCaseActivityType['value'];
 
-    $resultAct = civicrm_api3('activity_type', 'get', $paramsAct);
 
-    if (in_array("Open Case",$resultAct['values'])) {
-      $activityIdd = array_search('Open Case', $resultAct['values']);
-      $paramsAct1 = array(
-        'option_group_id' => 2,
-        'version' => 3,
-        'id' => 18,
-      );
+    $hrdataCaseType = civicrm_api3('CaseType', 'getsingle', array(
+      'sequential' => 1,
+      'name' => "Hrdata",
+    ));
 
-      $resultAct1 = civicrm_api3('option_value', 'delete', $paramsAct1);
+    $this->casetype_id = $hrdataCaseType['id'];
+
+    // build Name => ID array for used activity types
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'return' => array("value", "name"),
+      'option_group_id' => "activity_type",
+      'name' => array('IN' => array("Background Check", "Phone Call", "Interview Prospect")),
+    ));
+    $activities = $result['values'];
+    foreach ($activities as $activity)  {
+      $this->activityIds[$activity['name']] = $activity['value'];
     }
 
-    $import = new CRM_Utils_Migrate_Import();
-    $path = __DIR__ .'/Hrdata.xml';
-    $dom = new DomDocument();
-    $dom->load($path);
-    $dom->xinclude();
-    $xml = simplexml_import_dom($dom);
-    $caseTypeName = $xml->name;
-
-    $proc = new CRM_Case_XMLProcessor();
-    $caseTypesGroupId = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'case_type', 'return' => 'id'));
-    if (!is_numeric($caseTypesGroupId)) {
-      throw new CRM_Core_Exception("Found invalid ID for OptionGroup (case_type)");
-    }
-
-    // Create case type with 'Program Hiring Process'
-    $paramsCaseType = array(
-      'option_group_id' => $caseTypesGroupId,
-      'version' => 3,
-      'name' => $caseTypeName,
-      'label' => $caseTypeName,
-    );
-
-    $resultCaseType = civicrm_api3('option_value', 'create', $paramsCaseType);
-    $this->casetype_id = $resultCaseType['values'][$resultCaseType['id']]['value'];
-
-    $activitytype = $xml->ActivityTypes->ActivityType;
-
-    foreach ($activitytype as $key => $val) {
-      $activitytypename = (array)$val->name ;
-      $params = array(
-        'weight' => '2',
-        'label' => $activitytypename[0],
-        'name' => $activitytypename[0],
-        'filter' => 0,
-        'is_active' => 1,
-        'is_optgroup' => 1,
-        'is_default' => 0,
-      );
-
-      $result = civicrm_api3('activity_type', 'create', $params);
-      $this->activityIds[$result['values'][$result['id']]['name']] = $result['values'][$result['id']]['value'];
-
-      //get id of open case activity type
-      if ( $activitytypename[0] == "Open Case") {
-        $paramsAct = array(
-          'option_group_id' => 2,
-          'version' => 3,
-        );
-        $resultAct = civicrm_api3('activity_type', 'get', $paramsAct);
-        $this->opencase_activityId = array_search('Open Case', $resultAct['values']);
-      }
-    }
   }
 
   public function testPipeline() {
 
-    $contact = $this->callAPISuccess('contact', 'create', array(
+    $contact = civicrm_api3('contact', 'create', array(
       'first_name' => 'JohnHR',
       'contact_type' => 'Individual',
       'last_name' => 'Smith',
@@ -157,10 +130,11 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase implem
     $this->assertFalse($analyzer->hasActivity('Interview Prospect'));
     $this->assertFalse($analyzer->hasActivity('Background Check'));
 
+
     $paramsActivity = array(
       'id' => $opencase_activityIds,
       'source_contact_id' =>$contact['id'],
-      'activity_type_id' => $this->opencase_activityId,//'46',
+      'activity_type_id' => $this->opencase_activityId,
       'subject' => 'Open Case',
       'activity_date_time' => '2011-06-02 14:36:13',
       'status_id' => 2,
@@ -236,10 +210,23 @@ class api_v3_HRCaseUtils_HRCaseUtilsPipelineTest extends CiviUnitTestCase implem
     $resultActivity3 = civicrm_api3('activity', 'create', $paramsActivity3);
 
     $this->assertEquals('2', $resultActivity3['values'][$resultActivity3['id']]['status_id']);
-
   }
 
-  function tearDown() {
-
+  /**
+   * Creates single (Individuals) contact from the provided data.
+   *
+   * @param array $params should contain first_name and last_name
+   * @return int return the contact ID
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function createContact($params) {
+    $result = civicrm_api3('Contact', 'create', array(
+      'contact_type' => "Individual",
+      'first_name' => $params['first_name'],
+      'last_name' => $params['last_name'],
+      'display_name' => $params['first_name'] . ' ' . $params['last_name'],
+    ));
+    return $result['id'];
   }
+
 }

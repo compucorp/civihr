@@ -30,7 +30,7 @@ function hrcaseutils_civicrm_install() {
  */
 function hrcaseutils_civicrm_uninstall() {
   //delete all activity type
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE name IN ('Interview Prospect', 'Background_Check', 'ID badge')");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_value WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')");
 
   $caseTypes = CRM_Case_PseudoConstant::caseType('name', FALSE);
   $value = array_search('Hrdata', $caseTypes);
@@ -64,7 +64,7 @@ function hrcaseutils_civicrm_disable() {
 
 function _hrcaseutils_setActiveFields($setActive) {
   // disable/enable activity type
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE name IN ('Interview Prospect', 'Background_Check', 'ID badge')");
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_value SET is_active = {$setActive} WHERE name IN ('Interview Prospect', 'Background Check', 'ID badge')");
 }
 
 /**
