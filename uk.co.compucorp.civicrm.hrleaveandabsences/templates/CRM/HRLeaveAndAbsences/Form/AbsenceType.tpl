@@ -126,12 +126,12 @@
                     <div class="label">{ts}Carry forward leave expiry{/ts}</div>
                     <div class="content">
                         {assign var="carry_forward_never_expire" value=false }
-                        {if not $carry_forward_expire_after_duration and not $carry_forward_expire_after_date }
+                        {if $form.carry_forward_expiration_duration.value eq '' and $form.carry_forward_expiration_unit.value.0 eq ''}
                             {assign var="carry_forward_never_expire" value=true }
                         {/if}
                         <label><input type="radio" name="carry_forward_expiration" id="carry_forward_never_expire" {if $carry_forward_never_expire}checked{/if}> {ts}Never expire{/ts}</label>
                         <br/>
-                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_duration"> {ts}Expire after a certain duration{/ts}</label>
+                        <label><input type="radio" name="carry_forward_expiration" id="carry_forward_expire_after_duration" {if not $carry_forward_never_expire}checked{/if}> {ts}Expire after a certain duration{/ts}</label>
                         <br/>
                         <span class="carry-forward-expiration-duration">{$form.carry_forward_expiration_duration.html}{$form.carry_forward_expiration_unit.html}<br/></span>
                     </div>
@@ -198,7 +198,7 @@
                         $('.carry-forward-option').show();
                     }
 
-                    if(carry_forward_expire_after_duration.is(':checked')) {
+                    if(!carry_forward_never_expire.is(':checked')) {
                         $('.carry-forward-expiration-duration').show();
                     }
 
