@@ -33,20 +33,12 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
+
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
-    //set government field value for individual page
-    $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
-    if ($contactType == 'Individual') {
-      $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
-      CRM_Core_Resources::singleton()
-        ->addSetting(array(
-          'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId));
-    }
   }
 }
 
@@ -73,53 +65,6 @@ function hrui_civicrm_buildForm($formName, &$form) {
   }
 
   $ogID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'type_20130502144049', 'id', 'name');
-  //HR-355 -- Add Government ID
-  if ($formName == 'CRM_Contact_Form_Contact' && $ogID && $form->_contactType == 'Individual') {
-    //add government fields
-    $contactID = CRM_Utils_Request::retrieve('cid', 'Integer', $form);
-    $templatePath = CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrui'). '/templates';
-    $form->add('text', 'GovernmentId', ts('Government ID'));
-    $form->addElement('select', "govTypeOptions", '', CRM_Core_BAO_OptionValue::getOptionValuesAssocArray($ogID));
-    CRM_Core_Region::instance('page-body')
-      ->add(array('template' => "{$templatePath}/CRM/HRUI/Form/contactField.tpl"));
-
-    $action = CRM_Utils_Request::retrieve('action', 'String', $form);
-    $govVal = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($contactID);
-    //set default to government type option
-    $default = array();
-    $default['govTypeOptions'] = CRM_Core_BAO_CustomField::getOptionGroupDefault($ogID, 'select');
-    if ($action == CRM_Core_Action::UPDATE && !empty($govVal)) {
-      //set key for updating specific record of contact id in custom value table
-      $default['govTypeOptions'] = CRM_Utils_Array::value('type', $govVal);
-      $default['GovernmentId'] = CRM_Utils_Array::value('typeNumber',$govVal);
-    }
-    $form->setDefaults($default);
-  }
-}
-
-/**
- * Implementation of hook_civicrm_postProcess
- */
-function hrui_civicrm_postProcess( $formName, &$form ) {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrident', 'is_active', 'full_name');
-  if ($formName == 'CRM_Contact_Form_Contact'
-    && !empty($form->_submitValues['GovernmentId'])
-    && $form->_contactType == 'Individual') {
-    $govFieldId = CRM_HRIdent_Page_HRIdent::retreiveContactFieldId('Identify');
-    $govFieldIds = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($form->_contactId);
-    if (!empty($govFieldId)) {
-      if (empty($govFieldIds)) {
-        $govFieldIds['id'] = NULL;
-      }
-      $customParams = array(
-        "custom_{$govFieldId['Type']}{$govFieldIds['id']}" => $form->_submitValues['govTypeOptions'],
-        "custom_{$govFieldId['Number']}{$govFieldIds['id']}" => $form->_submitValues['GovernmentId'],
-        "custom_{$govFieldId['is_government']}{$govFieldIds['id']}" => 1,
-        "entity_id" => $form->_contactId,
-      );
-      civicrm_api3('CustomValue', 'create', $customParams);
-    }
-  }
 }
 
 /**
