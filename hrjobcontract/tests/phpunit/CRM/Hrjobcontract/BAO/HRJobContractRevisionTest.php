@@ -1,30 +1,19 @@
 <?php
 
-require_once 'CiviTest/CiviUnitTestCase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
 /**
  * Class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest
+ *
+ * @group headless
  */
-class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends CiviUnitTestCase {
-  function setUp() {
-    parent::setUp();
-    $this->quickCleanup(array(
-      'civicrm_hrjobcontract_details',
-      'civicrm_hrjobcontract_health',
-      'civicrm_hrjobcontract_role',
-      'civicrm_hrjobcontract_hour',
-      'civicrm_hrjobcontract_pay',
-      'civicrm_hrjobcontract_leave',
-      'civicrm_hrjobcontract_pension',
-      'civicrm_hrjobcontract_revision',
-      'civicrm_hrjobcontract',
-    ));
-    $upgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $upgrader->install();
-  }
+class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface,
+  TransactionalInterface {
 
-  function tearDown() {
-    parent::tearDown();
+  public function setUpHeadless() {
+    return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
 
   /**
@@ -137,7 +126,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends CiviUnitTestCase {
 
   /**
    * Create a test Contact (Individual).
-   * 
+   *
    * @param string $displayName
    * @throws Exception
    */
@@ -155,7 +144,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends CiviUnitTestCase {
 
   /**
    * Create a test Job Contract.
-   * 
+   *
    * @param int $contactId
    * @throws Exception
    */
@@ -173,7 +162,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends CiviUnitTestCase {
   /**
    * Return an array containing Job Contract Details entity's array
    * of a Job Contract by given Job Contract ID.
-   * 
+   *
    * @param int $jobContractId
    * @return array
    */

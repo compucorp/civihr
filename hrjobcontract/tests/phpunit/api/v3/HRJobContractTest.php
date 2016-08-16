@@ -38,27 +38,6 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
     civicrm_api3('HRJobContract', 'getactivecontracts', ['end_date' => [$operator => '2016-01-01']]);
   }
 
-  public function testGetActiveContractsReturnsActiveContracts()
-  {
-    $result = civicrm_api3('HRJobContract', 'getactivecontracts');
-    $this->assertEquals(0, $result['count']);
-
-    $this->createContacts(2);
-    $contract1 = $this->createJobContract($this->contacts[0]['id'], date('Y-m-d'));
-    $contract2 = $this->createJobContract($this->contacts[1]['id'], date('Y-m-d', strtotime('-1 day')));
-
-    $result = civicrm_api3('HRJobContract', 'getactivecontracts');
-    $this->assertEquals(2, $result['count']);
-
-    $this->deleteContract($contract1->id);
-    $result = civicrm_api3('HRJobContract', 'getactivecontracts');
-    $this->assertEquals(1, $result['count']);
-
-    $this->deleteContract($contract2->id);
-    $result = civicrm_api3('HRJobContract', 'getactivecontracts');
-    $this->assertEquals(0, $result['count']);
-  }
-
   public function invalidGetActiveContractsDateOperator()
   {
     return [
