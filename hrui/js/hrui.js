@@ -22,6 +22,15 @@
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
 
+      // Remove the Cases tab if T&A extension is enabled
+      if (CRM.extensionsEnabled.taskAssignments) {
+        var $tabCases = $('#tab_case');
+        var $tabCasesContent = $('#' + $tabCases.attr('aria-controls'));
+
+        $tabCases.remove();
+        $tabCasesContent.remove();
+      }
+
       //add government field
       var govfield = "<div class='container crm-summary-row' id='government'><div class='crm-label'>Government ID</div><div id='govValID' class='crm-content'></div></div>";
       if (CRM.cid && CRM.hideGId) {

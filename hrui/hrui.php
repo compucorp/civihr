@@ -33,13 +33,19 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
+
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
-      ->addSetting(array('pageName' => 'viewSummary'));
+      ->addSetting(array('pageName' => 'viewSummary'))
+      ->addSetting(array('extensionsEnabled' => array(
+        'taskAssignments' => !!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name')
+      )));
+
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
+
     if ($contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
       CRM_Core_Resources::singleton()
