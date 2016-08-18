@@ -65,16 +65,17 @@
   /**
    * Update label 'for' attr to works with the datepicker
    *
-   * @param  {jQuery object} $line [datepicker's line parent]
+   * @param  {jQuery Obejct} line [tr parent element]
    */
-  function linkLabelToDatepickerInput($line) {
-    $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
+  function updateLabelFor(line) {
+    line.find('label').attr('for', line.find('.crm-form-date').attr('id'));
   }
 
   $(document).on('crmLoad', function(e) {
     if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
-      linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
-      linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
+      var lines = $('.CRM_HRRecruitment_Form_HRVacancy tbody:first-child tr');
+      updateLabelFor($(lines.get(7)));
+      updateLabelFor($(lines.get(8)));
     }
 
     //change text from Client to Contact
