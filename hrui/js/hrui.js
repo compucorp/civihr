@@ -12,7 +12,23 @@
       }
     });
   }
+
+  /**
+   * Update label 'for' attr to works with the datepicker
+   *
+   * @param  {jQuery Obejct} line [tr parent element]
+   */
+  function updateLabelFor(line) {
+    line.find('label').attr('for', line.find('.crm-form-date').attr('id'));
+  }
+
   $(document).on('crmLoad', function(e) {
+    if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
+      var lines = $('.CRM_HRRecruitment_Form_HRVacancy tbody:first-child tr');
+      updateLabelFor($(lines.get(7)));
+      updateLabelFor($(lines.get(8)));
+    }
+
     //change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
     if (CRM.formName == 'contactForm' || CRM.pageName == 'viewSummary') {
