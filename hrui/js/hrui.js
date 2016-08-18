@@ -53,19 +53,6 @@
     }
   }
 
-  /**
-   * Remove the Cases tab if T&A extension is enabled
-   */
-  function setVisibilityCasesTab() {
-    if (CRM.extensionsEnabled && CRM.extensionsEnabled.taskAssignments) {
-      var $tabCases = $('#tab_case');
-      var $tabCasesContent = $('#' + $tabCases.attr('aria-controls'));
-
-      $tabCases.remove();
-      $tabCasesContent.remove();
-    }
-  }
-
   function fetchGovernmentId() {
     return $.ajax({
       url: CRM.url('civicrm/contact/government/detail'),
@@ -86,7 +73,6 @@
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
 
-      setVisibilityCasesTab();
       addGovernmentIdField(e.target);
       miscPageChanges(e.target);
     }
