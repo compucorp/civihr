@@ -17,6 +17,13 @@ label {
     &:focus {
         @include box-shadow(none);
     }
+
+    &[disabled],
+    &[readonly],
+    fieldset[disabled] & {
+      border-color: $crm-input-border-disabled;
+      color: $crm-input-border-disabled;
+    }
 }
 
 .form-group.form-required {
@@ -66,6 +73,16 @@ label {
     .form-group {
         margin-bottom: 0;
     }
+}
+
+// Removing color from labels of fields with status
+.has-success,
+.has-warning,
+.has-error {
+
+  .control-label {
+    color: $gray-darker;
+  }
 }
 
 /**

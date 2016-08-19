@@ -14,7 +14,7 @@
 
     > .panel-footer,
     > .panel-heading {
-        background: $brand-primary-light;
+        background: $crm-brand-primary-light;
     }
 }
 
@@ -27,7 +27,7 @@
 
         // An <hr> can serve as a separator
         > hr {
-            margin: $panel-heading-big-padding;
+            margin: $crm-panel-heading-big-padding;
             margin-bottom: 0;
             margin-left: 0;
             margin-right: 0;
@@ -43,7 +43,7 @@
     }
 
     > .panel-footer {
-        background: $brand-primary-light;
+        background: $crm-brand-primary-light;
     }
 }
 
@@ -51,6 +51,6 @@
 .panel-default-plain-inverted {
 
     > .panel-heading {
-        background: $brand-primary-light;
+        background: $crm-brand-primary-light;
     }
 }

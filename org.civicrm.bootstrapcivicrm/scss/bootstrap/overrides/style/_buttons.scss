@@ -1,6 +1,6 @@
 // Redefine the vertical padding for buttons
 .btn {
-    padding: $btn-padding-base-vertical $padding-base-horizontal;
+    padding: $crm-btn-padding-base-vertical $padding-base-horizontal;
 
     &:active,
     &.active {
@@ -8,13 +8,14 @@
     }
 }
 
+// Keeps the standard settings for font size, line height, and border radius
 .btn-lg {
-    padding: $padding-large-vertical $padding-large-horizontal;
+    @include button-size($padding-large-vertical, $padding-large-horizontal, $font-size-base, $line-height-base, $btn-border-radius-base);
 }
 
 .btn-sm {
-    font-weight: $btn-small-font-weight;
-    padding: $btn-padding-small-vertical $padding-base-horizontal;
+    font-weight: $crm-btn-small-font-weight;
+    padding: $crm-btn-padding-small-vertical $padding-base-horizontal;
 }
 
 .btn-xs {
@@ -22,23 +23,18 @@
 }
 
 
-// Custom style for the default variation
+// Customize variations
 .btn-default {
     box-shadow: $box-shadow;
     font-weight: 600;
 }
 
-// Keeps the standard settings for font size, line height, and border radius
-.btn-lg {
-    @include button-size($padding-large-vertical, $padding-large-horizontal, $font-size-base, $line-height-base, $btn-border-radius-base);
+.btn-primary {
+    min-width: 90px;
 }
 
 .btn-block + .btn-block {
     margin-top: 10px;
-}
-
-.btn-primary {
-    min-width: 90px;
 }
 
 // From Bootstrap 4 alpha
@@ -48,6 +44,7 @@
 
 .btn-primary-outline {
     @include button-outline-variant($btn-primary-bg);
+    min-width: 90px;
 }
 
 .btn-secondary-outline {

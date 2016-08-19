@@ -111,19 +111,38 @@ function reqangular_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * Implementation of hook_civicrm_pageRun
  */
 function reqangular_civicrm_pageRun($page) {
+  /**
+   * Avoids injecting the common dependencies (which include angular) in core pages
+   * that are already using angular themselves. A quick patch while we
+   * figure out a better solution to avoid having our own copy of angular in CiviHR
+   */
+  if (!_reqangular_isAngularCorePage($page)) {
     $url = CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.reqangular');
 
     CRM_Core_Resources::singleton()->addVars('reqAngular', array(
-        'baseUrl' => $url,
-        'angular' => "$url/src/common/vendor/angular/angular.min",
-        'angularAnimate' => "$url/src/common/vendor/angular/angular-animate.min",
-        'angularBootstrap' => "$url/src/common/vendor/angular/ui-bootstrap",
-        'angularFileUpload' => "$url/src/common/vendor/angular/angular-file-upload",
-        'angularResource' => "$url/src/common/vendor/angular/angular-resource.min",
-        'angularRoute' => "$url/src/common/vendor/angular/angular-route.min",
-        'requireLib' => "$url/src/common/vendor/require.min",
-        'reqangular' => "$url/dist/reqangular.min",
+      'baseUrl' => $url,
+      'angular' => "$url/src/common/vendor/angular/angular.min",
+      'angularAnimate' => "$url/src/common/vendor/angular/angular-animate.min",
+      'angularBootstrap' => "$url/src/common/vendor/angular/ui-bootstrap",
+      'angularFileUpload' => "$url/src/common/vendor/angular/angular-file-upload",
+      'angularResource' => "$url/src/common/vendor/angular/angular-resource.min",
+      'angularRoute' => "$url/src/common/vendor/angular/angular-route.min",
+      'requireLib' => "$url/src/common/vendor/require.min",
+      'reqangular' => "$url/dist/reqangular.min",
     ));
 
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular', 'dist/reqangular.min.js', 1000);
+  }
+}
+
+/**
+ * Checks if the given page is an angular-based page from core
+ *
+ * Note: CRM_Core_Page_Angular is CiviCrm v1.5, Civi\Angular\Page\Main is CiviCrm v4.7
+ *
+ * @param  [object]  $page
+ * @return boolean
+ */
+function _reqangular_isAngularCorePage($page) {
+  return ($page instanceof CRM_Core_Page_Angular) || ($page instanceof Civi\Angular\Page\Main);
 }
