@@ -1,18 +1,17 @@
 <?php
 
 use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_WorkDayTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase implements HeadlessInterface {
-
-    protected $_tablesToTruncate = [
-        'civicrm_hrleaveandabsences_work_day',
-        'civicrm_hrleaveandabsences_work_week',
-    ];
+class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface, TransactionalInterface {
 
     protected $workPattern = null;
     protected $workWeek = null;
@@ -152,10 +151,10 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase implements
     public function testWorkWeekCannotBeChangedOnUpdate()
     {
         $entity = $this->createBasicWorkDay();
-        $this->assertEquals($this->workWeek['id'], $entity->week_id);
+        $this->assertEquals($this->workWeek->id, $entity->week_id);
 
         $updatedEntity = $this->updateWorkDay($entity->id, ['week_id' => rand(100, 200)]);
-        $this->assertEquals($this->workWeek['id'], $updatedEntity->week_id);
+        $this->assertEquals($this->workWeek->id, $updatedEntity->week_id);
     }
 
     /**
@@ -189,7 +188,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase implements
         $basicDefaultParams = [
             'day_of_the_week' => 1,
             'type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
-            'week_id' => $this->workWeek['id'],
+            'week_id' => $this->workWeek->id,
             'time_from' => '09:00',
             'time_to' => '18:00',
             'break' => 1,
@@ -221,22 +220,18 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends CiviUnitTestCase implements
         return $entity;
     }
 
-    private function instantiateWorkPatternWithWeek()
-    {
-        $params = ['label' => 'Pattern ' . microtime()];
-        $result = $this->callAPISuccess('WorkPattern', 'create', $params);
+    private function instantiateWorkPatternWithWeek() {
+      $this->workPattern = WorkPattern::create([
+        'label' => 'Pattern ' . microtime()
+      ]);
 
-        $this->workPattern = reset($result['values']);
-
-        $this->instantiateWorkWeek($this->workPattern['id']);
+      $this->instantiateWorkWeek($this->workPattern->id);
     }
 
-    private function instantiateWorkWeek($patternId)
-    {
-        $params['pattern_id'] = $patternId;
-        $result = $this->callAPISuccess('WorkWeek', 'create', $params);
-
-        $this->workWeek = reset($result['values']);
+    private function instantiateWorkWeek($patternId) {
+      $this->workWeek = WorkWeek::create([
+        'pattern_id' => $patternId
+      ]);
     }
 
     public function dayOfTheWeekDataProvider()

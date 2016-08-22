@@ -1,35 +1,32 @@
 <?php
 
 use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implements HeadlessInterface
+class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends PHPUnit_Framework_TestCase implements
+  HeadlessInterface, TransactionalInterface
 {
-    protected $_tablesToTruncate = [
-        'civicrm_hrleaveandabsences_work_day',
-        'civicrm_hrleaveandabsences_work_week',
-        'civicrm_hrleaveandabsences_work_pattern',
-    ];
-
     protected $workPattern = null;
 
     public function setUpHeadless() {
       return \Civi\Test::headless()->installMe(__DIR__)->apply();
     }
 
-    public function setUp()
-    {
-        parent::setUp();
+    public function setUp() {
         $this->instantiateWorkPattern();
     }
 
     public function testNumberShouldAlwaysBeMaxNumberPlus1OnCreate()
     {
-        $params = ['pattern_id' => $this->workPattern['id']];
+        $params = ['pattern_id' => $this->workPattern->id];
 
         $entity = $this->createWorkWeek($params);
         $this->assertEquals(1, $entity->number);
@@ -41,7 +38,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
     public function testCannotSetWeekNumberOnCreate()
     {
         $params = [
-            'pattern_id' => $this->workPattern['id'],
+            'pattern_id' => $this->workPattern->id,
             'number' => rand(2, 1000)
         ];
         $entity = $this->createWorkWeek($params);
@@ -50,7 +47,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
 
     public function testCannotChangeWeekNumberOnUpdate()
     {
-        $entity = $this->createWorkWeek(['pattern_id' => $this->workPattern['id']]);
+        $entity = $this->createWorkWeek(['pattern_id' => $this->workPattern->id]);
         $this->assertEquals(1, $entity->number);
 
         $updatedEntity = $this->updateWorkWeek($entity->id, ['number' => rand(100, 200)]);
@@ -59,17 +56,17 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
 
     public function testCannotChangeWorkPatternId()
     {
-        $entity = $this->createWorkWeek(['pattern_id' => $this->workPattern['id']]);
-        $this->assertEquals($this->workPattern['id'], $entity->pattern_id);
+        $entity = $this->createWorkWeek(['pattern_id' => $this->workPattern->id]);
+        $this->assertEquals($this->workPattern->id, $entity->pattern_id);
 
         $updatedEntity = $this->updateWorkWeek($entity->id, ['pattern_id' => rand(100, 200)]);
-        $this->assertEquals($this->workPattern['id'], $updatedEntity->pattern_id);
+        $this->assertEquals($this->workPattern->id, $updatedEntity->pattern_id);
     }
 
     public function testCanCreateWorkWeekWithDays()
     {
       $params = [
-        'pattern_id' => $this->workPattern['id'],
+        'pattern_id' => $this->workPattern->id,
         'days' => [
           ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 1],
           ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 2],
@@ -86,20 +83,20 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
       $weekDays = $this->getWorkDaysForWeek($workWeek->id);
       $this->assertCount(7, $weekDays);
       foreach($params['days'] as $i => $day) {
-        $this->assertEquals($day['type'], $weekDays[$i]['type']);
-        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]['day_of_the_week']);
+        $this->assertEquals($day['type'], $weekDays[$i]->type);
+        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]->day_of_the_week);
         if($day['type'] == 2) {
-          $this->assertEquals($day['time_from'], $weekDays[$i]['time_from']);
-          $this->assertEquals($day['time_to'], $weekDays[$i]['time_to']);
-          $this->assertEquals($day['break'], $weekDays[$i]['break']);
-          $this->assertEquals($day['leave_days'], $weekDays[$i]['leave_days']);
+          $this->assertEquals($day['time_from'], $weekDays[$i]->time_from);
+          $this->assertEquals($day['time_to'], $weekDays[$i]->time_to);
+          $this->assertEquals($day['break'], $weekDays[$i]->break);
+          $this->assertEquals($day['leave_days'], $weekDays[$i]->leave_days);
         }
       }
     }
 
     public function testCanUpdateWorkWeekWithDays()
     {
-      $params = ['pattern_id' => $this->workPattern['id']];
+      $params = ['pattern_id' => $this->workPattern->id];
       $workWeek = $this->createWorkWeek($params);
       $this->assertNotEmpty($workWeek->id);
       $weekDays = $this->getWorkDaysForWeek($workWeek->id);
@@ -122,13 +119,13 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
       $this->assertCount(7, $weekDays);
 
       foreach($params['days'] as $i => $day) {
-        $this->assertEquals($day['type'], $weekDays[$i]['type']);
-        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]['day_of_the_week']);
+        $this->assertEquals($day['type'], $weekDays[$i]->type);
+        $this->assertEquals($day['day_of_the_week'], $weekDays[$i]->day_of_the_week);
         if($day['type'] == 2) {
-          $this->assertEquals($day['time_from'], $weekDays[$i]['time_from']);
-          $this->assertEquals($day['time_to'], $weekDays[$i]['time_to']);
-          $this->assertEquals($day['break'], $weekDays[$i]['break']);
-          $this->assertEquals($day['leave_days'], $weekDays[$i]['leave_days']);
+          $this->assertEquals($day['time_from'], $weekDays[$i]->time_from);
+          $this->assertEquals($day['time_to'], $weekDays[$i]->time_to);
+          $this->assertEquals($day['break'], $weekDays[$i]->break);
+          $this->assertEquals($day['leave_days'], $weekDays[$i]->leave_days);
         }
       }
     }
@@ -140,7 +137,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
     public function testCannotCreateWorkWeekWithLessThanSevenDays()
     {
       $params = [
-        'pattern_id' => $this->workPattern['id'],
+        'pattern_id' => $this->workPattern->id,
         'days' => [
           ['type' => 3, 'day_of_the_week' => 1],
           ['type' => 3, 'day_of_the_week' => 2],
@@ -157,7 +154,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
     public function testCannotCreateWorkWeekWithMoreThanSevenDays()
     {
       $params = [
-        'pattern_id' => $this->workPattern['id'],
+        'pattern_id' => $this->workPattern->id,
         'days' => [
           ['type' => 3, 'day_of_the_week' => 1],
           ['type' => 3, 'day_of_the_week' => 2],
@@ -186,19 +183,24 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends CiviUnitTestCase implement
         return $this->findWorkWeekByID($id);
     }
 
-    private function instantiateWorkPattern()
-    {
-        $params = ['label' => 'Pattern ' . microtime()];
-        $result = $this->callAPISuccess('WorkPattern', 'create', $params);
-
-        $this->workPattern = reset($result['values']);
+    private function instantiateWorkPattern() {
+        $this->workPattern = WorkPattern::create([
+          'label' => 'Pattern ' . microtime()
+        ]);
     }
 
-    private function getWorkDaysForWeek($weekId)
-    {
-      $params = ['week_id' => $weekId, 'sequential' => 1];
-      $result = $this->callAPISuccess('WorkDay', 'get', $params);
-      return $result['values'];
+    private function getWorkDaysForWeek($weekId) {
+      $workDays = [];
+
+      $workDay = new WorkDay();
+      $workDay->week_id = $weekId;
+      $workDay->find();
+
+      while($workDay->fetch()) {
+        $workDays[] = clone $workDay;
+      }
+
+      return $workDays;
     }
 
     private function findWorkWeekByID($id)
