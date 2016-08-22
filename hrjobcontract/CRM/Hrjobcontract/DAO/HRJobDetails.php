@@ -129,7 +129,7 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
   public $period_end_date;
   /**
    * Job Contract End reason
-   * 
+   *
    * @var int
    */
   public $end_reason;
@@ -168,7 +168,6 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
    * class constructor
    *
    * @access public
-   * @return civicrm_hrjob
    */
   function __construct()
   {

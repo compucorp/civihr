@@ -41,7 +41,7 @@ class CRM_Hrjobcontract_BAO_HRJobHealth extends CRM_Hrjobcontract_DAO_HRJobHealt
    * @return CRM_HRJob_DAO_HRJobHealth|NULL
    *
   public static function create($params) {
-    $className = 'CRM_HRJob_DAO_HRJobHealth';
+    $className = 'CRM_Hrjobcontract_DAO_HRJobHealth';
     $entityName = 'HRJobHealth';
     $hook = empty($params['id']) ? 'create' : 'edit';
 

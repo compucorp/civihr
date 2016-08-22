@@ -498,9 +498,6 @@ function hrjobcontract_civicrm_queryObjects(&$queryObjects, $type) {
   if ($type == 'Contact') {
     $queryObjects[] = new CRM_Hrjobcontract_BAO_Query();
   }
-  elseif ($type == 'Report') {
-    $queryObjects[] = new CRM_Hrjobcontract_BAO_ReportHook();
-  }
 }
 
 /**
