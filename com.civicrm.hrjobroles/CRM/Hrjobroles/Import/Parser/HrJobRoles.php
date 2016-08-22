@@ -147,7 +147,11 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
     $session = CRM_Core_Session::singleton();
     $dateType = $session->get('dateTypes');
 
-    $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
+    $contractDetails = NULL;
+    if (!empty($params['job_contract_id']))  {
+      $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($params['job_contract_id']);
+    }
+
     if (empty($contractDetails))  {
       CRM_Contact_Import_Parser_Contact::addToErrorMsg('job contract ID is not found', $errorMessage);
     }
@@ -165,7 +169,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
       foreach($optionValues as $key)  {
         if (!empty($params[$key])) {
           $optionID = $this->getOptionKey($key, $params[$key]);
-          if ($optionID !== 0) {
+          if ($optionID !== NULL) {
             $params[$key] = $optionID;
           } else {
             CRM_Contact_Import_Parser_Contact::addToErrorMsg($fields[$key]['title'].' is not found', $errorMessage);
@@ -176,7 +180,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
       $cost_center_error = FALSE;
       if (!empty($params['hrjc_cost_center'])) {
         $optionID = $this->getOptionKey('hrjc_cost_center', $params['hrjc_cost_center']);
-        if ($optionID !== 0) {
+        if ($optionID !== NULL) {
           $params['hrjc_cost_center'] = $optionID;
           if (!empty($params['hrjc_cost_center_val_type']))  {
             $val = strtolower($params['hrjc_cost_center_val_type']);
@@ -204,33 +208,35 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         $cost_center_error = TRUE;
       }
 
-      if ($params['hrjc_cost_center_val_type'] === 0 && !$cost_center_error)  {
-        if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount should be removed', $errorMessage);
-        }
-        elseif (!empty($params['hrjc_role_amount_pay_cost_center']))  {
-          if ( !filter_var($params['hrjc_role_amount_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_cost_center'] < 0)  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to cost center should be positive number', $errorMessage);
+      if (isset($params['hrjc_cost_center_val_type']))  {
+        if ($params['hrjc_cost_center_val_type'] === 0 && !$cost_center_error)  {
+          if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount should be removed', $errorMessage);
           }
-        }
-        else  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount is not set', $errorMessage);
-        }
-        $params['hrjc_role_percent_pay_cost_center'] = 0;
-      }
-      elseif ($params['hrjc_cost_center_val_type'] === 1 && !$cost_center_error)  {
-        if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount should be removed', $errorMessage);
-        }
-        elseif (!empty($params['hrjc_role_percent_pay_cost_center']))  {
-          if ( !filter_var($params['hrjc_role_percent_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_cost_center'] < 0)  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to cost center should be positive number', $errorMessage);
+          elseif (!empty($params['hrjc_role_amount_pay_cost_center']))  {
+            if ( !filter_var($params['hrjc_role_amount_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_cost_center'] < 0)  {
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to cost center should be positive number', $errorMessage);
+            }
           }
+          else  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount is not set', $errorMessage);
+          }
+          $params['hrjc_role_percent_pay_cost_center'] = 0;
         }
-        else  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount is not set', $errorMessage);
+        elseif ($params['hrjc_cost_center_val_type'] === 1 && !$cost_center_error)  {
+          if (!empty($params['hrjc_role_amount_pay_cost_center']) && !empty($params['hrjc_role_percent_pay_cost_center']))  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center absolute amount should be removed', $errorMessage);
+          }
+          elseif (!empty($params['hrjc_role_percent_pay_cost_center']))  {
+            if ( !filter_var($params['hrjc_role_percent_pay_cost_center'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_cost_center'] < 0)  {
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to cost center should be positive number', $errorMessage);
+            }
+          }
+          else  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('cost center percent amount is not set', $errorMessage);
+          }
+          $params['hrjc_role_amount_pay_cost_center'] = 0;
         }
-        $params['hrjc_role_amount_pay_cost_center'] = 0;
       }
 
       if ($cost_center_error)  {
@@ -250,7 +256,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         else {
           $search_field = 'display_name';
         }
-        $result = CRM_Hrjobroles_BAO_HrJobRoles::checkContact($funder_value, $search_field);
+        $result = CRM_Hrjobroles_BAO_HrJobRoles::contactExists($funder_value, $search_field);
         if ($result !== 0)  {
           $params['funder'] = $result;
           if (!empty($params['hrjc_funder_val_type']))  {
@@ -279,33 +285,35 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
         $funder_error = TRUE;
       }
 
-      if ($params['hrjc_funder_val_type'] === 0 && !$funder_error)  {
-        if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount should be removed', $errorMessage);
-        }
-        elseif (!empty($params['hrjc_role_amount_pay_funder']))  {
-          if ( !filter_var($params['hrjc_role_amount_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_funder'] < 0)  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to funder should be positive number', $errorMessage);
+      if (isset($params['hrjc_funder_val_type']))  {
+        if ($params['hrjc_funder_val_type'] === 0 && !$funder_error)  {
+          if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount should be removed', $errorMessage);
           }
-        }
-        else  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount is not set', $errorMessage);
-        }
-        $params['hrjc_role_percent_pay_funder'] = 0;
-      }
-      elseif ($params['hrjc_funder_val_type'] === 1 && !$funder_error)  {
-        if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount should be removed', $errorMessage);
-        }
-        elseif (!empty($params['hrjc_role_percent_pay_funder']))  {
-          if ( !filter_var($params['hrjc_role_percent_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_funder'] < 0)  {
-            CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to funder should be positive number', $errorMessage);
+          elseif (!empty($params['hrjc_role_amount_pay_funder']))  {
+            if ( !filter_var($params['hrjc_role_amount_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_amount_pay_funder'] < 0)  {
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Amount of Pay Assigned to funder should be positive number', $errorMessage);
+            }
           }
+          else  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount is not set', $errorMessage);
+          }
+          $params['hrjc_role_percent_pay_funder'] = 0;
         }
-        else  {
-          CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount is not set', $errorMessage);
+        elseif ($params['hrjc_funder_val_type'] === 1 && !$funder_error)  {
+          if (!empty($params['hrjc_role_amount_pay_funder']) && !empty($params['hrjc_role_percent_pay_funder']))  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder absolute amount should be removed', $errorMessage);
+          }
+          elseif (!empty($params['hrjc_role_percent_pay_funder']))  {
+            if ( !filter_var($params['hrjc_role_percent_pay_funder'], FILTER_VALIDATE_FLOAT) || $params['hrjc_role_percent_pay_funder'] < 0)  {
+              CRM_Contact_Import_Parser_Contact::addToErrorMsg('Percent of Pay Assigned to funder should be positive number', $errorMessage);
+            }
+          }
+          else  {
+            CRM_Contact_Import_Parser_Contact::addToErrorMsg('funder percent amount is not set', $errorMessage);
+          }
+          $params['hrjc_role_amount_pay_funder'] = 0;
         }
-        $params['hrjc_role_amount_pay_funder'] = 0;
       }
 
       if ($funder_error)  {
@@ -414,26 +422,19 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
 
 
   /**
-   * get the option database ID given its label or ID
-   * @param String|Integer $option
-   * @param String|Integer $value
-   * @return Integer
+   * Get the (Option Value) database value given its
+   * label or the value itself
+   *
+   * @param String| $option
+   * @param String $value
+   * @return Integer|String|NULL
    * @access private
    */
-   private function getOptionKey($option, $value)  {
-     if (is_numeric ($value)) {
-       $search_field = 'id';
-     }
-     else {
-       $search_field = 'label';
-     }
-     $index = array_search(strtolower($value), array_column($this->_optionsList[$option], $search_field));
-     if ($index !== FALSE)  {
-       return (int) $this->_optionsList[$option][$index]['id'];
-     }
-     else {
-       return 0;
-     }
+  private function getOptionKey($option, $value)  {
+    if (CRM_Utils_Array::value($value, $this->_optionsList[$option])){
+      return $value;
+    }
+    return CRM_Utils_Array::key(strtolower($value), $this->_optionsList[$option]);
   }
 
 }

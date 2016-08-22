@@ -50,14 +50,14 @@
   <field>
     <name>start_date</name>
     <title>Absence Period Start Date</title>
-    <type>timestamp</type>
+    <type>datetime</type>
     <comment>Absence Period Start Date</comment>
   </field>
-  
+
   <field>
     <name>end_date</name>
     <title>Absence Period End Date</title>
-    <type>timestamp</type>
+    <type>datetime</type>
     <comment>Absence Period End Date</comment>
   </field>
 </table>
