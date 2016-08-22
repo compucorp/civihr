@@ -33,13 +33,16 @@ function hrui_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
+
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
       ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
       ->addSetting(array('pageName' => 'viewSummary'));
+
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
+
     if ($contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
       CRM_Core_Resources::singleton()
@@ -393,24 +396,44 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Check if the extension with the given key is enabled
+ *
+ * @param string $extensionKey
+ * @return boolean
  */
-function hrui_civicrm_tabs(&$tabs, $contactID) {
-  $newTabs = array();
-  /*
-   * 1) we alter the weights for these tabs here
-   * since these tabs are not created by hook_civicrm_tab
-   * and the only way to alter their weights is here
-   * by taking advantage of &$tabs variable.
-   * 2) we set assignments tab to 30 since it should appear
-   * after appraisals tab directly which have the weight of 20.
-   * 3) we jump to weight of 60 in identifications tab since 40 & 50
-   * are occupied by tasks & assignments extension tabs .
-   * 4) the weight increased by 10 between every tab
-   * to give a large space for other tabs to be inserted
-   * between any two without altering other tabs weights.
-   */
+function _hrui_check_extension($extensionKey)  {
+  return (boolean)CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_Extension',
+    $extensionKey,
+    'is_active',
+    'full_name'
+  );
+}
+
+/**
+ * 1) we alter the weights for these tabs here
+ * since these tabs are not created by hook_civicrm_tab
+ * and the only way to alter their weights is here
+ * by taking advantage of &$tabs variable.
+ * 2) we set assignments tab to 30 since it should appear
+ * after appraisals tab directly which have the weight of 20.
+ * 3) we jump to weight of 60 in identifications tab since 40 & 50
+ * are occupied by tasks & assignments extension tabs .
+ * 4) the weight increased by 10 between every tab
+ * to give a large space for other tabs to be inserted
+ * between any two without altering other tabs weights.
+ * 5) we remove a tab if present in the $tabsToRemove list
+ *
+ * @param Array $tabs
+ * @param Array $tabsToRemove
+ */
+function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
   foreach ($tabs as $i => $tab) {
+    if (in_array($tab['id'], $tabsToRemove)) {
+      unset($tabs[$i]);
+      continue;
+    }
+
     switch($tab['title'])  {
       case 'Assignments':
         $tabs[$i]['weight'] = 30;
@@ -451,6 +474,19 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
         break;
     }
   }
+}
+
+/**
+ * Implementation of hook_civicrm_tabset
+ */
+function hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
+  $tabsToRemove = array();
+
+  if (_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments')) {
+    $tabsToRemove[] = 'case';
+  }
+
+  _hrui_alter_tabs($tabs, $tabsToRemove);
 }
 
 /**
