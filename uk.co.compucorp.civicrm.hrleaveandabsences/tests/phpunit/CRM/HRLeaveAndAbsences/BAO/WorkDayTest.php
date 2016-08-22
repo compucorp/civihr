@@ -199,25 +199,11 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends PHPUnit_Framework_TestCase 
         return CRM_HRLeaveAndAbsences_BAO_WorkDay::create($params);
     }
 
-    private function updateWorkDay($id, $params)
-    {
-        $params['id'] = $id;
-        $this->createBasicWorkDay($params);
+    private function updateWorkDay($id, $params) {
+      $params['id'] = $id;
+      $this->createBasicWorkDay($params);
 
-        return $this->findWorkDayByID($id);
-    }
-
-    private function findWorkDayByID($id)
-    {
-        $entity = new CRM_HRLeaveAndAbsences_BAO_WorkDay();
-        $entity->id = $id;
-        $entity->find(true);
-
-        if($entity->N == 0) {
-            return null;
-        }
-
-        return $entity;
+      return CRM_HRLeaveAndAbsences_BAO_WorkDay::findById($id);
     }
 
     private function instantiateWorkPatternWithWeek() {

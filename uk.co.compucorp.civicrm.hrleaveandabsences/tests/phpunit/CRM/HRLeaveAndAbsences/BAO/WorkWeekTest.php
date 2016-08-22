@@ -175,12 +175,11 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends PHPUnit_Framework_TestCase
         return CRM_HRLeaveAndAbsences_BAO_WorkWeek::create($params);
     }
 
-    private function updateWorkWeek($id, $params)
-    {
-        $params['id'] = $id;
-        CRM_HRLeaveAndAbsences_BAO_WorkWeek::create($params);
+    private function updateWorkWeek($id, $params) {
+      $params['id'] = $id;
+      CRM_HRLeaveAndAbsences_BAO_WorkWeek::create($params);
 
-        return $this->findWorkWeekByID($id);
+      return WorkWeek::findById($id);
     }
 
     private function instantiateWorkPattern() {
@@ -201,18 +200,5 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends PHPUnit_Framework_TestCase
       }
 
       return $workDays;
-    }
-
-    private function findWorkWeekByID($id)
-    {
-        $entity = new CRM_HRLeaveAndAbsences_BAO_WorkWeek();
-        $entity->id = $id;
-        $entity->find(true);
-
-        if($entity->N == 0) {
-            return null;
-        }
-
-        return $entity;
     }
 }
