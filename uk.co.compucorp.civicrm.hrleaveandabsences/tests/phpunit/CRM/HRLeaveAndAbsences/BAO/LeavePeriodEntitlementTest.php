@@ -480,6 +480,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertEquals($contract['id'], $periodEntitlement->contract_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+
+    $user = null;
   }
 
   private function createPeriodEntitlement() {
