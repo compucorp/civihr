@@ -18,6 +18,11 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends PHPUnit_Framework_TestC
       return \Civi\Test::headless()->installMe(__DIR__)->apply();
     }
 
+    public function setUp() {
+      //Deletes the default work pattern so it doesn't interfere with the tests
+      WorkPattern::del(1);
+    }
+
     public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
     {
         $firstEntity = $this->createBasicWorkPattern();
@@ -72,7 +77,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends PHPUnit_Framework_TestC
 
     public function testFindWithNumberOfWeeksAndHours()
     {
-
         $this->createWorkPatternWith40HoursWorkWeek('Pattern 1');
         $this->createWorkPatternWithTwoWeeksAnd31AndHalfHours('Pattern 2');
 
