@@ -1,7 +1,8 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
+require_once __DIR__."/../BaseTest.php";
+
+use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
 /**
@@ -9,11 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
+class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
