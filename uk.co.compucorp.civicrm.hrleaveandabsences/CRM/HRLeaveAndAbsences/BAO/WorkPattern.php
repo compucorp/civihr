@@ -3,6 +3,13 @@
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
 
   /**
+   * This field is used to cache the results from the getWeeks method
+   *
+   * @var array
+   */
+  private $weeks = null;
+
+  /**
    * Create a new WorkPattern based on array-data
    *
    * This method can handle related weeks. For that, you should pass
@@ -248,6 +255,144 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     } catch(CiviCRM_API3_Exception $ex) {
       return [];
     }
+  }
+
+  /**
+   * Returns the leave_days amount for the given $date, based on the $startDate
+   * and $endDate.
+   *
+   * This method will rotate through the pattern's weeks to get the return value.
+   * That is, starting from $startDate, if the $date falls on the first week, we
+   * get the leave_days amount from the first week of the pattern; if it falls on
+   * second week, we get it from the pattern's second week; if it's on the third
+   * week, we rotate and get the value from the pattern's first week again and
+   * so on.
+   *
+   * If the $date is not between $startDate and $endDate, it will return 0.
+   *
+   * If the WorkPattern doesn’t have weeks, it will return 0.
+   *
+   * @param \DateTime $date
+   * @param \DateTime $startDate
+   * @param \DateTime $endDate
+   *
+   * @return float
+   */
+  public function getLeaveDaysForDate(DateTime $date, DateTime $startDate, DateTime $endDate) {
+    if($date < $startDate || $date > $endDate) {
+      return 0;
+    }
+
+    $weeks = $this->getWeeks();
+
+    if(empty($weeks)) {
+      return 0;
+    }
+
+    $dateDayOfTheWeek = $date->format('N');
+    $weekToUse = $this->getWeekForDateFromStartDate($date, $startDate);
+
+    return $this->getLeaveDaysForDayOfTheWeekInWeek($dateDayOfTheWeek, $weekToUse);
+  }
+
+  /**
+   * Loops through all the $week days and return the leave_days value for the
+   * day with the given $dayOfTheWeek
+   *
+   * @param int $dayOfTheWeek
+   *  An ISO-8601 numeric representation of the day of the week. 1=Monday, 2=Tuesday and son on
+   * @param array $week
+   *  An week array, as the one returned from getValuesArray()
+   *
+   * @return float
+   */
+  private function getLeaveDaysForDayOfTheWeekInWeek($dayOfTheWeek, $week) {
+    foreach($week['days'] as $day) {
+      if($day['day_of_the_week'] == $dayOfTheWeek) {
+        return isset($day['leave_days']) ? (float)$day['leave_days'] : 0;
+      }
+    }
+
+    return 0;
+  }
+
+  /**
+   * Based on a given startDate, this method will calculate which of the work
+   * pattern weeks should be used for the given date.
+   *
+   * Here it's how it works:
+   * 1. First, to make the calculation easier, we adjust the $startDate to be
+   * the monday of its week. Example, if the $startDate is 2016-07-30 (a
+   * Saturday), it will be changed to 2016-07-25, the monday of the startDate's
+   * week.
+   * 2. Next, we calculate the number of weeks between the $startDate and the
+   * $date.
+   * 3. Based on the number of weeks on the work pattern and the number of weeks
+   * between the $startDate and $date, we decide which of the pattern's week
+   * to return. The patterns will rotate, that is, for the first week, we return
+   * the first pattern's week, for second week, the second pattern's week, for
+   * the third week, the first pattern's week and so on.
+   *
+   * @param \DateTime $date
+   * @param \DateTime $startDate
+   *
+   * @return array
+   *    The WorkPattern week to be used for the given $date
+   */
+  private function getWeekForDateFromStartDate(DateTime $date, DateTime $startDate) {
+    $weeks = $this->getWeeks();
+
+    $startDate = $this->shiftDateToLastMonday($startDate);
+
+    $dateNumberOfWeek = floor($date->diff($startDate)->days / 7);
+    $weekToUse   = $dateNumberOfWeek % count($weeks);
+
+    return $weeks[$weekToUse];
+  }
+
+  /**
+   * This is basically a non-static version of the getValuesArray() method,
+   * which loads the data based on the ID of this WorkPattern.
+   *
+   * It also caches the fetched data, so we won't have performance problems if
+   * it gets called multiple times (For example, when we need to get the
+   * leave_days amount for multiple dates).
+   *
+   * @return array
+   */
+  private function getWeeks() {
+    if($this->weeks == null) {
+      $this->weeks = [];
+
+      $valuesArray = self::getValuesArray($this->id);
+      if(!empty($valuesArray['weeks'])) {
+        $this->weeks = $valuesArray['weeks'];
+      }
+    }
+
+    return $this->weeks;
+  }
+
+  /**
+   * Based on the given $date, returns a new $date representing the monday on
+   * the $date's week.
+   *
+   * Example, if the date is 2016-07-30 (a Saturday), it will be return 2016-07-25,
+   * the monday of the date's week.
+   *
+   * @param \DateTime $date
+   *
+   * @return \DateTime
+   */
+  private function shiftDateToLastMonday(DateTime $date) {
+    $isMonday = $date->format('N') == 1;
+
+    if (!$isMonday) {
+      $lastMonday = date('Y-m-d', strtotime('last monday', $date->getTimestamp()));
+      $date  = new DateTime($lastMonday);
+    }
+
+    return $date;
   }
 
   private static function unsetDefaultWorkPatterns()

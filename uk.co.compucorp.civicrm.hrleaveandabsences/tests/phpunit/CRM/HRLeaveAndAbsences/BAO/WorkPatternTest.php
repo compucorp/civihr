@@ -216,6 +216,164 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseTest {
     $this->assertEquals(0, $workPattern1->is_active);
   }
 
+  public function testGetLeaveDaysForDateShouldReturnZeroIfDateIsNotBetweenStartAndEndDates() {
+    $pattern = new WorkPattern();
+
+    $start = new DateTime('2016-01-02');
+    $end = new DateTime('2016-12-31');
+
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-01-01'), $start, $end
+    ));
+
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2017-01-01'), $start, $end
+    ));
+  }
+
+  public function testGetLeaveDaysForDateShouldReturnZeroIfWorkPatternHasNoWeeks() {
+    $pattern = new WorkPattern();
+
+    $start = new DateTime('2016-01-01');
+    $end = new DateTime('2016-12-31');
+
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-01-01'), $start, $end
+    ));
+  }
+
+  public function testGetLeaveDaysForDateShouldTheNumberOfDaysForPatternsWithOnlyOneWeek() {
+    $pattern = $this->createWorkPatternWith40HoursWorkWeek('Pattern 1');
+
+    $start = new DateTime('2016-01-01');
+    $end = new DateTime('2016-12-31');
+
+    // A friday
+    $this->assertEquals(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-01-01'), $start, $end
+    ));
+
+    // A saturday
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-02-13'), $start, $end
+    ));
+
+    // A sunday
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-03-06'), $start, $end
+    ));
+
+    // A monday
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-04-04'), $start, $end
+    ));
+
+    // A tuesday
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-05-24'), $start, $end
+    ));
+
+    // A wednesday
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-06-15'), $start, $end
+    ));
+
+    // A thursday
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-07-28'), $start, $end
+    ));
+  }
+
+  public function testGetLeaveDaysForDateShouldTheNumberOfDaysForPatternsWithMultipleWeeks() {
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $pattern = $this->createWorkPatternWithTwoWeeksAnd31AndHalfHours('Pattern 1');
+
+    $start = new DateTime('2016-07-31'); // A sunday
+    $end = new DateTime('2016-12-31');
+
+    // Since the start date is a sunday, the end of the week, the following day
+    // (2016-08-01) should be on the second week. Monday of the second week is
+    // not a working day, so the leave days should be 0
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-01'), $start, $end
+    ));
+
+    // The next day is a tuesday, which is a working day on the second week, so
+    // we should return 1
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-02'), $start, $end
+    ));
+
+    // Wednesday is not a working day on the second week, so we should return 0
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-03'), $start, $end
+    ));
+
+    // Thursday is a working day on the second week, so we should return 1
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-04'), $start, $end
+    ));
+
+    // Friday, Saturday and Sunday are not working days on the second week,
+    // so we should return 0
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-05'), $start, $end
+    ));
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-06'), $start, $end
+    ));
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-07'), $start, $end
+    ));
+
+    // Now, since we hit sunday, the following day will be on the third week
+    // since the start date, but the work pattern only has 2 weeks, so we
+    // rotate back to use the week 1 from the pattern
+
+    // Monday is a working day on the first week
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-08'), $start, $end
+    ));
+
+    // Tuesday is not a working day on the first week
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-09'), $start, $end
+    ));
+
+    // Wednesday is a working day on the first week
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-10'), $start, $end
+    ));
+
+    // Thursday is not a working day on the first week
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-11'), $start, $end
+    ));
+
+    // Friday is a working day on the first week
+    $this->assertSame(1.0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-12'), $start, $end
+    ));
+
+    // Saturday and Sunday are not working days on the first week
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-13'), $start, $end
+    ));
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-14'), $start, $end
+    ));
+
+    // Hit sunday again, so we are now on the fourth week since the start date.
+    // The work pattern will rotate and use the week 2
+
+    // Monday is not a working day on week 2, so it should return 0
+    $this->assertSame(0, $pattern->getLeaveDaysForDate(
+      new DateTime('2016-08-15'), $start, $end
+    ));
+  }
+
+
   private function createBasicWorkPattern($params = []) {
     $basicRequiredFields = ['label' => 'Pattern ' . microtime() ];
 
@@ -247,7 +405,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseTest {
    *
    * @param string $label the label of the Work Pattern
    *
-   * @return \CRM_HRLeaveAndAbsences_DAO_WorkPattern|NULL
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern|NULL
    */
   private function createWorkPatternWith40HoursWorkWeek($label) {
     $pattern = $this->createBasicWorkPattern(['label' => $label]);
@@ -333,7 +491,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseTest {
    *
    * @param string $label the label of the Work Pattern
    *
-   * @return \CRM_HRLeaveAndAbsences_DAO_WorkPattern|NULL
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern|NULL
    */
   private function createWorkPatternWithTwoWeeksAnd31AndHalfHours($label) {
     $pattern = $this->createBasicWorkPattern(['label' => $label]);
@@ -452,5 +610,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseTest {
       'type'            => WorkDay::WORK_DAY_OPTION_WEEKEND,
       'day_of_the_week' => 7,
     ]);
+
+    return $pattern;
   }
 }
