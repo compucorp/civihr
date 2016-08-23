@@ -155,9 +155,20 @@
                                     <tr ng-repeat="(key, funder) in edit_data['new_role_id']['funders']">
                                         <td>
                                             <!-- editable funder (text with validation) -->
-                                            <span editable-text="funder.funder_id" e-uib-typeahead="contact as contact.sort_name for contact in jobroles.contactList | filter:$viewValue | limitTo:10" e-form="tableform" e-name="funder" onbeforesave="checkName($data, user.id)">
-                                                {{ funder.funder_id.sort_name || 'empty' }}
-                                            </span>
+                                          <ui-select allow-clear
+                                                     theme="civihr-ui-select"
+                                                     ng-model="funder.funder_id">
+                                            <ui-select-match class="ui-select-match">
+                                              {{$select.selected.sort_name}}
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                              class="ui-select-choices"
+                                              repeat="contact in jobroles.contactList | filter: $select.search"
+                                              refresh="jobroles.getContactList($select.search)"
+                                              refresh-delay="500">
+                                              <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                          </ui-select>
                                         </td>
                                         <td>
                                             <!-- editable funder type (will restrict the fields to amount or percentage -->
