@@ -59,11 +59,15 @@
 
 .crm-container {
   > table,
-  table.report-layout {
+  table.report-layout,
+  table.selector,
+  .ui-dialog table {
     @extend %crm-table;
-  }
 
-  table {
+    &:not(.report-layout) {
+      box-shadow: $box-shadow;
+    }
+
     td {
       &.label {
         vertical-align: middle !important;
@@ -78,6 +82,36 @@
 
       > tbody > tr > td.label {
         line-height: 25px;
+      }
+    }
+
+    tr {
+      &:first-child {
+        th {
+          &:first-child {
+            border-top-left-radius: 2px;
+          }
+
+          &:last-child {
+            border-top-right-radius: 2px;
+          }
+        }
+      }
+
+      &:last-child {
+        td {
+          &:first-child {
+            border-bottom-left-radius: 2px;
+          }
+
+          &:last-child {
+            border-bottom-right-radius: 2px;
+          }
+        }
+      }
+
+      td {
+        color: $crm-copy;
       }
     }
   }
