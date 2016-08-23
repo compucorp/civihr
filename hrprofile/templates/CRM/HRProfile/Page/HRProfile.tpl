@@ -66,6 +66,6 @@ CRM.$(function($){
   $( '.crm-profile-name-hrprofile table').css( "table-layout",'fixed');
 });
 </script>
-{/literal} 
+{/literal}
 
 <div class="clear"></div>
