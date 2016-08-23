@@ -12,7 +12,6 @@ ENTITY_EXTS=\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
 org.civicrm.hrident,\
-org.civicrm.hrjob,\
 org.civicrm.hrjobcontract,\
 com.civicrm.hrjobroles,\
 org.civicrm.hrabsence,\
@@ -32,7 +31,6 @@ org.civicrm.hrcase,\
 org.civicrm.hrstaffdir,\
 org.civicrm.hrim,\
 org.civicrm.hrprofile,\
-org.civicrm.hrcaseutils,\
 org.civicrm.hrrecruitment,\
 org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
