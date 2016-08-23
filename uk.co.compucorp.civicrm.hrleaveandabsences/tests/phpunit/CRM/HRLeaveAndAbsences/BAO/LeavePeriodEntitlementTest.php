@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__."/../LeaveBalanceChangeHelpersTrait.php";
+require_once __DIR__."/../BaseTest.php";
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
@@ -17,19 +17,11 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
+class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseTest {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   private $leaveRequestStatuses = [];
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->install('org.civicrm.hrjobcontract')
-      ->apply();
-  }
 
   public function setUp() {
     $this->leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
@@ -480,6 +472,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertEquals($contract['id'], $periodEntitlement->contract_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+
+    $user = null;
   }
 
   private function createPeriodEntitlement() {

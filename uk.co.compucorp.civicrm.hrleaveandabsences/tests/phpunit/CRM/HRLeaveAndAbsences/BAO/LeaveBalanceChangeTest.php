@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__."/../LeaveBalanceChangeHelpersTrait.php";
+require_once __DIR__."/../BaseTest.php";
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
+use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
@@ -13,17 +13,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
+class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseTest {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-                     ->installMe(__DIR__)
-                     ->install('org.civicrm.hrjobcontract')
-                     ->apply();
-  }
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,

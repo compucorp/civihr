@@ -1,28 +1,22 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
+require_once __DIR__."/../BaseTest.php";
+
+use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends CiviUnitTestCase implements HeadlessInterface {
+class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends BaseTest {
 
   private $absenceType = null;
-
-  protected $_tablesToTruncate = [
-    'civicrm_hrleaveandabsences_notification_receiver'
-  ];
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
 
   public function setUp()
   {
     parent::setUp();
-    $this->loadAllFixtures();
     $this->instantiateAbsenceType();
   }
 
@@ -40,32 +34,31 @@ class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends CiviUnitTestCa
   {
     $this->addAndRetrieveReceiversForAbsenceType();
 
-    CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::removeReceiversFromAbsenceType($this->absenceType['id']);
+    CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::removeReceiversFromAbsenceType($this->absenceType->id);
 
     $receiversIds = CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType(
-        $this->absenceType['id']
+        $this->absenceType->id
     );
     $this->assertEmpty($receiversIds);
   }
 
   private function instantiateAbsenceType()
   {
-    $result = $this->callAPISuccess('AbsenceType', 'create', [
+    $this->absenceType = AbsenceType::create([
         'title' => 'Type ' . microtime(),
         'color' => '#000000',
         'default_entitlement' => 20,
         'allow_request_cancelation' => 1,
     ]);
-
-    $this->absenceType = reset($result['values']);
   }
 
   private function getContactsIds($limit = 5)
   {
-    $result = $this->callAPISuccess('Contact', 'get', [
+    $result = civicrm_api3('Contact', 'get', [
       'return' => 'id',
       'options' => ['limit' => $limit]
     ]);
+
     if($result['is_error'] == 0) {
       return array_keys($result['values']);
     }
@@ -79,11 +72,11 @@ class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends CiviUnitTestCa
     $this->assertNotEmpty($receiversIdsToAdd);
 
     CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::addReceiversToAbsenceType(
-        $this->absenceType['id'], $receiversIdsToAdd
+        $this->absenceType->id, $receiversIdsToAdd
     );
 
     $receiversIds = CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType(
-        $this->absenceType['id']
+        $this->absenceType->id
     );
 
     $this->assertEquals(count($receiversIdsToAdd), count($receiversIds));

@@ -1,15 +1,15 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
+require_once __DIR__."/../BaseTest.php";
+
+use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
+class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseTest {
 
   private $allColors = [
       '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',
@@ -17,10 +17,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
       '#263345', '#CC4A49', '#D97038', '#4F944A', '#995978', '#5F3D76', '#147E99',
       '#151D2C', '#B32E2E', '#BF561D', '#377A31', '#803D5E', '#47275C', '#056780'
   ];
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
 
   /**
    * @expectedException PEAR_Exception
