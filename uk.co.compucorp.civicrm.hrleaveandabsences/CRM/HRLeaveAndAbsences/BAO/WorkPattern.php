@@ -395,15 +395,21 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     return $date;
   }
 
-  private static function unsetDefaultWorkPatterns()
-  {
+  /**
+   * Unset the is_default flag for the default Work Pattern
+   */
+  private static function unsetDefaultWorkPatterns() {
     $tableName = self::getTableName();
     $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
     CRM_Core_DAO::executeQuery($query);
   }
 
-  public function links()
-  {
+  /**
+   * {@inheritdoc}
+   *
+   * @return array
+   */
+  public function links() {
     $workWeekTable = CRM_HRLeaveAndAbsences_BAO_WorkWeek::getTableName();
     return [
       'id' => "{$workWeekTable}:pattern_id"
