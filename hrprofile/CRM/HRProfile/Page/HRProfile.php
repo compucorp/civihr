@@ -12,19 +12,9 @@ class CRM_HRProfile_Page_HRProfile extends CRM_Profile_Page_Listings {
     $this->_params['contact_type'] = 'Individual';
 
     $selector = new CRM_Profile_Selector_Listings($this->_params, $this->_customFields, $profID, $this->_map, FALSE, 0);
-    $extraWhereClause = NULL;
-    $grpParams = array('name'=>'HRJobContract_Summary');
-    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $grpParams, $cGrp);
-    $fdParams = array('name'=>'Final_Termination_Date', 'custom_group_id' => $cGrp['id']);
-    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $fdParams, $fdField);
-    $idParams = array('name'=>'Initial_Join_Date', 'custom_group_id' => $cGrp['id']);
-    CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomField', $idParams, $idField);
-
-    $extraWhereClause = " (({$cGrp['table_name']}.{$fdField['column_name']} >= CURDATE() OR {$cGrp['table_name']}.{$fdField['column_name']} IS NULL) AND
-      ({$cGrp['table_name']}.{$idField['column_name']} IS NOT NULL AND {$cGrp['table_name']}.{$idField['column_name']} <= CURDATE()))";
 
     $column = $columnHeaders = $selector->getColumnHeaders();
-    $rows = $selector->getRows(4, 0, 0,NULL, NULL, $extraWhereClause);
+    $rows = $selector->getRows(4, 0, 0, NULL);
 
     CRM_Utils_Hook::searchColumns('profile', $columnHeaders, $rows, $this);
     $this->assign('aaData',json_encode($rows));
