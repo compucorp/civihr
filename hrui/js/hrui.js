@@ -74,7 +74,7 @@
   $(document).on('crmLoad', function(e) {
     $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
       window.setTimeout(function() {
-        Array.prototype.map.call(document.querySelectorAll('.listing-box'), function(element) {
+        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function(element) {
           Ps.initialize(element);
         });
       }, 0);
