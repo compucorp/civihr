@@ -79,9 +79,15 @@
         });
       }, 0);
     });
+
     if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
       linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
       linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
+
+      // Add a class to identify the form 'New Vacancy Template'
+      if ($('[name="entryURL"]').val().indexOf(';template=1') > -1) {
+        $($('.CRM_HRRecruitment_Form_HRVacancy tbody').get(0)).addClass('CRM_HRRecruitment_Form_HRVacancy_Template');
+      }
     }
 
     //change text from Client to Contact
