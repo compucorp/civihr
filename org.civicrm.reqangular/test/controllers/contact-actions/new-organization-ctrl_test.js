@@ -7,7 +7,7 @@ define([
   'use strict';
 
   describe('NewOrganizationModalCtrl', function () {
-    var ctrl, $rootScope, $q, modalInstanceSpy, contactActionsSpy, resultMock;
+    var ctrl, $rootScope, $q, modalInstanceSpy, contactActionsStub, resultMock;
 
     beforeEach(module('common.apis', 'common.controllers'));
     beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
@@ -17,7 +17,7 @@ define([
       ctrl = _$controller_('NewOrganizationModalCtrl', {
         '$rootScope': $rootScope,
         '$uibModalInstance': modalInstanceSpy,
-        'api.contactActions': contactActionsSpy
+        'api.contactActions': contactActionsStub
       });
       $rootScope.$digest();
     }));
@@ -27,11 +27,13 @@ define([
      */
     function initSpies() {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
-      contactActionsSpy = jasmine.createSpyObj('contactActionsSpy', ['saveNewOrganization']);
+      contactActionsStub = {
+        save: jasmine.createSpyObj('saveSpy', ['newOrganization'])
+      };
       resultMock = {
         test: true
       };
-      contactActionsSpy.saveNewOrganization.and.returnValue($q.resolve(resultMock));
+      contactActionsStub.save.newOrganization.and.returnValue($q.resolve(resultMock));
     }
 
     describe('cancel', function () {
@@ -55,8 +57,8 @@ define([
 
         it('saves the new organization', function () {
           $rootScope.$digest();
-          expect(contactActionsSpy.saveNewOrganization.calls.count()).toBe(1);
-          expect(contactActionsSpy.saveNewOrganization).toHaveBeenCalledWith('Organization Name', 'Email');
+          expect(contactActionsStub.save.newOrganization.calls.count()).toBe(1);
+          expect(contactActionsStub.save.newOrganization).toHaveBeenCalledWith('Organization Name', 'Email');
         });
 
         it('broadcasts the "newOrganizationCreated" event', function () {
@@ -78,7 +80,7 @@ define([
 
       describe('when there are errors', function () {
         beforeEach(function () {
-          contactActionsSpy.saveNewOrganization.and.returnValue($q.reject());
+          contactActionsStub.save.newOrganization.and.returnValue($q.reject());
           spyOn($rootScope, '$broadcast');
           ctrl.submit();
         });
@@ -90,7 +92,7 @@ define([
 
         it('sets the error message', function () {
           $rootScope.$digest();
-          expect(contactActionsSpy.saveNewOrganization.calls.count()).toBe(1);
+          expect(contactActionsStub.save.newOrganization.calls.count()).toBe(1);
           expect(ctrl.errorMsg.length).not.toBe(0);
         });
 

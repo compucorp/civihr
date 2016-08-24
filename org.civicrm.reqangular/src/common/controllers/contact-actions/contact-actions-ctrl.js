@@ -28,25 +28,25 @@ define([
         },
         availableFields: [{
           label: 'Contact Type',
-          getOptions: contactActions.getContactTypeOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forContactType.bind(contactActions)
         }, {
           label: 'Group',
-          getOptions: contactActions.getGroupOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forGroup.bind(contactActions)
         }, {
           label: 'Tag',
-          getOptions: contactActions.getTagOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forTag.bind(contactActions)
         }, {
           label: 'State / Province',
-          getOptions: contactActions.getStateProvinceOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forStateProvince.bind(contactActions)
         }, {
           label: 'Country',
-          getOptions: contactActions.getCountryOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forCountry.bind(contactActions)
         }, {
           label: 'Gender',
-          getOptions: contactActions.getGenderOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forGender.bind(contactActions)
         }, {
           label: 'Deceased',
-          getOptions: contactActions.getDeceasedOptions.bind(contactActions)
+          getOptions: contactActions.getOptions.forDeceased.bind(contactActions)
         }],
         availableOptions: {
           refresh: function() {

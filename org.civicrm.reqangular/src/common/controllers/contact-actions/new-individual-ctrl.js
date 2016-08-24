@@ -26,7 +26,7 @@ define([
        */
       vm.submit = function() {
         vm.loading = true;
-        contactActions.saveNewIndividual(vm.firstName, vm.lastName, vm.email)
+        contactActions.save.newIndividual(vm.firstName, vm.lastName, vm.email)
           .then(function(data) {
             vm.loading = false;
             $rootScope.$broadcast('newIndividualCreated', data);

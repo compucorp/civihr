@@ -25,7 +25,7 @@ define([
        */
       vm.submit = function() {
         vm.loading = true;
-        contactActions.saveNewHousehold(vm.householdName, vm.email)
+        contactActions.save.newHousehold(vm.householdName, vm.email)
           .then(function(data) {
             vm.loading = false;
             $rootScope.$broadcast('newHouseholdCreated', data);

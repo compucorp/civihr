@@ -28,23 +28,25 @@ define([
     it('calls api.extend with correct parameters', function () {
       expect(apiSpy.extend.calls.count()).toBe(1);
       expect(apiSpy.extend.calls.mostRecent().args.length).toBe(1);
-      expect('getContactTypeOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getGroupOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getTagOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getStateProvinceOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getCountryOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getGenderOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('getDeceasedOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('getOptions' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('forContactType' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forGroup' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forTag' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forStateProvince' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forCountry' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forGender' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
+      expect('forDeceased' in apiSpy.extend.calls.mostRecent().args[0].getOptions).toBeTruthy();
 
-      expect('saveNewIndividual' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('saveNewOrganization' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
-      expect('saveNewHousehold' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('save' in apiSpy.extend.calls.mostRecent().args[0]).toBeTruthy();
+      expect('newIndividual' in apiSpy.extend.calls.mostRecent().args[0].save).toBeTruthy();
+      expect('newOrganization' in apiSpy.extend.calls.mostRecent().args[0].save).toBeTruthy();
+      expect('newHousehold' in apiSpy.extend.calls.mostRecent().args[0].save).toBeTruthy();
     });
 
-    describe('getContactTypeOptions', function () {
+    describe('getOptions.forContactType', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getContactTypeOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forContactType.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -63,10 +65,10 @@ define([
       });
     });
 
-    describe('getGroupOptions', function () {
+    describe('getOptions.forGroup', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getGroupOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forGroup.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -85,10 +87,10 @@ define([
       });
     });
 
-    describe('getTagOptions', function () {
+    describe('getOptions.forTag', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getTagOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forTag.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -107,10 +109,10 @@ define([
       });
     });
 
-    describe('getStateProvinceOptions', function () {
+    describe('getOptions.forStateProvince', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getStateProvinceOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forStateProvince.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -129,10 +131,10 @@ define([
       });
     });
 
-    describe('getCountryOptions', function () {
+    describe('getOptions.forCountry', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getCountryOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forCountry.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -151,10 +153,10 @@ define([
       });
     });
 
-    describe('getGenderOptions', function () {
+    describe('getOptions.forGender', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getGenderOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forGender.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -173,10 +175,10 @@ define([
       });
     });
 
-    describe('getDeceasedOptions', function () {
+    describe('getOptions.forDeceased', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].getDeceasedOptions.call(apiSpy);
+        result = apiSpy.extend.calls.mostRecent().args[0].getOptions.forDeceased.call(apiSpy);
       });
 
       it('returns the correct result', function (done) {
@@ -195,10 +197,10 @@ define([
       });
     });
 
-    describe('saveNewIndividual', function () {
+    describe('save.newIndividual', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].saveNewIndividual.call(apiSpy,
+        result = apiSpy.extend.calls.mostRecent().args[0].save.newIndividual.call(apiSpy,
           'First Name', 'Last Name', 'Email');
       });
 
@@ -220,10 +222,10 @@ define([
       });
     });
 
-    describe('saveNewOrganization', function () {
+    describe('save.newOrganization', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].saveNewOrganization.call(apiSpy,
+        result = apiSpy.extend.calls.mostRecent().args[0].save.newOrganization.call(apiSpy,
           'Organization Name', 'Email');
       });
 
@@ -244,10 +246,10 @@ define([
       });
     });
 
-    describe('saveNewHousehold', function () {
+    describe('save.newHousehold', function () {
       var result;
       beforeEach(function () {
-        result = apiSpy.extend.calls.mostRecent().args[0].saveNewHousehold.call(apiSpy,
+        result = apiSpy.extend.calls.mostRecent().args[0].save.newHousehold.call(apiSpy,
           'Household Name', 'Email');
       });
 

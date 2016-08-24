@@ -7,7 +7,7 @@ define([
   'use strict';
 
   describe('NewHouseholdModalCtrl', function () {
-    var ctrl, $rootScope, $q, modalInstanceSpy, contactActionsSpy, resultMock;
+    var ctrl, $rootScope, $q, modalInstanceSpy, contactActionsStub, resultMock;
 
     beforeEach(module('common.apis', 'common.controllers'));
     beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
@@ -17,7 +17,7 @@ define([
       ctrl = _$controller_('NewHouseholdModalCtrl', {
         '$rootScope': $rootScope,
         '$uibModalInstance': modalInstanceSpy,
-        'api.contactActions': contactActionsSpy
+        'api.contactActions': contactActionsStub
       });
       $rootScope.$digest();
     }));
@@ -27,11 +27,13 @@ define([
      */
     function initSpies() {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
-      contactActionsSpy = jasmine.createSpyObj('contactActionsSpy', ['saveNewHousehold']);
+      contactActionsStub = {
+        save: jasmine.createSpyObj('saveSpy', ['newHousehold'])
+      };
       resultMock = {
         test: true
       };
-      contactActionsSpy.saveNewHousehold.and.returnValue($q.resolve(resultMock));
+      contactActionsStub.save.newHousehold.and.returnValue($q.resolve(resultMock));
     }
 
     describe('cancel', function () {
@@ -55,8 +57,8 @@ define([
 
         it('saves the new household', function () {
           $rootScope.$digest();
-          expect(contactActionsSpy.saveNewHousehold.calls.count()).toBe(1);
-          expect(contactActionsSpy.saveNewHousehold).toHaveBeenCalledWith('Household Name', 'Email');
+          expect(contactActionsStub.save.newHousehold.calls.count()).toBe(1);
+          expect(contactActionsStub.save.newHousehold).toHaveBeenCalledWith('Household Name', 'Email');
         });
 
         it('broadcasts the "newHouseholdCreated" event', function () {
@@ -78,7 +80,7 @@ define([
 
       describe('when there are errors', function () {
         beforeEach(function () {
-          contactActionsSpy.saveNewHousehold.and.returnValue($q.reject());
+          contactActionsStub.save.newHousehold.and.returnValue($q.reject());
           spyOn($rootScope, '$broadcast');
           ctrl.submit();
         });
@@ -90,7 +92,7 @@ define([
 
         it('sets the error message', function () {
           $rootScope.$digest();
-          expect(contactActionsSpy.saveNewHousehold.calls.count()).toBe(1);
+          expect(contactActionsStub.save.newHousehold.calls.count()).toBe(1);
           expect(ctrl.errorMsg.length).not.toBe(0);
         });
 

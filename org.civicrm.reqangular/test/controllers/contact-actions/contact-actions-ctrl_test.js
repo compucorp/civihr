@@ -7,7 +7,7 @@ define([
   'use strict';
 
   describe('ContactActionsCtrl', function () {
-    var $scope, ctrl, modalSpy, contactActionsSpy;
+    var $scope, ctrl, modalSpy, contactActionsStub;
 
     beforeEach(module('common.apis', 'common.controllers'));
 
@@ -16,17 +16,20 @@ define([
      */
     beforeEach(inject(function ($q) {
       modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
-      contactActionsSpy = jasmine.createSpyObj('contactActionsSpy', [
-        'getContactTypeOptions', 'getGroupOptions', 'getTagOptions', 'getStateProvinceOptions',
-        'getCountryOptions', 'getGenderOptions', 'getDeceasedOptions'
-      ]);
-      contactActionsSpy.getContactTypeOptions.and.returnValue($q.resolve('contact type options'));
-      contactActionsSpy.getGroupOptions.and.returnValue($q.resolve('group options'));
-      contactActionsSpy.getTagOptions.and.returnValue($q.resolve('tag options'));
-      contactActionsSpy.getStateProvinceOptions.and.returnValue($q.resolve('state / province options'));
-      contactActionsSpy.getCountryOptions.and.returnValue($q.resolve('country options'));
-      contactActionsSpy.getGenderOptions.and.returnValue($q.resolve('gender options'));
-      contactActionsSpy.getDeceasedOptions.and.returnValue($q.resolve('deceased options'));
+      contactActionsStub = {
+        getOptions: jasmine.createSpyObj('optionsSpy', [
+          'forContactType', 'forGroup', 'forTag', 'forStateProvince', 'forCountry',
+          'forGender', 'forDeceased'
+        ])
+      };
+
+      contactActionsStub.getOptions.forContactType.and.returnValue($q.resolve('contact type options'));
+      contactActionsStub.getOptions.forGroup.and.returnValue($q.resolve('group options'));
+      contactActionsStub.getOptions.forTag.and.returnValue($q.resolve('tag options'));
+      contactActionsStub.getOptions.forStateProvince.and.returnValue($q.resolve('state / province options'));
+      contactActionsStub.getOptions.forCountry.and.returnValue($q.resolve('country options'));
+      contactActionsStub.getOptions.forGender.and.returnValue($q.resolve('gender options'));
+      contactActionsStub.getOptions.forDeceased.and.returnValue($q.resolve('deceased options'));
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_) {
@@ -34,7 +37,7 @@ define([
       ctrl = _$controller_('ContactActionsCtrl', {
         '$scope': $scope,
         '$uibModal': modalSpy,
-        'api.contactActions': contactActionsSpy
+        'api.contactActions': contactActionsStub
       });
     }));
 
@@ -110,8 +113,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getContactTypeOptions', function () {
-            expect(contactActionsSpy.getContactTypeOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forContactType', function () {
+            expect(contactActionsStub.getOptions.forContactType).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -132,8 +135,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getGroupOptions', function () {
-            expect(contactActionsSpy.getGroupOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forGroup', function () {
+            expect(contactActionsStub.getOptions.forGroup).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -154,8 +157,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getTagOptions', function () {
-            expect(contactActionsSpy.getTagOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forTag', function () {
+            expect(contactActionsStub.getOptions.forTag).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -176,8 +179,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getStateProvinceOptions', function () {
-            expect(contactActionsSpy.getStateProvinceOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forStateProvince', function () {
+            expect(contactActionsStub.getOptions.forStateProvince).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -198,8 +201,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getCountryOptions', function () {
-            expect(contactActionsSpy.getCountryOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forCountry', function () {
+            expect(contactActionsStub.getOptions.forCountry).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -220,8 +223,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getGenderOptions', function () {
-            expect(contactActionsSpy.getGenderOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forGender', function () {
+            expect(contactActionsStub.getOptions.forGender).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {
@@ -242,8 +245,8 @@ define([
             $scope.$apply();
           });
 
-          it('calls contactActions.getDeceasedOptions', function () {
-            expect(contactActionsSpy.getDeceasedOptions).toHaveBeenCalled();
+          it('calls contactActions.getOptions.forDeceased', function () {
+            expect(contactActionsStub.getOptions.forDeceased).toHaveBeenCalled();
           });
 
           it('sets refineSearch.availableOptions.options', function () {

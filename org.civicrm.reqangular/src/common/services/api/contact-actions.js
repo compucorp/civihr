@@ -21,55 +21,59 @@ define([
     }
 
     return api.extend({
-      getContactTypeOptions: function() {
-        return getRefineSearchOptions.call(this, 'Contact', 'contact_type');
-      },
-      getGroupOptions: function() {
-        return getRefineSearchOptions.call(this, 'GroupContact', 'group_id');
-      },
-      getTagOptions: function() {
-        return getRefineSearchOptions.call(this, 'EntityTag', 'tag_id');
-      },
-      getStateProvinceOptions: function() {
-        return getRefineSearchOptions.call(this, 'Address', 'state_province_id');
-      },
-      getCountryOptions: function() {
-        return getRefineSearchOptions.call(this, 'Address', 'country_id');
-      },
-      getGenderOptions: function() {
-        return getRefineSearchOptions.call(this, 'Contact', 'gender_id');
-      },
-      getDeceasedOptions: function() {
-        return getRefineSearchOptions.call(this, 'Contact', 'is_deceased');
+      getOptions: {
+        forContactType: function() {
+          return getRefineSearchOptions.call(this, 'Contact', 'contact_type');
+        },
+        forGroup: function() {
+          return getRefineSearchOptions.call(this, 'GroupContact', 'group_id');
+        },
+        forTag: function() {
+          return getRefineSearchOptions.call(this, 'EntityTag', 'tag_id');
+        },
+        forStateProvince: function() {
+          return getRefineSearchOptions.call(this, 'Address', 'state_province_id');
+        },
+        forCountry: function() {
+          return getRefineSearchOptions.call(this, 'Address', 'country_id');
+        },
+        forGender: function() {
+          return getRefineSearchOptions.call(this, 'Contact', 'gender_id');
+        },
+        forDeceased: function() {
+          return getRefineSearchOptions.call(this, 'Contact', 'is_deceased');
+        }
       },
 
-      saveNewIndividual: function (firstName, lastName, email) {
-        return this.sendPOST('Contact', 'create', {
-          first_name: firstName,
-          last_name: lastName,
-          custom_100003: email,
-          contact_type: 'Individual'
-        }).then(function(data) {
-          return data.values[0];
-        });
-      },
-      saveNewOrganization: function (organizationName, email) {
-        return this.sendPOST('Contact', 'create', {
-          organization_name: organizationName,
-          custom_100003: email,
-          contact_type: 'Organization'
-        }).then(function(data) {
-          return data.values[0];
-        });
-      },
-      saveNewHousehold: function (householdName, email) {
-        return this.sendPOST('Contact', 'create', {
-          household_name: householdName,
-          custom_100003: email,
-          contact_type: 'Household'
-        }).then(function(data) {
-          return data.values[0];
-        });
+      save: {
+        newIndividual: function (firstName, lastName, email) {
+          return this.sendPOST('Contact', 'create', {
+            first_name: firstName,
+            last_name: lastName,
+            custom_100003: email,
+            contact_type: 'Individual'
+          }).then(function(data) {
+            return data.values[0];
+          });
+        },
+        newOrganization: function (organizationName, email) {
+          return this.sendPOST('Contact', 'create', {
+            organization_name: organizationName,
+            custom_100003: email,
+            contact_type: 'Organization'
+          }).then(function(data) {
+            return data.values[0];
+          });
+        },
+        newHousehold: function (householdName, email) {
+          return this.sendPOST('Contact', 'create', {
+            household_name: householdName,
+            custom_100003: email,
+            contact_type: 'Household'
+          }).then(function(data) {
+            return data.values[0];
+          });
+        }
       }
     });
   }]);

@@ -25,7 +25,7 @@ define([
        */
       vm.submit = function() {
         vm.loading = true;
-        contactActions.saveNewOrganization(vm.organizationName, vm.email)
+        contactActions.save.newOrganization(vm.organizationName, vm.email)
           .then(function(data) {
             vm.loading = false;
             $rootScope.$broadcast('newOrganizationCreated', data);
