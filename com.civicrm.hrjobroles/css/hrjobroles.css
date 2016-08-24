@@ -9309,7 +9309,14 @@ fieldset[disabled]
   top: 0;
 }
 #hrjobroles .civihr-ui-select.funder-select {
-  width: 200px !important;
+  width: 250px !important;
+}
+#hrjobroles .civihr-ui-select.funder-select .select2-chosen > span {
+  text-overflow: ellipsis;
+  width: 175px;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
 }
 #hrjobroles .hrjobroles-role-details {
   padding-bottom: 10px;
