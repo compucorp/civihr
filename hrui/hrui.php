@@ -51,6 +51,9 @@ function hrui_civicrm_pageRun($page) {
           'hideGId' => $hideGId));
     }
   }
+
+  CRM_Core_Resources::singleton()
+    ->addScriptFile('org.civicrm.hrui', 'js/perfect-scrollbar/perfect-scrollbar.min.js');
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {

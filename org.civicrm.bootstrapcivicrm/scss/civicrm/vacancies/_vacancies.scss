@@ -153,4 +153,57 @@
       margin-bottom: 20px;
     }
   }
+
+  .CRM_HRRecruitment_Form_Search {
+    table {
+      .action-item {
+        border: 0 !important;
+      }
+    }
+
+    .crm-search-form-block {
+      margin-bottom: 20px;
+    }
+  }
+
+  #searchForm {
+    padding: 20px;
+
+    td {
+      padding: 0;
+    }
+
+    tr:nth-child(2) {
+      td {
+        padding: 20px 0;
+      }
+    }
+
+    #_qf_Search_refresh {
+      margin-bottom: 0 !important;
+    }
+
+    .listing-box {
+      background-color: transparent;
+      border-color: $crm-copy;
+
+      > div {
+        background-color: transparent;
+
+        label {
+          color: $crm-copy !important;
+          font-weight: normal !important;
+          padding: 5px;
+        }
+      }
+    }
+
+    .font-size12pt {
+      font-size: 1em;
+    }
+
+    .crm-form-text {
+      width: 312px !important;
+    }
+  }
 }
