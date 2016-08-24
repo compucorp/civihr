@@ -128,3 +128,12 @@ function bootstrapcivicrm_civicrm_alterSettingsFolders(&$metaDataFolders = NULL)
 function bootstrapcivicrm_civicrm_pageRun($page) {
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrm', 'css/bootstrap.css');
 }
+
+/**
+ * This hook is invoked after all the content of a CiviCRM form or page is generated. It allows for direct manipulation of the generated content.
+ */
+function bootstrapcivicrm_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  if(strpos($tplName, 'Advanced.tpl') !== false) {
+    $content = '<script src="'.CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.bootstrapcivicrm').'/js/enable-select2.js"></script>'. $content;
+  }
+}
