@@ -72,6 +72,13 @@
   }
 
   $(document).on('crmLoad', function(e) {
+    $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
+      window.setTimeout(function() {
+        Array.prototype.map.call(document.querySelectorAll('.listing-box'), function(element) {
+          Ps.initialize(element);
+        });
+      }, 0);
+    });
     if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
       linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
       linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
