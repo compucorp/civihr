@@ -9126,6 +9126,9 @@ fieldset[disabled]
   padding: 2px 8px;
   text-transform: none;
 }
+#hrjobroles .ui-select-container:not(.ui-select-multiple) > a {
+  border: 1px solid #42AFCB !important;
+}
 #hrjobroles .table > tbody > tr > td .hrjobroles-context-menu-toggle,
 #hrjobroles .table > tfoot > tr > td .hrjobroles-context-menu-toggle {
   margin: -2px 0;
@@ -9301,6 +9304,10 @@ fieldset[disabled]
 #hrjobroles .btn-link .glyphicon {
   font-size: 11px;
   top: 0;
+}
+#hrjobroles .civihr-ui-select.funder-select {
+  width: 200px !important;
+  height: 30px;
 }
 #hrjobroles .hrjobroles-role-details {
   padding-bottom: 10px;

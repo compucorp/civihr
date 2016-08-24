@@ -153,9 +153,10 @@
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="(key, funder) in edit_data['new_role_id']['funders']">
-                                        <td>
+                                        <td id="bootstrap-theme">
                                             <!-- editable funder (text with validation) -->
                                           <ui-select allow-clear
+                                                     class="funder-select"
                                                      theme="civihr-ui-select"
                                                      ng-model="funder.funder_id">
                                             <ui-select-match class="ui-select-match">
@@ -179,7 +180,7 @@
                                         <td>
                                             <span ng-show="funder.type == 1">
                                                 <!-- editable funder type - percentage (show only when percentage type selected, otherwise read only -->
-                                                <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent" onbeforesave="checkName($data, user.id)">
+                                                <span editable-text="funder.percentage" e-form="tableform" e-name="funder-percent"">
                                                     {{ funder.percentage || 'empty' }}
                                                 </span>
                                             </span>
@@ -187,7 +188,7 @@
                                         <td>
                                             <span ng-show="funder.type == 0">
                                                 <!-- editable funder type - amount (show only when amount type selected, otherwise read only -->
-                                                <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount" onbeforesave="checkName($data, user.id)">
+                                                <span editable-text="funder.amount" e-form="tableform" e-name="funder-amount">
                                                     {{ funder.amount || 'empty' }}
                                                 </span>
                                             </span>
@@ -247,7 +248,7 @@
                                         <td>
                                             <span ng-show="cost_centre.type == 1">
                                                 <!-- editable cost_centre type - percentage (show only when percentage type selected, otherwise read only -->
-                                                <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent" onbeforesave="checkName($data, user.id)">
+                                                <span editable-text="cost_centre.percentage" e-form="tableformcc" e-name="cost-centre-percent">
                                                     {{ cost_centre.percentage || 'empty' }}
                                                 </span>
                                             </span>
@@ -255,7 +256,7 @@
                                         <td>
                                             <span ng-show="cost_centre.type == 0">
                                                 <!-- editable cost_centre type - amount (show only when amount type selected, otherwise read only -->
-                                                <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount"  onbeforesave="checkName($data, user.id)">
+                                                <span editable-text="cost_centre.amount" e-form="tableformcc" e-name="cost-centre-amount">
                                                     {{ cost_centre.amount || 'empty' }}
                                                 </span>
                                             </span>
