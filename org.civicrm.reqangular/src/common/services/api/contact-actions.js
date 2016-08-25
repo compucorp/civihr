@@ -1,22 +1,68 @@
 define([
   'common/modules/apis',
   'common/services/api'
-], function (apis) {
+], function(apis) {
   'use strict';
 
-  apis.factory('api.contactActions', ['api', function (api) {
+  apis.factory('api.contactActions', ['$q', 'api', function($q, api) {
     /**
-    * Fetches the possible "refine search" values for the given field
-    * @param  {string} entity The entity name
-    * @param  {string} field  The field name to fetch options for
-    * @return {Promise}       Resolves to the possible values
-    */
+     * Fetches the possible 'refine search' values for the given field
+     * @param  {string} entity The entity name
+     * @param  {string} field  The field name to fetch options for
+     * @return {Promise}       Resolves to the possible values array
+     */
     function getRefineSearchOptions(entity, field) {
-      return this.sendGET(entity, 'getoptions', {
+      return api.sendGET(entity, 'getoptions', {
         field: field,
         context: 'search'
       }).then(function(data) {
         return data.values;
+      });
+    }
+
+    /**
+     * Fetches the form fields for a group
+     * @param  {string} groupId The group id to fetch the fields for
+     * @return {Promise}        Resolves to the form fields array
+     */
+    function getFormFields(groupId) {
+      return api.sendGET('UFField', 'get', {
+        uf_group_id: groupId,
+        is_active: true
+      }).then(function(data) {
+        return data.values;
+      });
+    }
+
+    /**
+     * Saves new contacts
+     * @param  {string} contactType The type of the new contact
+     * @param  {Object} formData    The data to be saved
+     * @return {Promise}            Resolves to the saved data
+     */
+    function saveData(contactType, formData) {
+      return $q(function(resolve, reject) {
+        formData.contact_type = contactType;
+        if (formData.email) {
+          // The email field is a custom field, and has to be sent to the api
+          // with the name 'custom_ID' (where ID is a number)
+          return api.sendGET('CustomField', 'get', {
+            return: ['id'],
+            custom_group_id: 'Emergency_Contacts',
+            name: 'email'
+          }).then(function(data) {
+            // Set the property name (with the correct ID), and delete the email property
+            formData['custom_' + data.id] = formData.email;
+            delete formData.email;
+            resolve();
+          });
+        } else {
+          resolve();
+        }
+      }).then(function() {
+        return api.sendPOST('Contact', 'create', formData).then(function(data) {
+          return data.values[0];
+        });
       });
     }
 
@@ -46,33 +92,26 @@ define([
       },
 
       save: {
-        newIndividual: function (firstName, lastName, email) {
-          return this.sendPOST('Contact', 'create', {
-            first_name: firstName,
-            last_name: lastName,
-            custom_100003: email,
-            contact_type: 'Individual'
-          }).then(function(data) {
-            return data.values[0];
-          });
+        newIndividual: function(formData) {
+          return saveData.call(this, 'Individual', formData);
         },
-        newOrganization: function (organizationName, email) {
-          return this.sendPOST('Contact', 'create', {
-            organization_name: organizationName,
-            custom_100003: email,
-            contact_type: 'Organization'
-          }).then(function(data) {
-            return data.values[0];
-          });
+        newOrganization: function(formData) {
+          return saveData.call(this, 'Organization', formData);
         },
-        newHousehold: function (householdName, email) {
-          return this.sendPOST('Contact', 'create', {
-            household_name: householdName,
-            custom_100003: email,
-            contact_type: 'Household'
-          }).then(function(data) {
-            return data.values[0];
-          });
+        newHousehold: function(formData) {
+          return saveData.call(this, 'Household', formData);
+        }
+      },
+
+      getFormFields: {
+        forNewIndividual: function() {
+          return getFormFields.call(this, 'new_individual');
+        },
+        forNewOrganization: function() {
+          return getFormFields.call(this, 'new_organization');
+        },
+        forNewHousehold: function() {
+          return getFormFields.call(this, 'new_household');
         }
       }
     });

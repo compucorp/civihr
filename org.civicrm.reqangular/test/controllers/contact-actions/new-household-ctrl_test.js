@@ -25,16 +25,27 @@ define([
     /**
      * Jasmine spies initialization
      */
-    function initSpies() {
-      modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
-      contactActionsStub = {
-        save: jasmine.createSpyObj('saveSpy', ['newHousehold'])
-      };
-      resultMock = {
-        test: true
-      };
-      contactActionsStub.save.newHousehold.and.returnValue($q.resolve(resultMock));
-    }
+     function initSpies() {
+       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
+       contactActionsStub = {
+         save: jasmine.createSpyObj('saveSpy', ['newHousehold']),
+         getFormFields: jasmine.createSpyObj('getFormFieldsSpy', ['forNewHousehold'])
+       };
+       resultMock = {
+         test: true
+       };
+
+       contactActionsStub.getFormFields.forNewHousehold.and.returnValue($q.resolve([{
+         id: '1',
+         label: 'Field1',
+         field_name: 'field1'
+       }, {
+         id: '2',
+         label: 'Field2',
+         field_name: 'field2'
+       }]));
+       contactActionsStub.save.newHousehold.and.returnValue($q.resolve(resultMock));
+     }
 
     describe('cancel', function () {
       it('closes the modal instance', function () {
@@ -45,8 +56,8 @@ define([
 
     describe('submit', function () {
       beforeEach(function () {
-        ctrl.householdName = 'Household Name';
-        ctrl.email = 'Email';
+        ctrl.formFields[0].value = 'value1';
+        ctrl.formFields[1].value = 'value2';
       });
 
       describe('when there are no errors', function () {
@@ -58,7 +69,10 @@ define([
         it('saves the new household', function () {
           $rootScope.$digest();
           expect(contactActionsStub.save.newHousehold.calls.count()).toBe(1);
-          expect(contactActionsStub.save.newHousehold).toHaveBeenCalledWith('Household Name', 'Email');
+          expect(contactActionsStub.save.newHousehold).toHaveBeenCalledWith({
+            field1: 'value1',
+            field2: 'value2'
+          });
         });
 
         it('broadcasts the "newHouseholdCreated" event', function () {

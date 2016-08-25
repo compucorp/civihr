@@ -1,41 +1,24 @@
 define([
   'common/modules/controllers',
+  'common/controllers/contact-actions/modal-ctrl',
   'common/services/api/contact-actions'
-], function(controllers) {
+], function(controllers, ModalCtrl) {
   'use strict';
 
+  function NewOrganizationModalCtrl($rootScope, $modalInstance, contactActions) {
+    var vm = this;
+    ModalCtrl.call(vm, $rootScope, $modalInstance);
+    vm.title = 'New Organization';
+
+    vm.init(contactActions.getFormFields.forNewOrganization);
+
+    vm.submit = function() {
+      vm.save(contactActions.save.newOrganization, 'newOrganizationCreated');
+    };
+  }
+  NewOrganizationModalCtrl.prototype = Object.create(ModalCtrl.prototype);
+  NewOrganizationModalCtrl.prototype.constructor = NewOrganizationModalCtrl;
+
   controllers.controller('NewOrganizationModalCtrl', ['$rootScope', '$uibModalInstance',
-    'api.contactActions', function($rootScope, $modalInstance, contactActions) {
-      var vm = this;
-
-      vm.errorMsg = '';
-      vm.loading = false;
-      vm.organizationName = '';
-      vm.email = '';
-
-      /**
-       * Closes the modal
-       */
-      vm.cancel = function() {
-        $modalInstance.dismiss('cancel');
-      };
-
-      /**
-       * Saves data and closes the modal
-       */
-      vm.submit = function() {
-        vm.loading = true;
-        contactActions.save.newOrganization(vm.organizationName, vm.email)
-          .then(function(data) {
-            vm.loading = false;
-            $rootScope.$broadcast('newOrganizationCreated', data);
-            $modalInstance.dismiss('cancel');
-          })
-          .catch(function() {
-            vm.loading = false;
-            vm.errorMsg = 'Error while saving data';
-          });
-      };
-    }
-  ]);
+    'api.contactActions', NewOrganizationModalCtrl]);
 });

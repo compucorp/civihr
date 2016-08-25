@@ -9,7 +9,7 @@ define([], function() {
     // is changed depending on the presence of the "contacts" attribute
     directive.templateUrl = function(elem, attrs) {
       if (angular.isDefined(attrs.contacts)) {
-        return 'civihr-ui-select/select-contacts.tpl.html';
+        return angular.isDefined(attrs.multiple) ? 'civihr-ui-select/select-contacts-multiple.tpl.html' : 'civihr-ui-select/select-contacts.tpl.html';
       }
       return origTemplateUrl.apply(this, arguments);
     };

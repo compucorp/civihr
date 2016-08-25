@@ -1,9 +1,9 @@
 define([
   'common/modules/controllers',
+  'common/services/api/contact-actions',
   'common/controllers/contact-actions/new-individual-ctrl',
   'common/controllers/contact-actions/new-household-ctrl',
-  'common/controllers/contact-actions/new-organization-ctrl',
-  'common/services/api/contact-actions'
+  'common/controllers/contact-actions/new-organization-ctrl'
 ], function(controllers) {
   'use strict';
   controllers.controller('ContactActionsCtrl', ['$scope', '$rootElement', '$uibModal', 'api.contactActions',
@@ -28,25 +28,25 @@ define([
         },
         availableFields: [{
           label: 'Contact Type',
-          getOptions: contactActions.getOptions.forContactType.bind(contactActions)
+          getOptions: contactActions.getOptions.forContactType
         }, {
           label: 'Group',
-          getOptions: contactActions.getOptions.forGroup.bind(contactActions)
+          getOptions: contactActions.getOptions.forGroup
         }, {
           label: 'Tag',
-          getOptions: contactActions.getOptions.forTag.bind(contactActions)
+          getOptions: contactActions.getOptions.forTag
         }, {
           label: 'State / Province',
-          getOptions: contactActions.getOptions.forStateProvince.bind(contactActions)
+          getOptions: contactActions.getOptions.forStateProvince
         }, {
           label: 'Country',
-          getOptions: contactActions.getOptions.forCountry.bind(contactActions)
+          getOptions: contactActions.getOptions.forCountry
         }, {
           label: 'Gender',
-          getOptions: contactActions.getOptions.forGender.bind(contactActions)
+          getOptions: contactActions.getOptions.forGender
         }, {
           label: 'Deceased',
-          getOptions: contactActions.getOptions.forDeceased.bind(contactActions)
+          getOptions: contactActions.getOptions.forDeceased
         }],
         availableOptions: {
           refresh: function() {
@@ -69,7 +69,7 @@ define([
           controller: 'NewIndividualModalCtrl',
           controllerAs: '$ctrl',
           bindToController: true,
-          templateUrl: 'contact-actions/modals/new-individual.html'
+          templateUrl: 'contact-actions/modals/form.html'
         });
       };
 
@@ -79,7 +79,7 @@ define([
           controller: 'NewHouseholdModalCtrl',
           controllerAs: '$ctrl',
           bindToController: true,
-          templateUrl: 'contact-actions/modals/new-household.html'
+          templateUrl: 'contact-actions/modals/form.html'
         });
       };
 
@@ -89,7 +89,7 @@ define([
           controller: 'NewOrganizationModalCtrl',
           controllerAs: '$ctrl',
           bindToController: true,
-          templateUrl: 'contact-actions/modals/new-organization.html'
+          templateUrl: 'contact-actions/modals/form.html'
         });
       };
     }

@@ -1,42 +1,25 @@
 define([
   'common/modules/controllers',
+  'common/controllers/contact-actions/modal-ctrl',
   'common/services/api/contact-actions'
-], function(controllers) {
+], function(controllers, ModalCtrl) {
   'use strict';
 
+  function NewIndividualModalCtrl($rootScope, $modalInstance, contactActions) {
+    var vm = this;
+    ModalCtrl.call(vm, $rootScope, $modalInstance);
+    vm.title = 'New Individual';
+
+    vm.init(contactActions.getFormFields.forNewIndividual);
+
+    vm.submit = function() {
+      vm.save(contactActions.save.newIndividual, 'newIndividualCreated');
+    };
+  }
+  NewIndividualModalCtrl.prototype = Object.create(ModalCtrl.prototype);
+  NewIndividualModalCtrl.prototype.constructor = NewIndividualModalCtrl;
+
   controllers.controller('NewIndividualModalCtrl', ['$rootScope', '$uibModalInstance',
-    'api.contactActions', function($rootScope, $modalInstance, contactActions) {
-      var vm = this;
-
-      vm.errorMsg = '';
-      vm.loading = false;
-      vm.firstName = '';
-      vm.lastName = '';
-      vm.email = '';
-
-      /**
-       * Closes the modal
-       */
-      vm.cancel = function() {
-        $modalInstance.dismiss('cancel');
-      };
-
-      /**
-       * Saves data and closes the modal
-       */
-      vm.submit = function() {
-        vm.loading = true;
-        contactActions.save.newIndividual(vm.firstName, vm.lastName, vm.email)
-          .then(function(data) {
-            vm.loading = false;
-            $rootScope.$broadcast('newIndividualCreated', data);
-            $modalInstance.dismiss('cancel');
-          })
-          .catch(function() {
-            vm.loading = false;
-            vm.errorMsg = 'Error while saving data';
-          });
-      };
-    }
+    'api.contactActions', NewIndividualModalCtrl
   ]);
 });

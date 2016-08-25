@@ -13,12 +13,13 @@ define([
       return function (scope, element) {
         link.apply(this, arguments);
 
-        // Adding the "contactList" property to the controller
-        scope.$select.contactList = element.parent().parent()[0].hasAttribute('contacts');
-
         // Enabling the "perfect scrollbar" plugin
-        if (element.closest('.civihr-ui-select').length) {
+        var civihrUiSelect = element.closest('.civihr-ui-select');
+        if (civihrUiSelect.length) {
           ps.initialize(element[0]);
+          
+          // Adding the "contactList" property to the controller
+          scope.$select.contactList = civihrUiSelect.attr('contacts') !== undefined;
         }
       };
     };
