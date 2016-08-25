@@ -71,6 +71,9 @@
     $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
   }
 
+  $('.CRM_HRRecruitment_Form_Application').addClass('crm-form-block');
+  $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
+
   $(document).on('crmLoad', function(e) {
     $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
       window.setTimeout(function() {
