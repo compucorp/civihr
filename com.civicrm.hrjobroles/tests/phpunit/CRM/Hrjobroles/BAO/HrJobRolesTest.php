@@ -127,4 +127,23 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
     $this->assertContains('Special Supervision', $departments);
     $this->assertCount(2, $departments);
   }
+
+  /**
+   * If a contact has multiple roles in the same department, the method
+   * should return a compact list to avoid duplicates
+   */
+  public function testGetCompactDepartmentsList() {
+    $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
+    $contract =  $this->createJobContract($contactID);
+
+    $department = $this->createDepartment('special_investigation', 'Special Investigation');
+
+    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department['value']));
+    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department['value']));
+
+    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($contract->id);
+
+    $this->assertContains('Special Investigation', $departments);
+    $this->assertCount(1, $departments);
+  }
 }
