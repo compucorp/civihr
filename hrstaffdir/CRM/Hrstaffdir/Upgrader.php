@@ -73,4 +73,26 @@ class CRM_Hrstaffdir_Upgrader extends CRM_Hrstaffdir_Upgrader_Base {
 
     return true;
   }
+
+  public function upgrade_1402() {
+    $ufGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_UFGroup', 'hrstaffdir_listing', 'id', 'name');
+    $result = civicrm_api3('UFField', 'get', [
+      'sequential' => 1,
+      'uf_group_id' => $ufGroupID,
+      'field_name' => 'hrjobcontract_role_manager_contact'
+    ]);
+
+    // Rename hrjobcontract_role_manager_contact to manager_contact
+    if(!empty($result['values'])) {
+      $params = $result['values'][0];
+      $params['field_name'] = 'manager_contact';
+      try {
+        civicrm_api3('UFField', 'create', $params);
+      } catch(Exception $ex) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
