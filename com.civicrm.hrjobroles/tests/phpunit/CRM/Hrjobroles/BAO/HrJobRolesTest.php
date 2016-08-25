@@ -110,16 +110,14 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
   }
 
   public function testGetDepartmentsList() {
-    $contactParams = array("first_name" => "chrollo", "last_name" => "lucilfer");
-    $contactID =  $this->createContact($contactParams);
+    $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
     $contract =  $this->createJobContract($contactID);
+    $department = $this->createDepartment('special_investigation', 'Special Investigation');
 
-    $departmentID1 =  $this->createDepartment('special_investigation', 'Special Investigation');
-
-    $params = array('job_contract_id' => $contract->id, 'department' => $departmentID1);
-    $this->createJobRole($params);
+    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department['value']));
 
     $departments = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($contract->id);
+
     $this->assertContains('Special Investigation', $departments);
     $this->assertCount(1, $departments);
   }
