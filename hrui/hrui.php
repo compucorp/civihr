@@ -782,7 +782,7 @@ function _hrui_updateContactSummaryUI() {
 
   // $departmentsList contain current roles departments list separated by comma
   if ($currentContractDetails)  {
-    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($currentContractDetails->contract_id);
     $departmentsList = implode(', ', $departmentsArray);
   }
 

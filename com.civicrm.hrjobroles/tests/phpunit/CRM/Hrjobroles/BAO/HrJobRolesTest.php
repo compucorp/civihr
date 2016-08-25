@@ -109,22 +109,39 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
     $this->assertCount(3, CRM_Hrjobroles_BAO_HrJobRoles::getContactRoles($contactID));
   }
 
-  public function testGetDepartmentsList() {
+  /**
+   * If a contact has roles that have expired, the method should return only
+   * the departments of the current job roles
+   */
+  public function testGetCurrentDepartmentsList() {
     $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
     $contract =  $this->createJobContract($contactID);
 
-    $department = [
-      $this->createDepartment('special_investigation', 'Special Investigation'),
-      $this->createDepartment('special_supervision', 'Special Supervision')
+    $departments = [
+      $this->createDepartment('special_investigation', 'Special Investigation')['value'],
+      $this->createDepartment('special_supervision', 'Special Supervision')['value'],
+      $this->createDepartment('special_development', 'Special Development')['value']
     ];
 
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department[0]['value']));
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department[1]['value']));
+    $jobRolesParams = array(
+      array('department' => $departments[0], 'start_offset' => '-3 months', 'end_offset' => '-1 month'),
+      array('department' => $departments[1], 'start_offset' => '-1 month', 'end_offset' => '+5 months'),
+      array('department' => $departments[2], 'start_offset' => '-1 week')
+    );
 
-    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($contract->id);
+    foreach($jobRolesParams as $params) {
+      $this->createJobRole(array(
+        'job_contract_id' => $contract->id,
+        'department' => $params['department'],
+        'start_date' => date('YmdHis', strtotime($params['start_offset'])),
+        'end_date' => array_key_exists('end_offset', $params) ? date('YmdHis', strtotime($params['end_offset'])) : NULL
+      ));
+    }
 
-    $this->assertContains('Special Investigation', $departments);
+    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contract->id);
+
     $this->assertContains('Special Supervision', $departments);
+    $this->assertContains('Special Development', $departments);
     $this->assertCount(2, $departments);
   }
 
@@ -132,18 +149,18 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
    * If a contact has multiple roles in the same department, the method
    * should return a compact list to avoid duplicates
    */
-  public function testGetCompactDepartmentsList() {
+  public function testGetCompactCurrentDepartmentsList() {
     $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
     $contract =  $this->createJobContract($contactID);
 
-    $department = $this->createDepartment('special_investigation', 'Special Investigation');
+    $department = $this->createDepartment('special_investigation', 'Special Investigation')['value'];
 
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department['value']));
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department['value']));
+    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department));
+    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department));
 
-    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($contract->id);
+    $departmentsList = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contract->id);
 
-    $this->assertContains('Special Investigation', $departments);
-    $this->assertCount(1, $departments);
+    $this->assertContains('Special Investigation', $departmentsList);
+    $this->assertCount(1, $departmentsList);
   }
 }

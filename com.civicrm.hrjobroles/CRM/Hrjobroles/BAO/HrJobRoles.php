@@ -61,14 +61,15 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
-   * Returns an array containing the list of departments
+   * Returns an array containing the list of departments of the current job roles
    * for specific contact based on the current contract ID
    *
    * @param int $contractID contract ID
    * @return array
    */
-  public static function getDepartmentsList($contractID)  {
+  public static function getCurrentDepartmentsList($contractID)  {
     $result = array();
+    $today = date('Y-m-d');
 
     $queryParam = array(1 => array($contractID, 'Integer'));
     $query = "SELECT cov.id, cov.label
@@ -78,6 +79,11 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
               INNER JOIN civicrm_option_group cog
                 ON cov.option_group_id = cog.id
               WHERE hrjr.job_contract_id = %1
+                AND hrjr.start_date <= '{$today}'
+                AND (
+                  hrjr.end_date = 0
+                  OR hrjr.end_date >= '{$today}'
+                )
                 AND cog.name = 'hrjc_department'";
     $response = CRM_Core_DAO::executeQuery($query, $queryParam);
 
