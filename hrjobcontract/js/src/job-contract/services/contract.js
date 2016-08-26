@@ -80,33 +80,41 @@ define([
 
               return deffered.promise;
             },
-          /**
-           * called adding/editing/deleting a contract and check if there
-           * is an active contract for that contact
-           * if yes then the header color will be changed to blue and contract
-           * info in the header will be updated .
-           * if no , then the header color will be changed to red and contract info
-           * in the header will be updated.
-           *
-           * Though it is not an optimal solution since I use JQuery here
-           * inside angular app but this is the only available way currently
-           * since the header is not in the scope of the angular app.
-           *
-           */
-            changeHeaderInfo: function() {
-              this.getCurrentContract(settings.contactId).then(function(currentContract){
-                if(currentContract)  {
-                  cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');
-                  cj('.crm-contact-detail-position').html('<strong>Position:</strong> '+ currentContract.position);
-                  cj('.crm-contact-detail-location').html('<strong>Normal place of work:</strong> '+ currentContract.location);
-                } else {
-                  cj('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
-                  cj('.crm-contact-detail-position').html('');
-                  cj('.crm-contact-detail-location').html('');
-                }
-              }).catch(function(error){
-                console.log(error);
-              });
+
+            /**
+             * Called adding/editing/deleting a contract and check if there
+             * is an active contract for that contact
+             * if yes then the header color will be changed to blue and contract
+             * info in the header will be updated .
+             * if no , then the header color will be changed to red and contract info
+             * in the header will be updated.
+             *
+             * Though it is not an optimal solution since I use JQuery here
+             * inside angular app but this is the only available way currently
+             * since the header is not in the scope of the angular app.
+             */
+            changeHeaderInfo: function () {
+              this.getCurrentContract(settings.contactId)
+                .then(function (currentContract) {
+                  if (currentContract)  {
+                    cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');
+
+                    if (currentContract.position) {
+                      cj('.crm-contact-detail-position').html('<strong>Position:</strong> '+ currentContract.position);
+                    }
+
+                    if (currentContract.location) {
+                      cj('.crm-contact-detail-location').html('<strong>Normal place of work:</strong> '+ currentContract.location);
+                    }
+                  } else {
+                    cj('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
+                    cj('.crm-contact-detail-position').html('');
+                    cj('.crm-contact-detail-location').html('');
+                  }
+                })
+                .catch(function (error){
+                  console.log(error);
+                });
             },
             getOne: function(contractId, contactId){
 
