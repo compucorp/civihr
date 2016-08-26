@@ -2,14 +2,39 @@
   .crm-container {
     .advmultiselect {
       input[type='button'] {
-        bottom: 21px !important;
+        bottom: 0 !important;
         position: relative;
+        margin: 0 20px !important;
+        height: 35px;
+        padding: 0 12px;
+
+        &:first-child {
+          margin-right: 0 !important;
+        }
+      }
+
+      .crm-form-multiselect {
+        margin: 0 !important;
+      }
+
+      tr:first-child {
+        td:nth-child(2) {
+          vertical-align: bottom;
+          padding-bottom: 4px;
+        }
       }
     }
 
     .crm-block.crm-form-block {
       .form-layout-compressed .crm-profile-selector-preview {
         @extend .btn-primary;
+        height: 30px;
+        line-height: 16px;
+        margin-left: 20px;
+
+        .crm-i {
+          display: none;
+        }
       }
     }
   }
@@ -41,6 +66,37 @@
               min-width: 169px !important;
               width: 169px !important;
             }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 1340px) {
+      #s2id_permission_1 {
+        min-width: 200px !important;
+      }
+
+      .crm-form-multiselect {
+        min-width: 230px !important;
+        width: 230px !important;
+      }
+    }
+
+    @media (max-width: 1100px) and (min-width: 861px) {
+      .crm-form-multiselect {
+        min-width: 160px !important;
+        width: 160px !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .advmultiselect {
+        td:nth-child(2) {
+          vertical-align: middle !important;
+          padding-bottom: 15px !important;
+
+          > input:first-child {
+            margin: 0 0 10px 0 !important;
           }
         }
       }
