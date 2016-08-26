@@ -244,7 +244,7 @@ define([
                         return;
                     }
 
-                    ContractService.changeHeaderInfo();
+                    ContractService.updateHeaderInfo();
 
                     if (results.revisionCreated) {
 
