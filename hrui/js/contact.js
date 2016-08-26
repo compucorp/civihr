@@ -18,6 +18,10 @@
       if (typeof data.contract !== 'undefined')  {
         updateContactHeaderContractDetails(data.contract);
       }
+
+      if (typeof data.roles !== 'undefined')  {
+        updateContactHeaderRolesDetails(data.roles);
+      }
     });
 
   /**
@@ -40,6 +44,25 @@
       $('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
       $('.crm-contact-detail-position').html('');
       $('.crm-contact-detail-location').html('');
+
+      updateContactHeaderRolesDetails(null);
+    }
+  }
+
+  /**
+   * Updates the contact header with the given roles details
+   *
+   * @param  {object} contract
+   */
+  function updateContactHeaderRolesDetails(roles) {
+    if (roles) {
+      if (roles.departments && roles.departments.length > 0) {
+        $('.crm-contact-detail-departments').html('<strong>Department:</strong> ' + roles.departments.join(', '));
+      } else {
+        $('.crm-contact-detail-departments').html('');
+      }
+    } else {
+      $('.crm-contact-detail-departments').html('');
     }
   }
 }(CRM.$, CRM._));

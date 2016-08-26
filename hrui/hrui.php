@@ -717,7 +717,9 @@ function _hrui_contactSummaryHeaderHtml($data) {
     $html .= "<span class='crm-contact-detail crm-contact-detail-location'>{$location}</span>";
 
     if (!empty($data['departments'])) {
-      $html .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $data['departments'] . "</span>";
+      $html .= "<span class='crm-contact-detail crm-contact-detail-departments'><strong>Department:</strong> " . $data['departments'] . "</span>";
+    } else {
+      $html .= "<span class='crm-contact-detail crm-contact-detail-departments'></span>";
     }
 
     if (!empty($data['managers'])) {
@@ -727,6 +729,7 @@ function _hrui_contactSummaryHeaderHtml($data) {
   else {
     $html .= "<span class='crm-contact-detail crm-contact-detail-position'></span>";
     $html .= "<span class='crm-contact-detail crm-contact-detail-location'></span>";
+    $html .= "<span class='crm-contact-detail crm-contact-detail-departments'></span>";
   }
 
   return $html;
