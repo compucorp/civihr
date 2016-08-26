@@ -418,15 +418,29 @@ define([
 
             },
 
-            getNewJobRole: function getNewJobRole(contract_id) {
+            getNewJobRole: function (contract_id) {
                 //Creates new JobRole depending on contract id and returns promise
                 return CRM.api3('HrJobRoles', 'create', {
                     "sequential": 1,
                     "job_contract_id": contract_id,
                     "title": ''
                 });
-            }
+            },
 
+            /**
+             * [getCurrentDepartments description]
+             * @param  {[type]} contractId [description]
+             * @return {[type]}            [description]
+             */
+            getCurrentDepartments: function (contractId) {
+              return CRM.api3('HrJobRoles', 'getcurrentdepartments', {
+                'sequential': 1,
+                'job_contract_id': contractId
+              })
+              .then(function (result) {
+                return result.values;
+              });
+            }
         }
     }]);
 
