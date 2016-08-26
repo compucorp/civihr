@@ -38,7 +38,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
   //FIXME: extend should be a subtype suitable for CiviHR applicants
   protected $_customGroupExtends = array('Individual');
 
-  function __construct() {
+  public function __construct() {
     $this->_exposeContactID = $this->_emailField = FALSE;
     $this->_customGroupJoin = 'LEFT JOIN';
 
@@ -188,7 +188,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
           ),
         ),
       ),
-        
+
       'civicrm_hrjobcontract' =>
       array(
         'dao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
@@ -220,7 +220,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
         ),
         'grouping' => array('job-fields' => 'Job'),
       ),
-        
+
     'civicrm_hrjobcontract_revision' =>
     array(
       'dao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
@@ -474,7 +474,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     parent::__construct();
   }
 
-  function from() {
+  public function from() {
 
     $this->_from = "
       FROM  civicrm_contact {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
@@ -504,7 +504,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
       LEFT JOIN civicrm_contact manager
                ON manager.id = ({$this->_aliases['civicrm_hrjobcontract_role']}.manager_contact_id)
       ";
-    
+
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
@@ -534,7 +534,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     }
   }
 
-  function customDataFrom() {
+  public function customDataFrom($joinsForFiltersOnly = FALSE) {
     parent::customDataFrom();
     $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
@@ -546,7 +546,7 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     }
   }
 
-  function where() {
+  public function where() {
     parent::where();
     $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
@@ -576,14 +576,14 @@ class CRM_HRReport_Form_Contact_HRDetail extends CRM_Report_Form {
     }
   }
 
-  function groupBy() {
+  public function groupBy() {
     if (!empty($this->_params['current_employee_value'])) {
       $this->_groupBy = "GROUP BY {$this->_aliases['civicrm_hrjobcontract']}.id";
       $this->_select = str_replace("manager.sort_name", "GROUP_CONCAT(DISTINCT(manager.sort_name) SEPARATOR ' | ')", $this->_select);
     }
   }
 
-  function alterDisplay(&$rows) {
+  public function alterDisplay(&$rows) {
     $entryFound = FALSE;
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
     $job_location = CRM_Core_OptionGroup::values('hrjc_location');

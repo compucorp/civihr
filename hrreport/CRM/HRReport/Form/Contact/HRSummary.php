@@ -38,7 +38,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
   //FIXME: extend should be a subtype suitable for CiviHR applicants
   protected $_customGroupExtends = array('Individual');
 
-  function __construct() {
+  public function __construct() {
     $this->_emailField = FALSE;
     $this->_customGroupJoin = 'LEFT JOIN';
     $this->_customGroupGroupBy = TRUE;
@@ -136,7 +136,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
           ),
         ),
       ),
-        
+
       'civicrm_hrjobcontract' =>
       array(
         'dao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
@@ -168,7 +168,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         ),
         'grouping' => array('job-fields' => 'Job'),
       ),
-        
+
     'civicrm_hrjobcontract_revision' =>
     array(
       'dao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
@@ -418,7 +418,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
         ),
         'grouping' => 'job-fields',
       ),
-        
+
       'civicrm_hrjobcontract_leave' =>
       array(
         'dao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
@@ -493,7 +493,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
   }
 
-  function from() {
+  public function from() {
     $this->_from = "
       FROM  civicrm_contact {$this->_aliases['civicrm_contact']} {$this->_aclFrom}
       LEFT JOIN civicrm_hrjobcontract {$this->_aliases['civicrm_hrjobcontract']}
@@ -517,7 +517,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
       LEFT JOIN civicrm_hrjobcontract_role {$this->_aliases['civicrm_hrjobcontract_role']}
                ON {$this->_aliases['civicrm_hrjobcontract_revision']}.role_revision_id = {$this->_aliases['civicrm_hrjobcontract_role']}.jobcontract_revision_id
       ";
-    
+
     foreach ($this->_columns as $tableName => $table) {
       if (!empty($table['fields'])) {
         foreach ($table['fields'] as $fieldName => $field) {
@@ -541,7 +541,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
   }
 
-  function customDataFrom() {
+  public function customDataFrom($joinsForFiltersOnly = FALSE) {
     parent::customDataFrom();
     $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
@@ -553,7 +553,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
   }
 
-  function where() {
+  public function where() {
     parent::where();
     $params = array('name'=>'HRJobContract_Summary');
     CRM_Core_DAO::commonRetrieve('CRM_Core_DAO_CustomGroup', $params, $cGrp);
@@ -583,7 +583,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
   }
 
-  function statistics(&$rows) {
+  public function statistics(&$rows) {
     $statistics = parent::statistics($rows);
     if (!empty($this->_statFields)) {
       if ((array_key_exists("civicrm_hrjobcontract_pay_monthly_cost_eq",$this->_params["fields"]) || array_key_exists("civicrm_hrjobcontract_pay_annual_cost_eq_sum",$this->_params["fields"])) && array_key_exists("civicrm_hrjobcontract_pay_hrjobcontract_pay_pay_currency",$this->_params["fields"])) {
@@ -622,7 +622,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     return $statistics;
   }
 
-  function modifyColumnHeaders() {
+  public function modifyColumnHeaders() {
     // make sure stats columns always appear on right.
     if (!empty($this->_statFields)) {
       $tempHeaders = array();
@@ -634,7 +634,7 @@ class CRM_HRReport_Form_Contact_HRSummary extends CRM_Report_Form {
     }
   }
 
-  function alterDisplay(&$rows) {
+  public function alterDisplay(&$rows) {
     $entryFound = FALSE;
     $gender = CRM_Core_PseudoConstant::get('CRM_Contact_DAO_Contact', 'gender_id');
     foreach ($rows as $rowNum => $row) {
