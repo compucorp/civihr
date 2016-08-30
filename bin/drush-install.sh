@@ -28,9 +28,7 @@ APP_EXTS=\
 org.civicrm.hrreport,\
 org.civicrm.hrui,\
 org.civicrm.hrcase,\
-org.civicrm.hrstaffdir,\
 org.civicrm.hrim,\
-org.civicrm.hrprofile,\
 org.civicrm.hrrecruitment,\
 org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
