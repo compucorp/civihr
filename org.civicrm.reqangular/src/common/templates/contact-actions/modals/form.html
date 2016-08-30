@@ -7,7 +7,7 @@
   </div>
   <div class="modal-body">
     <crm-loading show="!$ctrl.loading">
-      <section class="container">
+      <section class="container-fluid">
         <div class="alert alert-danger" ng-show="$ctrl.errorMsg">
           {{$ctrl.errorMsg}}
         </div>
@@ -37,11 +37,11 @@
     </crm-loading>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default text-uppercase" data-dismiss="modal" ng-click="$ctrl.cancel()">
-      <span class="fa fa-remove" aria-hidden="true"></span> cancel
+    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="$ctrl.cancel()">
+      cancel
     </button>
     <button type="button" class="btn btn-primary text-uppercase" ng-click="$ctrl.submit()" ng-disabled="!modalFrm.$valid">
-      <span class="fa fa-check" aria-hidden="true"></span> save
+      save
     </button>
   </div>
 </form>

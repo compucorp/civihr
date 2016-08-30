@@ -1,7 +1,8 @@
 <div class="civihr-ui-select ui-select-container ui-select-multiple select2 select2-container select2-container-multi"
      ng-class="{'form-control': !$select.open, 'select2-container-active select2-dropdown-open open': $select.open,
                 'select2-container-disabled': $select.disabled,
-                'search-enabled': $select.searchEnabled}">
+                'search-enabled': $select.searchEnabled,
+                'contact-lookup': $select.contactList}">
   <div class="civihr-ui-select__content-multiple">
     <ul class="select2-choices"  ng-class="{'search-enabled': $select.searchEnabled}" >
       <span class="ui-select-match"></span>
@@ -26,7 +27,7 @@
       </li>
     </ul>
 
-    <contact-actions></contact-actions>
+    <contact-actions ng-show="$select.open && $select.search.length === 0"></contact-actions>
 
     <div class="ui-select-dropdown select2-drop select2-with-searchbox select2-drop-active"
          ng-class="{'select2-display-none': !$select.open || $select.items.length === 0}">

@@ -2,7 +2,8 @@
      ng-class="{'form-control': !$select.open, 'select2-container-active select2-dropdown-open open': $select.open,
                 'select2-container-disabled': $select.disabled,
                 'select2-container-active': $select.focus,
-                'select2-allowclear': $select.allowClear && !$select.isEmpty()}">
+                'select2-allowclear': $select.allowClear && !$select.isEmpty(),
+                'contact-lookup': $select.contactList}">
   <div class="ui-select-match"></div>
   <div class="ui-select-dropdown select2-drop select2-with-searchbox select2-drop-active"
        ng-class="{'select2-display-none': !$select.open}">
@@ -17,7 +18,7 @@
              ng-model="$select.search">
     </div>
 
-    <contact-actions></contact-actions>
+    <contact-actions ng-show="$select.search.length === 0"></contact-actions>
     <div class="ui-select-choices"></div>
 
   </div>
