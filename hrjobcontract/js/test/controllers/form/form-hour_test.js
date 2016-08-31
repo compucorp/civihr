@@ -35,7 +35,7 @@ define([
 
           $scope.entity.hour.hours_type = '0';
           $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe('40.00');
+          expect($scope.entity.hour.hours_amount).toBe(0);
 
           $scope.entity.hour.hours_type = '4';
           $scope.$digest();
@@ -43,7 +43,7 @@ define([
 
           $scope.entity.hour.hours_type = '0';
           $scope.$digest();
-          expect($scope.entity.hour.hours_amount).toBe(20);
+          expect($scope.entity.hour.hours_amount).toBe(0);
         });
       });
     });
