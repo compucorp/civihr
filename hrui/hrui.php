@@ -334,6 +334,11 @@ function hrui_civicrm_uninstall() {
   $defaults['is_active'] = 1;
   CRM_Core_BAO_OptionValue::create($defaults);
   _hrui_wordReplacement(TRUE);
+
+  // Remove 'Import Custom Fields' Navigation item and reset the menu
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name = 'import_custom_fields'");
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrui_civix_civicrm_uninstall();
 }
 
@@ -378,6 +383,8 @@ function hrui_civicrm_enable() {
   _hrui_setActiveFields(FALSE);
   _hrui_toggleContactSubType(FALSE);
   _hrui_wordReplacement(FALSE);
+  _hrui_menuSetActive(1);
+
   return _hrui_civix_civicrm_enable();
 }
 
@@ -388,6 +395,8 @@ function hrui_civicrm_disable() {
   _hrui_setActiveFields(TRUE);
   _hrui_toggleContactSubType(TRUE);
   _hrui_wordReplacement(TRUE);
+  _hrui_menuSetActive(0);
+
   return _hrui_civix_civicrm_disable();
 }
 
@@ -467,7 +476,7 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * @return boolean
  */
 function _hrui_check_extension($extensionKey)  {
-  return (boolean)CRM_Core_DAO::getFieldValue(
+  return (boolean) CRM_Core_DAO::getFieldValue(
     'CRM_Core_DAO_Extension',
     $extensionKey,
     'is_active',
@@ -564,51 +573,9 @@ function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
 }
 
-function hrui_civicrm_navigationMenu( &$params ) {
-  $maxKey = ( max( array_keys($params) ) );
-  $jobNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
-  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-  if ($jobNavId) {
-    $i = 1;
-    // Degrade gracefully on 4.4
-    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
-      //  Get the maximum key of $params
-      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
-
-      $multiValuedData[$maxKey+1] = array(
-        'attributes' => array (
-         'label' => ts('Jobs'),
-         'name' => 'jobs',
-         'url'  => 'civicrm/job/import',
-         'permission' => 'access HRJobs',
-         'operator'   => null,
-         'separator'  => null,
-         'parentID'   => $jobNavId,
-         'navID'      => $maxKey+1,
-         'weight'     => 1,
-         'active'     => 1
-       ));
-      foreach ($multipleCustomData as $key => $value) {
-        $i++;
-        $i = $maxKey + $i;
-        $multiValuedData[$i] = array (
-          'attributes' => array (
-            'label'      => $value,
-            'name'       => $value,
-            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
-            'permission' => 'access HRJobs',
-            'operator'   => null,
-            'separator'  => null,
-            'parentID'   => $jobNavId,
-            'navID'      => $i,
-            'active'     => 1
-          ),
-          'child' => null
-        );
-      }
-      $params[$contactNavId]['child'][$jobNavId]['child'] = $multiValuedData;
-    }
-  }
+function hrui_civicrm_navigationMenu(&$params) {
+  _hrui_customImportMenuItems($params);
+  _hrui_coreMenuChanges($params);
 }
 
 /**
@@ -824,4 +791,102 @@ function _hrui_updateContactSummaryUI() {
   </script>";
 
   return $content;
+}
+
+/**
+ * Generating Custom Fields import child menu items
+ *
+ */
+function _hrui_customImportMenuItems(&$params) {
+  $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
+
+  $customFieldsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'import_custom_fields', 'id', 'name');
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+
+  if ($customFieldsNavId) {
+    // Degrade gracefully on 4.4
+    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
+      //  Get the maximum key of $params
+      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+
+      $multiValuedData = NULL;
+      foreach ($multipleCustomData as $key => $value) {
+        ++$navId;
+        $multiValuedData[$navId] = array (
+          'attributes' => array (
+            'label'      => $value,
+            'name'       => $value,
+            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+            'permission' => 'access CiviCRM',
+            'operator'   => null,
+            'separator'  => null,
+            'parentID'   => $customFieldsNavId,
+            'navID'      => $navId,
+            'active'     => 1
+          )
+        );
+      }
+      $params[$contactNavId]['child'][$customFieldsNavId]['child'] = $multiValuedData;
+    }
+  }
+}
+
+/**
+ * Changes to some core menu items
+ *
+ */
+function _hrui_coreMenuChanges(&$params) {
+  // remove search items
+  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Search...', 'id', 'name');
+  $toRemove = [
+    'Full-text search',
+    'Search builder',
+    'Custom searches',
+    'Find Cases',
+    'Find Activities'
+  ];
+  foreach($toRemove as $item) {
+    if (
+      in_array($item, ['Find Cases', 'Find Activities'])
+      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
+    ) {
+      continue;
+    }
+    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    unset($params[$searchNavId]['child'][$itemId]);
+  }
+
+  // remove contact items
+  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $toRemove = [
+    'New Tag',
+    'Manage Tags (Categories)',
+    'New Activity',
+    'Import Activities',
+  ];
+  foreach($toRemove as $item) {
+    if (
+      in_array($item, ['New Activity', 'Import Activities'])
+      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
+    ) {
+      continue;
+    }
+    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    unset($params[$searchNavId]['child'][$itemId]);
+  }
+
+  // Remove Admin items
+  $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
+  $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
+  unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
+}
+
+/**
+ * Enable/Disable Menu items created by hrui extension
+ *
+ */
+function _hrui_menuSetActive($isActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
+  CRM_Core_BAO_Navigation::resetNavigation();
 }

@@ -97,25 +97,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $this->executeCustomDataFile('xml/1105_pension_type.xml');
     }
 
-    //Add job import navigation menu
-    $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
-    $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-    $importJobNavigation = new CRM_Core_DAO_Navigation();
-    $params = array (
-      'domain_id'  => CRM_Core_Config::domainID(),
-      'label'      => ts('Import Jobs'),
-      'name'       => 'jobImport',
-      'url'        => null,
-      'parent_id'  => $contactNavId,
-      'weight'     => $weight+1,
-      'permission' => 'access HRJobs',
-      'separator'  => 1,
-      'is_active'  => 1
-    );
-    $importJobNavigation->copyValues($params);
-    $importJobNavigation->save();
-    //$this->ctx->log->info('Applying update 1400');
-
     $i = 4;
     $params = array(
       'option_group_id' => 'hrjc_contract_type',
@@ -558,6 +539,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1012();
     $this->upgrade_1014();
     $this->upgrade_1015();
+    $this->upgrade_1016();
+    $this->upgrade_1017();
   }
 
   function upgrade_1001() {
@@ -879,6 +862,60 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_reserved' => 1,
       ));
     }
+    return true;
+  }
+
+  /**
+   * Create job contract import/export navigation menus
+   *
+   */
+  function upgrade_1017() {
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('job_contracts', 'import_export_job_contracts')");
+
+    $contactsNavID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+    $importContactWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
+    $params = [
+      'name' => 'import_export_job_contracts',
+      'label' => ts('Import / Export'),
+      'url' => NULL,
+      'parent_id' => $contactsNavID,
+      'is_active' => TRUE,
+      'weight' => $importContactWeight,
+      'permission' => 'access HRJobs',
+      'domain_id' => CRM_Core_Config::domainID(),
+    ];
+    $navigation = new CRM_Core_DAO_Navigation();
+    $navigation->copyValues($params);
+    $importExportMenu = $navigation->save();
+
+    if (!empty($importExportMenu->id)) {
+      $toCreate = [
+        [
+          'name' => 'import_job_contracts',
+          'label' => ts('Import Job Contracts'),
+          'url' => "civicrm/job/import",
+          'parent_id' => $importExportMenu->id,
+          'is_active' => TRUE,
+          'permission' => [
+            'access HRJobs',
+          ]
+        ],
+        [
+          'name' => 'export_job_contracts',
+          'label' => ts('Job Contract Report'),
+          'url' => "civicrm/report/hrjobcontract/summary",
+          'parent_id' => $importExportMenu->id,
+          'is_active' => TRUE,
+          'permission' => [
+            'access HRJobs',
+          ]
+        ]
+      ];
+      foreach($toCreate as $item) {
+        CRM_Core_BAO_Navigation::add($item);
+      }
+    }
+
     return true;
   }
 
