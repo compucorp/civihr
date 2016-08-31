@@ -27,7 +27,7 @@ define([
               entityHour.hours_amount = locStandHrs.standard_hours;
               break;
             case 4:
-              entityHour.hours_amount = !!entityHour.hours_amount ? entityHour.hours_amount : Math.round(locStandHrs.standard_hours / 2);
+              entityHour.hours_amount = Math.round(locStandHrs.standard_hours / 2);
               break;
             case 0:
               entityHour.hours_amount = !!entityHour.hours_amount ? entityHour.hours_amount : 0;
