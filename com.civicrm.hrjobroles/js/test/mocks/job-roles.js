@@ -44,9 +44,6 @@ define(function () {
                 start_date: "2016-01-01",
                 status: "",
                 title: "Test Contract 3"
-            },
-            revisions: {
-
             }
         },
         form_data: {
@@ -69,6 +66,7 @@ define(function () {
                 "title": "Test",
                 "job_contract_id": "1",
                 "start_date": "2015-12-30 00:00:00",
+                "end_date": '0000-00-00 00:00:00',
                 "funders": [],
                 "cost_centers": []
             },
@@ -92,6 +90,7 @@ define(function () {
               "title": "Test filter",
               "job_contract_id": "1",
               "start_date": "2015-12-30 00:00:00",
+              "end_date": '0000-00-00 00:00:00',
               "funders": [
                 {
                   $$hashKey: "object:565",
