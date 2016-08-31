@@ -1,3 +1,29 @@
+%search-filter-block {
+  margin: 20px 0;
+  padding: 18px 15px;
+  background-color: $gray-lighter;
+
+  .form-layout-compressed {
+    margin: 0;
+  }
+
+  .select2-container {
+    width: 180px !important;
+  }
+}
+
+%group-buttons {
+  border-left: 1px solid transparent !important;
+
+  &:hover {
+    background: none;
+    border-left: 1px solid #AAAAAA !important;
+    color: $crm-copy;
+  }
+}
+
+// .page-civicrm-vacancy
+// =====================================
 .page-civicrm-vacancy {
   .crm-container {
     .advmultiselect {
@@ -155,8 +181,6 @@
       }
     }
   }
-
-
 
   .crm-submit-buttons {
     padding: 20px !important;
@@ -497,6 +521,8 @@
   }
 }
 
+// .page-civicrm-case
+// =====================================
 .page-civicrm-case {
   .font-size12pt {
     font-size: 13px;
@@ -565,13 +591,7 @@
   }
 
   .crm-search-tasks {
-    margin: 20px 0;
-    padding: 18px 15px;
-    background-color: $gray-lighter;
-
-    .form-layout-compressed {
-      margin: 0;
-    }
+    @extend %search-filter-block;
   }
 
   .caseSelector {
@@ -592,13 +612,7 @@
         }
 
         .crm-hover-button {
-          border-left: 1px solid transparent !important;
-
-          &:hover {
-            background: none;
-            border-left: 1px solid #AAAAAA !important;
-            color: $crm-copy;
-          }
+          @extend %group-buttons;
         }
 
         .nestedActivitySelector {
@@ -613,6 +627,68 @@
           .ui-button {
             padding: 5px 10px;
           }
+        }
+      }
+    }
+  }
+}
+
+// .page-civicrm-activity
+// =====================================
+.page-civicrm-activity {
+  .crm-search-tasks {
+    @extend %search-filter-block;
+  }
+
+  .crm-hover-button {
+    @extend %group-buttons;
+  }
+
+  #searchForm {
+    box-sizing: border-box;
+
+    tr {
+      &:not(#activityCustom) {
+        td {
+          padding: 10px 20px !important;
+        }
+      }
+
+      &:nth-child(n+8):nth-child(-n+9) {
+        display: none;
+      }
+
+      td {
+        border: 0 !important;
+        padding: 10px 0 !important;
+
+        &.font-size12pt {
+          font-size: 13px;
+        }
+
+        .crm-button_qf_Search_refresh {
+          float: right !important;
+          margin: 0;
+
+          > .crm-form-submit {
+            margin-right: 0 !important;
+          }
+        }
+
+        &.label {
+          text-align: left;
+        }
+
+        #sort_name {
+          max-width: 230px !important;
+          min-width: 230px !important;
+        }
+
+        .select2-choices,
+        .select2-choice,
+        #activity_subject {
+          width: 329px !important;
+          min-width: 329px !important;
         }
       }
     }

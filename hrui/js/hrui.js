@@ -111,6 +111,7 @@
   $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
 
   $(document).on('crmLoad', function(e) {
+    $('#activityCustomData').attr('colspan', 3);
 
     addUploadFileListener('#custom_87');
 
