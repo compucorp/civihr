@@ -8,7 +8,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * Create a new HRJobContract based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobContract|NULL
+   * @return CRM_Hrjobcontract_DAO_HRJobContract|NULL
    *
    */
   public static function create($params) {
@@ -42,9 +42,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   /**
    * Delete current HRJobContract based on array-data
    *
-   * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobContract|NULL
-   *
+   * @param array|boolean $useWhere
+   * @return CRM_Hrjobcontract_DAO_HRJobContract|NULL
    */
   public function delete($useWhere = false) {
       $id = $this->id;
@@ -176,7 +175,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Return an assotiative array with Contracts dates.
+   * Return an associative array with Contracts dates.
    *
    * @param array $contracts
    *

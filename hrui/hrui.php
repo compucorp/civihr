@@ -63,18 +63,11 @@ function hrui_civicrm_buildForm($formName, &$form) {
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
-    //HR-358 - Set default values
-    //set default value to phone location and type
-    $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful.
-    //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
-    if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
-      $phoneType = $form->getElement('phone[2][phone_type_id]');
-      $phoneValue = CRM_Core_OptionGroup::values('phone_type');
-      $phoneKey = CRM_Utils_Array::key('Mobile', $phoneValue);
-      $phoneType->setSelected($phoneKey);
-      $phoneLocation = $form->getElement('phone[2][location_type_id]');
-      $phoneLocation->setSelected($locationId);
+
+    $phoneIndex = 2;
+    if (_hrui_phone_is_empty($phoneIndex, $form)) {
+      _hrui_set_phone_type_as_mobile($phoneIndex, $form);
+      _hrui_set_phone_location_to_the_default_location($phoneIndex, $form);
     }
   }
 
@@ -101,6 +94,78 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
     $form->setDefaults($default);
   }
+}
+
+/**
+ * Sets the location type of the phone with the given index to the default
+ * location type.
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_location_to_the_default_location($phoneIndex, $form) {
+  $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 1, 'id', 'is_default');
+
+  if($locationId) {
+    $form->setDefaults([
+      "phone[{$phoneIndex}][location_type_id]" => $locationId
+    ]);
+  }
+}
+
+/**
+ * Sets the phone type of the phone with the given index as 'Mobile'.
+ *
+ * @param $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_type_as_mobile($phoneIndex, $form) {
+  _hrui_set_phone_type($phoneIndex, $form, 'Mobile');
+}
+
+/**
+ * Sets the phone type of the phone with the given index to the type given by
+ * $type.
+ *
+ * @param int $phoneIndex
+ *   The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *   The Contact Form instance
+ * @param string $type
+ *   The new phone type. Valid values are those from the phone_type option list
+ */
+function _hrui_set_phone_type($phoneIndex, $form, $type) {
+  $elementName = "phone[{$phoneIndex}][phone_type_id]";
+
+  if(!$form->elementExists($elementName)) {
+    return;
+  }
+
+  $phoneType  = $form->getElement($elementName);
+  $phoneValue = CRM_Core_OptionGroup::values('phone_type');
+  $phoneKey   = CRM_Utils_Array::key($type, $phoneValue);
+  if($phoneKey) {
+    $phoneType->setSelected($phoneKey);
+  }
+}
+
+/**
+ * Returns if the contact form has a phone with the given index and it's empty
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ *
+ * @return bool
+ */
+function _hrui_phone_is_empty($phoneIndex, $form) {
+  return $form->elementExists("phone[{$phoneIndex}][phone]") &&
+         empty($form->getElementValue("phone[{$phoneIndex}][phone]"));
 }
 
 /**

@@ -9,316 +9,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     // $this->executeCustomDataFile('xml/customdata.xml');
     $this->executeSqlFile('sql/install.sql');
-    $this->migrateData();
     $this->upgradeBundle();
-  }
-
-  /*
-   * Migrate old HRJob existing data into new HRJobContract entities.
-   */
-  protected function migrateData()
-  {
-    CRM_Core_DAO::executeQuery("DROP TABLE IF EXISTS civicrm_hrpay_scale");
-    CRM_Core_DAO::executeQuery("
-        CREATE TABLE IF NOT EXISTS `civicrm_hrpay_scale` (
-        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-          `pay_scale` VARCHAR(63) DEFAULT NULL,
-          `pay_grade` VARCHAR(63) DEFAULT NULL,
-          `currency` VARCHAR(63) DEFAULT NULL,
-          `amount` DECIMAL(10,2) DEFAULT NULL,
-          `periodicity` VARCHAR(63) DEFAULT NULL,
-          `is_active` tinyint(4) DEFAULT '1',
-          PRIMARY KEY(id)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
-      ");
-    CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) VALUES
-        ('US', 'Senior', 'USD', 38000, 'Year', 1),
-        ('US', 'Junior', 'USD', 24000, 'Year', 1),
-        ('UK', 'Senior', 'GBP', 35000, 'Year', 1),
-        ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
-        ('Not Applicable', NULL, NULL, NULL, NULL, 1)
-    ");
-
-    $tableExists = $this->checkTableExists(array(
-        'civicrm_hrjob',
-        'civicrm_hrjob_health',
-        'civicrm_hrjob_hour',
-        'civicrm_hrjob_leave',
-        'civicrm_hrjob_pay',
-        'civicrm_hrjob_pension',
-        'civicrm_hrjob_role',
-        'civicrm_value_job_summary_10',
-    ));
-
-    if (!$tableExists['civicrm_hrjob'])
-    {
-        return false;
-    }
-
-    $hrJob = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob ORDER BY id ASC');
-    while ($hrJob->fetch())
-    {
-        // Creating Job Contract:
-        $insertContractQuery = 'INSERT INTO civicrm_hrjobcontract SET contact_id = %1, is_primary = %2';
-        $insertContractParams = array(
-            1 => array($hrJob->contact_id, 'Integer'),
-            2 => array($hrJob->is_primary, 'Integer'),
-        );
-        CRM_Core_DAO::executeQuery($insertContractQuery, $insertContractParams);
-        $jobContractId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-
-        // Creating Job Contract Revision:
-        $insertRevisionQuery = 'INSERT INTO civicrm_hrjobcontract_revision SET jobcontract_id = %1';
-        $insertRevisionParams = array(1 => array($jobContractId, 'Integer'));
-        CRM_Core_DAO::executeQuery($insertRevisionQuery, $insertRevisionParams);
-        $revisionId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-
-        // Populating data with existing HRJob entities:
-        $this->populateTableWithEntity(
-            'civicrm_hrjobcontract_details',
-            $hrJob,
-            array(
-                'position' => 'String',
-                'title' => 'String',
-                'funding_notes' => 'String',
-                'contract_type' => 'String',
-                'period_start_date' => 'Date',
-                'period_end_date' => 'Date',
-                'notice_amount' => 'Float',
-                'notice_unit' => 'String',
-                'notice_amount_employee' => 'Float',
-                'notice_unit_employee' => 'String',
-                'location' => 'String',
-            ),
-            $revisionId
-        );
-
-        $healthRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_health'])
-        {
-            $hrJobHealth = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_health WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobHealth->fetch())
-            {
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_health',
-                    $hrJobHealth,
-                    array(
-                        'provider' => 'Integer',
-                        'plan_type' => 'String',
-                        'description' => 'String',
-                        'dependents' => 'String',
-                        'provider_life_insurance' => 'Integer',
-                        'plan_type_life_insurance' => 'String',
-                        'description_life_insurance' => 'String',
-                        'dependents_life_insurance' => 'String',
-                    ),
-                    $revisionId
-                );
-                $healthRevisionId = $revisionId;
-            }
-        }
-
-        $hourRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_hour'])
-        {
-            $hrJobHour = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_hour WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobHour->fetch())
-            {
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_hour',
-                    $hrJobHour,
-                    array(
-                        'hours_type' => 'String',
-                        'hours_amount' => 'Float',
-                        'hours_unit' => 'String',
-                        'hours_fte' => 'Float',
-                        'fte_num' => 'Integer',
-                        'fte_denom' => 'Integer',
-                    ),
-                    $revisionId
-                );
-                $hourRevisionId = $revisionId;
-            }
-        }
-
-        // MULTIPLE
-        $leaveRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_leave'])
-        {
-            $hrJobLeave = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_leave WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobLeave->fetch())
-            {
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_leave',
-                    $hrJobLeave,
-                    array(
-                        'leave_type' => 'Integer',
-                        'leave_amount' => 'Integer',
-                    ),
-                    $revisionId
-                );
-                $leaveRevisionId = $revisionId;
-            }
-        }
-
-        $payRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_pay'])
-        {
-            $hrJobPay = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pay WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobPay->fetch())
-            {
-                $payScaleId = $this->getPayScaleId($hrJobPay->pay_scale);
-                $hrJobPay->pay_scale = $payScaleId;
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_pay',
-                    $hrJobPay,
-                    array(
-                        'pay_scale' => 'String',
-                        'is_paid' => 'Integer',
-                        'pay_amount' => 'Float',
-                        'pay_unit' => 'String',
-                        'pay_currency' => 'String',
-                        'pay_annualized_est' => 'Float',
-                        'pay_is_auto_est' => 'Integer',
-                    ),
-                    $revisionId
-                );
-                $payRevisionId = $revisionId;
-            }
-        }
-
-        $pensionRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_pension'])
-        {
-            $hrJobPension = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_pension WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobPension->fetch())
-            {
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_pension',
-                    $hrJobPension,
-                    array(
-                        'is_enrolled' => 'Integer',
-                        'ee_contrib_pct' => 'Float',
-                        'er_contrib_pct' => 'Float',
-                        'pension_type' => 'String',
-                        'ee_contrib_abs' => 'Float',
-                        'ee_evidence_note' => 'String',
-                    ),
-                    $revisionId
-                );
-                $pensionRevisionId = $revisionId;
-            }
-        }
-
-        // MULTIPLE
-        $roleRevisionId = 0;
-        if ($tableExists['civicrm_hrjob_role'])
-        {
-            $hrJobRole = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjob_role WHERE job_id = %1', array(1 => array($hrJob->id, 'Integer')));
-            while ($hrJobRole->fetch())
-            {
-                $this->populateTableWithEntity(
-                    'civicrm_hrjobcontract_role',
-                    $hrJobRole,
-                    array(
-                        'title' => 'String',
-                        'description' => 'String',
-                        'hours' => 'Float',
-                        'role_hours_unit' => 'String',
-                        'region' => 'String',
-                        'department' => 'String',
-                        'level_type' => 'String',
-                        'manager_contact_id' => 'Integer',
-                        'functional_area' => 'String',
-                        'organization' => 'String',
-                        'cost_center' => 'String',
-                        'funder' => 'String',
-                        'percent_pay_funder' => 'String',
-                        'percent_pay_role' => 'Integer',
-                        'location' => 'String',
-                    ),
-                    $revisionId
-                );
-                $roleRevisionId = $revisionId;
-            }
-        }
-
-        // Creating entities entries with default values for non existing entities.
-        if (!$healthRevisionId)
-        {
-            CRM_Core_DAO::executeQuery(
-                'INSERT INTO civicrm_hrjobcontract_health SET jobcontract_revision_id = %1',
-                array(1 => array($revisionId, 'Integer'))
-            );
-        }
-        if (!$hourRevisionId)
-        {
-            CRM_Core_DAO::executeQuery(
-                'INSERT INTO civicrm_hrjobcontract_hour SET jobcontract_revision_id = %1',
-                array(1 => array($revisionId, 'Integer'))
-            );
-        }
-        if (!$payRevisionId)
-        {
-            CRM_Core_DAO::executeQuery(
-                'INSERT INTO civicrm_hrjobcontract_pay SET jobcontract_revision_id = %1',
-                array(1 => array($revisionId, 'Integer'))
-            );
-        }
-        if (!$pensionRevisionId)
-        {
-            CRM_Core_DAO::executeQuery(
-                'INSERT INTO civicrm_hrjobcontract_pension SET jobcontract_revision_id = %1',
-                array(1 => array($revisionId, 'Integer'))
-            );
-        }
-
-        $effectiveDate = null;
-        $periodStartDate = explode('-', $hrJob->period_start_date);
-        if (count($periodStartDate) === 3)
-        {
-            $effectiveDate = array(
-                'month' => $periodStartDate[1],
-                'day' => $periodStartDate[2],
-                'year' => $periodStartDate[0],
-            );
-        }
-
-        // Updating Revision:
-        $updateRevisionQuery = 'UPDATE civicrm_hrjobcontract_revision SET '
-            . 'effective_date = %12,'
-            . 'details_revision_id = %1,'
-            . 'health_revision_id = %2,'
-            . 'hour_revision_id = %3,'
-            . 'leave_revision_id = %4,'
-            . 'pay_revision_id = %5,'
-            . 'pension_revision_id = %6,'
-            . 'role_revision_id = %7,'
-            . 'created_date = %8,'
-            . 'modified_date = %9,'
-            . 'status = %10'
-            . ' WHERE id = %11';
-        $updateRevisionParams = array(
-            1 => array($revisionId, 'Integer'),
-            2 => array($revisionId, 'Integer'),
-            3 => array($revisionId, 'Integer'),
-            4 => array($leaveRevisionId, 'Integer'),
-            5 => array($revisionId, 'Integer'),
-            6 => array($revisionId, 'Integer'),
-            7 => array($roleRevisionId, 'Integer'),
-            8 => array(CRM_Utils_Date::getToday( null, 'YmdHis' ), 'Timestamp'),
-            9 => array(CRM_Utils_Date::getToday( null, 'YmdHis' ), 'Timestamp'),
-            10 => array(1, 'Integer'),
-            11 => array($revisionId, 'Integer'),
-            12 => array(CRM_Utils_Date::getToday($effectiveDate, 'Ymd'), 'Timestamp'),
-        );
-
-        CRM_Core_DAO::executeQuery($updateRevisionQuery, $updateRevisionParams);
-
-    }
-
-    return true;
   }
 
   protected function checkTableExists(array $tables)
@@ -406,21 +97,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       $this->executeCustomDataFile('xml/1105_pension_type.xml');
     }
 
-    /* DEPRECATED:
-    //$this->ctx->log->info('Applying update 1201');
-    //get all fields of Custom Group "HRJobContract_Summary"
-    $params = array(
-      'custom_group_id' => 'HRJobContract_Summary',
-    );
-    $results = civicrm_api3('CustomField', 'get', $params);
-    foreach ($results['values'] as $result) {
-      $result['is_view'] = 0; // make the field editable
-      civicrm_api3('CustomField', 'create', $result);
-    }
-    //disable trigger
-    CRM_Core_DAO::triggerRebuild();*/
-
-    //$this->ctx->log->info('Applying update 1202');
     //Add job import navigation menu
     $weight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
     $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
@@ -449,10 +125,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'value' => 'Employee - Permanent',
     );
     civicrm_api3('OptionValue', 'create',$params);
-    /* DEPRECATED:
-    $empoption_id = civicrm_api3('OptionValue', 'getsingle', array('return' => "id",'option_group_id' => 'hrjc_contract_type', 'name' => "Employee"));
-    civicrm_api3('OptionValue', 'create',array('id' => $empoption_id['id'],'name' => "Employee_Temporary",'label' => 'Employee - Temporary', 'value' => 'Employee - Temporary'));
-    */
+
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_contract_type', 'id', 'name');
     foreach (array('Intern','Trustee','Volunteer') as $opName) {
       $i++;
@@ -472,27 +145,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_active' => 1,
       );
       $newRegionGroupResult = civicrm_api3('OptionGroup', 'create', $params);
-    }
-
-    // Migrate old 'hrjob_region' option values into new 'hrjc_region':
-    if (!empty($newRegionGroupResult['id'])) {
-        $oldRegionGroup = civicrm_api3('OptionGroup', 'get', array(
-        'sequential' => 1,
-        'name' => "hrjob_region",
-        ));
-        if (!empty($oldRegionGroup['id'])) {
-            $oldRegionsResult = civicrm_api3('OptionValue', 'get', array(
-            'sequential' => 1,
-            'option_group_id' => $oldRegionGroup['id'],
-            ));
-
-            foreach ($oldRegionsResult['values'] as $oldRegion) {
-                $newRegion = $oldRegion;
-                unset($newRegion['id']);
-                $newRegion['option_group_id'] = $newRegionGroupResult['id'];
-                civicrm_api3('OptionValue', 'create', $newRegion);
-            }
-        }
     }
 
     $result = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjobcontract_hour ORDER BY id ASC');
@@ -778,32 +430,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'parent_id'  => $administerNavId,
         );
 
-        // Migrating old 'hrjob_location' option values into new 'hrjc_location':
-        $oldLocationGroup = civicrm_api3('OptionGroup', 'get', array(
-        'sequential' => 1,
-        'name' => "hrjob_location",
-        ));
-        if (!empty($oldLocationGroup['id'])) {
-            $oldLocationsResult = civicrm_api3('OptionValue', 'get', array(
-            'sequential' => 1,
-            'option_group_id' => $oldLocationGroup['id'],
-            ));
-
-            foreach ($oldLocationsResult['values'] as $oldLocation) {
-                $newLocationResult = civicrm_api3('OptionValue', 'get', array(
-                    'sequential' => 1,
-                    'option_group_id' => $result['id'],
-                    'value' => $oldLocation['value'],
-                ));
-                if (!empty($newLocationResult['id'])) {
-                    continue;
-                }
-                $newLocation = $oldLocation;
-                unset($newLocation['id']);
-                $newLocation['option_group_id'] = $result['id'];
-                civicrm_api3('OptionValue', 'create', $newLocation);
-            }
-        }
     }
 
     // hrjc_pay_cycle:
@@ -919,18 +545,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    // Delete old HRJob Option Groups:
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_option_group WHERE name IN ('hrjob_contract_type',
-    'hrjob_department',
-    'hrjob_health_provider',
-    'hrjob_hours_type',
-    'hrjob_level_type',
-    'hrjob_life_provider',
-    'hrjob_pay_grade',
-    'hrjob_pay_scale',
-    'hrjob_pension_type',
-    'hrjob_region',
-    'hrjob_location')");
 
     $this->upgrade_1001();
     $this->upgrade_1002();

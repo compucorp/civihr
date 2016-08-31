@@ -6,12 +6,9 @@ ENTITY_EXTS=( hrabsence \
 hrbank \
 hrcareer \
 hrcase \
-hrcaseutils \
 hrdemog \
-hremerg \
 hrident \
 hrim \
-hrjob \
 hrmed \
 hrprofile
 hrqual \
