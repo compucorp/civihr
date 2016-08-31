@@ -3,27 +3,8 @@
 <CaseType>
   <name>Probation</name>
   <weight>4</weight>
+  <componentName>CiviTask</componentName>
   <ActivityTypes>
-    <ActivityType>
-      <name>Open Case</name>
-      <max_instances>1</max_instances>
-    </ActivityType>
-    <ActivityType>
-      <name>Follow up</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Type</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Status</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Start Date</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Link Cases</name>
-    </ActivityType>
-
      <ActivityType>
       <name>Conduct appraisal</name>
      </ActivityType>
@@ -49,18 +30,15 @@
       <ActivityTypes>
         <ActivityType>
           <name>Conduct appraisal</name>
-          <reference_offset>1</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-24</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Collection of appraisal paperwork</name>
-          <reference_offset>21</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-3</reference_offset>
         </ActivityType>
         <ActivityType>
           <name>Issue confirmation/warning letter</name>
-          <reference_offset>24</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>0</reference_offset>
         </ActivityType>
       </ActivityTypes>
     </ActivitySet>
