@@ -103,7 +103,7 @@ function hrjobcontract_civicrm_uninstall() {
   if (!empty($jobContractMenu)) {
     CRM_Core_BAO_Navigation::processDelete($jobContractMenu);
   }
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'export_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')");
   CRM_Core_BAO_Navigation::resetNavigation();
 
   //delete custom groups and field
@@ -162,7 +162,7 @@ function hrjobcontract_civicrm_disable() {
 }
 
 function _hrjobcontract_setActiveFields($setActive) {
-  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'export_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
+  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 
