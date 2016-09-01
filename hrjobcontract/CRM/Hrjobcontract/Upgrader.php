@@ -899,22 +899,23 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           'permission' => [
             'access HRJobs',
           ]
-        ],
-        [
-          'name' => 'export_job_contracts',
-          'label' => ts('Job Contract Report'),
-          'url' => "civicrm/report/hrjobcontract/summary",
-          'parent_id' => $importExportMenu->id,
-          'is_active' => TRUE,
-          'permission' => [
-            'access HRJobs',
-          ]
         ]
       ];
       foreach($toCreate as $item) {
         CRM_Core_BAO_Navigation::add($item);
       }
     }
+
+    return true;
+  }
+
+  /**
+   * Remove (Job Contract Report) menu item if exist
+   *
+   */
+  function upgrade_1018() {
+    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('export_job_contracts')");
+    CRM_Core_BAO_Navigation::resetNavigation();
 
     return true;
   }
