@@ -135,4 +135,8 @@ function bootstrapcivicrm_civicrm_pageRun($page) {
  */
 function bootstrapcivicrm_civicrm_buildForm($formName) {
   CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/radio-checkbox.js');
+
+  if($formName == 'CRM_Contact_Form_Search_Advanced') {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/enable-select2.js');
+  }
 }

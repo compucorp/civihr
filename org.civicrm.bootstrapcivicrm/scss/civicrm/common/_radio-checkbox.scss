@@ -4,9 +4,15 @@
     display: none;
   }
 
-  input[type=checkbox] + label[for],
-  input[type=radio] + label[for] {
-    cursor: pointer;
+  input[type=checkbox],
+  input[type=radio] {
+    margin: 0 5px 0 0;
+    vertical-align: middle;
+
+    + label[for] {
+      cursor: pointer;
+      margin-right: 15px !important;
+    }
   }
 
   input[type=radio] {

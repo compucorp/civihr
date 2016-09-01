@@ -106,15 +106,6 @@ $control-height: 30px;
       @extend %responsive;
     }
 
-    input[type='checkbox'],
-    input[type='radio'] {
-      margin: 0 5px 0 0;
-      vertical-align: middle;
-      &:not(:first-of-type) {
-        margin-left: 15px !important;
-      }
-    }
-
     div.form-item {
       @extend .form-group;
     }
