@@ -18,7 +18,7 @@ define([
 
     describe('FormHourCtrl', function() {
       describe('updateHours', function() {
-        it('asdsad', function() {
+        it('should always change the hours_amount based on hours_type', function() {
           expect($scope.entity.hour.hours_amount).toBe('');
 
           $scope.entity.hour.hours_type = '8';

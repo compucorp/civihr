@@ -41,7 +41,6 @@ define([
 
         entityHour.hours_unit = '';
         entityHour.hours_amount = '';
-
       }
 
       function updateFTE(hrsStandard, hrsAmount){
