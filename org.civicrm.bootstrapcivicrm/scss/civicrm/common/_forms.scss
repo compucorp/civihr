@@ -31,6 +31,7 @@ $control-height: 30px;
     }
   }
 
+
   &.select2-container,
   &.select2-choice {
     @extend %responsive;
@@ -165,6 +166,7 @@ $control-height: 30px;
     // 'Select2' Drop-downs
     .select2-container,
     .crm-form-select {
+
       %arrow {
         @include fa-icon($font-size: 13px, $content: '\f0d7');
         display: block;

@@ -1,6 +1,4 @@
 .CRM_Export_Form_Select {
-  position: relative;
-
   #export-type {
     padding: 10px 20px 0;
   }
@@ -9,30 +7,15 @@
     display: none;
   }
 
+  #postal_mailing_export_postal_mailing_export {
+    margin-left: 0 !important;
+  }
+
   .help {
     @extend %block-with-shadow;
-    position: absolute;
-    width: calc(100% - 49px);
-    left: 20px;
     border-radius: 0;
     border-color: $gray;
     background-color: #ffffff;
-
-    @media (max-device-width: $screen-xs-max) {
-      top: 140px;
-    }
-
-    @media (min-device-width: $screen-xs-min) {
-      top: 110px;
-    }
-
-    @media (min-device-width: $screen-sm-min) {
-      top: 80px;
-    }
-
-    @media (min-device-width: 1740px)  {
-      top: 60px;
-    }
   }
 
   br {
@@ -43,62 +26,17 @@
     padding-bottom: 15px;
   }
 
-  .crm-exportOption-section {
-    h3 {
-      @media (max-device-width: $screen-xs-max) {
-        padding-bottom: 130px;
-        font-size: 1.285em;
-      }
+  h2 {
+    position: initial !important;
+    margin: 20px 20px 0;
 
-      @media (min-device-width: $screen-xs-min) {
-        padding-bottom: 130px;
-      }
-
-      @media (min-device-width: $screen-sm-min) {
-        padding-bottom: 120px;
-      }
-
-      @media (min-device-width: 1740px)  {
-        padding-bottom: 75px;
-      }
+    + .crm-submit-buttons {
+      display: none;
     }
   }
 
-  h2 {
-    + {
-      .crm-submit-buttons {
-        display: none;
-      }
-    }
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    left: 170px;
-    width: 50%;
-
-    @media (max-device-width: $screen-xs-max) {
-      top: -68px !important;
-      font-size: .45em !important;
-    }
-
-    @media (min-device-width: $screen-xs-min) and (max-device-width: $screen-sm-max) {
-      top: -61px !important;
-      font-size: .75em !important;
-    }
-
-    @media (min-device-width: $screen-sm-min) {
-      font-size: 1.1em;
-      top: -54px !important;
-    }
-
-    @media (min-device-width: 1740px) {
-      font-size: 1.285em;
-      top: -54px !important;
-    }
-
-    &::before {
-      content: ' - ';
-    }
+  h3 {
+    padding-left: 0;
   }
 
   input + label {

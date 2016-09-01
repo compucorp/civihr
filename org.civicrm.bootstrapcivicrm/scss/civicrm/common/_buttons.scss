@@ -67,14 +67,12 @@ $button-border-radius: 2px;
     .crm-button.crm-i-button input.crm-form-submit {
       padding-left: 12px;
     }
-
     .crm-submit-buttons {
       background: #ffffff !important;
 
       .crm-i {
         display: none;
       }
-
       .crm-button-type-cancel,
       .crm-button-type-back {
         input {
@@ -82,6 +80,8 @@ $button-border-radius: 2px;
           ///The default theme uses "!important"
           color: $gray !important;
           border: solid 1px $gray-dark;
+
+
 
           &:hover {
             color: #ffffff !important;
