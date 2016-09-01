@@ -28,12 +28,12 @@ define([
 
       /**
        * Checks if date should be considered empty.
-       * Empty date is saved to database as 0000-00-00 00:00:00
+       *
        * @param {String} date
        * @returns {boolean}
        */
       var isDateEmpty = function(date){
-        return date === '0000-00-00 00:00:00';
+        return date === null;
       };
 
       /**

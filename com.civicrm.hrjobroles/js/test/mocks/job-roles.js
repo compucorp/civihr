@@ -66,7 +66,7 @@ define(function () {
                 "title": "Test",
                 "job_contract_id": "1",
                 "start_date": "2015-12-30 00:00:00",
-                "end_date": '0000-00-00 00:00:00',
+                "end_date": null,
                 "funders": [],
                 "cost_centers": []
             },
@@ -90,7 +90,7 @@ define(function () {
               "title": "Test filter",
               "job_contract_id": "1",
               "start_date": "2015-12-30 00:00:00",
-              "end_date": '0000-00-00 00:00:00',
+              "end_date": null,
               "funders": [
                 {
                   $$hashKey: "object:565",
