@@ -1,7 +1,8 @@
 %search-filter-block {
   margin: 20px 0;
   padding: 18px 15px;
-  background-color: $gray-lighter;
+  background-color: #fff;
+  box-shadow: $box-shadow;
 
   .form-layout-compressed {
     margin: 0;
@@ -698,6 +699,87 @@
         #activity_subject {
           width: 329px !important;
           min-width: 329px !important;
+        }
+      }
+    }
+
+    .crm-i {
+      display: none;
+    }
+  }
+
+  .ui-dialog {
+    max-height: 80% !important;
+    overflow-y: auto;
+
+    .crm-submit-buttons {
+      display: none;
+    }
+
+    table {
+      tr {
+        border-bottom: 0 !important;
+
+        td {
+          border-bottom: 0 !important;
+
+          &.label {
+            text-align: left;
+            padding-left: 20px;
+          }
+        }
+
+        &.crm-activity-form-block-assignee_contact_id {
+          td:last-child {
+            padding-left: 4px;
+          }
+        }
+      }
+    }
+
+    .CRM_Activity_Form_Activity {
+      .crm-block {
+        box-shadow: none;
+      }
+
+      .crm-activity-form-block {
+        &-custom_data,
+        &-attachment,
+        &-recurring_activity,
+        &-schedule_followup {
+          padding: 0 !important;
+
+          > td,
+          #Activity_Custom_Fields__ {
+            padding: 0 20px !important;
+          }
+        }
+
+        &-schedule_followup {
+          > td {
+            padding-bottom: 20px !important;
+          }
+        }
+      }
+
+      .crm-accordion-body {
+        padding-left: 0 !important;
+      }
+    }
+
+    .ui-dialog-buttonpane {
+      background: $gray-lighter;
+
+      .crm-i,
+      .ui-icon {
+        display: none;
+      }
+
+      .ui-dialog-buttonset {
+        > .ui-button {
+          > .ui-button-text {
+            padding: 0 !important;
+          }
         }
       }
     }
