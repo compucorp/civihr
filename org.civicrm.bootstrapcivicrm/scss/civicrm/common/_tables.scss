@@ -59,12 +59,21 @@
 
 .crm-container {
   > table,
-  table.report-layout {
+  table.report-layout,
+  table.selector,
+  .ui-dialog table,
+  .CRM_HRRecruitment_Form_Search > table,
+  .CRM_Case_Form_Search .caseSelector,
+  .CRM_Activity_Form_Activity > .crm-activity-view-block > .crm-info-panel {
     @extend %crm-table;
-  }
 
-  table {
+    &:not(.report-layout) {
+      box-shadow: $box-shadow;
+    }
+
     td {
+      background: #fff !important;
+
       &.label {
         vertical-align: middle !important;
       }
@@ -78,6 +87,36 @@
 
       > tbody > tr > td.label {
         line-height: 25px;
+      }
+    }
+
+    tr {
+      &:first-child {
+        th {
+          &:first-child {
+            border-top-left-radius: 2px;
+          }
+
+          &:last-child {
+            border-top-right-radius: 2px;
+          }
+        }
+      }
+
+      &:last-child {
+        td {
+          &:first-child {
+            border-bottom-left-radius: 2px;
+          }
+
+          &:last-child {
+            border-bottom-right-radius: 2px;
+          }
+        }
+      }
+
+      td {
+        color: $crm-copy;
       }
     }
   }

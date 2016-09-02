@@ -62,7 +62,77 @@
     });
   }
 
-  $(document).on('crmLoad', function (e) {
+  /**
+   * Update label 'for' attr to works with the datepicker
+   *
+   * @param  {jQuery object} $line [datepicker's line parent]
+   */
+  function linkLabelToDatepickerInput($line) {
+    $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
+  }
+
+  /**
+   * Add an event listener on input[type="file"]
+   * @param {jQuery Object} selector [selector from input file]
+   */
+  function addUploadFileListener(selector) {
+    if ($(selector).length === 1) {
+      $(selector).on('change', insertFile);
+    }
+  }
+
+  /**
+   * Insert a DOM node after input[type="file"]
+   * with the filename
+   */
+  function insertFile() {
+    var fileName = $(this)[0].files[0];
+
+    $('#js-uploaded-file').remove();
+    if (fileName !== undefined) {
+      $(this).after('<span id="js-uploaded-file" class="uploaded-file">' + fileName.name + ' <span class="uploaded-file-icon-trash"><i class="fa fa-trash-o"></i> Remove</span>');
+
+      $('.uploaded-file-icon-trash').on('click', removeFile);
+    }
+  }
+
+  /**
+   * Remove the #js-uploaded-file DIV and
+   * clean input[type="file"] value
+   */
+  function removeFile() {
+    var $input = $('#js-uploaded-file').parent().find('input[type="file"]');
+
+    $('#js-uploaded-file').remove();
+    $input.val('');
+  }
+
+  $('.CRM_HRRecruitment_Form_Application').addClass('crm-form-block');
+  $('.CRM_HRRecruitment_Form_Application .crm-profile-name-application_profile').addClass('form-layout-compressed');
+
+  $(document).on('crmLoad', function(e) {
+    $('#activityCustomData').attr('colspan', 3);
+
+    addUploadFileListener('#custom_87');
+
+    $('.crm-accordion-header.crm-master-accordion-header').on('click', function() {
+      window.setTimeout(function() {
+        Array.prototype.forEach.call(document.querySelectorAll('.listing-box'), function(element) {
+          Ps.initialize(element);
+        });
+      }, 0);
+    });
+
+    if ($('.CRM_HRRecruitment_Form_HRVacancy').length === 1) {
+      linkLabelToDatepickerInput($('label[for="start_date"]').parents('tr'));
+      linkLabelToDatepickerInput($('label[for="end_date"]').parents('tr'));
+
+      // Add a class to identify the form 'New Vacancy Template'
+      if ($('[name="entryURL"]').val().indexOf(';template=1') > -1) {
+        $($('.CRM_HRRecruitment_Form_HRVacancy tbody').get(0)).addClass('CRM_HRRecruitment_Form_HRVacancy_Template');
+      }
+    }
+
     //change text from Client to Contact
     $('#crm-activity-view-table .crm-case-activity-view-Client .label').html('Contact');
 

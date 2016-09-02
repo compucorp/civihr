@@ -4,14 +4,19 @@
 $button-border-radius: 2px;
 
 .crm-container {
-  %btn {
+  %btn,
+  .crm-profile-selector-preview {
     @extend .btn, %open-sans-font-family;
     text-shadow: none;
     text-transform: uppercase;
     opacity: 1 !important;
     font-size: 1em !important;
 
-    &:not(.crm-form-submit):not(.crm-close-accordion):not(.crm-clear-link) {
+    /**
+     * :not(.ui-dialog .button) is used to do not apply the selector .btn-secondary-outline
+     * on modal's buttons.
+     */
+    &:not(.crm-form-submit):not(.crm-close-accordion):not(.crm-clear-link):not(.ui-dialog .button) {
       @extend .btn-secondary-outline;
       border-radius: $button-border-radius;
     }
@@ -40,7 +45,7 @@ $button-border-radius: 2px;
       padding-top: $toolbar-top-space;
       background: $crm-accordion-header-color !important;
 
-      %btn {
+      %btn:not(.crm-button_qf_HRVacancy_next):not(.crm-button_qf_HRVacancy_cancel):not(#_qf_Application_upload) {
         border: 0;
         color: $gray-darker !important;
         min-width: initial !important;
@@ -133,7 +138,7 @@ $button-border-radius: 2px;
   }
 
   .crm-button-type-refresh,
-  .crm-submit-buttons > .crm-button {
+  .crm-submit-buttons > .crm-button:not(.crm-button_qf_HRVacancy_next):not(.crm-button_qf_HRVacancy_cancel):not(.crm-button_qf_Application_upload):not(.crm-button_qf_Application_cancel) {
     padding: 0 !important;
     border: 0 !important;
 
@@ -306,6 +311,15 @@ $button-border-radius: 2px;
       .ui-button-text-icon-primary .ui-button-text {
         padding: 0 0 0 7px !important;
       }
+    }
+  }
+
+  .crm-profile-selector-preview {
+    padding: 4px 12px;
+
+    .crm-i {
+      position: relative;
+      top: -1px;
     }
   }
 }
