@@ -1,0 +1,19 @@
+.CRM_Activity_Form_Activity {
+  label {
+    line-height: 45px;
+  }
+
+  .close-icon {
+    display: none !important;
+  }
+
+  .crm-clear-link {
+    &::before {
+      @include fa-icon(13px, '\f00d');
+    }
+  }
+
+  .crm-hover-button .crm-i {
+    padding-left: 15px;
+  }
+}

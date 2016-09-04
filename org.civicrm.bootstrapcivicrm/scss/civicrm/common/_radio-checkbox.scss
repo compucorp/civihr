@@ -7,45 +7,33 @@
       margin-right: 10px;
     }
   }
-
-  input[type=checkbox],
-  input[type=radio] {
-    margin: 0 5px 0 0;
-    vertical-align: middle;
-
-    + label[for] {
-      cursor: pointer;
-      margin-right: 15px !important;
-    }
+  input[type=checkbox] + label[for],
+  input[type=radio] + label[for] {
+    cursor: pointer;
+    margin-right: 15px !important;
   }
-
   input[type=radio] {
     &:checked + label[for]::before,
     + label[for]::before {
       margin-right: 5px;
       vertical-align: middle;
     }
-
     + label[for]::before {
       @include fa-icon($font-size: 15px, $content: '\f10c', $color: $gray);
     }
-
     &:checked + label[for]::before {
       @include fa-icon($font-size: 15px, $content: '\f192', $color: $gray);
     }
   }
-
   input[type=checkbox] {
     &:checked + label[for]::before,
     + label[for]::before {
       margin-right: 5px;
       vertical-align: middle;
     }
-
     + label[for]::before {
       @include fa-icon($font-size: 15px, $content: '\f096', $color: $gray);
     }
-
     &:checked + label[for]::before {
       @include fa-icon($font-size: 15px, $content: '\f046', $color: $gray);
     }
