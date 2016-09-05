@@ -106,6 +106,12 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
    * @var int unsigned
    */
   public $leave_amount;
+  /**
+   * If the number of public holidays should be added to the leave_amount
+   *
+   * @var boolean
+   */
+  public $add_public_holidays;
 
   /**
    * class constructor
@@ -177,6 +183,14 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                 'export' => true,
                 'headerPattern' => '/^contract\s?leave\s?amount/i',
               ) ,
+              'hrjobcontract_leave_add_public_holidays' => array(
+                'name' => 'add_public_holidays',
+                'type' => CRM_Utils_Type::T_BOOLEAN,
+                'title' => ts('Add Public Holidays?') ,
+                'export' => false,
+                'import' => false,
+                'headerPattern' => '/^add\s?public\s?holidays/i',
+              ) ,
             )
         );
     }
@@ -197,6 +211,7 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                 'id' => 'id',
                 'leave_type' => 'hrjobcontract_leave_leave_type',
                 'leave_amount' => 'hrjobcontract_leave_leave_amount',
+                'add_public_holidays' => 'hrjobcontract_leave_add_public_holidays',
             )
         );
     }

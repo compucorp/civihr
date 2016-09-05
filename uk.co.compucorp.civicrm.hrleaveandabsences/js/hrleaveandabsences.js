@@ -119,6 +119,7 @@ CRM.HRLeaveAndAbsencesApp.ListPage.Action = (function() {
      * @constructor
      */
     function Action(target, title, confirmationMessage, successMessage) {
+        this._target = target;
         this._listRow = target.closest('.crm-entity');
         this._entity = target.crmEditableEntity();
         this._title = title;

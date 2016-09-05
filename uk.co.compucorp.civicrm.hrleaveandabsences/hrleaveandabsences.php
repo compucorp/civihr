@@ -68,13 +68,13 @@ function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminN
       array(
           'label'      => ts('Leave/Absence Periods'),
           'name'       => 'leave_and_absence_periods',
-          'url'        => 'civicrm/admin/leaveandabsences/periods',
+          'url'        => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(
           'label'      => ts('Public Holidays'),
           'name'       => 'leave_and_absence_public_holidays',
-          'url'        => 'civicrm/admin/leaveandabsences/public_holidays',
+          'url'        => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
           'permission' => 'administer leave and absences',
       ),
       array(
@@ -274,6 +274,48 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
       'name'  => 'AbsenceType',
       'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
       'table' => 'civicrm_hrleaveandabsences_absence_type',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'NotificationReceiver',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_NotificationReceiver',
+    'table' => 'civicrm_hrleaveandabsences_notification_receiver',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkPattern',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkPattern',
+    'table' => 'civicrm_hrleaveandabsences_work_pattern',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkWeek',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkWeek',
+    'table' => 'civicrm_hrleaveandabsences_work_week',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'WorkDay',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkDay',
+    'table' => 'civicrm_hrleaveandabsences_work_day',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'AbsencePeriod',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod',
+    'table' => 'civicrm_hrleaveandabsences_absence_period',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'PublicHoliday',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday',
+    'table' => 'civicrm_hrleaveandabsences_public_holiday',
+  );
+
+  $entityTypes[] = array(
+    'name'  => 'Entitlement',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_Entitlement',
+    'table' => 'civicrm_hrleaveandabsences_entitlement',
   );
 }
 

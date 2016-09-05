@@ -38,25 +38,25 @@ class CRM_Hrjobcontract_BAO_HRJobHour extends CRM_Hrjobcontract_DAO_HRJobHour {
    * Create a new HRJobHour based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobHour|NULL
+   * @return CRM_Hrjobcontract_DAO_HRJobHour|NULL
    *
    */
   public static function create($params) {
     $hook = empty($params['id']) ? 'create' : 'edit';
     $instance = parent::create($params);
-    
+
     $currentInstanceResult = civicrm_api3('HRJobHour', 'get', array(
         'sequential' => 1,
         'id' => $instance->id,
     ));
-    
+
     $currentInstance = CRM_Utils_Array::first($currentInstanceResult['values']);
     $revisionResult = civicrm_api3('HRJobContractRevision', 'get', array(
         'sequential' => 1,
         'id' => $currentInstance['jobcontract_revision_id'],
     ));
     $revision = CRM_Utils_Array::first($revisionResult['values']);
-    
+
     if ($hook == 'create' && empty($params['import'])) {
         $result = civicrm_api3('HRJobRole', 'get', array(
           'sequential' => 1,
@@ -68,7 +68,7 @@ class CRM_Hrjobcontract_BAO_HRJobHour extends CRM_Hrjobcontract_DAO_HRJobHour {
             CRM_Hrjobcontract_BAO_HRJobRole::create(array('id' => $role['id'], 'hours' => $instance->hours_amount, 'role_hours_unit' => $instance->hours_unit));
         }
     }
-    
+
     return $instance;
   }
 

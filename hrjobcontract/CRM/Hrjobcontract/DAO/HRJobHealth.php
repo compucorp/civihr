@@ -143,7 +143,6 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
    * class constructor
    *
    * @access public
-   * @return civicrm_hrjob_health
    */
   function __construct()
   {

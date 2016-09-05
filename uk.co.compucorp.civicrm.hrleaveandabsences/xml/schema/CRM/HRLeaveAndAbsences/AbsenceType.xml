@@ -154,15 +154,5 @@
     <type>int unsigned</type>
     <comment>The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry</comment>
   </field>
-  <field>
-    <name>carry_forward_expiration_day</name>
-    <type>int</type>
-    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
-  </field>
-  <field>
-    <name>carry_forward_expiration_month</name>
-    <type>int</type>
-    <comment>If expiration_unit + expiration_duration is not informed, the expiration day and month should be</comment>
-  </field>
 
 </table>

@@ -111,10 +111,9 @@ function hrjobroles_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function hrjobroles_civicrm_navigationMenu( &$params ) {
   // Add sub-menu
   $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
-  if (is_integer($navId)) {
-    $navId++;
-  }
-  $topMenuID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'id', 'name');
+  $navId++;
+
+  $topMenuID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
   $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'import_export_job_contracts', 'id', 'name');
   $params[$topMenuID]['child'][$parentID]['child'][$navId] = array(
     'attributes' => array(
@@ -122,8 +121,7 @@ function hrjobroles_civicrm_navigationMenu( &$params ) {
       'name' => "import_job_roles",
       'url' => "civicrm/jobroles/import",
       'permission' => NULL,
-      'operator' => 'OR',
-      'separator' => NULL,
+      'separator' => TRUE,
       'parentID' => $parentID,
       'navID' => $navId,
       'active' => 1

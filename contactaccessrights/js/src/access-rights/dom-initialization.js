@@ -17,12 +17,12 @@ define([
       var appElement = angular.element('<li id="access-rights"> \
           <div ng-controller="AccessRightsCtrl as $ctrl" id="bootstrap-theme"> \
             <a href class="edit button pull-right" ng-click="$ctrl.openModal()" id="manage-roles-and-teams"> \
-              <div class="icon settings-icon"></div> Manage roles and teams \
+              <div class="crm-i fa-edit"></div> Manage roles and teams \
             </a> \
           </div> \
         </li>');
       actionsElement.append(appElement);
       return appElement;
     }
-  }
+  };
 });

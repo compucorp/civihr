@@ -107,11 +107,6 @@ class GenerateHRData {
           $this->addIndividual($cid);
           foreach ($enabledExtensions as $extension) {
             switch ($extension) {
-              case 'org.civicrm.hrjob':
-                //if Job(CiviHR) extension is enabled, add the sample data
-                $this->addJobData($cid);
-                $this->addJobSummaryData($cid);
-                break;
               case 'org.civicrm.hrident':
                 //if Identification (CiviHR) extension is enabled, add the sample data
                 $this->addIdentificationData($cid);
@@ -154,9 +149,6 @@ class GenerateHRData {
           $count++;
         }
       }
-    }
-    if (in_array('org.civicrm.hrjob', $enabledExtensions)) {
-      CRM_HRJob_Estimator::updateEstimates();
     }
   }
 
@@ -832,171 +824,6 @@ class GenerateHRData {
       $domain = $this->randomItem('email_domain') . '.' . $this->randomItem('email_tld');
     }
     return strtolower($email) . '@' . $domain;
-  }
-
-  /**
-   * This method populates all the HRJob Entity tables
-   */
-  public function addJobData($cid) {
-    if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrjob', 'is_active', 'full_name')) {
-      return;
-    }
-
-    $startDate = date('Y-m-d', strtotime(date('Y-m')." -1 month"));
-    $endDate = date('Y-m-d', strtotime(date('Y-m')." last day of +2 year"));
-    for ($i = 1; $i <= mt_rand(1, 3); $i++) {
-      //sample data for HRJob table
-      $jobValues = array(
-        'contact_id' => $cid,
-        'position' => $this->randomItem('position'),
-        'title' => $this->randomItem('title'),
-        'contract_type' => $this->randomItem('contract_type'),
-        'period_type' => $this->randomItem('period_type'),
-        'period_start_date' => $this->randomDate('20090101', '20121231'),
-        'period_end_date' => $this->randomDate($startDate, $endDate),
-        'notice_amount' => $this->randomItem('notice_amount'),
-        'notice_unit' => $this->randomItem('notice_unit'),
-        'notice_amount_employee' => $this->randomItem('notice_amount'),
-        'notice_unit_employee' => $this->randomItem('notice_unit'),
-        'location' => $this->randomItem('location'),
-        'is_primary' => 0,
-      );
-      if ($i == 1) {
-        $jobValues['is_primary'] = 1;
-      }
-      $hrJob[] = $this->insertJobData('CRM_HRJob_DAO_HRJob', $jobValues);
-    }
-
-    //For each HRJob, there may be 0 or 1 records for each of these entity types: HRJobHealth, HRJobHour, HRJobPay, HRJobPension.
-    foreach ($hrJob as $key => $hrJobObj) {
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        //sample data for HRJob Health table
-        $healthValues = array(
-          'job_id' => $hrJobObj->id,
-          'provider' => NULL,
-          'plan_type' => $this->randomItem('plan_type'),
-          'description' => $this->randomItem('description'),
-          'dependents' => $this->randomItem('dependents'),
-          'provider_life_insurance' => NULL,
-          'plan_type_life_insurance' => $this->randomItem('plan_type_life_insurance'),
-          'description_life_insurance' => $this->randomItem('description_life_insurance'),
-          'dependents_life_insurance' => $this->randomItem('dependents_life_insurance'),
-        );
-        $this->insertJobData('CRM_HRJob_DAO_HRJobHealth', $healthValues);
-      }
-
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        //sample data for HRJob Hour table
-        $hoursValues = array(
-          'job_id' => $hrJobObj->id,
-          'hours_type' => $this->randomItem('hours_type'),
-          'hours_unit' => 'Day',
-        );
-
-        if ($hoursValues['hours_type'] == 8) {
-          $hoursValues['hours_amount'] = 8;
-        }
-        else if ($hoursValues['hours_type'] == 4) {
-          $hoursValues['hours_amount'] = 4;
-          $hoursValues['fte_denom'] = 2;
-        }
-        else {
-          $hoursValues['hours_amount'] = 0;
-          $hoursValues['fte_num'] = 0;
-          $hoursValues['hours_unit'] = 'Week';
-        }
-        $this->insertJobData('CRM_HRJob_DAO_HRJobHour', $hoursValues);
-      }
-
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        //sample data for HRJob Pay table
-        $payValues = array(
-          'job_id' => $hrJobObj->id,
-          'is_paid' => $this->randomItem('paid_unpaid'),
-          'pay_scale' => $this->randomItem('pay_scale'),
-          'pay_amount' => $this->randomItem('pay_amount'),
-          'pay_unit' => $this->randomItem('pay_unit'),
-        );
-        $this->insertJobData('CRM_HRJob_DAO_HRJobPay', $payValues);
-      }
-
-      for ($i = 1; $i <= mt_rand(0, 1); $i++) {
-        //sample data for HRJob Pension table
-        $pensionValues = array(
-          'job_id' => $hrJobObj->id,
-          'pension_type' => $this->randomItem('pension_type'),
-          'is_enrolled' => $this->randomItem('is_enrolled'),
-          'ee_contrib_pct' => $this->randomItem('contrib_pct'),
-          'er_contrib_pct' => $this->randomItem('contrib_pct'),
-        );
-        $this->insertJobData('CRM_HRJob_DAO_HRJobPension', $pensionValues);
-      }
-
-      //sample data for HRJob Leave table. For each HRJob, there would be one HRJobLeave for each leave_type.
-      $leaveTypes = array('1', '2', '3');
-      foreach ($leaveTypes as $key => $value) {
-        $leaveValues = array(
-          'job_id' => $hrJobObj->id,
-          'leave_type' => $value,
-          'leave_amount' => $this->randomItem('leave_amount'),
-        );
-        $this->insertJobData('CRM_HRJob_DAO_HRJobLeave', $leaveValues);
-      }
-
-      //sample data for HRJob Role table. cases with 0, 1, 2, and 3 job roles.
-      $count = mt_rand(0, 3);
-      for ($i = 1; $i <= $count; $i++) {
-        $roleValues = array(
-          'job_id' => $hrJobObj->id,
-          'title' => $this->randomItem('title'),
-          'description' => $this->randomItem('job_role_description'),
-          'hours' => $this->randomItem('hours_amount'),
-          'role_hours_unit' => $this->randomItem('hours_unit'),
-          'region' => null,
-          'department' => $this->randomItem('department'),
-          'level_type' => $this->randomItem('level_type'),
-          'manager_contact_id' => $this->randomIndex(array_flip($this->contact)),
-          'functional_area' => $this->randomItem('functional_area'),
-          'organization' => $this->randomItem('name_of_organisation'),
-          'cost_center' => $this->randomItem('cost_center'),
-          'funder' => $this->randomIndex(array_flip($this->Organization)),
-          'location' => $this->randomItem('location'),
-        );
-        $roleValues['percent_pay_funder'] = $roleValues['funder']."-".$this->randomItem('percent_pay_funder');
-        $this->insertJobData('CRM_HRJob_DAO_HRJobRole', $roleValues);
-      }
-    }
-  }
-
-  /**
-   * This is a common method called to insert the data into HRJob tables
-   */
-  function insertJobData($className, $values) {
-    $dao = new $className();
-    foreach ($values as $columnName => $columnValue) {
-      $dao->$columnName = $columnValue;
-    }
-    $dao->save();
-    return $dao;
-  }
-
-  /**
-   * This method populates the Initial join date and final termination date
-   */
-  function addJobSummaryData($cid) {
-    if (!$gid = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'HRJobContract_Summary', 'id', 'name')) {
-      return;
-    }
-
-    $startDate = date('Y-m-d', strtotime(date('Y-m')." -1 month"));
-    $endDate = date('Y-m-d', strtotime(date('Y-m')." last day of +2 year"));
-    $values = array(
-      'entity_id' => $cid,
-      'initial_join_date' => $this->randomDate('20090101', '20111231'),
-      'final_termination_date' => $this->randomDate($startDate, $endDate),
-    );
-
-    $this->insertCustomData($gid, $values);
   }
 
   /**

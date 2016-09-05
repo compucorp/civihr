@@ -36,7 +36,7 @@ class CRM_HRRecruitment_Page_Dashboard extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addStyleFile('org.civicrm.hrrecruitment', 'css/dashboard.css')
       ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Page/Dashboard.js')
-      ->addScriptFile('civicrm', 'packages/momentjs/moment.min.js');
+      ->addScriptFile('org.civicrm.reqangular', 'src/common/vendor/moment.min.js');
     $vacancies = CRM_HRRecruitment_BAO_HRVacancy::getVacanciesByStatus();
     $recentActivities = CRM_HRRecruitment_BAO_HRVacancy::recentApplicationActivities();
     $this->assign('vacanciesByStatus', $vacancies);

@@ -126,5 +126,15 @@ function bootstrapcivicrm_civicrm_alterSettingsFolders(&$metaDataFolders = NULL)
  * Implementation of hook_civicrm_pageRun
  */
 function bootstrapcivicrm_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrm', 'css/bootstrap-civicrm-style.css');
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivicrm', 'css/bootstrap.css');
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/radio-checkbox.js');
+}
+
+/**
+ * Implementation of hook_civicrm_buildForm
+ */
+function bootstrapcivicrm_civicrm_buildForm($formName) {
+  if($formName == 'CRM_Contact_Form_Search_Advanced') {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/enable-select2.js');
+  }
 }

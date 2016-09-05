@@ -2,14 +2,14 @@
 
 class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_HRJobContractRevision {
 
-  static $_importableFields = array();  
-  
+  static $_importableFields = array();
+
   /**
    * Create a new HRJobContractRevision based on array-data
    *
    * @param array $params key-value pairs
-   * 
-   * @return CRM_HRJobContract_DAO_HRJobContractRevision|NULL
+   *
+   * @return CRM_Hrjobcontract_DAO_HRJobContractRevision|NULL
    *
    */
   public static function create($params) {
@@ -21,7 +21,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     $className = 'CRM_Hrjobcontract_DAO_HRJobContractRevision';
     $entityName = 'HRJobContractRevision';
     $hook = empty($params['id']) ? 'create' : 'edit';
-    
+
     $now = CRM_Utils_Date::currentDBDate();
     if ($hook === 'create')
     {
@@ -54,7 +54,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
   /**
    * Update Revision's effective end dates for given Job Contract ID.
-   * 
+   *
    * @param int $jobcontractId
    */
   public static function updateEffectiveEndDates($jobcontractId) {
@@ -124,7 +124,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * It updates revision entry with calculated 'effective_end_date'
    * and 'overrided' values basing on specified date of previously iterated
    * revision and date of currenly iterated revision.
-   * 
+   *
    * @param int $revisionId
    * @param string $previousEffectiveDate
    * @param string $currentEffectiveDate
@@ -156,7 +156,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
   /**
    * Set effective_end_date to NULL for given revision ID.
-   * 
+   *
    * @param int $revisionId
    */
   protected static function clearEffectiveEndDate($revisionId) {

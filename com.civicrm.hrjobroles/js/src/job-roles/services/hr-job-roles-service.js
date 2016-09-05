@@ -339,13 +339,14 @@ define([
 
             },
 
-            getContactList: function (search_value) {
+            getContactList: function (sortName) {
 
                 var deferred = $q.defer();
 
                 CRM.api3('Contact', 'get', {
                     "sequential": 1,
-                    "return": "id,sort_name"
+                    "return": "id, sort_name",
+                    "sort_name": sortName || null
                 }).done(function (result) {
 
                     // Passing data to deferred's resolve function on successful completion

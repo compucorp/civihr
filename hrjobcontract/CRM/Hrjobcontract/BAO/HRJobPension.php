@@ -38,8 +38,8 @@ class CRM_Hrjobcontract_BAO_HRJobPension extends CRM_Hrjobcontract_DAO_HRJobPens
    * Create a new HRJobPension based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobPension|NULL
-   * 
+   * @return CRM_Hrjobcontract_DAO_HRJobPension|NULL
+   *
    */
     public static function create($params) {
         $hook = empty($params['id']) ? 'create' : 'edit';
@@ -56,17 +56,17 @@ class CRM_Hrjobcontract_BAO_HRJobPension extends CRM_Hrjobcontract_DAO_HRJobPens
         }
 
         $instance = parent::create($params);
-        
+
         $revisionResult = civicrm_api3('HRJobContractRevision', 'get', array(
             'sequential' => 1,
             'id' => $instance->jobcontract_revision_id,
         ));
         $revision = CRM_Utils_Array::first($revisionResult['values']);
-        
+
         if ($previousPensionRevisionId) {
             CRM_Core_BAO_File::copyEntityFile('civicrm_hrjobcontract_pension', $previousPensionRevisionId, 'civicrm_hrjobcontract_pension', $revision['pension_revision_id']);
         }
-        
+
         return $instance;
     }
 

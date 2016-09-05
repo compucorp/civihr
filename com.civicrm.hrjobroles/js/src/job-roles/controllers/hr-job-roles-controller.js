@@ -28,12 +28,12 @@ define([
 
       /**
        * Checks if date should be considered empty.
-       * Empty date is saved to database as 0000-00-00 00:00:00
+       *
        * @param {String} date
        * @returns {boolean}
        */
       var isDateEmpty = function(date){
-        return date === '0000-00-00 00:00:00';
+        return date === null;
       };
 
       /**
@@ -680,51 +680,53 @@ define([
       getJobRolesList($scope.$parent.contactId);
 
       // Get the contact list and store the data
-      getContactList();
 
-      function getContactList() {
+      job_roles.getContactList = function(sortName, showMessage) {
+        var successCallback = function (data) {
 
-        HRJobRolesService.getContactList().then(function (data) {
+          var contact,
+            contactList = [],
+            contactListObject = {},
+            i = 0;
 
-            if (data.is_error === 1) {
-              job_roles.message_type = 'alert-danger';
-              job_roles.message = 'Cannot get contact lit!';
+          if (data.is_error === 1) {
+            job_roles.message_type = 'alert-danger';
+            job_roles.message = 'Cannot get contact list!';
+          }
+          else {
+            // Pass the contact list to the scope
+            for (; i < data.count; i++) {
+              // Build the contact list
+              contact = {
+                id: data.values[i]['id'],
+                sort_name: data.values[i]['sort_name']
+              };
+              contactList.push(contact);
+              contactListObject[data.values[i]['id']] = contact;
             }
-            else {
+            // Store the ContactList as Array as typeahead needs array what we can reuse later
+            job_roles.contactList = contactList;
+            // Store the object too, so we can point to right values by Contact ID
+            job_roles.contactListObject = contactListObject;
 
-              // Pass the contact list to the scope
-              var contactList = [];
-              var contactListObject = {};
-
-              for (var i = 0; i < data.count; i++) {
-
-                // Build the contact list
-                contactList.push({ id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] });
-                contactListObject[data.values[i]['id']] = {
-                  id: data.values[i]['id'],
-                  sort_name: data.values[i]['sort_name']
-                };
-              }
-
-              // Store the ContactList as Array as typeahead needs array what we can reuse later
-              job_roles.contactList = contactList;
-
-              // Store the object too, so we can point to right values by Contact ID
-              job_roles.contactListObject = contactListObject;
-
+            if(showMessage) { //dont show message when user types, show only first time
               job_roles.message_type = 'alert-success';
               job_roles.message = 'Contact list OK!';
             }
+          }
 
-            // Hide the message after some seconds
-            $timeout(function () {
-              job_roles.message = null;
-            }, 3000);
-          },
-          function (errorMessage) {
-            $scope.error = errorMessage;
-          });
-      }
+          // Hide the message after some seconds
+          $timeout(function () {
+            job_roles.message = null;
+          }, 3000);
+        };
+        var errorCallback = function (errorMessage) {
+          $scope.error = errorMessage;
+        };
+
+        HRJobRolesService.getContactList(sortName).then(successCallback,errorCallback);
+      };
+      job_roles.getContactList(null, true);
 
       function getOptionValues() {
 
@@ -907,16 +909,19 @@ define([
        */
       function jobRolesFromContracts(contractIds) {
         return HRJobRolesService.getAllJobRoles(contractIds).then(function (data) {
-          // Assign data
+
           job_roles.present_job_roles = [];
           job_roles.past_job_roles = [];
 
           data.values.forEach(function (object_data) {
-            var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
             var todaysDate = moment().startOf('day');
-            end_date =  moment(end_date).startOf('day');
+            var endDate = null;
 
-            if (!end_date || moment(end_date).isSameOrAfter(todaysDate)) {
+            if(!isDateEmpty(object_data.end_date)) {
+              endDate = moment(object_data.end_date).startOf('day');
+            }
+
+            if (!endDate || endDate.isSameOrAfter(todaysDate)) {
               job_roles.present_job_roles.push(object_data);
             } else {
               job_roles.past_job_roles.push(object_data);

@@ -51,39 +51,32 @@ function hrjobcontract_civicrm_install() {
     }
   }
 
-  // Add Job Contract top menu
 
-  $jobContractNavigation = new CRM_Core_DAO_Navigation();
-  $jobContractNavigation->name = 'job_contracts';
-  $jobContractNavigationResult = $jobContractNavigation->find();
-  if (!$jobContractNavigationResult)
-  {
-    $contactsWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'weight', 'name');
-    $jobContractNavigation = new CRM_Core_DAO_Navigation();
-    $params = array (
-      'domain_id' => CRM_Core_Config::domainID(),
-      'label' => ts('Job Contracts'),
-      'name' => 'job_contracts',
-      'url' => null,
-      'operator' => null,
-      'weight' => $contactsWeight + 1,
-      'is_active' => 1,
-    );
-    $jobContractNavigation->copyValues($params);
-    $jobContractNavigation->save();
-    $jobContractMenuTree = array(
-      array(
-        'label' => ts('Import / Export'),
-        'name' => 'import_export_job_contracts',
-      ),
-    );
+  /* on civicrm 4.7.7 this activity type (Contact Deleted by Merge) is not created
+ * as a part of civicrm installation but it should be, since it's used in
+ * contact merge code in core civicrm files. So here we just insure that it will
+ * be created .
+ */
+  try {
+    $result = civicrm_api3('OptionValue', 'getsingle', array(
+      'sequential' => 1,
+      'name' => "Contact Deleted by Merge",
+    ));
+    $is_error = $result['is_error'];
+  } catch (CiviCRM_API3_Exception $e) {
+    $is_error = true;
+  }
 
-    foreach ($jobContractMenuTree as $key => $menuItems) {
-      $menuItems['is_active'] = 1;
-      $menuItems['parent_id'] = $jobContractNavigation->id;
-      $menuItems['weight'] = $key;
-      CRM_Core_BAO_Navigation::add($menuItems);
-    }
+  if ($is_error)  {
+    civicrm_api3('OptionValue', 'create', array(
+      'sequential' => 1,
+      'option_group_id' => "activity_type",
+      'name' => "Contact Deleted by Merge",
+      'label' => "Contact Deleted by Merge",
+      'filter' => 1,
+      'description' => "Contact was merged into another contact",
+      'is_reserved' => 1,
+    ));
   }
 
   return _hrjobcontract_civix_civicrm_install();
@@ -110,7 +103,7 @@ function hrjobcontract_civicrm_uninstall() {
   if (!empty($jobContractMenu)) {
     CRM_Core_BAO_Navigation::processDelete($jobContractMenu);
   }
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('job_contracts', 'import_export_job_contracts', 'jobImport', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')");
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')");
   CRM_Core_BAO_Navigation::resetNavigation();
 
   //delete custom groups and field
@@ -154,11 +147,6 @@ function hrjobcontract_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrjobcontract_civicrm_enable() {
-  //Enable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=1 WHERE name IN ('job_contracts', 'hoursType', 'hours_location', 'pay_scale', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
-  CRM_Core_DAO::executeQuery($sql);
-  CRM_Core_BAO_Navigation::resetNavigation();
-
   _hrjobcontract_setActiveFields(1);
   return _hrjobcontract_civix_civicrm_enable();
 }
@@ -169,17 +157,12 @@ function hrjobcontract_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrjobcontract_civicrm_disable() {
-  //Disable the Navigation menu and submenus
-  $sql = "UPDATE civicrm_navigation SET is_active=0 WHERE name IN ('job_contracts', 'hoursType', 'hours_location', 'pay_scale', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
-  CRM_Core_DAO::executeQuery($sql);
-  CRM_Core_BAO_Navigation::resetNavigation();
-
   _hrjobcontract_setActiveFields(0);
   return _hrjobcontract_civix_civicrm_disable();
 }
 
 function _hrjobcontract_setActiveFields($setActive) {
-  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('jobs','jobImport','hoursType', 'job_contracts')";
+  $sql = "UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('import_export_job_contracts', 'import_job_contracts', 'hoursType', 'pay_scale','hours_location', 'hrjc_contact_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason', 'hrjc_contract_end_reason')";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_BAO_Navigation::resetNavigation();
 
@@ -256,43 +239,6 @@ function hrjobcontract_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
     $metaDataFolders[] = $settingsDir;
   }
   $metaDataFolders = array_unique($metaDataFolders);
-}
-
-function hrjobcontract_civicrm_navigationMenu( &$params ) {
-  // Add sub-menu
-  $submenuItems = array();
-  $topMenuID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'job_contracts', 'id', 'name');
-  $parentID =  CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'import_export_job_contracts', 'id', 'name');
-  $submenuItems[] = array(
-      'attributes' => array(
-        'label' => "Import Job Contracts",
-        'name' => "import_job_contracts",
-        'url' => "civicrm/job/import",
-        'permission' => NULL,
-        'operator' => 'OR',
-        'separator' => NULL,
-        'parentID' => $parentID,
-        'navID' => 1,
-        'active' => 1
-      )
-  );
-  $submenuItems[] = array(
-      'attributes' => array(
-        //'label' => "Export Job Contracts",
-        'label' => 'Job Contract Report',
-        'name' => "export_job_contracts",
-        'url' => "civicrm/report/hrjobcontract/summary",
-        'permission' => NULL,
-        'operator' => 'OR',
-        'separator' => NULL,
-        'parentID' => $parentID,
-        'navID' => 2,
-        'active' => 1
-      )
-  );
-  if (!empty($submenuItems)) {
-    $params[$topMenuID]['child'][$parentID]['child'] = $submenuItems;
-  }
 }
 
 /**
@@ -470,9 +416,6 @@ function hrjobcontract_getSummaryFields($fresh = FALSE) {
 function hrjobcontract_civicrm_queryObjects(&$queryObjects, $type) {
   if ($type == 'Contact') {
     $queryObjects[] = new CRM_Hrjobcontract_BAO_Query();
-  }
-  elseif ($type == 'Report') {
-    $queryObjects[] = new CRM_Hrjobcontract_BAO_ReportHook();
   }
 }
 

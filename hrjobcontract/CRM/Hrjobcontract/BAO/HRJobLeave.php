@@ -33,7 +33,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
    * @static
    */
   static $_importableFields = array();
-  
+
   /**
    * Create a new HRJobLeave based on array-data
    *
@@ -42,13 +42,19 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
    *
    */
   public static function create($params) {
+      //If add_public_holidays has not been set or is null,
+      //make sure to set it to false (0)
+      if(empty($params['add_public_holidays'])) {
+        $params['add_public_holidays'] = 0;
+      }
       return parent::create($params);
   }
-  
+
   /**
    * Recalculating HR Absence Entitlement values for given Job Contract ID.
-   * 
+   *
    * @param int $jobContractId
+   * @throws \Exception
    */
   static function recalculateAbsenceEntitlement($jobContractId) {
     try {
@@ -72,11 +78,12 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
       throw new \Exception($e);
     }
   }
-  
+
   /**
    * Recalculating HR Absence Entitlement values for given Contact.
-   * 
-   * @param int $jobContractId
+   *
+   * @param int $contactId
+   * @throws \Exception
    */
   static function recalculateAbsenceEntitlementForContact($contactId) {
     try {
@@ -91,7 +98,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
       throw new \Exception($e);
     }
   }
-  
+
   static function getAllAbsencePeriods() {
     $data = array();
     $result = civicrm_api3('HRAbsencePeriod', 'get', array(
@@ -105,7 +112,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
     return $data;
   }
-  
+
   static function getAbsencePeriods($startDate = null, $endDate = null) {
     $data = array();
     $query = "SELECT * FROM civicrm_hrabsence_period ";
@@ -134,7 +141,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
     return $data;
   }
-  
+
   static function getLeavesForPeriod($contactId, $startDate = null, $endDate = null) {
     $data = CRM_Hrjobcontract_BAO_HRJobLeave::createAbsenceArray();
     $jobContracts = civicrm_api3('HRJobContract', 'get', array(
@@ -165,7 +172,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
     return $data;
   }
-  
+
   static function isJobDetailsInPeriod($jobDetails, $startDate = null, $endDate = null) {
     $result = true;
     if ($startDate && !empty($jobDetails['period_end_date'])) {
@@ -180,7 +187,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
     return $result;
   }
-  
+
   static function createAbsenceArray() {
     $data = array();
     $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array(
@@ -191,7 +198,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
     return $data;
   }
-  
+
   static function overwriteAbsenceEntitlementPeriod($contactId, $periodId, array $leaves) {
     CRM_Core_DAO::executeQuery('DELETE FROM civicrm_hrabsence_entitlement WHERE contact_id = %1 AND period_id = %2',
       array(

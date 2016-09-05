@@ -1,22 +1,32 @@
 <?php
 
-require_once 'HrJobRolesTestBase.php';
+use Civi\Test\HeadlessInterface;
+use Civi\Test\TransactionalInterface;
 
-class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
+/**
+ * Class CRM_Hrjobroles_BAO_HrJobRolesTest
+ *
+ * @group headless
+ */
+class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
 
+  use HrJobRolesTestTrait;
 
-  function setUp() {
-    parent::setUp();
-  }
-
-  function tearDown() {
-    parent::tearDown();
+  public function setUpHeadless() {
+    // job contract is installed before job roles since job roles is depend on it
+    // otherwise the installation of job roles will fail.
+    return \Civi\Test::headless()
+      ->install('org.civicrm.hrjobcontract')
+      ->installMe(__DIR__)
+      ->apply();
+    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
+    $jobContractUpgrader->install();
   }
 
   function testCreateJobRoleWithBasicData() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -46,7 +56,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
   function testCreateJobRoleWithOptionValueFields() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -72,7 +82,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
   function testGetContactRoles() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->individualCreate($contactParams);
+    $contactID = $this->createContact($contactParams);
 
     // create contracts
     $contract1 = $this->createJobContract($contactID, date('Y-m-d', strtotime('-3 years')), date('Y-m-d', strtotime('-1 years')));
@@ -97,6 +107,21 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends HrJobRolesTestBase {
     $this->createJobRole($roleParams3);
 
     $this->assertCount(3, CRM_Hrjobroles_BAO_HrJobRoles::getContactRoles($contactID));
+  }
+
+  public function testGetDepartmentsList() {
+    $contactParams = array("first_name" => "chrollo", "last_name" => "lucilfer");
+    $contactID =  $this->createContact($contactParams);
+    $contract =  $this->createJobContract($contactID);
+
+    $departmentID1 =  $this->createDepartment('special_investigation', 'Special Investigation');
+
+    $params = array('job_contract_id' => $contract->id, 'department' => $departmentID1);
+    $this->createJobRole($params);
+
+    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($contract->id);
+    $this->assertContains('Special Investigation', $departments);
+    $this->assertCount(1, $departments);
   }
 
 }

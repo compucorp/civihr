@@ -1,6 +1,6 @@
 ## Pre-requisites
 
-CiviCRM 4.5 
+CiviCRM 4.5
 
 > NOTE: CiviHR includes some significant changes to the nomal CiviCRM
 > user-experience.  As with any significant change or addition, CiviHR
@@ -58,7 +58,7 @@ individually:
  * org.civicrm.hremerg: Emergency Contacts
  * org.civicrm.hrident: Identification
  * org.civicrm.hrabsence: Absences
- * org.civicrm.hrjob: Jobs and Roles
+ * org.civicrm.hrjobcontract: Job Contracts
  * org.civicrm.hrmed: Medical and Disability
  * org.civicrm.hrqual: Qualifications
  * org.civicrm.hrreport: Reporting

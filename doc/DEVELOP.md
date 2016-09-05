@@ -51,20 +51,36 @@ schema, be sure to:
 ## Test
 
 To run the unit-tests, one must configure CiviCRM to run unit-tests, install
-civix, and link civix to CiviCRM. To validate that the link is setup, run:
+cv, and populate the cv vars file. To do that, run:
 
 ```bash
-user@host:/path/to/civihr/hrjob$ civix civicrm:ping
-Ping successful
+$ cv vars:fill
+Site: /path/to/your/installation/sites/default/civicrm.settings.php
+These fields were missing. Setting defaults:
+{
+    "ADMIN_EMAIL": "admin@example.com",
+    "ADMIN_PASS": "t0ps3cr3t",
+    "ADMIN_USER": "admin",
+    "CMS_TITLE": "Untitled installation",
+    "DEMO_EMAIL": "demo@example.com",
+    "DEMO_PASS": "t0ps3cr3t",
+    "DEMO_USER": "demo",
+    "SITE_TOKEN": "38022b28355040d28e1f6dd2f7248b96",
+    "TEST_DB_DSN": "mysql://dbUser:dbPass@dbHost/dbName?new_link=true"
+}
+Please edit /home/user/.cv.json
 ```
 
-To execute particular tests, use "civix test":
+As the command output suggests, you need to edit "~/.cv.json" with your installation ADMIN_PASS, DEMO_PASS
+and TEST_DB_DSN. You'll also need to add the "CMS_URL" option with the URL of you installation.
+
+To execute particular tests, use "phpunit4":
 
 ```bash
-user@host:/path/to/civihr/hrjob$ civix test api_v3_HRJobTest
+user@host:/path/to/civihr/hrjob$ phpunit4 tests/phpunit/api/v3/HRJobTest.php
 Adding Individual
 Adding Organization
-PHPUnit 3.6.10 by Sebastian Bergmann.
+PHPUnit 4.8.21 by Sebastian Bergmann.
 
 .
 Installing civicrm_tests_dev database
@@ -75,10 +91,16 @@ Time: 24 seconds, Memory: 28.25Mb
 OK (1 test, 4 assertions)
 ```
 
-(Note: Civix's design assumes that there are two databases. The "live database"
-used with "civix civicrm:ping" is part of a fully-functioning CiviCRM/CiviHR installation.
-The "headless testing database" is only used for testing -- it is conventionally
-called "civicrm_tests_dev".)
+To run all the tests for an extension, just run "phpunit4" without passing the test file:
+
+```bash
+user@host:/path/to/civihr/hrjob$ phpunit4
+```
+
+(Note: We're assuming that there are two databases. The "live database",
+used with "civix civicrm:ping", which is part of a fully-functioning CiviCRM/CiviHR installation.
+The "headless testing database" is, which is the one you configured in the "TEST_DB_DSN" option
+of the ~/.cv.json file.)
 
 (Note: For "hrjob", there's an extra pre-requisite: before running tests, run
 "hrjob/bin/setup.sh {CIVICRM_ROOT}".)

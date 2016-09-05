@@ -6,6 +6,9 @@
 </div>
 {literal}
     <script type="text/javascript">
+      jQuery(function() {
         document.dispatchEvent(new CustomEvent('contactsummaryLoad'));
+        window.contactsummaryLoad = true;
+      })
     </script>
 {/literal}
