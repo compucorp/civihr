@@ -1,0 +1,47 @@
+.CRM_Hrjobcontract_Form_Merge {
+  .help {
+    @extend %block-with-shadow;
+    border-radius: 0;
+    border-color: $gray;
+    background-color: #ffffff;
+    padding: 10px;
+  }
+
+  .crm-icon-button .ui-icon-check {
+    display: none;
+  }
+
+  .action-link {
+    display: inline-block;
+    margin-bottom: 55px;
+
+    &:nth-child(4) {
+      margin-left: 30px;
+    }
+
+    .crm-hover-button {
+      padding: 7px 12px !important;
+    }
+  }
+
+  table {
+    @extend .table-bordered, %open-sans-font-family;
+
+    th {
+      border-bottom: 0;
+      font-weight: bold !important;
+    }
+
+    td {
+      font-weight: 100 !important;
+    }
+
+    th,
+    tr,
+    tr td {
+      border: initial !important;
+      line-height: 35px;
+      padding-left: 15px;
+    }
+  }
+}
