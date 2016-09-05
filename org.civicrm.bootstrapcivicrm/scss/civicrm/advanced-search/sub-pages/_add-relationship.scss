@@ -1,0 +1,25 @@
+.CRM_Contact_Form_Task_AddToOrganization {
+  .help {
+    @extend %block-with-shadow;
+    border-radius: 0;
+    border-color: $gray;
+    background-color: #ffffff;
+    padding: 10px;
+  }
+
+  .crm-form-submit {
+    @extend %btn;
+  }
+
+  #_qf_AddToOrganization_cancel {
+    border: solid 1px $gray-dark !important;
+    background: none !important;
+    color: $gray-dark !important;
+    min-width: initial !important;
+
+    &:hover {
+      background: $gray-dark !important;
+      color: #ffffff !important;
+    }
+  }
+}
