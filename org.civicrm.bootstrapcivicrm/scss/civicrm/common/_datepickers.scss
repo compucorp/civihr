@@ -45,12 +45,12 @@
     }
 
     .ui-datepicker-prev::before {
-      @include fa-icon(13px, '\f0d9');
+      @include fa-icon($font-size: 13px, $content: '\f0d9');
       padding-left: 5px;
     }
 
     .ui-datepicker-next::before {
-      @include fa-icon(13px, '\f0da');
+      @include fa-icon($font-size: 13px, $content: '\f0da');
       padding-left: 15px;
     }
 
