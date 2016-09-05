@@ -12,18 +12,21 @@ define([
     'job-roles/directives/example',
     'common/services/angular-date/date-format',
     'common/modules/routers/compu-ng-route',
-    'common/directives/angular-date/date-input'
+    'common/directives/angular-date/date-input',
+    'common/ui-select'
 ], function () {
     'use strict';
 
     angular.module('hrjobroles', [
         'ngAnimate',
+        'ngSanitize',
         'common.angularDate',
         'compuNgRoute',
         'xeditable',
         'angular.filter',
         'ngResource',
         'ui.bootstrap',
+        'ui.select',
         'hrjobroles.controllers',
         'hrjobroles.directives',
         'hrjobroles.filters',
