@@ -8,9 +8,10 @@
     }
   }
   input[type=checkbox] + label[for],
-  input[type=radio] + label[for] {
+  input[type=radio] + label[for]{
+    vertical-align: middle;
     cursor: pointer;
-    margin-right: 15px !important;
+      margin-right: 15px !important;
   }
   input[type=radio] {
     &:checked + label[for]::before,

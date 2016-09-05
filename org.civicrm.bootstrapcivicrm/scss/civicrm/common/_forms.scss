@@ -572,7 +572,7 @@ $control-height: 30px;
       }
 
       &:after {
-        @include fa-icon(13px, '\f014');
+        @include fa-icon($font-size: 13px, $content: '\f014');
         top: -3px;
         position: relative;
         font-weight: normal;

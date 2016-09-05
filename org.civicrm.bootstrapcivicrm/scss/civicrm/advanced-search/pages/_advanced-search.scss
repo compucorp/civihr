@@ -2,6 +2,19 @@
   @import 'variables';
   @import 'labels';
 
+  #resetAdvancedSearch {
+    border: solid 1px $gray-dark !important;
+
+    &:hover {
+      background: $gray-dark !important;
+      color: #ffffff !important;
+    }
+
+    .crm-i {
+      display: none;
+    }
+  }
+
   td input + label + br {
     display: none;
   }

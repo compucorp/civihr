@@ -9,7 +9,7 @@
 
   .crm-clear-link {
     &::before {
-      @include fa-icon(13px, '\f00d');
+      @include fa-icon($font-size: 13px, $content: '\f00d');
     }
   }
 

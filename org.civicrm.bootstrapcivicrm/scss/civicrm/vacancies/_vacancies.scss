@@ -143,10 +143,74 @@
       margin-right: 3px;
 
       &:after {
-        @include fa-icon(13px, '\f067');
+        @include fa-icon($font-size: 13px, $content: '\f067');
         position: relative;
         top: -1px;
         color: #fff !important;
+      }
+    }
+  }
+
+  .CRM_HRRecruitment_Form_HRVacancy {
+    table:first-child {
+      tbody:first-child {
+        label[for^="dp"] {
+          position: relative;
+          height: 30px;
+          line-height: 30px;
+          margin: 7.5px 0;
+          display: block;
+
+          &:after {
+            @include fa-icon($font-size: 13px, $content: '\f073');
+            font-weight: normal;
+            position: absolute;
+            left: 338px;
+            top: 0;
+            color: $brand-primary;
+            z-index: 91;
+          }
+
+          &:before {
+            content: '';
+            position: absolute;
+            left: 327px;
+            top: 0;
+            width: 30px;
+            height: 28px;
+            border: 1px solid $crm-copy;
+            background: $crm-accordion-header-color;
+            z-index: 90;
+          }
+        }
+
+        .crm-form-time {
+          margin-left: 15px !important;
+          min-width: 70px !important;
+          max-width: 70px !important;
+        }
+
+        tr {
+          td {
+            vertical-align: middle !important;
+          }
+        }
+
+        &:not(.CRM_HRRecruitment_Form_HRVacancy_Template) {
+          tr:nth-child(n+5):nth-child(-n+7) {
+            td:first-child {
+              vertical-align: top !important;
+            }
+          }
+        }
+
+        &.CRM_HRRecruitment_Form_HRVacancy_Template {
+          tr:nth-child(n+4):nth-child(-n+6) {
+            td:first-child {
+              vertical-align: top !important;
+            }
+          }
+        }
       }
     }
   }
@@ -281,7 +345,7 @@
                     margin: 0;
 
                     &:after {
-                      @include fa-icon(13px, '\f040', #ffffff);
+                      @include fa-icon($font-size: 13px, $content: '\f040', $color: #ffffff);
                       font-weight: normal;
                     }
 

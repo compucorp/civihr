@@ -1,0 +1,18 @@
+.CRM_Contact_Form_Task_PDF {
+  label {
+    line-height: 45px;
+  }
+
+  select#document_type,
+  select#template{
+    width: 500px !important;
+  }
+
+  #s2id_autogen2 {
+    margin-bottom: 10px !important;
+  }
+
+  div.crm-block:nth-child(1) {
+    box-shadow: none;
+  }
+}
