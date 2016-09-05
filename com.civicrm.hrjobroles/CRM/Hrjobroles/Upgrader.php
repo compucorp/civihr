@@ -36,9 +36,11 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_1003() {
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `start_date` DATETIME DEFAULT 0');
-    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `end_date` DATETIME DEFAULT 0');
+  public function upgrade_1004() {
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `start_date` DATETIME DEFAULT NULL');
+    CRM_Core_DAO::executeQuery('ALTER TABLE `civicrm_hrjobroles` MODIFY COLUMN `end_date` DATETIME DEFAULT NULL');
+    //Update any end_date using "0000-00-00 00:00:00" as an empty value to NULL
+    CRM_Core_DAO::executeQuery("UPDATE `civicrm_hrjobroles` SET `end_date` = NULL WHERE end_date = '0000-00-00 00:00:00'");
 
     return TRUE;
   }

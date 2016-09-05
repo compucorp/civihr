@@ -28,12 +28,12 @@ define([
 
       /**
        * Checks if date should be considered empty.
-       * Empty date is saved to database as 0000-00-00 00:00:00
+       *
        * @param {String} date
        * @returns {boolean}
        */
       var isDateEmpty = function(date){
-        return date === '0000-00-00 00:00:00';
+        return date === null;
       };
 
       /**
@@ -909,16 +909,19 @@ define([
        */
       function jobRolesFromContracts(contractIds) {
         return HRJobRolesService.getAllJobRoles(contractIds).then(function (data) {
-          // Assign data
+
           job_roles.present_job_roles = [];
           job_roles.past_job_roles = [];
 
           data.values.forEach(function (object_data) {
-            var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
             var todaysDate = moment().startOf('day');
-            end_date =  moment(end_date).startOf('day');
+            var endDate = null;
 
-            if (!end_date || moment(end_date).isSameOrAfter(todaysDate)) {
+            if(!isDateEmpty(object_data.end_date)) {
+              endDate = moment(object_data.end_date).startOf('day');
+            }
+
+            if (!endDate || endDate.isSameOrAfter(todaysDate)) {
               job_roles.present_job_roles.push(object_data);
             } else {
               job_roles.past_job_roles.push(object_data);
