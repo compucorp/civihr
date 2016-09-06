@@ -2,8 +2,9 @@
   @import 'variables';
   @import 'labels';
 
-  #resetAdvancedSearch {
+  a#resetAdvancedSearch {
     border: solid 1px $gray-dark !important;
+    border-radius: 2 !important;
 
     &:hover {
       background: $gray-dark !important;

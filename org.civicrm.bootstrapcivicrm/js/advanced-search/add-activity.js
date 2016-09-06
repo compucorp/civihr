@@ -6,20 +6,6 @@ CRM.$(function() {
   'use strict';
 
   /**
-   * Checks if the "org.civicrm.bootstrapcivicrm" is installed
-   * @return {Promise} Resolves to a boolean
-   */
-  function isBootstrapcivicrmInstalled() {
-    return CRM.api3('Extension', 'get', {
-      'sequential': 1
-    }).then(function(result) {
-      return result.values.filter(function(extension) {
-        return extension.key === 'org.civicrm.bootstrapcivicrm' && extension.status === 'installed';
-      }).length > 0;
-    });
-  }
-
-  /**
    * Replaces the "with contact" links with a multiselect "select2" dropdown
    */
   function addSelect2DropdownForWithContact() {
@@ -47,10 +33,5 @@ CRM.$(function() {
           .join(',');
       });
   }
-
-  isBootstrapcivicrmInstalled().then(function(installed) {
-    if (installed) {
-      addSelect2DropdownForWithContact();
-    }
-  });
+  addSelect2DropdownForWithContact();
 });
