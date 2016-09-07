@@ -901,6 +901,11 @@ define([
             job_roles.contractsData = contractsData;
           } else {
             job_roles.empty = 'No Job Contracts found for this Contact!';
+
+            // Hide the message after some seconds
+            $timeout(function () {
+              job_roles.empty = null;
+            }, 3000);
           }
 
           job_roles.job_contract_ids = jobContractIds;
