@@ -1,0 +1,109 @@
+.page-civicrm-import-contact {
+  @mixin table-header {
+    font-weight: bold !important;
+    color: $gray-darker;
+  }
+
+  #wizard-steps {
+    display: none;
+  }
+
+  .crm-form-block.crm-form-block {
+    box-shadow: none;
+    padding: 0 !important;
+
+    > .crm-submit-buttons {
+      margin-left: 0 !important;
+    }
+
+    h2 {
+      position: initial !important;
+      margin: 0 0 20px 0;
+    }
+
+    h3 {
+      @extend .collapsible-title;
+      margin-top: 20px;
+    }
+
+    .help {
+      @extend %block-with-shadow;
+      border-radius: 0;
+      border-color: $gray;
+      background-color: #ffffff;
+
+      + .crm-submit-buttons {
+        display: none;
+      }
+    }
+
+    .label {
+      text-align: left !important;
+      vertical-align: middle !important;
+    }
+  }
+
+  form > .crm-form-block.crm-form-block {
+    padding: 20px 20px 0 20px !important;
+  }
+
+  #map-field {
+    table.selector {
+      width: 100% !important;
+      margin-bottom: 20px;
+    }
+  }
+
+  .crm-form-select {
+    @extend .select2-container;
+  }
+
+  .CRM_Contact_Import_Form_Preview {
+    > .crm-form-block.crm-form-block {
+      padding: 20px 0 0 0 !important;
+    }
+
+    .help {
+      margin: 20px;
+    }
+
+    h2 {
+      margin: 0 20px !important;
+    }
+
+    #map-field,
+    #preview-counts {
+      margin: 0 20px;
+    }
+
+    #preview-counts {
+      width: calc(100% - 40px) !important;
+      margin-bottom: 20px;
+
+      tr {
+        td:first-child {
+          @include table-header();
+        }
+      }
+    }
+  }
+
+  #map-field,
+  #preview-counts {
+    .columnheader {
+      td {
+        @include table-header();
+      }
+    }
+  }
+
+  #summary-counts {
+    width: 100% !important;
+
+    tr {
+      td:first-child {
+        @include table-header();
+      }
+    }
+  }
+}
