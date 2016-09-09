@@ -194,10 +194,10 @@ class CRM_HRRecruitment_BAO_HRVacancy extends CRM_HRRecruitment_DAO_HRVacancy {
           }
           $vacancy['start_date'] = !empty($vacancy['start_date']) ? CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') : NULL;
           $vacancy['end_date'] = !empty($vacancy['end_date']) ? CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y') : NULL;
+
           $vacancyEntry[$vacancy['status_id']]['vacancies'][$id] = array(
-            'date' => CRM_Utils_Date::customFormat($vacancy['start_date'], '%b %E, %Y') . ' - ' . CRM_Utils_Date::customFormat($vacancy['end_date'], '%b %E, %Y'),
             'position' => $position,
-            'location' => CRM_Utils_Array::value('location', $vacancy),
+            'location' => self::getOptionLabel($vacancy, 'location'),
             'date' => "{$vacancy['start_date']} - {$vacancy['end_date']}",
           );
 
@@ -423,6 +423,23 @@ WHERE       ov.name = '{$status}'
     return $position;
   }
 
+  /**
+   * Retrieve the label of a pseudoconstant for a vacancy
+   * given the BAO name and pseudoconstant name
+   *
+   * @param array $vacancyVal Single vacancy values
+   * @param string $option The pseudoconstant name we want to check against
+   * @param string $baoName BAO name for the pseudoconstant
+   *
+   * @return String|False|null
+   */
+  public static function getOptionLabel($vacancyVal, $option, $baoName = 'CRM_HRRecruitment_BAO_HRVacancy') {
+    $optionValue = CRM_Utils_Array::value($option, $vacancyVal);
+    if ($optionValue !== FALSE) {
+      $optionValue = CRM_Core_PseudoConstant::getLabel($baoName, $option, $optionValue);
+    }
 
+    return $optionValue;
+  }
 
 }
