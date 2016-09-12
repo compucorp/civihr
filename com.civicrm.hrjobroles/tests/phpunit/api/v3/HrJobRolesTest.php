@@ -20,15 +20,19 @@ class api_v3_HrJobRolesTest extends PHPUnit_Framework_TestCase implements Headle
     $jobContractUpgrader->install();
   }
 
-  public function testGetCurrentDepartments() {
-    $mock = $this->getMockBuilder(CRM_Hrjobroles_BAO_HrJobRoles::class)
-                 ->setMethods(['getCurrentDepartmentsList'])
-                 ->getMock();
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Please specify 'job_contract_id'
+   */
+  public function testGetCurrentDepartmentsExpectsJobContractId() {
+    civicrm_api3('HrJobRoles', 'getcurrentdepartments');
+  }
 
-    $mock->expects($this->once())
-         ->method('getCurrentDepartmentsList')
-         ->with($this->equalTo('34'));
-
-    $result = civicrm_api3('HrJobRoles', 'getcurrentdepartments', array('job_contract_id' => '34'));
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Please specify 'job_contract_id'
+   */
+  public function testGetCurrentDepartmentsExpectsJobContractIdToBeNotNull() {
+    civicrm_api3('HrJobRoles', 'getcurrentdepartments', array('job_contract_id' => NULL));
   }
 }
