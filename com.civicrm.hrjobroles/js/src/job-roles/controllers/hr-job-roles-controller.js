@@ -2,12 +2,16 @@ define([
   'common/angular',
   'job-roles/controllers/controllers',
   'common/moment',
+  'common/lodash',
   'common/filters/angular-date/format-date'
-], function (angular, controllers, moment) {
+], function (angular, controllers, moment, _) {
   'use strict';
 
-  controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
-    function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters) {
+  controllers.controller('HRJobRolesController',[
+    '$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q',
+    'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
+    'DOMEventTrigger',
+    function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger) {
       $log.debug('Controller: HRJobRolesController');
 
       $scope.format = HR_settings.DATE_FORMAT;
@@ -430,15 +434,15 @@ define([
 
         var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
         var validateResponse = validateDates({
-            'start': $scope.edit_data.new_role_id.newStartDate,
-            'end': $scope.edit_data.new_role_id.newEndDate,
-            'contractStart': contract.start_date,
-            'contractEnd': contract.end_date,
-          },
-          {
-            'start': $scope.errors.newStartDate,
-            'end': $scope.errors.newEndDate
-          });
+          'start': $scope.edit_data.new_role_id.newStartDate,
+          'end': $scope.edit_data.new_role_id.newEndDate,
+          'contractStart': contract.start_date,
+          'contractEnd': contract.end_date,
+        },
+        {
+          'start': $scope.errors.newStartDate,
+          'end': $scope.errors.newEndDate
+        });
 
         if (validateResponse) {
           newRole = angular.copy($scope.edit_data.new_role_id);
@@ -453,6 +457,8 @@ define([
 
           // Create the new job role
           createJobRole(newRole).then(function () {
+            updateHeaderInfo(newRole);
+
             // Hide the add new form
             $scope.add_new = false;
 
@@ -483,14 +489,16 @@ define([
       };
 
       /**
-       * Removes the Role based on Role ID
-       * @param row_id
+       * Removes the given Role
+       * @param {object} jobRole
        */
-      $scope.removeRole = function (row_id) {
+      $scope.removeRole = function (jobRole) {
         $log.debug('Remove Role');
 
         // Delete job role
-        deleteJobRole(row_id).then(function () {
+        deleteJobRole(jobRole.id).then(function () {
+          updateHeaderInfo(jobRole);
+
           return getJobRolesList($scope.$parent.contactId);
         });
       };
@@ -519,6 +527,8 @@ define([
 
         // Update the job role
         updateJobRole(role_id, updatedRole).then(function () {
+          updateHeaderInfo(updatedRole);
+
           return getJobRolesList($scope.$parent.contactId);
         });
       };
@@ -878,6 +888,7 @@ define([
                 start_date: data.values[i]['period_start_date'],
                 end_date: data.values[i]['period_end_date'],
                 status: status,
+                is_current: data.values[i]['is_current'],
                 revisions: data.values[i]['revisions']
               };
 
@@ -1068,6 +1079,23 @@ define([
         var dateString = formatDate(date, 'YYYY-MM-DD');
 
         return dateString !== 'Unspecified' ? dateString : null;
+      }
+
+      /**
+       * Triggers the update of the contact header via the `hrui` extension
+       * by emitting a DOM event with the roles data
+       *
+       * Given that the header reflects data only related to the current contract,
+       * the header update happens only for job roles belonging that particular contract
+       */
+      function updateHeaderInfo(jobRole) {
+        if (job_roles.contractsData[jobRole.job_contract_id].is_current) {
+          HRJobRolesService.getCurrentDepartments(jobRole.job_contract_id).then(function (departments) {
+            DOMEventTrigger('updateContactHeader', {
+              roles: { departments: departments }
+            });
+          });
+        }
       }
     }
   ]);

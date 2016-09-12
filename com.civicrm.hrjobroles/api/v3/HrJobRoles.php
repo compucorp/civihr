@@ -44,3 +44,20 @@ function civicrm_api3_hr_job_roles_delete($params) {
 function civicrm_api3_hr_job_roles_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * HrJobRoles.getcurrentdepartments API
+ *
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_hr_job_roles_getCurrentDepartments($params) {
+  if (empty($params['job_contract_id'])) {
+    throw new API_Exception(ts("Please specify 'job_contract_id' value."));
+  }
+
+  $result = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($params['job_contract_id']);
+
+  return civicrm_api3_create_success($result, $params);
+}

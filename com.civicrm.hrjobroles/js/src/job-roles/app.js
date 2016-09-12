@@ -1,4 +1,9 @@
 define([
+    'common/ui-select',
+    'common/services/angular-date/date-format',
+    'common/services/dom-event-trigger',
+    'common/modules/routers/compu-ng-route',
+    'common/directives/angular-date/date-input',
     'job-roles/vendor/angular-editable',
     'job-roles/vendor/angular-filter',
     'job-roles/controllers/controllers',
@@ -10,21 +15,18 @@ define([
     'job-roles/services/date-validation',
     'job-roles/services/hr-job-roles-service-filter',
     'job-roles/directives/example',
-    'common/services/angular-date/date-format',
-    'common/modules/routers/compu-ng-route',
-    'common/directives/angular-date/date-input',
-    'common/ui-select'
 ], function () {
     'use strict';
 
     angular.module('hrjobroles', [
         'ngAnimate',
         'ngSanitize',
+        'ngResource',
         'common.angularDate',
+        'common.services',
         'compuNgRoute',
         'xeditable',
         'angular.filter',
-        'ngResource',
         'ui.bootstrap',
         'ui.select',
         'hrjobroles.controllers',

@@ -148,13 +148,13 @@ define([
 
                 modalInstance = $modal.open(options);
 
-                modalInstance.result.then(function(contract){
-                    ContractService.changeHeaderInfo();
-                    +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+                modalInstance.result.then(function (contract){
+                  ContractService.updateHeaderInfo();
+                  +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
 
-                    if (+contract.is_primary) {
-                        $scope.toggleIsPrimary(contract.id);
-                    }
+                  if (+contract.is_primary) {
+                    $scope.toggleIsPrimary(contract.id);
+                  }
                 });
             }
 
@@ -189,17 +189,16 @@ define([
                     }
                 });
 
-                modalInstance.result.then(function(confirm){
-                    if (confirm) {
-                        $scope.$emit('hrjc-loader-show');
-                        ContractService.delete(contractId).then(function(result){
-
-                            if (!result.is_error) {
-                                ContractService.changeHeaderInfo();
-                                removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
-                            }
-                        });
-                    }
+                modalInstance.result.then(function (confirm) {
+                  if (confirm) {
+                    $scope.$emit('hrjc-loader-show');
+                    ContractService.delete(contractId).then(function (result){
+                      if (!result.is_error) {
+                        ContractService.updateHeaderInfo();
+                        removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
+                      }
+                    });
+                  }
                 })
 
             }
