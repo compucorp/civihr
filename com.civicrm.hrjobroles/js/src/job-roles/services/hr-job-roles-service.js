@@ -428,9 +428,10 @@ define([
             },
 
             /**
-             * [getCurrentDepartments description]
-             * @param  {[type]} contractId [description]
-             * @return {[type]}            [description]
+             * Returns the current departments of a given contract
+             *
+             * @param  {int} contractId
+             * @return {Promise} resolves to an array of departments
              */
             getCurrentDepartments: function (contractId) {
               return CRM.api3('HrJobRoles', 'getcurrentdepartments', {

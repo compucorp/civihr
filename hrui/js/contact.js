@@ -55,12 +55,8 @@
    * @param  {object} contract
    */
   function updateContactHeaderRolesDetails(roles) {
-    if (roles) {
-      if (roles.departments && roles.departments.length > 0) {
-        $('.crm-contact-detail-departments').html('<strong>Department:</strong> ' + roles.departments.join(', '));
-      } else {
-        $('.crm-contact-detail-departments').html('');
-      }
+    if (roles && roles.departments && roles.departments.length > 0) {
+      $('.crm-contact-detail-departments').html('<strong>Department:</strong> ' + roles.departments.join(', '));
     } else {
       $('.crm-contact-detail-departments').html('');
     }
