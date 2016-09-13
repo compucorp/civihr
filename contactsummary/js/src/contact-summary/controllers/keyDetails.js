@@ -31,8 +31,13 @@ define([
                 }
 
                 this.primaryContract = response;
-                this.primaryContract.lengthOfService = getLengthOfService(response.start_date, response.end_date);
-            }.bind(this))
+            }.bind(this)).then(function (response) {
+                return Contract.getLengthOfServiceYmd();
+            })
+            .then(function (response) {
+                this.primaryContract.lengthOfService = response;
+            }
+            .bind(this))
             .finally(function () {
                 this.ready = true;
             }.bind(this));
@@ -41,25 +46,6 @@ define([
     /////////////////////
     // Private Members //
     /////////////////////
-
-    function getLengthOfService(start, end) {
-        var now = moment();
-
-        start = moment(start, 'YYYY-MM-DD');
-        end = end ? moment(end, 'YYYY-MM-DD') : now;
-
-        if(end.isAfter(now)) {
-            end = now;
-        }
-
-        var lengthOfService = moment.duration(end.diff(start));
-
-        return {
-            days: lengthOfService.days(),
-            months: lengthOfService.months(),
-            years: lengthOfService.years()
-        };
-    }
 
     controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', KeyDetailsCtrl]);
 });

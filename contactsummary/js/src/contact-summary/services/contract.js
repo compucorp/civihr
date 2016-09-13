@@ -180,6 +180,40 @@ define([
                 });
         };
 
+        /**
+         * @ngdoc method
+         * @name getLengthOfServiceYmd
+         * @methodOf ContractService
+         * @returns {*}
+         */
+        factory.getLengthOfServiceYmd = function () {
+            var deferred = $q.defer();
+            var val = null;
+            ContactDetails.get()
+            .then(function(response) {
+                return Api.post(
+                    'HRJobContract',
+                    {
+                        sequential: 0,
+                        contact_id: response.id
+                    },
+                    'getlengthofserviceymd'
+                )
+            })
+            .then(function(response) {
+                if (response.is_error) {
+                    return;
+                }
+                val = response.values;
+                deferred.resolve(val);
+            })
+            .catch(function (response) {
+                deferred.reject(response);
+            });
+
+            return deferred.promise;
+        };
+
         /////////////////////
         // Private Members //
         /////////////////////
