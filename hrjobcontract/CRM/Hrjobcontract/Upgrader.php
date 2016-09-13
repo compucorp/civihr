@@ -541,6 +541,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1015();
     $this->upgrade_1016();
     $this->upgrade_1017();
+    $this->upgrade_1019();
   }
 
   function upgrade_1001() {
@@ -916,6 +917,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   function upgrade_1018() {
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('export_job_contracts')");
     CRM_Core_BAO_Navigation::resetNavigation();
+
+    return true;
+  }
+
+  /**
+   * Upgrade Length of Service values.
+   * 
+   * @return TRUE
+   */
+  function upgrade_1019() {
+    CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfServiceAllContacts();
 
     return true;
   }

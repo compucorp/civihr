@@ -35,7 +35,7 @@ define([
                 return Contract.getLengthOfServiceYmd();
             })
             .then(function (response) {
-                this.primaryContract.lengthOfService = response;
+                this.lengthOfService = response;
             }
             .bind(this))
             .finally(function () {

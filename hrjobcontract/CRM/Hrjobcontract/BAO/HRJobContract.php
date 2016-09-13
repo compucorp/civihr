@@ -205,7 +205,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       $detailsValues = CRM_Utils_Array::first($details['values']);
       if (empty($detailsValues['period_end_date'])) {
         $dates[$detailsValues['period_start_date']] = null;
-        break;
+        continue;
       }
       if (!empty($dates[$detailsValues['period_start_date']])) {
         if ($detailsValues['period_end_date'] > $dates[$detailsValues['period_start_date']]) {
@@ -268,6 +268,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @return int
    */
   protected static function calculateLength($serviceDates, $date, $break) {
+    if (empty($serviceDates['startDate'])) {
+      return 0;
+    }
     // Restrict $serviceEndDate to the specified date,
     // so we won't get an infinite Service length.
     if (!$serviceDates['endDate'] || $serviceDates['endDate'] > $date) {
@@ -365,7 +368,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       )
     );
     if ($result->fetch()) {
-      return $result->length_of_service;
+      return (int)$result->length_of_service;
     }
     return 0;
   }
