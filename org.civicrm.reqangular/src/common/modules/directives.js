@@ -1,6 +1,6 @@
 define([
   'common/angular',
-  'common/decorators/ui-select/ui-select-choices-custom-scrollbars',
+  'common/decorators/ui-select/ui-select-choices',
   'common/decorators/angular-date/datepicker-addon',
   'common/ui-select',
   'common/modules/templates',
