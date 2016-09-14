@@ -172,7 +172,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Return an associative array with Contracts dates.
+   * Return an associative array with Contracts dates in format below:
+   * [
+   *   'start_date1' => 'end_date1',
+   *   'start_date2' => 'end_date2',
+   *   'start_date3' => 'end_date3',
+   * ];
    *
    * @param array $contracts
    * @param string $date Y-m-d format of a date for which we calculate the result 
@@ -181,24 +186,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    */
   protected static function getContractDates($contracts, $date) {
     $dates = array();
-    // Fill $dates array with the Contract Start and End dates
-    // to get the data structure as below:
-    // $dates = [
-    //   'start_date1' => 'end_date1',
-    //   'start_date2' => 'end_date2',
-    //   'start_date3' => 'end_date3',
-    // ];
     foreach ($contracts as $contract) {
-      if ($contract['period_start_date'] > $date) {
-        continue;
+      if ($contract['period_start_date'] <= $date) {
+        $dates[$contract['period_start_date']] = !empty($contract['period_end_date']) ? $contract['period_end_date']  : null;
       }
-      if (empty($contract['period_end_date'])) {
-        $dates[$contract['period_start_date']] = null;
-        continue;
-      }
-      $dates[$contract['period_start_date']] = $contract['period_end_date'];
     }
-
     // Sorting $dates array by keys.
     ksort($dates);
 
