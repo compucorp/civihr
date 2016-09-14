@@ -27,4 +27,24 @@
   #helphtml {
     margin: 0 0 20px 0;
   }
+
+  #attachments {
+    > .form-layout-compressed {
+      width: 100%;
+
+      tr {
+        &:first-child {
+          td {
+            padding-bottom: 20px;
+          }
+        }
+
+        &.attachment-fieldset {
+          td {
+            padding-bottom: 13px;
+          }
+        }
+      }
+    }
+  }
 }

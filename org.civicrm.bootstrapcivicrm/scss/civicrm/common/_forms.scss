@@ -268,6 +268,10 @@ $control-height: 30px;
         abbr {
           top: 0;
         }
+
+        .select2-chosen {
+          color: $brand-primary;
+        }
       }
 
       &.select2-container-active {
@@ -599,5 +603,9 @@ $control-height: 30px;
     > .crm-i {
       color: $brand-primary !important;
     }
+  }
+
+  .crm-marker {
+    color: $brand-danger;
   }
 }
