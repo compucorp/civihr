@@ -131,12 +131,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
 
     // Getting all Job Contracts for given Contact ID.
-    $contracts = civicrm_api3('HRJobContract', 'get', array(
-      'sequential' => 1,
-      'contact_id' => (int)$contactId,
-      'deleted' => 0,
-      'options' => array('limit' => 0),
-    ));
+    $contracts = self::getContactContracts($contactId);
 
     return self::calculateLength(
       self::getServiceDates(
@@ -157,6 +152,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $contracts = civicrm_api3('HRJobContract', 'get', array(
       'sequential' => 1,
       'contact_id' => $cuid,
+      'deleted' => 0,
       'options' => array('limit' => 0),
     ));
     $contracts = $contracts['values'];
@@ -192,21 +188,15 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     //   'start_date2' => 'end_date2',
     //   'start_date3' => 'end_date3',
     // ];
-    foreach ($contracts['values'] as $contract) {
-      $details = civicrm_api3('HRJobDetails', 'get', array(
-        'sequential' => 1,
-        'jobcontract_id' => (int)$contract['id'],
-        'period_start_date' => array('<=' => $date),
-      ));
-      if (empty($details['values'])) {
+    foreach ($contracts as $contract) {
+      if ($contract['period_start_date'] > $date) {
         continue;
       }
-      $detailsValues = CRM_Utils_Array::first($details['values']);
-      if (empty($detailsValues['period_end_date'])) {
-        $dates[$detailsValues['period_start_date']] = null;
+      if (empty($contract['period_end_date'])) {
+        $dates[$contract['period_start_date']] = null;
         continue;
       }
-      $dates[$detailsValues['period_start_date']] = $detailsValues['period_end_date'];
+      $dates[$contract['period_start_date']] = $contract['period_end_date'];
     }
 
     // Sorting $dates array by keys.
