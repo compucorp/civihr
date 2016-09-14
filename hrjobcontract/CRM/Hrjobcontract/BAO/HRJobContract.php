@@ -157,6 +157,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $contracts = civicrm_api3('HRJobContract', 'get', array(
       'sequential' => 1,
       'contact_id' => $cuid,
+      'options' => array('limit' => 0),
     ));
     $contracts = $contracts['values'];
     $contractsList = array();
@@ -191,8 +192,6 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     //   'start_date2' => 'end_date2',
     //   'start_date3' => 'end_date3',
     // ];
-    // If there are two (or more) Contracts starting on the same day
-    // then we pick only the one with latest End date.
     foreach ($contracts['values'] as $contract) {
       $details = civicrm_api3('HRJobDetails', 'get', array(
         'sequential' => 1,
@@ -205,12 +204,6 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       $detailsValues = CRM_Utils_Array::first($details['values']);
       if (empty($detailsValues['period_end_date'])) {
         $dates[$detailsValues['period_start_date']] = null;
-        continue;
-      }
-      if (!empty($dates[$detailsValues['period_start_date']])) {
-        if ($detailsValues['period_end_date'] > $dates[$detailsValues['period_start_date']]) {
-          $dates[$detailsValues['period_start_date']] = $detailsValues['period_end_date'];
-        }
         continue;
       }
       $dates[$detailsValues['period_start_date']] = $detailsValues['period_end_date'];
