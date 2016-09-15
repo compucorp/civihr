@@ -8,9 +8,17 @@
     display: none;
   }
 
+  #dataSource {
+    min-width: 250px;
+  }
+
   .crm-form-block.crm-form-block {
     box-shadow: none;
     padding: 0 !important;
+
+    td {
+      color: $crm-copy;
+    }
 
     > .crm-submit-buttons {
       margin-left: 0 !important;
@@ -27,11 +35,6 @@
     }
 
     .help {
-      @extend %block-with-shadow;
-      border-radius: 0;
-      border-color: $gray;
-      background-color: #ffffff;
-
       + .crm-submit-buttons {
         display: none;
       }
@@ -105,5 +108,12 @@
         @include table-header();
       }
     }
+  }
+
+  #map-field > .selector,
+  #preview-counts,
+  #summary-counts {
+    box-shadow: none !important;
+    border: 1px solid $crm-background;
   }
 }
