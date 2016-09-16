@@ -176,7 +176,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 /* Absence view page */
 .page-civicrm-absence-set .crm-container table.absencedetail tbody tr td:first-child {
     font-weight: bold;
-} 
+}
 
 .page-civicrm-absence-set .crm-container table#tblabsence tbody tr:last-child{
     font-weight: bold;
@@ -187,7 +187,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 
 .page-civicrm-absence-set .crm-container table {
     width:70% !important;
-} 
+}
 
 .page-civicrm-absence-set #tabs-wrapper h1 {
     display: none;
@@ -203,4 +203,70 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 
 .page-civicrm-absence-set table.abempInfo tr td:last-child, .page-civicrm-absence-set table.absencedetail tr td:last-child {
     border-right:none;
-} 
+}
+
+
+/*My absences*/
+.hrabsence-container button.ui-multiselect{
+  border-radius: 0px;
+  height: 32px;
+  padding: 6px 12px;
+  font-size: 12px;
+  line-height: 1.42857143;
+  color: #586277;
+  background: #fff;
+  margin: 0 15px;
+  border: 1px solid #727e8a;
+}
+
+.page-civicrm-absences .ui-multiselect-menu ul{
+  background-color: #FFF !important;
+}
+
+.page-civicrm-absences .ui-multiselect-single .ui-multiselect-checkboxes label,
+.ui-multiselect-checkboxes label{
+  border-radius: 0;
+  border: 0;
+  color: #727E8A;
+  font-size: 12px;
+}
+
+.page-civicrm-absences .ui-multiselect-menu .ui-state-hover {
+  color: #727E8A;
+  background: #F3F6F7;
+  border: none;
+}
+
+.page-civicrm-absences .ui-multiselect-checkboxes li{
+  padding-right: 0px;
+}
+.page-civicrm-absences .ui-multiselect-menu{
+  border: 1px solid #799bd1;
+  padding: 0 !important;
+  border-radius: 0;
+}
+.page-civicrm-absences .ui-multiselect-header{
+  border-radius: 0;
+  background: #F3F6F7;
+  font-weight: 400;
+  border: 0;
+  margin-bottom: 0;
+  padding: 5px;
+}
+.page-civicrm-absences .ui-multiselect-checkboxes label input{
+  margin-left: 5px;
+}
+.page-civicrm-absences .ui-multiselect-checkboxes label{
+  padding: 5px;
+}
+
+
+
+/*New absence*/
+.page-civicrm-absence .CRM_HRAbsence_Form_AbsenceRequest .crm-i {
+  display: none;
+}
+.page-civicrm-absence textarea.crm-form-textarea{
+  width: 500px !important;
+  height: 200px;
+}
