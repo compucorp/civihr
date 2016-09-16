@@ -67,7 +67,7 @@ define([
 
                         var dob = response.values[0].birth_date;
                         var age = moment(dob, 'YYYY-MM-DD').isValid()
-                            ? moment(moment(dob, 'YYYY-MM-DD')).fromNow(true)
+                            ? calculateAge(dob)
                             : '';
 
                         factory.setDataKey('id', contactId);
@@ -84,6 +84,16 @@ define([
             }
 
             return deferred.promise;
+        }
+
+      /**
+       * Calculate age from birth date
+       *
+       * @param {string} dateOfBirth Date of birth in a YYYY-MM-DD format
+       * @returns {string}
+       */
+        function calculateAge(dateOfBirth) {
+            return moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
         }
 
         return factory;
