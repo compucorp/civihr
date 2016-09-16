@@ -583,7 +583,7 @@ ORDER BY parent_id, weight";
       // get home menu from db
       $homeParams = array('name' => 'Home');
       $homeNav = array();
-      $homeIcon = '<img src="' . $config->userFrameworkResourceURL . 'i/logo16px.png" style="vertical-align:middle;" />';
+      $homeIcon = '<img src="' . $config->userFrameworkResourceURL . '/tools/extensions/civihr/assets/civihr.png" style="height: 20px; vertical-align:middle;" />';;
       self::retrieve($homeParams, $homeNav);
       if ($homeNav) {
         if (array_key_exists('query', parse_url($homeNav['url']))) {
