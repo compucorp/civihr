@@ -40,8 +40,8 @@
     </tr>
     <tr class="crm-event-manage-eventinfo-form-block-start_date">
       <td class="label">{ts}Dates{/ts}</td>
-      <td>{include file="CRM/common/jcalendar.tpl" elementName=start_date}</td>
-      <td>{include file="CRM/common/jcalendar.tpl" elementName=end_date}</td>
+      <td>{include file="CRM/common/jcalendar.tpl" elementName=start_date}<span class="fa fa-calendar"></span></td>
+      <td>{include file="CRM/common/jcalendar.tpl" elementName=end_date}<span class="fa fa-calendar"></span></td>
     </tr>
   </table>
   <table id="tblabsence" class="report">
