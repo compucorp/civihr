@@ -258,8 +258,34 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .page-civicrm-absences .ui-multiselect-checkboxes label input {
   margin-left: 5px;
 }
+
 .page-civicrm-absences .ui-multiselect-checkboxes label {
   padding: 5px;
+}
+
+.page-civicrm-absences .hrabsence-tabs-region ul {
+  margin: 3px 0 0 0 !important;
+}
+
+.page-civicrm-absences .hrabsence-tabs-region li {
+  height: 40px;
+  margin: 0;
+  border: none;
+  line-height: 40px;
+  background: #FFF;
+}
+
+.page-civicrm-absences .hrabsence-tabs-region li a{
+  color: #42AFCB;
+}
+
+.page-civicrm-absences .hrabsence-tabs-region li.highlight {
+  background: #42AFCB;
+}
+
+.page-civicrm-absences .hrabsence-tabs-region li.highlight a {
+  color: #FFF;
+  font-weight: 400;
 }
 
 /*New absence*/
