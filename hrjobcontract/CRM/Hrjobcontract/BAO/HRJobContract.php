@@ -20,6 +20,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $instance = new self();
     $instance->copyValues($params);
     $instance->save();
+    $instance->find(true);
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     if ((is_numeric(CRM_Utils_Array::value('is_primary', $params)) || $hook === 'create') && empty($params['import'])) {
@@ -30,6 +31,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     if ($deleted)
     {
         CRM_Hrjobcontract_JobContractDates::removeDates($instance->id);
+        self::updateLengthOfService($instance->contact_id);
     }
 
     if (function_exists('module_exists') && module_exists('rules')) {
@@ -284,6 +286,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
 
   /**
    * Update Length of Service for specific Contact.
+   *
+   * @param int $contactId
    *
    * @return bool
    */
