@@ -5,7 +5,8 @@ define([
   'common/ui-select',
   'common/modules/templates',
   'common/modules/controllers',
-  'common/modules/services'
+  'common/modules/services',
+  'common/modules/apis'
 ], function (angular, uiSelectChoices, uiSelect) {
   'use strict';
 
