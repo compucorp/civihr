@@ -3,10 +3,6 @@ define([
 ], function (ps) {
   'use strict';
 
-  /**
-   * Decorates ui-select-choices directive, in order for it to have custom scrollbars,
-   * using the "perfect-scrollbar" plugin.
-   */
   return ['$delegate', function ($delegate) {
     var directive = $delegate[0];
     var origCompile = directive.compile;
@@ -17,12 +13,17 @@ define([
       return function (scope, element) {
         link.apply(this, arguments);
 
-        if (element.closest('.civihr-ui-select').length) {
+        // Enabling the "perfect scrollbar" plugin
+        var civihrUiSelect = element.closest('.civihr-ui-select');
+        if (civihrUiSelect.length) {
           ps.initialize(element[0]);
+          
+          // Adding the "contactList" property to the controller
+          scope.$select.contactList = civihrUiSelect.attr('contacts') !== undefined;
         }
       };
     };
-    
+
     return $delegate;
   }];
 });
