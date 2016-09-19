@@ -19,12 +19,11 @@
 
 .hrabsence-tabs-region {
     width: 15%;
-    padding: 0.8em 0.8em 0.8em 0;
-    margin: 1em 1em 1em 0;
+    font-weight: 600;
 }
 
 .hrabsence-tabs-region .highlight {
-    font-weight: bold;
+    font-weight: 600;
     background-color: #FFFFFF;
 }
 
@@ -50,12 +49,22 @@
 .hrabsence-content-region {
     width: 85%;
     min-height: 15em;
-    border: 1px solid black;
-    padding: 0.8em 0 0.8em 0;
-    margin-top: 1em;
+    border: 1px solid #C2CFD8;
     float: right;
     z-index: 1;
     background-color: #FFFFFF;
+}
+
+.hrabsence-content-region thead tr {
+  height: 30px;
+  line-height: 30px;
+}
+
+.hrabsence-content-region h3 {
+  margin: 0;
+  height: 38px;
+  line-height: 38px;
+  background-color: #FFF;
 }
 
 .hrabsence-calendar-chart {
@@ -277,6 +286,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 
 .page-civicrm-absences .hrabsence-tabs-region li a{
   color: #42AFCB;
+  font-weight: 600;
 }
 
 .page-civicrm-absences .hrabsence-tabs-region li.highlight {
@@ -288,7 +298,27 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   font-weight: 400;
 }
 
+.page-civicrm-absences .hrabsence-new-region,
+.page-civicrm-absences .hrabsence-filter-region {
+  background: #FFF;
+  padding-bottom: 2px;
+}
+
+.hrabsence-toolbar:nth-child(1),
+.hrabsence-content-region,
+.hrabsence-tabs-region {
+  box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.1);
+}
+
+.hrabsence-tabs-region {
+  margin-top: 20px;
+}
+
 /*New absence*/
+.page-civicrm-absence #customData {
+  box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.1);
+}
+
 .page-civicrm-absence .CRM_HRAbsence_Form_AbsenceRequest .crm-i {
   display: none;
 }
@@ -336,6 +366,26 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   position: relative;
 }
 
+.page-civicrm-absence .crm-marker {
+  color: #E6807F;
+}
+
+.page-civicrm-absence .abempInfo td:nth-child(1) {
+  color: #3e3e3e;
+  font-weight: 600 !important;
+}
+
+.page-civicrm-absence .form-layout-compressed td {
+  text-align: left !important;
+}
+
+.page-civicrm-absence .form-layout-compressed td.label {
+  line-height: 38px;
+}
+
+.page-civicrm-absence .crm-button_qf_AbsenceRequest_done_saveandapprove {
+  margin-top: 20px;
+}
 
 
 
@@ -343,6 +393,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 .page-civicrm-absence-type .crm-container #crm-main-content-wrapper div.action-link {
   background: transparent !important;
 }
+
 .page-civicrm-absence-period .crm-container #crm-main-content-wrapper div.action-link a.button,
 .page-civicrm-absence-type .crm-container #crm-main-content-wrapper div.action-link a.button {
   color: #fff;
@@ -350,54 +401,83 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   border-color: #35a3bf;
   margin-top: 10px;
 }
+
 .page-civicrm-absence-period .crm-container #crm-main-content-wrapper div.action-link a.button .icon,
 .page-civicrm-absence-type .crm-container #crm-main-content-wrapper div.action-link a.button .icon {
   display: none;
 }
 
 .page-civicrm-absence-type .crm-entity.odd-row a,
-.page-civicrm-absence-type .crm-entity.even-row a {
-  color: #fff;
-  background-color: #42AFCB;
-  border-color: #35a3bf;
-  margin: 5px;
-  display: inline-block;
-  width: 60px !important;
-  min-width: initial !important;
+.page-civicrm-absence-type .crm-entity.even-row a,
+.page-civicrm-absence-period .crm-entity.odd-row a,
+.page-civicrm-absence-period .crm-entity.even-row a {
+  color: #42AFCB;
+  text-transform: lowercase;
   font-size: 12px !important;
+  font-weight: 600;
+  border: 0 !important;
 }
-.page-civicrm-absence-type .crm-container tr {
+
+
+.page-civicrm-absence-type .crm-container tr,
+.page-civicrm-absence-period .crm-container tr {
   border-bottom: 1px solid #ecedee !important;
 }
-.page-civicrm-absence-type .crm-container tr td {
+
+.page-civicrm-absence-type .crm-container tr td,
+.page-civicrm-absence-period .crm-container tr td {
   color: #767b8e;
   vertical-align: middle;
   border-right: none;
 }
-.page-civicrm-absence-type .crm-container tr th {
+
+.page-civicrm-absence-type .crm-container tr th,
+.page-civicrm-absence-period .crm-container tr th {
   color: #4e4e5f !important;
   padding: 10px 7px !important;
   border: none !important;
 }
-.page-civicrm-absence-type .crm-container tr.even-row {
+
+.page-civicrm-absence-type .crm-container tr,
+.page-civicrm-absence-period .crm-container tr {
   background-color: #fff;
-}
-.page-civicrm-absence-type .crm-container tr.odd-row {
-  background-color: #fbfbfc;
 }
 
 
 
 /*Public Holidays*/
-.crm-button_qf_PublicHolidays_next .crm-i,
-.crm-button_qf_PublicHolidays_cancel .crm-i {
-    display: none;
-  }
-.crm-button_qf_PublicHolidays_next input,
-.crm-button_qf_PublicHolidays_cancel input {
+.page-civicrm-absence .crm-button_qf_PublicHolidays_next .crm-i,
+.page-civicrm-absence .crm-button_qf_PublicHolidays_cancel .crm-i {
+  display: none;
+}
+.page-civicrm-absence .crm-button_qf_PublicHolidays_next input,
+.page-civicrm-absence .crm-button_qf_PublicHolidays_cancel input {
   color: #fff !important;
   background-color: #42AFCB !important;
   min-width: 70px !important;
   padding: 7px 12px !important;
   border: none !important;
+  margin: 10px !important;
+}
+
+.page-civicrm-absence .crm-container .crm-form-block.crm-form-block>.crm-submit-buttons {
+  min-height: 60px;
+}
+
+.page-civicrm-absence .CRM_HRAbsence_Form_PublicHolidays h3 {
+  background: transparent;
+}
+
+.page-civicrm-absence .crm-public_holidays-form-block .crm-submit-buttons:nth-child(1) {
+  display: none;
+}
+
+.crm-public_holidays-form-block td:nth-child(1) {
+  text-align: left !important;
+  line-height: 41px;
+  padding-left: 15px !important;
+}
+
+input#status_id {
+  margin-top: 15px;
 }
