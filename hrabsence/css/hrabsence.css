@@ -314,6 +314,29 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   margin-top: 20px;
 }
 
+/* Scrollbar */
+.ui-multiselect-checkboxes::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.ui-multiselect-checkboxes::-webkit-scrollbar-track {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Handle */
+.ui-multiselect-checkboxes::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #586277;
+}
+
+.ui-multiselect-checkboxes::-webkit-scrollbar-thumb:window-inactive {
+  background: #e8eef0;
+}
+
+
 /*New absence*/
 .page-civicrm-absence #customData {
   box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.1);
