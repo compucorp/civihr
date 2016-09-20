@@ -12,10 +12,11 @@
   }
 
   .help {
-    @extend %block-with-shadow;
+    border: 0;
     border-radius: 0;
     border-color: $gray;
     background-color: #ffffff;
+    padding: 17px 17px 0;
   }
 
   br {
@@ -29,6 +30,7 @@
   h2 {
     position: initial !important;
     margin: 20px 20px 0;
+    color: $gray-darker;
 
     + .crm-submit-buttons {
       display: none;
@@ -36,7 +38,11 @@
   }
 
   h3 {
+    @extend %open-sans-font-family;
     padding-left: 0;
+    font-size: 13px;
+    color: $gray-darker;
+    font-weight: 600;
   }
 
   input + label {

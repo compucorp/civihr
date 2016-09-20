@@ -1,10 +1,20 @@
 .CRM_Contact_Form_Task_PDF {
+  .messages.status {
+    border: 0;
+    background: none;
+    padding: 17px 17px 0;
+  }
+
+  table.form-layout-compressed:nth-child(2) {
+    margin: 15px;
+  }
+
   label {
     line-height: 45px;
   }
 
   select#document_type,
-  select#template{
+  select#template {
     width: 500px !important;
   }
 
@@ -14,5 +24,13 @@
 
   div.crm-block:nth-child(1) {
     box-shadow: none;
+  }
+
+  .crm-accordion-wrapper.collapsed .crm-accordion-header {
+    font-weight: 600 !important;
+
+    &::before {
+      font-weight: initial !important;
+    }
   }
 }

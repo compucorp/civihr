@@ -11,6 +11,7 @@
 
   h1.page-title {
     @extend %block-with-shadow;
+    color: $gray-darker !important;
   }
 
   .crm-container {

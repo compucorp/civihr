@@ -16,4 +16,24 @@
   .crm-hover-button .crm-i {
     padding-left: 15px;
   }
+
+  td.label {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 30px;
+    width: auto;
+
+    label {
+      text-align: left;
+    }
+  }
+
+  .crm-i {
+    display: none;
+  }
+
+  .crm-block {
+    padding-top: 15px;
+  }
 }

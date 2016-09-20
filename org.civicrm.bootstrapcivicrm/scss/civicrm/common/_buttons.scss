@@ -4,11 +4,11 @@
 $button-border-radius: 2px;
 
 %btn-civi {
-    @extend .btn, %open-sans-font-family;
-    text-shadow: none;
-    text-transform: uppercase;
-    opacity: 1 !important;
-    font-size: 1em !important;
+  @extend .btn, %open-sans-font-family;
+  text-shadow: none;
+  text-transform: uppercase;
+  opacity: 1 !important;
+  font-size: 1em !important;
 }
 
 %btn-civi-primary {
@@ -62,7 +62,7 @@ $button-border-radius: 2px;
     &.crm-search-form-block > .crm-submit-buttons,
     &.crm-form-block > .crm-submit-buttons {
       @extend %submit-buttons-civi;
-        }
+    }
 
     .crm-button.crm-i-button input.crm-form-submit {
       padding-left: 12px;
@@ -81,7 +81,6 @@ $button-border-radius: 2px;
           ///The default theme uses "!important"
           color: $gray !important;
           border: solid 1px $gray-dark;
-
 
           &:hover {
             color: #ffffff !important;
