@@ -35,10 +35,7 @@ function hrui_civicrm_pageRun($page) {
   }
 
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    CRM_Core_Resources::singleton()
-      ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
-      ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
-      ->addSetting(array('pageName' => 'viewSummary'));
+    CRM_Core_Resources::singleton()->addSetting(array('pageName' => 'viewSummary'));
 
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
@@ -48,18 +45,19 @@ function hrui_civicrm_pageRun($page) {
       CRM_Core_Resources::singleton()
         ->addSetting(array(
           'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId));
+          'hideGId' => $hideGId)
+        );
     }
   }
 
-  CRM_Core_Resources::singleton()
-    ->addScriptFile('org.civicrm.hrui', 'js/perfect-scrollbar/perfect-scrollbar.min.js');
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
   CRM_Core_Resources::singleton()
     ->addStyleFile('org.civicrm.hrui', 'css/hrui.css')
-    ->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+    ->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
