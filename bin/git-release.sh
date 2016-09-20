@@ -26,8 +26,7 @@ org.civicrm.hremergency \
 com.civicrm.hrjobroles \
 hrjobcontract \
 org.civicrm.reqangular \
-hrabsence \
-uk.co.compucorp.civicrm.hrnavigation
+hrabsence
 )
 
 set -e
