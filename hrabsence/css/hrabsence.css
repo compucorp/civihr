@@ -376,7 +376,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 }
 
 .page-civicrm-absence .crm-event-manage-eventinfo-form-block-start_date .fa-calendar {
-  left: -47px;
+  left: -39px;
   color: #42AFCB;
   line-height: 1;
   height: 14px;
@@ -490,7 +490,6 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   min-width: 70px !important;
   padding: 7px 12px !important;
   border: none !important;
-  margin: 10px !important;
   box-sizing: border-box;
   width:80px;
 }
@@ -506,7 +505,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   border: 1px solid #4D5663 !important;
   height: 33px;
   line-height: 11px;
-  margin-left: 0 !important;
+  margin-left: 10px !important;
 }
 
 .page-civicrm-absence #_qf_PublicHolidays_cancel-bottom:hover {
@@ -514,7 +513,7 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
 }
 
 .page-civicrm-absence .crm-container .crm-form-block.crm-form-block>.crm-submit-buttons {
-  min-height: 60px;
+  min-height: 45px;
 }
 
 .page-civicrm-absence .CRM_HRAbsence_Form_PublicHolidays h3 {
