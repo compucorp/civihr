@@ -24,67 +24,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       return $result;
   }
 
-  protected function populateTableWithEntity($tableName, $entity, array $fields, $revisionId)
-  {
-    $insertQuery = "INSERT INTO {$tableName} SET ";
-    $insertParams = array(1 => array($revisionId, 'Integer'));
-
-    foreach ($fields as $name => $type)
-    {
-        $value = $entity->{$name};
-        if ($value !== null)
-        {
-            switch ($type)
-            {
-                case 'String':
-                case 'Date':
-                case 'Timestamp':
-                    $value = '"' . $value . '"';
-                break;
-            }
-        }
-        else
-        {
-            $value = 'NULL';
-        }
-
-        $insertQuery .= "{$name} = {$value},";
-    }
-    $insertQuery .= "jobcontract_revision_id = %1";
-
-    return CRM_Core_DAO::executeQuery($insertQuery, $insertParams);
-  }
-
-  public function getPayScaleId($payScale)
-  {
-    if (!$payScale)
-    {
-        return null;
-    }
-
-    $selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 LIMIT 1';
-    $selectPayScaleParams = array(
-        1 => array($payScale, 'String'),
-    );
-    $payScaleResult = CRM_Core_DAO::executeQuery($selectPayScaleQuery, $selectPayScaleParams, false);
-
-    $payScaleId = null;
-    if ($payScaleResult->fetch())
-    {
-        $payScaleId = $payScaleResult->id;
-    }
-    else
-    {
-        //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
-        $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
-        CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
-
-        $payScaleId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-    }
-
-    return $payScaleId;
-  }
-
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
     $this->executeCustomDataFile('xml/option_group_install.xml');
