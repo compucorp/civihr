@@ -15,3 +15,8 @@
   height: 26px !important;
   line-height: 26px;
 }
+
+#civicrm-menu #crm-qsearch {
+  line-height: 28px;
+  height: 30px !important;
+}
