@@ -1,0 +1,47 @@
+<form class="form-horizontal" name="modalFrm">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="$ctrl.cancel()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <h2 class="modal-title">{{$ctrl.title}}</h2>
+  </div>
+  <div class="modal-body">
+    <crm-loading show="!$ctrl.loading">
+      <section class="container-fluid">
+        <div class="alert alert-danger" ng-show="$ctrl.errorMsg">
+          {{$ctrl.errorMsg}}
+        </div>
+
+        <div class="form-group has-feedback"
+          ng-repeat="field in $ctrl.formFields | orderBy: field.weight"
+          ng-class="{'has-error': {{::'modalFrm.'+ field.field_name +'.$dirty'}} && {{::'modalFrm.'+ field.field_name +'.$invalid'}}}">
+          <label for="{{::field.id}}" class="col-xs-12 col-sm-4 control-label">
+            {{::field.label}}
+          </label>
+          <div class="col-xs-12 col-sm-8">
+            <input type="text" ng-if="field.field_name !== 'email'"
+              name="{{::field.field_name}}" id="{{::field.id}}" ng-model="field.value"
+              class="form-control" ng-required="field.is_required === '1'">
+            <input type="email" ng-if="field.field_name === 'email'"
+              name="{{::field.field_name}}" id="{{::field.id}}" ng-model="field.value"
+              class="form-control" ng-required="field.is_required === '1'">
+            <span class="label label-danger" ng-show="{{::'modalFrm.'+ field.field_name +'.$dirty'}} && {{::'modalFrm.'+ field.field_name +'.$error.required'}}">
+              Field is required.
+            </span>
+            <span ng-if="field.field_name === 'email'" class="label label-danger" ng-show="modalFrm.email.$error.email">
+              Invalid email address.
+            </span>
+          </div>
+        </div>
+      </section>
+    </crm-loading>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary-outline text-uppercase" data-dismiss="modal" ng-click="$ctrl.cancel()">
+      cancel
+    </button>
+    <button type="button" class="btn btn-primary text-uppercase" ng-click="$ctrl.submit()" ng-disabled="!modalFrm.$valid">
+      save
+    </button>
+  </div>
+</form>
