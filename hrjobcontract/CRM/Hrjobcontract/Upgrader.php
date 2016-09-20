@@ -781,17 +781,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * contact merge code in core civicrm files. So here we just insure that it will
    * be created for existing installations.
    */
-    try {
-      $result = civicrm_api3('OptionValue', 'getsingle', array(
-        'sequential' => 1,
-        'name' => "Contact Deleted by Merge",
-      ));
-      $is_error = $result['is_error'];
-    } catch (CiviCRM_API3_Exception $e) {
-      $is_error = true;
-    }
 
-    if ($is_error)  {
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'name' => "Contact Deleted by Merge",
+      'options' => array('limit' => 1),
+    ));
+
+    if (!empty($result[0]['values']))  {
       civicrm_api3('OptionValue', 'create', array(
         'sequential' => 1,
         'option_group_id' => "activity_type",
