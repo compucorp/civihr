@@ -886,10 +886,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
         ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
-      return true;
     }
 
-    return false;
+    return true;
   }
 
   function decToFraction($fte) {
