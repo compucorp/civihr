@@ -28,7 +28,12 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
 function hrui_civicrm_pageRun($page) {
+  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
+    return;
+  }
+
   CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
 
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
@@ -49,8 +54,6 @@ function hrui_civicrm_pageRun($page) {
         );
     }
   }
-
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
