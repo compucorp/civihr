@@ -38,6 +38,15 @@ require.config({
         'common/angularUiRouter': {
             deps: ['common/angular']
         },
+        'common/angularUiRouter': {
+            deps: ['common/angular']
+        },
+        'common/ui-select': {
+            deps: [
+              'common/angular',
+              'common/text-angular-sanitize'
+            ]
+        }
     },
     paths: {
         'common': srcPath,
@@ -48,7 +57,10 @@ require.config({
         'common/angularUiRouter': srcPath + '/vendor/angular/angular-ui-router.min',
         'common/angularMocks': srcPath + '/vendor/angular/angular-mocks',
         'common/angularBootstrap': srcPath + '/vendor/angular/ui-bootstrap',
-        'common/lodash': srcPath + '/vendor/lodash.min'
+        'common/lodash': srcPath + '/vendor/lodash.min',
+        'common/ui-select': srcPath + '/vendor/angular/select',
+        'common/vendor/perfect-scrollbar': srcPath + '/vendor/perfect-scrollbar.min',
+        'common/text-angular-sanitize': srcPath + '/vendor/angular/textAngular-sanitize.min'
     },
     callback: function () {
         // Simple hack to provide value to CRM.vars.reqangular.baseURL

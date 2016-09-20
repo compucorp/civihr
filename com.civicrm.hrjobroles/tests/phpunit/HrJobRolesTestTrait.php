@@ -121,17 +121,18 @@ trait HrJobRolesTestTrait {
    *
    * @param string $name
    * @param string $label
-   * @return int $newDepartment
+   * @return Array $newDepartment
    * @throws \CiviCRM_API3_Exception
    */
   protected function createDepartment($name, $label) {
     $newDepartment = civicrm_api3('OptionValue', 'create', array(
+      'sequential' => '1',
       'option_group_id' => 'hrjc_department',
       'name' => $name,
       'label'=> $label,
-    ));
+    ))['values'][0];
 
-    return $newDepartment['id'];
+    return $newDepartment;
   }
 
   /**

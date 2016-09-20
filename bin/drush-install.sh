@@ -33,8 +33,7 @@ org.civicrm.hrrecruitment,\
 org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
 org.civicrm.bootstrapcivicrm,\
-org.civicrm.bootstrapcivihr,\
-uk.co.compucorp.civicrm.hrnavigation
+org.civicrm.bootstrapcivihr
 
 ##################################
 ## Main
