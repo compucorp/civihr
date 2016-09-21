@@ -2,6 +2,7 @@ define([
     'common/angular',
     'job-contract/controllers/controllers',
     'job-contract/services/contract',
+    'job-contract/services/contract-revision',
     'job-contract/services/contract-details',
     'job-contract/services/contract-hour',
     'job-contract/services/contract-pay',
@@ -14,11 +15,11 @@ define([
     'use strict';
 
     controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
-        'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
+        'ContractService', 'ContractRevisionService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'action', 'entity',
         'content', 'files', 'UtilsService', 'utils', 'settings', '$log',
-        function ($scope, $modal, $modalInstance, $q, $rootElement, $rootScope, $filter, ContractService, ContractDetailsService,
-                 ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
+        function ($scope, $modal, $modalInstance, $q, $rootElement, $rootScope, $filter, ContractService, ContractRevisionService,
+                 ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
                  ContractPensionService, ContractFilesService, action, entity, content, files,
                  UtilsService, utils, settings, $log) {
             $log.debug('Controller: ModalContractCtrl');
@@ -362,9 +363,24 @@ define([
                 });
             }
 
-            function contractChange(reasonId, date){
+            function contractChange(reasonId, date) {
                 $scope.$broadcast('hrjc-loader-show');
 
+                ContractRevisionService.validateEffectiveDate({
+                    contact_id: settings.contactId,
+                    effective_date: date
+                }).then(function(result){
+                    if (result.success) {
+                        saveContractChange(reasonId, date);
+                    } else {
+                        CRM.alert(result.message, 'Error', 'error');
+                        $scope.$broadcast('hrjc-loader-hide');
+                    }
+                },function(reason){
+                });
+            }
+
+            function saveContractChange(reasonId, date) {
                 var entityNew = angular.copy($scope.entity),
                     filesTrash = $scope.filesTrash,
                     uploader = $scope.uploader,
