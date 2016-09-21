@@ -35,6 +35,28 @@ org.civicrm.contactsummary,\
 org.civicrm.bootstrapcivicrm,\
 org.civicrm.bootstrapcivihr
 
+##
+# Set Default localisation settings
+# It expect one parameter ($1) which points to civicrm absolute path
+function set_default_localisation_settings() {
+  LOC_FILE="en_US"
+  if wget -q "https://download.civicrm.org/civicrm-l10n-core/mo/en_GB/civicrm.mo" > /dev/null; then
+    mkdir -p $1/l10n/en_GB/LC_MESSAGES/
+    mv civicrm.mo $1/l10n/en_GB/LC_MESSAGES/civicrm.mo
+    LOC_FILE="en_GB"
+  fi
+
+  UKID=$(drush cvapi Country.getsingle return="id" iso_code="GB" | grep -oh '[0-9]*')
+
+  drush cvapi Setting.create sequential=1 defaultCurrency="GBP" \
+  dateformatDatetime="%d/%m/%Y %l:%M %P" dateformatFull="%d/%m/%Y" \
+  dateformatFinancialBatch="%d/%m/%Y" dateInputFormat="dd/mm/yy" \
+  lcMessages=${LOC_FILE} defaultContactCountry=${UKID}
+
+  drush cvapi OptionValue.create sequential=1 option_group_id="currencies_enabled" \
+  label="GBP (£)" value="GBP" is_default=1 is_active=1
+}
+
 ##################################
 ## Main
 
@@ -54,3 +76,5 @@ if [ -n "$WITHSAMPLE" ]; then
   drush "$@" cvapi extension.install keys=org.civicrm.hrsampledata
   set +ex
 fi
+
+set_default_localisation_settings $1
