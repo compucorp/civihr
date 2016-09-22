@@ -48,13 +48,21 @@ function set_default_localisation_settings() {
 
   UKID=$(drush cvapi Country.getsingle return="id" iso_code="GB" | grep -oh '[0-9]*')
 
-  drush cvapi Setting.create sequential=1 defaultCurrency="GBP" \
+  drush cvapi Setting.create defaultCurrency="GBP" \
   dateformatDatetime="%d/%m/%Y %l:%M %P" dateformatFull="%d/%m/%Y" \
   dateformatFinancialBatch="%d/%m/%Y" dateInputFormat="dd/mm/yy" \
   lcMessages=${LOC_FILE} defaultContactCountry=${UKID}
 
-  drush cvapi OptionValue.create sequential=1 option_group_id="currencies_enabled" \
+  drush cvapi OptionValue.create option_group_id="currencies_enabled" \
   label="GBP (£)" value="GBP" is_default=1 is_active=1
+}
+
+##
+# Set Any needed Resource URLs
+function set_resource_urls() {
+  # Set Custom CSS URL
+  drush cvapi Setting.create \
+  customCSSURL="[civicrm.root]/tools/extensions/civihr/org.civicrm.bootstrapcivicrm/css/custom-civicrm.css"
 }
 
 ##################################
@@ -78,3 +86,5 @@ if [ -n "$WITHSAMPLE" ]; then
 fi
 
 set_default_localisation_settings $1
+set_resource_urls
+
