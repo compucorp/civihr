@@ -245,19 +245,12 @@ function hrjobcontract_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * Implementation of hook_civicrm_pageRun
  */
 function hrjobcontract_civicrm_pageRun($page) {
+  if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
+    $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
+    $gid = array_search('HRJobContract_Summary', $groups);
 
-    if ($page instanceof CRM_Contact_Page_View_Summary || $page instanceof CRM_Contact_Page_Inline_CustomData) {
-        $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
-        $gid = array_search('HRJobContract_Summary', $groups);
-        CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid));
-    }
-
-    if ($page instanceof CRM_Contact_Page_View_Summary) {
-        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrjobcontract', CRM_Core_Config::singleton()->debug ? 'js/src/job-contract.js' : 'js/dist/job-contract.min.js', 1010);
-        CRM_Core_Resources::singleton()
-            ->addStyleFile('org.civicrm.hrjobcontract', 'css/hrjc.css');
-    }
-
+    CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid));
+  }
 }
 
 /**
@@ -286,14 +279,12 @@ function hrjobcontract_civicrm_buildForm($formName, &$form) {
  * their tabs between these two.
  */
 function hrjobcontract_civicrm_tabs(&$tabs) {
-    CRM_Hrjobcontract_Page_JobContractTab::registerScripts();
-    $tabs[] = Array(
-        'id'        => 'hrjobcontract',
-        'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract'),
-        'title'     => ts('Job Contract'),
-        'weight'    => -190
-    );
-
+  $tabs[] = Array(
+    'id'        => 'hrjobcontract',
+    'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract'),
+    'title'     => ts('Job Contract'),
+    'weight'    => -190
+  );
 }
 
 /**
