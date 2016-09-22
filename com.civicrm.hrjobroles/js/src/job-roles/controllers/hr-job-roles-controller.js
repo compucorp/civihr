@@ -7,7 +7,7 @@ define([
 ], function (angular, controllers, moment, _) {
   'use strict';
 
-  controllers.controller('HRJobRolesController',[
+  controllers.controller('HRJobRolesController', [
     '$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q',
     'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
     'DOMEventTrigger',
@@ -691,7 +691,7 @@ define([
 
       // Get the contact list and store the data
 
-      job_roles.getContactList = function(sortName, showMessage) {
+      job_roles.getContactList = function(sortName) {
         var successCallback = function (data) {
 
           var contact,
@@ -718,11 +718,6 @@ define([
             job_roles.contactList = contactList;
             // Store the object too, so we can point to right values by Contact ID
             job_roles.contactListObject = contactListObject;
-
-            if(showMessage) { //dont show message when user types, show only first time
-              job_roles.message_type = 'alert-success';
-              job_roles.message = 'Contact list OK!';
-            }
           }
 
           // Hide the message after some seconds
@@ -736,7 +731,7 @@ define([
 
         HRJobRolesService.getContactList(sortName).then(successCallback,errorCallback);
       };
-      job_roles.getContactList(null, true);
+      job_roles.getContactList();
 
       function getOptionValues() {
 
@@ -850,7 +845,7 @@ define([
               $scope.CostCentreList = CostCentreList;
 
               job_roles.message_type = 'alert-success';
-              job_roles.message = 'Option values list OK!';
+              job_roles.message = null;
             }
 
             // Hide the message after some seconds
@@ -900,12 +895,7 @@ define([
             // Store the ContractsData what we can reuse later
             job_roles.contractsData = contractsData;
           } else {
-            job_roles.empty = 'No Job Contracts found for this Contact!';
-
-            // Hide the message after some seconds
-            $timeout(function () {
-              job_roles.empty = null;
-            }, 3000);
+            job_roles.empty = null;
           }
 
           job_roles.job_contract_ids = jobContractIds;
@@ -945,8 +935,6 @@ define([
 
           if (data.is_error === 1) {
             job_roles.error = 'Data load failure';
-          } else if (data.count === 0) {
-            job_roles.empty = 'No Job Roles found!';
           } else {
             job_roles.empty = null;
           }
