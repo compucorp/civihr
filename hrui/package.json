@@ -1,7 +1,7 @@
 {
   "name": "hrui",
   "version": "1.0.0",
-  "description": "A CiviHR theme",
+  "description": "CiviHR UI changes",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,9 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "gulp": "^3.9.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^2.1.0",
-    "gulp-sass-bulk-import": "^0.3.2",
-    "gulp-sass-glob": "0.0.2"
+    "gulp-concat": "^2.6.0",
+    "gulp-uglify": "^2.0.0"
   }
 }
