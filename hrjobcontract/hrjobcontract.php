@@ -278,10 +278,10 @@ function hrjobcontract_civicrm_buildForm($formName, &$form) {
  * to give some room for other extensions to place
  * their tabs between these two.
  */
-function hrjobcontract_civicrm_tabs(&$tabs) {
+function hrjobcontract_civicrm_tabs(&$tabs, $contactId) {
   $tabs[] = Array(
     'id'        => 'hrjobcontract',
-    'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract'),
+    'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract', array('cid' => $contactId)),
     'title'     => ts('Job Contract'),
     'weight'    => -190
   );
