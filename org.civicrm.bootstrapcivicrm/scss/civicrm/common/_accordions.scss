@@ -36,7 +36,7 @@
 
     .helpicon {
       padding-left: 15px;
-      color: #ffffff;
+      color: $brand-primary;
       opacity: 1;
 
       &:hover{
@@ -96,6 +96,7 @@
     .helpicon {
       color: $brand-primary;
       font-size: 13px;
+      opacity: 1;
     }
   }
 }

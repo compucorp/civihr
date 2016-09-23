@@ -54,6 +54,7 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
    * Recalculating HR Absence Entitlement values for given Job Contract ID.
    *
    * @param int $jobContractId
+   * @throws \Exception
    */
   static function recalculateAbsenceEntitlement($jobContractId) {
     try {
@@ -81,7 +82,8 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
   /**
    * Recalculating HR Absence Entitlement values for given Contact.
    *
-   * @param int $jobContractId
+   * @param int $contactId
+   * @throws \Exception
    */
   static function recalculateAbsenceEntitlementForContact($contactId) {
     try {

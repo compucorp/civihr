@@ -38,7 +38,7 @@ class CRM_Hrjobcontract_BAO_HRJobPay extends CRM_Hrjobcontract_DAO_HRJobPay {
    * Create a new HRJobPay based on array-data
    *
    * @param array $params key-value pairs
-   * @return CRM_HRJob_DAO_HRJobPay|NULL
+   * @return CRM_Hrjobcontract_DAO_HRJobPay|NULL
    *
    */
   public static function create($params) {
@@ -50,7 +50,7 @@ class CRM_Hrjobcontract_BAO_HRJobPay extends CRM_Hrjobcontract_DAO_HRJobPay {
       }
       return parent::create($params);
   }
-  
+
   /**
    * combine all the importable fields from the lower levels object
    *

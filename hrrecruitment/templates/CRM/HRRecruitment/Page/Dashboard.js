@@ -8,4 +8,8 @@
   }
   window.setInterval(updateTimes, 60000);
   $('#crm-container').on('crmLoad', updateTimes);
+
+  $('.hr-stage-link').each(function() {
+    $(this).text('Apply Now - ' + $(this).text() + ' Applications');
+  });
 }(CRM.$));

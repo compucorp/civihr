@@ -2,14 +2,14 @@
 
 class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_HRJobContractRevision {
 
-  static $_importableFields = array();  
-  
+  static $_importableFields = array();
+
   /**
    * Create a new HRJobContractRevision based on array-data
    *
    * @param array $params key-value pairs
-   * 
-   * @return CRM_HRJobContract_DAO_HRJobContractRevision|NULL
+   *
+   * @return CRM_Hrjobcontract_DAO_HRJobContractRevision|NULL
    *
    */
   public static function create($params) {
@@ -21,7 +21,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
     $className = 'CRM_Hrjobcontract_DAO_HRJobContractRevision';
     $entityName = 'HRJobContractRevision';
     $hook = empty($params['id']) ? 'create' : 'edit';
-    
+
     $now = CRM_Utils_Date::currentDBDate();
     if ($hook === 'create')
     {
@@ -54,7 +54,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
   /**
    * Update Revision's effective end dates for given Job Contract ID.
-   * 
+   *
    * @param int $jobcontractId
    */
   public static function updateEffectiveEndDates($jobcontractId) {
@@ -77,6 +77,48 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
       }
       $previousEffectiveDate = $revisions->effective_date;
     }
+  }
+
+  /**
+   * Validate if a given effective date isn't the equal
+   * to any other contract revision effective date
+   * for a given contact
+   *
+   * @param int $contactID Contact ID to validate against
+   * @param string $effectiveDate Date in Y-m-d format
+   *
+   * @return array Array in the following format :
+   *   ['success' => bool, 'message' => string] Where :
+   *     success : True when their is not revision with the same effective date otherwise FALSE.
+   *     message : Error message if there is a conflicting revision.
+   */
+  public static function validateEffectiveDate($contactID, $effectiveDate) {
+    $query =
+      "SELECT hrjd.title FROM civicrm_hrjobcontract hrjc
+      INNER JOIN civicrm_hrjobcontract_revision hrjr ON hrjc.id = hrjr.jobcontract_id
+      INNER JOIN civicrm_hrjobcontract_details hrjd ON hrjd.jobcontract_revision_id = hrjr.details_revision_id
+      WHERE hrjc.contact_id = %1
+      AND hrjr.effective_date = %2
+      AND hrjc.deleted = 0
+      AND hrjr.deleted = 0
+      LIMIT 1";
+    $params = array(
+      1 => array($contactID, 'Integer'),
+      2 => array($effectiveDate, 'String'),
+    );
+    $revision = CRM_Core_DAO::executeQuery($query, $params);
+
+    $conflictRevision['success'] = TRUE;
+    $conflictRevision['message'] = '';
+
+    if ($revision->fetch()) {
+      $conflictRevision['success'] = FALSE;
+      $conflictRevision['message'] =
+        ts('A contract With the following title contain a revision with the same effective date : ')
+        . '(' . $revision->title . ')';
+    }
+
+    return $conflictRevision;
   }
 
   static function importableFields($contactType = 'HRJobContractRevision',
@@ -124,7 +166,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * It updates revision entry with calculated 'effective_end_date'
    * and 'overrided' values basing on specified date of previously iterated
    * revision and date of currenly iterated revision.
-   * 
+   *
    * @param int $revisionId
    * @param string $previousEffectiveDate
    * @param string $currentEffectiveDate
@@ -156,7 +198,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
 
   /**
    * Set effective_end_date to NULL for given revision ID.
-   * 
+   *
    * @param int $revisionId
    */
   protected static function clearEffectiveEndDate($revisionId) {

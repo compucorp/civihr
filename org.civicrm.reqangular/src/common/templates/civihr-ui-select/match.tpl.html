@@ -1,7 +1,7 @@
 <a class="select2-choice ui-select-match"
    ng-class="{'select2-default': $select.isEmpty()}"
    ng-click="$select.toggle($event)" aria-label="{{ $select.baseTitle }} select">
-  <span ng-show="$select.isEmpty()" class="select2-chosen" ng-class="{'empty': $select.isEmpty()}">{{$select.placeholder}}</span>
+  <span ng-show="$select.isEmpty()" class="select2-chosen" ng-class="{'empty': $select.isEmpty()}">{{$select.contactList ? '-select-' : $select.placeholder}}</span>
   <span ng-hide="$select.isEmpty()" class="select2-chosen" ng-transclude></span>
   <abbr ng-if="$select.allowClear && !$select.isEmpty()" class="select2-search-choice-close" ng-click="$select.clear($event)"></abbr>
   <span class="select2-arrow ui-select-toggle" ng-class="{'search-enabled': $select.searchEnabled}"><b></b></span>
