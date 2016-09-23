@@ -1,6 +1,10 @@
 define([
     'common/angular',
     'common/ui-select',
+    'common/services/dom-event-trigger',
+    'common/services/angular-date/date-format',
+    'common/modules/routers/compu-ng-route',
+    'common/directives/angular-date/date-input',
     'job-contract/controllers/controllers',
     'job-contract/controllers/contract-list',
     'job-contract/controllers/contract',
@@ -32,9 +36,6 @@ define([
     'job-contract/services/services',
     'job-contract/services/contract',
     'job-contract/vendor/job-summary',
-    'common/services/angular-date/date-format',
-    'common/modules/routers/compu-ng-route',
-    'common/directives/angular-date/date-input'
 ], function (angular) {
     'use strict';
 
@@ -42,10 +43,11 @@ define([
             'ngAnimate',
             'compuNgRoute',
             'ngResource',
+            'angularFileUpload',
             'ui.bootstrap',
             'ui.select',
             'common.angularDate',
-            'angularFileUpload',
+            'common.services',
             'hrjc.controllers',
             'hrjc.directives',
             'hrjc.filters',

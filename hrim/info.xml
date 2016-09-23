@@ -8,11 +8,11 @@
     <author>CiviCRM LLC</author>
     <email>info@civicrm.org</email>
   </maintainer>
-  <releaseDate>2016-08-09</releaseDate>
-  <version>1.5.7</version>
+  <releaseDate>2016-09-08</releaseDate>
+  <version>1.6.1</version>
   <develStage>beta</develStage>
   <compatibility>
-    <ver>4.5</ver>
+    <ver>4.7</ver>
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
 </extension>

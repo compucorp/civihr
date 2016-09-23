@@ -28,47 +28,57 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
 function hrui_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
+    return;
+  }
 
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
+
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    CRM_Core_Resources::singleton()
-      ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
-      ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
-      ->addSetting(array('pageName' => 'viewSummary'));
+    CRM_Core_Resources::singleton()->addSetting(array('pageName' => 'viewSummary'));
+
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
+
     if ($contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
       CRM_Core_Resources::singleton()
         ->addSetting(array(
           'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId));
+          'hideGId' => $hideGId)
+        );
     }
   }
+
+  if (CRM_Core_Config::singleton()->debug) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/perfect-scrollbar/perfect-scrollbar.min.js');
+  } else {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+  }
+
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()
-    ->addStyleFile('org.civicrm.hrui', 'css/hrui.css')
-    ->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+
+  if (CRM_Core_Config::singleton()->debug) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
+  } else {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+  }
+
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
-    //HR-358 - Set default values
-    //set default value to phone location and type
-    $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 'Main', 'id', 'name');
-    // PCHR-1146 : Commenting line ahead to fix the issue, but figuring why it was done at first place coul be useful.
-    //$result = civicrm_api3('LocationType', 'create', array('id'=>$locationId, 'is_default'=> 1, 'is_active'=>1));
-    if (($form->elementExists('phone[2][phone_type_id]')) && ($form->elementExists('phone[2][phone_type_id]'))) {
-      $phoneType = $form->getElement('phone[2][phone_type_id]');
-      $phoneValue = CRM_Core_OptionGroup::values('phone_type');
-      $phoneKey = CRM_Utils_Array::key('Mobile', $phoneValue);
-      $phoneType->setSelected($phoneKey);
-      $phoneLocation = $form->getElement('phone[2][location_type_id]');
-      $phoneLocation->setSelected($locationId);
+
+    $phoneIndex = 2;
+    if (_hrui_phone_is_empty($phoneIndex, $form)) {
+      _hrui_set_phone_type_as_mobile($phoneIndex, $form);
+      _hrui_set_phone_location_to_the_default_location($phoneIndex, $form);
     }
   }
 
@@ -95,6 +105,78 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
     $form->setDefaults($default);
   }
+}
+
+/**
+ * Sets the location type of the phone with the given index to the default
+ * location type.
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_location_to_the_default_location($phoneIndex, $form) {
+  $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 1, 'id', 'is_default');
+
+  if($locationId) {
+    $form->setDefaults([
+      "phone[{$phoneIndex}][location_type_id]" => $locationId
+    ]);
+  }
+}
+
+/**
+ * Sets the phone type of the phone with the given index as 'Mobile'.
+ *
+ * @param $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ */
+function _hrui_set_phone_type_as_mobile($phoneIndex, $form) {
+  _hrui_set_phone_type($phoneIndex, $form, 'Mobile');
+}
+
+/**
+ * Sets the phone type of the phone with the given index to the type given by
+ * $type.
+ *
+ * @param int $phoneIndex
+ *   The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *   The Contact Form instance
+ * @param string $type
+ *   The new phone type. Valid values are those from the phone_type option list
+ */
+function _hrui_set_phone_type($phoneIndex, $form, $type) {
+  $elementName = "phone[{$phoneIndex}][phone_type_id]";
+
+  if(!$form->elementExists($elementName)) {
+    return;
+  }
+
+  $phoneType  = $form->getElement($elementName);
+  $phoneValue = CRM_Core_OptionGroup::values('phone_type');
+  $phoneKey   = CRM_Utils_Array::key($type, $phoneValue);
+  if($phoneKey) {
+    $phoneType->setSelected($phoneKey);
+  }
+}
+
+/**
+ * Returns if the contact form has a phone with the given index and it's empty
+ *
+ * @param int $phoneIndex
+ *  The index of phone in the contact form
+ * @param CRM_Core_Form $form
+ *  The Contact Form instance
+ *
+ * @return bool
+ */
+function _hrui_phone_is_empty($phoneIndex, $form) {
+  return $form->elementExists("phone[{$phoneIndex}][phone]") &&
+         empty($form->getElementValue("phone[{$phoneIndex}][phone]"));
 }
 
 /**
@@ -266,6 +348,11 @@ function hrui_civicrm_uninstall() {
   $defaults['is_active'] = 1;
   CRM_Core_BAO_OptionValue::create($defaults);
   _hrui_wordReplacement(TRUE);
+
+  // Remove 'Import Custom Fields' Navigation item and reset the menu
+  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name = 'import_custom_fields'");
+  CRM_Core_BAO_Navigation::resetNavigation();
+
   return _hrui_civix_civicrm_uninstall();
 }
 
@@ -310,6 +397,8 @@ function hrui_civicrm_enable() {
   _hrui_setActiveFields(FALSE);
   _hrui_toggleContactSubType(FALSE);
   _hrui_wordReplacement(FALSE);
+  _hrui_menuSetActive(1);
+
   return _hrui_civix_civicrm_enable();
 }
 
@@ -320,6 +409,8 @@ function hrui_civicrm_disable() {
   _hrui_setActiveFields(TRUE);
   _hrui_toggleContactSubType(TRUE);
   _hrui_wordReplacement(TRUE);
+  _hrui_menuSetActive(0);
+
   return _hrui_civix_civicrm_disable();
 }
 
@@ -393,24 +484,44 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Check if the extension with the given key is enabled
+ *
+ * @param string $extensionKey
+ * @return boolean
  */
-function hrui_civicrm_tabs(&$tabs, $contactID) {
-  $newTabs = array();
-  /*
-   * 1) we alter the weights for these tabs here
-   * since these tabs are not created by hook_civicrm_tab
-   * and the only way to alter their weights is here
-   * by taking advantage of &$tabs variable.
-   * 2) we set assignments tab to 30 since it should appear
-   * after appraisals tab directly which have the weight of 20.
-   * 3) we jump to weight of 60 in identifications tab since 40 & 50
-   * are occupied by tasks & assignments extension tabs .
-   * 4) the weight increased by 10 between every tab
-   * to give a large space for other tabs to be inserted
-   * between any two without altering other tabs weights.
-   */
+function _hrui_check_extension($extensionKey)  {
+  return (boolean) CRM_Core_DAO::getFieldValue(
+    'CRM_Core_DAO_Extension',
+    $extensionKey,
+    'is_active',
+    'full_name'
+  );
+}
+
+/**
+ * 1) we alter the weights for these tabs here
+ * since these tabs are not created by hook_civicrm_tab
+ * and the only way to alter their weights is here
+ * by taking advantage of &$tabs variable.
+ * 2) we set assignments tab to 30 since it should appear
+ * after appraisals tab directly which have the weight of 20.
+ * 3) we jump to weight of 60 in identifications tab since 40 & 50
+ * are occupied by tasks & assignments extension tabs .
+ * 4) the weight increased by 10 between every tab
+ * to give a large space for other tabs to be inserted
+ * between any two without altering other tabs weights.
+ * 5) we remove a tab if present in the $tabsToRemove list
+ *
+ * @param Array $tabs
+ * @param Array $tabsToRemove
+ */
+function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
   foreach ($tabs as $i => $tab) {
+    if (in_array($tab['id'], $tabsToRemove)) {
+      unset($tabs[$i]);
+      continue;
+    }
+
     switch($tab['title'])  {
       case 'Assignments':
         $tabs[$i]['weight'] = 30;
@@ -454,6 +565,19 @@ function hrui_civicrm_tabs(&$tabs, $contactID) {
 }
 
 /**
+ * Implementation of hook_civicrm_tabset
+ */
+function hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
+  $tabsToRemove = array();
+
+  if (_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments')) {
+    $tabsToRemove[] = 'case';
+  }
+
+  _hrui_alter_tabs($tabs, $tabsToRemove);
+}
+
+/**
  * Implementation of hook_civicrm_managed
  *
  * Generate a list of entities to create/deactivate/delete when this module
@@ -463,51 +587,9 @@ function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
 }
 
-function hrui_civicrm_navigationMenu( &$params ) {
-  $maxKey = ( max( array_keys($params) ) );
-  $jobNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'jobImport', 'id', 'name');
-  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-  if ($jobNavId) {
-    $i = 1;
-    // Degrade gracefully on 4.4
-    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
-      //  Get the maximum key of $params
-      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
-
-      $multiValuedData[$maxKey+1] = array(
-        'attributes' => array (
-         'label' => ts('Jobs'),
-         'name' => 'jobs',
-         'url'  => 'civicrm/job/import',
-         'permission' => 'access HRJobs',
-         'operator'   => null,
-         'separator'  => null,
-         'parentID'   => $jobNavId,
-         'navID'      => $maxKey+1,
-         'weight'     => 1,
-         'active'     => 1
-       ));
-      foreach ($multipleCustomData as $key => $value) {
-        $i++;
-        $i = $maxKey + $i;
-        $multiValuedData[$i] = array (
-          'attributes' => array (
-            'label'      => $value,
-            'name'       => $value,
-            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
-            'permission' => 'access HRJobs',
-            'operator'   => null,
-            'separator'  => null,
-            'parentID'   => $jobNavId,
-            'navID'      => $i,
-            'active'     => 1
-          ),
-          'child' => null
-        );
-      }
-      $params[$contactNavId]['child'][$jobNavId]['child'] = $multiValuedData;
-    }
-  }
+function hrui_civicrm_navigationMenu(&$params) {
+  _hrui_customImportMenuItems($params);
+  _hrui_coreMenuChanges($params);
 }
 
 /**
@@ -613,6 +695,88 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
 }
 
 /**
+ * Builds the custom HTML markup for the contact header section
+ *
+ * @param  Array $data contains details about the contact, the current contract, the departments and managers
+ * @return string
+ */
+function _hrui_contactSummaryHeaderHtml($data) {
+  $html = '';
+
+  if (!empty($data['contact']['phone'])) {
+    $html .= "<span class='crm-contact-detail'><strong>Phone:</strong> " . $data['contact']['phone'] . "</span>";
+  }
+
+  if (!empty($data['contact']['email'])) {
+    $html .= "<span class='crm-contact-detail'><strong>Email:</strong> " . $data['contact']['email'] . "</span>";
+  }
+
+  $html .= "<br />";
+
+  if (isset($data['current_contract'])) {
+    $position = $location =  '';
+
+    if (!empty($data['current_contract']->position)) {
+      $position = "<strong>Position:</strong> " . $data['current_contract']->position;
+    }
+
+    if (!empty($data['current_contract']->location)) {
+      $location .= "<strong>Normal place of work:</strong> " . $data['current_contract']->location;
+    }
+
+    $html .= "<span class='crm-contact-detail crm-contact-detail-position'>{$position}</span>";
+    $html .= "<span class='crm-contact-detail crm-contact-detail-location'>{$location}</span>";
+
+    if (!empty($data['departments'])) {
+      $html .= "<span class='crm-contact-detail crm-contact-detail-departments'><strong>Department:</strong> " . $data['departments'] . "</span>";
+    } else {
+      $html .= "<span class='crm-contact-detail crm-contact-detail-departments'></span>";
+    }
+
+    if (!empty($data['managers'])) {
+      $html .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $data['managers'] . "</span>";
+    }
+  }
+  else {
+    $html .= "<span class='crm-contact-detail crm-contact-detail-position'></span>";
+    $html .= "<span class='crm-contact-detail crm-contact-detail-location'></span>";
+    $html .= "<span class='crm-contact-detail crm-contact-detail-departments'></span>";
+  }
+
+  return $html;
+}
+
+/**
+ * Builds the JS script that will alter the DOM of the contact summary DOM
+ *
+ * @param  Array $data contains details about the contact, the current contract, the departments and managers
+ * @return string
+ */
+function _hrui_contactSummaryDOMScript($data) {
+  $script = '';
+
+  $script .= "<script type=\"text/javascript\">";
+  $script .= "CRM.$(function($) {";
+  $script .= "$('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');";
+
+  if (!empty($data['contact']['image_URL'])) {
+    $script .= "$('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $data['contact']['image_URL'] . " />');";
+  }
+
+  if (empty($data['current_contract'])) {
+    $script .= "$('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');";
+  }
+
+  $script .= "$('.crm-summary-block-wrap').append(\"<div class='crm-contact-detail-wrap' />\");";
+  $script .= "$('.crm-contact-detail-wrap').append(\"" . _hrui_contactSummaryHeaderHtml($data) . "\");";
+
+  $script .= "});";
+  $script .= "</script>";
+
+  return $script;
+}
+
+/**
  * Add new information in the contact header as the contact photo,
  * phone, department. All changes are made via Javascript.
  *
@@ -620,21 +784,23 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
  */
 function _hrui_updateContactSummaryUI() {
   $content = '';
+  $departmentsList = $managersList = null;
 
   $contact_id = CRM_Utils_Request::retrieve( 'cid', 'Positive');
+
   /* $currentContractDetails contain current contact data including
    * Current ( Position = $currentContractDetails->position ) and
    * ( Normal Place of work =  $currentContractDetails->location )
   */
   $currentContractDetails = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contact_id);
+
   // $departmentsList contain current roles departments list separated by comma
-  $departmentsList = null;
   if ($currentContractDetails)  {
-    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getDepartmentsList($currentContractDetails->contract_id);
+    $departmentsArray = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($currentContractDetails->contract_id);
     $departmentsList = implode(', ', $departmentsArray);
   }
+
   // $managersList contain current line managers list separated by comma
-  $managersList = null;
   if ($currentContractDetails)  {
     $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
     $managersList = implode(', ', $managersArray);
@@ -646,73 +812,114 @@ function _hrui_updateContactSummaryUI() {
       'return' => array("phone", "email", "image_URL"),
       'id' => $contact_id,
     ));
+
+    $content = _hrui_contactSummaryDOMScript(array(
+      'contact' => $contactDetails,
+      'current_contract' => $currentContractDetails,
+      'departments' => $departmentsList,
+      'managers' => $managersList,
+    ));
   }
   catch (CiviCRM_API3_Exception $e) {
   }
 
-  $content .="<script type=\"text/javascript\">
-    CRM.$(function($) {
-      $('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');
-    });
-  </script>";
-
-  if (!empty($contactDetails['image_URL'])) {
-    $content .= "<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $contactDetails['image_URL'] . " />');
-      });
-    </script>";
-  }
-
-  if (empty($currentContractDetails)) {
-    $content .= "<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
-      });
-    </script>";
-  }
-
-  $content .="<script type=\"text/javascript\">
-    CRM.$(function($) {
-      $('.crm-summary-block-wrap').append(\"<div class='crm-contact-detail-wrap' />\");
-    });
-  </script>";
-
-  $contactDetailHTML = '';
-
-  if (!empty($contactDetails['phone'])) {
-    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Phone:</strong> " . $contactDetails['phone'] . "</span>";
-  }
-
-  if (!empty($contactDetails['email'])) {
-    $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Email:</strong> " . $contactDetails['email'] . "</span>";
-  }
-
-  $contactDetailHTML .= "<br />";
-
-  if (isset($currentContractDetails)) {
-    if (!empty($currentContractDetails->position)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Position:</strong> " . $currentContractDetails->position . "</span>";
-    }
-
-    if (!empty($currentContractDetails->location)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Normal place of work:</strong> " . $currentContractDetails->location . "</span>";
-    }
-
-    if (!empty($departmentsList)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Department:</strong> " . $departmentsList . "</span>";
-    }
-
-    if (!empty($managersList)) {
-      $contactDetailHTML .= "<span class='crm-contact-detail'><strong>Manager:</strong> " . $managersList . "</span>";
-    }
-  }
-
-  $content .="<script type=\"text/javascript\">
-    CRM.$(function($) {
-      $('.crm-contact-detail-wrap').append(\"" . $contactDetailHTML . "\");
-    });
-  </script>";
-
   return $content;
+}
+
+/**
+ * Generating Custom Fields import child menu items
+ *
+ */
+function _hrui_customImportMenuItems(&$params) {
+  $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
+
+  $customFieldsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'import_custom_fields', 'id', 'name');
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+
+  if ($customFieldsNavId) {
+    // Degrade gracefully on 4.4
+    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
+      //  Get the maximum key of $params
+      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+
+      $multiValuedData = NULL;
+      foreach ($multipleCustomData as $key => $value) {
+        ++$navId;
+        $multiValuedData[$navId] = array (
+          'attributes' => array (
+            'label'      => $value,
+            'name'       => $value,
+            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+            'permission' => 'access CiviCRM',
+            'operator'   => null,
+            'separator'  => null,
+            'parentID'   => $customFieldsNavId,
+            'navID'      => $navId,
+            'active'     => 1
+          )
+        );
+      }
+      $params[$contactNavId]['child'][$customFieldsNavId]['child'] = $multiValuedData;
+    }
+  }
+}
+
+/**
+ * Changes to some core menu items
+ *
+ */
+function _hrui_coreMenuChanges(&$params) {
+  // remove search items
+  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Search...', 'id', 'name');
+  $toRemove = [
+    'Full-text search',
+    'Search builder',
+    'Custom searches',
+    'Find Cases',
+    'Find Activities'
+  ];
+  foreach($toRemove as $item) {
+    if (
+      in_array($item, ['Find Cases', 'Find Activities'])
+      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
+    ) {
+      continue;
+    }
+    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    unset($params[$searchNavId]['child'][$itemId]);
+  }
+
+  // remove contact items
+  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $toRemove = [
+    'New Tag',
+    'Manage Tags (Categories)',
+    'New Activity',
+    'Import Activities',
+  ];
+  foreach($toRemove as $item) {
+    if (
+      in_array($item, ['New Activity', 'Import Activities'])
+      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
+    ) {
+      continue;
+    }
+    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    unset($params[$searchNavId]['child'][$itemId]);
+  }
+
+  // Remove Admin items
+  $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
+  $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
+  unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
+}
+
+/**
+ * Enable/Disable Menu items created by hrui extension
+ *
+ */
+function _hrui_menuSetActive($isActive) {
+  CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
+  CRM_Core_BAO_Navigation::resetNavigation();
 }

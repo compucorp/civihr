@@ -1,0 +1,41 @@
+<div id="civihr-ui-select-contact">
+  <div class="refine-search row" ng-if="$ctrl.refineSearchVisible">
+    <div class="col-xs-12 refine-search__placeholder">
+      Start typing a name or email...
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <div class="crm_custom-select crm_custom-select--full">
+        <select
+          ng-required class="refine-search__dropdown form-control"
+          ng-model="$ctrl.refineSearch.selected.field"
+          ng-change="$ctrl.refineSearch.availableOptions.refresh()"
+          ng-options="value.label for value in $ctrl.refineSearch.availableFields">
+          <option value="">Refine search...</option>
+        </select>
+        <span class="crm_custom-select__arrow"></span>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <div class="loading-indicator" ng-hide="$ctrl.refineSearch.availableOptions.options"></div>
+      <div class="crm_custom-select crm_custom-select--full" ng-show="$ctrl.refineSearch.availableOptions.options.length">
+        <select class="refine-search__dropdown form-control"
+          ng-model="$ctrl.refineSearch.selected.option"
+          ng-options="option.value for option in $ctrl.refineSearch.availableOptions.options">
+          <option value="">- select -</option>
+        </select>
+        <span class="crm_custom-select__arrow"></span>
+      </div>
+    </div>
+  </div>
+  <div class="button-list" ng-class="{'button-list--with-upper-margin': $ctrl.refineSearchVisible}">
+    <a class="button-list__button" ng-click="$ctrl.showNewHouseholdModal()">
+      <i class="crm-i fa-home"></i> New Household
+    </a>
+    <a class="button-list__button" ng-click="$ctrl.showNewIndividualModal()">
+      <i class="crm-i fa-user"></i> New Individual
+    </a>
+    <a class="button-list__button" ng-click="$ctrl.showNewOrganizationModal()">
+      <i class="crm-i fa-building"></i> New Organization
+    </a>
+  </div>
+</div>

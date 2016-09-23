@@ -221,13 +221,13 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
   /**
    * Start Date of the job role
    *
-   * @var timestamp
+   * @var datetime
    */
   public $start_date;
   /**
    * End Date of the job role
    *
-   * @var timestamp
+   * @var datetime
    */
   public $end_date;
   /**
@@ -508,25 +508,27 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
         ) ,
         'hrjc_role_start_date' => array(
           'name' => 'start_date',
-          'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'default' => 'NULL',
           'title' => ts('Job Role Start Date') ,
+          'description' => 'Start Date of the job role',
           'import' => true,
           'where' => 'civicrm_hrjobroles.start_date',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
-          'default' => 0,
         ) ,
         'hrjc_role_end_date' => array(
           'name' => 'end_date',
-          'type' => CRM_Utils_Type::T_DATE | CRM_Utils_Type::T_TIME,
+          'type' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
+          'default' => 'NULL',
           'title' => ts('Job Role End Date') ,
+          'description' => 'End Date of the job role',
           'import' => true,
           'where' => 'civicrm_hrjobroles.end_date',
           'headerPattern' => '',
           'dataPattern' => '',
           'export' => true,
-          'default' => 0,
         ) ,
       );
     }

@@ -1,18 +1,16 @@
 var gulp = require('gulp');
-var bulk = require('gulp-sass-bulk-import');
-var sass = require('gulp-sass');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
 
-gulp.task('sass-hrui', function () {
-  gulp.src('scss/*.scss')
-    .pipe(bulk())
-    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
-    .pipe(gulp.dest('css/'));
+gulp.task('js-bundle', function () {
+  gulp.src('js/src/**/*.js')
+    .pipe(uglify())
+    .pipe(concat('hrui.min.js'))
+    .pipe(gulp.dest('js/dist'));
 });
-
-gulp.task('sass', ['sass-hrui']);
 
 gulp.task('watch', function () {
-  gulp.watch('scss/**/*.scss', ['sass']);
+  gulp.watch('js/src/**/*.js', ['js-bundle']);
 });
 
-gulp.task('default', ['sass', 'watch']);
+gulp.task('default', ['js-bundle']);

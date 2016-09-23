@@ -21,6 +21,7 @@ define([
                   ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
                   ContractHealthService, ContractPensionService, ContractFilesService, ContactService, $log,
                   UtilsService) {
+
             $log.debug('Controller: ContractCtrl');
 
             var contractId = $scope.contract.id,
@@ -246,6 +247,8 @@ define([
                     if (!results) {
                         return;
                     }
+
+                    ContractService.updateHeaderInfo();
 
                     if (results.revisionCreated) {
 

@@ -339,13 +339,14 @@ define([
 
             },
 
-            getContactList: function (search_value) {
+            getContactList: function (sortName) {
 
                 var deferred = $q.defer();
 
                 CRM.api3('Contact', 'get', {
                     "sequential": 1,
-                    "return": "id,sort_name"
+                    "return": "id, sort_name",
+                    "sort_name": sortName || null
                 }).done(function (result) {
 
                     // Passing data to deferred's resolve function on successful completion
@@ -417,15 +418,30 @@ define([
 
             },
 
-            getNewJobRole: function getNewJobRole(contract_id) {
+            getNewJobRole: function (contract_id) {
                 //Creates new JobRole depending on contract id and returns promise
                 return CRM.api3('HrJobRoles', 'create', {
                     "sequential": 1,
                     "job_contract_id": contract_id,
                     "title": ''
                 });
-            }
+            },
 
+            /**
+             * Returns the current departments of a given contract
+             *
+             * @param  {int} contractId
+             * @return {Promise} resolves to an array of departments
+             */
+            getCurrentDepartments: function (contractId) {
+              return CRM.api3('HrJobRoles', 'getcurrentdepartments', {
+                'sequential': 1,
+                'job_contract_id': contractId
+              })
+              .then(function (result) {
+                return result.values;
+              });
+            }
         }
     }]);
 

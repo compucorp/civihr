@@ -2,12 +2,16 @@ define([
   'common/angular',
   'job-roles/controllers/controllers',
   'common/moment',
+  'common/lodash',
   'common/filters/angular-date/format-date'
-], function (angular, controllers, moment) {
+], function (angular, controllers, moment, _) {
   'use strict';
 
-  controllers.controller('HRJobRolesController', ['$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q', 'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
-    function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters) {
+  controllers.controller('HRJobRolesController',[
+    '$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q',
+    'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
+    'DOMEventTrigger',
+    function ($scope, $log, $routeParams, $route, $timeout, $filter, $q, HR_settings, HRJobRolesService, DateValidation, HRJobRolesServiceFilters, DOMEventTrigger) {
       $log.debug('Controller: HRJobRolesController');
 
       $scope.format = HR_settings.DATE_FORMAT;
@@ -28,12 +32,12 @@ define([
 
       /**
        * Checks if date should be considered empty.
-       * Empty date is saved to database as 0000-00-00 00:00:00
+       *
        * @param {String} date
        * @returns {boolean}
        */
       var isDateEmpty = function(date){
-        return date === '0000-00-00 00:00:00';
+        return date === null;
       };
 
       /**
@@ -430,15 +434,15 @@ define([
 
         var contract = getContractData($scope.edit_data.new_role_id.job_contract_id);
         var validateResponse = validateDates({
-            'start': $scope.edit_data.new_role_id.newStartDate,
-            'end': $scope.edit_data.new_role_id.newEndDate,
-            'contractStart': contract.start_date,
-            'contractEnd': contract.end_date,
-          },
-          {
-            'start': $scope.errors.newStartDate,
-            'end': $scope.errors.newEndDate
-          });
+          'start': $scope.edit_data.new_role_id.newStartDate,
+          'end': $scope.edit_data.new_role_id.newEndDate,
+          'contractStart': contract.start_date,
+          'contractEnd': contract.end_date,
+        },
+        {
+          'start': $scope.errors.newStartDate,
+          'end': $scope.errors.newEndDate
+        });
 
         if (validateResponse) {
           newRole = angular.copy($scope.edit_data.new_role_id);
@@ -453,6 +457,8 @@ define([
 
           // Create the new job role
           createJobRole(newRole).then(function () {
+            updateHeaderInfo(newRole);
+
             // Hide the add new form
             $scope.add_new = false;
 
@@ -483,14 +489,16 @@ define([
       };
 
       /**
-       * Removes the Role based on Role ID
-       * @param row_id
+       * Removes the given Role
+       * @param {object} jobRole
        */
-      $scope.removeRole = function (row_id) {
+      $scope.removeRole = function (jobRole) {
         $log.debug('Remove Role');
 
         // Delete job role
-        deleteJobRole(row_id).then(function () {
+        deleteJobRole(jobRole.id).then(function () {
+          updateHeaderInfo(jobRole);
+
           return getJobRolesList($scope.$parent.contactId);
         });
       };
@@ -519,6 +527,8 @@ define([
 
         // Update the job role
         updateJobRole(role_id, updatedRole).then(function () {
+          updateHeaderInfo(updatedRole);
+
           return getJobRolesList($scope.$parent.contactId);
         });
       };
@@ -680,51 +690,53 @@ define([
       getJobRolesList($scope.$parent.contactId);
 
       // Get the contact list and store the data
-      getContactList();
 
-      function getContactList() {
+      job_roles.getContactList = function(sortName, showMessage) {
+        var successCallback = function (data) {
 
-        HRJobRolesService.getContactList().then(function (data) {
+          var contact,
+            contactList = [],
+            contactListObject = {},
+            i = 0;
 
-            if (data.is_error === 1) {
-              job_roles.message_type = 'alert-danger';
-              job_roles.message = 'Cannot get contact lit!';
+          if (data.is_error === 1) {
+            job_roles.message_type = 'alert-danger';
+            job_roles.message = 'Cannot get contact list!';
+          }
+          else {
+            // Pass the contact list to the scope
+            for (; i < data.count; i++) {
+              // Build the contact list
+              contact = {
+                id: data.values[i]['id'],
+                sort_name: data.values[i]['sort_name']
+              };
+              contactList.push(contact);
+              contactListObject[data.values[i]['id']] = contact;
             }
-            else {
+            // Store the ContactList as Array as typeahead needs array what we can reuse later
+            job_roles.contactList = contactList;
+            // Store the object too, so we can point to right values by Contact ID
+            job_roles.contactListObject = contactListObject;
 
-              // Pass the contact list to the scope
-              var contactList = [];
-              var contactListObject = {};
-
-              for (var i = 0; i < data.count; i++) {
-
-                // Build the contact list
-                contactList.push({ id: data.values[i]['id'], sort_name: data.values[i]['sort_name'] });
-                contactListObject[data.values[i]['id']] = {
-                  id: data.values[i]['id'],
-                  sort_name: data.values[i]['sort_name']
-                };
-              }
-
-              // Store the ContactList as Array as typeahead needs array what we can reuse later
-              job_roles.contactList = contactList;
-
-              // Store the object too, so we can point to right values by Contact ID
-              job_roles.contactListObject = contactListObject;
-
+            if(showMessage) { //dont show message when user types, show only first time
               job_roles.message_type = 'alert-success';
               job_roles.message = 'Contact list OK!';
             }
+          }
 
-            // Hide the message after some seconds
-            $timeout(function () {
-              job_roles.message = null;
-            }, 3000);
-          },
-          function (errorMessage) {
-            $scope.error = errorMessage;
-          });
-      }
+          // Hide the message after some seconds
+          $timeout(function () {
+            job_roles.message = null;
+          }, 3000);
+        };
+        var errorCallback = function (errorMessage) {
+          $scope.error = errorMessage;
+        };
+
+        HRJobRolesService.getContactList(sortName).then(successCallback,errorCallback);
+      };
+      job_roles.getContactList(null, true);
 
       function getOptionValues() {
 
@@ -876,6 +888,7 @@ define([
                 start_date: data.values[i]['period_start_date'],
                 end_date: data.values[i]['period_end_date'],
                 status: status,
+                is_current: data.values[i]['is_current'],
                 revisions: data.values[i]['revisions']
               };
 
@@ -907,16 +920,19 @@ define([
        */
       function jobRolesFromContracts(contractIds) {
         return HRJobRolesService.getAllJobRoles(contractIds).then(function (data) {
-          // Assign data
+
           job_roles.present_job_roles = [];
           job_roles.past_job_roles = [];
 
           data.values.forEach(function (object_data) {
-            var end_date = isDateEmpty(object_data.end_date) ? null : object_data.end_date;
             var todaysDate = moment().startOf('day');
-            end_date =  moment(end_date).startOf('day');
+            var endDate = null;
 
-            if (!end_date || moment(end_date).isSameOrAfter(todaysDate)) {
+            if(!isDateEmpty(object_data.end_date)) {
+              endDate = moment(object_data.end_date).startOf('day');
+            }
+
+            if (!endDate || endDate.isSameOrAfter(todaysDate)) {
               job_roles.present_job_roles.push(object_data);
             } else {
               job_roles.past_job_roles.push(object_data);
@@ -1063,6 +1079,23 @@ define([
         var dateString = formatDate(date, 'YYYY-MM-DD');
 
         return dateString !== 'Unspecified' ? dateString : null;
+      }
+
+      /**
+       * Triggers the update of the contact header via the `hrui` extension
+       * by emitting a DOM event with the roles data
+       *
+       * Given that the header reflects data only related to the current contract,
+       * the header update happens only for job roles belonging that particular contract
+       */
+      function updateHeaderInfo(jobRole) {
+        if (job_roles.contractsData[jobRole.job_contract_id].is_current) {
+          HRJobRolesService.getCurrentDepartments(jobRole.job_contract_id).then(function (departments) {
+            DOMEventTrigger('updateContactHeader', {
+              roles: { departments: departments }
+            });
+          });
+        }
       }
     }
   ]);

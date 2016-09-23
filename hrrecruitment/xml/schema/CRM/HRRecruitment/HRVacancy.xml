@@ -47,13 +47,22 @@
     <comment>Requirements of vacancy</comment>
     <title>Requirements</title>
   </field>
+
   <field>
     <name>location</name>
     <type>varchar</type>
     <length>254</length>
     <comment>Location of vacancy</comment>
     <title>Location</title>
+    <pseudoconstant>
+      <optionGroupName>hrjc_location</optionGroupName>
+    </pseudoconstant>
   </field>
+  <index>
+    <name>index_location</name>
+    <fieldName>location</fieldName>
+  </index>
+
   <field>
     <name>is_template</name>
     <type>boolean</type>

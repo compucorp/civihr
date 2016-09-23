@@ -6,12 +6,9 @@ ENTITY_EXTS=( hrabsence \
 hrbank \
 hrcareer \
 hrcase \
-hrcaseutils \
 hrdemog \
-hremerg \
 hrident \
 hrim \
-hrjob \
 hrmed \
 hrprofile
 hrqual \
@@ -29,8 +26,7 @@ org.civicrm.hremergency \
 com.civicrm.hrjobroles \
 hrjobcontract \
 org.civicrm.reqangular \
-hrabsence \
-uk.co.compucorp.civicrm.hrnavigation
+hrabsence
 )
 
 set -e

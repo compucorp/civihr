@@ -23,8 +23,9 @@ define([
         })
     }]);
 
-    services.factory('ContractService', ['Contract','ContractRevision','settings','$q','UtilsService','$log',
-        function (Contract, ContractRevision, settings, $q, UtilsService, $log) {
+    services.factory('ContractService', [
+        '$log', '$q', 'Contract', 'ContractRevision', 'settings', 'UtilsService', 'DOMEventTrigger',
+        function ($log, $q, Contract, ContractRevision, settings, UtilsService, DOMEventTrigger) {
             $log.debug('Service: ContractRevision');
 
         return {
@@ -57,6 +58,41 @@ define([
                 }
 
                 return deffered.promise;
+            },
+          /**
+           * Perform an ajax request and call HrJobContract => getcurrentcontract
+           * API method which is used to get the current contract for the contact
+           * or null if it is not exist.
+           *
+           * @param contactId :the current contact ID
+           */
+            getCurrentContract: function(contactId) {
+              var deffered = $q.defer();
+
+              Contract.get({action: 'getcurrentcontract', json: {'contact_id': contactId} }, function(data){
+                if (data.is_error)  {
+                  deffered.reject('Unable to fetch the current contract');
+                }
+                deffered.resolve(data.values);
+              },function(){
+                deffered.reject('Unable to fetch the current contract');
+              });
+
+              return deffered.promise;
+            },
+
+            /**
+             * Triggers the update of the contact header via the `hrui` extension
+             * by emitting a DOM event with the contract data
+             */
+            updateHeaderInfo: function () {
+              this.getCurrentContract(settings.contactId)
+                .then(function (currentContract) {
+                  DOMEventTrigger('updateContactHeader', { contract: currentContract });
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
             },
             getOne: function(contractId, contactId){
 
