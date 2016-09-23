@@ -24,67 +24,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       return $result;
   }
 
-  protected function populateTableWithEntity($tableName, $entity, array $fields, $revisionId)
-  {
-    $insertQuery = "INSERT INTO {$tableName} SET ";
-    $insertParams = array(1 => array($revisionId, 'Integer'));
-
-    foreach ($fields as $name => $type)
-    {
-        $value = $entity->{$name};
-        if ($value !== null)
-        {
-            switch ($type)
-            {
-                case 'String':
-                case 'Date':
-                case 'Timestamp':
-                    $value = '"' . $value . '"';
-                break;
-            }
-        }
-        else
-        {
-            $value = 'NULL';
-        }
-
-        $insertQuery .= "{$name} = {$value},";
-    }
-    $insertQuery .= "jobcontract_revision_id = %1";
-
-    return CRM_Core_DAO::executeQuery($insertQuery, $insertParams);
-  }
-
-  public function getPayScaleId($payScale)
-  {
-    if (!$payScale)
-    {
-        return null;
-    }
-
-    $selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 LIMIT 1';
-    $selectPayScaleParams = array(
-        1 => array($payScale, 'String'),
-    );
-    $payScaleResult = CRM_Core_DAO::executeQuery($selectPayScaleQuery, $selectPayScaleParams, false);
-
-    $payScaleId = null;
-    if ($payScaleResult->fetch())
-    {
-        $payScaleId = $payScaleResult->id;
-    }
-    else
-    {
-        //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
-        $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
-        CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
-
-        $payScaleId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
-    }
-
-    return $payScaleId;
-  }
-
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
     $this->executeCustomDataFile('xml/option_group_install.xml');
@@ -541,6 +480,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1015();
     $this->upgrade_1016();
     $this->upgrade_1017();
+    $this->upgrade_1019();
   }
 
   function upgrade_1001() {
@@ -841,17 +781,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * contact merge code in core civicrm files. So here we just insure that it will
    * be created for existing installations.
    */
-    try {
-      $result = civicrm_api3('OptionValue', 'getsingle', array(
-        'sequential' => 1,
-        'name' => "Contact Deleted by Merge",
-      ));
-      $is_error = $result['is_error'];
-    } catch (CiviCRM_API3_Exception $e) {
-      $is_error = true;
-    }
 
-    if ($is_error)  {
+    $result = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'name' => "Contact Deleted by Merge",
+      'options' => array('limit' => 1),
+    ));
+
+    if (!empty($result[0]['values']))  {
       civicrm_api3('OptionValue', 'create', array(
         'sequential' => 1,
         'option_group_id' => "activity_type",
@@ -916,6 +853,40 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   function upgrade_1018() {
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('export_job_contracts')");
     CRM_Core_BAO_Navigation::resetNavigation();
+
+    return true;
+  }
+
+  /**
+   * Create civicrm_hrpay_scale table and its default data if it is not exist
+   *
+   */
+  function upgrade_1019() {
+    CRM_Core_DAO::executeQuery("
+        CREATE TABLE IF NOT EXISTS `civicrm_hrpay_scale` (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+          `pay_scale` VARCHAR(63) DEFAULT NULL,
+          `pay_grade` VARCHAR(63) DEFAULT NULL,
+          `currency` VARCHAR(63) DEFAULT NULL,
+          `amount` DECIMAL(10,2) DEFAULT NULL,
+          `periodicity` VARCHAR(63) DEFAULT NULL,
+          `is_active` tinyint(4) DEFAULT '1',
+          PRIMARY KEY(id)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+      ");
+
+    $data = CRM_Core_DAO::singleValueQuery("SELECT COUNT(*) FROM `civicrm_hrpay_scale`");
+
+    if (empty($data)) {
+      CRM_Core_DAO::executeQuery("
+        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) VALUES
+        ('US', 'Senior', 'USD', 38000, 'Year', 1),
+        ('US', 'Junior', 'USD', 24000, 'Year', 1),
+        ('UK', 'Senior', 'GBP', 35000, 'Year', 1),
+        ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
+        ('Not Applicable', NULL, NULL, NULL, NULL, 1)
+    ");
+    }
 
     return true;
   }
