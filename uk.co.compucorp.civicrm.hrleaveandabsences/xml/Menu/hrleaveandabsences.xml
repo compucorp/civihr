@@ -28,6 +28,6 @@
     <path>civicrm/admin/leaveandabsences/periods/manage_entitlements</path>
     <page_callback>CRM_HRLeaveAndAbsences_Form_ManageEntitlements</page_callback>
     <title>ManageEntitlements</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer leave and absences</access_arguments>
   </item>
 </menu>

@@ -129,7 +129,7 @@
   <field>
     <name>accrual_expiration_unit</name>
     <type>int unsigned</type>
-    <comment>The unit (year, month, etc) of accrual_expiration_duration of this type default expiry</comment>
+    <comment>The unit (months or days) of accrual_expiration_duration of this type default expiry</comment>
   </field>
   <field>
     <name>allow_carry_forward</name>
@@ -152,7 +152,7 @@
   <field>
     <name>carry_forward_expiration_unit</name>
     <type>int unsigned</type>
-    <comment>The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry</comment>
+    <comment>The unit (months or days) of carry_forward_expiration_duration of this type default expiry</comment>
   </field>
 
 </table>

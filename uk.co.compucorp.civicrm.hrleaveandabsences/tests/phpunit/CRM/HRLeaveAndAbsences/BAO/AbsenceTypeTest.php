@@ -22,6 +22,13 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
 
+  public function setUp() {
+    // We delete everything two avoid problems with the default absence types
+    // created during the extension installation
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+  }
+
   /**
    * @expectedException PEAR_Exception
    * @expectedExceptionMessage DB Error: already exists
@@ -89,6 +96,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     $this->assertEquals(0, $entity2->add_public_holiday_to_entitlement);
 
     $this->updateBasicType($basicEntity2->id, ['add_public_holiday_to_entitlement' => true]);
+  }
+
+  public function testUpdatingATypeWithAddPublicHolidayToEntitlementShouldNotTriggerErrorAboutHavingAnotherTypeWithItSelected() {
+    $basicEntity = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
+    $entity1 = $this->findTypeByID($basicEntity->id);
+    $this->assertEquals(1, $entity1->add_public_holiday_to_entitlement);
+
+    $this->updateBasicType($entity1->id, ['add_public_holiday_to_entitlement' => true]);
   }
 
   /**
@@ -350,7 +365,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends PHPUnit_Framework_TestC
     $absenceType = $this->createBasicType([
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 4,
-      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS
+      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS
     ]);
     $this->assertFalse($absenceType->carryForwardNeverExpires());
   }
