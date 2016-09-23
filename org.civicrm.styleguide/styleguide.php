@@ -123,10 +123,3 @@ _styleguide_civix_civicrm_angularModules($angularModules);
 function styleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _styleguide_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
-
-/**
- * Implementation of hook_civicrm_pageRun
- */
-function styleguide_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.styleguide', 'css/styleguide.css');
-}

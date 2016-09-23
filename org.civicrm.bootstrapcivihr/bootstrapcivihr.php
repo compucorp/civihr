@@ -126,5 +126,7 @@ function bootstrapcivihr_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) 
  * Implementation of hook_civicrm_pageRun
  */
 function bootstrapcivihr_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/bootstrap-civihr-style.css');
+  if (!(isset($_GET['snippet']) && $_GET['snippet'] == 'json')) {
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/bootstrap-civihr-style.css');
+  }
 }

@@ -121,6 +121,7 @@ function hrjobroles_civicrm_navigationMenu( &$params ) {
       'name' => "import_job_roles",
       'url' => "civicrm/jobroles/import",
       'permission' => NULL,
+      'operator' => NULL,
       'separator' => TRUE,
       'parentID' => $parentID,
       'navID' => $navId,
