@@ -87,12 +87,6 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to LeavePeriodEntitlement
-   *
-   * @var int unsigned
-   */
-  public $entitlement_id;
-  /**
    * One of the values of the Leave Balance Type option group
    *
    * @var int unsigned
@@ -123,6 +117,12 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
    */
   public $source_id;
   /**
+   * Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.
+   *
+   * @var string
+   */
+  public $source_type;
+  /**
    * class constructor
    *
    * @return civicrm_hrleaveandabsences_leave_balance_change
@@ -142,7 +142,6 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = static ::createReferenceColumns(__CLASS__);
-      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'entitlement_id', 'civicrm_hrleaveandabsences_leave_period_entitlement', 'id');
       self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'expired_balance_id', 'civicrm_hrleaveandabsences_leave_balance_change', 'id');
     }
     return self::$_links;
@@ -161,13 +160,6 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'Unique LeaveBalanceChange ID',
           'required' => true,
-        ) ,
-        'entitlement_id' => array(
-          'name' => 'entitlement_id',
-          'type' => CRM_Utils_Type::T_INT,
-          'description' => 'FK to LeavePeriodEntitlement',
-          'required' => true,
-          'FKClassName' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement',
         ) ,
         'type_id' => array(
           'name' => 'type_id',
@@ -207,6 +199,14 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have the ID of this source.',
         ) ,
+        'source_type' => array(
+          'name' => 'source_type',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Source Type') ,
+          'description' => 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.',
+          'maxlength' => 20,
+          'size' => CRM_Utils_Type::MEDIUM,
+        ) ,
       );
     }
     return self::$_fields;
@@ -222,12 +222,12 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'entitlement_id' => 'entitlement_id',
         'type_id' => 'type_id',
         'amount' => 'amount',
         'expiry_date' => 'expiry_date',
         'expired_balance_id' => 'expired_balance_id',
         'source_id' => 'source_id',
+        'source_type' => 'source_type',
       );
     }
     return self::$_fieldKeys;
