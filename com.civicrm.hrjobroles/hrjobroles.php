@@ -150,28 +150,6 @@ function hrjobroles_civicrm_tabs(&$tabs, $contactID) {
 }
 
 /**
- * Implementation of hook_civicrm_pageRun
- */
-function hrjobroles_civicrm_pageRun($page) {
-    if ($page instanceof CRM_Contact_Page_View_Summary) {
-
-        // Returns the fully qualified URL for our extension
-        CRM_Core_Resources::singleton()->addVars('hrjobroles', array(
-            'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('com.civicrm.hrjobroles')
-        ));
-
-        CRM_Core_Resources::singleton()->addScriptFile('com.civicrm.hrjobroles', CRM_Core_Config::singleton()->debug ? 'js/src/job-roles.js' : 'js/dist/job-roles.min.js', 1010);
-
-        CRM_Core_Resources::singleton()
-            ->addStyleFile('com.civicrm.hrjobroles', 'css/hrjobroles.css');
-
-        // Add angular xeditable css library
-        CRM_Core_Resources::singleton()
-            ->addStyleFile('com.civicrm.hrjobroles', 'angular-xeditable/css/xeditable.css');
-    }
-}
-
-/**
  * Implementation of hook_civicrm_entityTypes
  */
 function hrjobroles_civicrm_entityTypes(&$entityTypes) {
