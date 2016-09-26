@@ -900,7 +900,7 @@ function _hrui_coreMenuChanges(&$params) {
     'Search builder',
     'Custom searches',
     'Find Cases',
-    'Find Activities'
+    'Find Activities',
   ];
   foreach($toRemove as $item) {
     if (
@@ -920,6 +920,7 @@ function _hrui_coreMenuChanges(&$params) {
     'Manage Tags (Categories)',
     'New Activity',
     'Import Activities',
+    'Contact Reports',
   ];
   foreach($toRemove as $item) {
     if (
@@ -932,10 +933,19 @@ function _hrui_coreMenuChanges(&$params) {
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
+  // remove main Reports menu
+  $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
+  unset($params[$reportsNavId]);
+
   // Remove Admin items
   $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+
+  $civiReportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviReport', 'id', 'name');
+
   $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
   $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
+
+  unset($params[$adminNavId]['child'][$civiReportNavId]);
   unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
 }
 
