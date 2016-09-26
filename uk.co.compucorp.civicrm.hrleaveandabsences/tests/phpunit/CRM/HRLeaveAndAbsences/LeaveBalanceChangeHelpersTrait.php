@@ -137,7 +137,7 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
       CRM_Core_DAO::executeQuery("
         INSERT INTO {$balanceChangeTableName}(type_id, amount, source_id, source_type)
-        VALUES({$debitBalanceChangeType}, -1, {$dateId}, 'leave_request_day')
+        VALUES({$debitBalanceChangeType}, -1, {$dateId}, '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "')
       ");
     }
 

@@ -224,7 +224,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Leave'],
       'source_id' => $periodEntitlement->id,
-      'source_type' => 'entitlement',
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'amount' => $amount
     ]);
   }
@@ -250,7 +250,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       LeaveBalanceChange::create([
         'type_id' => $balanceChangeTypes['Brought Forward'],
         'source_id' => $periodEntitlement->id,
-        'source_type' => 'entitlement',
+        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount' => $broughtForward,
         'expiry_date' => CRM_Utils_Date::processDate($broughtForwardExpirationDate)
       ]);
@@ -289,7 +289,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       LeaveBalanceChange::create([
         'type_id'     => $balanceChangeTypes['Public Holiday'],
         'source_id'   => $periodEntitlement->id,
-        'source_type' => 'entitlement',
+        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
         'amount'      => count($publicHolidays)
       ]);
 
@@ -307,7 +307,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
           'type_id'        => $balanceChangeTypes['Debit'],
           'amount'         => -1,
           'source_id'      => $requestDate->id,
-          'source_type'    => 'leave_request_day'
+          'source_type'    => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY
         ]);
       }
     }

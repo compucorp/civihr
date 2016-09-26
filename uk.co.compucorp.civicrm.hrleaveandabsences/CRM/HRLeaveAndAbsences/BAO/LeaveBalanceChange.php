@@ -5,6 +5,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
+  const SOURCE_ENTITLEMENT = 'entitlement';
+  const SOURCE_LEAVE_REQUEST_DAY = 'leave_request_day';
+
   /**
    * Create a new LeaveBalanceChange based on array-data
    *
@@ -59,7 +62,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       FROM {$balanceChangeTable} leave_balance_change
       LEFT JOIN {$leaveRequestDateTable} leave_request_date 
              ON leave_balance_change.source_id = leave_request_date.id AND 
-                leave_balance_change.source_type = 'leave_request_day'
+                leave_balance_change.source_type = '". self::SOURCE_LEAVE_REQUEST_DAY ."'
       LEFT JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
       WHERE (
               leave_request.entitlement_id = {$entitlementID} $whereLeaveRequestStatus
@@ -67,7 +70,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
             OR
             (
               leave_balance_change.source_id = {$entitlementID} AND 
-              leave_balance_change.source_type = 'entitlement'
+              leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
             )
     ";
 
@@ -100,7 +103,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       SELECT *
       FROM {$balanceChangeTable}
       WHERE source_id = {$entitlementID} AND
-            source_type = 'entitlement' AND 
+            source_type = '" . self::SOURCE_ENTITLEMENT . "' AND 
             expired_balance_id IS NULL
       ORDER BY id
     ";
@@ -180,7 +183,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       SELECT SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
       INNER JOIN {$leaveRequestDateTable} leave_request_date 
-              ON leave_balance_change.source_id = leave_request_date.id AND leave_balance_change.source_type = 'leave_request_day'
+              ON leave_balance_change.source_id = leave_request_date.id AND 
+                 leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
       INNER JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
       WHERE leave_request.entitlement_id = {$entitlementID}
     ";
