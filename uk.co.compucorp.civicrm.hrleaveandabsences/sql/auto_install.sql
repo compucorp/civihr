@@ -301,13 +301,13 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change` (
      `type_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Balance Type option group',
      `amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'The amount of days this change in balance represents to the entitlement',
      `expiry_date` date    COMMENT 'Some balance changes can expire. This is the date it will expire.',
-     `expired_balance_id` int unsigned    COMMENT 'FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.',
+     `expired_balance_change_id` int unsigned    COMMENT 'FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.',
      `source_id` int unsigned    COMMENT 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have the ID of this source.' ,
      `source_type` varchar(20)    COMMENT 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.' ,
     PRIMARY KEY ( `id` ),
-    UNIQUE INDEX `unique_expiry_record`(expired_balance_id),
+    UNIQUE INDEX `unique_expiry_record`(expired_balance_change_id),
     INDEX `index_source_id`(source_id, source_type),
-    CONSTRAINT FK_civicrm_hrlaa_leave_balance_change_expired_balance_id FOREIGN KEY (`expired_balance_id`) REFERENCES `civicrm_hrleaveandabsences_leave_balance_change`(`id`) ON DELETE CASCADE
+    CONSTRAINT FK_civicrm_hrlaa_leave_balance_change_expired_balance_change_id FOREIGN KEY (`expired_balance_change_id`) REFERENCES `civicrm_hrleaveandabsences_leave_balance_change`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 

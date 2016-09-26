@@ -104,7 +104,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       FROM {$balanceChangeTable}
       WHERE source_id = {$entitlementID} AND
             source_type = '" . self::SOURCE_ENTITLEMENT . "' AND 
-            expired_balance_id IS NULL
+            expired_balance_change_id IS NULL
       ORDER BY id
     ";
 
@@ -211,7 +211,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   /**
    * This method checks every leave balance change record with an expiry_date in
    * the past and that still don't have a record for the expired days (that is,
-   * a balance change record of this same type and with an expired_balance_id
+   * a balance change record of this same type and with an expired_balance_change_id
    * pointing to the expired record), and creates it.
    *
    * @return int The number of records created
@@ -223,12 +223,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT balance_to_expire.*
       FROM {$tableName} balance_to_expire
-      LEFT JOIN {$tableName} expired_balance
-             ON balance_to_expire.id = expired_balance.expired_balance_id
+      LEFT JOIN {$tableName} expired_balance_change
+             ON balance_to_expire.id = expired_balance_change.expired_balance_change_id
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
             balance_to_expire.expiry_date < CURDATE() AND
-            balance_to_expire.expired_balance_id IS NULL AND
-            expired_balance.id IS NULL
+            balance_to_expire.expired_balance_change_id IS NULL AND
+            expired_balance_change.id IS NULL
       ORDER BY balance_to_expire.source_id ASC, balance_to_expire.expiry_date ASC
     ";
 
@@ -255,7 +255,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         'type_id' => $dao->type_id,
         'amount' => $expiredAmount,
         'expiration_date' => date('YmdHis', strtotime($dao->expiry_date)),
-        'expired_balance_id' => $dao->id
+        'expired_balance_change_id' => $dao->id
       ]);
 
       $numberOfRecordsCreated++;

@@ -48,13 +48,13 @@
   </field>
 
   <field>
-    <name>expired_balance_id</name>
+    <name>expired_balance_change_id</name>
     <type>int unsigned</type>
     <comment>FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
-    <name>expired_balance_id</name>
+    <name>expired_balance_change_id</name>
     <table>civicrm_hrleaveandabsences_leave_balance_change</table>
     <key>id</key>
     <add>4.4</add>
@@ -78,7 +78,7 @@
 
   <index>
     <name>unique_expiry_record</name>
-    <fieldName>expired_balance_id</fieldName>
+    <fieldName>expired_balance_change_id</fieldName>
     <unique>true</unique>
     <add>4.4</add>
   </index>

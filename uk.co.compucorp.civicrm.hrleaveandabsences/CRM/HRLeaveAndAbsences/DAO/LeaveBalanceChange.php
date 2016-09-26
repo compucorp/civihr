@@ -109,7 +109,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
    *
    * @var int unsigned
    */
-  public $expired_balance_id;
+  public $expired_balance_change_id;
   /**
    * Some balance changes are originated from an specific source (a leave request date, for example) and this field will have the ID of this source.
    *
@@ -142,7 +142,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = static ::createReferenceColumns(__CLASS__);
-      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'expired_balance_id', 'civicrm_hrleaveandabsences_leave_balance_change', 'id');
+      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'expired_balance_change_id', 'civicrm_hrleaveandabsences_leave_balance_change', 'id');
     }
     return self::$_links;
   }
@@ -188,8 +188,8 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
           'title' => ts('Expiry Date') ,
           'description' => 'Some balance changes can expire. This is the date it will expire.',
         ) ,
-        'expired_balance_id' => array(
-          'name' => 'expired_balance_id',
+        'expired_balance_change_id' => array(
+          'name' => 'expired_balance_change_id',
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.',
           'FKClassName' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange',
@@ -225,7 +225,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange extends CRM_Core_DAO
         'type_id' => 'type_id',
         'amount' => 'amount',
         'expiry_date' => 'expiry_date',
-        'expired_balance_id' => 'expired_balance_id',
+        'expired_balance_change_id' => 'expired_balance_change_id',
         'source_id' => 'source_id',
         'source_type' => 'source_type',
       );

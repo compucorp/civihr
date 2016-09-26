@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
       'type_id' => 1,
       'amount' => -3,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'expired_balance_id' => $balanceChangeToExpire->id
+      'expired_balance_change_id' => $balanceChangeToExpire->id
     ]);
 
     $this->assertNotEmpty($expiryBalanceChange->id);
@@ -68,7 +68,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
       'type_id' => 1,
       'amount' => -3,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'expired_balance_id' => $balanceChangeToExpire->id
+      'expired_balance_change_id' => $balanceChangeToExpire->id
     ]);
   }
 
@@ -597,7 +597,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
 
   private function getExpirationRecordForBalanceChange($balanceChangeID) {
     $record = new LeaveBalanceChange();
-    $record->expired_balance_id = $balanceChangeID;
+    $record->expired_balance_change_id = $balanceChangeID;
     $record->find();
     if($record->N == 1) {
       $record->fetch();
