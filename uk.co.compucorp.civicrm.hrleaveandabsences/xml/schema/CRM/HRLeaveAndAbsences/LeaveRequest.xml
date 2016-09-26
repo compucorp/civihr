@@ -21,15 +21,30 @@
   </primaryKey>
 
   <field>
-    <name>entitlement_id</name>
+    <name>type_id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>FK to LeavePeriodEntitlement</comment>
+    <comment>FK to AbsenceType</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
-    <name>entitlement_id</name>
-    <table>civicrm_hrleaveandabsences_leave_period_entitlement</table>
+    <name>type_id</name>
+    <table>civicrm_hrleaveandabsences_absence_type</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
     <key>id</key>
     <add>4.4</add>
     <onDelete>CASCADE</onDelete>

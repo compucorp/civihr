@@ -116,6 +116,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testBroughtForwardShouldNotBeMoreThanTheMaxNumberOfDaysAllowedToBeCarriedForward() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
     $type = $this->createAbsenceType([
       'max_number_of_days_to_carry_forward' => 5
     ]);
@@ -145,8 +147,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(5, $calculation->getBroughtForward());
   }
 
-  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement()
-  {
+  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
     $type = $this->createAbsenceType([
       'max_number_of_days_to_carry_forward' => 5
     ]);
@@ -518,6 +521,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeTheTotalAmountOfDaysFromAllApprovedLeaveRequestsOnThePeriod() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
+    $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
+
     $type = $this->createAbsenceType();
     $previousPeriod = AbsencePeriod::create([
       'title' => 'Period 1',
@@ -530,14 +535,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $previousPeriodStartDateTimeStamp = strtotime($previousPeriod->start_date);
     // Add a 1 day Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
-      $previousPeriodEntitlement->id,
+      $previousPeriodEntitlement->type_id,
+      $previousPeriodEntitlement->getContactIDFromContract(),
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+1 day', $previousPeriodStartDateTimeStamp))
     );
 
     // Add a 11 days Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
-      $previousPeriodEntitlement->id,
+      $previousPeriodEntitlement->type_id,
+      $previousPeriodEntitlement->getContactIDFromContract(),
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+31 days', $previousPeriodStartDateTimeStamp)),
       date('Y-m-d', strtotime('+41 days', $previousPeriodStartDateTimeStamp))
@@ -568,8 +575,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(0, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
-  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeEqualsToProposedEntitlementMinusLeavesTaken()
-  {
+  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeEqualsToProposedEntitlementMinusLeavesTaken() {
+    $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
+
     $type = $this->createAbsenceType();
 
     $previousPeriod = AbsencePeriod::create([

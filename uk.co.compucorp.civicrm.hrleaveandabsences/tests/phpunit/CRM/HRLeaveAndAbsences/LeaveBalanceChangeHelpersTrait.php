@@ -83,16 +83,20 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    * we don't need all that for the tests. Only having the data on the right
    * tables is enough, and that's what this method does.
    *
-   * @param int $entitlementID
-   *    The ID of the entitlement to which the leave request will be added to
+   * @param $typeID
+   *    The ID of the Absence Type this Leave Request will belong to
+   * @param $contactID
+   *    The ID of the Contact (user) this Leave Request will belong to
    * @param int $status
    *    One of the values of the Leave Request Status option list
    * @param $fromDate
    *    The start date of the leave request
    * @param null $toDate
    *    The end date of the leave request. If null, it means it starts and ends at the same date
+   *
+   * @internal param int $entitlementID The ID of the entitlement to which the leave request will be added to*    The ID of the entitlement to which the leave request will be added to
    */
-  public function createLeaveRequestBalanceChange($entitlementID, $status, $fromDate, $toDate = null) {
+  public function createLeaveRequestBalanceChange($typeID, $contactID, $status, $fromDate, $toDate = null) {
     $leaveRequestTable = LeaveRequest::getTableName();
     $startDate = new DateTime($fromDate);
 
@@ -107,8 +111,8 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     $toDate = $toDate ? "'{$toDate}'" : 'NULL';
 
     $query = "
-      INSERT INTO {$leaveRequestTable}(entitlement_id, status_id, from_date, to_date)
-      VALUES({$entitlementID}, {$status}, {$fromDate}, {$toDate})
+      INSERT INTO {$leaveRequestTable}(type_id, contact_id, status_id, from_date, to_date)
+      VALUES({$typeID}, {$contactID}, {$status}, {$fromDate}, {$toDate})
     ";
 
     CRM_Core_DAO::executeQuery($query);

@@ -2,6 +2,7 @@
 
 require_once __DIR__."/../LeaveBalanceChangeHelpersTrait.php";
 require_once __DIR__."/../ContractHelpersTrait.php";
+require_once __DIR__."/../LeavePeriodEntitlementHelpersTrait.php";
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
@@ -23,6 +24,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
 
   private $leaveRequestStatuses = [];
 
@@ -112,14 +114,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testBalanceShouldNotIncludeOpenLeaveRequests() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 5);
     $this->assertEquals(5, $periodEntitlement->getBalance());
 
     // This leave request will deduct 3 days from the entitlement
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
@@ -128,7 +131,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     // This would deduct 2 days, but it's waiting approval, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Waiting Approval'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
@@ -137,7 +141,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     // This would deduct 1 day, but it's waiting for more information, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['More Information Requested'],
       date('YmdHis')
     );
@@ -146,14 +151,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testBalanceShouldNotIncludeCancelledAndRejectedLeaveRequests() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->assertEquals(6, $periodEntitlement->getBalance());
 
     // This leave request will deduct 3 days from the entitlement
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+2 day'))
@@ -162,7 +168,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     // This would deduct 2 days, but it's rejected, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Rejected'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
@@ -171,7 +178,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     // This would deduct 2 days, but it's cancelled, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Cancelled'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
@@ -181,14 +189,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testBalanceShouldOnlyIncludeApprovedLeaveRequests() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 5);
     $this->assertEquals(5, $periodEntitlement->getBalance());
 
     // This leave request will deduct 2 days from the entitlement
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
@@ -196,14 +205,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
 
     // This will deduct 1 day
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Admin Approved'],
       date('YmdHis')
     );
 
     // This will deduct 1 more day
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('YmdHis')
     );
@@ -211,7 +222,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     // This would deduct 2 days, but it's cancelled, so
     // it shouldn't be included on the balance
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Cancelled'],
       date('YmdHis'),
       date('YmdHis', strtotime('+1 day'))
@@ -221,7 +233,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testBalanceShouldIncludeBroughtForwardPublicHolidayAndLeave() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
@@ -230,7 +242,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testBalanceShouldIncludeExpiredBalanceChanges() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
     $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 3, 0.5);
     // Note that this is only testing if the expired amount will be summed in
@@ -307,16 +319,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testTheLeaveRequestBalanceShouldOnlyIncludeDaysDeductedByApprovedLeaveRequests() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
-    // Neither of these won't be included in the Leave Request balance
+    // None of these will be included in the Leave Request balance
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
     $this->createPublicHolidayBalanceChange($periodEntitlement->id, 8);
 
     // 3 days Leave Request
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+2 days'))
@@ -326,7 +339,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
 
     // 6 day Leave Request
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
+      $periodEntitlement->getContactIDFromContract(),
       $this->leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+3 days')),
       date('Y-m-d', strtotime('+8 days'))
@@ -336,14 +350,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testCanSaveALeavePeriodEntitlementFromAnEntitlementCalculation() {
-    $type = new AbsenceType();
-    $type->id = 1;
-    $period = new AbsencePeriod();
-    $period->id = 1;
-    $contract = ['id' => 1];
+
+    $type = $this->createAbsenceType();
+    $period = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $this->setContractDates('2016-01-01', '2016-12-31');
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
-      $contract['id'],
+      $this->contract['id'],
       $period->id,
       $type->id
     );
@@ -354,7 +367,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $publicHolidays = [ '2016-01-01', '2016-03-15', '2016-09-09' ];
     $calculation = $this->getEntitlementCalculationMock(
       $period,
-      $contract,
+      $this->contract,
       $type,
       $broughtForward,
       $proRata,
@@ -364,7 +377,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     LeavePeriodEntitlement::saveFromCalculation($calculation);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
-      $contract['id'],
+      $this->contract['id'],
       $period->id,
       $type->id
     );
@@ -372,7 +385,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertNotNull($periodEntitlement);
     $this->assertEquals($period->id, $periodEntitlement->period_id);
     $this->assertEquals($type->id, $periodEntitlement->type_id);
-    $this->assertEquals($contract['id'], $periodEntitlement->contract_id);
+    $this->assertEquals($this->contract['id'], $periodEntitlement->contract_id);
 
     // 10 + 1 + 3 (Pro Rata + Brought Forward + No. Public Holidays)
     $this->assertEquals(14, $periodEntitlement->getEntitlement());
@@ -411,14 +424,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function testSaveFromCalculationWillReplaceExistingLeavePeriodEntitlement() {
-    $type = new AbsenceType();
-    $type->id = 1;
-    $period = new AbsencePeriod();
-    $period->id = 1;
-    $contract = ['id' => 1];
+    $type = $this->createAbsenceType();
+    $period = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $this->setContractDates('2016-01-01', '2016-12-31');
 
     $periodEntitlement1 = LeavePeriodEntitlement::create([
-      'contract_id' => $contract['id'],
+      'contract_id' => $this->contract['id'],
       'period_id' => $period->id,
       'type_id' => $type->id
     ]);
@@ -428,7 +439,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $proRata = 10;
     $calculation = $this->getEntitlementCalculationMock(
       $period,
-      $contract,
+      $this->contract,
       $type,
       $broughtForward,
       $proRata
@@ -437,7 +448,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     LeavePeriodEntitlement::saveFromCalculation($calculation);
 
     $periodEntitlement2 = LeavePeriodEntitlement::getPeriodEntitlementForContract(
-      $contract['id'],
+      $this->contract['id'],
       $period->id,
       $type->id
     );
@@ -553,6 +564,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertEquals('2016-05-23', $dates[1]);
   }
 
+  public function testGetContactIDFromContract() {
+    $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $absenceType = $this->createAbsenceType();
+
+    $periodEntitlement = LeavePeriodEntitlement::create([
+      'contract_id' => $this->contract['id'],
+      'type_id'     => $absenceType->id,
+      'period_id'   => $absencePeriod->id
+    ]);
+
+    $this->assertEquals(2, $periodEntitlement->getContactIDFromContract());
+  }
+
   private function createAbsencePeriod($startDate, $endDate) {
     return AbsencePeriod::create([
       'title' => microtime(),
@@ -661,4 +685,5 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
 
     $user = null;
   }
+
 }
