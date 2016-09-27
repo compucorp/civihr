@@ -6,86 +6,64 @@ define([
 
     services.factory('HRJobRolesService', ['$log', '$q', '$filter', function ($log, $q, $filter) {
 
+        /**
+         * Extracts the contract revisions details from the chained api calls
+         * properties, then removes the current one and format the dates
+         *
+         * @param  {Object} contract
+         */
+        function processContractRevisions(contract) {
+          var contractRevisions = contract['api.HRJobContractRevision.get'].values;
+          delete(contract['api.HRJobContractRevision.get']);
+
+          contract.revisions = contractRevisions
+            .map(function (revision) {
+              return revision['api.HRJobDetails.getsingle'];
+            })
+            .filter(function (revision) {
+              return !(revision.period_start_date === contract.period_start_date
+              && revision.period_end_date === contract.period_end_date);
+            })
+            .map(function (revision) {
+              revision.period_start_date = $filter('formatDate')(revision.period_start_date);
+              revision.period_end_date = $filter('formatDate')(revision.period_end_date);
+
+              return revision;
+            });
+        }
+
         return {
+
             /**
              * Gets all contracts and revisions
-             * @param contact_id
+             *
+             * @param {string} contactId
              * @returns {promise}
              */
-            getContracts: function (contact_id) {
-                var deferred = $q.defer();
+            getContracts: function (contactId) {
+              var deferred = $q.defer();
 
-                /**
-                 * Get contracts for given contact.
-                 */
-                CRM.api3('HRJobContract', 'get', {
-                    "sequential": 1,
-                    "contact_id": contact_id,
-                    "deleted": 0,
-                    "return": "title,period_end_date,period_start_date"
-                }).done(function (contracts) {
-                    // get revisions for each contract
-                    var revisions = contracts.values.map(function (contract) {
-                        return CRM.api3('HRJobContractRevision', 'get', {
-                            "sequential": 1,
-                            "jobcontract_id": contract.id
-                        }).then(function (response) {
-                            return response.values.map(function (item) {
-                                return {
-                                    id: item.id,
-                                    contract_id: item.jobcontract_id
-                                }
-                            });
-                        });
-                    });
+              CRM.api3('HRJobContract', 'get', {
+                'sequential': 1,
+                'contact_id': contactId,
+                'deleted': 0,
+                'return': 'title,period_end_date,period_start_date',
+                'api.HRJobContractRevision.get': {
+                  'jobcontract_id': '$value.id',
+                  'api.HRJobDetails.getsingle': {
+                    'jobcontract_revision_id': '$value.id'
+                  }
+                }
+              })
+              .done(function (contracts) {
+                contracts.values.forEach(processContractRevisions);
+                deferred.resolve(contracts);
+              })
+              .error(function () {
+                deferred.reject('An error occured while fetching items');
+              });
 
-                    $q.all(revisions).then(function (response) {
-                        // Flatten the array of revisions
-                        return [].concat.apply([], response);
-                    }).then(function (response) {
-                        // get details for each revision
-                        return $q.all(response.map(function (item) {
-                            return CRM.api3('HRJobDetails', 'get', {
-                                "sequential": 1,
-                                "jobcontract_revision_id": item.id
-                            }).then(function (result) {
-                                result.job_contract_id = item.contract_id;
-                                return result;
-                            });
-                        }));
-                    }).then(function (revisions) {
-                        // for each contract
-                        contracts.values.forEach(function (contract) {
-
-                            // filter revisions by contract.id and remove current
-                            contract.revisions = revisions.filter(function (revision) {
-                                var isCurrent = (revision.values[0].period_start_date === contract.period_start_date
-                                && revision.values[0].period_end_date === contract.period_end_date);
-
-                                return !isCurrent && revision.job_contract_id === contract.id;
-                            });
-
-                            // save revisions in contract.revisions with properly formatted dates
-                            contract.revisions = contract.revisions.map(function (revisions) {
-                                var revision = revisions.values[0];
-                                revision.period_start_date = $filter('formatDate')(revision.period_start_date);
-                                revision.period_end_date = $filter('formatDate')(revision.period_end_date);
-                                return revision;
-                            });
-                        });
-
-                        // Passing data to deferred's resolve function on successful completion
-                        deferred.resolve(contracts);
-                    });
-                }).error(function (result) {
-
-                    // Sending a friendly error message in case of failure
-                    deferred.reject("An error occured while fetching items");
-
-                });
-
-                // Returning the promise object
-                return deferred.promise;
+              return deferred.promise;
             },
 
             getAllJobRoles: function (job_contract_ids) {

@@ -13,6 +13,93 @@ define([
       deferred = mockDeferred($q);
     }]));
 
+    describe('getContracts()', function () {
+      var callArgs, finalResult;
+
+      beforeEach(function () {
+        mockAPIResponse(mockedResponse());
+
+        HRJobRolesService.getContracts('1');
+
+        callArgs = CRM.api3.calls.argsFor(0);
+        finalResult = deferred.resolve.calls.argsFor(0)[0];
+      });
+
+      it('chains 3 api calls together to get the contract revision details', function () {
+        expect(callArgs[2]['api.HRJobContractRevision.get']).toBeDefined();
+        expect(callArgs[2]['api.HRJobContractRevision.get']['api.HRJobDetails.getsingle']).toBeDefined();
+      });
+
+      it('removes the current revision', function () {
+        expect(finalResult.values[0].revisions.length).toBe(1);
+        expect(finalResult.values[0].revisions[0].id).toBe('1');
+      });
+
+      describe('revisions property', function () {
+        it('is added to each contract', function () {
+          expect(finalResult.values.every(function (contract) {
+            return !!contract.revisions;
+          })).toBe(true);
+        });
+      });
+
+      /**
+       * A mocked list of contracts as they would be returned by the api
+       *
+       * @return {Object}
+       */
+      function mockedResponse() {
+        return {
+          values: [
+            {
+              'id': '1',
+              'contact_id': '1',
+              'is_primary': '1',
+              'deleted': '1',
+              'is_current': '1',
+              'period_start_date': '2016-01-01',
+              'period_end_date': '2016-12-31',
+              'title': 'Title',
+              'api.HRJobContractRevision.get': {
+                'is_error': 0,
+                'version': 3,
+                'count': 1,
+                'id': 1,
+                'values': [
+                  {
+                    'id': '1',
+                    'jobcontract_id': '1',
+                    'api.HRJobDetails.getsingle': {
+                      'id': '1',
+                      'position': 'Position 1',
+                      'title': 'Title 1',
+                      'contract_type': 'Type #1',
+                      'period_start_date': '2016-01-01',
+                      'period_end_date': '2016-05-31',
+                      'jobcontract_revision_id': '1'
+                    }
+                  },
+                  {
+                    'id': '2',
+                    'jobcontract_id': '1',
+                    'api.HRJobDetails.getsingle': {
+                      'id': '2',
+                      'position': 'Position 2',
+                      'title': 'Title 2',
+                      'contract_type': 'Type #2',
+                      'period_start_date': '2016-01-01',
+                      'period_end_date': '2016-12-31',
+                      'jobcontract_revision_id': '2'
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        };
+      }
+    });
+
     describe('getOptionValues()', function () {
       var callArgs;
 
