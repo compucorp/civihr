@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__."/../LeaveBalanceChangeHelpersTrait.php";
+require_once __DIR__."/../ContractHelpersTrait.php";
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
@@ -21,6 +22,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   HeadlessInterface, TransactionalInterface {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
 
   private $leaveRequestStatuses = [];
 
@@ -32,15 +34,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
   }
 
   public function setUp() {
+    $this->setGlobalUser();
+
     $this->leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+
+    $this->createContract();
   }
 
   public function tearDown() {
+    $this->unsetGlobalUser();
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 1;");
   }
 
@@ -482,6 +489,87 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
   }
 
+  public function testGetStartAndEndDatesShouldReturnAbsencePeriodDateIfContractStartDateIsLessThanThePeriodStartDate() {
+    $this->setContractDates('2015-12-31', null);
+    $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $absenceType = $this->createAbsenceType();
+
+    $periodEntitlement = LeavePeriodEntitlement::create([
+      'contract_id' => $this->contract['id'],
+      'type_id'     => $absenceType->id,
+      'period_id'   => $absencePeriod->id
+    ]);
+
+    $dates = $periodEntitlement->getStartAndEndDates();
+    $this->assertEquals('2016-01-01', $dates[0]);
+    $this->assertEquals('2016-12-31', $dates[1]);
+  }
+
+  public function testGetStartAndEndDatesShouldReturnContractDateIfContractStartDateIsGreaterThanThePeriodStartDate() {
+    $this->setContractDates('2016-03-17', null);
+    $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $absenceType = $this->createAbsenceType();
+
+    $periodEntitlement = LeavePeriodEntitlement::create([
+      'contract_id' => $this->contract['id'],
+      'type_id'     => $absenceType->id,
+      'period_id'   => $absencePeriod->id
+    ]);
+
+    $dates = $periodEntitlement->getStartAndEndDates();
+    $this->assertEquals('2016-03-17', $dates[0]);
+    $this->assertEquals('2016-12-31', $dates[1]);
+  }
+
+  public function testGetStartAndEndDatesShouldReturnAbsencePeriodDateIfContractEndDateIsGreaterThanThePeriodEndDate() {
+    $this->setContractDates('2015-03-17', '2017-01-01');
+    $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $absenceType = $this->createAbsenceType();
+
+    $periodEntitlement = LeavePeriodEntitlement::create([
+      'contract_id' => $this->contract['id'],
+      'type_id'     => $absenceType->id,
+      'period_id'   => $absencePeriod->id
+    ]);
+
+    $dates = $periodEntitlement->getStartAndEndDates();
+    $this->assertEquals('2016-01-01', $dates[0]);
+    $this->assertEquals('2016-12-31', $dates[1]);
+  }
+
+  public function testGetStartAndEndDatesShouldReturnContractDateIfContractEndDateIsLessThanThePeriodEndDate() {
+    $this->setContractDates('2016-03-17', '2016-05-23');
+    $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
+    $absenceType = $this->createAbsenceType();
+
+    $periodEntitlement = LeavePeriodEntitlement::create([
+      'contract_id' => $this->contract['id'],
+      'type_id'     => $absenceType->id,
+      'period_id'   => $absencePeriod->id
+    ]);
+
+    $dates = $periodEntitlement->getStartAndEndDates();
+    $this->assertEquals('2016-03-17', $dates[0]);
+    $this->assertEquals('2016-05-23', $dates[1]);
+  }
+
+  private function createAbsencePeriod($startDate, $endDate) {
+    return AbsencePeriod::create([
+      'title' => microtime(),
+      'start_date' => date('YmdHis', strtotime($startDate)),
+      'end_date' => date('YmdHis', strtotime($endDate)),
+    ]);
+  }
+
+  private function createAbsenceType() {
+    return AbsenceType::create([
+      'title' => 'Type ' . microtime(),
+      'color' => '#000000',
+      'default_entitlement' => 20,
+      'allow_request_cancelation' => 1,
+    ]);
+  }
+
   private function createPeriodEntitlement() {
     return LeavePeriodEntitlement::create([
       'type_id'     => 1,
@@ -549,5 +637,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
                 ->will($this->returnValue($publicHolidaysReturn));
 
     return $calculation;
+  }
+
+  /**
+   * Some tests on this class use the HRJobDetails API which uses the
+   * HRJobContractRevision API that depends on the the global $user.
+   *
+   * This API expects the global $user to be available, so we create it user
+   * here, with a null uid, which is enough to run the test.
+   */
+  private function setGlobalUser() {
+    global $user;
+
+    $user = new stdClass();
+    $user->uid = null;
+  }
+
+  /**
+   * This basically resets what is done by the setGlobalUser() method
+   */
+  private function unsetGlobalUser() {
+    global $user;
+
+    $user = null;
   }
 }
