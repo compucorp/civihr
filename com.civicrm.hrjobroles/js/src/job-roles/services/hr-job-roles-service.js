@@ -87,19 +87,6 @@ define([
                 return deferred.promise;
             },
 
-            getContractDetails: function getContractDetails(id) {
-                return CRM.api3('HRJobContractRevision', 'getcurrentrevision', {
-                    "sequential": 1,
-                    "jobcontract_id": id
-                }).then(function (result) {
-                    return CRM.api3('HRJobDetails', 'get', {
-                        "sequential": 1,
-                        "jobcontract_id": id,
-                        "jobcontract_revision_id": result.values.details_revision_id
-                    });
-                });
-            },
-
             getAllJobRoles: function (job_contract_ids) {
 
                 var deferred = $q.defer();
