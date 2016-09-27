@@ -1,6 +1,7 @@
 define([
-    'job-roles/services/services'
-], function (services) {
+  'common/lodash',
+  'job-roles/services/services'
+], function (_, services) {
     'use strict';
 
     services.factory('HRJobRolesService', ['$log', '$q', '$filter', function ($log, $q, $filter) {
@@ -351,58 +352,46 @@ define([
 
             },
 
-            getOptionValues: function (option_group_name) {
+            /**
+             * Returns the option values of the given option groups
+             *
+             * In addition to the standard CiviCRM api response, a property
+             * called `optionGroupData` is attached, containing a list
+             * of group name/group id pairs
+             *
+             * @param  {Array} groupNames
+             * @return {Promise}
+             */
+            getOptionValues: function (groupNames) {
+              var deferred = $q.defer();
 
-                var deferred = $q.defer();
+              CRM.api3('OptionValue', 'get', {
+                'sequential': 1,
+                'option_group_id.name': { 'IN': groupNames },
+                'return': [ 'id', 'label', 'weight', 'value', 'option_group_id', 'option_group_id.name' ],
+                'options': {
+                  'limit': 1000,
+                  'sort': 'id'
+                }
+              })
+              .done(function (result) {
+                result.optionGroupData = _(result.values)
+                  .map(function (optionValue) {
+                    return [
+                      optionValue['option_group_id.name'],
+                      optionValue.option_group_id
+                    ];
+                  })
+                  .zipObject()
+                  .value();
 
-                // Define option group names and IDs
-                var optionGroupData = {};
+                deferred.resolve(result);
+              })
+              .error(function (result) {
+                deferred.reject("An error occured while fetching items");
+              });
 
-                CRM.api3('OptionGroup', 'get', {
-                    "sequential": 1,
-                    "name": { "IN": option_group_name },
-                    "options": { "limit": 1000 }
-                }).done(function (option_group_data) {
-                    if (option_group_data.is_error !== 1) {
-
-                        var option_group_ids = [];
-
-                        angular.forEach(option_group_data['values'], function (option_group, key) {
-
-                            // Store the option group names and IDs
-                            optionGroupData[option_group['name']] = option_group['id'];
-
-                            // Prepare option group IDs for the API call
-                            option_group_ids.push(option_group['id']);
-
-                        });
-
-                        CRM.api3('OptionValue', 'get', {
-                            "sequential": 1,
-                            "option_group_id": { "IN": option_group_ids },
-                            "options": { "limit": 1000 }
-                        }).done(function (result) {
-
-                            // Pass the additional info about optionGroupData
-                            result['optionGroupData'] = optionGroupData;
-
-                            // Passing data to deferred's resolve function on successful completion
-                            deferred.resolve(result);
-
-                        }).error(function (result) {
-
-                            // Sending a friendly error message in case of failure
-                            deferred.reject("An error occured while fetching items");
-
-                        });
-
-                    }
-
-                });
-
-                // Returning the promise object
-                return deferred.promise;
-
+              return deferred.promise;
             },
 
             getNewJobRole: function (contract_id) {
