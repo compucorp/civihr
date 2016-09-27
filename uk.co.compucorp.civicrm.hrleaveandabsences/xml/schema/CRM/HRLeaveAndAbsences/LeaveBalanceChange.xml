@@ -21,21 +21,6 @@
   </primaryKey>
 
   <field>
-    <name>entitlement_id</name>
-    <type>int unsigned</type>
-    <required>true</required>
-    <comment>FK to LeavePeriodEntitlement</comment>
-    <add>4.4</add>
-  </field>
-  <foreignKey>
-    <name>entitlement_id</name>
-    <table>civicrm_hrleaveandabsences_leave_period_entitlement</table>
-    <key>id</key>
-    <add>4.4</add>
-    <onDelete>CASCADE</onDelete>
-  </foreignKey>
-
-  <field>
     <name>type_id</name>
     <type>int unsigned</type>
     <required>true</required>
@@ -63,13 +48,13 @@
   </field>
 
   <field>
-    <name>expired_balance_id</name>
+    <name>expired_balance_change_id</name>
     <type>int unsigned</type>
     <comment>FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
-    <name>expired_balance_id</name>
+    <name>expired_balance_change_id</name>
     <table>civicrm_hrleaveandabsences_leave_balance_change</table>
     <key>id</key>
     <add>4.4</add>
@@ -83,17 +68,26 @@
     <add>4.4</add>
   </field>
 
+  <field>
+    <name>source_type</name>
+    <type>varchar</type>
+    <length>20</length>
+    <comment>Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.</comment>
+    <add>4.4</add>
+  </field>
+
   <index>
     <name>unique_expiry_record</name>
-    <fieldName>expired_balance_id</fieldName>
+    <fieldName>expired_balance_change_id</fieldName>
     <unique>true</unique>
     <add>4.4</add>
   </index>
 
-  <!-- Since this is not a real FK, it's important to have an index for this field for a better performance in SQL JOINs -->
+  <!-- Since these are not real FKs, it's important to have an index for these field for a better performance in SQL JOINs -->
   <index>
     <name>index_source_id</name>
     <fieldName>source_id</fieldName>
+    <fieldName>source_type</fieldName>
     <add>4.4</add>
   </index>
 </table>

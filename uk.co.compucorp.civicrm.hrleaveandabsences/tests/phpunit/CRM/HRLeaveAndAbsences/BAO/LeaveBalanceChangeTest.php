@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
       'type_id' => 1,
       'amount' => -3,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'expired_balance_id' => $balanceChangeToExpire->id
+      'expired_balance_change_id' => $balanceChangeToExpire->id
     ]);
 
     $this->assertNotEmpty($expiryBalanceChange->id);
@@ -68,7 +68,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
       'type_id' => 1,
       'amount' => -3,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'expired_balance_id' => $balanceChangeToExpire->id
+      'expired_balance_change_id' => $balanceChangeToExpire->id
     ]);
   }
 
@@ -76,7 +76,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $entitlement = $this->createLeavePeriodEntitlement();
 
     LeaveBalanceChange::create([
-      'entitlement_id' => $entitlement->id,
+      'source_id' => $entitlement->id,
+      'source_type' => 'entitlement',
       'type_id' => 1,
       'amount' => 4.3
     ]);
@@ -84,7 +85,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(4.3, LeaveBalanceChange::getBalanceForEntitlement($entitlement->id));
 
     LeaveBalanceChange::create([
-      'entitlement_id' => $entitlement->id,
+      'source_id' => $entitlement->id,
+      'source_type' => 'entitlement',
       'type_id' => 2,
       'amount' => 2
     ]);
@@ -92,7 +94,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(6.3, LeaveBalanceChange::getBalanceForEntitlement($entitlement->id));
 
     LeaveBalanceChange::create([
-      'entitlement_id' => $entitlement->id,
+      'source_id' => $entitlement->id,
+      'source_type' => 'entitlement',
       'type_id' => 2,
       'amount' => -3.5
     ]);
@@ -100,7 +103,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(2.8, LeaveBalanceChange::getBalanceForEntitlement($entitlement->id));
 
     LeaveBalanceChange::create([
-      'entitlement_id' => $entitlement->id,
+      'source_id' => $entitlement->id,
+      'source_type' => 'entitlement',
       'type_id' => 2,
       'amount' => -2
     ]);
@@ -189,7 +193,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     $this->assertEquals(10, $balanceChanges[0]->amount);
 
     // Even if the days brought forward have expired, they're still
-    // part of the breakdown
+    // part of the breakdown (the expiry record is not returned though)
     $this->createExpiredBroughtForwardBalanceChange($entitlement->id, 4, 2);
     $balanceChanges = LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($entitlement->id);
     $this->assertCount(2, $balanceChanges);
@@ -593,7 +597,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
 
   private function getExpirationRecordForBalanceChange($balanceChangeID) {
     $record = new LeaveBalanceChange();
-    $record->expired_balance_id = $balanceChangeID;
+    $record->expired_balance_change_id = $balanceChangeID;
     $record->find();
     if($record->N == 1) {
       $record->fetch();
