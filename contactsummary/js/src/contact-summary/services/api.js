@@ -45,7 +45,6 @@ define([
          */
         function sendRequest(method, data, config) {
             config = angular.extend({
-                cache: true,
                 method: method,
                 url: '/civicrm/ajax/rest'
             }, (method === 'post' ? { data: data } : { params: data }), config);

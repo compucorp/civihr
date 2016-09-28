@@ -89,13 +89,31 @@ define([
 
     /**
      * @ngdoc method
-     * @name getContracts
+     * @name resetContracts
      * @methodOf ContractService
      * @returns {*}
      */
+    factory.resetContracts = function () {
+      contracts=[];
+      factory.collection = {
+        items: {},
+        insertItem: function (key, item) {
+          this.items[key] = item;
+        },
+        getItem: function (key) {
+          return this.items[key];
+        },
+        set: function (collection) {
+          this.items = collection;
+        },
+        get: function () {
+          return this.items;
+        }
+      }
+    };
+
     factory.getContracts = function () {
       var deferred = $q.defer();
-
       if (_.isEmpty(contracts)) {
         ContactDetails.get()
           .then(function (response) {
@@ -228,7 +246,6 @@ define([
 
     function init() {
       var deferred = $q.defer();
-
       if (_.isEmpty(factory.collection.get())) {
         factory.getContracts()
                 .then(assembleContracts)
