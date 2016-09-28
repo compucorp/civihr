@@ -848,7 +848,6 @@ define([
 
               // Store the Level types what we can reuse later
               $scope.CostCentreList = CostCentreList;
-              $log.info($scope.CostCentreList);
 
               job_roles.message_type = 'alert-success';
               job_roles.message = 'Option values list OK!';
