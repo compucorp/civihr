@@ -47,6 +47,7 @@ define([
             'ui.select',
             'common.angularDate',
             'common.services',
+            'common.directives',
             'hrjc.controllers',
             'hrjc.directives',
             'hrjc.filters',

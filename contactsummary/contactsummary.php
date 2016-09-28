@@ -126,27 +126,11 @@ function contactsummary_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * Implementation of hook_civicrm_pageRun
  */
 function contactsummary_civicrm_pageRun($page) {
-    if ($page instanceof CRM_Contact_Page_View_Summary) {
-        CRM_Core_Resources::singleton()
-          ->addVars('contactsummary', array(
-            'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.contactsummary')))
-          ->addSetting(array(
-            'tabSettings' => array('active' => CRM_Utils_Request::retrieve('selectedChild', 'String', $this, FALSE, 'contactsummary')),
-          ));
-
-        $script = <<<EOT
-            window.setTimeout(function() {
-                cj("#tab_contactsummary > a").click();
-            }, 2000);
-EOT;
-
-        CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/src/contact-summary.js' : 'js/dist/contact-summary.min.js', 1005);
-
-        // Script disabled as need to find a better approach to make Contact Summary the default tab
-        // CRM_Core_Resources::singleton()->addScript($script, 1020, 'page-footer');
-
-        CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
-    }
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Resources::singleton()->addSetting(array(
+      'tabSettings' => array('active' => CRM_Utils_Request::retrieve('selectedChild', 'String', $this, FALSE, 'contactsummary')),
+    ));
+  }
 }
 
 /**

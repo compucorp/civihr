@@ -3,13 +3,19 @@
 require_once 'CRM/Core/Page.php';
 
 class CRM_Contactsummary_Page_ContactSummary extends CRM_Core_Page {
+
   function run() {
-    // Example: Set the page-title dynamically; alternatively, declare a static title in xml/Menu/*.xml
     CRM_Utils_System::setTitle(ts('ContactSummary'));
 
-    // Example: Assign a variable for use in a template
-    $this->assign('currentTime', date('Y-m-d H:i:s'));
-
+    self::registerScripts();
     parent::run();
+  }
+
+  private static function registerScripts() {
+    CRM_Core_Resources::singleton()
+      ->addVars('contactsummary', array(
+        'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.contactsummary')))
+      ->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/src/contact-summary.js' : 'js/dist/contact-summary.min.js', 1005)
+      ->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
   }
 }

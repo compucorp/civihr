@@ -541,7 +541,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1015();
     $this->upgrade_1016();
     $this->upgrade_1017();
-    $this->upgrade_1019();
   }
 
   function upgrade_1001() {
@@ -928,6 +927,41 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   function upgrade_1019() {
     CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfServiceAllContacts();
+
+    return true;
+  }
+
+
+  /**
+   * Create civicrm_hrpay_scale table and its default data if it is not exist
+   *
+   */
+  function upgrade_1019() {
+    CRM_Core_DAO::executeQuery("
+        CREATE TABLE IF NOT EXISTS `civicrm_hrpay_scale` (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+          `pay_scale` VARCHAR(63) DEFAULT NULL,
+          `pay_grade` VARCHAR(63) DEFAULT NULL,
+          `currency` VARCHAR(63) DEFAULT NULL,
+          `amount` DECIMAL(10,2) DEFAULT NULL,
+          `periodicity` VARCHAR(63) DEFAULT NULL,
+          `is_active` tinyint(4) DEFAULT '1',
+          PRIMARY KEY(id)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+      ");
+
+    $data = CRM_Core_DAO::singleValueQuery("SELECT COUNT(*) FROM `civicrm_hrpay_scale`");
+
+    if (empty($data)) {
+      CRM_Core_DAO::executeQuery("
+        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) VALUES
+        ('US', 'Senior', 'USD', 38000, 'Year', 1),
+        ('US', 'Junior', 'USD', 24000, 'Year', 1),
+        ('UK', 'Senior', 'GBP', 35000, 'Year', 1),
+        ('UK', 'Junior', 'GBP', 22000, 'Year', 1),
+        ('Not Applicable', NULL, NULL, NULL, NULL, 1)
+    ");
+    }
 
     return true;
   }
