@@ -16,20 +16,20 @@ define([
           var contractRevisions = contract['api.HRJobContractRevision.get'].values;
           delete(contract['api.HRJobContractRevision.get']);
 
-          contract.revisions = contractRevisions
+          contract.revisions = _.compact(contractRevisions
             .map(function (revision) {
-              return revision['api.HRJobDetails.getsingle'];
-            })
-            .filter(function (revision) {
-              return !(revision.period_start_date === contract.period_start_date
-              && revision.period_end_date === contract.period_end_date);
-            })
-            .map(function (revision) {
-              revision.period_start_date = $filter('formatDate')(revision.period_start_date);
-              revision.period_end_date = $filter('formatDate')(revision.period_end_date);
+              var details = revision['api.HRJobDetails.getsingle'];
 
-              return revision;
-            });
+              if (details.period_start_date === contract.period_start_date
+              && details.period_end_date === contract.period_end_date) {
+                return null;
+              }
+
+              details.period_start_date = $filter('formatDate')(details.period_start_date);
+              details.period_end_date = $filter('formatDate')(details.period_end_date);
+
+              return details;
+            }));
         }
 
         return {
