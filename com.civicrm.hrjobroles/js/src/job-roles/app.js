@@ -24,6 +24,7 @@ define([
         'ngResource',
         'common.angularDate',
         'common.services',
+        'common.directives',
         'compuNgRoute',
         'xeditable',
         'angular.filter',
