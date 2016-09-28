@@ -3,7 +3,7 @@ define([
   'contact-summary/modules/controllers',
   'contact-summary/services/contract',
   'contact-summary/services/jobRole',
-  'common/services/pub-sub-service',
+  'common/services/pub-sub',
 ], function (moment, controllers) {
   'use strict';
 
@@ -44,9 +44,10 @@ define([
    * @param $log
    * @param {ContractService} Contract
    * @param {JobRoleService} JobRole
+   * @param {pubSub} pubSub
    * @constructor
    */
-  function KeyDatesCtrl($log, Contract, JobRole, pubSubService) {
+  function KeyDatesCtrl($log, Contract, JobRole, pubSub) {
     $log.debug('Controller: KeyDatesCtrl');
 
     var self = this;
@@ -55,7 +56,13 @@ define([
     this.activeContracts = 0;
     this.activeRoles = 0;
 
-
+    /**
+     * Fetch Contacts from Server
+     * @ngdoc method
+     * @name getContacts
+     * @methodOf KeyDatesCtrl
+     * @returns void
+     */
     var getContacts = function(){
       Contract.get()
         .then(function (response) {
@@ -90,8 +97,8 @@ define([
 
     getContacts();
 
-    pubSubService.subscribe("contract-refresh",  resetKeyDates);
+    pubSub.subscribe('contract-refresh',  resetKeyDates);
   }
 
-  controllers.controller('KeyDatesCtrl', ['$log', 'ContractService', 'JobRoleService','pubSubService', KeyDatesCtrl]);
+  controllers.controller('KeyDatesCtrl', ['$log', 'ContractService', 'JobRoleService','pubSub', KeyDatesCtrl]);
 });

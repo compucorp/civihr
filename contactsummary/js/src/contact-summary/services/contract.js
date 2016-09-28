@@ -32,21 +32,7 @@ define([
     //var factory = Model.createInstance();
     var factory = {};
 
-    factory.collection = {
-      items: {},
-      insertItem: function (key, item) {
-        this.items[key] = item;
-      },
-      getItem: function (key) {
-        return this.items[key];
-      },
-      set: function (collection) {
-        this.items = collection;
-      },
-      get: function () {
-        return this.items;
-      }
-    };
+    initializeCollection();
 
     factory.getCollection = function () {
       return this.collection.get();
@@ -88,28 +74,15 @@ define([
     };
 
     /**
+     * Reset contracts to initial state
      * @ngdoc method
      * @name resetContracts
      * @methodOf ContractService
-     * @returns {*}
+     * @returns void
      */
     factory.resetContracts = function () {
-      contracts=[];
-      factory.collection = {
-        items: {},
-        insertItem: function (key, item) {
-          this.items[key] = item;
-        },
-        getItem: function (key) {
-          return this.items[key];
-        },
-        set: function (collection) {
-          this.items = collection;
-        },
-        get: function () {
-          return this.items;
-        }
-      }
+      contracts = [];
+      initializeCollection();
     };
 
     factory.getContracts = function () {
@@ -243,6 +216,24 @@ define([
     /////////////////////
 
     var contracts = [];
+
+    function initializeCollection() {
+      factory.collection = {
+        items: {},
+        insertItem: function (key, item) {
+          this.items[key] = item;
+        },
+        getItem: function (key) {
+          return this.items[key];
+        },
+        set: function (collection) {
+          this.items = collection;
+        },
+        get: function () {
+          return this.items;
+        }
+      };
+    }
 
     function init() {
       var deferred = $q.defer();

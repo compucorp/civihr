@@ -3,7 +3,7 @@ define([
   'contact-summary/modules/controllers',
   'contact-summary/services/contactDetails',
   'contact-summary/services/contract',
-  'common/services/pub-sub-service',
+  'common/services/pub-sub',
 ], function (moment, controllers) {
   'use strict';
 
@@ -13,15 +13,22 @@ define([
    * @param $log
    * @param {ContactDetailsService} ContactDetails
    * @param {ContractService} Contract
+   * @param {pubSub} pubSub
    * @constructor
    */
-  function KeyDetailsCtrl($log, ContactDetails, Contract, pubSubService) {
+  function KeyDetailsCtrl($log, ContactDetails, Contract, pubSub) {
     $log.debug('Controller: KeyDetailsCtrl');
 
     this.ready = false;
 
 
-
+    /**
+     * Fetch Contacts from Server
+     * @ngdoc method
+     * @name getContacts
+     * @methodOf KeyDetailsCtrl
+     * @returns void
+     */
     var getContacts = function(){
       ContactDetails.get()
         .then(function (response) {
@@ -55,12 +62,12 @@ define([
 
     getContacts();
 
-    pubSubService.subscribe("contract-refresh",  resetKeyDetails);
+    pubSub.subscribe('contract-refresh',  resetKeyDetails);
   }
 
   /////////////////////
   // Private Members //
   /////////////////////
 
-  controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', 'pubSubService', KeyDetailsCtrl]);
+  controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', 'pubSub', KeyDetailsCtrl]);
 });

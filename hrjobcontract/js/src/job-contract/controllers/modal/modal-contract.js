@@ -11,18 +11,18 @@ define([
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
     'job-contract/services/utils',
-    'common/services/pub-sub-service',
+    'common/services/pub-sub',
 ], function (angular, controllers) {
     'use strict';
 
     controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
         'ContractService', 'ContractRevisionService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'action', 'entity',
-        'content', 'files', 'UtilsService', 'utils', 'settings', '$log', 'pubSubService',
+        'content', 'files', 'UtilsService', 'utils', 'settings', '$log', 'pubSub',
         function ($scope, $modal, $modalInstance, $q, $rootElement, $rootScope, $filter, ContractService, ContractRevisionService,
                  ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
                  ContractPensionService, ContractFilesService, action, entity, content, files,
-                 UtilsService, utils, settings, $log, pubSubService) {
+                 UtilsService, utils, settings, $log, pubSub) {
             $log.debug('Controller: ModalContractCtrl');
 
             var content = content || {},
@@ -357,7 +357,8 @@ define([
                 }).then(function(results){
                     $scope.$broadcast('hrjc-loader-hide');
                     $modalInstance.close(results);
-                    pubSubService.publish("contract-refresh");
+
+                    pubSub.publish('contract-refresh');
                 },function(reason){
                     $scope.$broadcast('hrjc-loader-hide');
                     CRM.alert(reason, 'Error', 'error');
@@ -547,7 +548,7 @@ define([
 
                         $scope.$broadcast('hrjc-loader-hide');
                         $modalInstance.close(results);
-                        pubSubService.publish("contract-refresh");
+                        pubSub.publish('contract-refresh');
                     });
                 } else {
                     $scope.$broadcast('hrjc-loader-hide');
