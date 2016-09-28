@@ -68,6 +68,10 @@ function set_resource_urls() {
 ##################################
 ## Main
 
+# Get CiviCRm Path and shift to the next option
+CIVI_PATH=$1
+shift
+
 if [ "$1" == "--with-sample-data" ]; then
   WITHSAMPLE=1
   shift
@@ -85,6 +89,6 @@ if [ -n "$WITHSAMPLE" ]; then
   set +ex
 fi
 
-set_default_localisation_settings $1
+set_default_localisation_settings ${CIVI_PATH}
 set_resource_urls
 
