@@ -369,25 +369,6 @@ td.hrabsence-cal-item.hrabsence-bg-6-debit a:hover
   margin: 3px 0 0 4px;
 }
 
-.page-civicrm-absence .dateplugin.dpDate.hasDatepicker {
-  background: #fff;
-  width: 100px;
-  padding-right: 2px;
-}
-
-.page-civicrm-absence .crm-event-manage-eventinfo-form-block-start_date .fa-calendar {
-  left: -39px;
-  color: #42AFCB;
-  line-height: 1;
-  height: 14px;
-  width: 14px;
-  text-align: center;
-  position: relative;
-  top: 1px;
-  border: 1px solid #999;
-  padding: 6px;
-}
-
 .page-civicrm-absence .crm-event-manage-eventinfo-form-block-start_date .crm-hover-button.crm-clear-link {
   left: 10px;
   top: 2px;
