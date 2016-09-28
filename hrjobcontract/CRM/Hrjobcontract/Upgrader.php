@@ -922,7 +922,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   /**
    * Upgrade Length of Service values.
-   * 
+   *
    * @return TRUE
    */
   function upgrade_1019() {
@@ -936,7 +936,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * Create civicrm_hrpay_scale table and its default data if it is not exist
    *
    */
-  function upgrade_1019() {
+  function upgrade_1020() {
     CRM_Core_DAO::executeQuery("
         CREATE TABLE IF NOT EXISTS `civicrm_hrpay_scale` (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
