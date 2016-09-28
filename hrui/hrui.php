@@ -28,17 +28,16 @@
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
 function hrui_civicrm_pageRun($page) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
+    return;
+  }
 
   if ($page instanceof CRM_Contact_Page_DashBoard) {
     CRM_Utils_System::setTitle(ts('CiviHR Home'));
   }
 
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    CRM_Core_Resources::singleton()
-      ->addScriptFile('org.civicrm.hrui', 'js/contact.js')
-      ->addScriptFile('org.civicrm.hrui', 'js/hrui.js')
-      ->addSetting(array('pageName' => 'viewSummary'));
+    CRM_Core_Resources::singleton()->addSetting(array('pageName' => 'viewSummary'));
 
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
@@ -48,18 +47,30 @@ function hrui_civicrm_pageRun($page) {
       CRM_Core_Resources::singleton()
         ->addSetting(array(
           'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId));
+          'hideGId' => $hideGId)
+        );
     }
   }
 
-  CRM_Core_Resources::singleton()
-    ->addScriptFile('org.civicrm.hrui', 'js/perfect-scrollbar/perfect-scrollbar.min.js');
+  if (CRM_Core_Config::singleton()->debug) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/perfect-scrollbar/perfect-scrollbar.min.js');
+  } else {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+  }
+
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
 }
 
 function hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()
-    ->addStyleFile('org.civicrm.hrui', 'css/hrui.css')
-    ->addScriptFile('org.civicrm.hrui', 'js/hrui.js');
+  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+
+  if (CRM_Core_Config::singleton()->debug) {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
+  } else {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+  }
+
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));

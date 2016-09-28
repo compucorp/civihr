@@ -118,7 +118,8 @@ define([
                 var deffered = $q.defer();
 
                 API.resource('HRPayScale','get',{
-                    sequential: 1
+                    sequential: 1,
+                    is_active: 1
                 }).get(function(data){
                     deffered.resolve(data.values);
                 },function(){
