@@ -204,3 +204,56 @@ function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
   }
   return civicrm_api3_create_success($return, $params);
 }
+
+/**
+ * HRJobContract.getfulldetails API specification
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ */
+function _civicrm_api3_h_r_job_contract_getfulldetails_spec(&$spec) {
+  $spec['jobcontract_id'] = array(
+   'name' => 'jobcontract_id',
+   'title' => 'Job Contract ID',
+   'type' => 1,
+   'api.required' => 1,
+  );
+}
+
+/**
+ * HRJobContract.getfulldetails API
+ *
+ * @param array $params The accepted params are: jobcontract_id
+ * @return array
+ */
+function civicrm_api3_h_r_job_contract_getfulldetails($params) {
+  $fullDetails = [];
+  $callParams = ['sequential' => 1, 'id' => $params['jobcontract_id']];
+  $entitiesToChain = [
+    'details' => 'getsingle',
+    'hour'    => 'getsingle',
+    'leave'   => 'get',
+    'pay'     => 'getsingle',
+    'health'  => 'getsingle',
+    'pension' => 'getsingle',
+  ];
+
+  // get the current revision, holds a pointer to the revision each
+  // detail "category" points to (ie: details_revision_id, leave_revision_id)
+  $currentRevision = _civicrm_hrjobcontract_api3_get_current_revision($params)['values'];
+
+  foreach ($entitiesToChain as $entity => $action) {
+    $callParams["api.HRJob" . ucfirst($entity) . ".$action"] = [
+      "jobcontract_revision_id" => $currentRevision[$entity . "_revision_id"]
+    ];
+  }
+
+  $result = civicrm_api3('HRJobContract', 'getsingle', $callParams);
+
+  foreach ($entitiesToChain as $entity => $action) {
+    $chainKey = "api.HRJob" . ucfirst($entity) . ".$action";
+    $fullDetails[$entity] = $action == 'getsingle' ? $result[$chainKey] : $result[$chainKey]['values'];
+  }
+
+  return $fullDetails;
+}
