@@ -578,3 +578,12 @@ function _hrabsencereport_getId () {
   }
   return $report_id;
 }
+
+
+function hrabsence_civicrm_pageRun($page) {
+  $page = get_class($page);
+  if (preg_match("/^CRM_HRAbsence*/",  $page)) {
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css');
+  }
+}
