@@ -1,6 +1,7 @@
 <?php
 
 require_once 'hrcase.civix.php';
+require_once 'CRM/HRCase/Upgrader.php';
 
 /**
  * Implementation of hook_civicrm_config

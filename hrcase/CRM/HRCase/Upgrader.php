@@ -1,4 +1,5 @@
 <?php
+require_once 'Upgrader/Base.php';
 
 /**
  * Collection of upgrade steps
@@ -70,8 +71,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1400() {
-    $this->ctx->log->info('Applying update 1400');
-
     self::activityTypesWordReplacement();
     self::createRelationshipTypes();
 
@@ -89,7 +88,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1401() {
-    $this->ctx->log->info('Applying update 1401');
 
     self::removeCivicrmCaseTypes();
     self::removeCivicrmRelationshipTypes();
@@ -125,7 +123,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
 
     // Replace case activity types
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'activity_type', 'id', 'name');
-    $sql = "UPDATE civicrm_option_value SET label= replace(label, {$replace}, {$replaceWith}) WHERE label like '%{$replace}%' and option_group_id={$optionGroupID} and label <> '{$replaceOpenCase}'";
+    $sql = "UPDATE civicrm_option_value SET label= replace(label, '{$replace}', '{$replaceWith}') WHERE label like '%{$replace}%' and option_group_id={$optionGroupID} and label <> '{$replaceOpenCase}'";
     CRM_Core_DAO::executeQuery($sql);
 
     // replace (open case) activity type  which is a special case and should be replaced differently
@@ -144,7 +142,18 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     }
     $toInsert = rtrim($toInsert, ',');
     $sql = "INSERT INTO `civicrm_relationship_type`
-            (`name_a_b`, `label_a_b`, `name_b_a`, `label_b_a`, `description`, `contact_type_a`, `contact_type_b`, `contact_sub_type_a`, `contact_sub_type_b`, `is_reserved`, `is_active`)
+            (
+            `name_a_b`,
+            `label_a_b`,
+            `name_b_a`,
+            `label_b_a`,
+            `description`,
+            `contact_type_a`,
+            `contact_type_b`,
+            `contact_sub_type_a`,
+            `contact_sub_type_b`,
+            `is_reserved`,
+            `is_active`)
             VALUES {$toInsert}";
     CRM_Core_DAO::executeQuery($sql);
   }
@@ -154,9 +163,9 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    *
    */
   public static function removeRelationshipTypes() {
-    $toDelete = array_map(function ($ar) {return $ar['name_b_a'];}, self::relationshipsTypesList());
-    $toDelete = "'" . implode("','", $toDelete) . "'";
-    $sql = "DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ({$toDelete})";
+    $toDelete = CRM_Utils_Array::collect('name_b_a', self::relationshipsTypesList());
+    $toDelete = implode("','", $toDelete);
+    $sql = "DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ('{$toDelete}')";
     CRM_Core_DAO::executeQuery($sql);
   }
 
@@ -166,9 +175,9 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @param int $setActive 0 : disable , 1 : enable
    */
   public static function toggleRelationshipTypes($setActive) {
-    $toToggle = array_map(function ($ar) {return $ar['name_b_a'];}, self::relationshipsTypesList());
-    $toToggle = "'" . implode("','", $toToggle) . "'";
-    $sql = "UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ({$toToggle})";
+    $toToggle = CRM_Utils_Array::collect('name_b_a', self::relationshipsTypesList());
+    $toToggle = implode("','", $toToggle);
+    $sql = "UPDATE `civicrm_relationship_type` SET is_active={$setActive} WHERE name_b_a IN ('{$toToggle}')";
     CRM_Core_DAO::executeQuery($sql);
   }
 
@@ -178,8 +187,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    */
   public static function removeCivicrmCaseTypes() {
     $toDelete = self::civicrmCaseTypesList();
-    $toDelete = "'" . implode("','", $toDelete) . "'";
-    $sql = "DELETE FROM `civicrm_case_type` WHERE name IN  ({$toDelete})";
+    $toDelete = implode("','", $toDelete);
+    $sql = "DELETE FROM `civicrm_case_type` WHERE name IN  ('{$toDelete}')";
     CRM_Core_DAO::executeQuery($sql);
   }
 
@@ -189,8 +198,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    */
   public static function removeCivicrmRelationshipTypes() {
     $toDelete = self::civicrmRelationshipTypesList();
-    $toDelete = "'" . implode("','", $toDelete) . "'";
-    $sql = "DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ({$toDelete})";
+    $toDelete = implode("','", $toDelete);
+    $sql = "DELETE FROM `civicrm_relationship_type` WHERE name_b_a IN ('{$toDelete}')";
     CRM_Core_DAO::executeQuery($sql);
   }
 
@@ -200,8 +209,8 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    */
   public static function removeCivicrmActivityTypes() {
     $toDelete = self::civicrmActivityTypesList();
-    $toDelete = "'" . implode("','", $toDelete) . "'";
-    $sql = "DELETE FROM `civicrm_option_value` WHERE name IN  ({$toDelete})";
+    $toDelete = implode("','", $toDelete);
+    $sql = "DELETE FROM `civicrm_option_value` WHERE name IN  ('{$toDelete}')";
     CRM_Core_DAO::executeQuery($sql);
   }
 
@@ -218,7 +227,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
 
     // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
     if (!_hrcase_isExtensionEnabled('org.civicrm.hrrecruitment')) {
-      $list = array_merge($list, ['name_a_b' => 'Recruiting Manager is', 'name_b_a' => 'Recruiting Manager', 'description' => 'Recruiting Manager']);
+      $list = array_merge($list, [ ['name_a_b' => 'Recruiting Manager is', 'name_b_a' => 'Recruiting Manager', 'description' => 'Recruiting Manager'] ]);
     }
     return $list;
   }
