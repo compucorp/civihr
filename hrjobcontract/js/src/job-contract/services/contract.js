@@ -13,20 +13,10 @@ define([
             })
     }]);
 
-    services.factory('ContractRevision',['$resource', 'settings', '$log', function ($resource, settings, $log) {
-        $log.debug('Service: ContractRevision');
-
-        return $resource(settings.pathRest,{
-            action: 'get',
-            entity: 'HRJobContractRevision',
-            json: {}
-        })
-    }]);
-
     services.factory('ContractService', [
-        '$log', '$q', 'Contract', 'ContractRevision', 'settings', 'UtilsService', 'DOMEventTrigger',
-        function ($log, $q, Contract, ContractRevision, settings, UtilsService, DOMEventTrigger) {
-            $log.debug('Service: ContractRevision');
+        '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger',
+        function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
+            $log.debug('Service: ContractService');
 
         return {
             get: function(contactId) {
@@ -138,7 +128,7 @@ define([
                         jobcontract_id: contractId
                     };
 
-                ContractRevision.get({json: params}, function(data){
+                ContractRevisionService.get({json: params}, function(data){
                     deffered.resolve(data.values);
                 },function(){
                     deffered.reject('Unable to fetch contract revisions');
@@ -205,7 +195,7 @@ define([
                     },revisionDetails),
                     val;
 
-                ContractRevision.save({
+                ContractRevisionService.save({
                     action: 'create',
                     json: params
                 }, null, function(data){
@@ -246,7 +236,7 @@ define([
                 var deffered = $q.defer(),
                     val;
 
-                ContractRevision.save({
+                ContractRevisionService.save({
                     action: 'create',
                     json: {
                         sequential: 1,
