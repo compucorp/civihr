@@ -118,6 +118,7 @@ define([
 
                 }).then(function(results){
                     $scope.revisionDataList.push.apply($scope.revisionDataList,results);
+                    $scope.$broadcast('hrjc-loader-hide');
                 });
             };
             fetchRevisions(contractId);
