@@ -20,8 +20,7 @@ define([
                  ContractPensionService, ContractFilesService, ContactService, $log) {
             $log.debug('Controller: ContractCtrl');
 
-            var contractId = $scope.contract.id,
-                promiseFiles;
+            var contractId = $scope.contract.id, promiseFiles;
 
             $scope.contractLoaded = false;
             $scope.isCollapsed = true;
@@ -29,6 +28,8 @@ define([
             $scope.revisionCurrent = {};
             $scope.revisionList = [];
             $scope.revisionDataList = [];
+
+            $scope.revisionsShown = false;
 
             angular.extend($scope, angular.copy($scope.model));
 
@@ -321,6 +322,13 @@ define([
 
                 });
             };
+
+            /**
+             * Marks that the revisions (in a different tab) have been shown
+             */
+            $scope.showRevisions = function () {
+              $scope.revisionsShown = true;
+            }
 
             $scope.modalRevision = function(entity){
                 $scope.$broadcast('hrjc-loader-show');
