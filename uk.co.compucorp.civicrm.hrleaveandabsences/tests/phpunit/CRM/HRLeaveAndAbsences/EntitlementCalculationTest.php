@@ -536,7 +536,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // Add a 1 day Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
       $previousPeriodEntitlement->type_id,
-      $previousPeriodEntitlement->getContactIDFromContract(),
+      $previousPeriodEntitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+1 day', $previousPeriodStartDateTimeStamp))
     );
@@ -544,7 +544,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // Add a 11 days Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
       $previousPeriodEntitlement->type_id,
-      $previousPeriodEntitlement->getContactIDFromContract(),
+      $previousPeriodEntitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+31 days', $previousPeriodStartDateTimeStamp)),
       date('Y-m-d', strtotime('+41 days', $previousPeriodStartDateTimeStamp))
@@ -937,7 +937,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = false, $comment = null) {
     $params = [
       'period_id'            => $period->id,
-      'contract_id'          => $this->contract['id'],
+      'contact_id'           => $this->contract['contact_id'],
       'type_id'              => $type->id,
       'overridden'           => $overridden ? '1' : '0',
     ];
