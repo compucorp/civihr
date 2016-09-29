@@ -38,8 +38,7 @@ define([
        * Publish a specific topic along with Data
        *
        * @param {string} topic
-       * @param {*} Any value that will be sent for the subscriber to be fetched
-       * @return void
+       * @param {*} data Any value that will be sent for the subscriber to be fetched
        */
       publish: function (topic, data) {
         if (!topics[topic]) {
