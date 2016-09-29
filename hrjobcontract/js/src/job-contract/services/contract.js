@@ -251,9 +251,32 @@ define([
                 });
 
                 return deffered.promise;
+            },
 
+            /**
+             * Returns the full details of a contract via the related custom api endpoint
+             *
+             * @param  {int} contractId
+             * @return {Promise} resolves with the api response
+             */
+            fullDetails: function (contractId) {
+              if (!contractId || typeof +contractId !== 'number') {
+                return null;
+              }
+
+              var deferred = $q.defer();
+
+              Contract.get({
+                action: 'getfulldetails',
+                json: { jobcontract_id: contractId }
+              }, function (data) {
+                deferred.resolve(data);
+              },function () {
+                deferred.reject('Could not fetch full details for contract ID:' + contractId);
+              });
+
+              return deferred.promise;
             }
         }
-
     }]);
 });
