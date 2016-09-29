@@ -7,6 +7,8 @@ define([
 ], function (_, services) {
   'use strict';
 
+    var promiseCache = {};
+
   /**
    * @param {ApiService} Api
    * @param {ModelService} Model
@@ -74,7 +76,7 @@ define([
     };
 
     /**
-     * Reset contracts to initial state
+     * Reset contracts and promiseCache to initial state
      * @ngdoc method
      * @name resetContracts
      * @methodOf ContractService
@@ -82,6 +84,7 @@ define([
      */
     factory.resetContracts = function () {
       contracts = [];
+      promiseCache = {};
       initializeCollection();
     };
 
@@ -156,19 +159,23 @@ define([
         'api.HRJobHour.get': {'jobcontract_id': id}
       };
 
-      return Api.post('HRJobDetails', data, 'get')
-        .then(function (response) {
-          if (response.values.length === 0) {
-            return $q.reject('No details found for contract revision with ID ' + id);
+      if (!promiseCache.getContractDetails) {
+            promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
+              .then(function (response) {
+                if (response.values.length === 0) {
+                  return $q.reject('No details found for contract revision with ID ' + id);
+                }
+
+                var details = response.values[0];
+
+                addPay(details);
+                addHours(details);
+
+                return details;
+              });
           }
 
-          var details = response.values[0];
-
-          addPay(details);
-          addHours(details);
-
-          return details;
-        });
+          return promiseCache.getContractDetails;
     };
 
     /**
