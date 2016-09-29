@@ -11,8 +11,7 @@ define([
             $log.debug('Controller: RevisionListCtrl');
 
             var contractId = $scope.contract.id,
-                revisionDataListLocal = $scope.revisionDataList = $scope.$parent.$parent.$parent.$parent.revisionDataList;
-                $scope.revisionCurrent = $scope.$parent.$parent.$parent.$parent.revisionCurrent;
+                revisionDataListLocal = $scope.revisionDataList;
 
             $scope.currentPage = 1;
             $scope.itemsPerPage = 5;
@@ -125,7 +124,7 @@ define([
 
             function urlCSVBuild(){
                 var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?' ),
-                    fields = $scope.$parent.fields;
+                    fields = $scope.fields;
 
                 angular.forEach(fields, function(entityFields, entityName){
                     url += 'fields['+entityName+'_revision_id]=1&';
@@ -192,7 +191,7 @@ define([
 
                 modalInstance.result.then(function(confirm){
                     if (confirm) {
-                        $scope.$parent.$parent.$parent.$broadcast('hrjc-loader-show');
+                        $scope.$broadcast('hrjc-loader-show');
                         ContractService.deleteRevision(revisionId).then(function(results){
                             var i = 0, len = $scope.revisionList.length;
                             if (!results.is_error) {
@@ -213,7 +212,7 @@ define([
                                     return
                                 }
 
-                                $scope.$parent.$parent.$parent.$broadcast('hrjc-loader-hide');
+                                $scope.$broadcast('hrjc-loader-hide');
                             }
                         });
                     }
