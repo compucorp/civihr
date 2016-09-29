@@ -14,7 +14,6 @@ define([
           $scope.publish = function(data) {
             pubSub.publish("changeB", data);
           };
-
         }
       );
 
@@ -60,7 +59,5 @@ define([
       },0);
       $timeout.flush();
     });
-
-
   });
 });

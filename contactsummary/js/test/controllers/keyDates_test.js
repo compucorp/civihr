@@ -29,7 +29,6 @@ define([
       ctrlConstructor = _$controller_;
     }));
 
-
     describe('constructor', function () {
       it("Should subscribe for contract changes", function(){
         spyOn(ContractServiceMock, "get").and.callThrough();

@@ -33,8 +33,7 @@ define([
       ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
       ctrlConstructor = _$controller_;
     }));
-
-
+    
     describe('constructor', function () {
       it("Should subscribe for contract changes", function(){
         spyOn(ContactDetailsServiceMock, "get").and.callThrough();
