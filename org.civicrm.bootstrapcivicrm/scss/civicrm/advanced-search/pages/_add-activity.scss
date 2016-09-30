@@ -1,0 +1,39 @@
+.CRM_Activity_Form_Activity {
+  label {
+    line-height: 45px;
+  }
+
+  .close-icon {
+    display: none !important;
+  }
+
+  .crm-clear-link {
+    &::before {
+      @include fa-icon($font-size: 13px, $content: '\f00d');
+    }
+  }
+
+  .crm-hover-button .crm-i {
+    padding-left: 15px;
+  }
+
+  td.label {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 30px;
+    width: auto;
+
+    label {
+      text-align: left;
+    }
+  }
+
+  .crm-i {
+    display: none;
+  }
+
+  .crm-block {
+    padding-top: 15px;
+  }
+}

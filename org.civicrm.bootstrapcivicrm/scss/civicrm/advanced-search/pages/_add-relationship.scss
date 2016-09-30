@@ -1,0 +1,52 @@
+.CRM_Contact_Form_Task_AddToOrganization {
+  .help {
+    @extend %open-sans-font-family;
+    border-radius: 0;
+    border: 0;
+    background-color: $crm-accordion-header-color;
+    padding-left: 20px;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 40px;
+  }
+
+  .crm-form-submit {
+    @extend %btn;
+  }
+
+  #_qf_AddToOrganization_cancel {
+    border: solid 1px $gray-dark !important;
+    background: none !important;
+    color: $gray-dark !important;
+    min-width: initial !important;
+
+    &:hover {
+      background: $gray-dark !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .form-layout-compressed {
+    margin: 15px !important;
+  }
+
+  .form-layout-compressed > tbody:nth-child(1) > tr:nth-child(4) {
+    border-top: solid 1px $crm-accordion-header-color;
+    margin: 15px 10px !important;
+
+    > td:nth-child(2) {
+      width: 100%;
+      padding-top: 15px !important;
+      position: relative;
+      left: -155px;
+    }
+  }
+
+  .crm-contact-task-addtoOrganization-form-block-name > td {
+    padding-bottom: 15px !important;
+  }
+
+  .crm-contact-task-addtoOrganization-form-block-relationship_type_id > td:nth-child(1) {
+    min-width: 160px !important;
+  }
+}

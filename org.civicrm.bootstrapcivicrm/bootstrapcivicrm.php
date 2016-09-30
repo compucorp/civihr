@@ -143,4 +143,7 @@ function bootstrapcivicrm_civicrm_buildForm($formName) {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/enable-select2.js');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/highlight-table-rows.js');
   }
+  if($formName == 'CRM_Activity_Form_Activity') {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivicrm', 'js/advanced-search/add-activity.js');
+  }
 }

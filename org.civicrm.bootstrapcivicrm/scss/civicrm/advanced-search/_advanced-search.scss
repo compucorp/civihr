@@ -1,4 +1,10 @@
 .crm-container {
   @import 'pages/advanced-search';
   @import 'pages/results';
+  @import 'pages/add-activity';
+  @import 'pages/add-relationship';
+  @import 'pages/export-contacts';
+  @import 'pages/merge-contacts';
+  @import 'pages/print-merge-document';
+  @import 'pages/communication-preferences';
 }

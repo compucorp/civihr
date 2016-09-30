@@ -2,6 +2,20 @@
   @import 'variables';
   @import 'labels';
 
+  a#resetAdvancedSearch {
+    border: solid 1px $gray-dark !important;
+    border-radius: 2 !important;
+
+    &:hover {
+      background: $gray-dark !important;
+      color: #ffffff !important;
+    }
+
+    .crm-i {
+      display: none;
+    }
+  }
+
   td input + label + br {
     display: none;
   }

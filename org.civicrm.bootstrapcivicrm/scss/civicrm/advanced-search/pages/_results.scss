@@ -163,15 +163,15 @@
       }
 
       &.Individual-icon::before {
-        @include fa-icon(13px, '\f007');
+        @include fa-icon($font-size: 13px, $content: '\f007');
       }
 
       &.Household-icon::before {
-        @include fa-icon(13px, '\f015');
+        @include fa-icon($font-size: 13px, $content: '\f015');
       }
 
       &.Organization-icon::before {
-        @include fa-icon(13px, '\f1ad');
+        @include fa-icon($font-size: 13px, $content: '\f1ad');
       }
     }
   }

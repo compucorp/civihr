@@ -1,17 +1,18 @@
-@mixin fa-icon($font-size: null, $content: null, $color: null) {
+@mixin fa-icon($args...) {
+  $paramsMap: keywords($args);
   font-family: 'FontAwesome';
   font-style: normal;
   text-rendering: auto;
-  @if($font-size) {
-    font-size: $font-size;
+  @if(map_has_key($paramsMap, 'font-size')) {
+    font-size: map_get($paramsMap, 'font-size');
   } @else {
     font-size: .8em;
   }
-  @if($content) {
-    content: $content;
+  @if(map_has_key($paramsMap, 'content')) {
+    content: map_get($paramsMap, 'content');
   }
-  @if($color) {
-    color: $color;
+  @if(map_has_key($paramsMap, 'color')) {
+    color: map_get($paramsMap, 'color');
   } @else {
     color: $gray-dark;
   }

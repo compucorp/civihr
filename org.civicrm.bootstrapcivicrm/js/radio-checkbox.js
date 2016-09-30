@@ -2,9 +2,9 @@ CRM.$(function() {
   'use strict';
 
   /**
-   * We're debouncing the callback to avoid calling multiple times during DOM changes
+   * Fixes the radio buttons and checkboxes
    */
-  var observer = new MutationObserver(debounce(function() {
+  function fixRadioAndCheckbox() {
     /**
      * The customized radio buttons / checkboxes depend on the existence of the
      * "for" attribute in the respective labels.
@@ -28,7 +28,14 @@ CRM.$(function() {
         label.attr('for', $this.attr('id'));
       }
     });
-  }, 500));
+  }
+
+  fixRadioAndCheckbox();
+
+  /**
+   * We're debouncing the callback to avoid calling multiple times during DOM changes
+   */
+  var observer = new MutationObserver(debounce(fixRadioAndCheckbox, 500));
 
   observer.observe(document.querySelector('body'), {
     childList: true,

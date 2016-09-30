@@ -1,0 +1,51 @@
+.CRM_Export_Form_Select {
+  #export-type {
+    padding: 10px 20px 0;
+  }
+
+  #wizard-steps {
+    display: none;
+  }
+
+  #postal_mailing_export_postal_mailing_export {
+    margin-left: 0 !important;
+  }
+
+  .help {
+    border: 0;
+    border-radius: 0;
+    border-color: $gray;
+    background-color: #ffffff;
+    padding: 17px 17px 0;
+  }
+
+  br {
+    display: none;
+  }
+
+  .crm-section .content {
+    padding-bottom: 15px;
+  }
+
+  h2 {
+    position: initial !important;
+    margin: 20px 20px 0;
+    color: $gray-darker;
+
+    + .crm-submit-buttons {
+      display: none;
+    }
+  }
+
+  h3 {
+    @extend %open-sans-font-family;
+    padding-left: 0;
+    font-size: 13px;
+    color: $gray-darker;
+    font-weight: 600;
+  }
+
+  input + label {
+    display: block;
+  }
+}
