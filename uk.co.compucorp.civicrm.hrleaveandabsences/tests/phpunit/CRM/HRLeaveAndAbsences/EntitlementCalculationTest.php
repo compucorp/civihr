@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__."/LeaveBalanceChangeHelpersTrait.php";
+require_once __DIR__."/ContractHelpersTrait.php";
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
@@ -20,8 +21,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
  HeadlessInterface, TransactionalInterface {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
-
-  private $contract;
+  use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -116,6 +116,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testBroughtForwardShouldNotBeMoreThanTheMaxNumberOfDaysAllowedToBeCarriedForward() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
     $type = $this->createAbsenceType([
       'max_number_of_days_to_carry_forward' => 5
     ]);
@@ -145,8 +147,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(5, $calculation->getBroughtForward());
   }
 
-  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement()
-  {
+  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
+    $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
+
     $type = $this->createAbsenceType([
       'max_number_of_days_to_carry_forward' => 5
     ]);
@@ -518,6 +521,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeTheTotalAmountOfDaysFromAllApprovedLeaveRequestsOnThePeriod() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
+    $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
+
     $type = $this->createAbsenceType();
     $previousPeriod = AbsencePeriod::create([
       'title' => 'Period 1',
@@ -530,14 +535,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $previousPeriodStartDateTimeStamp = strtotime($previousPeriod->start_date);
     // Add a 1 day Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
-      $previousPeriodEntitlement->id,
+      $previousPeriodEntitlement->type_id,
+      $previousPeriodEntitlement->getContactIDFromContract(),
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+1 day', $previousPeriodStartDateTimeStamp))
     );
 
     // Add a 11 days Leave Request to the previous period
     $this->createLeaveRequestBalanceChange(
-      $previousPeriodEntitlement->id,
+      $previousPeriodEntitlement->type_id,
+      $previousPeriodEntitlement->getContactIDFromContract(),
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('+31 days', $previousPeriodStartDateTimeStamp)),
       date('Y-m-d', strtotime('+41 days', $previousPeriodStartDateTimeStamp))
@@ -568,8 +575,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(0, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
-  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeEqualsToProposedEntitlementMinusLeavesTaken()
-  {
+  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeEqualsToProposedEntitlementMinusLeavesTaken() {
+    $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
+
     $type = $this->createAbsenceType();
 
     $previousPeriod = AbsencePeriod::create([
@@ -926,15 +934,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     return $currentPeriod;
   }
 
-  private function createContract() {
-    $result = civicrm_api3('HRJobContract', 'create', [
-      'contact_id' => 2, //Existing contact from civicrm_data.mysql,
-      'is_primary' => 1,
-      'sequential' => 1
-    ]);
-    $this->contract = $result['values'][0];
-  }
-
   private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = false, $comment = null) {
     $params = [
       'period_id'            => $period->id,
@@ -978,11 +977,5 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
   }
 
-  private function setContractDates($startDate, $endDate) {
-    CRM_Hrjobcontract_BAO_HRJobDetails::create([
-      'jobcontract_id' => $this->contract['id'],
-      'period_start_date' => $startDate,
-      'period_end_date' => $endDate,
-    ]);
-  }
+
 }

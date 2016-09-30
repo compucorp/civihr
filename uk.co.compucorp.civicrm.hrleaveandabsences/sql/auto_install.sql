@@ -320,16 +320,17 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change` (
 -- *******************************************************/
 CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
 
-
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveRequest ID',
-     `entitlement_id` int unsigned NOT NULL   COMMENT 'FK to LeavePeriodEntitlement',
+     `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
+     `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact',
      `status_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Status option group',
      `from_date` date NOT NULL   COMMENT 'The date the leave request starts.',
      `from_date_type` int unsigned    COMMENT 'One of the values of the Leave Request Day Type option group',
      `to_date` date    COMMENT 'The date the leave request ends. If null, it means is starts and ends at the same date',
      `to_date_type` int unsigned    COMMENT 'One of the values of the Leave Request Day Type option group',
     PRIMARY KEY ( `id` ),
-    CONSTRAINT FK_civicrm_hrlaa_leave_request_entitlement_id FOREIGN KEY (`entitlement_id`) REFERENCES `civicrm_hrleaveandabsences_leave_period_entitlement`(`id`) ON DELETE CASCADE
+    CONSTRAINT FK_civicrm_hrlaa_leave_request_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_leave_request_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
 -- /*******************************************************

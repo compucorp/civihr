@@ -1,5 +1,6 @@
 <?php
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
@@ -10,6 +11,13 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
  */
 class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement {
+
+  /**
+   * Caches the contract loaded by the getContract() method
+   *
+   * @var array
+   */
+  private $contract;
 
   /**
    * Create a new LeavePeriodEntitlement based on array-data
@@ -295,7 +303,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
       foreach ($publicHolidays as $publicHoliday) {
         $leaveRequest = LeaveRequest::create([
-          'entitlement_id' => $periodEntitlement->id,
+          'type_id'        => $periodEntitlement->type_id,
+          'contact_id'     => $periodEntitlement->getContactIDFromContract(),
           'status_id'      => $leaveRequestStatuses['Admin Approved'],
           'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
           'from_date_type' => $leaveRequestDateTypes['All Day']
@@ -353,7 +362,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $leaveRequestStatus['Approved'],
       $leaveRequestStatus['Admin Approved'],
     ];
-    return LeaveBalanceChange::getBalanceForEntitlement($this->id, $filterStatuses);
+    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
   /**
@@ -389,6 +398,93 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $leaveRequestStatus['Admin Approved'],
     ];
 
-    return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this->id, $filterStatuses);
+    return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
+  }
+
+  /**
+   * This method returns the start and end dates for this LeavePeriodEntitlement.
+   *
+   * The start date is given by this rule: If the Contract start date is less than
+   * the Absence Period start date, then the latter date will be returned. Otherwise,
+   * the former will be used.
+   *
+   * The end date is given by this rule: If the Contract end date is empty or is
+   * greater than the Absence Period end date, then the latter will be returned.
+   * Otherwise, the former will be used.
+   *
+   * @return array
+   *   An array with the start date as the first element and the end date as the second one
+   */
+  public function getStartAndEndDates() {
+    $contractDates = $this->getContractDates();
+    $absencePeriod = AbsencePeriod::findById($this->period_id);
+
+    if(is_null($contractDates['end_date'])) {
+      $contractDates['end_date'] = $absencePeriod->end_date;
+    }
+
+    return $absencePeriod->adjustDatesToMatchPeriodDates($contractDates['start_date'], $contractDates['end_date']);
+  }
+
+  /**
+   * Returns an array containing the Contract's start and end dates.
+   *
+   * @return array|null The array with the dates or null if the contract details could not be found
+   */
+  private function getContractDates() {
+    $result = civicrm_api3('HRJobDetails', 'get', [
+      'jobcontract_id' => $this->contract_id,
+      'sequential' => 1
+    ]);
+
+    if(empty($result['values'][0])) {
+      return null;
+    }
+
+    $contractDetails = $result['values'][0];
+
+    return [
+      'start_date' => $contractDetails['period_start_date'],
+      'end_date' => !empty($contractDetails['period_end_date']) ? $contractDetails['period_end_date'] : null
+    ];
+  }
+
+  /**
+   * Returns the Contact ID of this entitlement's contract
+   *
+   * @return int|null
+   */
+  public function getContactIDFromContract() {
+    $contract = $this->getContract();
+
+    if(!$contract) {
+      return null;
+    }
+
+    return $contract['contact_id'];
+  }
+
+  /**
+   * Loads this entitlement's contract using the HRJobContract API
+   *
+   * @return mixed
+   */
+  private function getContract() {
+    if(!$this->contract) {
+      try {
+        $result = civicrm_api3('HRJobContract', 'getsingle', [
+          'id' => $this->contract_id
+        ]);
+
+        if(!empty($result)) {
+          $this->contract = $result;
+        }
+
+      } catch(Exception $e) {
+
+      }
+    }
+
+    return $this->contract;
   }
 }
