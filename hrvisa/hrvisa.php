@@ -208,17 +208,22 @@ function hrvisa_civicrm_managed(&$entities) {
 
 
 /**
- * Implementation of hook_civicrm_tabs
+ * Implementation of hook_civicrm_tabset.
+ *
+ * @param string $tabsetName
+ * @param array &$tabs
+ * @param array $context
  */
-function hrvisa_civicrm_tabs(&$tabs, $contactID) {
-  $cgid = hrvisa_getCustomGroupId();
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrvisa', 'js/hrvisa.js');
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrvisa', 'css/hrvisa.css');
-  CRM_Core_Resources::singleton()->addSetting(array(
-    'hrvisa' => array(
-      'contactID' => $contactID,
-    ),
-  ));
+function hrvisa_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName === 'civicrm/contact/view') {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrvisa', 'js/hrvisa.js');
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrvisa', 'css/hrvisa.css');
+    CRM_Core_Resources::singleton()->addSetting(array(
+      'hrvisa' => array(
+        'contactID' => $context['contact_id'],
+      ),
+    ));
+  }
 }
 
 function hrvisa_getCustomGroupId() {
