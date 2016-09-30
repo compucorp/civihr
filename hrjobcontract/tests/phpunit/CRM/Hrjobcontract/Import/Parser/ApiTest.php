@@ -358,8 +358,28 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-position' => 'Test Contract Position',
       'HRJobDetails-contract_type' => $this->_contractTypeID,
       'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-end_reason' => 'Planned'
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+
+  function testImportingContractWithoutEndDateWithEndReason() {
+    $contact2Params = array(
+      'first_name' => 'John_54',
+      'last_name' => 'Snow_54',
+      'email' => '54@b54.com',
+      'contact_type' => 'Individual',
+    );
+    $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
       'HRJobDetails-period_end_date' => '2016-01-20',
-      'HRJobDetails-end_reason' => 'Plannedooooo'
     );
 
     $importResponse = $this->runImport($params);

@@ -526,7 +526,11 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     }
 
     if (!empty($params['HRJobDetails-period_end_date']) && empty($params['HRJobDetails-end_reason'])) {
-      CRM_Contact_Import_Parser_Contact::addToErrorMsg("Contract end reason is required when there end date is present", $errorMessages);
+      CRM_Contact_Import_Parser_Contact::addToErrorMsg(ts("Contract end reason is required when there end date is present"), $errorMessages);
+    }
+
+    if (empty($params['HRJobDetails-period_end_date']) && !empty($params['HRJobDetails-end_reason'])) {
+      CRM_Contact_Import_Parser_Contact::addToErrorMsg(ts("Contract End date does not exist"), $errorMessages);
     }
 
     foreach ($params as $key => $val) {
