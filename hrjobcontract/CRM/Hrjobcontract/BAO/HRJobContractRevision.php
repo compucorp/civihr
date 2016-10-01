@@ -53,6 +53,32 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
   }
 
   /**
+   * Builds and executes a query that return all the details of a given revision
+   *
+   * Note: as there could be multiple leave records, the leave data must be
+   * fetched and processed separately
+   *
+   * @param  Array $revision
+   * @return Array
+   */
+  public static function fullDetails($revision) {
+    $query1 = self::buildFullDetailsQuery(['details', 'hour', 'pay', 'health', 'pension'], $revision);
+    $query2 = self::buildFullDetailsQuery(['leave'], $revision);
+
+    $result1 = CRM_Core_DAO::executeQuery($query1);
+    $result2 = CRM_Core_DAO::executeQuery($query2);
+
+    $result1->fetch();
+    $fullDetails = self::normalizeFullDetailsResult($result1);
+
+    while ($result2->fetch()) {
+      $fullDetails['leave'][] = self::normalizeFullDetailsResult($result2)['leave'];
+    }
+
+    return $fullDetails;
+  }
+
+  /**
    * Update Revision's effective end dates for given Job Contract ID.
    *
    * @param int $jobcontractId
@@ -209,5 +235,85 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
       1 => array($revisionId, 'Integer'),
     );
     CRM_Core_DAO::executeQuery($clearEffectiveEndDateQuery, $clearEffectiveEndDateParams);
+  }
+
+  /**
+   * Builds the SQL query for fetching the revision details of the given entities
+   *
+   * The fields of each entities are dynamically listed in the SELECT clause
+   * and are aliased with a prefix ({entity}__) so that it is possible to know
+   * which entity they belong to (civicrm_hrjobcontract_pay.id -> pay__id)
+   *
+   * @param Array $entities
+   * @param Array $revision
+   */
+  protected static function buildFullDetailsQuery($entities, $revision) {
+    $query = ['select' => [], 'from' => [], 'where' => []];
+
+    /**
+     * Creates an alias for the given entity
+     *
+     * @param string $entity
+     * @return  string
+     */
+    $entityAlias = function ($entity) {
+      return substr($entity, 0, 3);
+    };
+
+    foreach ($entities as $entity) {
+      $class = "CRM_Hrjobcontract_BAO_HRJob" . ucfirst($entity);
+      $fields = array_column($class::fields(), 'name');
+
+      foreach ($fields as $field) {
+        $query['select'][] = "{$entityAlias($entity)}.{$field} as {$entity}__{$field}";
+      }
+
+      $query['from'][] = "civicrm_hrjobcontract_{$entity} {$entityAlias($entity)}";
+      $query['where'][] = "{$entityAlias($entity)}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+    }
+
+    return sprintf(
+      "SELECT %s FROM %s WHERE %s ",
+      join(', ', $query['select']),
+      join(', ', $query['from']),
+      join(' AND ', $query['where'])
+    );
+  }
+
+  /**
+   * Takes a flat list of revision details and rearranges it, by grouping
+   * each field by the entity it belongs to
+   *
+   * The field's entity is inferred by the prefix ({entity}__) in the field's name
+   *
+   * @param  Array $result
+   * @return Array
+   */
+  protected static function normalizeFullDetailsResult($result) {
+    $normalized = [];
+
+    foreach ($result as $key => $value) {
+      if (strpos($key, '_') == 0) { continue; } // ignores "internal" fields
+
+      list($entity, $field) = explode('__', $key);
+
+      // This is necessary because some fields are stored in the DB as strings
+      // although the content is actually a JSON. It is done automatically when
+      // using the API, but when building the query manually the fields have to
+      // be converted manually
+      $normalized[$entity][$field] = self::isJSON($value) ? json_decode($value) : $value;
+    }
+
+    return $normalized;
+  }
+
+  /**
+   * Determines if the given string is a JSON or not
+   *
+   * @param  String  $string
+   * @return boolean
+   */
+  protected static function isJSON($string){
+    return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
   }
 }

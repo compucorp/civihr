@@ -221,85 +221,13 @@ function _civicrm_api3_h_r_job_contract_getfulldetails_spec(&$spec) {
 }
 
 /**
- * [$buildQuery description]
- * @var [type]
- */
-function buildQuery($entities, $revision) {
-  $query = ['select' => [], 'from' => [], 'where' => []];
-
-  /**
-   * [$entityAlias description]
-   * @var [type]
-   */
-  $entityAlias = function ($entity) {
-    return substr($entity, 0, 3);
-  };
-
-  foreach ($entities as $entity) {
-    $class = "CRM_Hrjobcontract_BAO_HRJob" . ucfirst($entity);
-    $fields = array_column($class::fields(), 'name');
-
-    foreach ($fields as $field) {
-      $query['select'][] = "{$entityAlias($entity)}.{$field} as {$entity}__{$field}";
-    }
-
-    $query['from'][] = "civicrm_hrjobcontract_{$entity} {$entityAlias($entity)}";
-    $query['where'][] = "{$entityAlias($entity)}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
-  }
-
-  return sprintf(
-    "SELECT %s FROM %s WHERE %s ",
-    join(', ', $query['select']),
-    join(', ', $query['from']),
-    join(' AND ', $query['where'])
-  );
-};
-
-/**
- * [normalizeResult description]
- * @param  [type] $result [description]
- * @return [type]         [description]
- */
-function normalizeResult($result) {
-  $normalized = [];
-
-  foreach ($result as $key => $value) {
-    if (strpos($key, '_') == 0) { continue; }
-
-    list($entity, $field) = explode('__', $key);
-    $normalized[$entity][$field] = isJSON($value) ? json_decode($value) : $value;
-  }
-
-  return $normalized;
-};
-
-/**
- * [isJSON description]
- * @param  [type]  $string [description]
- * @return boolean         [description]
- */
-function isJSON($string){
-  return is_string($string) && is_array(json_decode($string, true)) && (json_last_error() == JSON_ERROR_NONE);
-}
-
-/**
  * HRJobContract.getfulldetails API
  *
- * @param array $params The accepted params are: jobcontract_id
+ * @param array $params
  * @return array
  */
 function civicrm_api3_h_r_job_contract_getfulldetails($params) {
-  $fullDetails = [];
   $currentRevision = _civicrm_hrjobcontract_api3_get_current_revision($params)['values'];
 
-  $result = CRM_Core_DAO::executeQuery(buildQuery(['details', 'hour', 'pay', 'health', 'pension'], $currentRevision));
-  $result->fetch();
-  $fullDetails = normalizeResult($result);
-
-  $result = CRM_Core_DAO::executeQuery(buildQuery(['leave'], $currentRevision));
-  while ($result->fetch()) {
-    $fullDetails['leave'][] = normalizeResult($result)['leave'];
-  }
-
-  return $fullDetails;
+  return CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails($currentRevision);
 }
