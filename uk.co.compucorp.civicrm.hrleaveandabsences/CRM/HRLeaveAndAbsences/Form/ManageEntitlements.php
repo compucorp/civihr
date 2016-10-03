@@ -212,7 +212,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   private function getActiveContractsForPeriod(AbsencePeriod $absencePeriod, $filter = []) {
     try {
-      $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts(
+      $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
         $absencePeriod->start_date,
         $absencePeriod->end_date
       );
