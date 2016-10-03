@@ -58,8 +58,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * Note: as there could be multiple leave records, the leave data must be
    * fetched and processed separately
    *
-   * @param  Array $revision
-   * @return Array
+   * @param  array $revision
+   *   an assoc array representing an instance of HRJobContractRevision entity
+   * @return array
    */
   public static function fullDetails($revision) {
     $query1 = self::buildFullDetailsQuery(['details', 'hour', 'pay', 'health', 'pension'], $revision);
@@ -113,7 +114,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @param int $contactID Contact ID to validate against
    * @param string $effectiveDate Date in Y-m-d format
    *
-   * @return array Array in the following format :
+   * @return array array in the following format :
    *   ['success' => bool, 'message' => string] Where :
    *     success : True when their is not revision with the same effective date otherwise FALSE.
    *     message : Error message if there is a conflicting revision.
@@ -244,39 +245,30 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * and are aliased with a prefix ({entity}__) so that it is possible to know
    * which entity they belong to (civicrm_hrjobcontract_pay.id -> pay__id)
    *
-   * @param Array $entities
-   * @param Array $revision
+   * @param array $entities
+   * @param array $revision
    */
   protected static function buildFullDetailsQuery($entities, $revision) {
     $query = ['select' => [], 'from' => [], 'where' => []];
 
-    /**
-     * Creates an alias for the given entity
-     *
-     * @param string $entity
-     * @return  string
-     */
-    $entityAlias = function ($entity) {
-      return substr($entity, 0, 3);
-    };
-
     foreach ($entities as $entity) {
       $class = "CRM_Hrjobcontract_BAO_HRJob" . ucfirst($entity);
+      $table = "civicrm_hrjobcontract_{$entity}";
       $fields = array_column($class::fields(), 'name');
 
       foreach ($fields as $field) {
-        $query['select'][] = "{$entityAlias($entity)}.{$field} as {$entity}__{$field}";
+        $query['select'][] = "{$table}.{$field} as {$entity}__{$field}";
       }
 
-      $query['from'][] = "civicrm_hrjobcontract_{$entity} {$entityAlias($entity)}";
-      $query['where'][] = "{$entityAlias($entity)}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
+      $query['from'][] = $table;
+      $query['where'][] = "{$table}.jobcontract_revision_id = " . $revision["{$entity}_revision_id"];
     }
 
     return sprintf(
       "SELECT %s FROM %s WHERE %s ",
-      join(', ', $query['select']),
-      join(', ', $query['from']),
-      join(' AND ', $query['where'])
+      implode(', ', $query['select']),
+      implode(', ', $query['from']),
+      implode(' AND ', $query['where'])
     );
   }
 
@@ -286,14 +278,14 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    *
    * The field's entity is inferred by the prefix ({entity}__) in the field's name
    *
-   * @param  Array $result
-   * @return Array
+   * @param  array $result
+   * @return array
    */
   protected static function normalizeFullDetailsResult($result) {
     $normalized = [];
 
     foreach ($result as $key => $value) {
-      if (strpos($key, '_') == 0) { continue; } // ignores "internal" fields
+      if ($key[0] == '_' || $key == 'N') { continue; } // ignores "internal" fields
 
       list($entity, $field) = explode('__', $key);
 
@@ -310,7 +302,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
   /**
    * Determines if the given string is a JSON or not
    *
-   * @param  String  $string
+   * @param  string  $string
    * @return boolean
    */
   protected static function isJSON($string){
