@@ -170,6 +170,69 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertNull($contact2ActiveContracts[0]['period_end_date']);
   }
 
+  public function testGetActiveContractWithDetailsShouldReturnTheDetailsFromTheLatestDetailsRevision() {
+    $this->createContacts(1);
+
+    $startDate = '2016-02-01';
+    $endDate = '2016-03-10';
+
+    $contract1 = $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDate,
+      $endDate
+    );
+
+    //Change the start date
+    $startDate = '2016-02-01';
+    CRM_Hrjobcontract_BAO_HRJobDetails::create([
+      'jobcontract_id' => $contract1->id,
+      'period_start_date' => date('YmdHis', strtotime($startDate)),
+      'period_end_date' => date('YmdHis', strtotime($endDate))
+    ]);
+
+    $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
+      $startDate, $endDate, $this->contacts[0]['id']
+    );
+
+    $this->assertCount(1, $contracts);
+    $this->assertEquals($startDate, $contracts[0]['period_start_date']);
+    $this->assertEquals($endDate, $contracts[0]['period_end_date']);
+
+    //Change both dates
+    $startDate = '2016-01-15';
+    $endDate = '2016-10-27';
+    CRM_Hrjobcontract_BAO_HRJobDetails::create([
+      'jobcontract_id' => $contract1->id,
+      'period_start_date' => date('YmdHis', strtotime($startDate)),
+      'period_end_date' => date('YmdHis', strtotime($endDate))
+    ]);
+
+    $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
+      $startDate, $endDate, $this->contacts[0]['id']
+    );
+
+    $this->assertCount(1, $contracts);
+    $this->assertEquals($startDate, $contracts[0]['period_start_date']);
+    $this->assertEquals($endDate, $contracts[0]['period_end_date']);
+
+    // Adding a new Job Leave will result in new revision,
+    // but we should still get the latest details
+    CRM_Hrjobcontract_BAO_HRJobLeave::create([
+      'jobcontract_id' => $contract1->id,
+      'leave_type' => 1,
+      'leave_amount' => 10,
+      'add_public_holidays' => 0
+    ]);
+
+    $contracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
+      $startDate, $endDate, $this->contacts[0]['id']
+    );
+
+    $this->assertCount(1, $contracts);
+    $this->assertEquals($startDate, $contracts[0]['period_start_date']);
+    $this->assertEquals($endDate, $contracts[0]['period_end_date']);
+  }
+
 
   public function testGetCurrentContract() {
     $contactParams = array("first_name" => "chrollo", "last_name" => "lucilfer");

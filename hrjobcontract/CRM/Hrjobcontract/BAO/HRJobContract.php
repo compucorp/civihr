@@ -552,7 +552,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
                      ORDER BY r2.effective_date DESC, r2.id DESC
                      LIMIT 1
         )
-        INNER JOIN civicrm_hrjobcontract_details d ON d.jobcontract_revision_id = r.id
+        INNER JOIN civicrm_hrjobcontract_details d ON d.jobcontract_revision_id = r.details_revision_id
       WHERE c.deleted = 0 AND
         (
           (d.period_end_date IS NOT NULL AND d.period_start_date <= '{$endDate}' AND d.period_end_date >= '{$startDate}')
