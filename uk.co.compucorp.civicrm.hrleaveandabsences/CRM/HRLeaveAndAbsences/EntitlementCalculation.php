@@ -204,8 +204,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   private function getPeriodEntitlement() {
     if($this->periodEntitlement === false) {
-      $this->periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
-        $this->contract['id'],
+      $this->periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+        $this->contract['contact_id'],
         $this->period->id,
         $this->absenceType->id
       );
@@ -333,8 +333,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     }
 
     if(!$this->previousPeriodEntitlement) {
-      $this->previousPeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContract(
-        $this->contract['id'],
+      $this->previousPeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+        $this->contract['contact_id'],
         $previousPeriod->id,
         $this->absenceType->id
       );

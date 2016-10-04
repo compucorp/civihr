@@ -53,8 +53,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
 
-    list($startDate, $endDate) = $periodEntitlement->getStartAndEndDates();
-    $contactID = $periodEntitlement->getContactIDFromContract();
+    $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
 
     $whereLeaveRequestStatus = '';
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
@@ -70,10 +69,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
                 leave_balance_change.source_type = '". self::SOURCE_LEAVE_REQUEST_DAY ."'
       LEFT JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
       WHERE (
-              leave_request_date.date >= '{$startDate}' AND 
-              leave_request_date.date <= '{$endDate}' AND
+              $whereLeaveRequestDates AND
               leave_request.type_id = {$periodEntitlement->type_id} AND
-              leave_request.contact_id = {$contactID} 
+              leave_request.contact_id = {$periodEntitlement->contact_id} 
               $whereLeaveRequestStatus
             )
             OR
@@ -184,12 +182,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     DateTime $dateStart = NULL
   ) {
 
-    list($startDate, $endDate) = $periodEntitlement->getStartAndEndDates();
-    $contactID = $periodEntitlement->getContactIDFromContract();
-
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
+
+    $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
 
     $query = "
       SELECT SUM(leave_balance_change.amount) balance
@@ -198,10 +195,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
               ON leave_balance_change.source_id = leave_request_date.id AND 
                  leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
       INNER JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
-      WHERE leave_request_date.date >= '{$startDate}' AND 
-            leave_request_date.date <= '{$endDate}' AND
+      WHERE {$whereLeaveRequestDates} AND
             leave_request.type_id = {$periodEntitlement->type_id} AND
-            leave_request.contact_id = {$contactID} 
+            leave_request.contact_id = {$periodEntitlement->contact_id} 
     ";
 
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
@@ -319,5 +315,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     // Since the the Leave Request Balance is negative, when we add it
     // to the amount we're actually subtracting the value
     return $balanceChange->amount + $expiredAmount;
+  }
+
+  /**
+   * Creates the where clause to filter leave requests by the LeavePeriodEntitlement
+   * dates.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   *
+   * @return string
+   */
+  private static function buildLeaveRequestDateWhereClause(
+    LeavePeriodEntitlement $periodEntitlement
+  ) {
+    $contractsDates = $periodEntitlement->getStartAndEndDates();
+
+    $leaveRequestDatesClauses = [];
+    foreach ($contractsDates as $dates) {
+      $leaveRequestDatesClauses[] = "leave_request_date.date BETWEEN '{$dates['start_date']}' AND '{$dates['end_date']}'";
+    }
+    $whereLeaveRequestDates = implode(' OR ', $leaveRequestDatesClauses);
+
+    // This is just a trick to make it easier to
+    // interpolate this clause in SQL query string.
+    // if theres no date, we return the clause as a catch all condition
+    if(empty($whereLeaveRequestDates)) {
+      $whereLeaveRequestDates = '1=1';
+    }
+
+    // Finally, since this is a list of conditions separate
+    // by OR, we wrap it in parenthesis
+    return "($whereLeaveRequestDates)";
   }
 }

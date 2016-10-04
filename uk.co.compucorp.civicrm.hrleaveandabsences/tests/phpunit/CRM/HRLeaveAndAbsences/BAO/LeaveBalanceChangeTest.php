@@ -125,42 +125,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Cancelled'],
       date('Y-m-d', strtotime('-10 days'))
     );
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Rejected'],
       date('Y-m-d', strtotime('-9 days'))
     );
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d', strtotime('-8 days'))
     );
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Admin Approved'],
       date('Y-m-d', strtotime('-7 days'))
     );
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Waiting Approval'],
       date('Y-m-d', strtotime('-6 days'))
     );
 
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['More Information Requested'],
       date('Y-m-d', strtotime('-6 days'))
     );
@@ -262,7 +262,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // This will deduct 11 days
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
@@ -271,7 +271,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // 1 day deducted
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Admin Approved'],
       date('Y-m-d', strtotime('+11 days'))
     );
@@ -279,7 +279,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // 1 day deducted
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Cancelled'],
       date('Y-m-d', strtotime('+12 days'))
     );
@@ -287,7 +287,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // 1 day deducted
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Rejected'],
       date('Y-m-d', strtotime('+13 days'))
     );
@@ -295,7 +295,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // 1 day deducted
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Waiting Approval'],
       date('Y-m-d', strtotime('+14 days'))
     );
@@ -303,7 +303,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // 1 day deducted
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['More Information Requested'],
       date('Y-m-d', strtotime('+15 days'))
     );
@@ -351,7 +351,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // This will deduct 11 days
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
@@ -405,7 +405,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     // This will deduct 11 days
     $this->createLeaveRequestBalanceChange(
       $entitlement->type_id,
-      $entitlement->getContactIDFromContract(),
+      $entitlement->contact_id,
       $leaveRequestStatuses['Approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
@@ -590,7 +590,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends PHPUnit_Framewor
     return LeavePeriodEntitlement::create([
       'type_id' => 1,
       'period_id' => 1,
-      'contract_id' => 1
+      'contact_id' => 1
     ]);
   }
 

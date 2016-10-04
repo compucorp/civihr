@@ -94,10 +94,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Returns the calculated entitlement for a JobContract,
+   * Returns the calculated entitlement for a Contact,
    * AbsencePeriod and AbsenceType with the given IDs
    *
-   * @param int $contractId The ID of the JobContract
+   * @param int $contactId The ID of the Contact
    * @param int $periodId The ID of the Absence Period
    * @param int $absenceTypeId The ID of the AbsenceType
    *
@@ -106,9 +106,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *
    * @throws \InvalidArgumentException
    */
-  public static function getPeriodEntitlementForContract($contractId, $periodId, $absenceTypeId) {
-    if(!$contractId) {
-      throw new InvalidArgumentException("You must inform the Contract ID");
+  public static function getPeriodEntitlementForContact($contactId, $periodId, $absenceTypeId) {
+    if(!$contactId) {
+      throw new InvalidArgumentException("You must inform the Contact ID");
     }
     if(!$periodId) {
       throw new InvalidArgumentException("You must inform the AbsencePeriod ID");
@@ -118,7 +118,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     }
 
     $entitlement = new self();
-    $entitlement->contract_id = (int)$contractId;
+    $entitlement->contact_id = (int)$contactId;
     $entitlement->period_id = (int)$periodId;
     $entitlement->type_id = (int)$absenceTypeId;
     $entitlement->find(true);
@@ -134,7 +134,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * LeaveBalanceChanges based on the given EntitlementCalculation.
    *
    * If there's already an LeavePeriodEntitlement for the calculation's Absence
-   * Period, Absence Type, and Contract, it will be replaced by a new one.
+   * Period, Absence Type, and Contact, it will be replaced by a new one.
    *
    * If an overridden entitlement is given, the created Entitlement will be marked
    * as overridden.
@@ -153,8 +153,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     try {
       $absencePeriodID = $calculation->getAbsencePeriod()->id;
       $absenceTypeID = $calculation->getAbsenceType()->id;
-      $contractID = $calculation->getContract()['id'];
-      self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contractID);
+      $contactID = $calculation->getContract()['contact_id'];
+      self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
 
       $periodEntitlement = self::create(self::buildLeavePeriodParamsFromCalculation(
         $calculation,
@@ -189,12 +189,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     global $user;
     $absenceTypeID   = $calculation->getAbsenceType()->id;
-    $contractID      = $calculation->getContract()['id'];
+    $contactID      = $calculation->getContract()['contact_id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
 
     $params = [
       'type_id'     => $absenceTypeID,
-      'contract_id' => $contractID,
+      'contact_id' => $contactID,
       'period_id'   => $absencePeriodID,
       'overridden'  => (boolean)$overriddenEntitlement,
     ];
@@ -304,7 +304,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       foreach ($publicHolidays as $publicHoliday) {
         $leaveRequest = LeaveRequest::create([
           'type_id'        => $periodEntitlement->type_id,
-          'contact_id'     => $periodEntitlement->getContactIDFromContract(),
+          'contact_id'     => $periodEntitlement->contact_id,
           'status_id'      => $leaveRequestStatuses['Admin Approved'],
           'from_date'      => CRM_Utils_Date::processDate($publicHoliday->date),
           'from_date_type' => $leaveRequestDateTypes['All Day']
@@ -324,22 +324,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
   /**
    * Deletes the LeavePeriodEntitlement with the given Absence Period ID, Absence Type ID
-   * and Contract ID
+   * and Contact ID
    *
    * @param int $absencePeriodID
    * @param int $absenceTypeID
-   * @param int $contractID
+   * @param int $contactID
    */
-  private static function deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contractID) {
+  private static function deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID) {
     $tableName = self::getTableName();
     $query     = "
       DELETE FROM {$tableName}
-      WHERE period_id = %1 AND type_id = %2 AND contract_id = %3
+      WHERE period_id = %1 AND type_id = %2 AND contact_id = %3
     ";
     $params    = [
       1 => [$absencePeriodID, 'Positive'],
       2 => [$absenceTypeID, 'Positive'],
-      3 => [$contractID, 'Positive'],
+      3 => [$contactID, 'Positive'],
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
@@ -402,89 +402,73 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * This method returns the start and end dates for this LeavePeriodEntitlement.
+   * This method returns a set of start and end dates for this LeavePeriodEntitlement.
+   * These dates are the start and end dates of all contracts for this
+   * LeavePeriodEntitlement's contact which overlap the LeavePeriodEntitlement's
+   * AbsencePeriod.
    *
-   * The start date is given by this rule: If the Contract start date is less than
-   * the Absence Period start date, then the latter date will be returned. Otherwise,
-   * the former will be used.
-   *
-   * The end date is given by this rule: If the Contract end date is empty or is
-   * greater than the Absence Period end date, then the latter will be returned.
+   * The dates are adjusted to be inside the Absence Period start and end date.
+   * That is, if the start date of one of the contracts is less than the Absence
+   * Period start date, then the latter date will be returned. Otherwise,
+   * the former will be used. As for the end date, if the contract one is empty
+   * or is greather than Absence Period end date, then the latter will be returned.
    * Otherwise, the former will be used.
    *
    * @return array
-   *   An array with the start date as the first element and the end date as the second one
+   *   An array of arrays with the start date and end date for each contract:
+   *   [
+   *    ['2016-01-01', '2016-04-10'],
+   *    ['2016-05-01', '2016-12-31'],
+   *   ]
    */
   public function getStartAndEndDates() {
-    $contractDates = $this->getContractDates();
     $absencePeriod = AbsencePeriod::findById($this->period_id);
+    $contractDates = $this->getContractDatesForContactInPeriod($absencePeriod);
 
-    if(is_null($contractDates['end_date'])) {
-      $contractDates['end_date'] = $absencePeriod->end_date;
+    foreach($contractDates as $i => $dates) {
+      if(is_null($dates['end_date'])) {
+        $dates['end_date'] = $absencePeriod->end_date;
+      }
+
+      list($adjustedStartDate, $adjustedEndDate) = $absencePeriod->adjustDatesToMatchPeriodDates(
+        $dates['start_date'],
+        $dates['end_date']
+      );
+
+      $contractDates[$i]['start_date'] = $adjustedStartDate;
+      $contractDates[$i]['end_date'] = $adjustedEndDate;
     }
 
-    return $absencePeriod->adjustDatesToMatchPeriodDates($contractDates['start_date'], $contractDates['end_date']);
+
+    return $contractDates;
   }
 
   /**
    * Returns an array containing the Contract's start and end dates.
    *
-   * @return array|null The array with the dates or null if the contract details could not be found
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $absencePeriod
+   *
+   * @return array The array with the dates
    */
-  private function getContractDates() {
-    $result = civicrm_api3('HRJobDetails', 'get', [
-      'jobcontract_id' => $this->contract_id,
-      'sequential' => 1
+  private function getContractDatesForContactInPeriod(AbsencePeriod $absencePeriod) {
+    $result = civicrm_api3('HRJobContract', 'getActiveContractsWithDetails', [
+      'contact_id' => $this->contact_id,
+      'start_date' => $absencePeriod->start_date,
+      'end_date'   => $absencePeriod->end_date
     ]);
 
-    if(empty($result['values'][0])) {
-      return null;
+    if(empty($result['values'])) {
+      return [];
     }
 
-    $contractDetails = $result['values'][0];
-
-    return [
-      'start_date' => $contractDetails['period_start_date'],
-      'end_date' => !empty($contractDetails['period_end_date']) ? $contractDetails['period_end_date'] : null
-    ];
-  }
-
-  /**
-   * Returns the Contact ID of this entitlement's contract
-   *
-   * @return int|null
-   */
-  public function getContactIDFromContract() {
-    $contract = $this->getContract();
-
-    if(!$contract) {
-      return null;
+    $contractsDates = [];
+    foreach($result['values'] as $contract) {
+      $contractsDates[] = [
+        'start_date' => $contract['period_start_date'],
+        'end_date' => !empty($contract['period_end_date']) ? $contract['period_end_date'] : null
+      ];
     }
 
-    return $contract['contact_id'];
-  }
-
-  /**
-   * Loads this entitlement's contract using the HRJobContract API
-   *
-   * @return mixed
-   */
-  private function getContract() {
-    if(!$this->contract) {
-      try {
-        $result = civicrm_api3('HRJobContract', 'getsingle', [
-          'id' => $this->contract_id
-        ]);
-
-        if(!empty($result)) {
-          $this->contract = $result;
-        }
-
-      } catch(Exception $e) {
-
-      }
-    }
-
-    return $this->contract;
+    return $contractsDates;
   }
 }

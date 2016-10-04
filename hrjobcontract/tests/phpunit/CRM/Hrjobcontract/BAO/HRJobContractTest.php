@@ -18,41 +18,41 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
 
-  public function testGetActiveContractsDoesntIncludeContractsWithoutDetails() {
+  public function testGetActiveContractsWithDetailsDoesntIncludeContractsWithoutDetails() {
     $this->createContacts(1);
     $this->createJobContract($this->contacts[0]['id']);
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
   }
 
-  public function testGetActiveContractsDoesntIncludeInactiveContracts() {
+  public function testGetActiveContractsWithDetailsDoesntIncludeInactiveContracts() {
     $this->createContacts(1);
     $startDate = date('YmdHis', strtotime('-10 days'));
     $endDate = date('YmdHis', strtotime('-1 day'));
     $this->createJobContract($this->contacts[0]['id'], $startDate, $endDate);
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
   }
 
-  public function testGetActiveContractsDoesntIncludeDeletedContracts()
+  public function testGetActiveContractsWithDetailsDoesntIncludeDeletedContracts()
   {
     $this->createContacts(1);
     $startDate = date('YmdHis');
     $endDate = date('YmdHis', strtotime('+10 days'));
     $contract = $this->createJobContract($this->contacts[0]['id'], $startDate, $endDate);
 
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertCount(1, $activeContracts);
     $this->assertEquals($contract->id, $activeContracts[0]['id']);
 
     $this->deleteContract($contract->id);
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
   }
 
-  public function testGetActiveContractsShouldIncludeActiveContracts()
+  public function testGetActiveContractsWithDetailsShouldIncludeActiveContracts()
   {
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
 
     $this->createContacts(4);
@@ -72,13 +72,13 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
       date('Y-m-d', strtotime('now'))
     );
 
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertCount(4, $activeContracts);
   }
 
-  public function testGetActiveContractsCanReturnContractsActiveOnASpecificPeriod()
+  public function testGetActiveContractsWithDetailsCanReturnContractsActiveOnASpecificPeriod()
   {
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
 
     $this->createContacts(2);
@@ -97,14 +97,14 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
 
     // Since both contracts start in the future,
     // getActiveContracts without start date should return empty
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts();
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails();
     $this->assertEmpty($activeContracts);
 
     // The contracts overlaps only on the end day,
     // so, if we getActiveContracts with a maximum end date of end day - 1 day,
     // only the first contract should be returned
     $oneDayBeforeEndDateInFuture = date('Y-m-d', strtotime('+8 days'));
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts(
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
       $startDateInFuture,
       $oneDayBeforeEndDateInFuture
     );
@@ -115,10 +115,59 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     // end date in the future (the only date where both contracts overlaps).
     // Since we are not passing an end date to getActiveContracts, that means
     // it will return contracts that are active on the exact given date.
-    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts(
+    $activeContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
       $endDateInFuture
     );
     $this->assertCount(2, $activeContracts);
+  }
+
+  public function testGetActiveContractsWithDetailsCanReturnOnlyContractsOfASpecificContact() {
+    $this->createContacts(2);
+
+    $startDateContract1 = '2016-01-01';
+    $endDateContract1 = '2016-03-10';
+    // Contact 1 has 2 contracts
+    $contract1 = $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDateContract1,
+      $endDateContract1
+    );
+
+    $startDateContract2 = '2016-04-01';
+    $endDateContract2 = '2016-10-17';
+    $contract2 = $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDateContract2,
+      $endDateContract2
+    );
+
+    $startDateContract3 = '2016-03-03';
+    // Contact 2 has 1 contract
+    $contract3 = $this->createJobContract(
+      $this->contacts[1]['id'],
+      $startDateContract3
+    );
+
+    $contact1ActiveContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
+      '2016-01-01', '2016-12-31', $this->contacts[0]['id']
+    );
+
+    $contact2ActiveContracts = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContractsWithDetails(
+      '2016-01-01', '2016-12-31', $this->contacts[1]['id']
+    );
+
+    $this->assertCount(2, $contact1ActiveContracts);
+    $this->assertEquals($contract1->id, $contact1ActiveContracts[0]['id']);
+    $this->assertEquals($startDateContract1, $contact1ActiveContracts[0]['period_start_date']);
+    $this->assertEquals($endDateContract1, $contact1ActiveContracts[0]['period_end_date']);
+    $this->assertEquals($contract2->id, $contact1ActiveContracts[1]['id']);
+    $this->assertEquals($startDateContract2, $contact1ActiveContracts[1]['period_start_date']);
+    $this->assertEquals($endDateContract2, $contact1ActiveContracts[1]['period_end_date']);
+
+    $this->assertCount(1, $contact2ActiveContracts);
+    $this->assertEquals($contract3->id, $contact2ActiveContracts[0]['id']);
+    $this->assertEquals($startDateContract3, $contact2ActiveContracts[0]['period_start_date']);
+    $this->assertNull($contact2ActiveContracts[0]['period_end_date']);
   }
 
 
@@ -163,5 +212,4 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
 
     $this->assertEquals(2, CRM_Hrjobcontract_BAO_HRJobContract::getStaffCount());
   }
-
 }
