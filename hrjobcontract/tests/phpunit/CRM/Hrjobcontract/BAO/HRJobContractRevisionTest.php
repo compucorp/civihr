@@ -3,6 +3,15 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
+require_once 'tests/phpunit/fabricators/ContactFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobContractFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobContractRevisionFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobHealthFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobHourFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobLeaveFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobPayFabricator.php';
+require_once 'tests/phpunit/fabricators/HRJobPensionFabricator.php';
+
 /**
  * Class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest
  *
@@ -19,43 +28,18 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
   }
 
   function testFullDetailsResponse() {
-    $contactParams = ["first_name" => "chrollo", "last_name" => "lucilfer"];
-    $contactID =  $this->createContact($contactParams);
-    $contract = $this->createJobContract($contactID, '2015-01-01');
-    $revision = civicrm_api3('HRJobContractRevision', 'getsingle', array(
-      'jobcontract_id' => $contract->id
-    ));
+    $contact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $contract = HRJobContractFabricator::fabricate(['contact_id' => $contact['id']], ['period_start_date' => '2015-01-01']);
 
-    $details = civicrm_api3('HRJobPension', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $health = civicrm_api3('HRJobHealth', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $hour = civicrm_api3('HRJobHour', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $leave = civicrm_api3('HRJobLeave', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $leave = civicrm_api3('HRJobLeave', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $pay = civicrm_api3('HRJobPay', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
-
-    $pension = civicrm_api3('HRJobPension', 'create', array(
-      'jobcontract_id' => $contract->id
-    ));
+    HRJobContractRevisionFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobHealthFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobHourFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobLeaveFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobPayFabricator::fabricate(['jobcontract_id' => $contract['id']]);
+    HRJobPensionFabricator::fabricate(['jobcontract_id' => $contract['id']]);
 
     $fullDetails = civicrm_api3('HRJobContract', 'getfulldetails', array(
-      'jobcontract_id' => $contract->id
+      'jobcontract_id' => $contract['id']
     ));
 
     $this->assertArrayHasKey('details', $fullDetails);
