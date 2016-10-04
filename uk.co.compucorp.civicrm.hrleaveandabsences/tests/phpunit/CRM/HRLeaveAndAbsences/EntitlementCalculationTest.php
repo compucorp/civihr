@@ -23,6 +23,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
 
+  private $contact;
+
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->installMe(__DIR__)
@@ -32,15 +34,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $jobContractUpgrader->install();
   }
 
-  public function setUp()
-  {
+  public function setUp() {
     $this->createContract();
+    $this->contact = ['id' => $this->contract['contact_id']];
   }
 
   public function testBroughtForwardShouldBeZeroIfAbsenceTypeDoesntAllowCarryForward()
   {
     $period = new AbsencePeriod();
-    $contract = new JobContract();
+    $contract = [];
     $type = new AbsenceType();
 
     $type->allow_carry_forward = false;
@@ -137,7 +139,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     // As the number of leaves taken is 0 at this point, all of days remaining
     // from the previous period entitlement (10 days) will be carried to the
@@ -169,7 +171,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->createEntitlement($previousPeriod, $type, 3);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     // The maximum allowed to be carried forward by the absence type is 5,
     // But the number of days remaining (it's balance) in the previous the period
@@ -212,7 +214,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     );
     $this->createJobLeaveEntitlement($type, 10);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, ['id' => 2], $type);
     // (21/261) * 10 = 0.80 = 1 (rounded)
     $this->assertEquals(1, $calculation->getProRata());
 
@@ -223,7 +225,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     );
 
     //Instantiates the calculation again to get the updated contract dates
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod,  ['id' => 2], $type);
     // (32/261) * 10 = 1.22 = 1.5 rounded
     $this->assertEquals(1.5, $calculation->getProRata());
 
@@ -234,7 +236,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     );
 
     //Instantiates the calculation again to get the updated contract dates
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, ['id' => 2], $type);
     // (66/261) * 10 = 2.52 = 3 rounded
     $this->assertEquals(3, $calculation->getProRata());
   }
@@ -265,7 +267,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $this->setContractDates($currentPeriod->start_date, $currentPeriod->end_date);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $this->assertEquals($leaveAmount, $calculation->getContractualEntitlement());
   }
@@ -285,6 +289,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
+    $this->setContractDates($currentPeriod->start_date, $currentPeriod->end_date);
+
     PublicHoliday::create([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
@@ -294,7 +300,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $this->assertEquals(12, $calculation->getContractualEntitlement());
   }
@@ -314,6 +320,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
+    $this->setContractDates($currentPeriod->start_date, $currentPeriod->end_date);
+
     PublicHoliday::create([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
@@ -323,7 +331,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $this->assertEquals($leaveAmount, $calculation->getContractualEntitlement());
   }
@@ -338,7 +346,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // We need to load the period from the database to get the dates in the
     // expected format: Y-m-d
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getProposedEntitlement());
   }
 
@@ -349,9 +357,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 days'))
     ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
     $this->createEntitlement($currentPeriod, $type, 25.3, true);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(25.3, $calculation->getProposedEntitlement());
   }
 
@@ -390,7 +400,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     );
 
     // (66/261) * 10 = 2.52 = 3 rounded
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(3, $calculation->getProRata());
 
     // As the number of leaves taken is 0 at this point,
@@ -421,7 +431,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getPreviousPeriodProposedEntitlement());
   }
 
@@ -442,7 +452,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getPreviousPeriodProposedEntitlement());
   }
 
@@ -465,7 +475,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(10, $calculation->getPreviousPeriodProposedEntitlement());
   }
 
@@ -557,7 +567,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(12, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
@@ -571,7 +581,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
@@ -595,7 +605,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(10, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
   }
 
@@ -620,13 +630,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($type, $calculation->getAbsenceType());
   }
 
-  public function testGetContractShouldReturnTheContractUsedToCreateTheCalculation()
+  public function testGetContactShouldReturnTheContactUsedToCreateTheCalculation()
   {
     $type = new AbsenceType();
     $period = new AbsencePeriod();
 
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
-    $this->assertEquals($this->contract, $calculation->getContract());
+    $contact = $this->contact;
+
+    $calculation = new EntitlementCalculation($period, $contact, $type);
+    $this->assertEquals($contact, $calculation->getContact());
   }
 
   public function testCalculationCanReturnItsStringRepresentation()
@@ -655,32 +667,32 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
     PublicHoliday::create([
       'title' => 'Holiday 1',
-      'date' => date('YmdHis', strtotime('2016-05-02'))
+      'date' => date('YmdHis', strtotime('2016-01-21'))
     ]);
     PublicHoliday::create([
       'title' => 'Holiday 2',
-      'date' => date('YmdHis', strtotime('2016-05-30'))
+      'date' => date('YmdHis', strtotime('2016-03-16'))
     ]);
 
-    // Set the contractual entitlement as 10 days
+    // Set the contractual entitlement as 20 days
     $this->createJobLeaveEntitlement($type, 20, true);
 
-    // 64 days to work
+    // 62 days to work (64 - the 2 public holidays)
     $this->setContractDates(
       date('YmdHis', strtotime('2016-01-01')),
       date('YmdHis', strtotime('2016-03-30'))
     );
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     //Contractual Entitlement = 20
     //Number of Public Holidays = 2
-    //Number of days to work = 64
+    //Number of days to work = 62
     //Number of working days = 259
     //Pro rata = 5.5
     //Brought forward = 5
     //Proposed Entitlement = 10.5
-    $expected = '((20 + 2) * (64 / 259)) = (5.5) + (5) = 10.5 days';
+    $expected = '((20 + 2) * (62 / 259)) = (5.5) + (5) = 10.5 days';
     $calculationDetails = sprintf('%s', $calculation);
     $this->assertEquals($expected, $calculationDetails);
   }
@@ -739,7 +751,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
     $this->assertCount(2, $publicHolidays);
@@ -789,7 +801,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+31 days'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
     $this->assertCount(1, $publicHolidays);
@@ -816,7 +828,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
     $this->assertEmpty($publicHolidays);
@@ -846,7 +858,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contract, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
     $this->assertEmpty($publicHolidays);
@@ -873,7 +885,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
     $this->createEntitlement($period, $type, 10);
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertFalse($calculation->isCurrentPeriodEntitlementOverridden());
   }
 
@@ -885,7 +897,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
     $this->createEntitlement($period, $type, 10, true);
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertTrue($calculation->isCurrentPeriodEntitlementOverridden());
   }
 
@@ -896,7 +908,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertEmpty($calculation->getCurrentPeriodEntitlementComment());
   }
 
@@ -909,7 +921,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     ]);
     $this->createEntitlement($period, $type, 10);
 
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertEmpty($calculation->getCurrentPeriodEntitlementComment());
   }
 
@@ -923,7 +935,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $comment = 'Lorem ipsum...';
     $this->createEntitlement($period, $type, 10, false, $comment);
 
-    $calculation = new EntitlementCalculation($period, $this->contract, $type);
+    $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertEquals($comment, $calculation->getCurrentPeriodEntitlementComment());
   }
 
@@ -937,14 +949,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = false, $comment = null) {
     $params = [
       'period_id'            => $period->id,
-      'contact_id'           => $this->contract['contact_id'],
+      'contact_id'           => $this->contact['id'],
       'type_id'              => $type->id,
       'overridden'           => $overridden ? '1' : '0',
     ];
 
     if($comment) {
       $params['comment'] = $comment;
-      $params['comment_author_id'] = $this->contract['contact_id'];
+      $params['comment_author_id'] = $this->contact['id'];
       $params['comment_date'] = date('YmdHis');
     }
 

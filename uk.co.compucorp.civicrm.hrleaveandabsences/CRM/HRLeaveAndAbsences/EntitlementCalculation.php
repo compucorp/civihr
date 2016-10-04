@@ -8,7 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 /**
  * This class encapsulates all of the entitlement calculation logic.
  *
- * Based on a set of Absence Period, Job Contract and Absence Type, it can
+ * Based on a set of Absence Period, Contract and Absence Type, it can
  * calculate the Pro Rata, Number of days brought forward, Contractual
  * Entitlement and a Proposed Entitlement.
  */
@@ -22,13 +22,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private $period;
 
   /**
-   * The Job Contract this calculation is based on
+   * The Contact this calculation is based on.
    * This is expected to be an array, just like the one returned from an API
    * call
    *
    * @var array
    */
-  private $contract;
+  private $contact;
 
   /**
    * The AbsenceType this calculation is based on
@@ -66,11 +66,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private $numberOfPublicHolidaysInPeriod;
 
   /**
-   * Variable to cache the return from the getContractDetails method
+   * Variable to cache the return from the getContractsInPeriod method
    *
    * @var array
    */
-  private $contractDetails;
+  private $contractInPeriod = null;
 
   /**
    * Variable to cache the return from the getJobLeaveForAbsenceType method
@@ -93,12 +93,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Creates a new EntitlementCalculation instance
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
-   * @param array $contract The contract in array format, like when it's returned by an API call
+   * @param array $contact The contact in array format, like when it's returned by an API call
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
    */
-  public function __construct(AbsencePeriod $period, $contract, AbsenceType $absenceType) {
+  public function __construct(AbsencePeriod $period, $contact, AbsenceType $absenceType) {
     $this->period = $period;
-    $this->contract = $contract;
+    $this->contact = $contact;
     $this->absenceType = $absenceType;
   }
 
@@ -156,26 +156,20 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   /**
    * Returns the Contractual Entitlement for this calculation contract.
    *
-   * The Contractual Entitlement is given by the leave amount set for this
-   * calculation contract and absence type + the number of public holidays in
-   * the period (if the leave settings on the contract allows this).
+   * The Contractual Entitlement is given by the sum of the leave amount of all
+   * of the employee's contracts + the number of public holidays during the
+   * contract start and end dates (if the leave settings on the contract allows
+   * this).
    *
    * @return int
    */
   public function getContractualEntitlement() {
-    $contractualEntitlement = 0;
+    $contracts = $this->getContractsInPeriod();
+    return array_reduce($contracts, function($contractualEntitlement, $contract) {
+      $contractualEntitlement += $this->getContractualEntitlementForContract($contract);
 
-    $jobLeave = $this->getJobLeaveForAbsenceType();
-    if(!$jobLeave) {
       return $contractualEntitlement;
-    }
-
-    $contractualEntitlement = $jobLeave['leave_amount'];
-    if($jobLeave['add_public_holidays']) {
-      $contractualEntitlement += $this->getNumberOfPublicHolidaysForPeriod();
-    }
-
-    return $contractualEntitlement;
+    }, 0);
   }
 
   /**
@@ -205,7 +199,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private function getPeriodEntitlement() {
     if($this->periodEntitlement === false) {
       $this->periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
-        $this->contract['contact_id'],
+        $this->contact['id'],
         $this->period->id,
         $this->absenceType->id
       );
@@ -301,13 +295,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns the Job Contract array used to create this calculation
+   * Returns the Contact array used to create this calculation
    *
    * @return array
    */
-  public function getContract()
+  public function getContact()
   {
-    return $this->contract;
+    return $this->contact;
   }
 
   /**
@@ -334,7 +328,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
 
     if(!$this->previousPeriodEntitlement) {
       $this->previousPeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
-        $this->contract['contact_id'],
+        $this->contact['id'],
         $previousPeriod->id,
         $this->absenceType->id
       );
@@ -388,41 +382,51 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns an array containing the Contract's start and end dates.
+   * Returns an array containing the start and end dates of all the contracts
+   * for this calculation's employee during the calculation's Absence Period.
    *
-   * To help with the calculation, if the contract doesn't have an end date,
+   * To help with the calculation, if any of the contract doesn't have an end date,
    * the period end date will be used instead.
    *
-   * @return array|null The array with the dates or null if the contract details could not be found
+   * @return array
+   *  The array with the dates in this format:
+   *  [
+   *    ['start_date' => '2016-01-01', 'end_date' => '2016-09-15'],
+   *    ['start_date' => '2016-10-10', 'end_date' => '2016-12-31'],
+   *    ...
+   *  ]
    */
-  private function getContractDates() {
-    $contractDetails = $this->getContractDetails();
-    if(!$contractDetails) {
-      return null;
+  private function getContractsDates() {
+    $contractsDates = [];
+
+    $contracts = $this->getContractsInPeriod();
+    foreach ($contracts as $contract) {
+      if(empty($contract['period_end_date'])) {
+        $contract['period_end_date'] = $this->period->end_date;
+      }
+
+      $contractsDates[] = [
+        'start_date' => $contract['period_start_date'],
+        'end_date' => $contract['period_end_date']
+      ];
     }
 
-    if(!isset($contractDetails['period_end_date'])) {
-      $contractDetails['period_end_date'] = $this->period->end_date;
-    }
-
-    return [
-      'start_date' => $contractDetails['period_start_date'],
-      'end_date' => $contractDetails['period_end_date']
-    ];
+    return $contractsDates;
   }
 
   /**
    * Returns an array with the values of the JobLeave of this calculation's
-   * contract and absence type.
+   * contract and absence type and the given contract.
    *
+   * @param int $contractID
    * @return array|null An array with the JobLeave fields or null if there's
    *                    no JobLeave for this AbsenceType
    */
-  private function getJobLeaveForAbsenceType() {
+  private function getJobLeaveForAbsenceType($contractID) {
     if(!$this->jobLeave) {
       try {
         $this->jobLeave = civicrm_api3('HRJobLeave', 'getsingle', array(
-          'jobcontract_id' => (int)$this->contract['id'],
+          'jobcontract_id' => (int)$contractID,
           'leave_type' => (int)$this->absenceType->id
         ));
       } catch(CiviCRM_API3_Exception $ex) {
@@ -434,24 +438,25 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns an array with the values of the JobDetails of this calculation's
-   * contract and absence type.
+   * Returns an array with all the of the contracts for the calculation's contact
+   * during the calculation's Absence Period.
    *
-   * @return array|null An array with the JobDetails fields or null if there's
-   *                    no JobDetails for this AbsenceType
+   * @return array
+   *  An array with the output of the HRJobContract.getactivecontractswithdetails
+   *  API endpoint
    */
-  private function getContractDetails() {
-    if(!$this->contractDetails) {
-      try {
-        $this->contractDetails = civicrm_api3('HRJobDetails', 'getsingle', array(
-          'jobcontract_id' => (int)$this->contract['id'],
-        ));
-      } catch(CiviCRM_API3_Exception $ex) {
-        $this->contractDetails = null;
-      }
+  private function getContractsInPeriod() {
+    if(is_null($this->contractInPeriod)) {
+      $result = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
+        'contact_id' => $this->contact['id'],
+        'start_date' => $this->period->start_date,
+        'end_date'   => $this->period->end_date
+      ]);
+
+      $this->contractInPeriod = $result['values'];
     }
 
-    return $this->contractDetails;
+    return $this->contractInPeriod;
   }
 
   /**
@@ -477,15 +482,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return int
    */
   private function getNumberOfWorkingDaysToWork() {
-    $contractDates = $this->getContractDates();
-    if(!$contractDates) {
-      return 0;
-    }
+    $contractsDates = $this->getContractsDates();
 
-    return $this->period->getNumberOfWorkingDaysToWork(
-      $contractDates['start_date'],
-      $contractDates['end_date']
-    );
+    return array_reduce($contractsDates, function($numberOfDays, $contractDates) {
+      $numberOfDays += $this->period->getNumberOfWorkingDaysToWork(
+        $contractDates['start_date'],
+        $contractDates['end_date']
+      );
+      return $numberOfDays;
+    });
   }
 
   /**
@@ -550,22 +555,73 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
    */
   public function getPublicHolidaysInEntitlement() {
-    $jobLeave = $this->getJobLeaveForAbsenceType();
+    $publicHolidays = [];
 
+    $contracts = $this->getContractsInPeriod();
+    foreach($contracts as $contract) {
+      $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
+
+      if(!empty($jobLeave['add_public_holidays'])) {
+        if(empty($contract['period_end_date'])) {
+          $contract['period_end_date'] = $this->period->end_date;
+        }
+
+        list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+          $contract['period_start_date'],
+          $contract['period_end_date']
+        );
+
+        $publicHolidays += PublicHoliday::getPublicHolidaysForPeriod($startDate, $endDate);
+      }
+    }
+
+    return $publicHolidays;
+  }
+
+  /**
+   * Returns the contractual entitlement for the given contract
+   *
+   * @param array $contract
+   *   An array representing a HRJobContract
+   *
+   * @return float
+   */
+  private function getContractualEntitlementForContract($contract) {
+    $contractualEntitlement = 0;
+
+    $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
     if(!$jobLeave) {
-      return [];
+      return $contractualEntitlement;
     }
 
-    if(!$jobLeave['add_public_holidays']) {
-      return [];
+    $contractualEntitlement = (float)$jobLeave['leave_amount'];
+    if($jobLeave['add_public_holidays']) {
+      $contractualEntitlement += $this->getNumberOfPublicHolidaysForContract($contract);
     }
 
-    $contractDates = $this->getContractDates();
+    return $contractualEntitlement;
+  }
+
+  /**
+   * Returns the number of Public Holidays between the contract start and end
+   * dates. If the contract has no end date, then the Absence Period end date
+   * will be used instead.
+   *
+   * @param array $contract
+   *  An array representing a HRJobContract
+   *
+   * @return int
+   */
+  private function getNumberOfPublicHolidaysForContract($contract) {
+    if(empty($contract['period_end_date'])) {
+      $contract['period_end_date'] = $this->period->end_date;
+    }
+
     list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
-      $contractDates['start_date'],
-      $contractDates['end_date']
+      $contract['period_start_date'],
+      $contract['period_end_date']
     );
 
-    return PublicHoliday::getPublicHolidaysForPeriod($startDate, $endDate);
+    return PublicHoliday::getNumberOfPublicHolidaysForPeriod($startDate, $endDate);
   }
 }
