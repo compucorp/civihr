@@ -18,6 +18,56 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
 
+  function testFullDetailsResponse() {
+    $contactParams = ["first_name" => "chrollo", "last_name" => "lucilfer"];
+    $contactID =  $this->createContact($contactParams);
+    $contract = $this->createJobContract($contactID, '2015-01-01');
+    $revision = civicrm_api3('HRJobContractRevision', 'getsingle', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $details = civicrm_api3('HRJobPension', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $health = civicrm_api3('HRJobHealth', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $hour = civicrm_api3('HRJobHour', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $leave = civicrm_api3('HRJobLeave', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $leave = civicrm_api3('HRJobLeave', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $pay = civicrm_api3('HRJobPay', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $pension = civicrm_api3('HRJobPension', 'create', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $fullDetails = civicrm_api3('HRJobContract', 'getfulldetails', array(
+      'jobcontract_id' => $contract->id
+    ));
+
+    $this->assertArrayHasKey('details', $fullDetails);
+    $this->assertArrayHasKey('health', $fullDetails);
+    $this->assertArrayHasKey('hour', $fullDetails);
+    $this->assertArrayHasKey('leave', $fullDetails);
+    $this->assertArrayHasKey('pay', $fullDetails);
+    $this->assertArrayHasKey('pension', $fullDetails);
+
+    $this->assertInternalType("array", $fullDetails['leave']);
+  }
+
   /**
    * Job Contract Revision's flow testing.
    * Create and modify a Revision with several different Job Contract's
