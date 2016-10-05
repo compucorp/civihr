@@ -253,12 +253,6 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     if (!$serviceDates['endDate'] || $serviceDates['endDate'] > $date) {
       $serviceDates['endDate'] = $date;
     }
-    // If the latest Contract has ended more than $break days ago, we return 0.
-    if ($date > self::sumDateAndBreak($serviceDates['endDate'], $break)) {
-      return 0;
-    } else {
-      $serviceDates['endDate'] = $date;
-    }
 
     $dateTimeStart = new DateTime($serviceDates['startDate']);
     $dateTimeEnd  = new DateTime($serviceDates['endDate']);
