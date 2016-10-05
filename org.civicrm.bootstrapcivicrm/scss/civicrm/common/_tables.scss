@@ -1,6 +1,7 @@
 %crm-table {
-  @extend .table-bordered, %open-sans-font-family;
+  @extend %open-sans-font-family;
   $border-color: $table-border-color;
+  border: 0;
 
   tr, th {
     background: #ffffff !important;
@@ -10,8 +11,9 @@
     background: $gray-lighter !important;
   }
 
-  th {
-    color: $gray-darker;
+  th,
+  .columnheader td {
+    color: $gray-darker !important;
     border-bottom: 0;
     font-weight: bold !important;
   }
@@ -23,36 +25,90 @@
   th,
   tr,
   tr td {
-    border: initial !important;
+    border: initial;
     line-height: 35px;
     padding-left: 15px;
-    border-bottom: solid 1px $table-border-color !important;
+    border-bottom: solid 1px $table-border-color;
   }
 
   td .crm-hover-button {
-    &:not(:only-of-type) {
-      border-top-left-radius: 0 !important;
-      border-bottom-left-radius: 0 !important;
-      border-top-right-radius: 0 !important;
-      border-bottom-right-radius: 0 !important;
+    border: 0;
+    background-image: none !important;
 
-      &:first-of-type {
-        border-top-left-radius: $button-border-radius !important;
-        border-bottom-left-radius: $button-border-radius !important;
-        border-top-right-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-      }
+    &,
+    * {
+      text-transform: capitalize !important;
+    }
 
-      &:last-of-type {
-        border-top-left-radius: 0 !important;
-        border-bottom-left-radius: 0 !important;
-        border-top-right-radius: $button-border-radius !important;
-        border-bottom-right-radius: $button-border-radius !important;
+    &:not(:hover) {
+      &,
+      * {
+        color: $brand-primary !important;
       }
     }
 
-    + .crm-hover-button {
-      border-left: 0;
+    &:hover {
+      &,
+      * {
+        color: $gray-dark !important;
+      }
+    }
+  }
+}
+
+%civihr-table {
+  @extend %crm-table;
+
+  &:not(.report-layout) {
+    box-shadow: $box-shadow;
+  }
+
+  td {
+    background: #fff !important;
+
+    &.label {
+      vertical-align: middle !important;
+    }
+  }
+
+  &.form-layout {
+    //For "New Activity" page
+    tr[class^="crm-activity-form"] > td:not(.label):not(.view-value) {
+      padding: 0;
+    }
+
+    > tbody > tr > td.label {
+      line-height: 25px;
+    }
+  }
+
+  tr {
+    &:first-child {
+      th {
+        &:first-child {
+          border-top-left-radius: 2px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 2px;
+        }
+      }
+    }
+
+    &:last-child {
+      td {
+        &:first-child {
+          border-bottom-left-radius: 2px;
+        }
+
+        &:last-child {
+          border-bottom-right-radius: 2px;
+        }
+      }
+    }
+
+    td {
+      color: $crm-copy;
     }
   }
 }
@@ -64,60 +120,10 @@
   .ui-dialog table,
   .CRM_HRRecruitment_Form_Search > table,
   .CRM_Case_Form_Search .caseSelector,
-  .CRM_Activity_Form_Activity > .crm-activity-view-block > .crm-info-panel {
-    @extend %crm-table;
-
-    &:not(.report-layout) {
-      box-shadow: $box-shadow;
-    }
-
-    td {
-      background: #fff !important;
-
-      &.label {
-        vertical-align: middle !important;
-      }
-    }
-
-    &.form-layout {
-      //For "New Activity" page
-      tr[class^="crm-activity-form"] > td:not(.label):not(.view-value) {
-        padding: 0;
-      }
-
-      > tbody > tr > td.label {
-        line-height: 25px;
-      }
-    }
-
-    tr {
-      &:first-child {
-        th {
-          &:first-child {
-            border-top-left-radius: 2px;
-          }
-
-          &:last-child {
-            border-top-right-radius: 2px;
-          }
-        }
-      }
-
-      &:last-child {
-        td {
-          &:first-child {
-            border-bottom-left-radius: 2px;
-          }
-
-          &:last-child {
-            border-bottom-right-radius: 2px;
-          }
-        }
-      }
-
-      td {
-        color: $crm-copy;
-      }
-    }
+  .CRM_Activity_Form_Activity > .crm-activity-view-block > .crm-info-panel,
+  #preview-counts,
+  #summary-counts,
+  #DataTables_Table_0 {
+    @extend %civihr-table;
   }
 }

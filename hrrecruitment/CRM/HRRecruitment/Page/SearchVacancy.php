@@ -169,10 +169,9 @@ class CRM_HRRecruitment_Page_SearchVacancy extends CRM_Core_Page {
     $rows = array();
 
     $vacancyStatuses = CRM_Core_OptionGroup::values('vacancy_status', FALSE);
-    $location = CRM_Core_OptionGroup::values('hrjc_location', FALSE);
     while ($dao->fetch()) {
       $rows[$dao->id]['position'] = $dao->position;
-      $rows[$dao->id]['location'] = $dao->location;
+      $rows[$dao->id]['location'] = CRM_HRRecruitment_BAO_HRVacancy::getOptionLabel(['location' => $dao->location], 'location');
       $rows[$dao->id]['salary'] = $dao->salary;
       $rows[$dao->id]['start_date'] = $dao->start_date;
       $rows[$dao->id]['end_date'] = $dao->end_date;

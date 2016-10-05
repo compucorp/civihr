@@ -1,7 +1,30 @@
+/**
+ * Ensures that there is the same top padding regardless whether
+ * the user can see the admin toolbar or not
+ */
+body:not(.toolbar-drawer) {
+  padding-top: 30px;
+}
+
 .crm-tooltip table td {
   width: 50%;
   word-wrap: break-word;
 }
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
+}
+
+/*CiviCRM Menu Buttons*/
+#civicrm-menu {
+  height: 32px;
+}
+
+#civicrm-menu > li.menumain {
+  height: 26px !important;
+  line-height: 26px;
+}
+
+#civicrm-menu #crm-qsearch {
+  line-height: 28px;
+  height: 30px !important;
 }

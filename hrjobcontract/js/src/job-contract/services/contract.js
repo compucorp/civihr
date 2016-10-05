@@ -13,19 +13,10 @@ define([
             })
     }]);
 
-    services.factory('ContractRevision',['$resource', 'settings', '$log', function ($resource, settings, $log) {
-        $log.debug('Service: ContractRevision');
-
-        return $resource(settings.pathRest,{
-            action: 'get',
-            entity: 'HRJobContractRevision',
-            json: {}
-        })
-    }]);
-
-    services.factory('ContractService', ['Contract','ContractRevision','settings','$q','UtilsService','$log',
-        function (Contract, ContractRevision, settings, $q, UtilsService, $log) {
-            $log.debug('Service: ContractRevision');
+    services.factory('ContractService', [
+        '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger',
+        function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
+            $log.debug('Service: ContractService');
 
         return {
             get: function(contactId) {
@@ -77,36 +68,21 @@ define([
                 deffered.reject('Unable to fetch the current contract');
               });
 
-
               return deffered.promise;
             },
-          /**
-           * called adding/editing/deleting a contract and check if there
-           * is an active contract for that contact
-           * if yes then the header color will be changed to blue and contract
-           * info in the header will be updated .
-           * if no , then the header color will be changed to red and contract info
-           * in the header will be updated.
-           *
-           * Though it is not an optimal solution since I use JQuery here
-           * inside angular app but this is the only available way currently
-           * since the header is not in the scope of the angular app.
-           *
-           */
-            changeHeaderInfo: function() {
-              this.getCurrentContract(settings.contactId).then(function(currentContract){
-                if(currentContract)  {
-                  cj('.crm-summary-contactname-block').removeClass('crm-summary-contactname-block-without-contract');
-                  cj('.crm-contact-detail-position').html('<strong>Position:</strong> '+ currentContract.position);
-                  cj('.crm-contact-detail-location').html('<strong>Normal place of work:</strong> '+ currentContract.location);
-                } else {
-                  cj('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');
-                  cj('.crm-contact-detail-position').html('');
-                  cj('.crm-contact-detail-location').html('');
-                }
-              }).catch(function(error){
-                console.log(error);
-              });
+
+            /**
+             * Triggers the update of the contact header via the `hrui` extension
+             * by emitting a DOM event with the contract data
+             */
+            updateHeaderInfo: function () {
+              this.getCurrentContract(settings.contactId)
+                .then(function (currentContract) {
+                  DOMEventTrigger('updateContactHeader', { contract: currentContract });
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
             },
             getOne: function(contractId, contactId){
 
@@ -152,7 +128,7 @@ define([
                         jobcontract_id: contractId
                     };
 
-                ContractRevision.get({json: params}, function(data){
+                ContractRevisionService.get({json: params}, function(data){
                     deffered.resolve(data.values);
                 },function(){
                     deffered.reject('Unable to fetch contract revisions');
@@ -219,7 +195,7 @@ define([
                     },revisionDetails),
                     val;
 
-                ContractRevision.save({
+                ContractRevisionService.save({
                     action: 'create',
                     json: params
                 }, null, function(data){
@@ -260,7 +236,7 @@ define([
                 var deffered = $q.defer(),
                     val;
 
-                ContractRevision.save({
+                ContractRevisionService.save({
                     action: 'create',
                     json: {
                         sequential: 1,
@@ -275,9 +251,32 @@ define([
                 });
 
                 return deffered.promise;
+            },
 
+            /**
+             * Returns the full details of a contract via the related custom api endpoint
+             *
+             * @param  {int} contractId
+             * @return {Promise} resolves with the api response
+             */
+            fullDetails: function (contractId) {
+              if (!contractId || typeof +contractId !== 'number') {
+                return null;
+              }
+
+              var deferred = $q.defer();
+
+              Contract.get({
+                action: 'getfulldetails',
+                json: { jobcontract_id: contractId }
+              }, function (data) {
+                deferred.resolve(data);
+              },function () {
+                deferred.reject('Could not fetch full details for contract ID:' + contractId);
+              });
+
+              return deferred.promise;
             }
         }
-
     }]);
 });

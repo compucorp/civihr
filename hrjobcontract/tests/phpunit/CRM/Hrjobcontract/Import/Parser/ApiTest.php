@@ -50,7 +50,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-period_start_date' => '2016-01-01',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID);
   }
 
@@ -71,7 +73,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-period_start_date' => '2016-01-01',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID);
   }
 
@@ -91,7 +95,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-period_start_date' => '2016-01-01',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID);
   }
 
@@ -119,7 +125,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobDetails-funding_notes' => 'sample',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID);
   }
 
@@ -142,7 +150,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHour-hours_amount' => '25',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID, 'HRJobHour');
   }
 
@@ -165,7 +175,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHour-hours_amount' => '25.52',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $expected = array('hours_unit'=>'Week', 'fte_num'=> 319, 'fte_denom'=>450, 'hours_fte'=>0.71);
     $this->validateHourAutoFields($contactID, $expected);
   }
@@ -193,7 +205,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPay-pay_cycle' => 'Monthly',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID, 'HRJobPay');
   }
 
@@ -219,7 +233,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPay-pay_cycle' => 'Monthly',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $expected = array('pay_annualized_est'=>35000, 'pay_per_cycle_gross'=> 2916.67, 'pay_per_cycle_net'=>2916.67);
     $this->validatePayAutoFields($contactID, $expected);
   }
@@ -249,7 +265,9 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobHealth-plan_type_life_insurance' => 'Individual',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID, 'HRJobHealth');
   }
 
@@ -275,8 +293,97 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
       'HRJobPension-pension_type' => 'employer pension',
     );
 
-    $this->runImport($params);
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
     $this->validateResult($contactID, 'HRJobPension');
+  }
+
+  function testImportingContractWithEndDateWithoutEndReason() {
+    $contact2Params = array(
+      'first_name' => 'John_54',
+      'last_name' => 'Snow_54',
+      'email' => '54@b54.com',
+      'contact_type' => 'Individual',
+    );
+    $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-period_end_date' => '2016-01-20',
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+
+  function testImportingContractWithEndDateAndEndReason() {
+    $contact2Params = array(
+      'first_name' => 'John_54',
+      'last_name' => 'Snow_54',
+      'email' => '54@b54.com',
+      'contact_type' => 'Individual',
+    );
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-period_end_date' => '2016-01-20',
+      'HRJobDetails-end_reason' => 'Planned'
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $this->validateResult($contactID);
+  }
+
+  function testImportingContractWithEndDateAndInvalidEndReason() {
+    $contact2Params = array(
+      'first_name' => 'John_54',
+      'last_name' => 'Snow_54',
+      'email' => '54@b54.com',
+      'contact_type' => 'Individual',
+    );
+    $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-end_reason' => 'Planned'
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+
+  function testImportingContractWithoutEndDateWithEndReason() {
+    $contact2Params = array(
+      'first_name' => 'John_54',
+      'last_name' => 'Snow_54',
+      'email' => '54@b54.com',
+      'contact_type' => 'Individual',
+    );
+    $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+      'HRJobDetails-period_end_date' => '2016-01-20',
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
   private function runImport($params)  {
@@ -285,7 +392,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $importObject = new CRM_Hrjobcontract_Import_Parser_Api($fields);
     $importObject->_importMode = CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS;
     $importObject->init();
-    $this->assertEquals(CRM_Import_Parser::VALID, $importObject->import(NULL, $values), 'import error');
+    return $importObject->import(NULL, $values);
   }
 
   private function validateResult($contactID, $entity = NULL)  {
