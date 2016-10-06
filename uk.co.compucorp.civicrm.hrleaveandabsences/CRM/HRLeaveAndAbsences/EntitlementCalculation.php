@@ -415,26 +415,22 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns an array with the values of the JobLeave of this calculation's
-   * contract and absence type and the given contract.
+   * Returns an array with the values of the JobLeave for the given contract and
+   * the calculation's  absence type.
    *
    * @param int $contractID
    * @return array|null An array with the JobLeave fields or null if there's
    *                    no JobLeave for this AbsenceType
    */
   private function getJobLeaveForAbsenceType($contractID) {
-    if(!$this->jobLeave) {
-      try {
-        $this->jobLeave = civicrm_api3('HRJobLeave', 'getsingle', array(
-          'jobcontract_id' => (int)$contractID,
-          'leave_type' => (int)$this->absenceType->id
-        ));
-      } catch(CiviCRM_API3_Exception $ex) {
-        $this->jobLeave = null;
-      }
+    try {
+      return civicrm_api3('HRJobLeave', 'getsingle', array(
+        'jobcontract_id' => (int)$contractID,
+        'leave_type' => (int)$this->absenceType->id
+      ));
+    } catch(CiviCRM_API3_Exception $ex) {
+      return null;
     }
-
-    return $this->jobLeave;
   }
 
   /**
