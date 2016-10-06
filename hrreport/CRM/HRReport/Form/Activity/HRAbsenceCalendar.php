@@ -215,9 +215,16 @@ cac.record_type_id = {$targetValue} ";
             continue;
           }
           if (array_key_exists("{$fieldName}_value", $this->_params)) {
-            if ($field['name'] == 'activity_type_id' && count($this->_params["{$fieldName}_value"])) {
+            if ($field['name'] == 'activity_type_id' && !empty($this->_params["{$fieldName}_value"])) {
               $sqlOp = $this->getSQLOperator(CRM_Utils_Array::value("{$fieldName}_op", $this->_params));
-              $clause = "absence.{$fieldName} {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
+
+              if (is_array($this->_params["{$fieldName}_value"])) {
+                $dataList = implode(',',$this->_params["{$fieldName}_value"]);
+              } else {
+                $dataList = $this->_params["{$fieldName}_value"];
+              }
+
+              $clause = "absence.{$fieldName} {$sqlOp} (" . $dataList . ") ";
             }
 
             if ($field['name'] == 'sort_name' && $this->_params["{$fieldName}_value"]) {
