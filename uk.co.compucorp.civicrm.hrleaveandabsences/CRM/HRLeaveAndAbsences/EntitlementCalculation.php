@@ -8,7 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 /**
  * This class encapsulates all of the entitlement calculation logic.
  *
- * Based on a set of Absence Period, Contract and Absence Type, it can
+ * Based on a set of Absence Period, Contact and Absence Type, it can
  * calculate the Pro Rata, Number of days brought forward, Contractual
  * Entitlement and a Proposed Entitlement.
  */
@@ -127,13 +127,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns the Pro Rata for this calculation contract on the calculation
-   * period.
+   * Returns the Pro Rata for all of the contracts included in this calculation.
    *
-   * The Pro Rata is given by:
+   * For each contract, we calculate the Pro Rata as:
    * (no. working days to work / no. of working days) x contractual entitlement.
    *
-   * The end result is rounded up to the nearest half day. Example:
+   * Finally, we sum the Pro Rata for each of the contracts and then round the
+   * value up the nearest half day. Example:
    *
    * Number of working days to work: 212
    * Number of working days: 253
@@ -143,14 +143,37 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return float|int
    */
   public function getProRata() {
-    $numberOfWorkingDaysToWork = $this->getNumberOfWorkingDaysToWork();
+    $contracts = $this->getContractsInPeriod();
+    $proRata = array_reduce($contracts, function($proRata, $contract) {
+      $proRata += $this->getContractProRata($contract);
+
+      return $proRata;
+    });
+
+    return ceil($proRata * 2) / 2;
+  }
+
+  /**
+   * Calculates the Pro Rata for a single contract.
+   *
+   * @param array $contract
+   *   An array representing a HRJobContract
+   *
+   * @return float|int
+   */
+  private function getContractProRata($contract) {
+    if(empty($contract['period_end_date'])) {
+      $contract['period_end_date'] = $this->period->end_date;
+    }
+
+    $numberOfWorkingDaysToWork = $this->period->getNumberOfWorkingDaysToWork(
+      $contract['period_start_date'],
+      $contract['period_end_date']
+    );
     $numberOfWorkingDays = $this->getNumberOfWorkingDays();
-    $contractualEntitlement = $this->getContractualEntitlement();
+    $contractualEntitlement = $this->getContractualEntitlementForContract($contract);
 
-    $proRata = ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
-    $roundedProRata = ceil($proRata * 2) / 2;
-
-    return $roundedProRata;
+    return ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
   }
 
   /**

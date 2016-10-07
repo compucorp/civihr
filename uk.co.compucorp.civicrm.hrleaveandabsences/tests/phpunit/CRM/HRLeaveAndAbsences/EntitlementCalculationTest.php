@@ -255,6 +255,62 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(3, $calculation->getProRata());
   }
 
+  public function testProRataShouldBeTheSumOfTheProRataForEachContractDuringTheAbsencePeriod() {
+    $type = $this->createAbsenceType();
+
+    // Delete the contract created during setUp
+    civicrm_api3('HRJobContract', 'deletecontract', ['id' => $this->contract['id']]);
+
+    // 261 working days
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis', strtotime('2016-01-01')),
+      'end_date' => date('YmdHis', strtotime('2016-12-31')),
+    ]);
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    // 62 working days
+    // 3 days of contractual entitlement
+    // Contract Pro Rata: 3 * (62 / 261) = 0,712
+    $this->createContractWithDetailsAndLeaveEntitlement(
+      $this->contact['id'],
+      '2016-01-01',
+      '2016-03-28',
+      $type->id,
+      3,
+      true
+    );
+
+    // 104 working days
+    // 5 days of contractual entitlement
+    // Contract Pro Rata:  5 * (104 / 261) = 1,992
+    $this->createContractWithDetailsAndLeaveEntitlement(
+      $this->contact['id'],
+      '2016-05-10',
+      '2016-09-30',
+      $type->id,
+      5,
+      false
+    );
+
+    // 64 working days
+    // 20 days if contractual entitlement
+    // Contract Pro Rata: 20 * (64 / 261): 4,904
+    $this->createContractWithDetailsAndLeaveEntitlement(
+      $this->contact['id'],
+      '2016-10-01',
+      null,
+      $type->id,
+      20,
+      true
+    );
+
+    $entitlementCalculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    // Pro Rata: 0,712 + 1,992 + 4,904 = 7,608
+    // Pro Rata rounded up to the nearest half day: 8
+    $this->assertEquals(8, $entitlementCalculation->getProRata());
+  }
+
   public function testContractualEntitlementShouldBeZeroIfTheresNoLeaveAmountForAnAbsenceType()
   {
     // Just create the absence type but don't create any contractual entitlement
