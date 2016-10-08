@@ -70,14 +70,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @var array
    */
-  private $contractInPeriod = null;
-
-  /**
-   * Variable to cache the return from the getJobLeaveForAbsenceType method
-   *
-   * @var array
-   */
-  private $jobLeave;
+  private $contractsInPeriod = null;
 
   /**
    * Variable to cache the return from the getPeriodEntitlement method.
@@ -442,8 +435,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * the calculation's  absence type.
    *
    * @param int $contractID
-   * @return array|null An array with the JobLeave fields or null if there's
-   *                    no JobLeave for this AbsenceType
+   *
+   * @return array|null
+   *   An array with the JobLeave fields or null if there's no JobLeave for this AbsenceType
    */
   private function getJobLeaveForAbsenceType($contractID) {
     try {
@@ -465,17 +459,17 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *  API endpoint
    */
   private function getContractsInPeriod() {
-    if(is_null($this->contractInPeriod)) {
+    if(is_null($this->contractsInPeriod)) {
       $result = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
         'contact_id' => $this->contact['id'],
         'start_date' => $this->period->start_date,
         'end_date'   => $this->period->end_date
       ]);
 
-      $this->contractInPeriod = $result['values'];
+      $this->contractsInPeriod = $result['values'];
     }
 
-    return $this->contractInPeriod;
+    return $this->contractsInPeriod;
   }
 
   /**
@@ -495,8 +489,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns the number of working days to work for the calculation contract on
-   * the calculation period.
+   * Returns the number of working days for all of the contracts included in this
+   * calculation.
    *
    * @return int
    */
