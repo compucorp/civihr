@@ -27,14 +27,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculatorTest extends PHPUnit_Framework
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
-    $contract = [
-      'id' => 1,
-      'is_primary' => 1,
-      'contact_id' => 2,
+    $contact = [
+      'id' => 1
     ];
 
     $calculator = new EntitlementCalculator($period);
-    $calculations = $calculator->calculateEntitlementsFor($contract);
+    $calculations = $calculator->calculateEntitlementsFor($contact);
     // He have 3 reserved absence types that cannot be deleted, and added a
     // new AbsenceType, so we should get 4 calculations (one for each type)
     $this->assertCount(4, $calculations);
@@ -49,14 +47,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculatorTest extends PHPUnit_Framework
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
-    $contract = [
-      'id' => 1,
-      'is_primary' => 1,
-      'contact_id' => 2,
+    $contact = [
+      'id' => 1
     ];
 
     $calculator = new EntitlementCalculator($period);
-    $calculations = $calculator->calculateEntitlementsFor($contract);
+    $calculations = $calculator->calculateEntitlementsFor($contact);
     // He have 3 reserved absence types that cannot be deleted, and added a
     // new disabled AbsenceType, so we should get only 3 calculations, since
     // the new one is disabled and should not be included in the calculation
