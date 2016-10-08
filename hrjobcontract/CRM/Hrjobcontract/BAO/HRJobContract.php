@@ -598,6 +598,88 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
+   * Returns an array of contacts with active contracts during the given start
+   * and end dates. Each contact on the list has an ID and its display name.
+   *
+   * If no startDate is given, the current date will be used. If no endDate is
+   * given, the startDate will be used for it.
+   *
+   * The list is ordered by the contact's display name
+   *
+   * @param string|null $startDate
+   *  A date in Y-m-d format
+   * @param string|null $endDate
+   *  A date in Y-m-d format
+   *
+   * @return array
+   */
+  public static function getContactsWithActiveContracts($startDate = null, $endDate = null) {
+    if($startDate) {
+      $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
+    } else {
+      $startDate = date('Y-m-d');
+    }
+
+    if($endDate) {
+      $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Y-m-d');
+    } else {
+      $endDate = $startDate;
+    }
+
+    $query = "
+      SELECT DISTINCT
+        contact.id as id,
+        contact.display_name as display_name
+      FROM civicrm_contact contact
+        INNER JOIN civicrm_hrjobcontract contract
+          ON contact.id = contract.contact_id
+        INNER JOIN civicrm_hrjobcontract_revision revision
+          ON revision.id = (
+             SELECT id
+             FROM civicrm_hrjobcontract_revision revision2
+             WHERE
+              revision2.jobcontract_id = contract.id AND
+              (
+                revision2.effective_date <= '{$startDate}'
+                 OR
+                ( revision2.effective_date >= '{$startDate}' AND
+                  revision2.effective_date <= '{$endDate}'
+                )
+              )
+             ORDER BY revision2.effective_date DESC, revision2.id DESC
+             LIMIT 1
+          )
+        INNER JOIN civicrm_hrjobcontract_details details ON details.jobcontract_revision_id = revision.details_revision_id
+      WHERE contract.deleted = 0 AND
+        (
+          (details.period_end_date IS NOT NULL AND details.period_start_date <= '{$endDate}' AND details.period_end_date >= '{$startDate}')
+            OR
+          (details.period_end_date IS NULL
+            AND
+            (
+              (details.period_start_date >= '{$startDate}' AND details.period_start_date <= '{$endDate}')
+              OR
+              details.period_start_date <= '{$endDate}'
+            )
+          )
+        )
+      ORDER BY contact.display_name ASC
+    ";
+
+    $dao = CRM_Core_DAO::executeQuery($query);
+    $contracts = [];
+    while($dao->fetch()) {
+      $contracts[] = [
+        'id' => $dao->id,
+        'display_name' => $dao->display_name,
+      ];
+    }
+
+    return $contracts;
+  }
+
+
+  /**
    * Return the current revision for current contract for the contact if exist.
    * which is the contract with current revision start date is
    * on or before the current date and end date

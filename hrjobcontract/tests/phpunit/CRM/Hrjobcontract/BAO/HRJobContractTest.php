@@ -233,6 +233,162 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($endDate, $contracts[0]['period_end_date']);
   }
 
+  public function testGetContactsWithActiveContractsShouldIncludeDisplayNameAndID() {
+    $this->createContacts(2);
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('-2 days')),
+      null
+    );
+
+    $this->createJobContract(
+      $this->contacts[1]['id'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+100 days'))
+    );
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts();
+    $this->assertCount(2, $contacts);
+    // Since the results are ordered by display_name, it's reliable to
+    // assert the order like this
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+    $this->assertEquals($this->contacts[1]['id'], $contacts[1]['id']);
+    $this->assertEquals($this->contacts[1]['display_name'], $contacts[1]['display_name']);
+  }
+
+  public function testGetContactsWithActiveContractsShouldNotIncludeContactsWithDeletedContracts() {
+    $this->createContacts(1);
+
+    $contract = $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('-2 days')),
+      null
+    );
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts();
+    $this->assertCount(1, $contacts);
+
+    $this->deleteContract($contract->id);
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts();
+    $this->assertCount(0, $contacts);
+  }
+
+  public function testGetContactsWithActiveContractsShouldNotIncludeContactsWithInactiveContracts() {
+    $this->createContacts(2);
+
+    // This is inactive because it has ended one day ago
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('-2 days')),
+      date('Y-m-d', strtotime('-1 day'))
+    );
+
+    // This is inactive because it will start only in 10 days
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('+10 days')),
+      null
+    );
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts();
+    $this->assertCount(0, $contacts);
+  }
+
+  public function testGetContactsWithActiveContractsCanReturnsContactsWithContractsActiveDuringASpecificPeriod() {
+    $this->createContacts(3);
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('-10 days')),
+      null
+    );
+
+    $this->createJobContract(
+      $this->contacts[1]['id'],
+      date('Y-m-d', strtotime('+5 days')),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    $this->createJobContract(
+      $this->contacts[2]['id'],
+      date('Y-m-d', strtotime('+100 days')),
+      date('Y-m-d', strtotime('+200 days'))
+    );
+
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts(
+      date('Y-m-d', strtotime('-11 days'))
+    );
+    // Should return 0 because there were no contracts
+    // active 11 days ago
+    $this->assertCount(0, $contacts);
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts(
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+4 days'))
+    );
+    // Since the second contract starts only after 5 days,
+    // this should return only 1 contact (from the first contract,
+    // which started 10 days ago and never ends)
+    $this->assertCount(1, $contacts);
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts(
+      date('Y-m-d', strtotime('+7 days')),
+      date('Y-m-d', strtotime('+50 days'))
+    );
+    // This should return 2. One from the first contract, which never ends
+    // and another one for the second contract, even though the end date of the
+    // filter is past the contract end date
+    $this->assertCount(2, $contacts);
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+    $this->assertEquals($this->contacts[1]['id'], $contacts[1]['id']);
+    $this->assertEquals($this->contacts[1]['display_name'], $contacts[1]['display_name']);
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts(
+      date('Y-m-d', strtotime('+101 days')),
+      date('Y-m-d', strtotime('+102 days'))
+    );
+    // This will 2: The contact from the first contract, which never ends, and
+    // the contact for the last contract. The contact for the second contract
+    // is not returned because it starts and ends before the filter start date
+    $this->assertCount(2, $contacts);
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+    $this->assertEquals($this->contacts[2]['id'], $contacts[1]['id']);
+    $this->assertEquals($this->contacts[2]['display_name'], $contacts[1]['display_name']);
+  }
+
+  public function testGetContractsWithActiveContractsReturnsTheConcatOnceWhenItHasMoreThanOneActiveContractDuringThePeriod() {
+    $this->createContacts(1);
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      date('Y-m-d', strtotime('+20 days')),
+      null
+    );
+
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithActiveContracts(
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+50 days'))
+    );
+    // During the filter period, both contract will be active for sometime, but
+    // the method should return the contract only once
+    $this->assertCount(1, $contacts);
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+  }
 
   public function testGetCurrentContract() {
     $contactParams = array("first_name" => "chrollo", "last_name" => "lucilfer");

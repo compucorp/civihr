@@ -77,6 +77,26 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
     $this->assertCount(1, $contact2ActiveContracts['values']);
   }
 
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage The start date parameter can only be used with the = operator
+   *
+   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   */
+  public function testOnGetContactsWithActiveContractsTheStartDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontactswithactivecontracts', ['start_date' => [$operator => '2016-01-01']]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage The end date parameter can only be used with the = operator
+   *
+   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   */
+  public function testOnGetContactsWithActiveContractsTheEndDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontactswithactivecontracts', ['end_date' => [$operator => '2016-01-01']]);
+  }
+
   public function invalidGetActiveContractsWithDetailsDateOperator()
   {
     return [
