@@ -1,3 +1,11 @@
+/**
+ * Ensures that there is the same top padding regardless whether
+ * the user can see the admin toolbar or not
+ */
+body:not(.toolbar-drawer) {
+  padding-top: 30px;
+}
+
 .crm-tooltip table td {
   width: 50%;
   word-wrap: break-word;
