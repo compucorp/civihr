@@ -204,3 +204,30 @@ function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
   }
   return civicrm_api3_create_success($return, $params);
 }
+
+/**
+ * HRJobContract.getfulldetails API specification
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ */
+function _civicrm_api3_h_r_job_contract_getfulldetails_spec(&$spec) {
+  $spec['jobcontract_id'] = array(
+   'name' => 'jobcontract_id',
+   'title' => 'Job Contract ID',
+   'type' => 1,
+   'api.required' => 1,
+  );
+}
+
+/**
+ * HRJobContract.getfulldetails API
+ *
+ * @param array $params
+ * @return array
+ */
+function civicrm_api3_h_r_job_contract_getfulldetails($params) {
+  $currentRevision = _civicrm_hrjobcontract_api3_get_current_revision($params)['values'];
+
+  return CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails($currentRevision);
+}

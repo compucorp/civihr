@@ -7,6 +7,8 @@ define([
 ], function (_, services) {
     'use strict';
 
+    var promiseCache = {};
+
     /**
      * @param {ApiService} Api
      * @param {ModelService} Model
@@ -137,47 +139,51 @@ define([
          * @returns {*}
          */
         factory.getContractDetails = function (id) {
-            var addPay = function (details) {
-                var pay = {};
+          var addPay = function (details) {
+            var pay = {};
 
-                if (details.api_HRJobPay_get.values.length !== 0) {
-                    pay.amount = details.api_HRJobPay_get.values[0].pay_amount;
-                    pay.currency = details.api_HRJobPay_get.values[0].pay_currency;
+            if (details.api_HRJobPay_get.values.length !== 0) {
+              pay.amount = details.api_HRJobPay_get.values[0].pay_amount;
+              pay.currency = details.api_HRJobPay_get.values[0].pay_currency;
+            }
+
+            details.pay = pay;
+          };
+
+          var addHours = function (details) {
+            var hours = {};
+
+            if (details.api_HRJobHour_get.values.length !== 0) {
+              hours.amount = details.api_HRJobHour_get.values[0].hours_amount;
+              hours.unit = details.api_HRJobHour_get.values[0].hours_unit;
+            }
+
+            details.hours = hours;
+          };
+
+          var data = {
+            jobcontract_id: id,
+            'api.HRJobPay.get': { 'jobcontract_id': id },
+            'api.HRJobHour.get': { 'jobcontract_id': id }
+          };
+
+          if (!promiseCache.getContractDetails) {
+            promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
+              .then(function (response) {
+                if (response.values.length === 0) {
+                  return $q.reject('No details found for contract revision with ID ' + id);
                 }
 
-                details.pay = pay;
-            };
+                var details = response.values[0];
 
-            var addHours = function (details) {
-                var hours = {};
+                addPay(details);
+                addHours(details);
 
-                if (details.api_HRJobHour_get.values.length !== 0) {
-                    hours.amount = details.api_HRJobHour_get.values[0].hours_amount;
-                    hours.unit = details.api_HRJobHour_get.values[0].hours_unit;
-                }
+                return details;
+              });
+          }
 
-                details.hours = hours;
-            };
-
-            var data = {
-                jobcontract_id: id,
-                'api.HRJobPay.get': { 'jobcontract_id': id },
-                'api.HRJobHour.get': { 'jobcontract_id': id }
-            };
-
-            return Api.post('HRJobDetails', data, 'get')
-                .then(function (response) {
-                    if (response.values.length === 0) {
-                        return $q.reject('No details found for contract revision with ID ' + id);
-                    }
-
-                    var details = response.values[0];
-
-                    addPay(details);
-                    addHours(details);
-
-                    return details;
-                });
+          return promiseCache.getContractDetails;
         };
 
         /////////////////////
