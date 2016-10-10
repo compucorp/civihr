@@ -155,12 +155,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
         $calculationComment
       ));
 
+      self::saveBroughtForwardBalanceChange($calculation, $periodEntitlement);
+      self::savePublicHolidaysBalanceChanges($calculation, $periodEntitlement);
+
       self::saveLeaveBalanceChange($calculation, $periodEntitlement, $overriddenEntitlement);
 
-      if(!$periodEntitlement->overridden) {
-        self::saveBroughtForwardBalanceChange($calculation, $periodEntitlement);
-        self::savePublicHolidaysBalanceChanges($calculation, $periodEntitlement);
-      }
 
       $transaction->commit();
     } catch(\Exception $ex) {
@@ -216,18 +215,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
 
-    if($periodEntitlement->overridden && !is_null($overriddenEntitlement)) {
-      $amount = (float)$overriddenEntitlement;
-    } else {
-      $amount = $calculation->getProRata();
-    }
+    $proRata = $calculation->getProRata();
 
     LeaveBalanceChange::create([
       'type_id' => $balanceChangeTypes['Leave'],
       'source_id' => $periodEntitlement->id,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-      'amount' => $amount
+      'amount' => $proRata
     ]);
+
+
+    if($periodEntitlement->overridden && !is_null($overriddenEntitlement)) {
+      $overriddenEntitlement = (float)$overriddenEntitlement;
+
+      $proposedEntitlement = $calculation->getProposedEntitlement();
+      LeaveBalanceChange::create([
+        'type_id' => $balanceChangeTypes['Overridden'],
+        'source_id' => $periodEntitlement->id,
+        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
+        'amount' => $overriddenEntitlement - $proposedEntitlement
+      ]);
+    }
+
   }
 
   /**
