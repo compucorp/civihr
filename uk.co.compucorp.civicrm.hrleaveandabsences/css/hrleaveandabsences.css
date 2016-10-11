@@ -77,6 +77,10 @@
   display: inline-block;
 }
 
+.entitlement-calculation-filters .override-filters label:before {
+  display: none;
+}
+
 .entitlement-calculation-filters .absence-type-filter {
   display: inline;
   margin-right: 10px;
