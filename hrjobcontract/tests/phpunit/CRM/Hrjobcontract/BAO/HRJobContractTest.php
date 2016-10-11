@@ -164,4 +164,47 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(2, CRM_Hrjobcontract_BAO_HRJobContract::getStaffCount());
   }
 
+  public function testLengthOfService() {
+    $contact = array('first_name' => 'Timothy', 'last_name' => 'Dalton');
+    $contactId = $this->createContact($contact);
+
+    // Create first Job Contract starting 5 days ago witn no end date.
+    $jobContract1StartDate = (new DateTime())->sub(new DateInterval('P5D'));
+    $this->createJobContract($contactId, $jobContract1StartDate->format('Y-m-d'), null);
+    $this->assertEquals(6, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfService($contactId));
+
+    // Create second Job Contract in the past ending within 14 days of first
+    // Job Contract start date.
+    $jobContract2StartDate = (new DateTime())->sub(new DateInterval('P40D'));
+    $jobContract2EndDate = (new DateTime())->sub(new DateInterval('P10D'));
+    $this->createJobContract($contactId, $jobContract2StartDate->format('Y-m-d'), $jobContract2EndDate->format('Y-m-d'));
+    $this->assertEquals(41, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfService($contactId));
+
+    // Create third Job Contract in the past ending earlier than within 14 days
+    // of second Job Contract start date (so it won't change Length of Service
+    // value).
+    $jobContract3StartDate = (new DateTime())->sub(new DateInterval('P70D'));
+    $jobContract3EndDate = (new DateTime())->sub(new DateInterval('P60D'));
+    $this->createJobContract($contactId, $jobContract3StartDate->format('Y-m-d'), $jobContract3EndDate->format('Y-m-d'));
+    $this->assertEquals(41, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfService($contactId));
+
+    // Check for valid format and values of getLengthOfServiceYmd() BAO method.
+    // It's Length of Service value split into days, months and years as integers.
+    // So it's basically an array containing of days, months and years between
+    // today and today - length_of_service value. Hovewer we can't assert any
+    // constant value here to compare because months have different length and
+    // it may be different depending on date when the test is running. So we
+    // are calculating expected values defining 41 days as it's our current
+    // Length of Service.
+    $today = new DateTime();
+    $past = (new DateTime())->sub(new DateInterval('P41D'));
+    $interval = $today->diff($past);
+    $lengthOfServiceYmdExpected = array(
+      'days' => (int)$interval->format('%d'),
+      'months' => (int)$interval->format('%m'),
+      'years' => (int)$interval->format('%y'),
+    );
+    $this->assertEquals($lengthOfServiceYmdExpected, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfServiceYmd($contactId));
+  }
+
 }

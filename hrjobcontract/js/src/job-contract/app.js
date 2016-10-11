@@ -4,7 +4,6 @@ define([
     'common/services/dom-event-trigger',
     'common/services/angular-date/date-format',
     'common/modules/routers/compu-ng-route',
-    'common/modules/directives',
     'common/directives/angular-date/date-input',
     'job-contract/controllers/controllers',
     'job-contract/controllers/contract-list',

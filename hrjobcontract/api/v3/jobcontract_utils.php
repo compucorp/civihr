@@ -321,8 +321,6 @@ function _civicrm_hrjobcontract_api3_replace($entity, $params, $forceRevisionId 
  * @return array|int
  */
 function _civicrm_hrjobcontract_api3_deletecontract($params) {
-    $entityNames = array('HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole');
-    
   $transaction = new CRM_Core_Transaction();
   try {
     if (empty($params['id'])) {
