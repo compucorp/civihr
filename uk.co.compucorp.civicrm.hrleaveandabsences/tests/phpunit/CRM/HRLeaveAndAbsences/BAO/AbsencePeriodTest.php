@@ -415,6 +415,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends PHPUnit_Framework_Tes
     $this->assertEquals($period2->weight, $period3PreviousPeriod->weight);
   }
 
+  public function testNextPeriodShouldReturnNullIfTheresNoNextPeriod() {
+    $period = $this->createBasicPeriod();
+    $this->assertNull($period->getNextPeriod());
+  }
+
+  public function testNextPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsANextPeriod() {
+    $period1 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
+    ]);
+
+    $period2 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
+    ]);
+
+    $period3 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
+    ]);
+
+    $period1NextPeriod = $period1->getNextPeriod();
+    $period2 = $this->findPeriodByID($period2->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period1NextPeriod);
+    $this->assertEquals($period2->id, $period1NextPeriod->id);
+    $this->assertEquals($period2->title, $period1NextPeriod->title);
+    $this->assertEquals($period2->start_date, $period1NextPeriod->start_date);
+    $this->assertEquals($period2->end_date, $period1NextPeriod->end_date);
+    $this->assertEquals($period2->weight, $period1NextPeriod->weight);
+
+    $period2NextPeriod = $period2->getNextPeriod();
+    $period3 = $this->findPeriodByID($period3->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period2NextPeriod);
+    $this->assertEquals($period3->id, $period2NextPeriod->id);
+    $this->assertEquals($period3->title, $period2NextPeriod->title);
+    $this->assertEquals($period3->start_date, $period2NextPeriod->start_date);
+    $this->assertEquals($period3->end_date, $period2NextPeriod->end_date);
+    $this->assertEquals($period3->weight, $period2NextPeriod->weight);
+  }
+
   public function testExpirationDateForAbsenceTypeWithoutCarryForwardShouldBeNull()
   {
     $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();

@@ -363,15 +363,39 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * Returns the Absence Period previous to this one. That is, the Absence
    * Period where weight is equal to this Period weight - 1.
    *
-   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod - The previous Absence Period or null if there's none
+   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   *  The previous Absence Period or null if there's none
    */
-  public function getPreviousPeriod()
-  {
-    $previousPeriod = new self();
-    $previousPeriod->weight = $this->weight - 1;
-    $previousPeriod->find(true);
-    if($previousPeriod->id) {
-      return $previousPeriod;
+  public function getPreviousPeriod() {
+    return $this->getAbsencePeriodByWeight($this->weight - 1);
+  }
+
+  /**
+   * Returns the Absence Period next to this one. That is, the Absence
+   * Period where weight is equal to this Period weight + 1.
+   *
+   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   *  The next Absence Period or null if there's none
+   */
+  public function getNextPeriod() {
+    return $this->getAbsencePeriodByWeight($this->weight + 1);
+  }
+
+  /**
+   * Returns the Absence Period with the given $weight.
+   *
+   * If there is no Absence Period with the given value, null will be returned.
+   *
+   * @param int $weight
+   *
+   * @return null|\CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   */
+  private function getAbsencePeriodByWeight($weight) {
+    $nextPeriod = new self();
+    $nextPeriod->weight = (int)$weight;
+    $nextPeriod->find(true);
+    if($nextPeriod->id) {
+      return $nextPeriod;
     }
 
     return null;
