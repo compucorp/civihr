@@ -89,8 +89,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   /**
    * {@inheritdoc}
    */
-  public function postProcess()
-  {
+  public function postProcess() {
     $values = $this->exportValues();
     foreach($this->calculations as $calculation) {
       $absenceTypeID = $calculation->getAbsenceType()->id;
@@ -106,17 +105,20 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     CRM_Core_Session::setStatus(ts('Entitlements successfully updated'), 'Success', 'success');
 
     $session = CRM_Core_Session::singleton();
-    $url =  $session->get('ManageEntitlementsReturnUrl');
-    //We won't need this value anymore, so let's remove it from the session
-    $session->set('ManageEntitlementsReturnUrl', null);
 
-    if(!$url) {
-      $contactsIDs = $this->getContactsIDsFromRequest();
-      $url = CRM_Utils_System::url(
-        'civicrm/admin/leaveandabsences/periods/manage_entitlements',
-        'reset=1&id='.$this->absencePeriod->id . '&' . http_build_query(['cid' => $contactsIDs])
-      );
+    $nextPeriod = $this->absencePeriod->getNextPeriod();
+    if ($nextPeriod) {
+      $url = $this->createManageEntitlementsURL($nextPeriod);
+    } else {
+      $url =  $session->get('ManageEntitlementsReturnUrl');
+      //We won't need this value anymore, so let's remove it from the session
+      $session->set('ManageEntitlementsReturnUrl', null);
+
+      if(!$url) {
+        $url = $this->createManageEntitlementsURL($this->absencePeriod);
+      }
     }
+
     $session->replaceUserContext($url);
   }
 
@@ -393,5 +395,23 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   private function isValidReturnPath($path) {
     return strpos($path, 'civicrm/') === 0 &&
            $path != 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
+  }
+
+  /**
+   * Creates an URL to manage the entitlements for the given Absence Period
+   *
+   * If there are any cid query string parameters on the current request, they
+   * will all be addeed to the URL
+   *
+   * @return string
+   *  The created URL
+   */
+  private function createManageEntitlementsURL(AbsencePeriod $period) {
+    $contactsIDs = $this->getContactsIDsFromRequest();
+    $url         = CRM_Utils_System::url(
+      'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+      'reset=1&id=' . $period->id . '&' . http_build_query(['cid' => $contactsIDs])
+    );
+    return $url;
   }
 }
