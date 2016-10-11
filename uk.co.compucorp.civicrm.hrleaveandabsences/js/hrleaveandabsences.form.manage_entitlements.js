@@ -141,9 +141,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
       });
 
       this._listElement
-        .find('tr:not(.hidden)')  // finds all the visible rows
-        .not(selectors.join(',')) // that doesn't match the select types
-        .addClass('hidden');      // and hide them
+        .find('tbody tr:not(.hidden)')  // finds all the visible rows
+        .not(selectors.join(','))       // that doesn't match the select types
+        .addClass('hidden');            // and hide them
     }
   };
 
