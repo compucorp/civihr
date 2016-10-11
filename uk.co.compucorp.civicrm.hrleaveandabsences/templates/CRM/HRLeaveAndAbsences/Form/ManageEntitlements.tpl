@@ -78,7 +78,7 @@
       <td>{$calculation->getProRata()}</td>
       <td class="proposed-entitlement">
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
-          {$form.proposed_entitlement[$contact.id][$absenceTypeID].html}
+          {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
           <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
           <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
             <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"

@@ -172,18 +172,27 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * This is basically the Pro Rata + the number of days brought forward + any
    * public holidays added for contracts with "Add public holiday?"
    *
-   * @return float|int
+   * @return float
    */
   public function getProposedEntitlement() {
-    $periodEntitlement = $this->getPeriodEntitlement();
-
-    if($periodEntitlement && $periodEntitlement->overridden) {
-      return $periodEntitlement->getEntitlement();
-    }
-
     return $this->getProRata() +
            $this->getBroughtForward() +
            $this->getNumberOfPublicHolidaysInEntitlement();
+  }
+
+  /**
+   * If there's a Leave Period Entitlement for this Calculation's Absence Period,
+   * and it has been overridden, this method will return the overridden value.
+   * Otherwise, it will return 0;
+   *
+   * @return float
+   */
+  public function getOverriddenEntitlement() {
+    if($this->isCurrentPeriodEntitlementOverridden()) {
+      return $this->getPeriodEntitlement()->getEntitlement();
+    }
+
+    return 0;
   }
 
   /**

@@ -46,10 +46,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
     if(!empty($this->calculations) && empty($this->defaultValues)) {
       $this->defaultValues = [];
       foreach($this->calculations as $calculation) {
+        $contactID = $calculation->getContact()['id'];
+        $absenceTypeID = $calculation->getAbsenceType()->id;
         if($calculation->getCurrentPeriodEntitlementComment()) {
-          $contactID = $calculation->getContact()['id'];
-          $absenceTypeID = $calculation->getAbsenceType()->id;
           $this->defaultValues['comment'][$contactID][$absenceTypeID] = $calculation->getCurrentPeriodEntitlementComment();
+        }
+
+        if($calculation->isCurrentPeriodEntitlementOverridden()) {
+          $this->defaultValues['overridden_entitlement'][$contactID][$absenceTypeID] = $calculation->getOverriddenEntitlement();
         }
       }
     }
@@ -97,7 +101,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
       LeavePeriodEntitlement::saveFromCalculation(
         $calculation,
-        $values['proposed_entitlement'][$contactID][$absenceTypeID],
+        $values['overridden_entitlement'][$contactID][$absenceTypeID],
         $values['comment'][$contactID][$absenceTypeID]
       );
     }
@@ -241,7 +245,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   private function addProposedEntitlementAndCommentFields() {
     foreach($this->calculations as $calculation) {
       $proposedEntitlementFieldName = sprintf(
-        'proposed_entitlement[%d][%d]',
+        'overridden_entitlement[%d][%d]',
         $calculation->getContact()['id'],
         $calculation->getAbsenceType()->id
       );
@@ -333,8 +337,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         'overridden' => 0
       ];
 
-      if(!empty($formValues['proposed_entitlement'][$contactID][$absenceTypeID])) {
-        $row['proposed_entitlement'] = $formValues['proposed_entitlement'][$contactID][$absenceTypeID];
+      if(!empty($formValues['overridden_entitlement'][$contactID][$absenceTypeID])) {
+        $row['proposed_entitlement'] = $formValues['overridden_entitlement'][$contactID][$absenceTypeID];
         $row['overridden'] = 1;
       }
 

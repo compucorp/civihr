@@ -373,19 +373,32 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(0, $calculation->getProposedEntitlement());
   }
 
-  public function testTheProposedEntitlementForAPeriodWithPreviouslyOverriddenEntitlementShouldBeTheTheOverriddenValue() {
+  public function testTheProposedEntitlementForAPeriodWithPreviouslyOverriddenEntitlementShouldNotBeTheTheOverriddenValue() {
     $type = $this->createAbsenceType();
+    $startDate = date('YmdHis', strtotime('2016-01-01'));
+    $endDate = date('YmdHis', strtotime('2016-04-01'));
     $currentPeriod = AbsencePeriod::create([
       'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 days'))
+      'start_date' => $startDate,
+      'end_date' => $endDate
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
-    $this->createEntitlement($currentPeriod, $type, 25.3, true);
+    // Set the contractual entitlement as 10 days
+    $this->createJobLeaveEntitlement($type, 10);
+
+    // The contract spans the whole period, so
+    // The proposed entitlement will be the whole contractual entitlement
+    $this->setContractDates(
+      $startDate,
+      $endDate
+    );
+
+    // Creates the previously overridden Leave Period Entitlement
+    $this->createEntitlement($currentPeriod, $type, 10, 50);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(25.3, $calculation->getProposedEntitlement());
+    $this->assertEquals(10, $calculation->getProposedEntitlement());
   }
 
   public function testTheProposedEntitlementShouldBeProRataPlusNumberOfDaysBroughtForward()
@@ -450,14 +463,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     // 261 working days
     $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+      'title'      => 'Period 2',
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
-      'end_date' => date('YmdHis', strtotime('2016-12-31')),
+      'end_date'   => date('YmdHis', strtotime('2016-12-31')),
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
 
     // Set the contractual entitlement as 10 days
-    $this->createJobLeaveEntitlement($type, 10, true);
+    $this->createJobLeaveEntitlement($type, 10, TRUE);
 
     // 64 days to work
     $this->setContractDates(
@@ -468,25 +481,26 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // This will not be included since it's before the contract start date
     PublicHoliday::create([
       'title' => 'Holiday 1',
-      'date' => date('YmdHis', strtotime('2015-01-01'))
+      'date'  => date('YmdHis', strtotime('2015-01-01'))
     ]);
 
     // This will be included since it's between the contract dates
     PublicHoliday::create([
       'title' => 'Holiday 2',
-      'date' => date('YmdHis', strtotime('2016-01-01'))
+      'date'  => date('YmdHis', strtotime('2016-01-01'))
     ]);
 
     // This will not be included since it's after the contract start date
     PublicHoliday::create([
       'title' => 'Holiday 3',
-      'date' => date('YmdHis', strtotime('2016-05-04'))
+      'date'  => date('YmdHis', strtotime('2016-05-04'))
     ]);
 
     // Working days in Period = 261 - 3 (public holidays) = 259
     // Working days to work = 64 - 1 (the single public holiday between contract dates) = 63
     // (63/259) * 10 = 2.43 = 2.5 rounded
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact,
+      $type);
     $this->assertEquals(2.5, $calculation->getProRata());
 
     // Number of days brought from previous period: 0 (No previous period)
@@ -499,6 +513,55 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // Proposed entitlement: Pro Rata + Brought Forward + Public Holidays
     // Proposed entitlement: 2.5 + 0 + 1
     $this->assertEquals(3.5, $calculation->getProposedEntitlement());
+  }
+
+  public function testGetOverriddenEntitlementShouldBeZeroIfTheresNoPreviousPeriodEntitlement() {
+    $type = $this->createAbsenceType();
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 days'))
+    ]);
+    // We need to load the period from the database to get the dates in the
+    // expected format: Y-m-d
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getOverriddenEntitlement());
+  }
+
+  public function testGetOverriddenEntitlementShouldBeZeroIfThePreviousPeriodEntitlementIsNotOverridden() {
+    $type = $this->createAbsenceType();
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 days'))
+    ]);
+    // We need to load the period from the database to get the dates in the
+    // expected format: Y-m-d
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->createEntitlement($currentPeriod, $type, 10);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getOverriddenEntitlement());
+  }
+
+  public function testGetOverriddenEntitlementShouldShouldBeTheOverriddenValueIfThePreviousPeriodEntitlementIsOverridden() {
+    $type = $this->createAbsenceType();
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis'),
+      'end_date' => date('YmdHis', strtotime('+1 days'))
+    ]);
+    // We need to load the period from the database to get the dates in the
+    // expected format: Y-m-d
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->createEntitlement($currentPeriod, $type, 10, 50);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(50, $calculation->getOverriddenEntitlement());
   }
 
   public function testPreviousPeriodProposedEntitlementShouldBeZeroIfThereIsNoPreviousPeriod()
@@ -989,7 +1052,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day'))
     ]);
-    $this->createEntitlement($period, $type, 10, true);
+    $this->createEntitlement($period, $type, 10, 20);
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertTrue($calculation->isCurrentPeriodEntitlementOverridden());
   }
@@ -1039,7 +1102,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     return $currentPeriod;
   }
 
-  private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = false, $comment = null) {
+  private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = null, $comment = null) {
     $params = [
       'period_id'            => $period->id,
       'contact_id'           => $this->contact['id'],
@@ -1056,6 +1119,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $periodEntitlement = LeavePeriodEntitlement::create($params);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, $numberOfDays);
+
+    if($overridden) {
+      $this->createOverriddenBalanceChange($periodEntitlement->id, $overridden - $numberOfDays);
+    }
 
     return $periodEntitlement;
   }

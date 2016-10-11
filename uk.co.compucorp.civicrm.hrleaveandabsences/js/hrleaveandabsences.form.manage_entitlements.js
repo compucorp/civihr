@@ -430,10 +430,14 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
   ProposedEntitlement.prototype._makeEntitlementEditable = function() {
     this._overrideButton.hide();
     this._proposedValue.hide();
+
+    if(!this._overrideField.val()) {
+      this._overrideField.val(this._proposedValue.text())
+    }
     this._overrideField
-      .val(this._proposedValue.text())
       .show()
       .focus();
+
     this._overrideCheckbox.prop('checked', true);
     this._isOverridden = true;
   };
