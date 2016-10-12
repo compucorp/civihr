@@ -270,7 +270,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return 0.0;
     }
 
-    return $entitlement->getLeaveRequestBalance() * -1.0;
+    return abs($entitlement->getLeaveRequestBalance());
   }
 
   /**

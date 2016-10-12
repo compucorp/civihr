@@ -666,7 +666,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
     ]);
     $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
-
+    $this->createEntitlement($previousPeriod, $type, 10);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());

@@ -173,7 +173,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *    When given, will make the method count only days taken as leave starting from this date
    *
    * @return float
-   * @internal param int $entitlementID The ID of the entitlement to get the balance*    The ID of the entitlement to get the balance
    */
   public static function getLeaveRequestBalanceForEntitlement(
     LeavePeriodEntitlement $periodEntitlement,
