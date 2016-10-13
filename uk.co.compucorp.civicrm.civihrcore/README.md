@@ -1,9 +1,9 @@
-CiviHR extension
+CiviHR Core extension
 ======
 
-This extension provides informations about current CiviHR release.
+This extension provides generic CiviHR functionality.
 
-It contains CRM_CiviHR class with static methods listed below:
+It contains CRM_CiviHRCore class with static methods listed below:
 * _getVersion()_ - returning current CiviHR version defined in info.xml file
 
 Also it provides CiviHR entity API entry points listed below:
@@ -15,6 +15,6 @@ Installation
 Go to 
 - Administer -> System Settings -> Manage Extensions
 
-and install Activity Report (uk.co.compucorp.civicrm.civihr) extension.
+and install CiviHR Core (uk.co.compucorp.civicrm.civihrcore) extension.
 
 No additional steps is required.

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<extension key="uk.co.compucorp.civicrm.civihr" type="module">
-  <file>civihr</file>
-  <name>CiviHR</name>
-  <description>Provides current CiviHR release details</description>
+<extension key="uk.co.compucorp.civicrm.civihrcore" type="module">
+  <file>civihrcore</file>
+  <name>CiviHR Core</name>
+  <description>Provides CiviHR generic functionality</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Compucorp Ltd</author>
@@ -14,8 +14,8 @@
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
-  <comments>This extension provides informations about current CiviHR release (such as version).</comments>
+  <comments>This extension provides generic CiviHR functionality.</comments>
   <civix>
-    <namespace>CRM/CiviHR</namespace>
+    <namespace>CRM/CiviHRCore</namespace>
   </civix>
 </extension>
