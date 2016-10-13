@@ -9,6 +9,7 @@
 ##################################
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
+uk.co.compucorp.civicrm.civihrcore,\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
 org.civicrm.hrident,\
