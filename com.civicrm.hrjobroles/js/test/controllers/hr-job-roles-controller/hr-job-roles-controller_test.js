@@ -446,8 +446,8 @@ define([
                         expect(HRJobRolesService.getAllJobRoles).not.toHaveBeenCalled();
                     });
 
-                    it('shows a message', function () {
-                        expect(ctrl.empty).toEqual(jasmine.any(String));
+                    it('empty is set to null when no error', function () {
+                        expect(ctrl.empty).toEqual(null);
                     });
                 });
 
