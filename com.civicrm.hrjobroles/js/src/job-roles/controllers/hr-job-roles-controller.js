@@ -465,9 +465,6 @@ define([
             // Remove if any data are added / Reset form
             delete $scope.edit_data['new_role_id'];
 
-            // Hide the empty message if visible
-            $scope.empty = false;
-
             return getJobRolesList($scope.$parent.contactId);
           });
         }
@@ -871,32 +868,29 @@ define([
           var contractsData = {};
 
           // If we have job contracts, try to get the job roles for the contract
-          if (data.count !== 0) {
-            for (var i = 0; i < data.count; i++) {
-              // Job contract IDs which will be passed to the "getAllJobRoles" service
-              jobContractIds.push(data.values[i]['id']);
+          for (var i = 0; i < data.count; i++) {
+            // Job contract IDs which will be passed to the "getAllJobRoles" service
+            jobContractIds.push(data.values[i]['id']);
 
-              var contract = {
-                id: data.values[i]['id'],
-                title: data.values[i]['title'],
-                start_date: data.values[i]['period_start_date'],
-                end_date: data.values[i]['period_end_date'],
-                status: status,
-                is_current: data.values[i]['is_current'],
-                revisions: data.values[i]['revisions']
-              };
+            var contract = {
+              id: data.values[i]['id'],
+              title: data.values[i]['title'],
+              start_date: data.values[i]['period_start_date'],
+              end_date: data.values[i]['period_end_date'],
+              status: status,
+              is_current: data.values[i]['is_current'],
+              revisions: data.values[i]['revisions']
+            };
 
-              var optionalEndDate = formatDate(contract.end_date) || 'Unspecified';
-              contract.label = contract.title + ' (' + formatDate(contract.start_date) + ' - ' + optionalEndDate + ')';
+            var optionalEndDate = formatDate(contract.end_date) || 'Unspecified';
+            contract.label = contract.title + ' (' + formatDate(contract.start_date) + ' - ' + optionalEndDate + ')';
 
-              contractsData[data.values[i]['id']] = contract;
-            }
-
-            // Store the ContractsData what we can reuse later
-            job_roles.contractsData = contractsData;
-          } else {
-            job_roles.empty = null;
+            contractsData[data.values[i]['id']] = contract;
           }
+
+          // Store the ContractsData what we can reuse later
+          job_roles.contractsData = contractsData;
+
 
           job_roles.job_contract_ids = jobContractIds;
 
@@ -935,8 +929,6 @@ define([
 
           if (data.is_error === 1) {
             job_roles.error = 'Data load failure';
-          } else {
-            job_roles.empty = null;
           }
 
           job_roles.status = 'Data load OK';
