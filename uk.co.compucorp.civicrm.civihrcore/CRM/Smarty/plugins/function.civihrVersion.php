@@ -48,7 +48,7 @@
  * @return string
  */
 function smarty_function_civihrVersion($params, &$smarty) {
-  $result = civicrm_api3('CiviHR', 'getversion');
+  $result = civicrm_api3('CiviHRCore', 'getversion');
   if (!empty($result['values'])) {
     return $result['values'];
   }

@@ -9,6 +9,8 @@ require_once 'civihrcore.civix.php';
  */
 function civihrcore_civicrm_config(&$config) {
   _civihrcore_civix_civicrm_config($config);
+  $smarty = CRM_Core_Smarty::singleton();
+  array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
 }
 
 /**

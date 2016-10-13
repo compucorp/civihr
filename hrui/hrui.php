@@ -211,9 +211,6 @@ function hrui_civicrm_config(&$config) {
   global $civicrm_setting;
   $civicrm_setting['CiviCRM Preferences']['communityMessagesUrl'] = FALSE;
   _hrui_civix_civicrm_config($config);
-
-  $smarty = CRM_Core_Smarty::singleton();
-  array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
 }
 
 /**
