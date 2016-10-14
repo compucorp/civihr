@@ -7,9 +7,12 @@
 ## Example: ./drush-install.sh --with-sample-data --root=/var/www/drupal -l newdomain.ex
 
 ##################################
+## List of CiviHR core extensions
+CORE_EXTS=\
+uk.co.compucorp.civicrm.civihrcore
+
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
-uk.co.compucorp.civicrm.civihrcore,\
 org.civicrm.hrbank,\
 org.civicrm.hrdemog,\
 org.civicrm.hrident,\
@@ -81,7 +84,7 @@ else
 fi
 
 set -ex
-drush "$@" cvapi extension.install keys=$ENTITY_EXTS,$APP_EXTS
+drush "$@" cvapi extension.install keys=$CORE_EXTS,$ENTITY_EXTS,$APP_EXTS
 set +ex
 
 if [ -n "$WITHSAMPLE" ]; then

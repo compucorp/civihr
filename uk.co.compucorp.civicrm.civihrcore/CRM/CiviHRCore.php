@@ -10,6 +10,7 @@ class CRM_CiviHRCore {
   public static function getVersion() {
 
     $version = CRM_Core_BAO_Cache::getItem('CiviHRCore', 'version');
+
     if (empty($version)) {
       $info = CRM_Extension_Info::loadFromFile(__DIR__ . '/../info.xml');
       $version = $info->version;
