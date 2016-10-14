@@ -3,14 +3,14 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
-require_once 'tests/phpunit/fabricators/ContactFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobContractFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobContractRevisionFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobHealthFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobHourFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobLeaveFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobPayFabricator.php';
-require_once 'tests/phpunit/fabricators/HRJobPensionFabricator.php';
+use CRM_Hrjobcontract_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision as HRJobContractRevisionFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobHealth as HRJobHealthFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobHour as HRJobHourFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobPay as HRJobPayFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobPension as HRJobPensionFabricator;
 
 /**
  * Class api_v3_HRJobContractTest
