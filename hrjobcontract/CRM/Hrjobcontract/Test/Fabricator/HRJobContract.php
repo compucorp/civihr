@@ -10,10 +10,10 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobContract {
     'period_start_date' => '2016-01-01'
   ];
 
-  public static function fabricate($params, $detailsParams) {
+  public static function fabricate($params, $detailsParams = null) {
     $contract = self::fabricateContract($params);
 
-    if (isset($detailsParams)) {
+    if (!empty($detailsParams)) {
       self::fabricateDetails($contract['id'], $detailsParams);
     }
 
