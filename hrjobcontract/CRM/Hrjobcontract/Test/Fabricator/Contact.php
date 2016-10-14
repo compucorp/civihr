@@ -2,7 +2,7 @@
 
 class CRM_Hrjobcontract_Test_Fabricator_Contact {
 
-  private static $default = [
+  private static $defaultParams = [
     'contact_type' => 'Individual',
     'first_name'   => 'John',
     'last_name'    => 'Doe',
@@ -10,7 +10,7 @@ class CRM_Hrjobcontract_Test_Fabricator_Contact {
   ];
 
   public static function fabricate($params) {
-    $params                 = array_merge(self::$default, $params);
+    $params                 = array_merge(self::$defaultParams, $params);
     $params['display_name'] = "{$params['first_name']} {$params['last_name']}";
 
     $result = civicrm_api3(

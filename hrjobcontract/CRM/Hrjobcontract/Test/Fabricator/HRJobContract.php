@@ -2,11 +2,11 @@
 
 class CRM_Hrjobcontract_Test_Fabricator_HRJobContract {
 
-  private static $default = [
+  private static $defaultParams = [
     'sequential' => 1
   ];
 
-  private static $defaultDetails = [
+  private static $defaultDetailsParams = [
     'period_start_date' => '2016-01-01'
   ];
 
@@ -28,7 +28,7 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobContract {
     $result = civicrm_api3(
       'HRJobContract',
       'create',
-      array_merge(self::$default, $params)
+      array_merge(self::$defaultParams, $params)
     );
 
     return $result['values'][0];
@@ -40,7 +40,7 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobContract {
       'create',
       array_merge(
         ['jobcontract_id' => $contractId],
-        self::$defaultDetails,
+        self::$defaultDetailsParams,
         $params
       )
     );

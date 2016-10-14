@@ -1,22 +1,11 @@
 <?php
 
-class CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision {
+use CRM_Hrjobcontract_Test_Fabricator_BaseAPIFabricator as BaseAPIFabricator;
 
-  private static $default = [
-    'sequential' => 1
-  ];
+class CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision extends BaseAPIFabricator {
 
-  public static function fabricate($params) {
-    if (!isset($params['jobcontract_id'])) {
-      throw new Exception('Specify jobcontract_id value');
-    }
-
-    $result = civicrm_api3(
-      'HRJobContractRevision',
-      'create',
-      array_merge(self::$default, $params)
-    );
-
-    return $result['values'][0];
+  protected static function getEntityName() {
+    return 'HRJobContractRevision';
   }
+
 }
