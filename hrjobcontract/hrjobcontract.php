@@ -62,7 +62,7 @@ function hrjobcontract_civicrm_install() {
       'sequential' => 1,
       'name' => "Contact Deleted by Merge",
     ));
-    $is_error = $result['is_error'];
+    $is_error = !empty($result['is_error']);
   } catch (CiviCRM_API3_Exception $e) {
     $is_error = true;
   }
