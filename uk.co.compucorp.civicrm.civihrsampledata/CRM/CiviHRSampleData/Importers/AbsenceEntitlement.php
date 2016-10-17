@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_AbsenceEntitlement
+ * Class CRM_CiviHRSampleData_Importers_AbsenceEntitlement
  *
  */
-class CRM_HRSampleData_Importers_AbsenceEntitlement extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_AbsenceEntitlement extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**

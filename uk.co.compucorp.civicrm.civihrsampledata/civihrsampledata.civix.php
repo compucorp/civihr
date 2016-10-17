@@ -5,7 +5,7 @@
 /**
  * (Delegated) Implementation of hook_civicrm_config
  */
-function _hrsampledata_civix_civicrm_config(&$config = NULL) {
+function _civihrsampledata_civix_civicrm_config(&$config = NULL) {
   static $configured = FALSE;
   if ($configured) return;
   $configured = TRUE;
@@ -30,8 +30,8 @@ function _hrsampledata_civix_civicrm_config(&$config = NULL) {
  *
  * @param $files array(string)
  */
-function _hrsampledata_civix_civicrm_xmlMenu(&$files) {
-  foreach (_hrsampledata_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
+function _civihrsampledata_civix_civicrm_xmlMenu(&$files) {
+  foreach (_civihrsampledata_civix_glob(__DIR__ . '/xml/Menu/*.xml') as $file) {
     $files[] = $file;
   }
 }
@@ -39,9 +39,9 @@ function _hrsampledata_civix_civicrm_xmlMenu(&$files) {
 /**
  * Implementation of hook_civicrm_install
  */
-function _hrsampledata_civix_civicrm_install() {
-  _hrsampledata_civix_civicrm_config();
-  if ($upgrader = _hrsampledata_civix_upgrader()) {
+function _civihrsampledata_civix_civicrm_install() {
+  _civihrsampledata_civix_civicrm_config();
+  if ($upgrader = _civihrsampledata_civix_upgrader()) {
     return $upgrader->onInstall();
   }
 }
@@ -49,9 +49,9 @@ function _hrsampledata_civix_civicrm_install() {
 /**
  * Implementation of hook_civicrm_uninstall
  */
-function _hrsampledata_civix_civicrm_uninstall() {
-  _hrsampledata_civix_civicrm_config();
-  if ($upgrader = _hrsampledata_civix_upgrader()) {
+function _civihrsampledata_civix_civicrm_uninstall() {
+  _civihrsampledata_civix_civicrm_config();
+  if ($upgrader = _civihrsampledata_civix_upgrader()) {
     return $upgrader->onUninstall();
   }
 }
@@ -59,9 +59,9 @@ function _hrsampledata_civix_civicrm_uninstall() {
 /**
  * (Delegated) Implementation of hook_civicrm_enable
  */
-function _hrsampledata_civix_civicrm_enable() {
-  _hrsampledata_civix_civicrm_config();
-  if ($upgrader = _hrsampledata_civix_upgrader()) {
+function _civihrsampledata_civix_civicrm_enable() {
+  _civihrsampledata_civix_civicrm_config();
+  if ($upgrader = _civihrsampledata_civix_upgrader()) {
     if (is_callable(array($upgrader, 'onEnable'))) {
       return $upgrader->onEnable();
     }
@@ -71,9 +71,9 @@ function _hrsampledata_civix_civicrm_enable() {
 /**
  * (Delegated) Implementation of hook_civicrm_disable
  */
-function _hrsampledata_civix_civicrm_disable() {
-  _hrsampledata_civix_civicrm_config();
-  if ($upgrader = _hrsampledata_civix_upgrader()) {
+function _civihrsampledata_civix_civicrm_disable() {
+  _civihrsampledata_civix_civicrm_config();
+  if ($upgrader = _civihrsampledata_civix_upgrader()) {
     if (is_callable(array($upgrader, 'onDisable'))) {
       return $upgrader->onDisable();
     }
@@ -89,17 +89,17 @@ function _hrsampledata_civix_civicrm_disable() {
  * @return mixed  based on op. for 'check', returns array(boolean) (TRUE if upgrades are pending)
  *                for 'enqueue', returns void
  */
-function _hrsampledata_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  if ($upgrader = _hrsampledata_civix_upgrader()) {
+function _civihrsampledata_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  if ($upgrader = _civihrsampledata_civix_upgrader()) {
     return $upgrader->onUpgrade($op, $queue);
   }
 }
 
-function _hrsampledata_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/HRSampleData/Upgrader.php')) {
+function _civihrsampledata_civix_upgrader() {
+  if (!file_exists(__DIR__ . '/CRM/CiviCiviHRSampleData/Upgrader.php')) {
     return NULL;
   } else {
-    return CRM_HRSampleData_Upgrader_Base::instance();
+    return CRM_CiviHRSampleData_Upgrader_Base::instance();
   }
 }
 
@@ -113,7 +113,7 @@ function _hrsampledata_civix_upgrader() {
  * @param $pattern string, glob pattern, eg "*.txt"
  * @return array(string)
  */
-function _hrsampledata_civix_find_files($dir, $pattern) {
+function _civihrsampledata_civix_find_files($dir, $pattern) {
   if (is_callable(array('CRM_Utils_File', 'findFiles'))) {
     return CRM_Utils_File::findFiles($dir, $pattern);
   }
@@ -122,7 +122,7 @@ function _hrsampledata_civix_find_files($dir, $pattern) {
   $result = array();
   while (!empty($todos)) {
     $subdir = array_shift($todos);
-    foreach (_hrsampledata_civix_glob("$subdir/$pattern") as $match) {
+    foreach (_civihrsampledata_civix_glob("$subdir/$pattern") as $match) {
       if (!is_dir($match)) {
         $result[] = $match;
       }
@@ -145,13 +145,13 @@ function _hrsampledata_civix_find_files($dir, $pattern) {
  *
  * Find any *.mgd.php files, merge their content, and return.
  */
-function _hrsampledata_civix_civicrm_managed(&$entities) {
-  $mgdFiles = _hrsampledata_civix_find_files(__DIR__, '*.mgd.php');
+function _civihrsampledata_civix_civicrm_managed(&$entities) {
+  $mgdFiles = _civihrsampledata_civix_find_files(__DIR__, '*.mgd.php');
   foreach ($mgdFiles as $file) {
     $es = include $file;
     foreach ($es as $e) {
       if (empty($e['module'])) {
-        $e['module'] = 'org.civicrm.hrsampledata';
+        $e['module'] = 'uk.co.compucorp.civicrm.civihrsampledata';
       }
       $entities[] = $e;
     }
@@ -170,7 +170,7 @@ function _hrsampledata_civix_civicrm_managed(&$entities) {
  * @param string $pattern
  * @return array, possibly empty
  */
-function _hrsampledata_civix_glob($pattern) {
+function _civihrsampledata_civix_glob($pattern) {
   $result = glob($pattern);
   return is_array($result) ? $result : array();
 }
@@ -183,7 +183,7 @@ function _hrsampledata_civix_glob($pattern) {
  * $item - menu you need to insert (parent/child attributes will be filled for you)
  * $parentId - used internally to recurse in the menu structure
  */
-function _hrsampledata_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = NULL) {
+function _civihrsampledata_civix_insert_navigation_menu(&$menu, $path, $item, $parentId = NULL) {
   static $navId;
 
   // If we are done going down the path, insert menu
@@ -207,7 +207,7 @@ function _hrsampledata_civix_insert_navigation_menu(&$menu, $path, $item, $paren
     foreach ($menu as $key => &$entry) {
       if ($entry['attributes']['name'] == $first) {
         if (!$entry['child']) $entry['child'] = array();
-        $found = _hrsampledata_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item, $key);
+        $found = _civihrsampledata_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item, $key);
       }
     }
     return $found;

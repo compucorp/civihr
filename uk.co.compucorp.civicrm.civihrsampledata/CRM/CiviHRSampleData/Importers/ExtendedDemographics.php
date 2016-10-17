@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_ExtendedDemographics
+ * Class CRM_CiviHRSampleData_Importers_ExtendedDemographics
  *
  */
-class CRM_HRSampleData_Importers_ExtendedDemographics extends CRM_HRSampleData_Importers_CustomFields
+class CRM_CiviHRSampleData_Importers_ExtendedDemographics extends CRM_CiviHRSampleData_Importers_CustomFields
 {
 
   public function __construct() {

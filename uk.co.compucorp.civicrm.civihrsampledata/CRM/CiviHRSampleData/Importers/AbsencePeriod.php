@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_AbsencePeriod
+ * Class CRM_CiviHRSampleData_Importers_AbsencePeriod
  *
  */
-class CRM_HRSampleData_Importers_AbsencePeriod extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_AbsencePeriod extends CRM_CiviHRSampleData_DataImporter
 {
 
   public function __construct() {
@@ -13,7 +13,7 @@ class CRM_HRSampleData_Importers_AbsencePeriod extends CRM_HRSampleData_DataImpo
   }
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row
    */
   protected function insertRecord(array $row) {

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<extension key="org.civicrm.hrsampledata" type="module">
-  <file>hrsampledata</file>
+<extension key="uk.co.compucorp.civicrm.civihrsampledata" type="module">
+  <file>civihrsampledata</file>
   <name>CiviHR Sample Data</name>
   <description>Sample Data for CiviHR extensions.</description>
   <license>AGPL-3.0</license>
@@ -16,6 +16,6 @@
   </compatibility>
   <comments>Sample Data for CiviHR extensions.</comments>
   <civix>
-    <namespace>CRM/HRSampleData</namespace>
+    <namespace>CRM/CiviHRSampleData</namespace>
   </civix>
 </extension>

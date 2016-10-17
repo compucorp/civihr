@@ -2,22 +2,22 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_Contact
+ * Class CRM_CiviHRSampleData_Importers_Contact
  *
  */
-class CRM_HRSampleData_Importers_Contact extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_Contact extends CRM_CiviHRSampleData_DataImporter
 {
 
   public function __construct() {
     // Move contact images to public civicrm upload directory
-    $imgDir = CRM_Core_Resources::singleton()->getPath('org.civicrm.hrsampledata') . "/resources/photos/";
+    $imgDir = CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.civihrsampledata') . "/resources/photos/";
     $config = CRM_Core_Config::singleton();
     $uploadDir= $config->customFileUploadDir;
     $this->recurseCopy($imgDir, $uploadDir);
   }
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row Should at least contain `id` & `contact_type`
    */
   protected function insertRecord(array $row) {

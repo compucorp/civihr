@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_VacancyStage
+ * Class CRM_CiviHRSampleData_Importers_VacancyStage
  *
  */
-class CRM_HRSampleData_Importers_VacancyStage extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_VacancyStage extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importers_VacancyStage extends CRM_HRSampleData_DataImpor
   }
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row Should at least contain `case_status_id` & `vacancy_id`
    */
   protected function insertRecord(array $row) {

@@ -2,14 +2,14 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_AbsenceType
+ * Class CRM_CiviHRSampleData_Importers_AbsenceType
  *
  */
-class CRM_HRSampleData_Importers_AbsenceType extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_AbsenceType extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row
    */
   protected function insertRecord(array $row) {

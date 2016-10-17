@@ -1,7 +1,7 @@
 <?php
 
 
-abstract class CRM_HRSampleData_DataImporter
+abstract class CRM_CiviHRSampleData_DataImporter
 {
 
   /**

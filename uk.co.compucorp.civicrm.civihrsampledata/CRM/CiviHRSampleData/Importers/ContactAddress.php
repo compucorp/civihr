@@ -2,14 +2,14 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_ContactAddress
+ * Class CRM_CiviHRSampleData_Importers_ContactAddress
  *
  */
-class CRM_HRSampleData_Importers_ContactAddress extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_ContactAddress extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row Should at least contain `contact_id` & `location_type_id`
    */
   protected function insertRecord(array $row) {

@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_JobRoles
+ * Class CRM_CiviHRSampleData_Importers_JobRoles
  *
  */
-class CRM_HRSampleData_Importers_JobRoles extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_JobRoles extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
@@ -21,7 +21,7 @@ class CRM_HRSampleData_Importers_JobRoles extends CRM_HRSampleData_DataImporter
   }
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row Should at least contain `job_contract_id`
    */
   protected function insertRecord(array $row) {

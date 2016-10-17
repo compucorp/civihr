@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_VacancyStage
+ * Class CRM_CiviHRSampleData_Importers_VacancyStage
  *
  */
-class CRM_HRSampleData_Importers_CustomFields extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_CustomFields extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**

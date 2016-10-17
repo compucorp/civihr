@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_JobContract
+ * Class CRM_CiviHRSampleData_Importers_JobContract
  *
  */
-class CRM_HRSampleData_Importers_JobContract extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**

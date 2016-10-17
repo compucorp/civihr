@@ -2,10 +2,10 @@
 
 
 /**
- * Class CRM_HRSampleData_Importers_Relationships
+ * Class CRM_CiviHRSampleData_Importers_Relationships
  *
  */
-class CRM_HRSampleData_Importers_Relationships extends CRM_HRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importers_Relationships extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importers_Relationships extends CRM_HRSampleData_DataImpo
   }
 
   /**
-   * @see CRM_HRSampleData_DataImporter::insertRecord
+   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
    * @param array $row Should at least contain `contact_id_a`, `contact_id_b` & `relationship_type_id`
    */
   protected function insertRecord(array $row) {
