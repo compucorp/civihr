@@ -306,7 +306,6 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       'days_taken',
       'remaining',
       'brought_forward',
-      'contractual_entitlement',
       'period_pro_rata',
       'proposed_entitlement',
       'overridden'
@@ -327,7 +326,6 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         'days_taken' => $calculation->getNumberOfDaysTakenOnThePreviousPeriod(),
         'remaining' => $calculation->getNumberOfDaysRemainingInThePreviousPeriod(),
         'brought_forward' => $calculation->getBroughtForward(),
-        'contractual_entitlement' => $calculation->getContractualEntitlement(),
         'period_pro_rata' => $calculation->getProRata(),
         'proposed_entitlement' => $calculation->getProposedEntitlement(),
         'overridden' => 0

@@ -52,20 +52,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private $previousPeriodEntitlement;
 
   /**
-   * Variable to cache the return from the getNumberOfWorkingDaysForPeriod method
-   *
-   * @var int
-   */
-  private $numberOfWorkingDays;
-
-  /**
-   * Variable to cache the return from the getNumberOfPublicHolidaysForPeriod method
-   *
-   * @var int
-   */
-  private $numberOfPublicHolidaysInPeriod;
-
-  /**
    * Variable to cache the return from the getContractsInPeriod method
    *
    * @var array
@@ -123,17 +109,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns the Pro Rata for all of the contracts included in this calculation.
    *
    * For each contract, we calculate the Pro Rata as:
-   * (no. working days to work / no. of working days) x contractual entitlement.
+   * ((no. working days to work / no. of working days) x contractual entitlement)
+   * + public holidays.
    *
    * Finally, we sum the Pro Rata for each of the contracts and then round the
-   * value up the nearest half day. Example:
+   * value up the nearest half day. Example (single contract):
    *
    * Number of working days to work: 212
    * Number of working days: 253
    * Contractual entitlement: 28
    * Pro rata: (212 / 253) * 28 = 23.46 = 23.5 (rounded)
    *
-   * @return float|int
+   * @return float
    */
   public function getProRata() {
     $contracts = $this->getContractsInPeriod();
@@ -147,12 +134,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Calculates the Pro Rata for a single contract.
+   * Calculates the Pro Rata for a single contract, which is given by:
+   *
+   * CE * (WDTW / WD)
+   *
+   * Where:
+   * CE: Contractual Entitlement
+   * WDTW: No. Working Days to Work
+   * WD: No. Working Days
    *
    * @param array $contract
    *   An array representing a HRJobContract
    *
-   * @return float|int
+   * @return float
    */
   private function getContractProRata($contract) {
     if(empty($contract['period_end_date'])) {
@@ -163,35 +157,24 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       $contract['period_start_date'],
       $contract['period_end_date']
     );
-    $numberOfWorkingDays = $this->getNumberOfWorkingDays();
-    $contractualEntitlement = $this->getContractualEntitlementForContract($contract);
+    $numberOfWorkingDays = $this->period->getNumberOfWorkingDays();
+    $contractualEntitlement = 0;
 
-    return ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
-  }
+    $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
+    if($jobLeave) {
+      $contractualEntitlement = (float)$jobLeave['leave_amount'];
+    }
 
-  /**
-   * Returns the Contractual Entitlement for this calculation contract.
-   *
-   * The Contractual Entitlement is given by the sum of the leave amount of all
-   * of the employee's contracts + the number of public holidays during the
-   * contract start and end dates (if the leave settings on the contract allows
-   * this).
-   *
-   * @return int
-   */
-  public function getContractualEntitlement() {
-    $contracts = $this->getContractsInPeriod();
-    return array_reduce($contracts, function($contractualEntitlement, $contract) {
-      $contractualEntitlement += $this->getContractualEntitlementForContract($contract);
+    $proRata = ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
 
-      return $contractualEntitlement;
-    }, 0);
+    return $proRata;
   }
 
   /**
    * Returns the calculated proposed entitlement.
    *
-   * This is basically the Pro Rata + the number of days brought forward
+   * This is basically the Pro Rata + the number of days brought forward + any
+   * public holidays added for contracts with "Add public holiday?"
    *
    * @return float|int
    */
@@ -202,7 +185,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       return $periodEntitlement->getEntitlement();
     }
 
-    return $this->getProRata() + $this->getBroughtForward();
+    return $this->getProRata() +
+           $this->getBroughtForward() +
+           $this->getNumberOfPublicHolidaysInEntitlement();
   }
 
   /**
@@ -398,39 +383,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns an array containing the start and end dates of all the contracts
-   * for this calculation's employee during the calculation's Absence Period.
-   *
-   * To help with the calculation, if any of the contract doesn't have an end date,
-   * the period end date will be used instead.
-   *
-   * @return array
-   *  The array with the dates in this format:
-   *  [
-   *    ['start_date' => '2016-01-01', 'end_date' => '2016-09-15'],
-   *    ['start_date' => '2016-10-10', 'end_date' => '2016-12-31'],
-   *    ...
-   *  ]
-   */
-  private function getContractsDates() {
-    $contractsDates = [];
-
-    $contracts = $this->getContractsInPeriod();
-    foreach ($contracts as $contract) {
-      if(empty($contract['period_end_date'])) {
-        $contract['period_end_date'] = $this->period->end_date;
-      }
-
-      $contractsDates[] = [
-        'start_date' => $contract['period_start_date'],
-        'end_date' => $contract['period_end_date']
-      ];
-    }
-
-    return $contractsDates;
-  }
-
-  /**
    * Returns an array with the values of the JobLeave for the given contract and
    * the calculation's  absence type.
    *
@@ -473,82 +425,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns the number of Public Holidays for this calculation period
+   * Returns the string representation for this calculation
    *
-   * @return int
-   */
-  private function getNumberOfPublicHolidaysForPeriod() {
-    if(!$this->numberOfPublicHolidaysInPeriod) {
-      $this->numberOfPublicHolidaysInPeriod = PublicHoliday::getNumberOfPublicHolidaysForPeriod(
-        $this->period->start_date,
-        $this->period->end_date
-      );
-    }
-
-    return $this->numberOfPublicHolidaysInPeriod;
-  }
-
-  /**
-   * Returns the number of working days for all of the contracts included in this
-   * calculation.
-   *
-   * @return int
-   */
-  private function getNumberOfWorkingDaysToWork() {
-    $contractsDates = $this->getContractsDates();
-
-    return array_reduce($contractsDates, function($numberOfDays, $contractDates) {
-      $numberOfDays += $this->period->getNumberOfWorkingDaysToWork(
-        $contractDates['start_date'],
-        $contractDates['end_date']
-      );
-      return $numberOfDays;
-    });
-  }
-
-  /**
-   * Returns the number of working days (excluding public holidays) for this
-   * calculation period
-   *
-   * @return int
-   */
-  private function getNumberOfWorkingDays() {
-    if(!$this->numberOfWorkingDays) {
-      $this->numberOfWorkingDays = $this->period->getNumberOfWorkingDays();
-    }
-
-    return $this->numberOfWorkingDays;
-  }
-
-
-  /**
-   * Returns a string representation of the calculation in the format:
-   *
-   * ((CE + PH) * (WDTW / WD)) = (PR) + (BF) = PE
-   *
-   * Where:
-   * CE: Contractual Entitlement (Not including public holidays)
-   * PH: Number of Public Holidays
-   * WDTW: Number of Working days to work
-   * WD: Number of Working days
-   * PR: Pro Rata, rounded to the nearest half day
-   * BF: Number of days Brought Forward
-   * PE: Proposed Entitlement
+   * @TODO return an actual representation instead of an empty string
    *
    * @return string
    */
   public function __toString()
   {
-    return sprintf(
-      '((%s + %s) * (%s / %s)) = (%s) + (%s) = %s days',
-      $this->getContractualEntitlement() - $this->getNumberOfPublicHolidaysForPeriod(),
-      $this->getNumberOfPublicHolidaysForPeriod(),
-      $this->getNumberOfWorkingDaysToWork(),
-      $this->period->getNumberOfWorkingDays(),
-      $this->getProRata(),
-      $this->getBroughtForward(),
-      $this->getProposedEntitlement()
-    );
+    return "";
   }
 
   /**
@@ -592,49 +477,32 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   }
 
   /**
-   * Returns the contractual entitlement for the given contract
-   *
-   * @param array $contract
-   *   An array representing a HRJobContract
-   *
-   * @return float
-   */
-  private function getContractualEntitlementForContract($contract) {
-    $contractualEntitlement = 0;
-
-    $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
-    if(!$jobLeave) {
-      return $contractualEntitlement;
-    }
-
-    $contractualEntitlement = (float)$jobLeave['leave_amount'];
-    if($jobLeave['add_public_holidays']) {
-      $contractualEntitlement += $this->getNumberOfPublicHolidaysForContract($contract);
-    }
-
-    return $contractualEntitlement;
-  }
-
-  /**
-   * Returns the number of Public Holidays between the contract start and end
-   * dates. If the contract has no end date, then the Absence Period end date
-   * will be used instead.
-   *
-   * @param array $contract
-   *  An array representing a HRJobContract
+   * Returns the number of Public Holidays added to the entitlement because of
+   * contract with "Add Public Holiday?" set.
    *
    * @return int
    */
-  private function getNumberOfPublicHolidaysForContract($contract) {
-    if(empty($contract['period_end_date'])) {
-      $contract['period_end_date'] = $this->period->end_date;
+  private function getNumberOfPublicHolidaysInEntitlement() {
+    $numberOfPublicHolidays = 0;
+
+    $contracts = $this->getContractsInPeriod();
+    foreach($contracts as $contract) {
+      $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
+
+      if(!empty($jobLeave['add_public_holidays'])) {
+        if(empty($contract['period_end_date'])) {
+          $contract['period_end_date'] = $this->period->end_date;
+        }
+
+        list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+          $contract['period_start_date'],
+          $contract['period_end_date']
+        );
+
+        $numberOfPublicHolidays += PublicHoliday::getNumberOfPublicHolidaysForPeriod($startDate, $endDate);
+      }
     }
 
-    list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
-      $contract['period_start_date'],
-      $contract['period_end_date']
-    );
-
-    return PublicHoliday::getNumberOfPublicHolidaysForPeriod($startDate, $endDate);
+    return $numberOfPublicHolidays;
   }
 }

@@ -47,7 +47,6 @@
     <th>{ts}Days taken{/ts}</th>
     <th>{ts}Remaining{/ts}</th>
     <th>{ts}Brought Forward from previous period{/ts}</th>
-    <th>{ts}Current Contractual Entitlement{/ts}</th>
     <th>{ts}New Period Pro rata{/ts}</th>
     <th class="proposed-entitlement-header">
       <div class="title">{ts}New Proposed Period Entitlement{/ts}</div>
@@ -76,7 +75,6 @@
       <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>
-      <td>{$calculation->getContractualEntitlement()}</td>
       <td>{$calculation->getProRata()}</td>
       <td class="proposed-entitlement">
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
