@@ -48,5 +48,5 @@
  * @return string
  */
 function smarty_function_civihrVersion($params, &$smarty) {
-  return CRM_CiviHRCore::getVersion() ?: t('unknown');
+  return CRM_HRCore_Info::getVersion() ?: t('unknown');
 }

@@ -1,14 +1,14 @@
 <?php
 
-require_once 'civihrcore.civix.php';
+require_once 'hrcore.civix.php';
 
 /**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
-function civihrcore_civicrm_config(&$config) {
-  _civihrcore_civix_civicrm_config($config);
+function hrcore_civicrm_config(&$config) {
+  _hrcore_civix_civicrm_config($config);
   $smarty = CRM_Core_Smarty::singleton();
   array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
 }
@@ -20,8 +20,8 @@ function civihrcore_civicrm_config(&$config) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_xmlMenu
  */
-function civihrcore_civicrm_xmlMenu(&$files) {
-  _civihrcore_civix_civicrm_xmlMenu($files);
+function hrcore_civicrm_xmlMenu(&$files) {
+  _hrcore_civix_civicrm_xmlMenu($files);
 }
 
 /**
@@ -29,8 +29,8 @@ function civihrcore_civicrm_xmlMenu(&$files) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
-function civihrcore_civicrm_install() {
-  _civihrcore_civix_civicrm_install();
+function hrcore_civicrm_install() {
+  _hrcore_civix_civicrm_install();
 }
 
 /**
@@ -38,8 +38,8 @@ function civihrcore_civicrm_install() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
-function civihrcore_civicrm_uninstall() {
-  _civihrcore_civix_civicrm_uninstall();
+function hrcore_civicrm_uninstall() {
+  _hrcore_civix_civicrm_uninstall();
 }
 
 /**
@@ -47,8 +47,8 @@ function civihrcore_civicrm_uninstall() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
-function civihrcore_civicrm_enable() {
-  _civihrcore_civix_civicrm_enable();
+function hrcore_civicrm_enable() {
+  _hrcore_civix_civicrm_enable();
 }
 
 /**
@@ -56,8 +56,8 @@ function civihrcore_civicrm_enable() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
-function civihrcore_civicrm_disable() {
-  _civihrcore_civix_civicrm_disable();
+function hrcore_civicrm_disable() {
+  _hrcore_civix_civicrm_disable();
 }
 
 /**
@@ -72,8 +72,8 @@ function civihrcore_civicrm_disable() {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_upgrade
  */
-function civihrcore_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  return _civihrcore_civix_civicrm_upgrade($op, $queue);
+function hrcore_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
+  return _hrcore_civix_civicrm_upgrade($op, $queue);
 }
 
 /**
@@ -84,8 +84,8 @@ function civihrcore_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_managed
  */
-function civihrcore_civicrm_managed(&$entities) {
-  _civihrcore_civix_civicrm_managed($entities);
+function hrcore_civicrm_managed(&$entities) {
+  _hrcore_civix_civicrm_managed($entities);
 }
 
 /**
@@ -99,8 +99,8 @@ function civihrcore_civicrm_managed(&$entities) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
-function civihrcore_civicrm_caseTypes(&$caseTypes) {
-  _civihrcore_civix_civicrm_caseTypes($caseTypes);
+function hrcore_civicrm_caseTypes(&$caseTypes) {
+  _hrcore_civix_civicrm_caseTypes($caseTypes);
 }
 
 /**
@@ -113,8 +113,8 @@ function civihrcore_civicrm_caseTypes(&$caseTypes) {
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
-function civihrcore_civicrm_angularModules(&$angularModules) {
-_civihrcore_civix_civicrm_angularModules($angularModules);
+function hrcore_civicrm_angularModules(&$angularModules) {
+_hrcore_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -122,6 +122,6 @@ _civihrcore_civix_civicrm_angularModules($angularModules);
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterSettingsFolders
  */
-function civihrcore_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  _civihrcore_civix_civicrm_alterSettingsFolders($metaDataFolders);
+function hrcore_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
+  _hrcore_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }

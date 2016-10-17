@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<extension key="uk.co.compucorp.civicrm.civihrcore" type="module">
-  <file>civihrcore</file>
-  <name>CiviHR Core</name>
+<extension key="uk.co.compucorp.civicrm.hrcore" type="module">
+  <file>hrcore</file>
+  <name>HR Core</name>
   <description>Provides CiviHR generic functionality</description>
   <license>AGPL-3.0</license>
   <maintainer>
@@ -16,6 +16,6 @@
   </compatibility>
   <comments>This extension provides generic CiviHR functionality.</comments>
   <civix>
-    <namespace>CRM/CiviHRCore</namespace>
+    <namespace>CRM/HRCore</namespace>
   </civix>
 </extension>
