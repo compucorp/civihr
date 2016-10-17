@@ -72,11 +72,11 @@ function set_resource_urls() {
 ##################################
 ## Main
 
-# Get CiviCRm Path and shift to the next option
+# Get CiviCRM Path and shift to the next option
 CIVI_PATH=$1
 shift
 
-if [ "$1" == "--with-sample-data" ]; then
+if [ "$1" == "--with-hrsample-data" ]; then
   WITHSAMPLE=1
   shift
 else
@@ -87,12 +87,12 @@ set -ex
 drush "$@" cvapi extension.install keys=$CORE_EXTS,$ENTITY_EXTS,$APP_EXTS
 set +ex
 
-if [ -n "$WITHSAMPLE" ]; then
-  set -ex
-  drush "$@" cvapi extension.install keys=org.civicrm.hrsampledata
-  set +ex
-fi
-
 set_default_localisation_settings ${CIVI_PATH}
 set_resource_urls
+
+if [ -n "$WITHSAMPLE" ]; then
+  set -ex
+  drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.civihrsampledata
+  set +ex
+fi
 

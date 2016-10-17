@@ -10,11 +10,11 @@ hrdemog \
 hrident \
 hrim \
 hrmed \
-hrprofile
+hrprofile \
 hrqual \
 hrrecruitment \
 hrreport \
-hrsampledata \
+uk.co.compucorp.civicrm.civihrsampledata \
 hrstaffdir \
 hrui \
 hrvisa \
