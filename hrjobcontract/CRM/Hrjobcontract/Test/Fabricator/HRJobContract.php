@@ -31,7 +31,7 @@ class CRM_Hrjobcontract_Test_Fabricator_HRJobContract {
       array_merge(self::$defaultParams, $params)
     );
 
-    return $result['values'][0];
+    return array_shift($result['values']);
   }
 
   private static function fabricateDetails($contractId, $params) {

@@ -19,6 +19,6 @@ class CRM_Hrjobcontract_Test_Fabricator_Contact {
       $params
     );
 
-    return $result['values'][0];
+    return array_shift($result['values']);
   }
 }

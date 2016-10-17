@@ -29,7 +29,7 @@ abstract class CRM_Hrjobcontract_Test_Fabricator_BaseAPIFabricator {
       array_merge(self::$defaultParams, $params)
     );
 
-    return $result['values'][0];
+    return array_shift($result['values']);
   }
 
   /**
