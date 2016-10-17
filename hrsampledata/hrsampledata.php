@@ -54,40 +54,7 @@ function hrsampledata_civicrm_install() {
  * Implementation of hook_civicrm_postInstall
  */
 function hrsampledata_civicrm_postInstall() {
-
-  $csvDir = CRM_Core_Resources::singleton()->getPath('org.civicrm.hrsampledata') . "/resources/csv";
-
-  // These files will be imported in order
-  $csvFiles  = [
-    'OptionValue' => 'civicrm_option_value',
-    'LocationType' => 'civicrm_location_type',
-    'Contact' => 'civicrm_contact',
-    'ContactEmail' => 'civicrm_email',
-    'ContactPhone' => 'civicrm_phone',
-    'ContactAddress' => 'civicrm_address',
-    'Case' => 'civicrm_case',
-    'Relationships' => 'civicrm_relationship',
-    'HRHoursLocation' => 'civicrm_hrhours_location',
-    'HRPayScale' => 'civicrm_hrpay_scale',
-    'AbsencePeriod' => 'civicrm_hrabsence_period',
-    'AbsenceType' => 'civicrm_hrabsence_type',
-    'Vacancy' => 'civicrm_hrvacancy',
-    'VacancyStage' => 'civicrm_hrvacancy_stage',
-    'JobContract' => 'civicrm_hrjobcontract',
-    'JobRoles' => 'civicrm_hrjobroles',
-    'Activity' => 'civicrm_activity',
-    'BankDetails' => 'civicrm_value_bank_details',
-    'EmergencyContacts' => 'civicrm_value_emergency_contacts',
-    'ExtendedDemographics' => 'civicrm_value_extended_demographics',
-    'VacancyValue' => 'civicrm_value_vacancy',
-  ];
-
-  foreach($csvFiles as $class => $file) {
-    $importerClassName = "CRM_HRSampleData_Importers_{$class}";
-    $importer = new $importerClassName();
-    $importer->import("{$csvDir}/{$file}.csv");
-  }
-
+  _hrsampledata_importSampleData();
 }
 
   /**
@@ -132,4 +99,43 @@ function hrsampledata_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrsampledata_civicrm_managed(&$entities) {
   return _hrsampledata_civix_civicrm_managed($entities);
+}
+
+/**
+ * Import CiviHR sample data
+ */
+function _hrsampledata_importSampleData() {
+
+  $csvDir = CRM_Core_Resources::singleton()->getPath('org.civicrm.hrsampledata') . "/resources/csv";
+
+  // These files will be imported in order
+  $csvFiles  = [
+    'OptionValue' => 'civicrm_option_value',
+    'LocationType' => 'civicrm_location_type',
+    'Contact' => 'civicrm_contact',
+    'ContactEmail' => 'civicrm_email',
+    'ContactPhone' => 'civicrm_phone',
+    'ContactAddress' => 'civicrm_address',
+    'Case' => 'civicrm_case',
+    'Relationships' => 'civicrm_relationship',
+    'HRHoursLocation' => 'civicrm_hrhours_location',
+    'HRPayScale' => 'civicrm_hrpay_scale',
+    'AbsencePeriod' => 'civicrm_hrabsence_period',
+    'AbsenceType' => 'civicrm_hrabsence_type',
+    'Vacancy' => 'civicrm_hrvacancy',
+    'VacancyStage' => 'civicrm_hrvacancy_stage',
+    'JobContract' => 'civicrm_hrjobcontract',
+    'JobRoles' => 'civicrm_hrjobroles',
+    'Activity' => 'civicrm_activity',
+    'BankDetails' => 'civicrm_value_bank_details',
+    'EmergencyContacts' => 'civicrm_value_emergency_contacts',
+    'ExtendedDemographics' => 'civicrm_value_extended_demographics',
+    'VacancyValue' => 'civicrm_value_vacancy',
+  ];
+
+  foreach($csvFiles as $class => $file) {
+    $importerClassName = "CRM_HRSampleData_Importers_{$class}";
+    $importer = new $importerClassName();
+    $importer->import("{$csvDir}/{$file}.csv");
+  }
 }

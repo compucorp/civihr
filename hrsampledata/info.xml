@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.hrsampledata" type="module">
   <file>hrsampledata</file>
-  <name>Sample Data (CiviHR)</name>
+  <name>CiviHR Sample Data</name>
   <description>Sample Data for CiviHR extensions.</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>CiviCRM LLC</author>
-    <email>info@civicrm.org</email>
+    <author>Compucorp</author>
+    <email>info@compucorp.com</email>
   </maintainer>
   <releaseDate>2016-12-02</releaseDate>
   <version>1.6.4</version>
@@ -14,7 +14,7 @@
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments>Sample Data for CiviHR extensions.</comments>
   <civix>
     <namespace>CRM/HRSampleData</namespace>
   </civix>
