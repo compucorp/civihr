@@ -1,0 +1,2 @@
+id,subject,case_type_id,start_date,status_id,is_deleted,contact_id,creator_id
+1,Application,Application,2016-09-08,Open,0,348,1

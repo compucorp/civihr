@@ -1,0 +1,3 @@
+name,title,is_active,allow_credits,allow_debits
+Compassionate_Leave,Compassionate Leave,1,0,1
+Parental_Leave,Parental Leave,0,0,1
