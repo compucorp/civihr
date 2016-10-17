@@ -21,8 +21,6 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
   HeadlessInterface,
   TransactionalInterface {
 
-  use HRJobContractTestTrait;
-
   public function setUpHeadless() {
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
