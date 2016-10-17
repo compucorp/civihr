@@ -37,7 +37,5 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed
    */
   public function install() {
-    require_once ($this->extensionDir . '/GenerateHRData.php');
-    $sampleData = new GenerateHRData();
   }
 }
