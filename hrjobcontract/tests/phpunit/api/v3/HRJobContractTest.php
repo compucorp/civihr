@@ -3,7 +3,7 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
-use CRM_Hrjobcontract_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision as HRJobContractRevisionFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobHealth as HRJobHealthFabricator;
@@ -22,7 +22,10 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
   TransactionalInterface {
 
   public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    return \Civi\Test::headless()
+      ->install('uk.co.compucorp.civicrm.hrcore')
+      ->installMe(__DIR__)
+      ->apply();
   }
 
   function testFullDetailsResponse() {

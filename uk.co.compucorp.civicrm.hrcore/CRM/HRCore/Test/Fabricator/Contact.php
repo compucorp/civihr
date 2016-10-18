@@ -1,6 +1,6 @@
 <?php
 
-class CRM_Hrjobcontract_Test_Fabricator_Contact {
+class CRM_HRCore_Test_Fabricator_Contact {
 
   private static $defaultParams = [
     'contact_type' => 'Individual',
