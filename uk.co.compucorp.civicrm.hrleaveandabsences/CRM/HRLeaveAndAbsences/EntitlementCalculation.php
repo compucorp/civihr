@@ -123,7 +123,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return float
    */
   public function getProRata() {
-    $contracts = $this->getContractsInPeriod();
+    $contracts = $this->getContractsInPeriodWithAdjustedDates();
     $proRata = array_reduce($contracts, function($proRata, $contract) {
       $proRata += $this->getContractProRata($contract);
 
@@ -149,10 +149,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * @return float
    */
   private function getContractProRata($contract) {
-    if(empty($contract['period_end_date'])) {
-      $contract['period_end_date'] = $this->period->end_date;
-    }
-
     $numberOfWorkingDaysToWork = $this->period->getNumberOfWorkingDaysToWork(
       $contract['period_start_date'],
       $contract['period_end_date']
@@ -406,11 +402,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns an array with all the of the contracts for the calculation's contact
    * during the calculation's Absence Period.
    *
+   * The contract dates are adjusted to match the calculation's Absence Period
+   * dates.
+   *
    * @return array
    *  An array with the output of the HRJobContract.getactivecontractswithdetails
    *  API endpoint
    */
-  private function getContractsInPeriod() {
+  private function getContractsInPeriodWithAdjustedDates() {
     if(is_null($this->contractsInPeriod)) {
       $result = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
         'contact_id' => $this->contact['id'],
@@ -419,6 +418,22 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
       ]);
 
       $this->contractsInPeriod = $result['values'];
+
+      foreach($this->contractsInPeriod as $i => $contract) {
+        if(empty($contract['period_end_date'])) {
+          $contract['period_end_date'] = $this->period->end_date;
+        }
+
+        list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+          $contract['period_start_date'],
+          $contract['period_end_date']
+        );
+
+        $contract['period_start_date'] = $startDate;
+        $contract['period_end_date'] = $endDate;
+
+        $this->contractsInPeriod[$i] = $contract;
+      }
     }
 
     return $this->contractsInPeriod;
@@ -455,21 +470,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   public function getPublicHolidaysInEntitlement() {
     $publicHolidays = [];
 
-    $contracts = $this->getContractsInPeriod();
+    $contracts = $this->getContractsInPeriodWithAdjustedDates();
     foreach($contracts as $contract) {
       $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
 
       if(!empty($jobLeave['add_public_holidays'])) {
-        if(empty($contract['period_end_date'])) {
-          $contract['period_end_date'] = $this->period->end_date;
-        }
-
-        list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+        $publicHolidays += PublicHoliday::getPublicHolidaysForPeriod(
           $contract['period_start_date'],
           $contract['period_end_date']
         );
-
-        $publicHolidays += PublicHoliday::getPublicHolidaysForPeriod($startDate, $endDate);
       }
     }
 
@@ -485,21 +494,15 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   private function getNumberOfPublicHolidaysInEntitlement() {
     $numberOfPublicHolidays = 0;
 
-    $contracts = $this->getContractsInPeriod();
+    $contracts = $this->getContractsInPeriodWithAdjustedDates();
     foreach($contracts as $contract) {
       $jobLeave = $this->getJobLeaveForAbsenceType($contract['id']);
 
       if(!empty($jobLeave['add_public_holidays'])) {
-        if(empty($contract['period_end_date'])) {
-          $contract['period_end_date'] = $this->period->end_date;
-        }
-
-        list($startDate, $endDate) = $this->period->adjustDatesToMatchPeriodDates(
+        $numberOfPublicHolidays += PublicHoliday::getNumberOfPublicHolidaysForPeriod(
           $contract['period_start_date'],
           $contract['period_end_date']
         );
-
-        $numberOfPublicHolidays += PublicHoliday::getNumberOfPublicHolidaysForPeriod($startDate, $endDate);
       }
     }
 
