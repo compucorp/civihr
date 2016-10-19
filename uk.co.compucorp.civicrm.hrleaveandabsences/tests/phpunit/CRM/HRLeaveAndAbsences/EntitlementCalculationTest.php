@@ -116,6 +116,33 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(0, $calculation->getBroughtForward());
   }
 
+  public function testBroughtForwardShouldBeZeroIfThePreviousPeriodIsNotOverYet() {
+    // never expires
+    $type = $this->createAbsenceType([
+      'max_number_of_days_to_carry_forward' => 50,
+    ]);
+
+    $previousPeriod = AbsencePeriod::create([
+      'title' => 'Period 1',
+      'start_date' => date('YmdHis', strtotime('-7 days')),
+      'end_date' => date('YmdHis', strtotime('+5 days')),
+    ]);
+
+    $currentPeriod = AbsencePeriod::create([
+      'title' => 'Period 2',
+      'start_date' => date('YmdHis', strtotime('+6 days')),
+      'end_date' => date('YmdHis', strtotime('+10 days')),
+    ]);
+
+    //Load the period from the database to get the dates back in Y-m-d format.
+    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+
+    $this->createEntitlement($previousPeriod, $type);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getBroughtForward());
+  }
+
   public function testBroughtForwardShouldNotBeMoreThanTheMaxNumberOfDaysAllowedToBeCarriedForward() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 

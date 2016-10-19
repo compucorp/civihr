@@ -384,7 +384,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    */
   private function shouldCalculateBroughtForward() {
     return $this->absenceType->allow_carry_forward &&
-           !$this->broughtForwardHasExpired();
+           !$this->broughtForwardHasExpired() &&
+           $this->previousPeriodIsOver();
   }
 
   /**
@@ -516,5 +517,22 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
     }
 
     return $numberOfPublicHolidays;
+  }
+
+  /**
+   * Checks if the Previous Period is Over. That is, if its end date is in the
+   * past.
+   *
+   * If there is no previous period, this method returns true.
+   *
+   * @return bool
+   */
+  private function previousPeriodIsOver() {
+    $previousPeriod = $this->getPreviousPeriod();
+    if($previousPeriod) {
+      return strtotime($previousPeriod->end_date) < strtotime('now');
+    }
+
+    return true;
   }
 }
