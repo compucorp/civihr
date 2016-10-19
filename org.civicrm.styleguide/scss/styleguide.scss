@@ -5,10 +5,10 @@
 @import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/variables";
 @import "../../org.civicrm.bootstrap/scss/vendor/bootstrap/mixins";
 
-@import "layout";
 @import "mixins/*";
 
 #{$bootstrap-namespace} {
+  @import "vendor/*";
   @import "overrides/style/*";
   @import "components/*";
 }

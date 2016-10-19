@@ -7,13 +7,6 @@
 
 ---------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------
- Layout
----------------------------------------------------------------------------- */
-body {
-  margin: 0;
-  padding-top: 50px;
-}
-/* -------------------------------------------------------------------------
  Utility Classes
 ---------------------------------------------------------------------------- */
 .sg-container {
@@ -62,9 +55,6 @@ body {
 }
 .sg-about {
   margin-top: 2em;
-}
-.row > .page-header {
-  padding-top: 2em;
 }
 /* Buttons
 ---------------------------------------------------------------------------- */
@@ -129,13 +119,13 @@ ul.scroll-menu {
   display: none;
 }
 /* Show specific buttons if JS enabled */
-.js .sg-btn--source,
-.js .sg-btn--select {
+&.js .sg-btn--source,
+&.js .sg-btn--select {
   display: block;
 }
 /* Hide specific buttons conditionally */
-.operamini .sg-btn--source,
-.legacy .sg-btn--source {
+&.operamini .sg-btn--source,
+&.legacy .sg-btn--source {
   display: none;
 }
 /* Sections
@@ -267,13 +257,13 @@ ul.scroll-menu {
 .sg-source pre code {
   background: transparent;
 }
-.js .sg-source {
+&.js .sg-source {
   max-height: 0;
   overflow: hidden;
 }
-.js .sg-source.is-active,
-.operamini .sg-source,
-.legacy .sg-source {
+&.js .sg-source.is-active,
+&.operamini .sg-source,
+&.legacy .sg-source {
   max-height: 2400px;
 }
 /* -------------------------------------------------------------------------

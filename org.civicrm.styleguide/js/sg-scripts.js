@@ -4,8 +4,8 @@
 (function (document, undefined) {
   "use strict";
 
-  // Add js class to body
-  document.getElementsByTagName('body')[0].className+=' js';
+  // Add js class to container
+  document.querySelector('#bootstrap-theme').className+=' js';
 
 
   // Add functionality to toggle classes on elements
@@ -45,9 +45,9 @@
 
   // Cut the mustard
   if ( !Array.prototype.forEach ) {
-    
+
     // Add legacy class for older browsers
-    document.getElementsByTagName('body')[0].className+=' legacy';
+    document.querySelector('#bootstrap-theme').className+=' legacy';
 
   } else {
 
@@ -71,17 +71,17 @@
     }, false);
   }
 
-  
+
   // Add operamini class to body
   if (window.operamini) {
-    document.getElementsByTagName('body')[0].className+=' operamini';    
-  } 
+    document.querySelector('#bootstrap-theme').className+=' operamini';
+  }
   // Opera Mini has trouble with these enhancements
   // So we'll make sure they don't get them
   else {
     // Init prettyprint
     prettyPrint();
-  
+
   }
- 
+
  })(document);

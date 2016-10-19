@@ -2,7 +2,7 @@
   $htmlBuilder = new CRM_Styleguide_HtmlBuilder();
 {/php}
 <section id="bootstrap-theme">
-  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <!-- <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
         <a class="navbar-brand" href="#">Style Guide</a>
@@ -23,10 +23,9 @@
         </li>
       </ul>
     </div>
-  </div>
+  </div> -->
   <div class="sg-body sg-container container">
     <div class="row">
-      <h1 class="page-header">Style Guide Documentation</h1>
       {php}$htmlBuilder->showDocs();{/php}
     </div>
     <div class="row">
