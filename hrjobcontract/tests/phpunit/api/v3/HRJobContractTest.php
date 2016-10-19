@@ -22,23 +22,23 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage The start date parameter can only be used with the = operator
    *
-   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   * @dataProvider invalidGetContractsWithDetailsInPeriodDateOperator
    */
-  public function testOnGetActiveContractsWithDetailsTheStartDateOnlyAcceptsTheEqualOperator($operator) {
-    civicrm_api3('HRJobContract', 'getactivecontractswithdetails', ['start_date' => [$operator => '2016-01-01']]);
+  public function testOnGetContractsWithDetailsInPeriodTheStartDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', ['start_date' => [$operator => '2016-01-01']]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage The end date parameter can only be used with the = operator
    *
-   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   * @dataProvider invalidGetContractsWithDetailsInPeriodDateOperator
    */
-  public function testOnGetActiveContractsWithDetailsTheEndDateOnlyAcceptsTheEqualOperator($operator) {
-    civicrm_api3('HRJobContract', 'getactivecontractswithdetails', ['end_date' => [$operator => '2016-01-01']]);
+  public function testOnGetContractsWithDetailsInPeriodTheEndDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', ['end_date' => [$operator => '2016-01-01']]);
   }
 
-  public function testGetActiveContractsWithDetailsCanReturnContractsOnlyForASingleContact() {
+  public function testGetContractsWithDetailsInPeriodCanReturnContractsOnlyForASingleContact() {
     $this->createContacts(2);
 
     // Contact 1 has 2 contracts
@@ -60,44 +60,44 @@ class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
       '2016-03-03'
     );
 
-    $contact1ActiveContracts = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
+    $contact1Contracts = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'start_date' => '2016-01-01',
       'end_date' => '2016-12-31',
       'contact_id' => $this->contacts[0]['id']
     ]);
 
-    $contact2ActiveContracts = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
+    $contact2Contracts = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'start_date' => '2016-01-01',
       'end_date' => '2016-12-31',
       'contact_id' => $this->contacts[1]['id']
     ]);
 
 
-    $this->assertCount(2, $contact1ActiveContracts['values']);
-    $this->assertCount(1, $contact2ActiveContracts['values']);
+    $this->assertCount(2, $contact1Contracts['values']);
+    $this->assertCount(1, $contact2Contracts['values']);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage The start date parameter can only be used with the = operator
    *
-   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   * @dataProvider invalidGetContractsWithDetailsInPeriodDateOperator
    */
-  public function testOnGetContactsWithActiveContractsTheStartDateOnlyAcceptsTheEqualOperator($operator) {
-    civicrm_api3('HRJobContract', 'getcontactswithactivecontracts', ['start_date' => [$operator => '2016-01-01']]);
+  public function testOnGetContactsWithContractsInPeriodTheStartDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontactswithcontractsinperiod', ['start_date' => [$operator => '2016-01-01']]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage The end date parameter can only be used with the = operator
    *
-   * @dataProvider invalidGetActiveContractsWithDetailsDateOperator
+   * @dataProvider invalidGetContractsWithDetailsInPeriodDateOperator
    */
-  public function testOnGetContactsWithActiveContractsTheEndDateOnlyAcceptsTheEqualOperator($operator) {
-    civicrm_api3('HRJobContract', 'getcontactswithactivecontracts', ['end_date' => [$operator => '2016-01-01']]);
+  public function testOnGetContactsWithContractsInPeriodTheEndDateOnlyAcceptsTheEqualOperator($operator) {
+    civicrm_api3('HRJobContract', 'getcontactswithcontractsinperiod', ['end_date' => [$operator => '2016-01-01']]);
   }
 
-  public function invalidGetActiveContractsWithDetailsDateOperator()
+  public function invalidGetContractsWithDetailsInPeriodDateOperator()
   {
     return [
       ['>'],

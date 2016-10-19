@@ -473,12 +473,13 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Returns a list of active contracts, together with their details.
+   * Returns a list of active contracts, together with their details, for the
+   * given Period
    *
    * If no startDate is given, the current date will be used. If no endDate is
    * given, the startDate will be used for it.
    *
-   * A contract is active if:
+   * A contract will be returned if:
    * - The effective date of current revision is less or equal the startDate OR
    *   it starts someday between the start and end dates
    * - The contract start date and end dates overlaps with the start and end
@@ -493,13 +494,15 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *
    * The contracts are returned ordered by their start date in ascending order.
    *
-   * @param null $startDate
-   * @param null $endDate
-   * @param null $contactID
+   * @param null|string $startDate
+   *  A date string in a format supported by strtotime
+   * @param null|string $endDate
+   *  A date string in a format supported by strtotime
+   * @param null|int $contactID
    *
    * @return array
    */
-  public static function getActiveContractsWithDetails($startDate = null, $endDate = null, $contactID = null)
+  public static function getContractsWithDetailsInPeriod($startDate = null, $endDate = null, $contactID = null)
   {
     if($startDate) {
       $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
@@ -598,7 +601,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Returns an array of contacts with active contracts during the given start
+   * Returns an array of contacts with contracts during the given start
    * and end dates. Each contact on the list has an ID and its display name.
    *
    * If no startDate is given, the current date will be used. If no endDate is
@@ -607,13 +610,13 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * The list is ordered by the contact's display name
    *
    * @param string|null $startDate
-   *  A date in Y-m-d format
+   *  A date string in a format supported by strtotime
    * @param string|null $endDate
-   *  A date in Y-m-d format
+   *  A date string in a format supported by strtotime
    *
    * @return array
    */
-  public static function getContactsWithActiveContracts($startDate = null, $endDate = null) {
+  public static function getContactsWithContractsInPeriod($startDate = null, $endDate = null) {
     if($startDate) {
       $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
     } else {

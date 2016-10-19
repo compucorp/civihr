@@ -406,12 +406,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * dates.
    *
    * @return array
-   *  An array with the output of the HRJobContract.getactivecontractswithdetails
+   *  An array with the output of the HRJobContract.getContractsWithDetailsInPeriod
    *  API endpoint
    */
   private function getContractsInPeriodWithAdjustedDates() {
     if(is_null($this->contractsInPeriod)) {
-      $result = civicrm_api3('HRJobContract', 'getactivecontractswithdetails', [
+      $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
         'contact_id' => $this->contact['id'],
         'start_date' => $this->period->start_date,
         'end_date'   => $this->period->end_date

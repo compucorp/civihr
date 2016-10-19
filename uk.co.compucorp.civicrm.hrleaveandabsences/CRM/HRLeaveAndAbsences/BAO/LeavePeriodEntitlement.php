@@ -444,7 +444,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return array The array with the dates
    */
   private function getContractDatesForContactInPeriod(AbsencePeriod $absencePeriod) {
-    $result = civicrm_api3('HRJobContract', 'getActiveContractsWithDetails', [
+    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $this->contact_id,
       'start_date' => $absencePeriod->start_date,
       'end_date'   => $absencePeriod->end_date

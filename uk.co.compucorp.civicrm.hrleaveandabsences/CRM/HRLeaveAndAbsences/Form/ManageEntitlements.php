@@ -174,7 +174,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   /**
    * Returns a list of contacts to run the entitlement calculation for.
    *
-   * By default, it returns all the Contacts which have at least one active
+   * By default, it returns all the Contacts which have at least one
    * contract during the given Absence Period. If the request contains the
    * "cid" parameter, it will only return the the contact with the give IDs
    * (only if they have active contracts).
@@ -185,11 +185,11 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   private function getContactsForCalculation(AbsencePeriod $absencePeriod) {
     $contactsIDs = $this->getContactsIDsFromRequest();
-    return $this->getContactsWithActiveContractsDuringPeriod($absencePeriod, $contactsIDs);
+    return $this->getContactsWithContractsInPeriod($absencePeriod, $contactsIDs);
   }
 
   /**
-   * Returns an array containing all contacts with active contracts for the given
+   * Returns an array containing all contacts with contracts for the given
    * AbsencePeriod.
    *
    * This method uses the HRJobContract API to retrieve the contacts, so the
@@ -205,9 +205,9 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    *
    * @return array
    */
-  private function getContactsWithActiveContractsDuringPeriod(AbsencePeriod $absencePeriod, $filter = []) {
+  private function getContactsWithContractsInPeriod(AbsencePeriod $absencePeriod, $filter = []) {
     try {
-      $contacts = civicrm_api3('HRJobContract', 'getcontactswithactivecontracts' , [
+      $contacts = civicrm_api3('HRJobContract', 'getcontactswithcontractsinperiod' , [
         $absencePeriod->start_date,
         $absencePeriod->end_date
       ])['values'];
