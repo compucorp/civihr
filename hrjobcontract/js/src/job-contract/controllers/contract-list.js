@@ -7,16 +7,17 @@ define([
     'job-contract/services/contract-leave',
     'job-contract/services/contract-pay',
     'job-contract/services/contract-pension',
-    'job-contract/services/utils'
+    'job-contract/services/utils',
+    'common/services/pub-sub',
 ], function (controllers) {
     'use strict';
 
     controllers.controller('ContractListCtrl',['$scope','$rootElement','$rootScope','$uibModal','$q', '$filter', '$sce',
         'contractList','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService',
-        'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService','settings', '$log',
+        'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService','settings', '$log', 'pubSub',
         function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, contractList, ContractService, ContractDetailsService,
                  ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
-                 UtilsService, settings, $log){
+                 UtilsService, settings, $log, pubSub){
             $log.debug('Controller: ContractListCtrl');
 
             var entityServices = {
@@ -196,6 +197,8 @@ define([
                       if (!result.is_error) {
                         ContractService.updateHeaderInfo();
                         removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
+
+                        pubSub.publish('contract-refresh');
                       }
                     });
                   }

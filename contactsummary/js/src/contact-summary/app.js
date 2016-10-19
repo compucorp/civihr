@@ -14,6 +14,7 @@ define([
         'ngRoute',
         'ngResource',
         'ui.bootstrap',
+        'common.services',
         'contactsummary.controllers',
         'contactsummary.directives',
         'contactsummary.filters',

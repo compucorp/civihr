@@ -3,6 +3,7 @@ define([
     'common/services/angular-date/date-format',
     'common/services/dom-event-trigger',
     'common/modules/routers/compu-ng-route',
+    'common/modules/directives',
     'common/directives/angular-date/date-input',
     'job-roles/vendor/angular-editable',
     'job-roles/vendor/angular-filter',

@@ -1,103 +1,69 @@
 define([
-    'job-roles/services/services'
-], function (services) {
+  'common/lodash',
+  'job-roles/services/services'
+], function (_, services) {
     'use strict';
 
     services.factory('HRJobRolesService', ['$log', '$q', '$filter', function ($log, $q, $filter) {
 
+        /**
+         * Extracts the contract revisions details from the chained api calls
+         * properties, then removes the current one and format the dates
+         *
+         * @param  {Object} contract
+         */
+        function processContractRevisions(contract) {
+          var contractRevisions = contract['api.HRJobContractRevision.get'].values;
+          delete(contract['api.HRJobContractRevision.get']);
+
+          contract.revisions = _.compact(contractRevisions
+            .map(function (revision) {
+              var details = revision['api.HRJobDetails.getsingle'];
+
+              if (details.period_start_date === contract.period_start_date
+              && details.period_end_date === contract.period_end_date) {
+                return null;
+              }
+
+              details.period_start_date = $filter('formatDate')(details.period_start_date);
+              details.period_end_date = $filter('formatDate')(details.period_end_date);
+
+              return details;
+            }));
+        }
+
         return {
+
             /**
              * Gets all contracts and revisions
-             * @param contact_id
+             *
+             * @param {string} contactId
              * @returns {promise}
              */
-            getContracts: function (contact_id) {
-                var deferred = $q.defer();
+            getContracts: function (contactId) {
+              var deferred = $q.defer();
 
-                /**
-                 * Get contracts for given contact.
-                 */
-                CRM.api3('HRJobContract', 'get', {
-                    "sequential": 1,
-                    "contact_id": contact_id,
-                    "deleted": 0,
-                    "return": "title,period_end_date,period_start_date"
-                }).done(function (contracts) {
-                    // get revisions for each contract
-                    var revisions = contracts.values.map(function (contract) {
-                        return CRM.api3('HRJobContractRevision', 'get', {
-                            "sequential": 1,
-                            "jobcontract_id": contract.id
-                        }).then(function (response) {
-                            return response.values.map(function (item) {
-                                return {
-                                    id: item.id,
-                                    contract_id: item.jobcontract_id
-                                }
-                            });
-                        });
-                    });
+              CRM.api3('HRJobContract', 'get', {
+                'sequential': 1,
+                'contact_id': contactId,
+                'deleted': 0,
+                'return': 'title,period_end_date,period_start_date',
+                'api.HRJobContractRevision.get': {
+                  'jobcontract_id': '$value.id',
+                  'api.HRJobDetails.getsingle': {
+                    'jobcontract_revision_id': '$value.id'
+                  }
+                }
+              })
+              .done(function (contracts) {
+                contracts.values.forEach(processContractRevisions);
+                deferred.resolve(contracts);
+              })
+              .error(function () {
+                deferred.reject('An error occured while fetching items');
+              });
 
-                    $q.all(revisions).then(function (response) {
-                        // Flatten the array of revisions
-                        return [].concat.apply([], response);
-                    }).then(function (response) {
-                        // get details for each revision
-                        return $q.all(response.map(function (item) {
-                            return CRM.api3('HRJobDetails', 'get', {
-                                "sequential": 1,
-                                "jobcontract_revision_id": item.id
-                            }).then(function (result) {
-                                result.job_contract_id = item.contract_id;
-                                return result;
-                            });
-                        }));
-                    }).then(function (revisions) {
-                        // for each contract
-                        contracts.values.forEach(function (contract) {
-
-                            // filter revisions by contract.id and remove current
-                            contract.revisions = revisions.filter(function (revision) {
-                                var isCurrent = (revision.values[0].period_start_date === contract.period_start_date
-                                && revision.values[0].period_end_date === contract.period_end_date);
-
-                                return !isCurrent && revision.job_contract_id === contract.id;
-                            });
-
-                            // save revisions in contract.revisions with properly formatted dates
-                            contract.revisions = contract.revisions.map(function (revisions) {
-                                var revision = revisions.values[0];
-                                revision.period_start_date = $filter('formatDate')(revision.period_start_date);
-                                revision.period_end_date = $filter('formatDate')(revision.period_end_date);
-                                return revision;
-                            });
-                        });
-
-                        // Passing data to deferred's resolve function on successful completion
-                        deferred.resolve(contracts);
-                    });
-                }).error(function (result) {
-
-                    // Sending a friendly error message in case of failure
-                    deferred.reject("An error occured while fetching items");
-
-                });
-
-                // Returning the promise object
-                return deferred.promise;
-            },
-
-            getContractDetails: function getContractDetails(id) {
-                return CRM.api3('HRJobContractRevision', 'getcurrentrevision', {
-                    "sequential": 1,
-                    "jobcontract_id": id
-                }).then(function (result) {
-                    return CRM.api3('HRJobDetails', 'get', {
-                        "sequential": 1,
-                        "jobcontract_id": id,
-                        "jobcontract_revision_id": result.values.details_revision_id
-                    });
-                });
+              return deferred.promise;
             },
 
             getAllJobRoles: function (job_contract_ids) {
@@ -364,58 +330,46 @@ define([
 
             },
 
-            getOptionValues: function (option_group_name) {
+            /**
+             * Returns the option values of the given option groups
+             *
+             * In addition to the standard CiviCRM api response, a property
+             * called `optionGroupData` is attached, containing a list
+             * of group name/group id pairs
+             *
+             * @param  {Array} groupNames
+             * @return {Promise}
+             */
+            getOptionValues: function (groupNames) {
+              var deferred = $q.defer();
 
-                var deferred = $q.defer();
+              CRM.api3('OptionValue', 'get', {
+                'sequential': 1,
+                'option_group_id.name': { 'IN': groupNames },
+                'return': [ 'id', 'label', 'weight', 'value', 'option_group_id', 'option_group_id.name' ],
+                'options': {
+                  'limit': 1000,
+                  'sort': 'id'
+                }
+              })
+              .done(function (result) {
+                result.optionGroupData = _(result.values)
+                  .map(function (optionValue) {
+                    return [
+                      optionValue['option_group_id.name'],
+                      optionValue.option_group_id
+                    ];
+                  })
+                  .zipObject()
+                  .value();
 
-                // Define option group names and IDs
-                var optionGroupData = {};
+                deferred.resolve(result);
+              })
+              .error(function (result) {
+                deferred.reject("An error occured while fetching items");
+              });
 
-                CRM.api3('OptionGroup', 'get', {
-                    "sequential": 1,
-                    "name": { "IN": option_group_name },
-                    "options": { "limit": 1000 }
-                }).done(function (option_group_data) {
-                    if (option_group_data.is_error !== 1) {
-
-                        var option_group_ids = [];
-
-                        angular.forEach(option_group_data['values'], function (option_group, key) {
-
-                            // Store the option group names and IDs
-                            optionGroupData[option_group['name']] = option_group['id'];
-
-                            // Prepare option group IDs for the API call
-                            option_group_ids.push(option_group['id']);
-
-                        });
-
-                        CRM.api3('OptionValue', 'get', {
-                            "sequential": 1,
-                            "option_group_id": { "IN": option_group_ids },
-                            "options": { "limit": 1000 }
-                        }).done(function (result) {
-
-                            // Pass the additional info about optionGroupData
-                            result['optionGroupData'] = optionGroupData;
-
-                            // Passing data to deferred's resolve function on successful completion
-                            deferred.resolve(result);
-
-                        }).error(function (result) {
-
-                            // Sending a friendly error message in case of failure
-                            deferred.reject("An error occured while fetching items");
-
-                        });
-
-                    }
-
-                });
-
-                // Returning the promise object
-                return deferred.promise;
-
+              return deferred.promise;
             },
 
             getNewJobRole: function (contract_id) {

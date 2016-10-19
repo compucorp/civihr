@@ -7,7 +7,7 @@ define([
 ], function (angular, controllers, moment, _) {
   'use strict';
 
-  controllers.controller('HRJobRolesController',[
+  controllers.controller('HRJobRolesController', [
     '$scope', '$log', '$routeParams', '$route', '$timeout', '$filter', '$q',
     'HR_settings', 'HRJobRolesService', 'DateValidation', 'HRJobRolesServiceFilters',
     'DOMEventTrigger',
@@ -465,9 +465,6 @@ define([
             // Remove if any data are added / Reset form
             delete $scope.edit_data['new_role_id'];
 
-            // Hide the empty message if visible
-            $scope.empty = false;
-
             return getJobRolesList($scope.$parent.contactId);
           });
         }
@@ -691,7 +688,7 @@ define([
 
       // Get the contact list and store the data
 
-      job_roles.getContactList = function(sortName, showMessage) {
+      job_roles.getContactList = function(sortName) {
         var successCallback = function (data) {
 
           var contact,
@@ -718,11 +715,6 @@ define([
             job_roles.contactList = contactList;
             // Store the object too, so we can point to right values by Contact ID
             job_roles.contactListObject = contactListObject;
-
-            if(showMessage) { //dont show message when user types, show only first time
-              job_roles.message_type = 'alert-success';
-              job_roles.message = 'Contact list OK!';
-            }
           }
 
           // Hide the message after some seconds
@@ -736,7 +728,7 @@ define([
 
         HRJobRolesService.getContactList(sortName).then(successCallback,errorCallback);
       };
-      job_roles.getContactList(null, true);
+      job_roles.getContactList();
 
       function getOptionValues() {
 
@@ -848,10 +840,9 @@ define([
 
               // Store the Level types what we can reuse later
               $scope.CostCentreList = CostCentreList;
-              $log.info($scope.CostCentreList);
 
               job_roles.message_type = 'alert-success';
-              job_roles.message = 'Option values list OK!';
+              job_roles.message = null;
             }
 
             // Hide the message after some seconds
@@ -877,32 +868,29 @@ define([
           var contractsData = {};
 
           // If we have job contracts, try to get the job roles for the contract
-          if (data.count !== 0) {
-            for (var i = 0; i < data.count; i++) {
-              // Job contract IDs which will be passed to the "getAllJobRoles" service
-              jobContractIds.push(data.values[i]['id']);
+          for (var i = 0; i < data.count; i++) {
+            // Job contract IDs which will be passed to the "getAllJobRoles" service
+            jobContractIds.push(data.values[i]['id']);
 
-              var contract = {
-                id: data.values[i]['id'],
-                title: data.values[i]['title'],
-                start_date: data.values[i]['period_start_date'],
-                end_date: data.values[i]['period_end_date'],
-                status: status,
-                is_current: data.values[i]['is_current'],
-                revisions: data.values[i]['revisions']
-              };
+            var contract = {
+              id: data.values[i]['id'],
+              title: data.values[i]['title'],
+              start_date: data.values[i]['period_start_date'],
+              end_date: data.values[i]['period_end_date'],
+              status: status,
+              is_current: data.values[i]['is_current'],
+              revisions: data.values[i]['revisions']
+            };
 
-              var optionalEndDate = formatDate(contract.end_date) || 'Unspecified';
-              contract.label = contract.title + ' (' + formatDate(contract.start_date) + ' - ' + optionalEndDate + ')';
+            var optionalEndDate = formatDate(contract.end_date) || 'Unspecified';
+            contract.label = contract.title + ' (' + formatDate(contract.start_date) + ' - ' + optionalEndDate + ')';
 
-              contractsData[data.values[i]['id']] = contract;
-            }
-
-            // Store the ContractsData what we can reuse later
-            job_roles.contractsData = contractsData;
-          } else {
-            job_roles.empty = 'No Job Contracts found for this Contact!';
+            contractsData[data.values[i]['id']] = contract;
           }
+
+          // Store the ContractsData what we can reuse later
+          job_roles.contractsData = contractsData;
+
 
           job_roles.job_contract_ids = jobContractIds;
 
@@ -941,10 +929,6 @@ define([
 
           if (data.is_error === 1) {
             job_roles.error = 'Data load failure';
-          } else if (data.count === 0) {
-            job_roles.empty = 'No Job Roles found!';
-          } else {
-            job_roles.empty = null;
           }
 
           job_roles.status = 'Data load OK';
