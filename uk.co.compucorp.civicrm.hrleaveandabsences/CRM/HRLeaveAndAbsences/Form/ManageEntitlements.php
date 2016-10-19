@@ -355,11 +355,15 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    * @return array
    */
   private function getAvailableButtons() {
+    $buttonName = ts('Save new entitlements');
+    if($this->hasMorePeriodsToCalculate()) {
+      $buttonName = ts('Save and go to the next period');
+    }
     $buttons = [
       [
         'type'      => 'next',
         'class'     => 'save-new-entitlements-button',
-        'name'      => ts('Save new entitlements'),
+        'name'      => $buttonName,
         'isDefault' => TRUE
       ],
     ];
@@ -417,5 +421,15 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       'reset=1&id=' . $period->id . '&' . http_build_query(['cid' => $contactsIDs])
     );
     return $url;
+  }
+
+  /**
+   * Returns true is there are more Absence Periods available to calculate the
+   * entitlements
+   *
+   * @return bool
+   */
+  private function hasMorePeriodsToCalculate() {
+    return $this->absencePeriod->getNextPeriod() != null;
   }
 }
