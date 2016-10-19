@@ -458,24 +458,6 @@ function _hrjobcontract_phpunit_populateDB() {
 }
 
 function hrjobcontract_civicrm_export( $exportTempTable, $headerRows, $sqlColumns, $exportMode ) {
-  // Replace contract type option values with respective labels
-  if(isset($sqlColumns['hrjobcontract_details_contract_type'])) {
-    $udpateConditions  = "";
-    $valueLabelMap = getContractTypeOptions();
-
-    // Generate update condition string to update all values in single query
-    foreach($valueLabelMap as $value => $label) {
-      $updateConditions .= " WHEN hrjobcontract_details_contract_type = '{$value}' ";
-      $updateConditions .= " Then '{$label}' ";
-    }
-    $sql = "UPDATE {$exportTempTable} SET hrjobcontract_details_contract_type =
-            CASE
-            {$updateConditions}
-            ELSE hrjobcontract_details_contract_type
-            END";
-    CRM_Core_DAO::executeQuery($sql);
-  }
-
   if ($exportMode == CRM_Export_Form_Select::EXPORT_ALL && !empty($_POST['unchange_export_selected_column'])) {
     //drop column from table -- HR-379
     $col = array('do_not_trade', 'do_not_email');
@@ -494,14 +476,16 @@ function hrjobcontract_civicrm_export( $exportTempTable, $headerRows, $sqlColumn
         }
         $i++;
       }
-      CRM_Export_BAO_Export::writeCSVFromTable($exportTempTable, $headerRows, $sqlColumns, $exportMode);
-
-      // delete the export temp table
-      $sql = "DROP TABLE IF EXISTS {$exportTempTable}";
-      CRM_Core_DAO::executeQuery($sql);
-      CRM_Utils_System::civiExit();
     }
   }
+
+  // Here we call custom writeCSVFromTable method instead
+  // of CRM_Export_BAO_Export::writeCSVFromTable. It allows us to convert
+  // Job Contract entity values to proper export format.
+  CRM_Hrjobcontract_Export_Export::writeCSVFromTable($exportTempTable, $headerRows, $sqlColumns, $exportMode);
+  $sql = "DROP TABLE IF EXISTS {$exportTempTable}";
+  CRM_Core_DAO::executeQuery($sql);
+  CRM_Utils_System::civiExit();
 }
 
 function hrjobcontract_civicrm_merge($type, &$data, $mainId = NULL, $otherId = NULL, $tables = NULL) {
