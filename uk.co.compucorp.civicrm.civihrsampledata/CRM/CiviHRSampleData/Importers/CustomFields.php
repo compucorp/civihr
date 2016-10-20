@@ -1,17 +1,18 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_VacancyStage
+ * Class CRM_CiviHRSampleData_Importer_VacancyStage
  *
  */
-class CRM_CiviHRSampleData_Importers_CustomFields extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_CustomFields extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @var array To store columns IDs/Names
+   * Stores custom group columns (fields) IDs/Names
+   *
+   * @var array
    */
-  protected $columns =[];
+  protected $columns = [];
 
   public function __construct($customGroupName) {
     $this->columns = $this->getFixData('CustomField', 'name', 'id', [
@@ -19,6 +20,12 @@ class CRM_CiviHRSampleData_Importers_CustomFields extends CRM_CiviHRSampleData_D
     ]);
   }
 
+  /**
+   * {@inheritdoc}
+   * Generic method to handle custom fields import
+   *
+   * @param array $row
+   */
   protected function insertRecord(array $row) {
     $toInsert['entity_id'] = $row['entity_id'];
 
@@ -31,7 +38,5 @@ class CRM_CiviHRSampleData_Importers_CustomFields extends CRM_CiviHRSampleData_D
 
     $this->callAPI('CustomValue', 'create', $toInsert);
   }
-
-
 
 }

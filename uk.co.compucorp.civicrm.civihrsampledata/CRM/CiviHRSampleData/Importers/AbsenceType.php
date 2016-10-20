@@ -1,20 +1,20 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_AbsenceType
+ * Class CRM_CiviHRSampleData_Importer_AbsenceType
  *
  */
-class CRM_CiviHRSampleData_Importers_AbsenceType extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_AbsenceType extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
+   * {@inheritdoc}
+   *
    * @param array $row
    */
   protected function insertRecord(array $row) {
-    $isExist = $this->callAPI('HRAbsenceType', 'getcount', ['name' => $row['name']]);
-    if (!$isExist) {
+    $absenceTypeExists = $this->callAPI('HRAbsenceType', 'getcount', ['name' => $row['name']]);
+    if (!$absenceTypeExists) {
       $this->callAPI('HRAbsenceType', 'create', $row);
     }
   }

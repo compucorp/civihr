@@ -1,15 +1,15 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_Vacancy
+ * Class CRM_CiviHRSampleData_Importer_Vacancy
  *
  */
-class CRM_CiviHRSampleData_Importers_Vacancy extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_Vacancy extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
+   * {@inheritdoc}
+   *
    * @param array $row
    */
   protected function insertRecord(array $row) {

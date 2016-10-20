@@ -1,16 +1,17 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_ContactEmail
+ * Class CRM_CiviHRSampleData_Importer_ContactEmail
  *
  */
-class CRM_CiviHRSampleData_Importers_ContactEmail extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_ContactEmail extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
-   * @param array $row Should at least contain `contact_id` & `email`
+   * {@inheritdoc}
+   *
+   * @param array $row
+   *   Should at least contain `contact_id` & `email`
    */
   protected function insertRecord(array $row) {
     $row['contact_id'] = $this->getDataMapping('contact_mapping', $row['contact_id']);

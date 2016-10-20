@@ -1,17 +1,18 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_VacancyStage
+ * Class CRM_CiviHRSampleData_Importer_VacancyStage
  *
  */
-class CRM_CiviHRSampleData_Importers_VacancyStage extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_VacancyStage extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @var array To store case statuses names/values
+   * Stores case statuses names/values
+   *
+   * @var array
    */
-  private $caseStatuses =[];
+  private $caseStatuses = [];
 
   public function __construct() {
     $this->caseStatuses = $this->getFixData('OptionValue', 'name', 'value', [
@@ -20,8 +21,10 @@ class CRM_CiviHRSampleData_Importers_VacancyStage extends CRM_CiviHRSampleData_D
   }
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
-   * @param array $row Should at least contain `case_status_id` & `vacancy_id`
+   * {@inheritdoc}
+   *
+   * @param array $row
+   *   Should at least contain `case_status_id` & `vacancy_id`
    */
   protected function insertRecord(array $row) {
     $row['vacancy_id'] = $this->getDataMapping('vacancy_mapping', $row['vacancy_id']);

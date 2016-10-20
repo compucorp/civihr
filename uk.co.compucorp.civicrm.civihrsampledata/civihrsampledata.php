@@ -29,7 +29,10 @@ function civihrsampledata_civicrm_install() {
  * Implementation of hook_civicrm_postInstall
  */
 function civihrsampledata_civicrm_postInstall() {
-  _civihrsampledata_importSampleData();
+  $extensionDirectory = CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.civihrsampledata');
+
+  _civihrsampledata_copyContactPhotos($extensionDirectory);
+  _civihrsampledata_importSampleData($extensionDirectory);
 }
 
   /**
@@ -77,11 +80,26 @@ function civihrsampledata_civicrm_managed(&$entities) {
 }
 
 /**
- * Import CiviHR sample data
+ * Copies photos to the public CiviCRM directory
+ *
+ * @param string $extensionDirectory
  */
-function _civihrsampledata_importSampleData() {
+function _civihrsampledata_copyContactPhotos($extensionDirectory) {
+  $imgDir = $extensionDirectory . "/resources/photos/";
+  $config = CRM_Core_Config::singleton();
+  $uploadDir= $config->customFileUploadDir;
 
-  $csvDir = CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.civihrsampledata') . "/resources/csv";
+  $copier = new CRM_CiviHRSampleData_FileCopier();
+  $copier->recurseCopy($imgDir, $uploadDir);
+}
+/**
+ * Imports CiviHR sample data
+ *
+ * @param string $extensionDirectory
+ */
+function _civihrsampledata_importSampleData($extensionDirectory) {
+
+  $csvDir = $extensionDirectory . "/resources/csv";
 
   // These files will be imported in order
   $csvFiles  = [
@@ -109,8 +127,13 @@ function _civihrsampledata_importSampleData() {
   ];
 
   foreach($csvFiles as $class => $file) {
-    $importerClassName = "CRM_CiviHRSampleData_Importers_{$class}";
-    $importer = new $importerClassName();
-    $importer->import("{$csvDir}/{$file}.csv");
+    $fileToImport = new SplFileObject("{$csvDir}/{$file}.csv");
+
+    $importerClassName = "CRM_CiviHRSampleData_Importer_{$class}";
+    $importer = new $importerClassName($fileToImport);
+    $importer->import();
+
+    $fileToImport = null;
   }
 }
+

@@ -1,27 +1,32 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_JobContract
+ * Class CRM_CiviHRSampleData_Importer_JobContract
  *
  */
-class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_JobContract extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @var array To store standard hours IDs/locations
+   * Stores standard hours IDs/locations
+   *
+   * @var array
    */
-  private $standardHours =[];
+  private $standardHours = [];
 
   /**
-   * @var array To store pay scales IDs/Names
+   * Stores pay scales IDs/Names
+   *
+   * @var array
    */
-  private $payScales =[];
+  private $payScales = [];
 
   /**
-   * @var array To store absence types types
+   * Stores absence types
+   *
+   * @var array
    */
-  private $absenceTypes =[];
+  private $absenceTypes = [];
 
 
   public function __construct() {
@@ -30,6 +35,11 @@ class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_Da
     $this->absenceTypes = $this->getFixData('HRAbsenceType', 'name', 'id');
   }
 
+  /**
+   * {@inheritdoc}
+   *
+   * @param array $row
+   */
   protected function insertRecord(array $row) {
     $entities = $this->parseRow($row);
 
@@ -62,12 +72,10 @@ class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_Da
     ];
 
     foreach($entitiesList as $entity) {
-      // Prepare Job Leave Data before insert
       if ($entity == 'HRJobLeave') {
         $this->prepareLeaveData($entities['HRJobLeave'], $contractID, $currentRevisionID);
       }
 
-      // Create entity record
       $result = $this->createEntityRecord($entity, $entities[$entity], $contractID, $currentRevisionID);
 
       if ($entity == 'HRJobContract') {
@@ -80,40 +88,16 @@ class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_Da
     }
 
     $this->setDataMapping('contracts_mapping', $currentID, $contractID);
-
-    /*$transaction = new CRM_Core_Transaction();
-    try {
-      foreach($entitiesList as $entity) {
-        // Prepare Job Leave Data before insert
-        if ($entity == 'HRJobLeave') {
-          $this->prepareLeaveData($entities['HRJobLeave'], $contractID, $currentRevisionID);
-        }
-
-        // Create entity record
-        $result = $this->createEntityRecord($entity, $entities[$entity], $contractID, $currentRevisionID);
-
-        if ($entity == 'HRJobContract') {
-          $contractID = $result['id'];
-        }
-
-        if ($entity == 'HRJobDetails') {
-          $currentRevisionID = $result['values'][0]['jobcontract_revision_id'];
-        }
-      }
-
-      $this->setDataMapping('contracts_mapping', $currentID, $contractID);
-
-    } catch(CiviCRM_API3_Exception $e) {
-      $transaction->rollback();
-    }*/
   }
 
 
   /**
-   * Parse and separate row columns into separate entities
+   * Parses and separates row columns into separate entities
    *
    * @param array $row
-   * @return array associative array in
+   *
+   * @return array
+   *   Associative array in the following format :
    *   ['entity_1' => ['filed_1' => 'value_1', ..etc]], 'entity_2' => ['filed_2' => 'value_2']..etc]]
    */
   private function parseRow($row) {
@@ -126,12 +110,16 @@ class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_Da
   }
 
   /**
-   * Create a record for the specified job contract entity.
+   * Creates a record for the specified job contract entity.
    *
-   * @param string $entity Job Contract Entity Name to create record for.
-   * @param array $data Array of entity record data to insert.
-   * @param int|NULL $contractID Contract ID if exist.
-   * @param int|NULL $revisionID Revision ID if exist.
+   * @param string $entity
+   *   Job Contract Entity Name to create record for.
+   * @param array $data
+   *   Array of entity record data to insert.
+   * @param int|NULL $contractID
+   *   Contract ID if exist.
+   * @param int|NULL $revisionID
+   *   Revision ID if exist.
    *
    * @return array
    */
@@ -151,9 +139,10 @@ class CRM_CiviHRSampleData_Importers_JobContract extends CRM_CiviHRSampleData_Da
   }
 
   /**
-   * Prepare Job Leave entity data for valid API format.
+   * Prepares Job Leave entity data to a valid API format.
    *
-   * @param array $row Job leave entity data.
+   * @param array $row
+   *   Job leave entity data.
    * @param int $contractID
    * @param int $revisionID
    */

@@ -1,24 +1,24 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_LocationType
+ * Class CRM_CiviHRSampleData_Importer_LocationType
  *
  */
-class CRM_CiviHRSampleData_Importers_LocationType extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_LocationType extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
-   * @param array $row Should at least contain `name`
+   * {@inheritdoc}
+   *
+   * @param array $row
+   *   Should at least contain `name`
    */
   protected function insertRecord(array $row) {
-    $isExist = $this->callAPI('LocationType', 'getcount', [
+    $LocationTypeExists = $this->callAPI('LocationType', 'getcount', [
       'name' => $row['name'],
     ]);
 
-    //  If there is no location type with the same name then create it
-    if (!$isExist) {
+    if (!$LocationTypeExists) {
       $this->callAPI('LocationType', 'create', $row);
     }
   }

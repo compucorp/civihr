@@ -1,17 +1,18 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_JobRoles
+ * Class CRM_CiviHRSampleData_Importer_JobRoles
  *
  */
-class CRM_CiviHRSampleData_Importers_JobRoles extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_JobRoles extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @var array To store cost centers names/values
+   * Stores cost centers names/values
+   *
+   * @var array
    */
-  private $costCenters =[];
+  private $costCenters = [];
 
 
   public function __construct() {
@@ -21,8 +22,10 @@ class CRM_CiviHRSampleData_Importers_JobRoles extends CRM_CiviHRSampleData_DataI
   }
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
-   * @param array $row Should at least contain `job_contract_id`
+   * {@inheritdoc}
+   *
+   * @param array $row
+   *   Should at least contain `job_contract_id`
    */
   protected function insertRecord(array $row) {
     $row['job_contract_id'] = $this->getDataMapping('contracts_mapping', $row['job_contract_id']);

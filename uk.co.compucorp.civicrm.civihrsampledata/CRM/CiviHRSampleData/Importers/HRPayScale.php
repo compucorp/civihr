@@ -1,20 +1,20 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_HRPayScale
+ * Class CRM_CiviHRSampleData_Importer_HRPayScale
  *
  */
-class CRM_CiviHRSampleData_Importers_HRPayScale extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_HRPayScale extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
+   * {@inheritdoc}
+   *
    * @param array $row
    */
   protected function insertRecord(array $row) {
-    $isExist = $this->callAPI('HRPayScale', 'getcount', $row);
-    if (!$isExist) {
+    $payScaleExists = $this->callAPI('HRPayScale', 'getcount', $row);
+    if (!$payScaleExists) {
       $this->callAPI('HRPayScale', 'create', $row);
     }
   }

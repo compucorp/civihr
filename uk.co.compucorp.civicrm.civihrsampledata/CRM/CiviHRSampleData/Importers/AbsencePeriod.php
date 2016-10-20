@@ -1,11 +1,10 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_AbsencePeriod
+ * Class CRM_CiviHRSampleData_Importer_AbsencePeriod
  *
  */
-class CRM_CiviHRSampleData_Importers_AbsencePeriod extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_AbsencePeriod extends CRM_CiviHRSampleData_DataImporter
 {
 
   public function __construct() {
@@ -13,7 +12,8 @@ class CRM_CiviHRSampleData_Importers_AbsencePeriod extends CRM_CiviHRSampleData_
   }
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
+   * {@inheritdoc}
+   *
    * @param array $row
    */
   protected function insertRecord(array $row) {
@@ -21,11 +21,20 @@ class CRM_CiviHRSampleData_Importers_AbsencePeriod extends CRM_CiviHRSampleData_
   }
 
   /**
-   * Remove any existing absence period.
+   * Removes existing absence period.
    */
   private function removeAllPeriods() {
-    $query = "DELETE FROM civicrm_hrabsence_period";
-    CRM_Core_DAO::executeQuery($query);
+    $absencePeriods = $this->callAPI('HRAbsencePeriod', 'get', [
+      'sequential' => 1,
+      'return' => ["id"],
+      'options' => ['limit' => 0],
+    ]);
+
+    foreach($absencePeriods['values'] as $absencePeriod) {
+      $this->callAPI('HRAbsencePeriod', 'delete', [
+        'id' => $absencePeriod['id'],
+      ]);
+    }
   }
 
 }

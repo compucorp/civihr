@@ -1,15 +1,15 @@
 <?php
 
-
 /**
- * Class CRM_CiviHRSampleData_Importers_Activity
+ * Class CRM_CiviHRSampleData_Importer_Activity
  *
  */
-class CRM_CiviHRSampleData_Importers_Activity extends CRM_CiviHRSampleData_DataImporter
+class CRM_CiviHRSampleData_Importer_Activity extends CRM_CiviHRSampleData_DataImporter
 {
 
   /**
-   * @see CRM_CiviHRSampleData_DataImporter::insertRecord
+   * {@inheritdoc}
+   *
    * @param array $row
    */
   protected function insertRecord(array $row) {
@@ -21,11 +21,11 @@ class CRM_CiviHRSampleData_Importers_Activity extends CRM_CiviHRSampleData_DataI
 
     $row['source_contact_id'] = $this->getDataMapping('contact_mapping', $row['source_contact_id']);
 
-    if (isset($row['assignee_id']) && $row['assignee_id'] != '') {
+    if (!empty($row['assignee_id'])) {
       $row['assignee_id'] = $this->getDataMapping('contact_mapping', $row['assignee_id']);
     }
 
-    if (isset($row['target_id']) && $row['target_id'] != '') {
+    if (!empty($row['target_id'])) {
       $row['target_id'] = $this->getDataMapping('contact_mapping', $row['target_id']);
     }
 
