@@ -470,7 +470,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    *
    * @return int
    */
-  private function getNumberOfPublicHolidaysInEntitlement() {
+  public function getNumberOfPublicHolidaysInEntitlement() {
     $numberOfPublicHolidays = 0;
 
     $calculations = $this->getContractEntitlementCalculations();

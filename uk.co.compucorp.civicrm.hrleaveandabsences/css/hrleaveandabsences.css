@@ -141,3 +141,18 @@
 .crm-container .CRM_HRLeaveAndAbsences_Form_ManageEntitlements .crm-button-type-next  {
   float: right !important;
 }
+
+#calculation-details .base-contractual-entitlement { color: #42afcb; }
+#calculation-details .working-days-to-work { color: #8EC68A; }
+#calculation-details .working-days-in-period { color: #ECA67F; }
+/*
+  It's unlikely that an employee will have more than 5 contracts
+  during a single period, but if that is the case, more
+  .contract-n-pro-rata classes will need to be added here
+ */
+#calculation-details .contract-1-pro-rata { color: #E6807F; }
+#calculation-details .contract-2-pro-rata { color: #797300; }
+#calculation-details .contract-3-pro-rata { color: #904E1E; }
+#calculation-details .contract-4-pro-rata { color: #0511B1; }
+#calculation-details .contract-5-pro-rata { color: #4B9609; }
+#calculation-details .calculation-pro-rata { color: #95c0ff  }

@@ -206,21 +206,15 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
       return;
     }
 
-    var calculationDescription = ts('' +
-      '((Base contractual entitlement + Public Holidays) ' +
-      '* ' +
-      '(No. of working days to work / No. of working days in period)) = ' +
-      '(Period pro rata) + (Brought Forward days) = Period Entitlement'
-    );
-    var calculationDetails = event.currentTarget.parentNode.dataset.calculationDetails;
-
-    if(!calculationDetails) {
-      return;
-    }
+    var query = {
+      'contact_id': event.currentTarget.parentNode.dataset.contact,
+      'type_id': event.currentTarget.parentNode.dataset.absenceType,
+      'period_id': event.currentTarget.parentNode.dataset.absencePeriod
+    };
 
     CRM.confirm({
       title: ts('Calculation details'),
-      message: calculationDescription + '<br /><br />' + calculationDetails,
+      url: CRM.url('civicrm/admin/leaveandabsences/periods/manage_entitlements/calculation_details', query),
       width: '70%',
       options: {}
     });
