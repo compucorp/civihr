@@ -456,7 +456,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertNotEquals($periodEntitlement1->id, $periodEntitlement2->id);
   }
 
-  public function testSaveFromEntitlementCalculationCanSaveOverriddenValues() {
+  public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesGreaterThanProposedEntitlement() {
     // This mocks the logged in user so we can test
     // the LeavePeriodEntitlement creation with a comment
     global $user;
@@ -483,6 +483,50 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     );
 
     $overriddenEntitlement = 50;
+    $comment = 'Lorem ipsum dolor sit amet...';
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement, $comment);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $contact['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($periodEntitlement);
+    $this->assertEquals($period->id, $periodEntitlement->period_id);
+    $this->assertEquals($type->id, $periodEntitlement->type_id);
+    $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
+    $this->assertEquals(1, $periodEntitlement->overridden);
+    $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+  }
+
+  public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesLessThanTheProposedEntitlement() {
+    // This mocks the logged in user so we can test
+    // the LeavePeriodEntitlement creation with a comment
+    global $user;
+    $user = new stdClass();
+    $user->uid = 1;
+
+    $type = new AbsenceType();
+    $type->id = 1;
+    $period = new AbsencePeriod();
+    $period->id = 1;
+    $contact = ['id' => 1];
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $overridden = true;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contact,
+      $type,
+      $broughtForward,
+      $proRata,
+      [],
+      $overridden
+    );
+
+    $overriddenEntitlement = 5;
     $comment = 'Lorem ipsum dolor sit amet...';
     LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement, $comment);
 
@@ -620,21 +664,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
                           'getBroughtForward',
                           'getProRata',
                           'getBroughtForwardExpirationDate',
-                          'getPublicHolidaysInEntitlement'
+                          'getPublicHolidaysInEntitlement',
+                          'getProposedEntitlement'
                         ])
                         ->getMock();
 
-    $calculation->expects($overridden ? $this->never() : $this->once())
+    $calculation->expects($this->once())
                 ->method('getBroughtForward')
                 ->will($this->returnValue($broughtForward));
 
-    $calculation->expects($overridden ? $this->never() : $this->once())
+    $calculation->expects($this->once())
                 ->method('getProRata')
                 ->will($this->returnValue($proRata));
 
-    $calculation->expects($overridden ? $this->never() : $this->once())
+    $calculation->expects($this->once())
                 ->method('getBroughtForwardExpirationDate')
                 ->will($this->returnValue('2016-01-01'));
+
+    $proposedEntitlement = $proRata + $broughtForward;
+    $calculation->expects($overridden ? $this->once() : $this->never())
+                ->method('getProposedEntitlement')
+                ->will($this->returnValue($proposedEntitlement));
 
     $publicHolidaysReturn = [];
     foreach($publicHolidays as $publicHoliday) {
@@ -643,7 +693,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
       $publicHolidaysReturn[] = $instance;
     }
 
-    $calculation->expects($overridden ? $this->never() : $this->once())
+    $calculation->expects($this->once())
                 ->method('getPublicHolidaysInEntitlement')
                 ->will($this->returnValue($publicHolidaysReturn));
 
