@@ -13,13 +13,6 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement {
 
   /**
-   * Caches the contract loaded by the getContract() method
-   *
-   * @var array
-   */
-  private $contract;
-
-  /**
    * Create a new LeavePeriodEntitlement based on array-data
    *
    * @param array $params key-value pairs
@@ -153,7 +146,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     try {
       $absencePeriodID = $calculation->getAbsencePeriod()->id;
       $absenceTypeID = $calculation->getAbsenceType()->id;
-      $contactID = $calculation->getContract()['contact_id'];
+      $contactID = $calculation->getContact()['id'];
       self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
 
       $periodEntitlement = self::create(self::buildLeavePeriodParamsFromCalculation(
@@ -189,7 +182,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     global $user;
     $absenceTypeID   = $calculation->getAbsenceType()->id;
-    $contactID      = $calculation->getContract()['contact_id'];
+    $contactID      = $calculation->getContact()['id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
 
     $params = [
@@ -451,7 +444,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @return array The array with the dates
    */
   private function getContractDatesForContactInPeriod(AbsencePeriod $absencePeriod) {
-    $result = civicrm_api3('HRJobContract', 'getActiveContractsWithDetails', [
+    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
       'contact_id' => $this->contact_id,
       'start_date' => $absencePeriod->start_date,
       'end_date'   => $absencePeriod->end_date

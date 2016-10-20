@@ -367,7 +367,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $publicHolidays = [ '2016-01-01', '2016-03-15', '2016-09-09' ];
     $calculation = $this->getEntitlementCalculationMock(
       $period,
-      $this->contract,
+      ['id' => $this->contract['contact_id']],
       $type,
       $broughtForward,
       $proRata,
@@ -439,7 +439,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $proRata = 10;
     $calculation = $this->getEntitlementCalculationMock(
       $period,
-      $this->contract,
+      ['id' => $this->contract['contact_id']],
       $type,
       $broughtForward,
       $proRata
@@ -467,14 +467,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $type->id = 1;
     $period = new AbsencePeriod();
     $period->id = 1;
-    $contract = ['contact_id' => 1];
+    $contact = ['id' => 1];
 
     $broughtForward = 1;
     $proRata = 10;
     $overridden = true;
     $calculation = $this->getEntitlementCalculationMock(
       $period,
-      $contract,
+      $contact,
       $type,
       $broughtForward,
       $proRata,
@@ -487,7 +487,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement, $comment);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
-      $contract['contact_id'],
+      $contact['id'],
       $period->id,
       $type->id
     );
@@ -495,7 +495,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $this->assertNotNull($periodEntitlement);
     $this->assertEquals($period->id, $periodEntitlement->period_id);
     $this->assertEquals($type->id, $periodEntitlement->type_id);
-    $this->assertEquals($contract['contact_id'], $periodEntitlement->contact_id);
+    $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
     $this->assertEquals(1, $periodEntitlement->overridden);
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
   }
@@ -595,7 +595,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
    * from a EntitlementCalculation instance
    *
    * @param $period
-   * @param $contract
+   * @param $contact
    * @param $type
    * @param int $broughtForward
    * @param int $proRata
@@ -607,7 +607,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
    */
   private function getEntitlementCalculationMock(
     $period,
-    $contract,
+    $contact,
     $type,
     $broughtForward = 0,
     $proRata = 0,
@@ -615,7 +615,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends PHPUnit_Fram
     $overridden = false
   ) {
     $calculation = $this->getMockBuilder(EntitlementCalculation::class)
-                        ->setConstructorArgs([$period, $contract, $type])
+                        ->setConstructorArgs([$period, $contact, $type])
                         ->setMethods([
                           'getBroughtForward',
                           'getProRata',

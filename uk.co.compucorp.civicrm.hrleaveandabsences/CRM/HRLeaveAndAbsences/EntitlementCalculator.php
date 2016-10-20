@@ -37,19 +37,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculator {
 
   /**
    * This method generates EntitlementCalculation instances for the given
-   * contract. One EntitlementCalculation instance is returned for each currently
+   * contact. One EntitlementCalculation instance is returned for each currently
    * enabled AbsenceType.
    *
-   * @param array $contract
-   *  A Job Contract in array format, like when it is returned from an API call
+   * @param array $contact
+   *  A Contact in array format, like when it is returned from an API call
    *
    * @return array An array of EntitlementCalculations
    */
-  public function calculateEntitlementsFor($contract) {
+  public function calculateEntitlementsFor($contact) {
     $absenceTypes = $this->getEnabledAbsenceTypes();
     $calculations = [];
     foreach($absenceTypes as $absenceType) {
-      $calculations[] = new EntitlementCalculation($this->period, $contract, $absenceType);
+      $calculations[] = new EntitlementCalculation($this->period, $contact, $absenceType);
     }
 
     return $calculations;

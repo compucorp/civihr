@@ -16,11 +16,11 @@ define([
         '$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window', 'settings', 'API',
         'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', '$log',
-        'UtilsService',
+        'UtilsService', 'ContractService',
         function ($scope, $route, $filter, $modal, $rootElement, $q, $window, settings, API,
                   ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService,
                   ContractHealthService, ContractPensionService, ContractFilesService, ContactService, $log,
-                  UtilsService) {
+                  UtilsService, ContractService) {
 
             $log.debug('Controller: ContractCtrl');
 
