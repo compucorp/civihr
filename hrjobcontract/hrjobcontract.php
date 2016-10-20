@@ -482,7 +482,7 @@ function hrjobcontract_civicrm_export( $exportTempTable, $headerRows, $sqlColumn
   // Here we call custom writeCSVFromTable method instead
   // of CRM_Export_BAO_Export::writeCSVFromTable. It allows us to convert
   // Job Contract entity values to proper export format.
-  CRM_Hrjobcontract_Export_Export::writeCSVFromTable($exportTempTable, $headerRows, $sqlColumns, $exportMode);
+  CRM_Hrjobcontract_Export_Converter::writeCSVFromTable($exportTempTable, $headerRows, $sqlColumns, $exportMode);
   $sql = "DROP TABLE IF EXISTS {$exportTempTable}";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Utils_System::civiExit();
