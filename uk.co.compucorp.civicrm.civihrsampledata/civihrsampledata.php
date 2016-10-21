@@ -130,7 +130,9 @@ function _civihrsampledata_importSampleData($extensionDirectory) {
     $fileToImport = new SplFileObject("{$csvDir}/{$file}.csv");
 
     $importerClassName = "CRM_CiviHRSampleData_Importer_{$class}";
-    $importer = new $importerClassName($fileToImport);
+    $importer = new $importerClassName();
+    $importer->setSplFileObject($fileToImport);
+
     $importer->import();
 
     $fileToImport = null;

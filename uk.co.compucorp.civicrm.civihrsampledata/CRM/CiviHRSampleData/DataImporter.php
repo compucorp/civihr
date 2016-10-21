@@ -18,7 +18,12 @@ abstract class CRM_CiviHRSampleData_DataImporter
    */
   protected $fileHandler;
 
-  public function __construct(SplFileObject $fileHandler) {
+  /**
+   * Injects SplFileObject object
+   *
+   * @param SplFileObject $fileHandler
+   */
+  public function setSplFileObject(SplFileObject $fileHandler) {
    $this->fileHandler = $fileHandler;
   }
 
