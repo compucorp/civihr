@@ -29,15 +29,21 @@
       {php}$htmlBuilder->showDocs();{/php}
     </div>
     <div class="row">
-      <h1 class="page-header">Foundation</h1>
+      <div class="page-header">
+        <h1>Foundation</h1>
+      </div>
       {php}$htmlBuilder->showFoundation();{/php}
     </div>
     <div class="row sg-base-styles">
-      <h1 class="page-header">Base Styles</h1>
+      <div class="page-header">
+        <h1>Base Styles</h1>
+      </div>
       {php}$htmlBuilder->showMarkup('base');{/php}
     </div><!--/.sg-base-styles-->
     <div class="sg-pattern-styles">
-      <h1 class="page-header">Patterns<small> - Design and mark-up patterns unique to your site.</small></h1>
+      <div class="page-header">
+        <h1>Patterns<small> - Design and mark-up patterns unique to your site.</small></h1>
+      </div>
       {php}$htmlBuilder->showMarkup('patterns');{/php}
     </div>
   </div>
