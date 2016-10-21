@@ -122,8 +122,7 @@
         echo '<div class="sg-markup sg-section">';
         echo '<div class="sg-display">';
         echo '<h2 class="sg-h2"><a id="sg-'.$filename.'" class="sg-anchor">'.$title.'</a></h2>';
-        echo '<div class="row"><div class="col-md-8">';
-        echo '<h3 class="sg-h3">Example</h3>';
+        echo '<div class="row"><div class="' . (file_exists($documentation) ? 'col-md-8' : 'col-sm-12') . '">';
         include($this->root . 'markup/'.$type.'/'.$file);
         echo '</div>';
 

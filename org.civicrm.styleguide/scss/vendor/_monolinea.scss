@@ -62,6 +62,13 @@
   float: left;
   text-shadow: none!important;
 }
+.sg-btn-list {
+
+  > .btn,
+  > .btn-group {
+    margin-right: 5px;
+  }
+}
 .sg-btn--top {
   float: right;
 }
@@ -138,6 +145,10 @@ ul.scroll-menu {
 .sg-anchor {
   display: block;
   padding-top: 1em;
+}
+
+.sg-row {
+  margin-bottom: 20px;
 }
 /* Colors
 ---------------------------------------------------------------------------- */
