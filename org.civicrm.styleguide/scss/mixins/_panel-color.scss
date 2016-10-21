@@ -1,9 +1,16 @@
 // Converts pixs into ems
-@mixin panel-color($name, $color) {
+@mixin panel-color($name, $color, $text: $gray-darker) {
 
   .panel-color-#{$name} {
+
     > .panel-body {
       background-color: $color;
+
+      &:after {
+        content: "#{$color}";
+        color: $text;
+        display: inline;
+      }
     }
   }
 }
