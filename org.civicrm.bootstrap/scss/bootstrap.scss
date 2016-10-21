@@ -1,15 +1,12 @@
 @import "overrides/variables";
-@import "mixins/body-namespaced";
 @import "mixins/initial-value";
 
 // Core variables and mixins
 @import "vendor/bootstrap/variables";
 @import "vendor/bootstrap/mixins";
 
-#{$bootstrap-namespace} {
-    // Reset CMS and old CiviCRM style
-    @import "overrides/reset/drupal";
-    @if $bootstrap-namespace != "" { @import "overrides/reset/civicrm"; }
+// Reset CMS and old CiviCRM style
+@import "overrides/reset/drupal";
+@import "overrides/reset/civicrm";
 
-    @import "themes/default";
-}
+@import "themes/default";

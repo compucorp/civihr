@@ -9,8 +9,6 @@
 
 @import "fonts/*";
 
-#{$bootstrap-namespace} {
-    @import "overrides/style/*";
-    @import "components/*";
-    @import "pages/*";
-}
+@import "overrides/style/*";
+@import "components/*";
+@import "pages/*";

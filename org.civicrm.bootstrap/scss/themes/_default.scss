@@ -4,12 +4,7 @@
 @import "../vendor/bootstrap/glyphicons";
 
 // Core CSS
-@if $bootstrap-namespace != "" {
-    @import "../overrides/namespace/scaffolding";
-} @else {
-    @import "../vendor/bootstrap/scaffolding";
-}
-
+@import "../vendor/bootstrap/scaffolding";
 @import "../vendor/bootstrap/type";
 @import "../vendor/bootstrap/code";
 @import "../vendor/bootstrap/grid";
