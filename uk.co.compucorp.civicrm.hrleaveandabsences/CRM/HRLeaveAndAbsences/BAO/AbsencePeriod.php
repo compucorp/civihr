@@ -16,8 +16,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   /**
    * Create a new AbsencePeriod based on array-data
    *
-   * @param array $params key-value pairs
-   * @return CRM_HRLeaveAndAbsences_DAO_AbsencePeriod|NULL
+   * @param array $params
+   *  An array of field => value pairs
+   *
+   * @return \CRM_HRLeaveAndAbsences_DAO_AbsencePeriod|NULL
    */
   public static function create($params) {
     $entityName = 'AbsencePeriod';
@@ -53,8 +55,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
    */
-  private static function validateParams($params)
-  {
+  private static function validateParams($params) {
     self::validateDates($params);
 
     if(self::overlapsWithAnotherPeriod($params)) {
@@ -74,8 +75,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
    */
-  private static function validateDates($params)
-  {
+  private static function validateDates($params) {
     if(empty($params['start_date']) || empty($params['end_date'])) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
         'Both the start and end dates are required'
@@ -103,12 +103,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * Checks if there's an existing Absence Period that overlaps with the
    * start and end dates on the given params array.
    *
-   * @param array $params - The params array passed to the create method
+   * @param array $params
+   *  The params array passed to the create method
    *
    * @return bool
    */
-  private static function overlapsWithAnotherPeriod($params)
-  {
+  private static function overlapsWithAnotherPeriod($params) {
     $tableName = self::getTableName();
     $query = "
       SELECT COUNT(*) as overlaping_periods
@@ -137,10 +137,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * It checks if there's another period with the same weight and, if positive,
    * increase the weight of every period that has an equal or greater weight.
    *
-   * @param CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance - The just saved AbsencePeriod
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance
+   *  The just saved AbsencePeriod
    */
-  private static function updatePeriodsOrder($instance)
-  {
+  private static function updatePeriodsOrder($instance) {
     if(self::theresAnotherPeriodWithTheSameWeight($instance)) {
       self::increaseWeightsEqualOrGreaterTo($instance);
     }
@@ -149,12 +149,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   /**
    * Checks if there's another period with the same weight of the given AbsencePeriod
    *
-   * @param CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance - An AbsencePeriod
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance
    *
    * @return bool
    */
-  private static function theresAnotherPeriodWithTheSameWeight($instance)
-  {
+  private static function theresAnotherPeriodWithTheSameWeight($instance) {
     $tableName = self::getTableName();
     $query = "
       SELECT COUNT(*) as periods
@@ -175,10 +174,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * Increases the weight of every existing period with a weight equal to or
    * greater than the weight of the given AbsencePeriod
    *
-   * @param CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance - An AbsencePeriod
+   * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $instance
    */
-  private static function increaseWeightsEqualOrGreaterTo($instance)
-  {
+  private static function increaseWeightsEqualOrGreaterTo($instance) {
     $tableName = self::getTableName();
     $query = "
       UPDATE {$tableName}
@@ -198,7 +196,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * Returns 0 if there's no Period available
    *
-   * @return int the maximum weight
+   * @return int
    */
   public static function getMaxWeight() {
     $tableName = self::getTableName();
@@ -221,7 +219,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * An empty array is returned if it is not possible to load
    * the data.
    *
-   * @param int $id The id of the AbsencePeriod to retrieve the values
+   * @param int $id
+   *  The id of the AbsencePeriod to retrieve the values
    *
    * @return array An array containing the values
    */
@@ -241,10 +240,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * If there's no existing Absence Period, the current date is returned
    *
-   * @return string The most recent start date available in Y-m-d format
+   * @return string
+   *  The most recent start date available in Y-m-d format
    */
-  public static function getMostRecentStartDateAvailable()
-  {
+  public static function getMostRecentStartDateAvailable() {
     $tableName = self::getTableName();
     $query = "SELECT MAX(end_date) as latest_end_date FROM {$tableName}";
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -263,8 +262,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
    */
-  public static function getCurrentPeriod()
-  {
+  public static function getCurrentPeriod() {
     $period = new self();
     $period->whereAdd("start_date <= CURDATE()");
     $period->whereAdd("end_date >= CURDATE()");
@@ -285,8 +283,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int
    */
-  public function getNumberOfWorkingDays()
-  {
+  public function getNumberOfWorkingDays() {
     if(!$this->numberOfWorkingDays) {
       if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d')) {
         throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid start date');
@@ -336,8 +333,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * greater than AbsencePeriod end date, then the AbsencePeriod's end date
    * will be used.
    *
-   * @param string $startDate A date in the Y-m-d format
-   * @param string $endDate A date in the Y-m-d format
+   * @param string $startDate
+   *  A date in the Y-m-d format
+   * @param string $endDate
+   *  A date in the Y-m-d format
    *
    * @return int
    */
@@ -363,7 +362,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * Returns the Absence Period previous to this one. That is, the Absence
    * Period where weight is equal to this Period weight - 1.
    *
-   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   * @return null|\CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
    *  The previous Absence Period or null if there's none
    */
   public function getPreviousPeriod() {
@@ -374,7 +373,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * Returns the Absence Period next to this one. That is, the Absence
    * Period where weight is equal to this Period weight + 1.
    *
-   * @return null|CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
+   * @return null|\CRM_HRLeaveAndAbsences_BAO_AbsencePeriod
    *  The next Absence Period or null if there's none
    */
   public function getNextPeriod() {
@@ -411,12 +410,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
    *
-   * @return null|string A date in Y-m-d or null if it can not be calculated
+   * @return null|string
+   *  A date in Y-m-d or null if it can not be calculated
    *
    * @throws \UnexpectedValueException
    */
-  public function getExpirationDateForAbsenceType(AbsenceType $absenceType)
-  {
+  public function getExpirationDateForAbsenceType(AbsenceType $absenceType) {
     if(!$this->hasValidDates()) {
       throw new UnexpectedValueException(
         'You can only calculate the expiration date for an AbsenceType from an AbsencePeriod with start and end dates'
@@ -441,10 +440,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
    *
-   * @return null|string A date in Y-m-d or null if it can not be calculated
+   * @return null|string
+   *  A date in Y-m-d or null if it can not be calculated
    */
-  private function getExpirationDurationDate(AbsenceType $absenceType)
-  {
+  private function getExpirationDurationDate(AbsenceType $absenceType) {
     if(!$absenceType->allow_carry_forward || !$absenceType->hasExpirationDuration()) {
       return null;
     }
