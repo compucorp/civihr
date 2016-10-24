@@ -92,7 +92,7 @@ set_resource_urls
 
 if [ -n "$WITHSAMPLE" ]; then
   set -ex
-  drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.civihrsampledata
+  drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.hrsampledata
   set +ex
 fi
 

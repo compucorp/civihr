@@ -14,7 +14,7 @@ hrprofile \
 hrqual \
 hrrecruitment \
 hrreport \
-uk.co.compucorp.civicrm.civihrsampledata \
+uk.co.compucorp.civicrm.hrsampledata \
 hrstaffdir \
 hrui \
 hrvisa \
