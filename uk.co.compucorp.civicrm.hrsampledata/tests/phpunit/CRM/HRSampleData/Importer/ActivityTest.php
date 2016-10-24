@@ -4,6 +4,7 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Activity.php';
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_Activity as ActivityFabricator;
+
 /**
  * Class CRM_HRSampleData_Importer_ActivityTest
  *
@@ -19,7 +20,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
   }
 
   public function testImportWithoutSourceRecord() {
@@ -44,7 +45,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
-    $this->assertEquals("New Year's Day", $this->apiQuickGet('Activity','subject', "New Year's Day"));
+    $this->assertEquals("New Year's Day", $this->apiGet('Activity','subject', "New Year's Day"));
   }
 
   public function testImportWithSourceRecord() {
@@ -72,7 +73,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
-    $this->assertNotEmpty($this->apiQuickGet('Activity','source_record_id', $sourceRecordID));
+    $this->assertEquals($sourceRecordID, $this->apiGet('Activity','source_record_id', $sourceRecordID));
   }
 
   private function importHeadersFixture() {

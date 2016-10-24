@@ -13,8 +13,6 @@ class CRM_HRSampleData_Importer_BankDetails extends CRM_HRSampleData_Importer_Cu
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $row['entity_id'] = $this->getDataMapping('contact_mapping', $row['entity_id']);

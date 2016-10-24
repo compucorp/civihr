@@ -37,8 +37,6 @@ class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_DataImporte
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $entities = $this->parseRow($row);

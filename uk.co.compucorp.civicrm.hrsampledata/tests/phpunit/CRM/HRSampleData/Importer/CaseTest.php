@@ -3,7 +3,7 @@
 require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Case.php';
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
-use CRM_HRCore_Test_Fabricator_Case as CaseFabricator;
+use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_CaseTest
@@ -20,8 +20,8 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
-    CaseFabricator::fabricateCaseType();
+    $this->testContact = ContactFabricator::fabricate();
+    CaseTypeFabricator::fabricate();
   }
 
   public function testImport() {
@@ -42,7 +42,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
 
     $this->runImporter('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
 
-    $this->assertEquals('test case', $this->apiQuickGet('Case', 'subject', 'test case'));
+    $this->assertEquals('test case', $this->apiGet('Case', 'subject', 'test case'));
   }
 
   private function importHeadersFixture() {

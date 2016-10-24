@@ -18,19 +18,11 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
 
   private $testContact;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrjobcontract')
-      ->install('org.civicrm.hrabsence')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
 
     HoursLocationFabricator::fabricate();
     PayScaleFabricator::fabricate();
@@ -42,7 +34,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       'hrjc_pension_type',
     ];
     foreach($contractOptionValues as $group) {
-      OptionValueFabricator::fabricate($group);
+      OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -102,16 +94,18 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
 
     $this->runImporter('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
 
-
-    $this->assertNotEmpty($contract = $this->apiQuickGet('HRJobContract',null, null, ['contact_id' => $this->testContact['id']]));
+    $contract = $this->apiGet('HRJobContract',null, null, ['contact_id' => $this->testContact['id']]);
+    $this->assertEquals($this->testContact['id'], $contract['contact_id']);
 
     $contractID = $contract['id'];
-    $this->assertNotEmpty($revision = $this->apiQuickGet('HRJobContractRevision',null ,null, ['jobcontract_id' => $contractID]));
+
+    $revision = $this->apiGet('HRJobContractRevision',null ,null, ['jobcontract_id' => $contractID]);
+    $this->assertEquals($contractID, $revision['jobcontract_id']);
 
     $revisionID = $revision['id'];
     $entities = ['HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobPay', 'HRJobPension', 'HRJobLeave'];
     foreach ($entities as $entity) {
-      $this->assertEquals($revisionID, $this->apiQuickGet($entity,'jobcontract_revision_id', $revisionID));
+      $this->assertEquals($revisionID, $this->apiGet($entity,'jobcontract_revision_id', $revisionID));
     }
   }
 

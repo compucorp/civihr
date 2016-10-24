@@ -49,7 +49,7 @@ class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporte
 
     $this->runImporter('CRM_HRSampleData_Importer_Contact', $this->rows);
 
-    $this->assertEquals('Mr. Peter Agodi', $this->apiQuickGet('Contact', 'display_name', 'Mr. Peter Agodi'));
+    $this->assertEquals('Mr. Peter Agodi', $this->apiGet('Contact', 'display_name', 'Mr. Peter Agodi'));
   }
 
   private function importHeadersFixture() {

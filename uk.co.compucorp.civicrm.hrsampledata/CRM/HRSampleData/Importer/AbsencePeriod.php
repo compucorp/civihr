@@ -13,8 +13,6 @@ class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_DataImpor
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $this->callAPI('HRAbsencePeriod', 'create', $row);

@@ -9,8 +9,6 @@ class CRM_HRSampleData_Importer_AbsenceType extends CRM_HRSampleData_DataImporte
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $absenceTypeExists = $this->callAPI('HRAbsenceType', 'getcount', ['name' => $row['name']]);

@@ -14,11 +14,11 @@ class CRM_HRSampleData_Importer_LocationType extends CRM_HRSampleData_DataImport
    *   Should at least contain `name`
    */
   protected function insertRecord(array $row) {
-    $LocationTypeExists = $this->callAPI('LocationType', 'getcount', [
+    $locationTypeExists = $this->callAPI('LocationType', 'getcount', [
       'name' => $row['name'],
     ]);
 
-    if (!$LocationTypeExists) {
+    if (!$locationTypeExists) {
       $this->callAPI('LocationType', 'create', $row);
     }
   }

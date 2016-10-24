@@ -19,19 +19,12 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
 
   private $testJobContract;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrjobcontract')
-      ->install('com.civicrm.hrjobroles')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
+
     $this->testJobContract = JobContractFabricator::fabricate(['contact_id' => $this->testContact['id']], ['period_start_date' => '2015-01-01']);
 
     $rolesOptionValues = [
@@ -41,7 +34,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       'hrjc_location',
     ];
     foreach($rolesOptionValues as $group) {
-      OptionValueFabricator::fabricate($group);
+      OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -72,7 +65,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
 
-    $this->assertEquals($this->testJobContract['id'], $this->apiQuickGet('HrJobRoles','job_contract_id', $this->testJobContract['id']));
+    $this->assertEquals($this->testJobContract['id'], $this->apiGet('HrJobRoles','job_contract_id', $this->testJobContract['id']));
   }
 
   private function importHeadersFixture() {

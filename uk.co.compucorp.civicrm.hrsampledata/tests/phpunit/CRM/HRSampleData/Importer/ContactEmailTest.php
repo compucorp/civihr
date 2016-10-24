@@ -19,7 +19,7 @@ class CRM_HRSampleData_Importer_ContactEmailTest extends CRM_HRSampleData_BaseIm
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
   }
 
   public function testImport() {
@@ -36,7 +36,7 @@ class CRM_HRSampleData_Importer_ContactEmailTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_ContactEmail',  $this->rows, $mapping);
 
-    $this->assertEquals('phoebe@sccs.org', $this->apiQuickGet('Email', 'email', 'phoebe@sccs.org'));
+    $this->assertEquals('phoebe@sccs.org', $this->apiGet('Email', 'email', 'phoebe@sccs.org'));
   }
 
   private function importHeadersFixture() {

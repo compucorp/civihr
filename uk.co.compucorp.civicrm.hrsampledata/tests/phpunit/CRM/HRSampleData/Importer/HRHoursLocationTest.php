@@ -11,12 +11,6 @@ class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_Bas
 
   private $rows;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -31,7 +25,7 @@ class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_Bas
 
     $this->runImporter('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
 
-    $this->assertEquals('Islington', $this->apiQuickGet('HRHoursLocation','location', 'Islington'));
+    $this->assertEquals('Islington', $this->apiGet('HRHoursLocation','location', 'Islington'));
   }
 
   private function importHeadersFixture() {

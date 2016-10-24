@@ -13,8 +13,6 @@ class CRM_HRSampleData_Importer_VacancyValue extends CRM_HRSampleData_Importer_C
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $row['entity_id'] = $this->getDataMapping('case_mapping', $row['entity_id']);

@@ -11,12 +11,6 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
 
   private $rows;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -33,7 +27,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
 
     $this->runImporter('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
 
-    $this->assertEquals('E2', $this->apiQuickGet('HRPayScale','pay_scale', 'E2'));
+    $this->assertEquals('E2', $this->apiGet('HRPayScale','pay_scale', 'E2'));
   }
 
   private function importHeadersFixture() {

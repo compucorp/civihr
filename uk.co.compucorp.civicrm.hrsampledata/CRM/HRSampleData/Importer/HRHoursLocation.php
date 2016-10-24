@@ -9,8 +9,6 @@ class CRM_HRSampleData_Importer_HRHoursLocation extends CRM_HRSampleData_DataImp
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
     $hourLocationExists = $this->callAPI('HRHoursLocation', 'getcount', $row);

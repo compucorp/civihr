@@ -34,7 +34,7 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
 
     $this->assertEquals(
       'Compassionate_Leave',
-      $this->apiQuickGet('OptionValue','name', 'Compassionate_Leave', ['option_group_id' => 'activity_type'])
+      $this->apiGet('OptionValue','name', 'Compassionate_Leave', ['option_group_id' => 'activity_type'])
     );
   }
 

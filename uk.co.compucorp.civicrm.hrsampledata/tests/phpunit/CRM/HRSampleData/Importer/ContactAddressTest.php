@@ -19,7 +19,7 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
   }
 
   public function testImport() {
@@ -41,7 +41,7 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
 
     $this->runImporter('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
 
-    $this->assertEquals('39 Elizabeth St,', $this->apiQuickGet('Address', 'street_address', '39 Elizabeth St,'));
+    $this->assertEquals('39 Elizabeth St,', $this->apiGet('Address', 'street_address', '39 Elizabeth St,'));
   }
 
   private function importHeadersFixture() {

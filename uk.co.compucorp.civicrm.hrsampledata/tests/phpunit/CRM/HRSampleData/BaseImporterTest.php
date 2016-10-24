@@ -14,6 +14,13 @@ class CRM_HRSampleData_BaseImporterTest extends \PHPUnit_Framework_TestCase impl
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->install('uk.co.compucorp.civicrm.hrcore')
+      ->install('org.civicrm.hrjobcontract')
+      ->install('org.civicrm.hrabsence')
+      ->install('com.civicrm.hrjobroles')
+      ->install('org.civicrm.hrrecruitment')
+      ->install('org.civicrm.hremergency')
+      ->install('org.civicrm.hrdemog')
+      ->install('org.civicrm.hrbank')
       ->apply();
   }
 
@@ -54,7 +61,7 @@ class CRM_HRSampleData_BaseImporterTest extends \PHPUnit_Framework_TestCase impl
     $importer->import();
   }
 
-  public function apiQuickGet($entity, $key = null, $value = null, $extraParams = []) {
+  public function apiGet($entity, $key = null, $value = null, $extraParams = []) {
     $defaultParams = [
       'sequential' => 1,
       'options' => ['limit' => 1],

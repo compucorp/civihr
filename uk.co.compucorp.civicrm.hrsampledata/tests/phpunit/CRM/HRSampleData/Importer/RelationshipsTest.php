@@ -4,7 +4,8 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Relationships.php';
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_Case as CaseFabricator;
-use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
+use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
+use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_RelationshipsTest
@@ -23,10 +24,10 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContactA = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContactA = ContactFabricator::fabricate();
     $this->testContactB = ContactFabricator::fabricate(['first_name' => 'chrollo2', 'last_name' => 'lucilfer2']);
 
-    RelationshipFabricator::fabricateRelationshipType();
+    RelationshipTypeFabricator::fabricate();
   }
 
   public function testImportWithoutCase() {
@@ -46,12 +47,12 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
-    $this->assertNotEmpty($this->apiQuickGet('Relationship', 'contact_id_a', $this->testContactA['id']));
+    $this->assertEquals($this->testContactA['id'], $this->apiGet('Relationship', 'contact_id_a', $this->testContactA['id']));
   }
 
   public function testImportWithCase() {
-    CaseFabricator::fabricateCaseType();
-    $caseID = CaseFabricator::fabricateCase()['id'];
+    CaseTypeFabricator::fabricate();
+    $caseID = CaseFabricator::fabricate()['id'];
 
     $this->rows[] = [
       $this->testContactA['id'],
@@ -70,7 +71,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
-    $this->assertNotEmpty($this->apiQuickGet('Relationship', 'contact_id_a', $this->testContactA['id']));
+    $this->assertEquals($this->testContactA['id'], $this->apiGet('Relationship', 'contact_id_a', $this->testContactA['id']));
   }
 
   private function importHeadersFixture() {

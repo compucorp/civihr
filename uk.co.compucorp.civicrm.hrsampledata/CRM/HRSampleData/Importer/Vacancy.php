@@ -9,8 +9,6 @@ class CRM_HRSampleData_Importer_Vacancy extends CRM_HRSampleData_DataImporter
 
   /**
    * {@inheritdoc}
-   *
-   * @param array $row
    */
   protected function insertRecord(array $row) {
 

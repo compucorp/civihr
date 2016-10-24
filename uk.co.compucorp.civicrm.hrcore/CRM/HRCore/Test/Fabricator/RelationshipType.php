@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_Test_Fabricator_Relationship {
+class CRM_HRCore_Test_Fabricator_RelationshipType {
 
   private static $defaultParams = [
     'sequential' => 1,
@@ -10,11 +10,11 @@ class CRM_HRCore_Test_Fabricator_Relationship {
     'contact_type_b' => "Individual",
   ];
 
-  public static function fabricateRelationshipType($params = []) {
+  public static function fabricate($params = []) {
     $params = array_merge(self::$defaultParams, $params);
 
     $result = civicrm_api3(
-      'Activity',
+      'RelationshipType',
       'create',
       $params
     );

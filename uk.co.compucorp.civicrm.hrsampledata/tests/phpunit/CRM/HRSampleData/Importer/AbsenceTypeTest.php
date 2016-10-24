@@ -11,12 +11,6 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
 
   private $rows;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrabsence')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -33,7 +27,7 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
 
     $this->runImporter('CRM_HRSampleData_Importer_AbsenceType', $this->rows[]);
 
-    $this->assertEquals('Compassionate_Leave', $this->apiQuickGet('HRAbsenceType','name', 'Compassionate_Leave'));
+    $this->assertEquals('Compassionate_Leave', $this->apiGet('HRAbsenceType','name', 'Compassionate_Leave'));
   }
 
   private function importHeadersFixture() {

@@ -15,18 +15,11 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
 
   private $testContact;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrbank')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $this->testContact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+    $this->testContact = ContactFabricator::fabricate();
   }
 
   public function testImport() {
@@ -45,7 +38,7 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
 
     $this->runImporter('CRM_HRSampleData_Importer_BankDetails', $this->rows, $mapping);
 
-    $this->assertNotEmpty($this->apiQuickGet('CustomValue','entity_id', $this->testContact['id']));
+    $this->assertEquals($this->testContact['id'], $this->apiGet('CustomValue','entity_id', $this->testContact['id']));
   }
 
   private function importHeadersFixture() {

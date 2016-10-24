@@ -11,12 +11,6 @@ class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseI
 
   private $rows;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrabsence')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -32,7 +26,7 @@ class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_AbsencePeriod', $this->rows);
 
-    $this->assertEquals('2016', $this->apiQuickGet('HRAbsencePeriod','name', '2016'));
+    $this->assertEquals('2016', $this->apiGet('HRAbsencePeriod','name', '2016'));
   }
 
   private function importHeadersFixture() {

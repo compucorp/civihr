@@ -29,8 +29,7 @@ class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_LocationType', $this->rows);
 
-
-    $this->assertEquals('Correspondence', $this->apiQuickGet('LocationType', 'name', 'Correspondence'));
+    $this->assertEquals('Correspondence', $this->apiGet('LocationType', 'name', 'Correspondence'));
   }
 
   private function importHeadersFixture() {

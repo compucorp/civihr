@@ -16,7 +16,7 @@ abstract class CRM_HRSampleData_DataImporter
    *
    * @var SplFileObject
    */
-  protected $fileHandler;
+  protected $fileHandler = null;
 
   /**
    * Injects SplFileObject object
@@ -60,16 +60,18 @@ abstract class CRM_HRSampleData_DataImporter
   public function import() {
     $header = null;
 
-    while (!$this->fileHandler->eof()) {
-      $row = $this->fileHandler->fgetcsv();
+    if (empty($this->fileHandler)) {
+      while (!$this->fileHandler->eof()) {
+        $row = $this->fileHandler->fgetcsv();
 
-      if ($header === null) {
-        $header = $row;
-        continue;
+        if ($header === null) {
+          $header = $row;
+          continue;
+        }
+
+        $row = array_combine($header, $row);
+        $this->insertRecord($row);
       }
-
-      $row = array_combine($header, $row);
-      $this->insertRecord($row);
     }
   }
 

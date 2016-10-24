@@ -3,6 +3,9 @@
 require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/VacancyValue.php';
 
 use CRM_HRCore_Test_Fabricator_Case as CaseFabricator;
+use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
+
+use CRM_HRRecruitment_Test_Fabricator_Vacancy as VacancyFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_VacancyValueTest
@@ -15,28 +18,16 @@ class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseIm
 
   private $vacancyID;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrrecruitment')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    $vacancy = civicrm_api3('HRVacancy', 'create', [
-      'position' => "test vacany",
-      'start_date' => "2016-01-01",
-      'end_date' => "",
-    ]);
-    $this->vacancyID = $vacancy['id'];
+    $this->vacancyID = VacancyFabricator::fabricate()['id'];
   }
 
   public function testImport() {
-    CaseFabricator::fabricateCaseType();
-    $caseID = CaseFabricator::fabricateCase()['id'];
+    CaseTypeFabricator::fabricate();
+    $caseID = CaseFabricator::fabricate()['id'];
 
     $this->rows[] = [
       $caseID,
@@ -50,7 +41,7 @@ class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_VacancyValue', $this->rows, $mapping);
 
-    $this->assertNotEmpty($this->apiQuickGet('CustomValue','entity_id', $caseID, ['entity_table' => 'Case']));
+    $this->assertEquals($caseID, $this->apiGet('CustomValue','entity_id', $caseID, ['entity_table' => 'Case']));
   }
 
   private function importHeadersFixture() {

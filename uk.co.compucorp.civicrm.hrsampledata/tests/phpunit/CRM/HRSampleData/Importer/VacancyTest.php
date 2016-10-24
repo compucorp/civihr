@@ -13,18 +13,11 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
 
   private $rows;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->install('org.civicrm.hrrecruitment')
-      ->apply();
-  }
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    OptionValueFabricator::fabricate('hrjc_location');
+    OptionValueFabricator::fabricate(['option_group_id' => 'hrjc_location']);
   }
 
   public function testImport() {
@@ -47,7 +40,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
 
     $this->assertEquals(
       'Junior Programme Coordinator',
-      $this->apiQuickGet('HRVacancy','position', 'Junior Programme Coordinator')
+      $this->apiGet('HRVacancy','position', 'Junior Programme Coordinator')
     );
   }
 
