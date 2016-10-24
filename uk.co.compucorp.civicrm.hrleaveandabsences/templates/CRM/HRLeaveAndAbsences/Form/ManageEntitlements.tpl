@@ -66,8 +66,10 @@
   {foreach from=$calculations item=calculation}
     {assign var=absenceType value=$calculation->getAbsenceType()}
     {assign var=absenceTypeID value=$absenceType->id}
+    {assign var=absencePeriod value=$calculation->getAbsencePeriod()}
+    {assign var=absencePeriodID value=$absencePeriod->id}
     {assign var=contact value=$calculation->getContact()}
-    <tr data-calculation-details="{$calculation}" data-absence-type="{$absenceTypeID}">
+    <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
       <td>{$contact.id}</td>
       <td>{$contact.display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
@@ -78,7 +80,7 @@
       <td>{$calculation->getProRata()}</td>
       <td class="proposed-entitlement">
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
-          {$form.proposed_entitlement[$contact.id][$absenceTypeID].html}
+          {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
           <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
           <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
             <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"

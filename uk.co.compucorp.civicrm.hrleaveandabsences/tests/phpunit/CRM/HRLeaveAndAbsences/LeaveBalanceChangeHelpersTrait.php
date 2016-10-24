@@ -39,6 +39,14 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     );
   }
 
+  public function createOverriddenBalanceChange($entitlementID, $amount) {
+    return $this->createEntitlementBalanceChange(
+      $entitlementID,
+      $amount,
+      $this->getBalanceChangeTypeValue('Overridden')
+    );
+  }
+
   public function createBroughtForwardBalanceChange($entitlementID, $amount, $expiryDate = null) {
     return $this->createEntitlementBalanceChange(
       $entitlementID,

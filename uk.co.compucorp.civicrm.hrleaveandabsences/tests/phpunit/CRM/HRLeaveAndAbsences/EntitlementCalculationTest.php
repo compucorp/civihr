@@ -4,13 +4,14 @@ require_once __DIR__."/ContractHelpersTrait.php";
 
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
-use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_EntitlementCalculationTest
@@ -52,10 +53,9 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testBroughtForwardShouldBeZeroIfTheresNoPreviousPeriod()
   {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
@@ -66,16 +66,14 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testBroughtForwardShouldBeZeroIfThereIsNoEntitlementForPreviousPeriod()
   {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    AbsencePeriod::create([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
@@ -86,14 +84,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testBroughtForwardShouldBeZeroIfExpirationDurationHasExpired()
   {
-    $type = $this->createAbsenceType([
+    $type = AbsenceTypeFabricator::fabricate([
       'max_number_of_days_to_carry_forward' => 50,
       'carry_forward_expiration_unit'       => AbsenceType::EXPIRATION_UNIT_DAYS,
       'carry_forward_expiration_duration'   => 5
     ]);
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('-7 days')),
       'end_date' => date('YmdHis', strtotime('-6 days')),
     ]);
@@ -101,14 +98,32 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     // The absence type says brought forward should expire in 5 days,
     // so we set the period start date to 5 days ago. Since the expiration date
     // is based on the period start date, it will be considered to have expired
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('-5 days')),
       'end_date' => date('YmdHis', strtotime('now')),
+    ], true);
+
+    $this->createEntitlement($previousPeriod, $type);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getBroughtForward());
+  }
+
+  public function testBroughtForwardShouldBeZeroIfThePreviousPeriodIsNotOverYet() {
+    // never expires
+    $type = AbsenceTypeFabricator::fabricate([
+      'max_number_of_days_to_carry_forward' => 50,
     ]);
 
-    //Load the period from the database to get the dates back in Y-m-d format.
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('-7 days')),
+      'end_date' => date('YmdHis', strtotime('+5 days')),
+    ]);
+
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('+6 days')),
+      'end_date' => date('YmdHis', strtotime('+10 days')),
+    ], true);
 
     $this->createEntitlement($previousPeriod, $type);
 
@@ -119,22 +134,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testBroughtForwardShouldNotBeMoreThanTheMaxNumberOfDaysAllowedToBeCarriedForward() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
-    $type = $this->createAbsenceType([
+    $type = AbsenceTypeFabricator::fabricate([
       'max_number_of_days_to_carry_forward' => 5
     ]);
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('-2 days')),
       'end_date' => date('YmdHis', strtotime('-1 day')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
@@ -151,22 +163,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
-    $type = $this->createAbsenceType([
+    $type = AbsenceTypeFabricator::fabricate([
       'max_number_of_days_to_carry_forward' => 5
     ]);
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('-2 days')),
       'end_date' => date('YmdHis', strtotime('-1 day')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->createEntitlement($previousPeriod, $type, 3);
 
@@ -182,12 +191,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testProRataShouldBeZeroIfTheContactHasNoContracts() {
     $type = new AbsenceType();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     //A non-existing contact, which will have no contracts
     $contact = ['id' => 5321];
@@ -199,27 +206,23 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   public function testProRataShouldBeZeroIfTheContractDoesntHaveStartAndEndDates() {
     $type = new AbsenceType();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 day')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getProRata());
   }
 
   public function testProRataShouldBeRoundedToTheNearestHalfDay() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
     // 261 working days
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     // 21 days to work
     $this->setContractDates(
@@ -256,15 +259,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testProRataShouldNotIncludePublicHolidaysBetweenContractDatesEvenIfContractSaysPublicHolidaysShouldBeAdded() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
     // 261 working days
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $period = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $period = $this->findAbsencePeriodByID($period->id);
+    ], true);
 
     // 141 working days to work (142 - 1 public holiday)
     $this->setContractDates(
@@ -274,8 +275,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->createJobLeaveEntitlement($type, 20, true);
 
     // This is between the contract dates, but will not be included
-    PublicHoliday::create([
-      'title' => 'Public Holiday 2',
+    PublicHolidayFabricator::fabricate([
       'date' => date('YmdHis', strtotime('2016-05-18'))
     ]);
 
@@ -286,18 +286,16 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testProRataShouldBeTheSumOfTheProRataForEachContractDuringTheAbsencePeriod() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
     // Delete the contract created during setUp
     civicrm_api3('HRJobContract', 'deletecontract', ['id' => $this->contract['id']]);
 
     // 261 working days
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     // 62 working days
     // 3 days of contractual entitlement
@@ -342,15 +340,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testTheProposedEntitlementForAContactWithoutAContractShouldBeZero() {
-    $type = $this->createAbsenceType();
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+1 days'))
-    ]);
-    // We need to load the period from the database to get the dates in the
-    // expected format: Y-m-d
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     // a contact without any contract
     $contact = ['id' => 3453];
@@ -360,44 +354,48 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testTheProposedEntitlementForAContractWithoutStartAndEndDatesShouldBeZero() {
-    $type = $this->createAbsenceType();
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 days'))
-    ]);
-    // We need to load the period from the database to get the dates in the
-    // expected format: Y-m-d
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([], true);
+
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getProposedEntitlement());
   }
 
-  public function testTheProposedEntitlementForAPeriodWithPreviouslyOverriddenEntitlementShouldBeTheTheOverriddenValue() {
-    $type = $this->createAbsenceType();
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 days'))
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+  public function testTheProposedEntitlementForAPeriodWithPreviouslyOverriddenEntitlementShouldNotBeTheTheOverriddenValue() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $startDate = date('YmdHis', strtotime('2016-01-01'));
+    $endDate = date('YmdHis', strtotime('2016-04-01'));
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate,
+      'end_date' => $endDate
+    ], true);
 
-    $this->createEntitlement($currentPeriod, $type, 25.3, true);
+    // Set the contractual entitlement as 10 days
+    $this->createJobLeaveEntitlement($type, 10);
+
+    // The contract spans the whole period, so
+    // The proposed entitlement will be the whole contractual entitlement
+    $this->setContractDates(
+      $startDate,
+      $endDate
+    );
+
+    // Creates the previously overridden Leave Period Entitlement
+    $this->createEntitlement($currentPeriod, $type, 10, 50);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(25.3, $calculation->getProposedEntitlement());
+    $this->assertEquals(10, $calculation->getProposedEntitlement());
   }
 
   public function testTheProposedEntitlementShouldBeProRataPlusNumberOfDaysBroughtForward()
   {
     // To simplify the code, we use an Absence where the carried
     // forward never expires
-    $type = $this->createAbsenceType([
+    $type = AbsenceTypeFabricator::fabricate([
       'max_number_of_days_to_carry_forward' => 20,
     ]);
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
@@ -406,12 +404,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->createEntitlement($previousPeriod, $type, 10);
 
     // 261 working days
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     // Set the contractual entitlement as 10 days
     $this->createJobLeaveEntitlement($type, 10);
@@ -444,20 +440,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testProposedEntitlementShouldIncludePublicHolidaysBetweenContractsWhereTheyShouldBeAdded() {
-    $type = $this->createAbsenceType([
+    $type = AbsenceTypeFabricator::fabricate([
       'max_number_of_days_to_carry_forward' => 20,
     ]);
 
     // 261 working days
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
-      'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+      'end_date'   => date('YmdHis', strtotime('2016-12-31')),
+    ], true);
 
     // Set the contractual entitlement as 10 days
-    $this->createJobLeaveEntitlement($type, 10, true);
+    $this->createJobLeaveEntitlement($type, 10, TRUE);
 
     // 64 days to work
     $this->setContractDates(
@@ -466,21 +460,18 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     );
 
     // This will not be included since it's before the contract start date
-    PublicHoliday::create([
-      'title' => 'Holiday 1',
-      'date' => date('YmdHis', strtotime('2015-01-01'))
+    PublicHolidayFabricator::fabricate([
+      'date'  => date('YmdHis', strtotime('2015-01-01'))
     ]);
 
     // This will be included since it's between the contract dates
-    PublicHoliday::create([
-      'title' => 'Holiday 2',
-      'date' => date('YmdHis', strtotime('2016-01-01'))
+    PublicHolidayFabricator::fabricate([
+      'date'  => date('YmdHis', strtotime('2016-01-01'))
     ]);
 
     // This will not be included since it's after the contract start date
-    PublicHoliday::create([
-      'title' => 'Holiday 3',
-      'date' => date('YmdHis', strtotime('2016-05-04'))
+    PublicHolidayFabricator::fabricate([
+      'date'  => date('YmdHis', strtotime('2016-05-04'))
     ]);
 
     // Working days in Period = 261 - 3 (public holidays) = 259
@@ -501,16 +492,42 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals(3.5, $calculation->getProposedEntitlement());
   }
 
+  public function testGetOverriddenEntitlementShouldBeZeroIfTheresNoPreviousPeriodEntitlement() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([], true);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getOverriddenEntitlement());
+  }
+
+  public function testGetOverriddenEntitlementShouldBeZeroIfThePreviousPeriodEntitlementIsNotOverridden() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([], true);
+
+    $this->createEntitlement($currentPeriod, $type, 10);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(0, $calculation->getOverriddenEntitlement());
+  }
+
+  public function testGetOverriddenEntitlementShouldShouldBeTheOverriddenValueIfThePreviousPeriodEntitlementIsOverridden() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([], true);
+
+    $this->createEntitlement($currentPeriod, $type, 10, 50);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    $this->assertEquals(50, $calculation->getOverriddenEntitlement());
+  }
+
   public function testPreviousPeriodProposedEntitlementShouldBeZeroIfThereIsNoPreviousPeriod()
   {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getPreviousPeriodProposedEntitlement());
@@ -518,20 +535,17 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testPreviousPeriodProposedEntitlementShouldBeZeroIfThereIsNoEntitlementForThePreviousPeriod()
   {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getPreviousPeriodProposedEntitlement());
@@ -539,20 +553,17 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testPreviousPeriodProposedEntitlementShouldReturnTheProposedEntitlement()
   {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
@@ -569,41 +580,36 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPeriodEntitlementForThePreviousPeriod() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
   }
 
   public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereAreNoLeaveRequestsOnThePeriod() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
+    $this->createEntitlement($previousPeriod, $type, 10);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
@@ -614,9 +620,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
 
-    $type = $this->createAbsenceType();
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $type = AbsenceTypeFabricator::fabricate();
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
@@ -641,12 +646,10 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       date('Y-m-d', strtotime('+41 days', $previousPeriodStartDateTimeStamp))
     );
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(12, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
@@ -654,13 +657,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod()
   {
-    $type = $this->createAbsenceType();
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $type = AbsenceTypeFabricator::fabricate();
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(0, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
@@ -671,20 +672,17 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
 
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $previousPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2015-01-01')),
       'end_date' => date('YmdHis', strtotime('2015-12-31')),
     ]);
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 2',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
       'end_date' => date('YmdHis', strtotime('2016-12-31')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->createEntitlement($previousPeriod, $type, 10);
 
@@ -734,62 +732,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($contact, $calculation->getContact());
   }
 
-//  public function testCalculationCanReturnItsStringRepresentation()
-//  {
-//    // To simplify the code, we use an Absence where the carried
-//    // forward never expires
-//    $type = $this->createAbsenceType([
-//      'max_number_of_days_to_carry_forward' => 5,
-//    ]);
-//
-//    $previousPeriod = AbsencePeriod::create([
-//      'title' => 'Period 1',
-//      'start_date' => date('YmdHis', strtotime('2015-01-01')),
-//      'end_date' => date('YmdHis', strtotime('2015-12-31')),
-//    ]);
-//
-//    // Set the previous period entitlement as 20 days
-//    $this->createEntitlement($previousPeriod, $type, 20);
-//
-//    // 261 working days - 2 public holidays = 259 working days
-//    $currentPeriod = AbsencePeriod::create([
-//      'title' => 'Period 2',
-//      'start_date' => date('YmdHis', strtotime('2016-01-01')),
-//      'end_date' => date('YmdHis', strtotime('2016-12-31')),
-//    ]);
-//    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
-//    PublicHoliday::create([
-//      'title' => 'Holiday 1',
-//      'date' => date('YmdHis', strtotime('2016-01-21'))
-//    ]);
-//    PublicHoliday::create([
-//      'title' => 'Holiday 2',
-//      'date' => date('YmdHis', strtotime('2016-03-16'))
-//    ]);
-//
-//    // Set the contractual entitlement as 20 days
-//    $this->createJobLeaveEntitlement($type, 20, true);
-//
-//    // 62 days to work (64 - the 2 public holidays)
-//    $this->setContractDates(
-//      date('YmdHis', strtotime('2016-01-01')),
-//      date('YmdHis', strtotime('2016-03-30'))
-//    );
-//
-//    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-//
-//    //Contractual Entitlement = 20
-//    //Number of Public Holidays = 2
-//    //Number of days to work = 62
-//    //Number of working days = 259
-//    //Pro rata = 5.5
-//    //Brought forward = 5
-//    //Proposed Entitlement = 10.5
-//    $expected = '((20 + 2) * (62 / 259)) = (5.5) + (5) = 10.5 days';
-//    $calculationDetails = sprintf('%s', $calculation);
-//    $this->assertEquals($expected, $calculationDetails);
-//  }
-
   public function testCalculationCanUseTheAbsencePeriodToCalculateTheBroughtForwardExpirationDate() {
     $absenceType = new AbsenceType();
 
@@ -817,14 +759,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testGetPublicHolidaysShouldReturnAListOfPublicHolidaysAddedToTheEntitlement() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+50 days')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->setContractDates(
       date('YmdHis', strtotime('-5 days')),
@@ -835,11 +775,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $addPublicHolidays = true;
     $this->createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays);
 
-    $publicHoliday1 = PublicHoliday::create([
+    $publicHoliday1 = PublicHolidayFabricator::fabricate([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
-    $publicHoliday2 = PublicHoliday::create([
+    $publicHoliday2 = PublicHolidayFabricator::fabricate([
       'title' => 'Holiday 2',
       'date' => date('YmdHis', strtotime('+3 days'))
     ]);
@@ -853,14 +793,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testGetPublicHolidaysShouldOnlyReturnPublicHolidaysWithDatesBetweenTheContractDatesAndAbsencePeriod() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+50 days')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     // The contract starts 5 days prior to the AbsencePeriod and
     // ends before the AbsencePeriod
@@ -875,22 +813,20 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     // This is between both the AbsencePeriod and the Contract dates,
     // so it should be returned
-    $publicHoliday1 = PublicHoliday::create([
+    $publicHoliday1 = PublicHolidayFabricator::fabricate([
       'title' => 'Holiday 1',
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
     // This is between the contract dates but prior to the AbsencePeriod
     // start_date, so it shouldn't be returned
-    $publicHoliday2 = PublicHoliday::create([
-      'title' => 'Holiday 2',
+    PublicHolidayFabricator::fabricate([
       'date' => date('YmdHis', strtotime('-3 days'))
     ]);
 
     // This is between the AbsencePeriod dates but after the contract end date,
     // so it shouldn't be returned
-    PublicHoliday::create([
-      'title' => 'Holiday 3',
+    PublicHolidayFabricator::fabricate([
       'date' => date('YmdHis', strtotime('+31 days'))
     ]);
 
@@ -902,22 +838,19 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testGetPublicHolidaysShouldReturnEmptyIfTheContractHasNoJobLeaveInformation() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+50 days')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $this->setContractDates(
       date('YmdHis'),
       date('YmdHis', strtotime('+30 days'))
     );
 
-    PublicHoliday::create([
-      'title' => 'Holiday 1',
+    PublicHolidayFabricator::fabricate([
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
@@ -928,14 +861,12 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testGetPublicHolidaysShouldReturnEmptyIfJobLeaveDoesNotAllowPublicHolidaysToBeAdded() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
 
-    $currentPeriod = AbsencePeriod::create([
-      'title' => 'Period 1',
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis'),
       'end_date' => date('YmdHis', strtotime('+50 days')),
-    ]);
-    $currentPeriod = $this->findAbsencePeriodByID($currentPeriod->id);
+    ], true);
 
     $leaveAmount = 10;
     $addPublicHolidays = false;
@@ -946,8 +877,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
       date('YmdHis', strtotime('+30 days'))
     );
 
-    PublicHoliday::create([
-      'title' => 'Holiday 1',
+    PublicHolidayFabricator::fabricate([
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
@@ -958,12 +888,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testIsCurrentPeriodEntitlementOverriddenShouldBeFalseIfThereIsNoPreviouslyCalculatedEntitlement() {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
 
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertFalse($calculation->isCurrentPeriodEntitlementOverridden());
@@ -971,47 +897,34 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
   public function testIsCurrentPeriodEntitlementOverriddenShouldBeFalseIfThePreviouslyCalculatedEntitlementIsNotOverridden()
   {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
     $this->createEntitlement($period, $type, 10);
+
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertFalse($calculation->isCurrentPeriodEntitlementOverridden());
   }
 
   public function testIsCurrentPeriodEntitlementOverriddenShouldBeTrueIfThePreviouslyCalculatedEntitlementIsOverridden() {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
-    $this->createEntitlement($period, $type, 10, true);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
+    $this->createEntitlement($period, $type, 10, 20);
+
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertTrue($calculation->isCurrentPeriodEntitlementOverridden());
   }
 
   public function testGetCurrentPeriodEntitlementCommentReturnsAnEmptyStringIfThereIsNoPreviouslyCalculatedEntitlement() {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
+
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
     $this->assertEmpty($calculation->getCurrentPeriodEntitlementComment());
   }
 
   public function testGetCurrentPeriodEntitlementCommentReturnsAnEmptyStringIfThereThePreviouslyCalculatedEntitlementHasNoComment() {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
     $this->createEntitlement($period, $type, 10);
 
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
@@ -1019,12 +932,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function testGetCurrentPeriodEntitlementCommentReturnsTheCommentIfThereThePreviouslyCalculatedEntitlementHasOne() {
-    $type = $this->createAbsenceType();
-    $period = AbsencePeriod::create([
-      'title' => 'Period 1',
-      'start_date' => date('YmdHis'),
-      'end_date' => date('YmdHis', strtotime('+1 day'))
-    ]);
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
     $comment = 'Lorem ipsum...';
     $this->createEntitlement($period, $type, 10, false, $comment);
 
@@ -1032,14 +941,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $this->assertEquals($comment, $calculation->getCurrentPeriodEntitlementComment());
   }
 
-  private function findAbsencePeriodByID($id) {
-    $currentPeriod     = new AbsencePeriod();
-    $currentPeriod->id = $id;
-    $currentPeriod->find(TRUE);
-    return $currentPeriod;
-  }
-
-  private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = false, $comment = null) {
+  private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = null, $comment = null) {
     $params = [
       'period_id'            => $period->id,
       'contact_id'           => $this->contact['id'],
@@ -1057,20 +959,11 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
 
     $this->createLeaveBalanceChange($periodEntitlement->id, $numberOfDays);
 
+    if($overridden) {
+      $this->createOverriddenBalanceChange($periodEntitlement->id, $overridden - $numberOfDays);
+    }
+
     return $periodEntitlement;
-  }
-
-  private function createAbsenceType($params = []) {
-    $basicRequiredFields = [
-      'title'                     => 'Type ' . microtime(),
-      'color'                     => '#000000',
-      'default_entitlement'       => 20,
-      'allow_request_cancelation' => 1,
-      'allow_carry_forward'       => 1,
-    ];
-
-    $params = array_merge($basicRequiredFields, $params);
-    return AbsenceType::create($params);
   }
 
   private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {

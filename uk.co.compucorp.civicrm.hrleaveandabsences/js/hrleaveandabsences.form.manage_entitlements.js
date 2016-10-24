@@ -141,9 +141,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
       });
 
       this._listElement
-        .find('tr:not(.hidden)')  // finds all the visible rows
-        .not(selectors.join(',')) // that doesn't match the select types
-        .addClass('hidden');      // and hide them
+        .find('tbody tr:not(.hidden)')  // finds all the visible rows
+        .not(selectors.join(','))       // that doesn't match the select types
+        .addClass('hidden');            // and hide them
     }
   };
 
@@ -206,21 +206,15 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
       return;
     }
 
-    var calculationDescription = ts('' +
-      '((Base contractual entitlement + Public Holidays) ' +
-      '* ' +
-      '(No. of working days to work / No. of working days in period)) = ' +
-      '(Period pro rata) + (Brought Forward days) = Period Entitlement'
-    );
-    var calculationDetails = event.currentTarget.parentNode.dataset.calculationDetails;
-
-    if(!calculationDetails) {
-      return;
-    }
+    var query = {
+      'contact_id': event.currentTarget.parentNode.dataset.contact,
+      'type_id': event.currentTarget.parentNode.dataset.absenceType,
+      'period_id': event.currentTarget.parentNode.dataset.absencePeriod
+    };
 
     CRM.confirm({
       title: ts('Calculation details'),
-      message: calculationDescription + '<br /><br />' + calculationDetails,
+      url: CRM.url('civicrm/admin/leaveandabsences/periods/manage_entitlements/calculation_details', query),
       width: '70%',
       options: {}
     });
@@ -430,10 +424,14 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
   ProposedEntitlement.prototype._makeEntitlementEditable = function() {
     this._overrideButton.hide();
     this._proposedValue.hide();
+
+    if(!this._overrideField.val()) {
+      this._overrideField.val(this._proposedValue.text())
+    }
     this._overrideField
-      .val(this._proposedValue.text())
       .show()
       .focus();
+
     this._overrideCheckbox.prop('checked', true);
     this._isOverridden = true;
   };
