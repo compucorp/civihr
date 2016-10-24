@@ -1,10 +1,6 @@
 #!/bin/bash
 
 ## About: Install the CiviHR extensions using drush
-## Usage: install.sh [--with-sample-data] [drush-options]
-## Example: ./drush-install.sh --with-sample-data
-## Example: ./drush-install.sh --root=/var/www/drupal -l newdomain.ex
-## Example: ./drush-install.sh --with-sample-data --root=/var/www/drupal -l newdomain.ex
 
 ##################################
 ## List of CiviHR core extensions
@@ -76,13 +72,6 @@ function set_resource_urls() {
 CIVI_PATH=$1
 shift
 
-if [ "$1" == "--with-hrsample-data" ]; then
-  WITHSAMPLE=1
-  shift
-else
-  WITHSAMPLE=
-fi
-
 set -ex
 drush "$@" cvapi extension.install keys=$CORE_EXTS,$ENTITY_EXTS,$APP_EXTS
 set +ex
@@ -90,7 +79,7 @@ set +ex
 set_default_localisation_settings ${CIVI_PATH}
 set_resource_urls
 
-if [ -n "$WITHSAMPLE" ]; then
+if [ "$WITH_HR_SAMPLE" == "1" ]; then
   set -ex
   drush "$@" cvapi extension.install keys=uk.co.compucorp.civicrm.hrsampledata
   set +ex
