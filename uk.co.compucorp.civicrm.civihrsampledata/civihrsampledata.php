@@ -138,4 +138,3 @@ function _civihrsampledata_importSampleData($extensionDirectory) {
     $fileToImport = null;
   }
 }
-

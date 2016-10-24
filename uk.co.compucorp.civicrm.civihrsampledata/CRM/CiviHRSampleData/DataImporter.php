@@ -9,7 +9,7 @@ abstract class CRM_CiviHRSampleData_DataImporter
    *
    * @var array
    */
-  protected static $data = [];
+  private static $data = [];
 
   /**
    * File handler
@@ -25,6 +25,32 @@ abstract class CRM_CiviHRSampleData_DataImporter
    */
   public function setSplFileObject(SplFileObject $fileHandler) {
    $this->fileHandler = $fileHandler;
+  }
+
+  /**
+   * Stores data mapping for old and new ID or value.
+   *
+   * @param string $mappingKey
+   *   The mapping key ( e.g: contact_mapping, activity_mapping .. etc )
+   * @param int|string $oldValue
+   *   The old ID or value usually come from the csv file
+   * @param int|string $newValue
+   *   The new ID or value after inserting data into the database.
+   */
+  public function setDataMapping($mappingKey, $oldValue, $newValue) {
+    self::$data[$mappingKey][$oldValue] = $newValue;
+  }
+
+  /**
+   * Gets stored mapping for specific mapping key and value.
+   *
+   * @param string $mappingKey
+   * @param int|string $oldValue
+   *
+   * @return int|string
+   */
+  public function getDataMapping($mappingKey, $oldValue) {
+    return self::$data[$mappingKey][$oldValue];
   }
 
   /**
@@ -72,32 +98,6 @@ abstract class CRM_CiviHRSampleData_DataImporter
    */
   protected function callAPI($entity, $action, $params) {
     return civicrm_api3($entity, $action, $params);
-  }
-
-  /**
-   * Stores data mapping for old and new ID or value.
-   *
-   * @param string $mappingKey
-   *   The mapping key ( e.g: contact_mapping, activity_mapping .. etc )
-   * @param int|string $oldValue
-   *   The old ID or value usually come from the csv file
-   * @param int|string $newValue
-   *   The new ID or value after inserting data into the database.
-   */
-  protected function setDataMapping($mappingKey, $oldValue, $newValue) {
-    self::$data[$mappingKey][$oldValue] = $newValue;
-  }
-
-  /**
-   * Gets stored mapping for specific mapping key and value.
-   *
-   * @param string $mappingKey
-   * @param int|string $oldValue
-   *
-   * @return int|string
-   */
-  protected function getDataMapping($mappingKey, $oldValue) {
-    return self::$data[$mappingKey][$oldValue];
   }
 
   /**

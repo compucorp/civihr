@@ -1,20 +1,19 @@
 <?php
 
-class CRM_HRCore_Test_Fabricator_Contact {
+class CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation {
 
   private static $defaultParams = [
-    'contact_type' => 'Individual',
-    'first_name'   => 'John',
-    'last_name'    => 'Doe',
+    'location' => 'test location',
+    'standard_hours' => 40,
+    'periodicity' => "Week",
     'sequential'   => 1
   ];
 
   public static function fabricate($params = []) {
     $params = array_merge(self::$defaultParams, $params);
-    $params['display_name'] = "{$params['first_name']} {$params['last_name']}";
 
     $result = civicrm_api3(
-      'Contact',
+      'HRHoursLocation',
       'create',
       $params
     );

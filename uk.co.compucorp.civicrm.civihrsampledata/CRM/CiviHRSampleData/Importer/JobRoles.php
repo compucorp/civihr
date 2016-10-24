@@ -38,7 +38,7 @@ class CRM_CiviHRSampleData_Importer_JobRoles extends CRM_CiviHRSampleData_DataIm
       $row['cost_center'] = $this->costCenters[$row['cost_center']];
     }
 
-    $this->callAPI('HrJobRoles', 'get', $row);
+    $this->callAPI('HrJobRoles', 'create', $row);
 
   }
 
