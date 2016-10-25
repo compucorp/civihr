@@ -36,8 +36,9 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
     );
 
     foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['option_group_id', 'component_id']))
-      $this->assertEquals($this->rows[1][$index], $optionValue[$fieldName]);
+      if (!in_array($fieldName, ['option_group_id', 'component_id'])) {
+        $this->assertEquals($this->rows[1][$index], $optionValue[$fieldName]);
+      }
     }
   }
 

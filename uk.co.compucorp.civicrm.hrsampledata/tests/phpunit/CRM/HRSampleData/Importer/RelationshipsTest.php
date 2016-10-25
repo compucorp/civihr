@@ -48,8 +48,9 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
 
     foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['relationship_type_id', 'case_id']))
-      $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
+      if (!in_array($fieldName, ['relationship_type_id', 'case_id'])) {
+        $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
+      }
     }
   }
 
@@ -77,8 +78,9 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
 
     foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['relationship_type_id', 'start_date']))
+      if (!in_array($fieldName, ['relationship_type_id', 'start_date'])) {
         $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
+      }
     }
   }
 

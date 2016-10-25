@@ -12,22 +12,6 @@ abstract class CRM_HRSampleData_DataImporter
   private static $data = [];
 
   /**
-   * File handler
-   *
-   * @var SplFileObject
-   */
-  protected $fileHandler = null;
-
-  /**
-   * Injects SplFileObject object
-   *
-   * @param SplFileObject $fileHandler
-   */
-  public function setSplFileObject(SplFileObject $fileHandler) {
-   $this->fileHandler = $fileHandler;
-  }
-
-  /**
    * Stores data mapping for old and new ID or value.
    *
    * @param string $mappingKey
@@ -56,22 +40,21 @@ abstract class CRM_HRSampleData_DataImporter
   /**
    * Imports csv file into the database.
    *
+   * @param SplFileObject $fileHandler
    */
-  public function import() {
+  public function import(SplFileObject $fileHandler) {
     $header = null;
 
-    if (!empty($this->fileHandler)) {
-      while (!$this->fileHandler->eof()) {
-        $row = $this->fileHandler->fgetcsv();
+    while (!$fileHandler->eof()) {
+      $row = $fileHandler->fgetcsv();
 
-        if ($header === null) {
-          $header = $row;
-          continue;
-        }
-
-        $row = array_combine($header, $row);
-        $this->insertRecord($row);
+      if ($header === null) {
+        $header = $row;
+        continue;
       }
+
+      $row = array_combine($header, $row);
+      $this->insertRecord($row);
     }
   }
 

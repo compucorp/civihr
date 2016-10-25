@@ -2,7 +2,7 @@
 
 require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/VacancyStage.php';
 
-use CRM_HRRecruitment_Test_Fabricator_Vacancy as VacancyFabricator;
+use CRM_HRRecruitment_Test_Fabricator_HRVacancy as VacancyFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_VacancyStageTest

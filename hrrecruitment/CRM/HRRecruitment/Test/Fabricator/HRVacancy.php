@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRRecruitment_Test_Fabricator_Vacancy {
+class CRM_HRRecruitment_Test_Fabricator_HRVacancy {
 
   private static $defaultParams = [
     'position' => "test vacany",

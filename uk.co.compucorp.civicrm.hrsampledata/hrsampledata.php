@@ -127,13 +127,11 @@ function _hrsampledata_importSampleData($extensionDirectory) {
   ];
 
   foreach($csvFiles as $class => $file) {
-    $fileToImport = new SplFileObject("{$csvDir}/{$file}.csv");
-
     $importerClassName = "CRM_HRSampleData_Importer_{$class}";
     $importer = new $importerClassName();
-    $importer->setSplFileObject($fileToImport);
 
-    $importer->import();
+    $fileToImport = new SplFileObject("{$csvDir}/{$file}.csv");
+    $importer->import($fileToImport);
 
     $fileToImport = null;
   }
