@@ -1,22 +1,37 @@
-(function($) {
-  var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+/*
+Prevent Popups to overflow tables.
+*/
+(function ($) {
+  'use strict';
 
-  $.fn.attrchange = function(callback) {
-    if (MutationObserver) {
-      var options = {
-        subtree: false,
-        attributes: true
-      };
+  // .btn-slide is a continer of popup and a button triggering it
+  $('.btn-slide').attrchange(function (e) {
+    var $button = $(this), $body = $('body'), $popup, buttonOffset;
 
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(e) {
-          callback.call(e.target, e);
-        });
-      });
+    // check if popup is open
+    if ($button.hasClass('btn-slide-active')) {
+      $popup = $button.children('ul.panel');
 
-      return this.each(function() {
-        observer.observe(this, options);
-      });
+      $popup
+        .appendTo($body)
+        .addClass('civihr-popup');
+
+      buttonOffset = $button.offset();
+
+      $popup
+        .css('top', parseInt(buttonOffset.top, 10) + $button.outerHeight())
+        .css('left', parseInt(buttonOffset.left, 10) - ($popup.width() - $button.outerWidth()));
+
+      $body.addClass('civihr-popup-open');
+    } else {
+
+      $body
+        .children('.civihr-popup')
+        .appendTo($button)
+        .removeClass('civihr-popup');
+
+      $body.removeClass('civihr-popup-open');
     }
-  }
+
+  });
 })(CRM.$);
