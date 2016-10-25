@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/HRHoursLocation.php
  */
 class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -25,7 +23,11 @@ class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_Bas
 
     $this->runImporter('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
 
-    $this->assertEquals('Islington', $this->apiGet('HRHoursLocation','location', 'Islington'));
+    $hoursLocation = $this->apiGet('HRHoursLocation', ['location' => 'Islington']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      $this->assertEquals($this->rows[1][$index], $hoursLocation[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

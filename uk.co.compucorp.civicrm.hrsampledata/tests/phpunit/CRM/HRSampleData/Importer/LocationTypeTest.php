@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/LocationType.php';
  */
 class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -29,7 +27,11 @@ class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_LocationType', $this->rows);
 
-    $this->assertEquals('Correspondence', $this->apiGet('LocationType', 'name', 'Correspondence'));
+    $locationType = $this->apiGet('LocationType', ['name' => 'Correspondence']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      $this->assertEquals($this->rows[1][$index], $locationType[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

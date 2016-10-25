@@ -11,8 +11,6 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  */
 class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -41,7 +39,12 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
 
     $this->runImporter('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
 
-    $this->assertEquals('39 Elizabeth St,', $this->apiGet('Address', 'street_address', '39 Elizabeth St,'));
+    $address = $this->apiGet('Address', ['street_address' => '39 Elizabeth St,']);
+
+    $this->assertEquals('39 Elizabeth St,', $address['street_address']);
+    $this->assertEquals('Belgravia', $address['supplemental_address_1']);
+    $this->assertEquals('London', $address['city']);
+    $this->assertEquals('SW1W 9RP', $address['postal_code']);
   }
 
   private function importHeadersFixture() {

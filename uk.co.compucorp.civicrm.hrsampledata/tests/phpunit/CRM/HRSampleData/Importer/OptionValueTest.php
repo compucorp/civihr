@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/OptionValue.php';
  */
 class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -32,10 +30,15 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
 
     $this->runImporter('CRM_HRSampleData_Importer_OptionValue', $this->rows);
 
-    $this->assertEquals(
-      'Compassionate_Leave',
-      $this->apiGet('OptionValue','name', 'Compassionate_Leave', ['option_group_id' => 'activity_type'])
+    $optionValue = $this->apiGet(
+      'OptionValue',
+      ['option_group_id' => 'activity_type', 'name' => 'Compassionate_Leave']
     );
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      if (!in_array($fieldName, ['option_group_id', 'component_id']))
+      $this->assertEquals($this->rows[1][$index], $optionValue[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

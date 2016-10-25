@@ -4,7 +4,7 @@ class CRM_HRCore_Test_Fabricator_CaseType {
 
   private static $defaultParams = [
     'title' => 'test case type',
-    'name' => 'test case type',
+    'name' => 'test_case_type',
     'is_active' => 1,
     'sequential'   => 1,
     'weight' => 100,

@@ -12,8 +12,6 @@ use CRM_HRCore_Test_Fabricator_Activity as ActivityFabricator;
  */
 class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -45,11 +43,15 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
-    $this->assertEquals("New Year's Day", $this->apiGet('Activity','subject', "New Year's Day"));
+    $activity = $this->apiGet('Activity', ['subject' => "New Year's Day"]);
+
+    $this->assertEquals("New Year's Day", $activity['subject']);
+    $this->assertEquals('2016-01-01 00:00:00', $activity['activity_date_time']);
+    $this->assertEquals($this->testContact['id'], $activity['source_contact_id']);
   }
 
   public function testImportWithSourceRecord() {
-    $sourceRecordID = ActivityFabricator::fabricate();
+    $sourceRecordID = ActivityFabricator::fabricate()['id'];
 
     $this->rows[] = [
       1,
@@ -73,7 +75,12 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
-    $this->assertEquals($sourceRecordID, $this->apiGet('Activity','source_record_id', $sourceRecordID));
+    $activity = $this->apiGet('Activity', ['source_record_id' => $sourceRecordID]);
+
+    $this->assertEquals($sourceRecordID, $activity['source_record_id']);
+    $this->assertEquals("New Year's Day", $activity['subject']);
+    $this->assertEquals('2016-01-01 00:00:00', $activity['activity_date_time']);
+    $this->assertEquals($this->testContact['id'], $activity['source_contact_id']);
   }
 
   private function importHeadersFixture() {

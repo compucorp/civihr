@@ -14,8 +14,6 @@ use CRM_HRRecruitment_Test_Fabricator_Vacancy as VacancyFabricator;
  */
 class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $vacancyID;
 
   public function setUp() {
@@ -41,7 +39,9 @@ class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_VacancyValue', $this->rows, $mapping);
 
-    $this->assertEquals($caseID, $this->apiGet('CustomValue','entity_id', $caseID, ['entity_table' => 'Case']));
+    $vacancyValue = $this->apiGet('CustomValue', ['entity_id' => $caseID, 'entity_table' => 'Case']);
+
+    $this->assertEquals($caseID, $vacancyValue['entity_id']);
   }
 
   private function importHeadersFixture() {

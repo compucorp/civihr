@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/AbsencePeriod.php';
  */
 class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -26,7 +24,11 @@ class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_AbsencePeriod', $this->rows);
 
-    $this->assertEquals('2016', $this->apiGet('HRAbsencePeriod','name', '2016'));
+    $absencePeriod = $this->apiGet('HRAbsencePeriod', ['name' => '2016']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      $this->assertEquals($this->rows[1][$index], $absencePeriod[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

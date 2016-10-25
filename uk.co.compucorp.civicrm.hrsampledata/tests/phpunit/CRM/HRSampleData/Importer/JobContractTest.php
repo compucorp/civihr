@@ -14,8 +14,6 @@ use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as PayScaleFabricator;
  */
 class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -94,18 +92,19 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
 
     $this->runImporter('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
 
-    $contract = $this->apiGet('HRJobContract',null, null, ['contact_id' => $this->testContact['id']]);
+    $contract = $this->apiGet('HRJobContract', ['contact_id' => $this->testContact['id']]);
     $this->assertEquals($this->testContact['id'], $contract['contact_id']);
 
     $contractID = $contract['id'];
 
-    $revision = $this->apiGet('HRJobContractRevision',null ,null, ['jobcontract_id' => $contractID]);
+    $revision = $this->apiGet('HRJobContractRevision', ['jobcontract_id' => $contractID]);
     $this->assertEquals($contractID, $revision['jobcontract_id']);
 
     $revisionID = $revision['id'];
     $entities = ['HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobPay', 'HRJobPension', 'HRJobLeave'];
     foreach ($entities as $entity) {
-      $this->assertEquals($revisionID, $this->apiGet($entity,'jobcontract_revision_id', $revisionID));
+      $entityList[$entity] = $this->apiGet($entity,['jobcontract_revision_id' => $revisionID]);
+      $this->assertEquals($revisionID, $entityList[$entity]['jobcontract_revision_id']);
     }
   }
 

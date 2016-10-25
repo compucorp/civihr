@@ -13,8 +13,6 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  */
 class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   private $testJobContract;
@@ -65,7 +63,26 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
 
     $this->runImporter('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
 
-    $this->assertEquals($this->testJobContract['id'], $this->apiGet('HrJobRoles','job_contract_id', $this->testJobContract['id']));
+    $jobRole = $this->apiGet('HrJobRoles', ['job_contract_id' => $this->testJobContract['id']]);
+
+    $fieldsToTest = [
+      'job_contract_id',
+      'title',
+      'cost_center_val_type',
+      'percent_pay_cost_center',
+      'amount_pay_cost_center',
+      'funder',
+      'funder_val_type',
+      'percent_pay_funder',
+      'amount_pay_funder',
+      'start_date',
+      'end_date',
+    ];
+    foreach($this->rows[0] as $index => $fieldName) {
+      if (in_array($fieldName, $fieldsToTest)) {
+        $this->assertEquals($this->rows[1][$index], $jobRole[$fieldName]);
+      }
+    }
   }
 
   private function importHeadersFixture() {

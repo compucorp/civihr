@@ -33,7 +33,10 @@ class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_VacancyStage', $this->rows, $mapping);
 
-    $this->assertEquals($this->vacancyID, $this->apiGet('HRVacancyStage','vacancy_id', $this->vacancyID));
+    $vacancyStage = $this->apiGet('HRVacancyStage', ['vacancy_id' => $this->vacancyID]);
+
+    $this->assertEquals($this->vacancyID, $vacancyStage['vacancy_id']);
+    $this->assertEquals(1, $vacancyStage['weight']);
   }
 
   private function importHeadersFixture() {

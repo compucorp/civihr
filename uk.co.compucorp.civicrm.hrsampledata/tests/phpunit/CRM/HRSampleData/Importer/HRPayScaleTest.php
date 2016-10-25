@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/HRPayScale.php';
  */
 class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -27,7 +25,11 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
 
     $this->runImporter('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
 
-    $this->assertEquals('E2', $this->apiGet('HRPayScale','pay_scale', 'E2'));
+    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => 'E2']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      $this->assertEquals($this->rows[1][$index], $payScale[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

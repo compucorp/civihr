@@ -4,7 +4,7 @@ class CRM_HRCore_Test_Fabricator_Case {
 
   private static $defaultParams = [
     'subject' => 'test test',
-    'case_type_id' => 'test case type',
+    'case_type_id' => 'test_case_type',
     'contact_id' => 1,
     'creator_id' => 1,
   ];

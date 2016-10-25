@@ -10,6 +10,7 @@ use Civi\Test\TransactionalInterface;
  */
 class CRM_HRSampleData_BaseImporterTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface
 {
+  protected $rows;
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
@@ -61,24 +62,16 @@ class CRM_HRSampleData_BaseImporterTest extends \PHPUnit_Framework_TestCase impl
     $importer->import();
   }
 
-  public function apiGet($entity, $key = null, $value = null, $extraParams = []) {
+  public function apiGet($entity, $extraParams = []) {
     $defaultParams = [
       'sequential' => 1,
       'options' => ['limit' => 1],
     ];
     $params = array_merge($defaultParams, $extraParams);
 
-    if (!empty($key) && !empty($value)) {
-      $params = array_merge($params, [$key => $value]);
-    }
-
     $fetchResult = civicrm_api3($entity, 'get', $params);
 
     $fetchResult = array_shift($fetchResult['values']);
-
-    if (!empty($key) && !empty($value)) {
-      $fetchResult = $fetchResult[$key];
-    }
 
     return $fetchResult;
   }

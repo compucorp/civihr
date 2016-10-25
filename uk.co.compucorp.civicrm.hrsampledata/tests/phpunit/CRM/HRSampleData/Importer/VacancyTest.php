@@ -11,8 +11,6 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  */
 class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -33,15 +31,17 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
       'Open',
       '2016-09-01 00:00:00',
       '2016-09-30 00:00:00',
-      '2016-09-07 22:32:45',
     ];
 
     $this->runImporter('CRM_HRSampleData_Importer_Vacancy', $this->rows);
 
-    $this->assertEquals(
-      'Junior Programme Coordinator',
-      $this->apiGet('HRVacancy','position', 'Junior Programme Coordinator')
-    );
+    $vacancy = $this->apiGet('HRVacancy', ['position' => 'Junior Programme Coordinator']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      if (!in_array($fieldName, ['id', 'location', 'status_id'])) {
+        $this->assertEquals($this->rows[1][$index], $vacancy[$fieldName]);
+      }
+    }
   }
 
   private function importHeadersFixture() {
@@ -57,7 +57,6 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
       'status_id',
       'start_date',
       'end_date',
-      'created_date',
     ];
   }
 

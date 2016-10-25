@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/AbsenceType.php';
  */
 class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -25,9 +23,13 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
       1,
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_AbsenceType', $this->rows[]);
+    $this->runImporter('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
 
-    $this->assertEquals('Compassionate_Leave', $this->apiGet('HRAbsenceType','name', 'Compassionate_Leave'));
+    $absenceType = $this->apiGet('HRAbsenceType', ['name' => 'Compassionate_Leave']);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      $this->assertEquals($this->rows[1][$index], $absenceType[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

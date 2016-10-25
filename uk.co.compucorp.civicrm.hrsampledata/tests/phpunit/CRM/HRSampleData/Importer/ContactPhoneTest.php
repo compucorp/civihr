@@ -11,8 +11,6 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  */
 class CRM_HRSampleData_Importer_ContactPhoneTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -38,7 +36,9 @@ class CRM_HRSampleData_Importer_ContactPhoneTest extends CRM_HRSampleData_BaseIm
 
     $this->runImporter('CRM_HRSampleData_Importer_ContactPhone', $this->rows, $mapping);
 
-    $this->assertEquals(7586311952, $this->apiGet('Phone', 'phone', 7586311952));
+    $phone = $this->apiGet('Phone', ['phone' => 7586311952]);
+
+    $this->assertEquals(7586311952, $phone['phone']);
   }
 
   private function importHeadersFixture() {

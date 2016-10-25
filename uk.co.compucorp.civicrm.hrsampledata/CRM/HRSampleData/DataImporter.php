@@ -60,7 +60,7 @@ abstract class CRM_HRSampleData_DataImporter
   public function import() {
     $header = null;
 
-    if (empty($this->fileHandler)) {
+    if (!empty($this->fileHandler)) {
       while (!$this->fileHandler->eof()) {
         $row = $this->fileHandler->fgetcsv();
 

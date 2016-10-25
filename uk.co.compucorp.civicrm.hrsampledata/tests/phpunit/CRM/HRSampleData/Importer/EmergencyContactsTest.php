@@ -11,8 +11,6 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  */
 class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -44,7 +42,9 @@ class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_B
 
     $this->runImporter('CRM_HRSampleData_Importer_EmergencyContacts', $this->rows, $mapping);
 
-    $this->assertEquals($this->testContact['id'], $this->apiGet('CustomValue','entity_id', $this->testContact['id']));
+    $emergencyContact = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
+
+    $this->assertEquals($this->testContact['id'], $emergencyContact['entity_id']);
   }
 
   private function importHeadersFixture() {

@@ -12,8 +12,6 @@ use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
  */
 class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContact;
 
   public function setUp() {
@@ -28,7 +26,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
     $this->rows[] = [
       1,
       'test case',
-      'test case',
+      'test_case_type',
       '2016-09-08',
       'Open',
       0,
@@ -42,7 +40,10 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
 
     $this->runImporter('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
 
-    $this->assertEquals('test case', $this->apiGet('Case', 'subject', 'test case'));
+    $case = $this->apiGet('Case', ['subject' => 'test case']);
+
+    $this->assertEquals('test case', $case['subject']);
+    $this->assertEquals('2016-09-08', $case['start_date']);
   }
 
   private function importHeadersFixture() {

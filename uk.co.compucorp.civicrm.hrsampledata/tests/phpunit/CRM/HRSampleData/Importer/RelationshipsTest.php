@@ -14,8 +14,6 @@ use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
  */
 class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   private $testContactA;
 
   private $testContactB;
@@ -35,7 +33,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
       $this->testContactA['id'],
       $this->testContactB['id'],
       'test AB',
-      '',
+      '2016-01-01',
       1,
       '',
     ];
@@ -47,7 +45,12 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
-    $this->assertEquals($this->testContactA['id'], $this->apiGet('Relationship', 'contact_id_a', $this->testContactA['id']));
+    $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      if (!in_array($fieldName, ['relationship_type_id', 'case_id']))
+      $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
+    }
   }
 
   public function testImportWithCase() {
@@ -71,7 +74,12 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
 
     $this->runImporter('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
-    $this->assertEquals($this->testContactA['id'], $this->apiGet('Relationship', 'contact_id_a', $this->testContactA['id']));
+    $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
+
+    foreach($this->rows[0] as $index => $fieldName) {
+      if (!in_array($fieldName, ['relationship_type_id', 'start_date']))
+        $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
+    }
   }
 
   private function importHeadersFixture() {

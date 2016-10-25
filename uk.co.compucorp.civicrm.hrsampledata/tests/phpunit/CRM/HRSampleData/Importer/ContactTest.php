@@ -9,8 +9,6 @@ require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Contact.php';
  */
 class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporterTest {
 
-  private $rows;
-
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -49,7 +47,12 @@ class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporte
 
     $this->runImporter('CRM_HRSampleData_Importer_Contact', $this->rows);
 
-    $this->assertEquals('Mr. Peter Agodi', $this->apiGet('Contact', 'display_name', 'Mr. Peter Agodi'));
+    $contact = $this->apiGet('Contact', ['display_name' => 'Mr. Peter Agodi']);
+
+    $this->assertEquals('Mr. Peter Agodi', $contact['display_name']);
+    $this->assertEquals('Agodi, Peter', $contact['sort_name']);
+    $this->assertEquals('en_US', $contact['preferred_language']);
+    $this->assertEquals('1957-10-02', $contact['birth_date']);
   }
 
   private function importHeadersFixture() {
