@@ -12,12 +12,14 @@ The Sample data includes:
 
 ## Installation
 
-To install the extension when creating a new buildkit instance then add *--with-hrsample-data* option.
+To install the extension when creating a new buildkit instance then you need to set
+*WITH_HR_SAMPLE* environment variable to *1* before running *civibuild create* command
 
 *Example :*
 
 ```bash
-civibuild create hr16 --civi-ver 4.7.9 --url http://localhost:8090 --with-hrsample-data
+export WITH_HR_SAMPLE=1
+civibuild create hr16 --civi-ver 4.7.9 --url http://localhost:8090
 ```
 
 You can also enable it from the extension manager page, but please consider changing your php timeout
