@@ -30,13 +30,6 @@ class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_DataImpor
 
     $row['relationship_type_id'] = $this->relationshipTypes[$row['relationship_type_id']];
 
-    if (!empty($row['case_id'])) {
-      $row['case_id'] = $this->getDataMapping('case_mapping', $row['case_id']);
-    }
-    else {
-      unset($row['case_id']);
-    }
-
     $this->callAPI('Relationship', 'create', $row);
   }
 
