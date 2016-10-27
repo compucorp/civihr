@@ -133,11 +133,21 @@ function styleguide_civicrm_navigationMenu(&$menu) {
   _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer', array(
     'label' => ts('Style Guide', array('domain' => 'org.civicrm.styleguide')),
     'name' => 'developer_styleguide',
-    'url' => 'civicrm/styleguide',
     'permission' => 'access CiviCRM',
+    'child' => array(),
     'operator' => 'OR',
     'separator' => 0,
   ));
+  foreach (Civi::service('styleguides')->getAll() as $styleGuide) {
+    _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer/developer_styleguide', array(
+      'label' => $styleGuide['label'],
+      'name' => 'developer_styleguide_' . $styleGuide['name'],
+      'url' => 'civicrm/styleguide/' . $styleGuide['name'],
+      'permission' => 'access CiviCRM',
+      'operator' => 'OR',
+      'separator' => 0,
+    ));
+  }
 }
 
 /**
