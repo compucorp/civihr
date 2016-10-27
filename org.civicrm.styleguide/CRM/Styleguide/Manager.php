@@ -1,20 +1,50 @@
 <?php
 
+/**
+ * Class CRM_Styleguide_Manager
+ *
+ * This class manages the list of available style-guides.
+ */
 class CRM_Styleguide_Manager {
 
   /**
    * @var array
+   *   A list of style-guides, indexed by name.
+   *   For data-structure, see `add()`.
+   *
+   * @see CRM_Styleguide_Manager::add
    */
   private $all = NULL;
 
   /**
-   * Get the definition of specific style-guide by name.
+   * Register another style-guide.
+   *
+   * @param array $styleGuide
+   *   Include properties:
+   *     - name: string, short machine name
+   *     - label: string, translated string
+   *     - path: string, local folder
+   * @return $this
+   * @throws \CRM_Core_Exception
+   */
+  public function add($styleGuide) {
+    if (empty($styleGuide['name']) || empty($styleGuide['label']) || empty($styleGuide['path'])) {
+      throw new \CRM_Core_Exception("Malformed style guide");
+    }
+    $this->all[$styleGuide['name']] = $styleGuide;
+    return $this;
+  }
+
+  /**
+   * Get the definition of a specific style-guide by name.
    *
    * @param string $name
+   *
    * @return array|NULL
    *   If the style-guide exists, it is an array with properties:
-   *     - name: string
-   *     - label: string
+   *     - name: string, short machine name
+   *     - label: string, translated string
+   *     - path: string, local folder
    */
   public function get($name) {
     $all = $this->getAll();
@@ -22,36 +52,41 @@ class CRM_Styleguide_Manager {
   }
 
   /**
-   * Get a list of all style guides.
+   * Get a list of all style-guides.
    *
    * @return array
+   *   A list of style-guides, indexed by name.
    */
   public function getAll() {
     if ($this->all === NULL) {
       $extPath = CRM_Core_Resources::singleton()->getPath('org.civicrm.styleguide');
 
-      $this->all = array(
-        'crm-star' => array(
-          'label' => ts('crm-*'),
-          'path' => "{$extPath}/guides/crm-star",
-        ),
-        'bootstrap' => array(
-          'label' => ts('Bootstrap'),
-          // FIXME: 'path' => "{$extPath}/guides/bootstrap",
-          'path' => "{$extPath}/partials",
-        ),
-        'bootstrap-civicrm' => array(
-          'label' => ts('Bootstrap-CiviCRM'),
-          'path' => "{$extPath}/guides/bootstrap-civicrm",
-        ),
-        // FIXME: Consider moving declaration to another extension.
-        'bootstrap-civihr' => array(
-          'label' => ts('Bootstrap-CiviHR'),
-          'path' => "{$extPath}/guides/bootstrap-civihr",
-        ),
-      );
+      $this->all = array();
 
-      CRM_Utils_Hook::singleton()->invoke(1, $this->all,
+      $this->add(array(
+        'name' => 'crm-star',
+        'label' => ts('crm-*'),
+        'path' => "{$extPath}/guides/crm-star",
+      ));
+      $this->add(array(
+        'name' => 'bootstrap',
+        'label' => ts('Bootstrap'),
+        // FIXME: 'path' => "{$extPath}/guides/bootstrap",
+        'path' => "{$extPath}/partials",
+      ));
+      $this->add(array(
+        'name' => 'bootstrap-civicrm',
+        'label' => ts('Bootstrap-CiviCRM'),
+        'path' => "{$extPath}/guides/bootstrap-civicrm",
+      ));
+      // FIXME: Consider moving declaration to another extension.
+      $this->add(array(
+        'name' => 'bootstrap-civihr',
+        'label' => ts('Bootstrap-CiviHR'),
+        'path' => "{$extPath}/guides/bootstrap-civihr",
+      ));
+
+      CRM_Utils_Hook::singleton()->invoke(1, $this,
         CRM_Utils_Hook::$_nullObject,
         CRM_Utils_Hook::$_nullObject,
         CRM_Utils_Hook::$_nullObject,
@@ -59,12 +94,22 @@ class CRM_Styleguide_Manager {
         CRM_Utils_Hook::$_nullObject,
         'civicrm_styleGuides'
       );
-
-      foreach ($this->all as $name => &$value) {
-        $value['name'] = $name;
-      }
     }
     return $this->all;
+  }
+
+  /**
+   * Get the definition of a specific style-guide by name.
+   *
+   * @param string $name
+   *
+   * @return CRM_Styleguide_Manager
+   */
+  public function remove($name) {
+    if ($this->all) {
+      unset($this->all[$name]);
+    }
+    return $this;
   }
 
 }
