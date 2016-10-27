@@ -6,6 +6,10 @@
     }
 
     public function listElementsAsOptions ($type) {
+      if (!file_exists($this->root . $type)) {
+        return '';
+      }
+
       $files = array();
       $handle=opendir($this->root . $type . '/');
 
@@ -29,6 +33,10 @@
 
     // Display title of each markup samples as a select option
     public function listMarkupAsOptions ($type) {
+      if (!file_exists($this->root . 'markup/' . $type)) {
+        return '';
+      }
+
       $files = array();
       $handle=opendir($this->root . 'markup/' . $type);
 
@@ -77,6 +85,10 @@
 
     // Display foundation elements
     public function showFoundation() {
+      if (!file_exists($this->root . 'foundation/')) {
+        return '';
+      }
+
       $files = array();
       $handle=opendir($this->root . 'foundation/');
 
@@ -103,6 +115,10 @@
 
     // Display markup view & source
     public function showMarkup($type) {
+      if (!file_exists($this->root . 'markup/'.$type)) {
+        return '';
+      }
+
       $files = array();
       $handle=opendir($this->root . 'markup/'.$type);
 
