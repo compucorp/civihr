@@ -24,6 +24,9 @@ class CRM_HRRecruitment_BAO_HRSearchVacancyTest extends PHPUnit_Framework_TestCa
     $params2 = array('first_name' => 'john', 'last_name' => 'snow');
     $permissionIndividual2Id = $this->createContact($params2);
 
+    $locationParams = ['name' => 'Headquaters', 'value' => 'Headquaters', 'label' => 'Headquaters'];
+    $this->createOptionValue($locationParams, 'hrjc_location');
+
     $juniorposition = 'Junior Support Specialist ' . substr(sha1(rand()), 0, 7);
     $this->juniorParams = array(
       'position' => $juniorposition,

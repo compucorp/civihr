@@ -20,8 +20,12 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
       // we need to manually add these fields because, since they are not
       // real fields, storeValues will ignore them
-      $rows[$object->id]['number_of_hours'] = $object->number_of_hours ?: 0;
-      $rows[$object->id]['number_of_weeks'] = $object->number_of_weeks ?: 0;
+      $rows[$object->id]['number_of_weeks'] = (int)$object->number_of_weeks;
+      $rows[$object->id]['number_of_hours'] = (float)$object->number_of_hours;
+
+      if($object->number_of_weeks > 1) {
+        $rows[$object->id]['number_of_hours'] = ts('Various');
+      }
 
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
           $this->links(),

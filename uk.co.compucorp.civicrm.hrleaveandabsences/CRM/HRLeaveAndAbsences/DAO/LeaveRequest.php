@@ -87,11 +87,17 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
    */
   public $id;
   /**
-   * FK to LeavePeriodEntitlement
+   * FK to AbsenceType
    *
    * @var int unsigned
    */
-  public $entitlement_id;
+  public $type_id;
+  /**
+   * FK to Contact
+   *
+   * @var int unsigned
+   */
+  public $contact_id;
   /**
    * One of the values of the Leave Request Status option group
    *
@@ -142,7 +148,8 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
   {
     if (!self::$_links) {
       self::$_links = static ::createReferenceColumns(__CLASS__);
-      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'entitlement_id', 'civicrm_hrleaveandabsences_leave_period_entitlement', 'id');
+      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'type_id', 'civicrm_hrleaveandabsences_absence_type', 'id');
+      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'contact_id', 'civicrm_contact', 'id');
     }
     return self::$_links;
   }
@@ -161,12 +168,19 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
           'description' => 'Unique LeaveRequest ID',
           'required' => true,
         ) ,
-        'entitlement_id' => array(
-          'name' => 'entitlement_id',
+        'type_id' => array(
+          'name' => 'type_id',
           'type' => CRM_Utils_Type::T_INT,
-          'description' => 'FK to LeavePeriodEntitlement',
+          'description' => 'FK to AbsenceType',
           'required' => true,
-          'FKClassName' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement',
+          'FKClassName' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
+        ) ,
+        'contact_id' => array(
+          'name' => 'contact_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'description' => 'FK to Contact',
+          'required' => true,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'status_id' => array(
           'name' => 'status_id',
@@ -227,7 +241,8 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveRequest extends CRM_Core_DAO
     if (!(self::$_fieldKeys)) {
       self::$_fieldKeys = array(
         'id' => 'id',
-        'entitlement_id' => 'entitlement_id',
+        'type_id' => 'type_id',
+        'contact_id' => 'contact_id',
         'status_id' => 'status_id',
         'from_date' => 'from_date',
         'from_date_type' => 'from_date_type',

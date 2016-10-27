@@ -67,6 +67,23 @@ class CRM_HRRecruitment_BAO_HRVacancyTest extends PHPUnit_Framework_TestCase imp
     }
   }
 
+  public function testGetOptionLabelWithCorrectLocationValue() {
+    $locationParams = ['name' => 't_l', 'value' => 10, 'label' => 'Test Location'];
+    $this->createOptionValue($locationParams, 'hrjc_location');
+
+    $vacancyVal['location'] = $locationParams['value'];
+    $label = CRM_HRRecruitment_BAO_HRVacancy::getOptionLabel($vacancyVal, 'location');
+
+    $this->assertEquals($locationParams['label'], $label);
+  }
+
+  public function testGetOptionLabelWithWrongLocationValue() {
+    $locationParams = ['value' => 'btbtbtbt', 'label' => 'Test Location'];
+
+    $vacancyVal['location'] = $locationParams['value'];
+    $label = CRM_HRRecruitment_BAO_HRVacancy::getOptionLabel($vacancyVal, 'location');
+
+    $this->assertEmpty($label);
+  }
+
 }
-
-

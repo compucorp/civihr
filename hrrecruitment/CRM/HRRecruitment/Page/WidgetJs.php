@@ -117,7 +117,7 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
       $row[$vacancyVal['id']]['id'] = $vacancyVal['id'];
       $row[$vacancyVal['id']]['position'] = CRM_Utils_Array::value('position', $vacancyVal);
       $row[$vacancyVal['id']]['positionLink'] = "{$base_url}/civicrm/vacancy/info?id={$vacancyVal['id']}";
-      $row[$vacancyVal['id']]['location'] = CRM_Utils_Array::value('location', $vacancyVal);
+      $row[$vacancyVal['id']]['location'] = CRM_HRRecruitment_BAO_HRVacancy::getOptionLabel($vacancyVal, 'location');
       $row[$vacancyVal['id']]['salary'] = CRM_Utils_Array::value('salary', $vacancyVal);
       $row[$vacancyVal['id']]['startDate'] = CRM_Utils_Date::customFormat(CRM_Utils_Array::value('start_date', $vacancyVal));
       $row[$vacancyVal['id']]['endDate'] = CRM_Utils_Date::customFormat(CRM_Utils_Array::value('end_date', $vacancyVal));
@@ -140,14 +140,14 @@ class CRM_HRRecruitment_Page_WidgetJs extends CRM_Core_Page {
     $vacancyId = $_GET['id'] ? $_GET['id'] : $vacancyId;
     $vacancy = civicrm_api3('HRVacancy','get', array('id'=>$vacancyId));
     foreach ($vacancy['values'] as $vacancyKey => $vacancyVal) {
-      CRM_Utils_System::setTitle($vacancyVal['position']);
-      $row['position'] = $vacancyVal['position'];
+      CRM_Utils_System::setTitle(CRM_Utils_Array::value('position', $vacancyVal));
+      $row['position'] = CRM_Utils_Array::value('position', $vacancyVal);
       $row['id'] = $vacancyVal['id'];
-      $row['salary'] = $vacancyVal['salary'];
-      $row['location'] = $vacancyVal['location'];
-      $row['description'] = $vacancyVal['description'];
-      $row['benefits'] = $vacancyVal['benefits'];
-      $row['requirements'] = $vacancyVal['requirements'];
+      $row['salary'] = CRM_Utils_Array::value('salary', $vacancyVal);
+      $row['location'] = CRM_HRRecruitment_BAO_HRVacancy::getOptionLabel($vacancyVal, 'location');
+      $row['description'] = CRM_Utils_Array::value('description', $vacancyVal);
+      $row['benefits'] = CRM_Utils_Array::value('benefits', $vacancyVal);
+      $row['requirements'] = CRM_Utils_Array::value('requirements', $vacancyVal);
       $row['apply'] = "{$base_url}/civicrm/vacancy/apply?id={$vacancyVal['id']}";
     }
     $row['applyButton'] = ts("Apply Now");

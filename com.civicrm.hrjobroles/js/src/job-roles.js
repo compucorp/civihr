@@ -1,20 +1,22 @@
-(function () {
-    var extPath = CRM.vars.hrjobroles.baseURL + '/js/src/job-roles';
+(function (CRM, require) {
+  var extPath = CRM.vars.hrjobroles.baseURL + '/js/src/job-roles';
 
-    require.config({
-        urlArgs: 'bust=' + (new Date()).getTime(),
-        paths: {
-            'job-roles': extPath,
-            'job-roles/vendor/angular-editable': extPath + '/vendor/angular/xeditable.min',
-            'job-roles/vendor/angular-filter': extPath + '/vendor/angular/angular-filter.min'
-        }
-    });
+  require.config({
+    urlArgs: 'bust=' + (new Date()).getTime(),
+    paths: {
+      'job-roles': extPath,
+      'job-roles/vendor/angular-editable': extPath + '/vendor/angular/xeditable.min',
+      'job-roles/vendor/angular-filter': extPath + '/vendor/angular/angular-filter.min'
+    }
+  });
 
-    require(['job-roles/app'], function (app) {
-        'use strict';
+  require(['job-roles/app'], function (app) {
+    'use strict';
 
-        document.addEventListener('hrjobrolesLoad', function(){
-            angular.bootstrap(document.getElementById('hrjobroles'), ['hrjobroles']);
-        });
-    });
-})(require);
+    document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('hrjobrolesReady') : (function () {
+      var e = document.createEvent('Event');
+      e.initEvent('hrjobrolesReady', true, true);
+      return e;
+    })());
+  });
+})(CRM, require);

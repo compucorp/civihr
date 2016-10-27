@@ -1,9 +1,13 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
+
+  const SOURCE_ENTITLEMENT = 'entitlement';
+  const SOURCE_LEAVE_REQUEST_DAY = 'leave_request_day';
 
   /**
    * Create a new LeaveBalanceChange based on array-data
@@ -26,40 +30,56 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Returns the sum of all balance changes for the entitlement with the given ID.
+   * Returns the sum of all balance changes between the given LeavePeriodEntitlement
+   * dates.
    *
    * This method can also sum only balance changes caused by leave requests with
    * specific statuses. For this, one can pass an array of statuses as the
    * $leaveRequestStatus parameter.
    *
-   * Note the balance changes without a respective source will always be included
-   * in the sum.
+   * Note: the balance changes linked to the given LeavePeriodEntitlement, that
+   * is source_id == entitlement->id and source_type == 'entitlement', will also
+   * be included in the sum.
    *
-   * @param int $entitlementID
-   *    The ID of the entitlement to get the balance
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   *    The LeavePeriodEntitlement to get the Balance to
    * @param array $leaveRequestStatus
    *    An array of values from Leave Request Status option list
    *
    * @return float
    */
-  public static function getBalanceForEntitlement($entitlementID, $leaveRequestStatus = []) {
-    $entitlementID = (int)$entitlementID;
+  public static function getBalanceForEntitlement(LeavePeriodEntitlement $periodEntitlement, $leaveRequestStatus = []) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
 
+    $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
+
+    $whereLeaveRequestStatus = '';
+    if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
+      array_walk($leaveRequestStatus, 'intval');
+      $whereLeaveRequestStatus = ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .')';
+    }
+
     $query = "
       SELECT SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
-      LEFT JOIN {$leaveRequestDateTable} leave_request_date ON leave_balance_change.source_id = leave_request_date.id
+      LEFT JOIN {$leaveRequestDateTable} leave_request_date 
+             ON leave_balance_change.source_id = leave_request_date.id AND 
+                leave_balance_change.source_type = '". self::SOURCE_LEAVE_REQUEST_DAY ."'
       LEFT JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
-      WHERE leave_balance_change.entitlement_id = {$entitlementID}
+      WHERE (
+              $whereLeaveRequestDates AND
+              leave_request.type_id = {$periodEntitlement->type_id} AND
+              leave_request.contact_id = {$periodEntitlement->contact_id} 
+              $whereLeaveRequestStatus
+            )
+            OR
+            (
+              leave_balance_change.source_id = {$periodEntitlement->id} AND 
+              leave_balance_change.source_type = '" . self::SOURCE_ENTITLEMENT . "'
+            )
     ";
-
-    if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
-      array_walk($leaveRequestStatus, 'intval');
-      $query .= ' AND (leave_balance_change.source_id IS NULL OR leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .'))';
-    }
 
     $result = CRM_Core_DAO::executeQuery($query);
     $result->fetch();
@@ -73,9 +93,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * The Breakdown is made of the balance changes representing the parts that,
    * together, make the period entitlement. They are: The Leave, the Brought
-   * Forward and the Public Holidays. These are all positive balance changes,
-   * without a source_id, since they're are created during the entitlement
-   * calculation.
+   * Forward and the Public Holidays. These are all balance changes, where the
+   * source_id is the LeavePeriodEntitlement's ID and source_type is equal to
+   * "entitlement", since they're are created during the entitlement calculation.
    *
    * @param int $entitlementID
    *   The ID of the LeavePeriodEntitlement to get the Breakdown to
@@ -89,7 +109,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT *
       FROM {$balanceChangeTable}
-      WHERE entitlement_id = {$entitlementID} AND amount >= 0 AND source_id IS NULL
+      WHERE source_id = {$entitlementID} AND
+            source_type = '" . self::SOURCE_ENTITLEMENT . "' AND 
+            expired_balance_change_id IS NULL
       ORDER BY id
     ";
 
@@ -142,8 +164,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * It's also possible to get the balance only for leave requests taken between
    * a given date range. For this, one can use the $dateLimit and $dateStart params.
    *
-   * @param int $entitlementID
-   *    The ID of the entitlement to get the balance
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    * @param array $leaveRequestStatus
    *    An array of values from Leave Request Status option list
    * @param \DateTime $dateLimit
@@ -154,22 +175,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return float
    */
   public static function getLeaveRequestBalanceForEntitlement(
-    $entitlementID,
+    LeavePeriodEntitlement $periodEntitlement,
     $leaveRequestStatus = [],
     DateTime $dateLimit = NULL,
     DateTime $dateStart = NULL
   ) {
-    $entitlementID = (int)$entitlementID;
+
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
 
+    $whereLeaveRequestDates = self::buildLeaveRequestDateWhereClause($periodEntitlement);
+
     $query = "
       SELECT SUM(leave_balance_change.amount) balance
       FROM {$balanceChangeTable} leave_balance_change
-      INNER JOIN {$leaveRequestDateTable} leave_request_date ON leave_balance_change.source_id = leave_request_date.id
+      INNER JOIN {$leaveRequestDateTable} leave_request_date 
+              ON leave_balance_change.source_id = leave_request_date.id AND 
+                 leave_balance_change.source_type = '" . self::SOURCE_LEAVE_REQUEST_DAY . "'
       INNER JOIN {$leaveRequestTable} leave_request ON leave_request_date.leave_request_id = leave_request.id
-      WHERE leave_balance_change.entitlement_id = {$entitlementID}
+      WHERE {$whereLeaveRequestDates} AND
+            leave_request.type_id = {$periodEntitlement->type_id} AND
+            leave_request.contact_id = {$periodEntitlement->contact_id} 
     ";
 
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
@@ -194,7 +221,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   /**
    * This method checks every leave balance change record with an expiry_date in
    * the past and that still don't have a record for the expired days (that is,
-   * a balance change record of this same type and with an expired_balance_id
+   * a balance change record of this same type and with an expired_balance_change_id
    * pointing to the expired record), and creates it.
    *
    * @return int The number of records created
@@ -206,23 +233,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT balance_to_expire.*
       FROM {$tableName} balance_to_expire
-      LEFT JOIN {$tableName} expired_balance
-             ON balance_to_expire.id = expired_balance.expired_balance_id
+      LEFT JOIN {$tableName} expired_balance_change
+             ON balance_to_expire.id = expired_balance_change.expired_balance_change_id
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
             balance_to_expire.expiry_date < CURDATE() AND
-            balance_to_expire.expired_balance_id IS NULL AND
-            expired_balance.id IS NULL
-      ORDER BY balance_to_expire.entitlement_id ASC, balance_to_expire.expiry_date ASC
+            balance_to_expire.expired_balance_change_id IS NULL AND
+            expired_balance_change.id IS NULL
+      ORDER BY balance_to_expire.source_id ASC, balance_to_expire.expiry_date ASC
     ";
 
     $startDate = null;
-    $entitlementID = null;
+    $sourceID = null;
+    $sourceType = null;
 
     $dao = CRM_Core_DAO::executeQuery($query, [], true, self::class);
     while($dao->fetch()) {
-      if($dao->entitlement_id != $entitlementID) {
+      if($dao->source_id != $sourceID && $dao->source_type != $sourceType) {
         $startDate = null;
-        $entitlementID = $dao->entitlement_id;
+        $sourceID = $dao->source_id;
+        $sourceType = $dao->source_type;
       }
 
       $expiredAmount = self::calculateExpiredAmount($dao, $startDate);
@@ -231,11 +260,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $expiredAmount *= -1;
 
       self::create([
-        'entitlement_id' => $dao->entitlement_id,
+        'source_id' => $dao->source_id,
+        'source_type' => $dao->source_type,
         'type_id' => $dao->type_id,
         'amount' => $expiredAmount,
         'expiration_date' => date('YmdHis', strtotime($dao->expiry_date)),
-        'expired_balance_id' => $dao->id
+        'expired_balance_change_id' => $dao->id
       ]);
 
       $numberOfRecordsCreated++;
@@ -273,8 +303,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     $balanceChange->amount = (float)$balanceChange->amount;
 
+    $entitlement = LeavePeriodEntitlement::findById($balanceChange->source_id);
     $expiredAmount = self::getLeaveRequestBalanceForEntitlement(
-      $balanceChange->entitlement_id,
+      $entitlement,
       $approvedStatuses,
       new DateTime($balanceChange->expiry_date),
       $startDate
@@ -283,5 +314,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     // Since the the Leave Request Balance is negative, when we add it
     // to the amount we're actually subtracting the value
     return $balanceChange->amount + $expiredAmount;
+  }
+
+  /**
+   * Creates the where clause to filter leave requests by the LeavePeriodEntitlement
+   * dates.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
+   *
+   * @return string
+   */
+  private static function buildLeaveRequestDateWhereClause(
+    LeavePeriodEntitlement $periodEntitlement
+  ) {
+    $contractsDates = $periodEntitlement->getStartAndEndDates();
+
+    $leaveRequestDatesClauses = [];
+    foreach ($contractsDates as $dates) {
+      $leaveRequestDatesClauses[] = "leave_request_date.date BETWEEN '{$dates['start_date']}' AND '{$dates['end_date']}'";
+    }
+    $whereLeaveRequestDates = implode(' OR ', $leaveRequestDatesClauses);
+
+    // This is just a trick to make it easier to
+    // interpolate this clause in SQL query string.
+    // if theres no date, we return the clause as a catch all condition
+    if(empty($whereLeaveRequestDates)) {
+      $whereLeaveRequestDates = '1=1';
+    }
+
+    // Finally, since this is a list of conditions separate
+    // by OR, we wrap it in parenthesis
+    return "($whereLeaveRequestDates)";
   }
 }

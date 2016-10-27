@@ -411,6 +411,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseTest {
     $this->assertEquals($period2->weight, $period3PreviousPeriod->weight);
   }
 
+  public function testNextPeriodShouldReturnNullIfTheresNoNextPeriod() {
+    $period = $this->createBasicPeriod();
+    $this->assertNull($period->getNextPeriod());
+  }
+
+  public function testNextPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsANextPeriod() {
+    $period1 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
+    ]);
+
+    $period2 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
+    ]);
+
+    $period3 = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
+      'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
+    ]);
+
+    $period1NextPeriod = $period1->getNextPeriod();
+    $period2 = $this->findPeriodByID($period2->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period1NextPeriod);
+    $this->assertEquals($period2->id, $period1NextPeriod->id);
+    $this->assertEquals($period2->title, $period1NextPeriod->title);
+    $this->assertEquals($period2->start_date, $period1NextPeriod->start_date);
+    $this->assertEquals($period2->end_date, $period1NextPeriod->end_date);
+    $this->assertEquals($period2->weight, $period1NextPeriod->weight);
+
+    $period2NextPeriod = $period2->getNextPeriod();
+    $period3 = $this->findPeriodByID($period3->id);
+    $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_AbsencePeriod', $period2NextPeriod);
+    $this->assertEquals($period3->id, $period2NextPeriod->id);
+    $this->assertEquals($period3->title, $period2NextPeriod->title);
+    $this->assertEquals($period3->start_date, $period2NextPeriod->start_date);
+    $this->assertEquals($period3->end_date, $period2NextPeriod->end_date);
+    $this->assertEquals($period3->weight, $period2NextPeriod->weight);
+  }
+
   public function testExpirationDateForAbsenceTypeWithoutCarryForwardShouldBeNull()
   {
     $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
@@ -455,7 +495,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseTest {
     $expectedDate = $startDate->add(new DateInterval('P5D'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
 
+    //485 days duration
+    $absenceType->carry_forward_expiration_duration = 485;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P485D'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
     //5 months duration
+    $absenceType->carry_forward_expiration_duration = 5;
     $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS;
     $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
     $expectedDate = $startDate->add(new DateInterval('P5M'));
@@ -467,16 +514,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseTest {
     $expectedDate = $startDate->add(new DateInterval('P10M'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
 
-    //10 years duration
-    $absenceType->carry_forward_expiration_unit = CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_YEARS;
-    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
-    $expectedDate = $startDate->add(new DateInterval('P10Y'));
-    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);//10 years
-
-    //1 year duration
-    $absenceType->carry_forward_expiration_duration = 1;
+    //12 months duration
+    $absenceType->carry_forward_expiration_duration = 12;
     $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
     $expectedDate = $startDate->add(new DateInterval('P1Y'));
+    $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
+
+    //27 months duration
+    $absenceType->carry_forward_expiration_duration = 27;
+    $expirationDate = $period->getExpirationDateForAbsenceType($absenceType);
+    $expectedDate = $startDate->add(new DateInterval('P27M'));
     $this->assertEquals($expectedDate->format('Y-m-d'), $expirationDate);
   }
 

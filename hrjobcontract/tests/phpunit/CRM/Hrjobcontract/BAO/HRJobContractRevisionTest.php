@@ -12,6 +12,8 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
   HeadlessInterface,
   TransactionalInterface {
 
+  use HRJobContractTestTrait;
+
   public function setUpHeadless() {
     return \Civi\Test::headless()->installMe(__DIR__)->apply();
   }
@@ -122,6 +124,29 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
     // so still we should get a revision which has its effective date 3 days ago
     // (and is currently valid).
     $this->assertEquals("Job Contract started three days ago", $details['title']);
+  }
+
+  /**
+   * @dataProvider validateEffectiveDateProvider
+   */
+  public function testValidateEffectiveDate($effectiveDate, $expected) {
+    // Create test Contacts.
+    $contactParams = ["first_name" => "chrollo", "last_name" => "lucilfer"];
+    $contactID =  $this->createContact($contactParams);
+
+    // Create test Job Contract.
+    $this->createJobContract($contactID, '2015-01-01');
+
+    $result = CRM_Hrjobcontract_BAO_HRJobContractRevision::validateEffectiveDate($contactID, $effectiveDate);
+    $this->assertEquals($expected, $result['success']);
+  }
+
+  public function validateEffectiveDateProvider() {
+    return [
+      ['2015-01-01', false],
+      ['2015-01-02', true],
+      ['2015-01-03', true],
+    ];
   }
 
   /**

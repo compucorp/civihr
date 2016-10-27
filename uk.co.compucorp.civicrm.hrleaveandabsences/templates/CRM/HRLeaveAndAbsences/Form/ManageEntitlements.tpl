@@ -4,10 +4,10 @@
 
 {* These hidden fields are used when we submit the form to export the CSV file *}
 {* The id is used so we know from which period we are exporting the CSV *}
-{* The cid is used so can export calculations only for the specified contracts *}
+{* The cid is used so can export calculations only for the specified contacts *}
 <input type="hidden" name="export_csv" id="export_csv" value="0">
 <input type="hidden" name="id" id="period_id" value="{$period->id}">
-{foreach from=$contractsIDs item=id}
+{foreach from=$contactsIDs item=id}
   <input type="hidden" name="cid[]" value="{$id}">
 {/foreach}
 
@@ -47,7 +47,6 @@
     <th>{ts}Days taken{/ts}</th>
     <th>{ts}Remaining{/ts}</th>
     <th>{ts}Brought Forward from previous period{/ts}</th>
-    <th>{ts}Current Contractual Entitlement{/ts}</th>
     <th>{ts}New Period Pro rata{/ts}</th>
     <th class="proposed-entitlement-header">
       <div class="title">{ts}New Proposed Period Entitlement{/ts}</div>
@@ -67,30 +66,31 @@
   {foreach from=$calculations item=calculation}
     {assign var=absenceType value=$calculation->getAbsenceType()}
     {assign var=absenceTypeID value=$absenceType->id}
-    {assign var=contract value=$calculation->getContract()}
-    <tr data-calculation-details="{$calculation}" data-absence-type="{$absenceTypeID}">
-      <td>{$contract.contact_id}</td>
-      <td>{$contract.contact_display_name}</td>
+    {assign var=absencePeriod value=$calculation->getAbsencePeriod()}
+    {assign var=absencePeriodID value=$absencePeriod->id}
+    {assign var=contact value=$calculation->getContact()}
+    <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
+      <td>{$contact.id}</td>
+      <td>{$contact.display_name}</td>
       <td><span class="absence-type" style="background-color: {$absenceType->color};">{$absenceType->title}</span></td>
       <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
       <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
       <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
       <td>{$calculation->getBroughtForward()}</td>
-      <td>{$calculation->getContractualEntitlement()}</td>
       <td>{$calculation->getProRata()}</td>
       <td class="proposed-entitlement">
           <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
-          {$form.proposed_entitlement[$contract.id][$absenceTypeID].html}
+          {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
           <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
-          <label for="override_checkbox_{$contract.id}_{$absenceTypeID}">
-            <input id="override_checkbox_{$contract.id}_{$absenceTypeID}"
+          <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
+            <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"
                    type="checkbox"
                    class="override-checkbox"
                    {if $calculation->isCurrentPeriodEntitlementOverridden()}checked{/if}> Override
           </label>
       </td>
       <td class="comment">
-        {$form.comment[$contract.id][$absenceTypeID].html}
+        {$form.comment[$contact.id][$absenceTypeID].html}
         <button type="button" class="borderless-button add-comment"><i class="fa fa-share-square-o"></i></button>
       </td>
     </tr>

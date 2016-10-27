@@ -301,8 +301,8 @@
     <field>
         <name>start_date</name>
         <title>Job Role Start Date</title>
-        <type>timestamp</type>
-        <default>0</default>
+        <type>datetime</type>
+        <default>NULL</default>
         <comment>Start Date of the job role</comment>
         <export>true</export>
         <import>true</import>
@@ -312,8 +312,8 @@
     <field>
         <name>end_date</name>
         <title>Job Role End Date</title>
-        <type>timestamp</type>
-        <default>0</default>
+        <type>datetime</type>
+        <default>NULL</default>
         <comment>End Date of the job role</comment>
         <export>true</export>
         <import>true</import>

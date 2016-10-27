@@ -4,7 +4,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
   const EXPIRATION_UNIT_DAYS = 1;
   const EXPIRATION_UNIT_MONTHS = 2;
-  const EXPIRATION_UNIT_YEARS = 3;
 
   const REQUEST_CANCELATION_NO = 1;
   const REQUEST_CANCELATION_ALWAYS = 2;
@@ -131,7 +130,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     return [
         self::EXPIRATION_UNIT_DAYS   => ts('Days'),
         self::EXPIRATION_UNIT_MONTHS => ts('Months'),
-        self::EXPIRATION_UNIT_YEARS  => ts('Years')
     ];
   }
 
@@ -197,7 +195,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function validateParams($params) {
     if(!empty($params['add_public_holiday_to_entitlement'])) {
-      self::validateAddPublicHolidayToEntitlement();
+      self::validateAddPublicHolidayToEntitlement($params);
     }
 
     if (!empty($params['allow_request_cancelation']) &&
@@ -219,15 +217,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * method checks if one such type already exists and throws an error if that
    * is the case.
    *
+   * @param array $params The params array received by the create method
+   *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @throws \CiviCRM_API3_Exception
    */
-  private static function validateAddPublicHolidayToEntitlement() {
-    $result = civicrm_api3('AbsenceType', 'getcount', array(
-        'sequential' => 1,
-        'add_public_holiday_to_entitlement' => 1,
-    ));
-    if(!isset($result['result']) || $result['result'] > 0) {
+  private static function validateAddPublicHolidayToEntitlement($params) {
+    $dao = new self();
+    $dao->add_public_holiday_to_entitlement = 1;
+
+    $id = empty($params['id']) ? null : intval($params['id']);
+    if($id) {
+      $dao->whereAdd("id <> {$id}");
+    }
+
+    if($dao->count() > 0) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
           'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
       );

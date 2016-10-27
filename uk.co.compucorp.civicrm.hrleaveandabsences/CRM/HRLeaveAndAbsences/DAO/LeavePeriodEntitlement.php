@@ -99,11 +99,11 @@ class CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement extends CRM_Core_DAO
    */
   public $type_id;
   /**
-   * FK to HRJobContract
+   * FK to Contact (civicrm_contact)
    *
    * @var int unsigned
    */
-  public $contract_id;
+  public $contact_id;
   /**
    * Indicates if the entitlement was overridden
    *
@@ -150,6 +150,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement extends CRM_Core_DAO
       self::$_links = static ::createReferenceColumns(__CLASS__);
       self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'period_id', 'civicrm_hrleaveandabsences_absence_period', 'id');
       self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'type_id', 'civicrm_hrleaveandabsences_absence_type', 'id');
+      self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'contact_id', 'civicrm_contact', 'id');
       self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'comment_author_id', 'civicrm_contact', 'id');
     }
     return self::$_links;
@@ -183,11 +184,12 @@ class CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement extends CRM_Core_DAO
           'required' => true,
           'FKClassName' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
         ) ,
-        'contract_id' => array(
-          'name' => 'contract_id',
+        'contact_id' => array(
+          'name' => 'contact_id',
           'type' => CRM_Utils_Type::T_INT,
-          'description' => 'FK to HRJobContract',
+          'description' => 'FK to Contact (civicrm_contact)',
           'required' => true,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'overridden' => array(
           'name' => 'overridden',
@@ -231,7 +233,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement extends CRM_Core_DAO
         'id' => 'id',
         'period_id' => 'period_id',
         'type_id' => 'type_id',
-        'contract_id' => 'contract_id',
+        'contact_id' => 'contact_id',
         'overridden' => 'overridden',
         'comment' => 'comment',
         'comment_author_id' => 'comment_author_id',

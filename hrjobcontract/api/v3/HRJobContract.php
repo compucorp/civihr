@@ -120,28 +120,117 @@ function civicrm_api3_h_r_job_contract_updatelengthofservice($params) {
 }
 
 /**
- * HRJobContract.getactivecontracts API
+ * HRJobContract.getContractsWithDetailsInPeriod API specification
  *
- * @param array $params The accepted params are: start_date and end_date
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ */
+function _civicrm_api3_h_r_job_contract_getcontractswithdetailsinperiod_spec(&$spec) {
+  $spec['start_date'] = array(
+    'name'         => 'start_date',
+    'title'        => 'Start Date',
+    'type'         => CRM_Utils_Type::T_DATE,
+    'api.required' => 0,
+  );
+
+  $spec['end_date'] = array(
+    'name'         => 'end_date',
+    'title'        => 'End Date',
+    'type'         => CRM_Utils_Type::T_DATE,
+    'api.required' => 0,
+  );
+
+  $spec['contact_id'] = array(
+    'name'         => 'contact_id',
+    'title'        => 'Contact ID',
+    'type'         => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+  );
+}
+
+/**
+ * HRJobContract.getContractsWithDetailsInPeriod API
+ *
+ * @param array $params The accepted params are: start_date, end_date and contact_id
  * @return array API result descriptor
  * @throws API_Exception
  */
-function civicrm_api3_h_r_job_contract_getactivecontracts($params) {
+function civicrm_api3_h_r_job_contract_getcontractswithdetailsinperiod($params) {
   $startDate = null;
   $endDate = null;
+  $contractID = null;
+
   if(!empty($params['start_date'])) {
     if(is_array($params['start_date'])) {
       return civicrm_api3_create_error('The start date parameter can only be used with the = operator');
     }
     $startDate = $params['start_date'];
   }
+
   if(!empty($params['end_date'])) {
     if(is_array($params['end_date'])) {
       return civicrm_api3_create_error('The end date parameter can only be used with the = operator');
     }
     $endDate = $params['end_date'];
   }
-  $result = CRM_Hrjobcontract_BAO_HRJobContract::getActiveContracts($startDate, $endDate);
+
+  if(!empty($params['contact_id'])) {
+    $contractID = (int)$params['contact_id'];
+  }
+
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContractsWithDetailsInPeriod($startDate, $endDate, $contractID);
+  return civicrm_api3_create_success($result, $params);
+}
+
+/**
+ * HRJobContract.getContactsWithContractsInPeriod API specification
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ */
+function _civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod_spec(&$spec) {
+  $spec['start_date'] = array(
+    'name'         => 'start_date',
+    'title'        => 'Start Date',
+    'type'         => CRM_Utils_Type::T_DATE,
+    'api.required' => 0,
+  );
+
+  $spec['end_date'] = array(
+    'name'         => 'end_date',
+    'title'        => 'End Date',
+    'type'         => CRM_Utils_Type::T_DATE,
+    'api.required' => 0,
+  );
+}
+
+
+/**
+ * HRJobContract.getContactsWithContractsInPeriod API
+ *
+ * @param array $params The accepted params are: start_date and end_date
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod($params) {
+  $startDate = null;
+  $endDate = null;
+
+  if(!empty($params['start_date'])) {
+    if(is_array($params['start_date'])) {
+      return civicrm_api3_create_error('The start date parameter can only be used with the = operator');
+    }
+    $startDate = $params['start_date'];
+  }
+
+  if(!empty($params['end_date'])) {
+    if(is_array($params['end_date'])) {
+      return civicrm_api3_create_error('The end date parameter can only be used with the = operator');
+    }
+    $endDate = $params['end_date'];
+  }
+
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithContractsInPeriod($startDate, $endDate);
   return civicrm_api3_create_success($result, $params);
 }
 
@@ -178,4 +267,29 @@ function _civicrm_api3_h_r_job_contract_getlist_output($result, $request) {
     }
   }
   return $output;
+}
+
+
+/**
+ * HRJobContract.getcurrentcontract API
+ *
+ * @param array $params The accepted params are: contact_id
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
+  if (empty($params['contact_id']))  {
+    throw new API_Exception('contact_id ' . ts("can't be empty."));
+  }
+
+  $contactID = (int) $params['contact_id'];
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getCurrentContract($contactID);
+  $return = null;
+  if (!empty($result)) {
+    $fields = ['contract_id', 'position', 'title', 'period_start_date', 'period_end_date', 'location'];
+    foreach($fields as $field) {
+      $return->$field = $result->$field;
+    }
+  }
+  return civicrm_api3_create_success($return, $params);
 }

@@ -51,12 +51,19 @@
   </foreignKey>
 
   <field>
-    <name>contract_id</name>
+    <name>contact_id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>FK to HRJobContract</comment>
+    <comment>FK to Contact (civicrm_contact)</comment>
     <add>4.4</add>
   </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
 
   <field>
     <name>overridden</name>
@@ -98,7 +105,7 @@
   <index>
     <name>unique_entitlement</name>
     <fieldName>period_id</fieldName>
-    <fieldName>contract_id</fieldName>
+    <fieldName>contact_id</fieldName>
     <fieldName>type_id</fieldName>
     <unique>true</unique>
     <add>4.4</add>

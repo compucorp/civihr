@@ -423,18 +423,20 @@ define([
         // to the controller initialization
         describe('Initial state dependent tests', function () {
             describe('Fetching Job Roles from contract', function () {
-                var spy;
+                var getContractsSpy, getAllJobRolesSpy;
 
                 beforeEach(function () {
-                    spy = spyOn(HRJobRolesService, 'getContracts');
-                    spyOn(HRJobRolesService, 'getAllJobRoles').and.callThrough();
+                    getContractsSpy = spyOn(HRJobRolesService, 'getContracts');
+                    getAllJobRolesSpy = spyOn(HRJobRolesService, 'getAllJobRoles');
                 });
 
                 describe('when the user does not have a contract', function () {
                     beforeEach(function () {
-                        spy.and.callFake(function () {
+                        getContractsSpy.and.callFake(function () {
                             return fakeContractResponse([]);
-                        })
+                        });
+
+                        getAllJobRolesSpy.and.callThrough();
 
                         initController();
                         $rootScope.$digest();
@@ -450,13 +452,18 @@ define([
                 });
 
                 describe('when the user does have a contract', function () {
-                    var contracts;
+                    var contracts, jobRoles;
 
                     beforeEach(function () {
                         contracts = _.toArray(angular.copy(Mock.contracts_data));
+                        jobRoles = _.toArray(angular.copy(Mock.roles_data));
 
-                        spy.and.callFake(function () {
+                        getContractsSpy.and.callFake(function () {
                             return fakeContractResponse(contracts);
+                        });
+
+                        getAllJobRolesSpy.and.callFake(function () {
+                          return fakeJobRolesResponse(jobRoles);
                         });
 
                         initController();
@@ -467,6 +474,11 @@ define([
                         expect(HRJobRolesService.getAllJobRoles).toHaveBeenCalledWith(contracts.map(function (contract) {
                             return contract.id;
                         }));
+                    });
+
+                    it('it separates past and present job roles', function () {
+                      expect(ctrl.present_job_roles.length).toBe(2);
+                      expect(ctrl.past_job_roles.length).toBe(2);
                     });
 
                     it('does not show any message', function () {
@@ -484,6 +496,19 @@ define([
             function fakeContractResponse(contracts) {
                 var deferred = $q.defer();
                 deferred.resolve({ count: contracts.length, values: contracts });
+
+                return deferred.promise;
+            }
+
+            /**
+             * Fakes the response that HRJobRolesService.getAllJobRoles() would get
+             *
+             * @param {Array} jobRoles
+             * @return {Promise} resolves to the response
+             */
+            function fakeJobRolesResponse(jobRoles) {
+                var deferred = $q.defer();
+                deferred.resolve({ count: jobRoles.length, values: jobRoles });
 
                 return deferred.promise;
             }

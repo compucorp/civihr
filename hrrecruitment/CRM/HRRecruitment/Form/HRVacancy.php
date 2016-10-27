@@ -97,13 +97,6 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
 
     if (!empty($params['id'])) {
       CRM_HRRecruitment_BAO_HRVacancy::retrieve($params, $defaults);
-      //format vacancy start/end date
-      if (!empty($defaults['start_date'])) {
-        list($defaults['start_date'], $defaults['start_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['start_date'], 'activityDateTime');
-      }
-      if (!empty($defaults['end_date'])) {
-        list($defaults['end_date'], $defaults['end_date_time']) = CRM_Utils_Date::setDateDefaults($defaults['end_date'], 'activityDateTime');
-      }
 
       //show that only number of permission row(s) which have defaults if any
       if (!empty($defaults['permission']) && count($defaults['permission'])) {
@@ -140,8 +133,8 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
     $this->add('wysiwyg', 'benefits', ts('Benefits'), array('rows' => 2, 'cols' => 40));
     $this->add('wysiwyg', 'requirements', ts('Requirements'), array('rows' => 2, 'cols' => 40));
 
-    $this->add('datepicker', 'start_date', ts('Start Date'), FALSE, array('formatType' => 'activityDateTime'));
-    $this->add('datepicker', 'end_date', ts('End Date'), FALSE, array('formatType' => 'activityDateTime'));
+    $this->add('datepicker', 'start_date', ts('Start Date'), NULL, TRUE, array('minDate' => time()));
+    $this->add('datepicker', 'end_date', ts('End Date'), NULL, TRUE, array('minDate' => time()));
 
     $include = & $this->addElement('advmultiselect', 'stages',
       '', CRM_Core_OptionGroup::values('case_status', FALSE, FALSE, FALSE, " AND grouping = 'Vacancy'"),
@@ -244,7 +237,11 @@ class CRM_HRRecruitment_Form_HRVacancy extends CRM_Core_Form {
       $errors['stages'] = ts('Please select at least one Vacancy stage');
     }
 
-    if ((strtotime($fields['start_date_display'])) > (strtotime($fields['end_date_display']))) {
+    if ((strtotime($fields['start_date'])) < time()) {
+      $errors['start_date'] = ts('Start date should be greater or equal the current date.');
+    }
+
+    if ((strtotime($fields['start_date'])) > (strtotime($fields['end_date']))) {
       $errors['end_date'] = ts('End date should be greater than start date.');
     }
 

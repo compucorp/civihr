@@ -111,6 +111,10 @@ function reqangular_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * Implementation of hook_civicrm_pageRun
  */
 function reqangular_civicrm_pageRun($page) {
+  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
+    return;
+  }
+
   /**
    * Avoids injecting the common dependencies (which include angular) in core pages
    * that are already using angular themselves. A quick patch while we
