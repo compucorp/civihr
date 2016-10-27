@@ -31,6 +31,9 @@ class CRM_Styleguide_Manager {
     if (empty($styleGuide['name']) || empty($styleGuide['label']) || empty($styleGuide['path'])) {
       throw new \CRM_Core_Exception("Malformed style-guide");
     }
+    if (!preg_match('/^[a-z-9\_\-]+$/', $styleGuide['name'])) {
+      throw new \CRM_Core_Exception("Malformed name in style-guide");
+    }
     $this->all[$styleGuide['name']] = $styleGuide;
     return $this;
   }
