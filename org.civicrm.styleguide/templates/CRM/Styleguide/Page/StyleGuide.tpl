@@ -1,5 +1,5 @@
 {php}
-  $htmlBuilder = new CRM_Styleguide_HtmlBuilder($this->get_template_vars('styleguide'));
+  $htmlBuilder = new CRM_StyleGuide_HtmlBuilder($this->get_template_vars('styleguide'));
 {/php}
 <section id="bootstrap-theme">
   <!-- <div class="navbar navbar-default navbar-fixed-top" role="navigation">

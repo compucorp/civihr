@@ -1,6 +1,6 @@
 <?php
 
-class CRM_Styleguide_HtmlBuilder {
+class CRM_StyleGuide_HtmlBuilder {
 
   /**
    * @var array

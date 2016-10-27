@@ -3,7 +3,7 @@
 require_once 'CRM/Core/Page.php';
 require_once 'CRM/Styleguide/HtmlBuilder.php';
 
-class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
+class CRM_StyleGuide_Page_StyleGuide extends CRM_Core_Page {
 
   /**
    * @param array $path

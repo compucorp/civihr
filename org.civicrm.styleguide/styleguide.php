@@ -157,7 +157,7 @@ function styleguide_civicrm_navigationMenu(&$menu) {
  */
 function styleguide_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
   $container->setDefinition('style_guides', new \Symfony\Component\DependencyInjection\Definition(
-    'CRM_Styleguide_Manager',
+    'CRM_StyleGuide_Manager',
     array()
   ));
 

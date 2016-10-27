@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Class CRM_Styleguide_Manager
+ * Class CRM_StyleGuide_Manager
  *
  * This class manages the list of available style-guides.
  */
-class CRM_Styleguide_Manager {
+class CRM_StyleGuide_Manager {
 
   /**
    * @var array|NULL
    *   A list of style-guides, indexed by name.
    *   For data-structure, see `add()`.
    *
-   * @see CRM_Styleguide_Manager::add
+   * @see CRM_StyleGuide_Manager::add
    */
   private $all = NULL;
 
@@ -24,7 +24,7 @@ class CRM_Styleguide_Manager {
    *     - name: string, short machine name
    *     - label: string, translated string
    *     - path: string, local folder
-   * @return CRM_Styleguide_Manager
+   * @return CRM_StyleGuide_Manager
    * @throws \CRM_Core_Exception
    */
   public function add($styleGuide) {
@@ -72,7 +72,7 @@ class CRM_Styleguide_Manager {
    *
    * @param string $name
    *
-   * @return CRM_Styleguide_Manager
+   * @return CRM_StyleGuide_Manager
    */
   public function remove($name) {
     if ($this->all) {

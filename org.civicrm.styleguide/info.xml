@@ -16,6 +16,6 @@
   </compatibility>
   <comments></comments>
   <civix>
-    <namespace>CRM/Styleguide</namespace>
+    <namespace>CRM/StyleGuide</namespace>
   </civix>
 </extension>
