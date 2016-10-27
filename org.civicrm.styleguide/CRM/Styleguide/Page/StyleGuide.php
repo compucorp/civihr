@@ -16,7 +16,7 @@ class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
     if (empty($path[2])) {
       throw new \CRM_Core_Exception("The path must specify the name of the style guide.");
     }
-    $styleguide = Civi::service('styleguides')->get($path[2]);
+    $styleguide = Civi::service('style_guides')->get($path[2]);
     if ($styleguide === NULL) {
       throw new \CRM_Core_Exception("The specified style guide does not exist.");
     }

@@ -138,7 +138,7 @@ function styleguide_civicrm_navigationMenu(&$menu) {
     'operator' => 'OR',
     'separator' => 0,
   ));
-  foreach (Civi::service('styleguides')->getAll() as $styleGuide) {
+  foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
     _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer/developer_styleguide', array(
       'label' => $styleGuide['label'],
       'name' => 'developer_styleguide_' . $styleGuide['name'],
@@ -156,7 +156,7 @@ function styleguide_civicrm_navigationMenu(&$menu) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_container
  */
 function styleguide_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
-  $container->setDefinition('styleguides', new \Symfony\Component\DependencyInjection\Definition(
+  $container->setDefinition('style_guides', new \Symfony\Component\DependencyInjection\Definition(
     'CRM_Styleguide_Manager',
     array()
   ));
