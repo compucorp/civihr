@@ -8,6 +8,7 @@ class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
   /**
    * @param array $path
    *   List of path elements.
+   *
    * @return void
    */
   public function run($path = array()) {
