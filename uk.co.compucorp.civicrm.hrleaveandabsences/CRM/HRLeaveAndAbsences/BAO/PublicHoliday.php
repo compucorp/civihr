@@ -68,26 +68,39 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
 
   /**
    * If there is no date specified but id exists then we skip the date validation.
-   * Otherwise a date cannot be empty and must be a real date.
+   * Otherwise a date:
+   * - cannot be empty
+   * - must be a real date
+   * - cannot be in the past
    *
    * @param array $params
+   *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   *
    * @return bool
    */
   private static function validateDate($params) {
-    // Skip date validation if we are editing an exsisting record and no new date is specified.
+    // Skip date validation if we are editing an existing record and no new date is specified.
     if (!isset($params['date']) && !empty($params['id'])) {
       return true;
     }
+
     if (empty($params['date'])) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
         'Date value is required'
       );
     }
+
     $dateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['date']);
     if(!$dateIsValid) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
         'Date value should be valid'
+      );
+    }
+
+    if(self::dateIsInThePast($params['date'])) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
+        'The date cannot be in the past'
       );
     }
   }
@@ -222,5 +235,20 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     }
 
     return $publicHolidays;
+  }
+
+  /**
+   * Returns if the given $date is in the past. That is, the date is less than
+   * today at 00:00:00
+   *
+   * @param string $date
+   *  A date string in any format supported by strtotime
+   *
+   * @return bool
+   */
+  private static function dateIsInThePast($date) {
+    $timestampToday = strtotime(date('Y-m-d 00:00:00'));
+
+    return strtotime($date) < $timestampToday;
   }
 }
