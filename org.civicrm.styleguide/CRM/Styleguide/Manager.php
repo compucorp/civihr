@@ -8,7 +8,7 @@
 class CRM_Styleguide_Manager {
 
   /**
-   * @var array
+   * @var array|NULL
    *   A list of style-guides, indexed by name.
    *   For data-structure, see `add()`.
    *
@@ -24,7 +24,7 @@ class CRM_Styleguide_Manager {
    *     - name: string, short machine name
    *     - label: string, translated string
    *     - path: string, local folder
-   * @return $this
+   * @return CRM_Styleguide_Manager
    * @throws \CRM_Core_Exception
    */
   public function add($styleGuide) {
@@ -62,41 +62,7 @@ class CRM_Styleguide_Manager {
    */
   public function getAll() {
     if ($this->all === NULL) {
-      $extPath = CRM_Core_Resources::singleton()->getPath('org.civicrm.styleguide');
-
-      $this->all = array();
-
-      $this->add(array(
-        'name' => 'crm-star',
-        'label' => ts('crm-*'),
-        'path' => "{$extPath}/guides/crm-star",
-      ));
-      $this->add(array(
-        'name' => 'bootstrap',
-        'label' => ts('Bootstrap'),
-        // FIXME: 'path' => "{$extPath}/guides/bootstrap",
-        'path' => "{$extPath}/partials",
-      ));
-      $this->add(array(
-        'name' => 'bootstrap-civicrm',
-        'label' => ts('Bootstrap-CiviCRM'),
-        'path' => "{$extPath}/guides/bootstrap-civicrm",
-      ));
-      // FIXME: Consider moving declaration to another extension.
-      $this->add(array(
-        'name' => 'bootstrap-civihr',
-        'label' => ts('Bootstrap-CiviHR'),
-        'path' => "{$extPath}/guides/bootstrap-civihr",
-      ));
-
-      CRM_Utils_Hook::singleton()->invoke(1, $this,
-        CRM_Utils_Hook::$_nullObject,
-        CRM_Utils_Hook::$_nullObject,
-        CRM_Utils_Hook::$_nullObject,
-        CRM_Utils_Hook::$_nullObject,
-        CRM_Utils_Hook::$_nullObject,
-        'civicrm_styleGuides'
-      );
+      $this->init();
     }
     return $this->all;
   }
@@ -113,6 +79,44 @@ class CRM_Styleguide_Manager {
       unset($this->all[$name]);
     }
     return $this;
+  }
+
+  private function init() {
+    $this->all = array();
+
+    $extPath = CRM_Core_Resources::singleton()->getPath('org.civicrm.styleguide');
+
+    $this->add(array(
+      'name' => 'crm-star',
+      'label' => ts('crm-*'),
+      'path' => "{$extPath}/guides/crm-star",
+    ));
+    $this->add(array(
+      'name' => 'bootstrap',
+      'label' => ts('Bootstrap'),
+      // FIXME: 'path' => "{$extPath}/guides/bootstrap",
+      'path' => "{$extPath}/partials",
+    ));
+    $this->add(array(
+      'name' => 'bootstrap-civicrm',
+      'label' => ts('Bootstrap-CiviCRM'),
+      'path' => "{$extPath}/guides/bootstrap-civicrm",
+    ));
+    // FIXME: Consider moving declaration to another extension.
+    $this->add(array(
+      'name' => 'bootstrap-civihr',
+      'label' => ts('Bootstrap-CiviHR'),
+      'path' => "{$extPath}/guides/bootstrap-civihr",
+    ));
+
+    CRM_Utils_Hook::singleton()->invoke(1, $this,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      CRM_Utils_Hook::$_nullObject,
+      'civicrm_styleGuides'
+    );
   }
 
 }
