@@ -4,21 +4,21 @@ class CRM_Styleguide_HtmlBuilder {
 
   /**
    * @var array
-   *   - name: string, symbolic code name
-   *   - label: string, printable label, localized
-   *   - description: string, localized
+   *     - name: string, short machine name
+   *     - label: string, translated string
+   *     - path: string, local folder
    */
-  private $styleguide;
+  private $styleGuide;
 
   /**
    * @var string
-   *   The path which contains this particular style guide.
+   *   The path which contains this particular style-guide.
    */
   private $root;
 
-  public function __construct($styleguide) {
-    $this->styleguide = $styleguide;
-    $this->root = CRM_Utils_File::addTrailingSlash($styleguide['path']);
+  public function __construct($styleGuide) {
+    $this->styleGuide = $styleGuide;
+    $this->root = CRM_Utils_File::addTrailingSlash($styleGuide['path']);
   }
 
   public function listElementsAsOptions($type) {

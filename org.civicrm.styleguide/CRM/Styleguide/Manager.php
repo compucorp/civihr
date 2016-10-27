@@ -29,7 +29,7 @@ class CRM_Styleguide_Manager {
    */
   public function add($styleGuide) {
     if (empty($styleGuide['name']) || empty($styleGuide['label']) || empty($styleGuide['path'])) {
-      throw new \CRM_Core_Exception("Malformed style guide");
+      throw new \CRM_Core_Exception("Malformed style-guide");
     }
     $this->all[$styleGuide['name']] = $styleGuide;
     return $this;

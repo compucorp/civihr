@@ -14,11 +14,11 @@ class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
     CRM_Utils_System::setTitle(ts('Style Guide'));
 
     if (empty($path[2])) {
-      throw new \CRM_Core_Exception("The path must specify the name of the style guide.");
+      throw new \CRM_Core_Exception("The path must specify the name of the style-guide.");
     }
     $styleguide = Civi::service('style_guides')->get($path[2]);
     if ($styleguide === NULL) {
-      throw new \CRM_Core_Exception("The specified style guide does not exist.");
+      throw new \CRM_Core_Exception("The specified style-guide does not exist.");
     }
     $this->assign('styleguide', $styleguide);
 
