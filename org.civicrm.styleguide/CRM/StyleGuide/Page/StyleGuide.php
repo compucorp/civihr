@@ -1,8 +1,5 @@
 <?php
 
-require_once 'CRM/Core/Page.php';
-require_once 'CRM/Styleguide/HtmlBuilder.php';
-
 class CRM_StyleGuide_Page_StyleGuide extends CRM_Core_Page {
 
   /**
@@ -10,6 +7,7 @@ class CRM_StyleGuide_Page_StyleGuide extends CRM_Core_Page {
    *   List of path elements.
    *
    * @return void
+   * @throws CRM_Core_Exception
    */
   public function run($path = array()) {
     CRM_Utils_System::setTitle(ts('Style Guide'));
