@@ -139,3 +139,16 @@ function styleguide_civicrm_navigationMenu(&$menu) {
     'separator' => 0,
   ));
 }
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_container
+ */
+function styleguide_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
+  $container->setDefinition('styleguides', new \Symfony\Component\DependencyInjection\Definition(
+    'CRM_Styleguide_Manager',
+    array()
+  ));
+
+}
