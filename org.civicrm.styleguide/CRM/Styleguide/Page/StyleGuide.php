@@ -4,8 +4,23 @@ require_once 'CRM/Core/Page.php';
 require_once 'CRM/Styleguide/HtmlBuilder.php';
 
 class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
-  public function run() {
+
+  /**
+   * @param array $path
+   *   List of path elements.
+   * @return void
+   */
+  public function run($path = array()) {
     CRM_Utils_System::setTitle(ts('Style Guide'));
+
+    if (empty($path[2])) {
+      throw new \CRM_Core_Exception("The path must specify the name of the style guide.");
+    }
+    $styleguide = Civi::service('styleguides')->get($path[2]);
+    if ($styleguide === NULL) {
+      throw new \CRM_Core_Exception("The specified style guide does not exist.");
+    }
+    $this->assign('styleguide', $styleguide);
 
     self::registerScripts();
     parent::run();
@@ -18,4 +33,5 @@ class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.styleguide', 'js/sg-plugins.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.styleguide', 'js/sg-scripts.js', 1000);
   }
+
 }

@@ -1,8 +1,23 @@
 <?php
   class CRM_Styleguide_HtmlBuilder {
 
-    public function __construct() {
-      $this->root = CRM_Core_Resources::singleton()->getPath('org.civicrm.styleguide') . '/partials/';
+    /**
+     * @var array
+     *   - name: string, symbolic code name
+     *   - label: string, printable label, localized
+     *   - description: string, localized
+     */
+    private $styleguide;
+
+    /**
+     * @var string
+     *   The path which contains this particular style guide.
+     */
+    private $root;
+
+    public function __construct($styleguide) {
+      $this->styleguide = $styleguide;
+      $this->root = CRM_Utils_File::addTrailingSlash($styleguide['path']);
     }
 
     public function listElementsAsOptions ($type) {
