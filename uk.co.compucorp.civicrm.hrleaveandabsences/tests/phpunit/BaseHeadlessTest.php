@@ -3,7 +3,7 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
-abstract class CRM_HRLeaveAndAbsences_BaseTest extends PHPUnit_Framework_TestCase implements
+abstract class BaseHeadlessTest extends PHPUnit_Framework_TestCase implements
   HeadlessInterface, TransactionalInterface {
 
   public function setUpHeadless() {

@@ -1,8 +1,5 @@
 <?php
-require_once __DIR__."/ContractHelpersTrait.php";
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_ContractEntitlementCalculation as ContractEntitlementCalculation;
@@ -14,19 +11,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
+class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-                     ->installMe(__DIR__)
-                     ->install('org.civicrm.hrjobcontract')
-                     ->apply();
-    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $jobContractUpgrader->install();
-  }
 
   public function setUp() {
     $this->createContract();

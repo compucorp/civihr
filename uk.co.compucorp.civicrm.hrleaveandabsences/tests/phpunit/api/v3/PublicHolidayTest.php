@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
@@ -10,13 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
  *
  * @group headless
  */
-class api_v3_PublicHolidayTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
+class api_v3_PublicHolidayTest extends BaseHeadlessTest {
 
   public function testGetCountForCurrentPeriod() {
     AbsencePeriod::create([

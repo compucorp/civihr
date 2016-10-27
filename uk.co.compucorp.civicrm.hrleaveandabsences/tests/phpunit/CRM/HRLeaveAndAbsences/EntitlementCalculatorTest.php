@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__."/BaseTest.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_EntitlementCalculator as EntitlementCalculator;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
@@ -13,7 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_EntitlementCalculatorTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_EntitlementCalculatorTest extends BaseHeadlessTest {
 
   public function testCanReturnCalculationsForMultipleAbsenceTypes()
   {
