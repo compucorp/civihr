@@ -123,3 +123,19 @@ _styleguide_civix_civicrm_angularModules($angularModules);
 function styleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _styleguide_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function styleguide_civicrm_navigationMenu(&$menu) {
+  _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer', array(
+    'label' => ts('Style Guide', array('domain' => 'org.civicrm.styleguide')),
+    'name' => 'developer_styleguide',
+    'url' => 'civicrm/styleguide',
+    'permission' => 'access CiviCRM',
+    'operator' => 'OR',
+    'separator' => 0,
+  ));
+}

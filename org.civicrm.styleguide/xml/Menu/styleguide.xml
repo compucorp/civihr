@@ -3,7 +3,7 @@
   <item>
     <path>civicrm/styleguide</path>
     <page_callback>CRM_Styleguide_Page_StyleGuide</page_callback>
-    <title>StyleGuide</title>
+    <title>Style Guide</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
 </menu>

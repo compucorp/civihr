@@ -5,7 +5,7 @@ require_once 'CRM/Styleguide/HtmlBuilder.php';
 
 class CRM_Styleguide_Page_StyleGuide extends CRM_Core_Page {
   public function run() {
-    CRM_Utils_System::setTitle(ts('StyleGuide'));
+    CRM_Utils_System::setTitle(ts('Style Guide'));
 
     self::registerScripts();
     parent::run();
