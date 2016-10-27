@@ -31,23 +31,23 @@ class CRM_Styleguide_Manager {
       $extPath = CRM_Core_Resources::singleton()->getPath('org.civicrm.styleguide');
 
       $this->all = array(
-        'crmstar' => array(
+        'crm-star' => array(
           'label' => ts('crm-*'),
-          'path' => "{$extPath}/guides/crmstar",
+          'path' => "{$extPath}/guides/crm-star",
         ),
         'bootstrap' => array(
           'label' => ts('Bootstrap'),
           // FIXME: 'path' => "{$extPath}/guides/bootstrap",
           'path' => "{$extPath}/partials",
         ),
-        'bootstrapcivicrm' => array(
+        'bootstrap-civicrm' => array(
           'label' => ts('Bootstrap-CiviCRM'),
-          'path' => "{$extPath}/guides/bootstrapcivicrm",
+          'path' => "{$extPath}/guides/bootstrap-civicrm",
         ),
         // FIXME: Consider moving declaration to another extension.
-        'bootstrapcivihr' => array(
+        'bootstrap-civihr' => array(
           'label' => ts('Bootstrap-CiviHR'),
-          'path' => "{$extPath}/guides/bootstrapcivihr",
+          'path' => "{$extPath}/guides/bootstrap-civihr",
         ),
       );
 
