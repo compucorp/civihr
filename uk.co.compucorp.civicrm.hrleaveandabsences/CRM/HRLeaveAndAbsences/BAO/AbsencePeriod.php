@@ -275,6 +275,28 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
+   * Returns the AbsencePeriod which overlaps the given date. If not period
+   * overlaps it, then null is returned
+   *
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  public static function getPeriodOverlappingDate(DateTime $date) {
+    $overlappingDate = $date->format('Y-m-d');
+
+    $period = new self();
+    $period->whereAdd("start_date <= '{$overlappingDate}'");
+    $period->whereAdd("end_date >= '{$overlappingDate}'");
+    $period->limit(1);
+    if($period->find(true)) {
+      return $period;
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the number of working days for this Absence Period.
    *
    * The number is given by "number of ways in period" - "weekends" - "public holidays".

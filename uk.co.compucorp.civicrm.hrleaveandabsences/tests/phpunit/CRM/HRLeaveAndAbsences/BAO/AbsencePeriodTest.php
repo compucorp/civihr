@@ -602,6 +602,35 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertEquals($today, $endDate);
   }
 
+  public function testGetPeriodOverlappingDateShouldReturnThePeriodWhichOverlapsTheGivenDate() {
+    $period = $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('+10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    $date = new DateTime('+11 days');
+    $overlappingPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getPeriodOverlappingDate($date);
+
+    $this->assertEquals($period->id, $overlappingPeriod->id);
+  }
+
+  public function testGetPeriodOverlappingDateShouldReturnNullIfTheGivenDateDoesntOverlapsAnyPeriod() {
+    $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('+10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+20 days'),
+    ]);
+
+    $this->createBasicPeriod([
+      'start_date' => CRM_Utils_Date::processDate('+22 days'),
+      'end_date' => CRM_Utils_Date::processDate('+32 days'),
+    ]);
+
+    $date = new DateTime('+21 days');
+    $overlappingPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getPeriodOverlappingDate($date);
+
+    $this->assertNull($overlappingPeriod);
+  }
+
   private function createBasicPeriod($params = array()) {
     $basicRequiredFields = [
         'title' => 'Type ' . microtime(),
