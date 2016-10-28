@@ -116,6 +116,47 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testCannotDisableAnEnabledPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'is_active' => false
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was disabled');
+  }
+
+  public function testCannotEnableADisabledPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02'),
+      'is_active' => false,
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'is_active' => true
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was disabled');
+  }
+
   public function testGetNumberOfPublicHolidaysForPeriod() {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-01-01')
