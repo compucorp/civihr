@@ -541,6 +541,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1015();
     $this->upgrade_1016();
     $this->upgrade_1017();
+    $this->upgrade_1020();
   }
 
   function upgrade_1001() {

@@ -158,8 +158,8 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
         continue;
       }
       $details = CRM_Utils_Array::first($jobContractDetails['values']);
-      $details['period_start_date'] = $details['period_start_date'] ? date('Y-m-d H:i:s', strtotime($details['period_start_date'])) : null;
-      $details['period_end_date'] = $details['period_end_date'] ? date('Y-m-d H:i:s', strtotime($details['period_end_date'])) : null;
+      $details['period_start_date'] = isset($details['period_start_date']) ? date('Y-m-d H:i:s', strtotime($details['period_start_date'])) : null;
+      $details['period_end_date'] = isset($details['period_end_date']) ? date('Y-m-d H:i:s', strtotime($details['period_end_date'])) : null;
       if (CRM_Hrjobcontract_BAO_HRJobLeave::isJobDetailsInPeriod($details, $startDate, $endDate)) {
         $leaves = civicrm_api3('HRJobLeave', 'get', array(
           'sequential' => 1,
