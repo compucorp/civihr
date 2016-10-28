@@ -43,7 +43,7 @@ class WebTest_PublicHoliday_FormTest extends CiviSeleniumTestCase implements Hea
     $this->type('title', 'Title 2');
     $this->type('date', '2016-06-01');
     $this->submitAndWait('PublicHoliday');
-    $this->assertTrue($this->isTextPresent('There is a Public Holiday already existing with given date'));
+    $this->assertTrue($this->isTextPresent('Another Public Holiday with the same date already exists'));
   }
 
   public function testCreateValidPublicHoliday() {

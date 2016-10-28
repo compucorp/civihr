@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 
 /**
@@ -17,8 +19,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testStartAndEndDateAreRequired($start_date, $end_date)
   {
-    $this->createBasicPeriod([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate($start_date),
       'end_date' => CRM_Utils_Date::processDate($end_date)
     ]);
@@ -26,20 +27,17 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testWhenSavingAPeriodWithExistingWeightAllWeightsEqualOrGreaterShouldBeIncreased()
   {
-    $period1 = $this->createBasicPeriod([
-      'title'      => 'Period 1',
+    $period1 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2015-12-31'),
       'weight'    => 1
     ]);
-    $period2 = $this->createBasicPeriod([
-      'title'      => 'Period 2',
+    $period2 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
       'weight'    => 2
     ]);
-    $period3 = $this->createBasicPeriod([
-      'title'      => 'Period 3',
+    $period3 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2017-12-31'),
       'weight'    => 2
@@ -56,14 +54,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testIfWeightIsEmptyItWillBeMaxWeightPlusOne()
   {
-    $period1 = $this->createBasicPeriod([
-      'title'      => 'Period 1',
+    $period1 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2015-12-31'),
       'weight'    => 1
     ]);
-    $period2 = $this->createBasicPeriod([
-      'title'      => 'Period 2',
+    $period2 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
@@ -80,12 +76,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    * @expectedExceptionMessage DB Error: already exists
    */
   public function testPeriodsTitlesShouldBeUnique() {
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'title'      => 'Period 1',
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2015-12-31'),
     ]);
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'title'      => 'Period 1',
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
@@ -103,13 +99,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
         'This Absence Period overlaps with another existing Period'
       );
     }
-    $this->createBasicPeriod([
-      'title'      => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate($period1['start_date']),
       'end_date'   => CRM_Utils_Date::processDate($period1['end_date']),
     ]);
-    $this->createBasicPeriod([
-      'title'      => 'Period 2',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate($period2['start_date']),
       'end_date'   => CRM_Utils_Date::processDate($period2['end_date']),
     ]);
@@ -125,7 +119,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'end_date' => CRM_Utils_Date::processDate($endDateUnformatted),
       'weight' => 1
     ];
-    $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+    $period = AbsencePeriodFabricator::fabricate($params);
 
     $period = $this->findPeriodByID($period->id);
     $this->assertEquals($params['title'], $period->title);
@@ -138,7 +132,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     // with another period (itself)
     $params['title'] = 'Period 1 Updated';
     $params['id'] = $period->id;
-    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
+    AbsencePeriodFabricator::fabricate($params);
 
     $period = $this->findPeriodByID($period->id);
     $this->assertEquals($params['title'], $period->title);
@@ -155,8 +149,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testStartAndEndDatesShouldBeValidDates($start_date, $end_date)
   {
-    $this->createBasicPeriod([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => $start_date,
       'end_date' => $end_date,
     ]);
@@ -170,8 +163,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testStartDateShouldNotBeGreaterOrEqualThanEndDate($start_date, $end_date)
   {
-    $this->createBasicPeriod([
-      'title' => 'Period 1',
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate($start_date),
       'end_date'   => CRM_Utils_Date::processDate($end_date)
     ]);
@@ -186,8 +178,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'start_date' => CRM_Utils_Date::processDate($startDateUnformatted),
       'end_date' => CRM_Utils_Date::processDate($endDateUnformatted)
     ];
-    $entity = $this->createBasicPeriod($params);
-    $values = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getValuesArray($entity->id);
+    $entity = AbsencePeriodFabricator::fabricate($params);
+    $values = AbsencePeriod::getValuesArray($entity->id);
     $this->assertEquals($params['title'], $values['title']);
     $this->assertEquals($startDateUnformatted, $values['start_date']);
     $this->assertEquals($endDateUnformatted, $values['end_date']);
@@ -195,28 +187,28 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testItCanReturnTheMostRecentStartDateAvailable()
   {
-    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $date = AbsencePeriod::getMostRecentStartDateAvailable();
     $this->assertEquals(date('Y-m-d'), $date);
 
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2015-12-31'),
     ]);
-    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $date = AbsencePeriod::getMostRecentStartDateAvailable();
     $this->assertEquals('2016-01-01', $date);
 
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2014-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2014-01-31'),
     ]);
-    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $date = AbsencePeriod::getMostRecentStartDateAvailable();
     $this->assertEquals('2016-01-01', $date);
 
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
-    $date = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getMostRecentStartDateAvailable();
+    $date = AbsencePeriod::getMostRecentStartDateAvailable();
     $this->assertEquals('2017-01-01', $date);
   }
 
@@ -225,7 +217,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testCanCalculateTheNumberOfWorkingDays($startDate, $endDate, $expectedNumberOfWorkingDays)
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = $startDate;
     $period->end_date = $endDate;
     $this->assertEquals($expectedNumberOfWorkingDays, $period->getNumberOfWorkingDays());
@@ -237,7 +229,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testCannotCalculateTheNumberOfWorkingDaysForAPeriodWithAnEmptyStartDate()
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->end_date = date('Y-m-d');
     $period->getNumberOfWorkingDays();
   }
@@ -248,7 +240,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testCannotCalculateTheNumberOfWorkingDaysForAPeriodWithAnEmptyEndDate()
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = date('Y-m-d');
     $period->getNumberOfWorkingDays();
   }
@@ -258,7 +250,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $start_date = '2016-01-01';
     $end_date = '2016-12-31';
 
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = $start_date;
     $period->end_date = $end_date;
     $this->assertEquals(261, $period->getNumberOfWorkingDays());
@@ -266,7 +258,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = $start_date;
     $period->end_date = $end_date;
     $this->assertEquals(260, $period->getNumberOfWorkingDays());
@@ -274,7 +266,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-05-17')
     ]);
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = $start_date;
     $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
@@ -283,7 +275,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-12-25')
     ]);
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = $start_date;
     $period->end_date = $end_date;
     $this->assertEquals(259, $period->getNumberOfWorkingDays());
@@ -291,7 +283,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testCanCalculateTheNumberOfWorkingDaysToWork()
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-12-31';
 
@@ -302,7 +294,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testCanCalculateTheNumberOfWorkingDaysToWorkWithPublicHolidays()
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-12-31';
 
@@ -337,7 +329,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidStartDate($startDate)
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-12-31';
 
@@ -352,7 +344,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
    */
   public function testCannotCalculateTheNumberOfWorkingDaysToWorkForAnInvalidEndDate($endDate)
   {
-    $period             = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period             = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date   = '2016-12-31';
 
@@ -361,23 +353,23 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testPreviousPeriodShouldReturnNullIfTheresNoPreviousPeriod()
   {
-    $period = $this->createBasicPeriod();
+    $period = AbsencePeriodFabricator::fabricate();
     $this->assertNull($period->getPreviousPeriod());
   }
 
   public function testPreviousPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsAPreviousPeriod()
   {
-    $period1 = $this->createBasicPeriod([
+    $period1 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
     ]);
 
-    $period2 = $this->createBasicPeriod([
+    $period2 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
     ]);
 
-    $period3 = $this->createBasicPeriod([
+    $period3 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
     ]);
@@ -403,22 +395,22 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   }
 
   public function testNextPeriodShouldReturnNullIfTheresNoNextPeriod() {
-    $period = $this->createBasicPeriod();
+    $period = AbsencePeriodFabricator::fabricate();
     $this->assertNull($period->getNextPeriod());
   }
 
   public function testNextPeriodShouldReturnAnAbsencePeriodInstanceWhenThereIsANextPeriod() {
-    $period1 = $this->createBasicPeriod([
+    $period1 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-02')
     ]);
 
-    $period2 = $this->createBasicPeriod([
+    $period2 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-03'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-04')
     ]);
 
-    $period3 = $this->createBasicPeriod([
+    $period3 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-05'),
       'end_date'   => CRM_Utils_Date::processDate('2015-01-06')
     ]);
@@ -446,7 +438,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   {
     $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
     $type->allow_carry_forward = false;
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-02-01';
     $this->assertNull($period->getExpirationDateForAbsenceType($type));
@@ -456,7 +448,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   {
     $type = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
     $type->allow_carry_forward = true;
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-02-01';
     $this->assertNull($period->getExpirationDateForAbsenceType($type));
@@ -464,7 +456,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testCanCalculateExpirationDateForAbsenceTypeWithCarryForwardExpirationDuration()
   {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
     $period->start_date = '2016-01-01';
     $period->end_date = '2016-02-01';
 
@@ -520,25 +512,25 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testGetCurrentPeriodShouldReturnTheCurrentPeriod()
   {
-    $currentPeriod = $this->createBasicPeriod([
-      'start_date' => date('YmdHis', strtotime('-2 days')),
-      'end_date' => date('YmdHis', strtotime('+2 days')),
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-2 days'),
+      'end_date' => CRM_Utils_Date::processDate('+2 days'),
     ]);
     // Load the period from the database to make sure it was stored and
     // to get the dates in the Y-m-d format
     $currentPeriod = $this->findPeriodByID($currentPeriod->id);
 
-    $this->createBasicPeriod([
-      'start_date' => date('YmdHis', strtotime('-5 days')),
-      'end_date' => date('YmdHis', strtotime('-3 days')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-5 days'),
+      'end_date' => CRM_Utils_Date::processDate('-3 days'),
     ]);
 
-    $this->createBasicPeriod([
-      'start_date' => date('YmdHis', strtotime('+3 days')),
-      'end_date' => date('YmdHis', strtotime('+5 days')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+3 days'),
+      'end_date' => CRM_Utils_Date::processDate('+5 days'),
     ]);
 
-    $returnedPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod();
+    $returnedPeriod = AbsencePeriod::getCurrentPeriod();
     $this->assertEquals($currentPeriod->id, $returnedPeriod->id);
     $this->assertEquals($currentPeriod->title, $returnedPeriod->title);
     $this->assertEquals($currentPeriod->start_date, $returnedPeriod->start_date);
@@ -547,25 +539,25 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
   public function testGetCurrentPeriodShouldReturnNullIfThereIsNoPeriod()
   {
-    $this->createBasicPeriod([
-      'start_date' => date('YmdHis', strtotime('-5 days')),
-      'end_date' => date('YmdHis', strtotime('-3 days')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-5 days'),
+      'end_date' => CRM_Utils_Date::processDate('-3 days'),
     ]);
 
-    $this->createBasicPeriod([
-      'start_date' => date('YmdHis', strtotime('+3 days')),
-      'end_date' => date('YmdHis', strtotime('+5 days')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+3 days'),
+      'end_date' => CRM_Utils_Date::processDate('+5 days'),
     ]);
-    $this->assertNull(CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod());
+    $this->assertNull(AbsencePeriod::getCurrentPeriod());
   }
 
   public function testGetCurrentPeriodShouldReturnNullIfThereIsNoCurrentPeriod()
   {
-    $this->assertNull(CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod());
+    $this->assertNull(AbsencePeriod::getCurrentPeriod());
   }
 
   public function testAdjustDatesToMatchPeriodDatesShouldAdjustStartDateIfItsLessThanThePeriodStartDate() {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
 
     $yesterday = date('Y-m-d', strtotime('-1 day'));
     $today = date('Y-m-d');
@@ -584,7 +576,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   }
 
   public function testAdjustDatesToMatchPeriodDatesShouldAdjustEndDateIfItsGreaterThanThePeriodEndDate() {
-    $period = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $period = new AbsencePeriod();
 
     $yesterday = date('Y-m-d', strtotime('-1 day'));
     $today = date('Y-m-d');
@@ -593,7 +585,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $period->start_date = $yesterday;
     $period->end_date = $today;
 
-    list($startDate, $endDate) = $period->adjustDatesToMatchPeriodDates(
+    list(, $endDate) = $period->adjustDatesToMatchPeriodDates(
       $today,
       $tomorrow
     );
@@ -603,47 +595,36 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
   }
 
   public function testGetPeriodOverlappingDateShouldReturnThePeriodWhichOverlapsTheGivenDate() {
-    $period = $this->createBasicPeriod([
+    $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('+10 days'),
       'end_date' => CRM_Utils_Date::processDate('+20 days'),
     ]);
 
     $date = new DateTime('+11 days');
-    $overlappingPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getPeriodOverlappingDate($date);
+    $overlappingPeriod = AbsencePeriod::getPeriodOverlappingDate($date);
 
     $this->assertEquals($period->id, $overlappingPeriod->id);
   }
 
   public function testGetPeriodOverlappingDateShouldReturnNullIfTheGivenDateDoesntOverlapsAnyPeriod() {
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('+10 days'),
       'end_date' => CRM_Utils_Date::processDate('+20 days'),
     ]);
 
-    $this->createBasicPeriod([
+    AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('+22 days'),
       'end_date' => CRM_Utils_Date::processDate('+32 days'),
     ]);
 
     $date = new DateTime('+21 days');
-    $overlappingPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getPeriodOverlappingDate($date);
+    $overlappingPeriod = AbsencePeriod::getPeriodOverlappingDate($date);
 
     $this->assertNull($overlappingPeriod);
   }
 
-  private function createBasicPeriod($params = array()) {
-    $basicRequiredFields = [
-        'title' => 'Type ' . microtime(),
-        'start_date' => CRM_Utils_Date::processDate(date('Y-m-d', strtotime('first day of this year'))),
-        'end_date' => CRM_Utils_Date::processDate(date('Y-m-d', strtotime('last day of this year'))),
-    ];
-
-    $params = array_merge($basicRequiredFields, $params);
-    return CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create($params);
-  }
-
   private function findPeriodByID($id) {
-    $entity = new CRM_HRLeaveAndAbsences_BAO_AbsencePeriod();
+    $entity = new AbsencePeriod();
     $entity->id = $id;
     $entity->find(true);
 
