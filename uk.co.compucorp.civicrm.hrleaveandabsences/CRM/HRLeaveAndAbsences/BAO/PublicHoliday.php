@@ -98,10 +98,19 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
       );
     }
 
-    if(self::dateIsInThePast($params['date'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
-        'The date cannot be in the past'
-      );
+    $oldDate = self::getOldDate($params);
+    if(strtotime($oldDate) != strtotime($params['date'])) {
+      if(self::dateIsInThePast($oldDate)) {
+        throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
+          'You cannot change the date of a past public holiday'
+        );
+      }
+
+      if(self::dateIsInThePast($params['date'])) {
+        throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
+          'The date cannot be in the past'
+        );
+      }
     }
   }
 
@@ -247,8 +256,30 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return bool
    */
   private static function dateIsInThePast($date) {
+    if(!$date) {
+      return false;
+    }
     $timestampToday = strtotime(date('Y-m-d 00:00:00'));
 
     return strtotime($date) < $timestampToday;
+  }
+
+  /**
+   * Returns the old value for the date field of the Public Holiday being
+   * updated.
+   *
+   * @param array $params
+   *  The params array passed to the create() method
+   *
+   * @return string|null
+   */
+  private static function getOldDate($params) {
+    if(empty($params['id'])) {
+      return null;
+    }
+
+    $publicHoliday = self::findById($params['id']);
+
+    return $publicHoliday->date;
   }
 }

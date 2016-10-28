@@ -85,6 +85,37 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
   }
 
+  public function testCannotChangeTheDateOfAPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'date' => CRM_Utils_Date::processDate('+1 day')
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot change the date of a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
+  }
+
+  public function testCanChangeTheTitleOfAPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    PublicHoliday::create([
+      'id' => $publicHoliday->id,
+      'title' => 'Updated'
+    ]);
+  }
+
   public function testGetNumberOfPublicHolidaysForPeriod() {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-01-01')
