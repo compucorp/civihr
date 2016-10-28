@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest
@@ -36,6 +37,13 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
    * @expectedExceptionMessage There is a Public Holiday already existing with given date
    */
   public function testPublicHolidayDateShouldBeUnique() {
+    // We're not allowed to create Public Holidays outside
+    // an Absence Period dates, so we need to have one on the database
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('now'),
+      'end_date' => CRM_Utils_Date::processDate('+1 day'),
+    ]);
+
     PublicHoliday::create([
       'title' => 'Public holiday 1',
       'date' => CRM_Utils_Date::processDate('now'),
@@ -67,7 +75,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
   }
 
   public function testCannotChangeDateToOneInThePast() {
-    $publicHoliday = PublicHolidayFabricator::fabricate([
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('+1 day'))
     ]);
 
@@ -105,6 +113,11 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
   }
 
   public function testCanChangeTheTitleOfAPastPublicHoliday() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
     $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday',
       'date' => CRM_Utils_Date::processDate('2016-01-02')
@@ -155,6 +168,17 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     }
 
     $this->fail('Expected an exception, but the public holiday was disabled');
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   * @expectedExceptionMessage The date cannot be outside the existing absence periods
+   */
+  public function testCannotCreateAPublicHolidayForADateNotOverlappingAnyAbsencePeriod() {
+    PublicHoliday::create([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('+1 day')
+    ]);
   }
 
   public function testGetNumberOfPublicHolidaysForPeriod() {

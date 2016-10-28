@@ -65,6 +65,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     self::validateDate($params);
     self::checkIfDateIsUnique($params);
     self::validateIsActive($params);
+    self::checkIfDateOverlapsAnAbsencePeriod($params);
   }
 
   /**
@@ -140,7 +141,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
       );
     }
   }
-  
+
   /**
    * Runs validation for the "Is Active" field. Basically, you cannot change its
    * value for a past public holiday
@@ -308,5 +309,21 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     $publicHoliday = self::findById($params['id']);
 
     return $publicHoliday->date;
+  }
+
+  private static function checkIfDateOverlapsAnAbsencePeriod($params) {
+    if(!array_key_exists('date', $params)) {
+      $date = self::getOldDate($params);
+    } else {
+      $date = $params['date'];
+    }
+
+    $period = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getPeriodOverlappingDate(new DateTime($date));
+
+    if(is_null($period)) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
+        'The date cannot be outside the existing absence periods'
+      );
+    }
   }
 }
