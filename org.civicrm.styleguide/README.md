@@ -52,3 +52,16 @@ and create your first HTML snippet:
 ```
 
 and navigate to ""Support => Developer => Style Guides => My Guide"
+
+## Tests
+
+The browser-level integration tests are implemented with `protractor` and stored
+under `tests/protractor/`.  (If you have not already installed Protractor, then
+follow [the setup instructions from `protractortest.org`](http://www.protractortest.org/).)
+
+Then run:
+
+```
+cd org.civicrm.styleguide
+protractor tests/protractor/conf.js
+```
