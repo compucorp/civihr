@@ -666,6 +666,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
           throw new Exception('Cannot find Job Contract with specified ID.');
       }
 
+      $contactId = $contract->contact_id;
       $revision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
       $revision->jobcontract_id = $contract->id;
       $revision->find();
@@ -675,6 +676,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       }
 
       $contract->delete();
+      CRM_Hrjobcontract_JobContractDates::removeDates($contractId);
+      self::updateLengthOfService($contactId);
     } catch(Exception $e) {
       $transaction->rollback();
       throw new Exception($e);
