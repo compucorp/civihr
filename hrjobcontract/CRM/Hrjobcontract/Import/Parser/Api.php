@@ -478,7 +478,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
             : new CRM_Hrjobcontract_Import_EntityHandler_Generic($entity);
 
           $entityInstance = $handler->handle($params, $contractRevision, $this->_previousRevision);
-          $this->_previousRevision['local'][$tableName] = isset($entityInstance[0]) ? $entityInstance[0]->id : null;
+          $this->_previousRevision['local'][$tableName] = isset($entityInstance) ? $entityInstance['id'] : null;
           $this->_previousRevision['imported'][$tableName] = $revisionParams[$tableName . '_revision_id'];
         }
       }
