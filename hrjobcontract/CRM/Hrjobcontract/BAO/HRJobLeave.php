@@ -99,20 +99,6 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
     }
   }
 
-  static function getAllAbsencePeriods() {
-    $data = array();
-    $result = civicrm_api3('HRAbsencePeriod', 'get', array(
-      'sequential' => 1,
-    ));
-    foreach ($result['values'] as $period) {
-      $data[$period['id']] = array(
-        'start' => $period['start_date'],
-        'end' => $period['end_date'],
-      );
-    }
-    return $data;
-  }
-
   static function getAbsencePeriods($startDate = null, $endDate = null) {
     $data = array();
     $query = "SELECT * FROM civicrm_hrabsence_period ";
