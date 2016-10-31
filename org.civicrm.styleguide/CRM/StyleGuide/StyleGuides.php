@@ -94,8 +94,7 @@ class CRM_StyleGuide_StyleGuides {
     $this->add(array(
       'name' => 'bootstrap',
       'label' => ts('Bootstrap'),
-      // FIXME: 'path' => "{$extPath}/guides/bootstrap",
-      'path' => "{$extPath}/partials",
+      'path' => "{$extPath}/guides/bootstrap",
     ));
     $this->add(array(
       'name' => 'bootstrap-civicrm',
