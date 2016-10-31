@@ -6,8 +6,6 @@ eval(cv('php:boot --level=classloader', 'phpcode'));
 
 require_once 'CRM/HRSampleData/BaseImporterTest.php';
 
-define('EXTENSION_ROOT_DIR', __DIR__.'/../../');
-
 /**
  * Call the "cv" command.
  *

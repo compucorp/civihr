@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Cleaner_HRPayScale
- *
  */
 class CRM_HRSampleData_Cleaner_HRPayScale extends CRM_HRSampleData_CSVHandler
 {

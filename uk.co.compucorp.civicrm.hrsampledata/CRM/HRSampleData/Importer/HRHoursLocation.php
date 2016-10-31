@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_HRHoursLocation
- *
  */
 class CRM_HRSampleData_Importer_HRHoursLocation extends CRM_HRSampleData_CSVHandler
 {

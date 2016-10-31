@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_BankDetails
- *
  */
 class CRM_HRSampleData_Importer_BankDetails extends CRM_HRSampleData_Importer_CustomFields
 {

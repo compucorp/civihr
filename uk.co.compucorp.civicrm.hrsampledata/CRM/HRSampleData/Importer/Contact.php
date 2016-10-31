@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_Contact
- *
  */
 class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVHandler
 {

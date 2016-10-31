@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Relationships.php';
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
 
@@ -16,6 +14,8 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
 
   private $testContactB;
 
+  private $relationshipType;
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
@@ -23,14 +23,14 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     $this->testContactA = ContactFabricator::fabricate();
     $this->testContactB = ContactFabricator::fabricate(['first_name' => 'chrollo2', 'last_name' => 'lucilfer2']);
 
-    RelationshipTypeFabricator::fabricate();
+    $this->relationshipType = RelationshipTypeFabricator::fabricate();
   }
 
   public function testIterate() {
     $this->rows[] = [
       $this->testContactA['id'],
       $this->testContactB['id'],
-      'test AB',
+      $this->relationshipType['name_a_b'],
       '2016-01-01',
       1,
     ];

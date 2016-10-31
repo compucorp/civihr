@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_ExtendedDemographics
- *
  */
 class CRM_HRSampleData_Importer_ExtendedDemographics extends CRM_HRSampleData_Importer_CustomFields
 {

@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Activity.php';
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_Activity as ActivityFabricator;
 

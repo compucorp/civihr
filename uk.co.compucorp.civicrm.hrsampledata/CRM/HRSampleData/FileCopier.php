@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_FileCopier
- *
  */
 class CRM_HRSampleData_FileCopier
 {

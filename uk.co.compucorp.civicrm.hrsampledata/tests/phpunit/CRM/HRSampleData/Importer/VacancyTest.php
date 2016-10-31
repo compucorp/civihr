@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Vacancy.php';
-
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 
 /**
@@ -11,11 +9,13 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  */
 class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporterTest {
 
+  private $locationOption;
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
-    OptionValueFabricator::fabricate(['option_group_id' => 'hrjc_location']);
+    $this->locationOption = OptionValueFabricator::fabricate(['option_group_id' => 'hrjc_location']);
   }
 
   public function testIterate() {
@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
       'Test Desc',
       'Test Ben',
       'Test Req',
-      'test option',
+      $this->locationOption['name'],
       0,
       'Open',
       '2016-09-01 00:00:00',

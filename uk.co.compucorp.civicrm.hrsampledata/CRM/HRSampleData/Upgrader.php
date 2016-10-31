@@ -7,8 +7,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
   private $csvDir;
 
-  public function __construct($extensionName, $extensionDir)
-  {
+  public function __construct($extensionName, $extensionDir) {
     parent::__construct($extensionName, $extensionDir);
 
     $this->csvDir = $this->extensionDir . "/resources/csv";
@@ -26,7 +25,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
   /**
    * Removes data from Specific tables
-   *
    */
   private function cleanTablesData() {
     $this->executeSqlFile('sql/uninstall.sql');
@@ -39,7 +37,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    * differently by getting all custom field tables
    * from custom groups table and then cleaning
    * each table one by one.
-   *
    */
   private function cleanCustomFieldsValues() {
     $customFieldTables = civicrm_api3('CustomGroup', 'get', [
@@ -57,7 +54,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
   /**
    * Data such as option values, pay scales .. etc
    * which are created by this extension are cleaned here.
-   *
    */
   private function cleanSampleDataValues() {
     $filesToClean = [
@@ -79,7 +75,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
   /**
    * Imports CiviHR sample data
-   *
    */
   private function importSampleData() {
     // These files will be imported in order
@@ -118,7 +113,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
   /**
    * Copies photos to the public CiviCRM directory
-   *
    */
   private function copyContactPhotos() {
     $imgDir = $this->extensionDir . "/resources/photos/";

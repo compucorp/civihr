@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/Case.php';
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
 
@@ -14,19 +12,21 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
 
   private $testContact;
 
+  private $testCaseType;
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
     $this->testContact = ContactFabricator::fabricate();
-    CaseTypeFabricator::fabricate();
+    $this->testCaseType = CaseTypeFabricator::fabricate();
   }
 
   public function testIterate() {
     $this->rows[] = [
       1,
       'test case',
-      'test_case_type',
+      $this->testCaseType['name'],
       '2016-09-08',
       'Open',
       0,

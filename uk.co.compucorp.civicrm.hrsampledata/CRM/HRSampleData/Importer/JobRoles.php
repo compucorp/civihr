@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_JobRoles
- *
  */
 class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVHandler
 {

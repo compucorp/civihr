@@ -1,10 +1,7 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/VacancyValue.php';
-
 use CRM_HRCore_Test_Fabricator_Case as CaseFabricator;
 use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
-
 use CRM_HRRecruitment_Test_Fabricator_HRVacancy as VacancyFabricator;
 
 /**

@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/HRPayScale.php';
-
 use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as PayScaleFabricator;
 
 /**
@@ -17,12 +15,12 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseImpor
   }
 
   public function testIterate() {
-    PayScaleFabricator::fabricate();
-    $testPayScale = $this->apiGet('HRPayScale', ['pay_scale' => 'test scale']);
-    $this->assertEquals('test scale', $testPayScale['pay_scale']);
+    $payScale = PayScaleFabricator::fabricate();
+    $testPayScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
+    $this->assertEquals($payScale['pay_scale'], $testPayScale['pay_scale']);
 
     $this->rows[] = [
-      'test scale',
+      $payScale['pay_scale'],
       'test grade',
       'USD',
       '35000',
@@ -31,7 +29,7 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseImpor
 
     $this->runIterator('CRM_HRSampleData_Cleaner_HRPayScale', $this->rows);
 
-    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => 'test scale']);
+    $payScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
     $this->assertEmpty($payScale);
   }
 

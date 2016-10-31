@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_EmergencyContacts
- *
  */
 class CRM_HRSampleData_Importer_EmergencyContacts extends CRM_HRSampleData_Importer_CustomFields
 {

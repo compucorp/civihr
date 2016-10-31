@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/JobRoles.php';
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as JobContractFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
@@ -16,6 +14,8 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
   private $testContact;
 
   private $testJobContract;
+
+  private $optionVales = [];
 
   public function setUp() {
     $this->rows = [];
@@ -32,7 +32,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       'hrjc_location',
     ];
     foreach($rolesOptionValues as $group) {
-      OptionValueFabricator::fabricate(['option_group_id' => $group]);
+      $this->optionVales[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -41,9 +41,9 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       $this->testJobContract['id'],
       'Subject Head - Computer Basics',
       'West London',
-      'test option',
-      'test option',
-      'test option',
+      $this->optionVales['hrjc_department']['name'],
+      $this->optionVales['hrjc_level_type']['name'],
+      $this->optionVales['cost_centres']['name'],
       1,
       100,
       0,
@@ -51,7 +51,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       1,
       100,
       0,
-      'test option',
+      $this->optionVales['hrjc_location']['name'],
       '2014-01-01 18:30:00',
       '2019-06-29 18:30:00',
     ];

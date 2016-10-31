@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Cleaner_LocationType
- *
  */
 class CRM_HRSampleData_Cleaner_LocationType extends CRM_HRSampleData_CSVHandler
 {

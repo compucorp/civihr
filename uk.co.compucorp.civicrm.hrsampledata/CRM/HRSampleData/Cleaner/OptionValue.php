@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Cleaner_OptionValue
- *
  */
 class CRM_HRSampleData_Cleaner_OptionValue extends CRM_HRSampleData_CSVHandler
 {

@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/JobContract.php';
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation as HoursLocationFabricator;
@@ -16,14 +14,21 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
 
   private $testContact;
 
+  private $testLocationType;
+
+  private $testPayScale;
+
+  private $optionVales = [];
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
     $this->testContact = ContactFabricator::fabricate();
 
-    HoursLocationFabricator::fabricate();
-    PayScaleFabricator::fabricate();
+    $this->testLocationType = HoursLocationFabricator::fabricate();
+
+    $this->testPayScale = PayScaleFabricator::fabricate();
 
     $contractOptionValues = [
       'hrjc_contract_type',
@@ -32,7 +37,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       'hrjc_pension_type',
     ];
     foreach($contractOptionValues as $group) {
-      OptionValueFabricator::fabricate(['option_group_id' => $group]);
+      $this->optionVales[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -44,15 +49,15 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       'Subject Head - Literacy',
       'Subject Head - Literacy',
       'Donor funded position',
-      'test option',
+      $this->optionVales['hrjc_contract_type']['name'],
       '2012-04-28',
       '2016-07-28',
-      'test option',
+      $this->optionVales['hrjc_contract_end_reason']['name'],
       3,
       'Month',
       3,
       'Month',
-      'test option',
+      $this->optionVales['hrjc_location']['name'],
       $this->testContact['id'],
       'Individual',
       'GP helpline, NHS cashback & up to 75% no claims discount',
@@ -61,14 +66,14 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       'Individual',
       'Maximum term 40 years or 75 years of age',
       'No',
-      'test location',
+      $this->testLocationType['location'],
       'Part_Time',
       35,
       'Week',
       0.92,
       35,
       38,
-      'test scale',
+      $this->testPayScale['pay_scale'],
       'Paid',
       53513,
       'Year',
@@ -82,7 +87,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       1,
       5,
       5,
-      'test option',
+      $this->optionVales['hrjc_pension_type']['name'],
       'Sick:0,Vacation:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
     ];
 

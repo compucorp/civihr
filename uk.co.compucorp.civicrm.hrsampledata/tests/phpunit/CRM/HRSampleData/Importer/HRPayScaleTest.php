@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/HRPayScale.php';
-
 /**
  * Class CRM_HRSampleData_Importer_HRPayScaleTest
  *

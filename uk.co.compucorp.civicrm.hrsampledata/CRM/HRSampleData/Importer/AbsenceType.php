@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_AbsenceType
- *
  */
 class CRM_HRSampleData_Importer_AbsenceType extends CRM_HRSampleData_CSVHandler
 {

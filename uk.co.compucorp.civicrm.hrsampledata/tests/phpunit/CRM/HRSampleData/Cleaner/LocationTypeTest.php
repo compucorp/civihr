@@ -1,7 +1,5 @@
 <?php
 
-require_once EXTENSION_ROOT_DIR . 'CRM/HRSampleData/Importer/LocationType.php';
-
 use CRM_HRCore_Test_Fabricator_LocationType as LocationTypeFabricator;
 
 /**
@@ -17,13 +15,13 @@ class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseImp
   }
 
   public function testIterate() {
-    LocationTypeFabricator::fabricate();
-    $testLocationType = $this->apiGet('LocationType', ['name' => 'test location type']);
-    $this->assertEquals('test location type', $testLocationType['name']);
+    $locationType = LocationTypeFabricator::fabricate();
+    $testLocationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
+    $this->assertEquals($locationType['name'], $testLocationType['name']);
 
     $this->rows[] = [
-      'test location type',
-      'test location type',
+      $locationType['name'],
+      $locationType['name'],
       '',
       '',
       0,
@@ -33,7 +31,7 @@ class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseImp
 
     $this->runIterator('CRM_HRSampleData_Cleaner_LocationType', $this->rows);
 
-    $locationType = $this->apiGet('LocationType', ['name' => 'test location type']);
+    $locationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
     $this->assertEmpty($locationType);
   }
 

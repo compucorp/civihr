@@ -2,7 +2,6 @@
 
 /**
  * Class CRM_HRSampleData_Importer_VacancyValue
- *
  */
 class CRM_HRSampleData_Importer_VacancyValue extends CRM_HRSampleData_Importer_CustomFields
 {
