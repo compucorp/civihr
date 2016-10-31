@@ -170,6 +170,8 @@ class CRM_HRAbsence_BAO_HRAbsenceType extends CRM_HRAbsence_DAO_HRAbsenceType {
     }
 
     $absenceType->delete();
+
+    CRM_Utils_Hook::post('delete', 'HRAbsenceType', $absenceTypeId);
   }
 
   /**
