@@ -616,4 +616,118 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
     return null;
   }
+
+  /**
+   * Permanently delete all contracts for given contact ID.
+   *
+   * @param int $contactId
+   *
+   * @return boolean
+   * @throw Exception
+   */
+  public static function deleteAllContractsPermanently($contactId) {
+
+    if (empty($contactId)) {
+      throw new Exception('Please specify contact ID.');
+    }
+
+    $contract = new self();
+    $contract->contact_id = $contactId;
+    $contract->find();
+    while ($contract->fetch()) {
+      self::deleteContractPermanently($contract->id);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Permanently delete whole contract with its all revisions and entities.
+   *
+   * @param int $contractId
+   *
+   * @return bool
+   * @throw Exception
+   */
+  public static function deleteContractPermanently($contractId) {
+
+    if (empty($contractId)) {
+      throw new Exception('Please specify contract ID to delete.');
+    }
+
+    $transaction = new CRM_Core_Transaction();
+    try {
+      $contract = new self();
+      $contract->id = $contractId;
+      $contract->find(TRUE);
+
+      if (empty($contract->id))
+      {
+          throw new Exception('Cannot find Job Contract with specified ID.');
+      }
+
+      $revision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
+      $revision->jobcontract_id = $contract->id;
+      $revision->find();
+
+      while ($revision->fetch()) {
+        self::deleteRevisionPermanently($revision);
+      }
+
+      $contract->delete();
+    } catch(Exception $e) {
+      $transaction->rollback();
+      throw new Exception($e);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Delete all contract entities of given revision and the revision itself.
+   *
+   * @param CRM_Hrjobcontract_BAO_HRJobContractRevision $revision
+   */
+  protected static function deleteRevisionPermanently(CRM_Hrjobcontract_BAO_HRJobContractRevision $revision) {
+    $entityNames = array('HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole');
+
+    foreach ($entityNames as $entityName)
+    {
+      $tableName = _civicrm_get_table_name($entityName);
+      self::deleteEntityRevisionPermanently('CRM_Hrjobcontract_BAO_' . $entityName, $revision->{$tableName . '_revision_id'});
+    }
+
+    $deleteRevision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
+    $deleteRevision->id = $revision->id;
+    $deleteRevision->delete();
+  }
+
+  /**
+   * Delete each entity entry of specified revision ID.
+   *
+   * @param string $className
+   * @param int $revisionId
+   */
+  protected static function deleteEntityRevisionPermanently($className, $revisionId) {
+
+    $entity = new $className();
+    $entity->jobcontract_revision_id = $revisionId;
+    $entity->find();
+
+    while ($entity->fetch()) {
+      self::deleteEntityPermanently($className, $entity->id);
+    }
+  }
+
+  /**
+   * Delete a single entity entry of given class and ID.
+   *
+   * @param string $className
+   * @param int $entityId
+   */
+  protected static function deleteEntityPermanently($className, $entityId) {
+    $deleteEntity = new $className();
+    $deleteEntity->id = $entityId;
+    $deleteEntity->delete();
+  }
 }
