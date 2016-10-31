@@ -25,6 +25,10 @@
 +--------------------------------------------------------------------+
 */
 
+use CRM_HRAbsence_BAO_HRAbsencePeriod as AbsencePeriod;
+use CRM_HRAbsence_BAO_HRAbsenceEntitlement as AbsenceEntitlement;
+use CRM_Hrjobcontract_BAO_HRJobLeave as JobLeave;
+
 class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsenceEntitlement {
 
   public static function create($params) {
@@ -51,5 +55,91 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
     $dao = new CRM_HRAbsence_DAO_HRAbsenceEntitlement();
     $dao->copyValues($params);
     return $dao->count();
+  }
+
+  /**
+   * Recalculates HR Absence Entitlement values for given Contact.
+   *
+   * @param int $contactId
+   */
+  public static function recalculateAbsenceEntitlementForContact($contactId) {
+    $periods = AbsencePeriod::getAbsencePeriods();
+
+    self::overwriteContactEntitlementForPeriods($contactId, $periods);
+  }
+
+  /**
+   * Recalculates HR Absence Entitlement values for given Job Contract ID.
+   *
+   * @param int $jobContractId
+   */
+  public static function recalculateAbsenceEntitlement($jobContractId) {
+    $jobContract = civicrm_api3('HRJobContract', 'getsingle', array(
+      'sequential' => 1,
+      'id'         => $jobContractId,
+      'deleted'    => 0,
+      'return'     => "contact_id,period_start_date,period_end_date,deleted",
+    ));
+
+    $startDate = isset($jobContract['period_start_date']) ? date('Y-m-d H:i:s', strtotime($jobContract['period_start_date'])) : NULL;
+    $endDate   = isset($jobContract['period_end_date']) ? date('Y-m-d H:i:s', strtotime($jobContract['period_end_date'])) : NULL;
+    $periods   = AbsencePeriod::getAbsencePeriods($startDate, $endDate);
+
+    self::overwriteContactEntitlementForPeriods($jobContract['contact_id'], $periods);
+  }
+
+  /**
+   * Overwrite the contact entitlement for the given periods
+   *
+   * @param int $contactId
+   * @param array $periods
+   */
+  private static function overwriteContactEntitlementForPeriods($contactId, $periods) {
+    foreach ($periods as $periodId => $periodValue) {
+      $leaves = JobLeave::getLeavesForPeriod($contactId, $periodValue['start'], $periodValue['end']);
+      self::overwriteAbsenceEntitlementPeriod($contactId, $periodId, $leaves);
+    }
+  }
+
+  /**
+   * Overwrites the absence entitlement for the given contact during the given
+   * period.
+   *
+   * @param int $contactId
+   * @param int $periodId
+   * @param array $leaves
+   */
+  private static function overwriteAbsenceEntitlementPeriod($contactId, $periodId, array $leaves) {
+    $query = 'DELETE FROM civicrm_hrabsence_entitlement WHERE contact_id = %1 AND period_id = %2';
+    $params = [
+      1 => [$contactId, 'Integer'],
+      2 => [$periodId, 'Integer'],
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+
+    foreach ($leaves as $leaveType => $leaveAmount) {
+      self::overwriteAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $leaveAmount);
+    }
+  }
+
+  /**
+   * Overwrites the absence entitlement for a single leave type for the given
+   * contact during the given period.
+   *
+   * @param int $contactId
+   * @param int $periodId
+   * @param int $leaveType
+   * @param float $amount
+   */
+  private static function overwriteAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $amount) {
+    $query = 'INSERT INTO civicrm_hrabsence_entitlement SET contact_id = %1, period_id = %2, type_id = %3, amount = %4';
+    $params = [
+      1 => [$contactId, 'Integer'],
+      2 => [$periodId, 'Integer'],
+      3 => [$leaveType, 'Integer'],
+      4 => [$amount, 'Float'],
+    ];
+    CRM_Core_DAO::executeQuery($query, $params);
   }
 }

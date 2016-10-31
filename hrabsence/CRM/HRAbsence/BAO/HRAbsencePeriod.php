@@ -83,4 +83,53 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
     $absencePeriod->find(TRUE);
     $absencePeriod->delete();
   }
+
+  /**
+   * Returns an array of Absence Periods dates overlapping the given start and
+   * end dates
+   *
+   * @param string|null $startDate
+   * @param string|null $endDate
+   *
+   * @return array
+   *  An array of Absence Periods dates as:
+   *  [
+   *   ['start' => '2016-01-01', 'end' => '2016-12-31'],
+   *   ['start' => '2017-01-01', 'end' => '2017-12-31'],
+   *   ...
+   *  ]
+   */
+  public static function getAbsencePeriods($startDate = NULL, $endDate = NULL) {
+    $data       = [];
+    $query      = "SELECT * FROM civicrm_hrabsence_period ";
+    $where      = [];
+    $params     = [];
+    $whereQuery = '';
+
+    if ($startDate) {
+      $startDate = date('Y-m-d H:i:s', strtotime($startDate));
+      $where[]   = " end_date >= %1 ";
+      $params[1] = [$startDate, 'String'];
+    }
+
+    if ($endDate) {
+      $endDate   = date('Y-m-d H:i:s', strtotime($endDate));
+      $where[]   = " start_date < %2 ";
+      $params[2] = [$endDate, 'String'];
+    }
+
+    if (!empty($where)) {
+      $whereQuery = ' WHERE ' . implode(' AND ', $where);
+    }
+
+    $periods = CRM_Core_DAO::executeQuery($query . $whereQuery, $params);
+    while ($periods->fetch()) {
+      $data[$periods->id] = array(
+        'start' => $periods->start_date,
+        'end'   => $periods->end_date,
+      );
+    }
+
+    return $data;
+  }
 }
