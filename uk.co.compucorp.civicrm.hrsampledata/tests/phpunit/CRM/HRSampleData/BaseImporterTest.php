@@ -46,18 +46,18 @@ class CRM_HRSampleData_BaseImporterTest extends \PHPUnit_Framework_TestCase impl
     return $splObjectMock;
   }
 
-  public function runImporter($importerClassName, $rows, $mapping = []) {
+  public function runIterator($className, $rows, $mapping = []) {
 
-    $importer = new $importerClassName();
+    $iterator = new $className();
 
     if (!empty($mapping)) {
       foreach($mapping as $map) {
-        $importer->setDataMapping($map[0], $map[1], $map[1]);
+        $iterator->setDataMapping($map[0], $map[1], $map[1]);
       }
     }
 
     $fileHandler = $this->getSplFileObjectMock($rows);
-    $importer->import($fileHandler);
+    $iterator->iterate($fileHandler);
   }
 
   public function apiGet($entity, $extraParams = []) {

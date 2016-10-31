@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_ContactEmailTest extends CRM_HRSampleData_BaseIm
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContact['id'],
       'phoebe@sccs.org',
@@ -32,7 +32,7 @@ class CRM_HRSampleData_Importer_ContactEmailTest extends CRM_HRSampleData_BaseIm
       ['contact_mapping', $this->testContact['id']]
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_ContactEmail',  $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_ContactEmail',  $this->rows, $mapping);
 
     $email = $this->apiGet('Email', ['email' => 'phoebe@sccs.org']);
 

@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseIm
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'Correspondence',
       'Correspondence',
@@ -25,7 +25,7 @@ class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseIm
       0
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_LocationType', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_LocationType', $this->rows);
 
     $locationType = $this->apiGet('LocationType', ['name' => 'Correspondence']);
 

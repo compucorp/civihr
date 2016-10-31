@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'activity_type',
       'Compassionate_Leave',
@@ -28,7 +28,7 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
       ''
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_OptionValue', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_OptionValue', $this->rows);
 
     $optionValue = $this->apiGet(
       'OptionValue',

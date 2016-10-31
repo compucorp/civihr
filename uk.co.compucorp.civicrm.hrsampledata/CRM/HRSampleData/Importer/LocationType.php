@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_LocationType
  *
  */
-class CRM_HRSampleData_Importer_LocationType extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_LocationType extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -13,7 +13,7 @@ class CRM_HRSampleData_Importer_LocationType extends CRM_HRSampleData_DataImport
    * @param array $row
    *   Should at least contain `name`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $locationTypeExists = $this->callAPI('LocationType', 'getcount', [
       'name' => $row['name'],
     ]);

@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_VacancyStage
  *
  */
-class CRM_HRSampleData_Importer_VacancyStage extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_VacancyStage extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_VacancyStage extends CRM_HRSampleData_DataImport
    * @param array $row
    *   Should at least contain `case_status_id` & `vacancy_id`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $row['vacancy_id'] = $this->getDataMapping('vacancy_mapping', $row['vacancy_id']);
 
     $row['case_status_id'] = $this->caseStatuses[$row['case_status_id']];

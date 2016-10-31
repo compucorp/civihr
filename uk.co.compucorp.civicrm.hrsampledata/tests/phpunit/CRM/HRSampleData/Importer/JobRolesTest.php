@@ -36,7 +36,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
     }
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testJobContract['id'],
       'Subject Head - Computer Basics',
@@ -61,7 +61,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
 
     $jobRole = $this->apiGet('HrJobRoles', ['job_contract_id' => $this->testJobContract['id']]);
 

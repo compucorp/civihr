@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_AbsencePeriod
  *
  */
-class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVHandler
 {
 
   public function __construct() {
@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_DataImpor
   /**
    * {@inheritdoc}
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $this->callAPI('HRAbsencePeriod', 'create', $row);
   }
 

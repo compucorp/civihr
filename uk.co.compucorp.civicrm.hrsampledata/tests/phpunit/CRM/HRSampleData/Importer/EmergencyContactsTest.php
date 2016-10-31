@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_B
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContact['id'],
       '070 8891 9127',
@@ -40,7 +40,7 @@ class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_B
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_EmergencyContacts', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_EmergencyContacts', $this->rows, $mapping);
 
     $emergencyContact = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

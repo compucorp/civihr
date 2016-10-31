@@ -22,7 +22,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
     CaseTypeFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       1,
       'test case',
@@ -38,7 +38,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
       ['contact_mapping', $this->testContact['id']]
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
 
     $case = $this->apiGet('Case', ['subject' => 'test case']);
 

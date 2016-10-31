@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporte
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       '235',
       'Individual',
@@ -45,7 +45,7 @@ class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporte
       0,
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_Contact', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_Contact', $this->rows);
 
     $contact = $this->apiGet('Contact', ['display_name' => 'Mr. Peter Agodi']);
 

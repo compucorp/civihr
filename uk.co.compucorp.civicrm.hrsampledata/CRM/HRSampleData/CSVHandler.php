@@ -1,6 +1,6 @@
 <?php
 
-abstract class CRM_HRSampleData_DataImporter
+abstract class CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -38,11 +38,15 @@ abstract class CRM_HRSampleData_DataImporter
   }
 
   /**
-   * Imports csv file into the database.
+   * Iterate through CSV file rows one by one
+   * and allows you to operate on them, So you can insert
+   * the row data to the database or remove the matching
+   * record from the database or anything else you want to
+   * do with the row data.
    *
    * @param SplFileObject $fileHandler
    */
-  public function import(SplFileObject $fileHandler) {
+  public function iterate(SplFileObject $fileHandler) {
     $header = null;
 
     while (!$fileHandler->eof()) {
@@ -54,19 +58,20 @@ abstract class CRM_HRSampleData_DataImporter
       }
 
       $row = array_combine($header, $row);
-      $this->insertRecord($row);
+      $this->operate($row);
     }
   }
 
   /**
-   * Inserts data from a row in the csv file
-   * into the database.
+   * Gives you the control to operate on
+   * a single CSV row data
+   *
    *
    * @param array $row
    *   Array of key=>value data to be inserted
    *
    */
-  protected abstract function insertRecord(array $row);
+  protected abstract function operate(array $row);
 
 
   /**
@@ -83,6 +88,24 @@ abstract class CRM_HRSampleData_DataImporter
    */
   protected function callAPI($entity, $action, $params) {
     return civicrm_api3($entity, $action, $params);
+  }
+
+  /**
+   * Deletes entity record from the database based on
+   * search criteria
+   *
+   * @param string $entity
+   * @param array $searchParams
+   */
+  protected function deleteRecord($entity, $searchParams) {
+    $searchParams['options'] = ['limit' => 0];
+
+    $entityResult = $this->callAPI($entity, 'get', $searchParams);
+
+    if (!empty($entityResult['id'])) {
+      $entityID = $entityResult['id'];
+      $this->callAPI($entity, 'delete', ['id' => $entityID]);
+    }
   }
 
   /**

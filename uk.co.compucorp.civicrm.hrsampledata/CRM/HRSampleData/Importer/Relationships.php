@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_Relationships
  *
  */
-class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -24,7 +24,7 @@ class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_DataImpor
    * @param array $row
    *   Should at least contain `contact_id_a`, `contact_id_b` & `relationship_type_id`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $row['contact_id_a'] = $this->getDataMapping('contact_mapping', $row['contact_id_a']);
     $row['contact_id_b'] = $this->getDataMapping('contact_mapping', $row['contact_id_b']);
 

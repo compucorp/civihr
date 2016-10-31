@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_OptionValue
  *
  */
-class CRM_HRSampleData_Importer_OptionValue extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_OptionValue extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -13,7 +13,7 @@ class CRM_HRSampleData_Importer_OptionValue extends CRM_HRSampleData_DataImporte
    * @param array $row
    *   Should at least contain `option_group_id` & `name`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $optionValueExists = $this->callAPI('OptionValue', 'getcount', [
       'option_group_id' => $row['option_group_id'],
       'name' => $row['name'],

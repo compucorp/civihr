@@ -4,13 +4,13 @@
  * Class CRM_HRSampleData_Importer_Activity
  *
  */
-class CRM_HRSampleData_Importer_Activity extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_Activity extends CRM_HRSampleData_CSVHandler
 {
 
   /**
    * {@inheritdoc}
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $currentID = $this->unsetArrayElement($row, 'id');
 
     if (!empty($row['source_record_id'])) {

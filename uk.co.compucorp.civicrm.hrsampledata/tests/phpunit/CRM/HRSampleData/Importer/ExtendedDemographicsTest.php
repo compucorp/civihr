@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_ExtendedDemographicsTest extends CRM_HRSampleDat
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContact['id'],
       1020,
@@ -34,7 +34,7 @@ class CRM_HRSampleData_Importer_ExtendedDemographicsTest extends CRM_HRSampleDat
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_ExtendedDemographics', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_ExtendedDemographics', $this->rows, $mapping);
 
     $extendedDemographic = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

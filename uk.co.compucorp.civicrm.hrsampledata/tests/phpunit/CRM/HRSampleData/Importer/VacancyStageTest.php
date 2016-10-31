@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseIm
     $this->vacancyID = VacancyFabricator::fabricate()['id'];
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'Open',
       $this->vacancyID,
@@ -31,7 +31,7 @@ class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseIm
       ['vacancy_mapping', $this->vacancyID],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_VacancyStage', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_VacancyStage', $this->rows, $mapping);
 
     $vacancyStage = $this->apiGet('HRVacancyStage', ['vacancy_id' => $this->vacancyID]);
 

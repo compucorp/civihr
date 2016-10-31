@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'E2',
       'Head of Department',
@@ -23,7 +23,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
       'Year'
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
 
     $payScale = $this->apiGet('HRPayScale', ['pay_scale' => 'E2']);
 

@@ -36,7 +36,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
     }
   }
 
-  public function testImport() {
+  public function testIterate() {
 
     $this->rows[] = [
       25,
@@ -90,7 +90,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
 
     $contract = $this->apiGet('HRJobContract', ['contact_id' => $this->testContact['id']]);
     $this->assertEquals($this->testContact['id'], $contract['contact_id']);

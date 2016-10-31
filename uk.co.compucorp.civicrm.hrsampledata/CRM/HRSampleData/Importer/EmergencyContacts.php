@@ -14,10 +14,10 @@ class CRM_HRSampleData_Importer_EmergencyContacts extends CRM_HRSampleData_Impor
   /**
    * {@inheritdoc}
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $row['entity_id'] = $this->getDataMapping('contact_mapping', $row['entity_id']);
 
-    parent::insertRecord($row);
+    parent::operate($row);
   }
 
 }

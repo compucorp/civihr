@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_JobRoles
  *
  */
-class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -27,7 +27,7 @@ class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_DataImporter
    * @param array $row
    *   Should at least contain `job_contract_id`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $row['job_contract_id'] = $this->getDataMapping('contracts_mapping', $row['job_contract_id']);
 
     if (!empty($row['funder'])) {

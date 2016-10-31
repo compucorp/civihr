@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     RelationshipTypeFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContactA['id'],
       $this->testContactB['id'],
@@ -40,7 +40,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
       ['contact_mapping', $this->testContactB['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
     $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
 

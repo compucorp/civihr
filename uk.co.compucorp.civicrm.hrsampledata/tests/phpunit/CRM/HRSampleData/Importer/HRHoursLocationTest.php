@@ -14,14 +14,14 @@ class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_Bas
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'Islington',
       38,
       'Week',
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
 
     $hoursLocation = $this->apiGet('HRHoursLocation', ['location' => 'Islington']);
 

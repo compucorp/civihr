@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_Contact
  *
  */
-class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -13,7 +13,7 @@ class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_DataImporter
    * @param array $row
    *   Should at least contain `id` & `contact_type`
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $currentID = $row['id'];
 
     // for "default organization" contact => id = 1 , keep the ID to update it instead of creating it twice

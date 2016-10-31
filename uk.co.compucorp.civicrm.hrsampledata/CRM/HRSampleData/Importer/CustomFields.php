@@ -4,7 +4,7 @@
  * Class CRM_HRSampleData_Importer_VacancyStage
  *
  */
-class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_DataImporter
+class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_CSVHandler
 {
 
   /**
@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_DataImport
    *
    * @param array $row
    */
-  protected function insertRecord(array $row) {
+  protected function operate(array $row) {
     $toInsert['entity_id'] = $row['entity_id'];
 
     foreach($row as $colName => $value) {

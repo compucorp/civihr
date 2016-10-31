@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
     OptionValueFabricator::fabricate(['option_group_id' => 'hrjc_location']);
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       2,
       25000,
@@ -33,7 +33,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
       '2016-09-30 00:00:00',
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_Vacancy', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_Vacancy', $this->rows);
 
     $vacancy = $this->apiGet('HRVacancy', ['position' => 'Junior Programme Coordinator']);
 

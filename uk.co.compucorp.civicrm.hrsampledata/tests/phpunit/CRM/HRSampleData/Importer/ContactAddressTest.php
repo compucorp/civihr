@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContact['id'],
       1,
@@ -37,7 +37,7 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
       ['contact_mapping', $this->testContact['id']]
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
 
     $address = $this->apiGet('Address', ['street_address' => '39 Elizabeth St,']);
 

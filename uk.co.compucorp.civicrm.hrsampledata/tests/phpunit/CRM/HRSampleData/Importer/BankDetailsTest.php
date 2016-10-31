@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       $this->testContact['id'],
       'Peter Agodi',
@@ -34,7 +34,7 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_BankDetails', $this->rows, $mapping);
+    $this->runIterator('CRM_HRSampleData_Importer_BankDetails', $this->rows, $mapping);
 
     $bankDetails = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

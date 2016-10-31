@@ -14,7 +14,7 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testImport() {
+  public function testIterate() {
     $this->rows[] = [
       'Compassionate_Leave',
       'Compassionate Leave',
@@ -23,7 +23,7 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
       1,
     ];
 
-    $this->runImporter('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
+    $this->runIterator('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
 
     $absenceType = $this->apiGet('HRAbsenceType', ['name' => 'Compassionate_Leave']);
 
