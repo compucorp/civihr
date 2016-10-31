@@ -105,6 +105,16 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
     $form->setDefaults($default);
   }
+
+  if ($formName == 'CRM_Admin_Form_Extensions') {
+    $extensionKey= CRM_Utils_Request::retrieve('key', 'String', $this);
+    if ($extensionKey == 'uk.co.compucorp.civicrm.hrsampledata') {
+      $title = ts("Be Careful");
+      $message = ts("Installing/Uninstalling this extension will remove all existing data, so make sure to create a backup first !");
+
+      CRM_Core_Session::setStatus($message, $title, 'no-popup crm-error', ['expires' => 0]);
+    }
+  }
 }
 
 /**
