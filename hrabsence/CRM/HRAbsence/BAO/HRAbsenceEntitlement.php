@@ -58,6 +58,27 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
   }
 
   /**
+   * Recalculates the Entitlements for all the contacts during the given
+   * absence period.
+   *
+   * @param int $periodId
+   */
+  public static function recalculateAbsenceEntitlementsForPeriod($periodId) {
+    $absencePeriod = AbsencePeriod::findById($periodId);
+    $periods = [
+      $periodId => [
+        'start' => $absencePeriod->start_date,
+        'end'   => $absencePeriod->end_date,
+      ]
+    ];
+
+    $contacts = self::getAllIndividuals();
+    foreach($contacts as $contact) {
+      self::overwriteContactEntitlementForPeriods($contact['id'], $periods);
+    }
+  }
+
+  /**
    * Recalculates HR Absence Entitlement values for given Contact.
    *
    * @param int $contactId
@@ -141,5 +162,27 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
       4 => [$amount, 'Float'],
     ];
     CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Returns all the non-deleted contacts where contact_type is
+   * 'Individual'
+   *
+   * @return array
+   */
+  private static function getAllIndividuals() {
+    $result = civicrm_api3('Contact', 'get', [
+      'sequential' => 1,
+      'contact_type' => 'Individual',
+      'options' => [
+        'limit' => 0
+      ]
+    ]);
+
+    if(!empty($result['is_error'])) {
+      return [];
+    }
+
+    return $result['values'];
   }
 }

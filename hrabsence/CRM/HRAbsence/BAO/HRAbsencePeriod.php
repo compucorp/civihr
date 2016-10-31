@@ -47,6 +47,8 @@ class CRM_HRAbsence_BAO_HRAbsencePeriod extends CRM_HRAbsence_DAO_HRAbsencePerio
 
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
+    CRM_HRAbsence_BAO_HRAbsenceEntitlement::recalculateAbsenceEntitlementsForPeriod($instance->id);
+
     return $instance;
   }
 
