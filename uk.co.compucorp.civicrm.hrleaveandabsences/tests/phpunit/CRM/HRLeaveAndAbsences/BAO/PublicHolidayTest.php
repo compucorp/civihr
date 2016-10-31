@@ -1,16 +1,16 @@
 <?php
 
-require_once __DIR__."/../BaseTest.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException as InvalidPublicHolidayException;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
@@ -35,16 +35,23 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
-   * @expectedExceptionMessage There is a Public Holiday already existing with given date
+   * @expectedExceptionMessage Another Public Holiday with the same date already exists
    */
   public function testPublicHolidayDateShouldBeUnique() {
+    // We're not allowed to create Public Holidays outside
+    // an Absence Period dates, so we need to have one on the database
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('now'),
+      'end_date' => CRM_Utils_Date::processDate('+1 day'),
+    ]);
+
     PublicHoliday::create([
       'title' => 'Public holiday 1',
-      'date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'date' => CRM_Utils_Date::processDate('now'),
     ]);
     PublicHoliday::create([
       'title' => 'Public holiday 2',
-      'date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'date' => CRM_Utils_Date::processDate('now'),
     ]);
   }
 
@@ -58,16 +65,148 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
     ]);
   }
 
-  public function testGetNumberOfPublicHolidaysForPeriod()
-  {
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-01-01')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-03-25')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-05-02')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-05-30')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-08-29')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-12-25')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-12-26')]);
-    $this->createBasicPublicHoliday(['date' => CRM_Utils_Date::processDate('2016-12-27')]);
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   * @expectedException The date cannot be in the past
+   */
+  public function testCannotBeCreatedWithADateInThePast() {
+    PublicHolidayFabricator::fabricate([
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+  }
+
+  public function testCannotChangeDateToOneInThePast() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+1 day')
+    ]);
+
+    try {
+      PublicHolidayFabricator::fabricate([
+        'id' => $publicHoliday->id,
+        'date' => CRM_Utils_Date::processDate('-1 day')
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('The date cannot be in the past', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
+  }
+
+  public function testCannotChangeTheDateOfAPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'date' => CRM_Utils_Date::processDate('+1 day')
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot change the date of a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was updated with to a date in the past');
+  }
+
+  public function testCanChangeTheTitleOfAPastPublicHoliday() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    PublicHoliday::create([
+      'id' => $publicHoliday->id,
+      'title' => 'Updated'
+    ]);
+  }
+
+  public function testCannotDisableAnEnabledPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'is_active' => false
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was disabled');
+  }
+
+  public function testCannotEnableADisabledPastPublicHoliday() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('2016-01-02'),
+      'is_active' => false,
+    ]);
+
+    try {
+      PublicHoliday::create([
+        'id' => $publicHoliday->id,
+        'is_active' => true
+      ]);
+    } catch(Exception $e) {
+      $this->assertInstanceOf(InvalidPublicHolidayException::class, $e);
+      $this->assertEquals('You cannot disable/enable a past public holiday', $e->getMessage());
+      return;
+    }
+
+    $this->fail('Expected an exception, but the public holiday was disabled');
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   * @expectedExceptionMessage The date cannot be outside the existing absence periods
+   */
+  public function testCannotCreateAPublicHolidayForADateNotOverlappingAnyAbsencePeriod() {
+    PublicHoliday::create([
+      'title' => 'Holiday',
+      'date' => CRM_Utils_Date::processDate('+1 day')
+    ]);
+  }
+
+  public function testGetNumberOfPublicHolidaysForPeriod() {
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-03-25')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-05-02')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-05-30')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-08-29')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-12-25')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-12-26')
+    ]);
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-12-27')
+    ]);
 
     $this->assertEquals(
       8,
@@ -102,14 +241,14 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   public function testGetNumberOfPublicHolidaysDoesntCountNonActiveHolidays()
   {
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-02-01')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date'      => CRM_Utils_Date::processDate('2016-07-25'),
       'is_active' => FALSE
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-04-02')
     ]);
 
@@ -121,16 +260,16 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   public function testGetNumberOfPublicHolidaysCanExcludeWeekendsFromCount()
   {
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-02-01')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-06-04') // Saturday
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-04-13')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-05-15') // Sunday
     ]);
 
@@ -142,30 +281,29 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   public function testGetNumberOfPublicHolidaysForCurrentPeriod()
   {
-    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
-      'title' => 'Current Period',
-      'start_date' => date('YmdHis', strtotime('first day of January')),
-      'end_date' => date('YmdHis', strtotime('last day of December')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of January'),
+      'end_date' => CRM_Utils_Date::processDate('last day of December'),
     ]);
 
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('2015-01-01'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2015-01-01')
     ]);
 
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('first monday of January'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('first monday of January')
     ]);
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('first tuesday of February'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('first tuesday of February')
     ]);
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('last thursday of May'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('last thursday of May')
     ]);
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('last monday of May'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('last monday of May')
     ]);
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('last friday of December'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('last friday of December')
     ]);
 
     $this->assertEquals(
@@ -176,17 +314,16 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
 
   public function testGetNumberOfPublicHolidaysForCurrentPeriodCanExcludeWeekendsFromCount()
   {
-    CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::create([
-      'title' => 'Current Period',
-      'start_date' => date('YmdHis', strtotime('first day of January')),
-      'end_date' => date('YmdHis', strtotime('last day of December')),
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of January'),
+      'end_date' => CRM_Utils_Date::processDate('last day of December'),
     ]);
 
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('first monday of January'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('first monday of January')
     ]);
-    $this->createBasicPublicHoliday([
-      'date' => date('YmdHis', strtotime('first sunday of February'))
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('first sunday of February')
     ]);
 
     $excludeWeekends = true;
@@ -197,19 +334,19 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
   }
 
   public function testGetPublicHolidaysForPeriod() {
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-03-25')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 3',
       'date' => CRM_Utils_Date::processDate('2016-12-26')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 4',
       'date' => CRM_Utils_Date::processDate('2016-12-27')
     ]);
@@ -236,16 +373,16 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
   }
 
   public function testGetPublicHolidaysForPeriodShouldOnlyReturnActivePublicHolidays() {
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01'),
       'is_active' => false,
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-01-02')
     ]);
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 3',
       'date' => CRM_Utils_Date::processDate('2016-01-03')
     ]);
@@ -257,17 +394,17 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
   }
 
   public function testGetPublicHolidaysForPeriodCanExcludeWeekends() {
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 1',
       'date' => CRM_Utils_Date::processDate('2016-01-01'),
     ]);
     // 2016-01-02 is a Saturday
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 2',
       'date' => CRM_Utils_Date::processDate('2016-01-02')
     ]);
     // 2016-01-02 is a Sunday
-    $this->createBasicPublicHoliday([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'title' => 'Holiday 3',
       'date' => CRM_Utils_Date::processDate('2016-01-03')
     ]);
@@ -276,17 +413,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseTest {
     $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-01-31', $excludeWeekends);
     $this->assertCount(1, $publicHolidays);
     $this->assertEquals('Holiday 1', $publicHolidays[0]->title);
-  }
-
-  private function createBasicPublicHoliday($params)
-  {
-    $basicRequiredFields = [
-      'title' => 'Type ' . microtime(),
-      'date' => CRM_Utils_Date::processDate(date('Y-m-d')),
-    ];
-
-    $params = array_merge($basicRequiredFields, $params);
-    return PublicHoliday::create($params);
   }
 
 }

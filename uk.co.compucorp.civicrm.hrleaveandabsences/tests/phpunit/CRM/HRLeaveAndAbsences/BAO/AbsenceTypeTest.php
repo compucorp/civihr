@@ -1,15 +1,11 @@
 <?php
 
-require_once __DIR__."/../BaseTest.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
-
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   private $allColors = [
       '#5A6779', '#E5807F', '#ECA67F', '#8EC68A', '#C096AA', '#9579A8', '#42B0CB',

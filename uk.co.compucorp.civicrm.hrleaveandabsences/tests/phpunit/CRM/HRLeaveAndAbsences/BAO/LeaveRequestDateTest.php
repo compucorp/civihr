@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__."/../BaseTest.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 /**
@@ -10,7 +7,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_LeaveRequestDateTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_BAO_LeaveRequestDateTest extends BaseHeadlessTest {
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,

@@ -4,6 +4,11 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
+require_once 'BaseHeadlessTest.php';
+require_once 'helpers/ContractHelpersTrait.php';
+require_once 'helpers/LeaveBalanceChangeHelpersTrait.php';
+require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
+
 /**
  * Call the "cv" command.
  *

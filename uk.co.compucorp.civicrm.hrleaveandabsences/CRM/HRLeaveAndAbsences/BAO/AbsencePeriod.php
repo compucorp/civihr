@@ -1,6 +1,9 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Validator_Date as DateValidator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException as InvalidAbsencePeriodException;
 
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DAO_AbsencePeriod {
 
@@ -59,7 +62,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     self::validateDates($params);
 
     if(self::overlapsWithAnotherPeriod($params)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
+      throw new InvalidAbsencePeriodException(
         'This Absence Period overlaps with another existing Period'
       );
     }
@@ -77,15 +80,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    */
   private static function validateDates($params) {
     if(empty($params['start_date']) || empty($params['end_date'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
+      throw new InvalidAbsencePeriodException(
         'Both the start and end dates are required'
       );
     }
 
-    $startDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['start_date']);
-    $endDateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['end_date']);
+    $startDateIsValid = DateValidator::isValid($params['start_date']);
+    $endDateIsValid = DateValidator::isValid($params['end_date']);
     if(!$startDateIsValid || !$endDateIsValid) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
+      throw new InvalidAbsencePeriodException(
         'Both the start and end dates should be valid'
       );
     }
@@ -93,7 +96,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     $startDate = strtotime($params['start_date']);
     $endDate = strtotime($params['end_date']);
     if($startDate >= $endDate) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException(
+      throw new InvalidAbsencePeriodException(
         'Start Date should be less than End Date'
       );
     }
@@ -275,6 +278,28 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
+   * Returns the AbsencePeriod which overlaps the given date. If not period
+   * overlaps it, then null is returned
+   *
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  public static function getPeriodOverlappingDate(DateTime $date) {
+    $overlappingDate = $date->format('Y-m-d');
+
+    $period = new self();
+    $period->whereAdd("start_date <= '{$overlappingDate}'");
+    $period->whereAdd("end_date >= '{$overlappingDate}'");
+    $period->limit(1);
+    if($period->find(true)) {
+      return $period;
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the number of working days for this Absence Period.
    *
    * The number is given by "number of ways in period" - "weekends" - "public holidays".
@@ -285,11 +310,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    */
   public function getNumberOfWorkingDays() {
     if(!$this->numberOfWorkingDays) {
-      if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d')) {
+      if(!DateValidator::isValid($this->start_date, 'Y-m-d')) {
         throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid start date');
       }
 
-      if(!CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d')) {
+      if(!DateValidator::isValid($this->end_date, 'Y-m-d')) {
         throw new UnexpectedValueException('You can only get the number of working days for an AbsencePeriod with a valid end date');
       }
 
@@ -311,7 +336,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
         }
       }
 
-      $numberOfPublicHolidays = CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+      $numberOfPublicHolidays = PublicHoliday::getNumberOfPublicHolidaysForPeriod(
         $this->start_date,
         $this->end_date,
         true
@@ -341,11 +366,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * @return int
    */
   public function getNumberOfWorkingDaysToWork($startDate, $endDate) {
-    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($startDate, 'Y-m-d')) {
+    if (!DateValidator::isValid($startDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid startDate in Y-m-d format');
     }
 
-    if (!CRM_HRLeaveAndAbsences_Validator_Date::isValid($endDate, 'Y-m-d')) {
+    if (!DateValidator::isValid($endDate, 'Y-m-d')) {
       throw new InvalidArgumentException('getNumberOfWorkingDaysToWork expects a valid endDate in Y-m-d format');
     }
 
@@ -473,8 +498,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * @return bool
    */
   private function hasValidDates() {
-    return CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->start_date, 'Y-m-d') &&
-           CRM_HRLeaveAndAbsences_Validator_Date::isValid($this->end_date, 'Y-m-d');
+    return DateValidator::isValid($this->start_date, 'Y-m-d') &&
+           DateValidator::isValid($this->end_date, 'Y-m-d');
   }
 
   /**

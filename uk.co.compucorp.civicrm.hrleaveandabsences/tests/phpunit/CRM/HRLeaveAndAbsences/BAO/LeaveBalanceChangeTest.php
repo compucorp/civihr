@@ -1,10 +1,5 @@
 <?php
 
-require_once __DIR__."/../BaseTest.php";
-require_once __DIR__."/../LeaveBalanceChangeHelpersTrait.php";
-require_once __DIR__."/../LeavePeriodEntitlementHelpersTrait.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
@@ -14,7 +9,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;

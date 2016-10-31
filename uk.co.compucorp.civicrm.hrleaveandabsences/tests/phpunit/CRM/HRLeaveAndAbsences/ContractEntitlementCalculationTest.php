@@ -1,8 +1,5 @@
 <?php
-require_once __DIR__."/ContractHelpersTrait.php";
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_ContractEntitlementCalculation as ContractEntitlementCalculation;
@@ -14,19 +11,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
+class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-                     ->installMe(__DIR__)
-                     ->install('org.civicrm.hrjobcontract')
-                     ->apply();
-    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $jobContractUpgrader->install();
-  }
 
   public function setUp() {
     $this->createContract();
@@ -79,7 +66,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $this->createJobLeaveEntitlement($type, 20, true);
 
     // This is between the contract dates, but will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-05-18'))
     ]);
 
@@ -150,7 +137,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
     //Is between contract dates but will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-11'))
     ]);
 
@@ -168,12 +155,12 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
     //Before the start date. Will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-09'))
     ]);
 
     //After the end date. Will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-09-24'))
     ]);
 
@@ -190,11 +177,11 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $allowPublicHolidays = true;
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-14'))
     ]);
 
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-08-23'))
     ]);
 
@@ -218,7 +205,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
     //Is between contract dates but will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-11'))
     ]);
 
@@ -236,12 +223,12 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
     //Before the start date. Will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-09'))
     ]);
 
     //After the end date. Will not be included
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-09-24'))
     ]);
 
@@ -258,11 +245,11 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
     $allowPublicHolidays = true;
     $this->createJobLeaveEntitlement($type, 17, $allowPublicHolidays);
 
-    $publicHoliday1 = PublicHolidayFabricator::fabricate([
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-03-14'))
     ]);
 
-    $publicHoliday2 = PublicHolidayFabricator::fabricate([
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-08-23'))
     ]);
 
@@ -297,7 +284,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends PHPUnit_
 
     $this->createJobLeaveEntitlement($type, 20, true);
 
-    PublicHolidayFabricator::fabricate([
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('2016-05-18'))
     ]);
 

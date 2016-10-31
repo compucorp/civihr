@@ -1,5 +1,8 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException as InvalidPublicHolidayException;
+
 class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DAO_PublicHoliday {
 
   /**
@@ -9,14 +12,13 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return CRM_HRLeaveAndAbsences_DAO_PublicHoliday|NULL
    **/
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday';
     $entityName = 'PublicHoliday';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     self::validateParams($params);
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new $className();
+    $instance = new self();
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
     $instance->save();
@@ -45,7 +47,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return array|NULL
    */
   public static function getValuesArray($id) {
-    $result = civicrm_api3('PublicHoliday', 'get', array('id' => $id));
+    $result = civicrm_api3('PublicHoliday', 'get', ['id' => $id]);
     return !empty($result['values'][$id]) ? $result['values'][$id] : null;
   }
 
@@ -58,37 +60,51 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    */
   private static function validateParams($params) {
     if(empty($params['title']) && empty($params['id'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
-        'Title value is required'
-      );
+      throw new InvalidPublicHolidayException('Title value is required');
     }
     self::validateDate($params);
     self::checkIfDateIsUnique($params);
+    self::validateIsActive($params);
+    self::checkIfDateOverlapsAnAbsencePeriod($params);
   }
 
   /**
    * If there is no date specified but id exists then we skip the date validation.
-   * Otherwise a date cannot be empty and must be a real date.
+   * Otherwise a date:
+   * - cannot be empty
+   * - must be a real date
+   * - cannot be in the past
    *
    * @param array $params
+   *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   *
    * @return bool
    */
   private static function validateDate($params) {
-    // Skip date validation if we are editing an exsisting record and no new date is specified.
+    // Skip date validation if we are editing an existing record and no new date is specified.
     if (!isset($params['date']) && !empty($params['id'])) {
       return true;
     }
+
     if (empty($params['date'])) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
-        'Date value is required'
-      );
+      throw new InvalidPublicHolidayException('Date value is required');
     }
+
     $dateIsValid = CRM_HRLeaveAndAbsences_Validator_Date::isValid($params['date']);
     if(!$dateIsValid) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
-        'Date value should be valid'
-      );
+      throw new InvalidPublicHolidayException('Date value should be valid');
+    }
+
+    $oldDate = self::getOldDate($params);
+    if(strtotime($oldDate) != strtotime($params['date'])) {
+      if(self::dateIsInThePast($oldDate)) {
+        throw new InvalidPublicHolidayException('You cannot change the date of a past public holiday');
+      }
+
+      if(self::dateIsInThePast($params['date'])) {
+        throw new InvalidPublicHolidayException('The date cannot be in the past');
+      }
     }
   }
 
@@ -96,25 +112,48 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Check if there is no Public Holiday already existing with provided date.
    *
    * @param array $params
+   *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
    */
   private static function checkIfDateIsUnique($params) {
-    // Skip date validation if we are editing an exsisting record and no new date is specified.
+    // Skip date validation if we are editing an existing record and no new date is specified.
     if (!isset($params['date']) && !empty($params['id'])) {
-      return true;
+      return;
     }
     // Check for Public Holiday already existing with given date.
-    $duplicateDateParams = array(
+    $duplicateDateParams = [
       'date' => $params['date'],
-    );
+    ];
     if (!empty($params['id'])) {
-      $duplicateDateParams['id'] = array('!=' => $params['id']);
+      $duplicateDateParams['id'] = ['!=' => $params['id']];
     }
     $duplicateDate = civicrm_api3('PublicHoliday', 'getcount', $duplicateDateParams);
     if ($duplicateDate) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException(
-        'There is a Public Holiday already existing with given date'
-      );
+      throw new InvalidPublicHolidayException('Another Public Holiday with the same date already exists');
+    }
+  }
+
+  /**
+   * Runs validation for the "Is Active" field. Basically, you cannot change its
+   * value for a past public holiday
+   *
+   * @param array $params
+   *   The params array passed to the create() method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException
+   */
+  private static function validateIsActive($params) {
+    if(empty($params['id'])) {
+      return;
+    }
+
+    $publicHoliday = self::findById($params['id']);
+
+    $isActiveChanged = array_key_exists('is_active', $params) &&
+                       boolval($publicHoliday->is_active) != boolval($params['is_active']);
+
+    if($isActiveChanged && self::dateIsInThePast($publicHoliday->date)) {
+      throw new InvalidPublicHolidayException('You cannot disable/enable a past public holiday');
     }
   }
 
@@ -162,7 +201,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return int
    */
   public static function getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends = false) {
-    $currentPeriod = CRM_HRLeaveAndAbsences_BAO_AbsencePeriod::getCurrentPeriod();
+    $currentPeriod = AbsencePeriod::getCurrentPeriod();
 
     if(!$currentPeriod) {
       return 0;
@@ -222,5 +261,56 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     }
 
     return $publicHolidays;
+  }
+
+  /**
+   * Returns if the given $date is in the past. That is, the date is less than
+   * today at 00:00:00
+   *
+   * @param string $date
+   *  A date string in any format supported by strtotime
+   *
+   * @return bool
+   */
+  private static function dateIsInThePast($date) {
+    if(!$date) {
+      return false;
+    }
+    $timestampToday = strtotime(date('Y-m-d 00:00:00'));
+
+    return strtotime($date) < $timestampToday;
+  }
+
+  /**
+   * Returns the old value for the date field of the Public Holiday being
+   * updated.
+   *
+   * @param array $params
+   *  The params array passed to the create() method
+   *
+   * @return string|null
+   */
+  private static function getOldDate($params) {
+    if(empty($params['id'])) {
+      return null;
+    }
+
+    $publicHoliday = self::findById($params['id']);
+
+    return $publicHoliday->date;
+  }
+
+  private static function checkIfDateOverlapsAnAbsencePeriod($params) {
+    if(!array_key_exists('date', $params)) {
+      $date = self::getOldDate($params);
+    } else {
+      $date = $params['date'];
+    }
+
+    $period = AbsencePeriod::getPeriodOverlappingDate(new DateTime($date));
+
+    if(is_null($period)) {
+      throw new InvalidPublicHolidayException('The date cannot be outside the existing absence periods');
+    }
   }
 }

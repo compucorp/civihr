@@ -1,8 +1,5 @@
 <?php
 
-require_once __DIR__."/../BaseTest.php";
-
-use CRM_HRLeaveAndAbsences_BaseTest as BaseTest;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
@@ -12,7 +9,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends BaseTest {
+class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends BaseHeadlessTest {
   protected $workPattern = null;
 
   public function setUp() {
