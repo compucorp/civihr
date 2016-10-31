@@ -564,3 +564,17 @@ function getContractTypeOptions() {
 
   return $valueLabelMap;
 }
+
+/**
+ * Implementation of hook_civicrm_pre hook.
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param int $objectId
+ * @param object $objectRef
+ */
+function hrjobcontract_civicrm_pre($op, $objectName, $objectId, &$objectRef) {
+  if ($objectName === 'Individual' && $op === 'delete') {
+    CRM_Hrjobcontract_BAO_HRJobContract::deleteAllContractsPermanently($objectId);
+  }
+}

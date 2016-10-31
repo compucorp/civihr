@@ -689,12 +689,20 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @param CRM_Hrjobcontract_BAO_HRJobContractRevision $revision
    */
   protected static function deleteRevisionPermanently(CRM_Hrjobcontract_BAO_HRJobContractRevision $revision) {
-    $entityNames = array('HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole');
 
-    foreach ($entityNames as $entityName)
+    $entityNames = array(
+      'HRJobDetails' => 'details',
+      'HRJobHealth' => 'health',
+      'HRJobHour' => 'hour',
+      'HRJobLeave' => 'leave',
+      'HRJobPay' => 'pay',
+      'HRJobPension' => 'pension',
+      'HRJobRole' => 'role',
+    );
+
+    foreach ($entityNames as $entityName => $prefix)
     {
-      $tableName = _civicrm_get_table_name($entityName);
-      self::deleteEntityRevisionPermanently('CRM_Hrjobcontract_BAO_' . $entityName, $revision->{$tableName . '_revision_id'});
+      self::deleteEntityRevisionPermanently('CRM_Hrjobcontract_BAO_' . $entityName, $revision->{$prefix . '_revision_id'});
     }
 
     $deleteRevision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
