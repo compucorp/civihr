@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return array|NULL
    */
   public static function getValuesArray($id) {
-    $result = civicrm_api3('PublicHoliday', 'get', array('id' => $id));
+    $result = civicrm_api3('PublicHoliday', 'get', ['id' => $id]);
     return !empty($result['values'][$id]) ? $result['values'][$id] : null;
   }
 
@@ -121,11 +121,11 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
       return;
     }
     // Check for Public Holiday already existing with given date.
-    $duplicateDateParams = array(
+    $duplicateDateParams = [
       'date' => $params['date'],
-    );
+    ];
     if (!empty($params['id'])) {
-      $duplicateDateParams['id'] = array('!=' => $params['id']);
+      $duplicateDateParams['id'] = ['!=' => $params['id']];
     }
     $duplicateDate = civicrm_api3('PublicHoliday', 'getcount', $duplicateDateParams);
     if ($duplicateDate) {
