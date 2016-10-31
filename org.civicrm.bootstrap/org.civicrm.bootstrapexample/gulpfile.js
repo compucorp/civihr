@@ -12,7 +12,10 @@ var bootstrapNamespace = '#bootstrap-theme';
 gulp.task('sass', function () {
   gulp.src('scss/*.scss')
     .pipe(bulk())
-    .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+    .pipe(sass({
+      outputStyle: 'compressed',
+      precision: 10
+    }).on('error', sass.logError))
     .pipe(stripCssComments({ preserve: false }))
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
