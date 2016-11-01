@@ -1,76 +1,94 @@
-<input type="text" class="form-control" placeholder="Text input">
-<input class="form-control" id="disabledInput" type="text" placeholder="Disabled input here..." disabled>
-<input class="form-control input-lg" type="text" placeholder=".input-lg">
-<input class="form-control" type="text" placeholder="Default input">
-<input class="form-control input-sm" type="text" placeholder=".input-sm">
 <div class="row">
-  <div class="col-xs-2">
-    <input type="text" class="form-control" placeholder=".col-xs-2">
+  <div class="col-sm-6">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="text-field-regular" class="col-sm-4 control-label">Text Field - Regular</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="text-field-regular" placeholder="Add your text here">
+        </div>
+      </div>
+      <div class="form-group form-group-lg">
+        <label for="text-field-large" class="col-sm-4 control-label">Text Field - Large</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="text-field-large" placeholder="Add your text here">
+        </div>
+      </div>
+      <div class="form-group form-group-sm">
+        <label for="text-field-small" class="col-sm-4 control-label">Text Field - Small</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="text-field-small" placeholder="Add your text here">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="disabled-field" class="col-sm-4 control-label">Disabled field</label>
+        <div class="col-sm-7">
+          <input type="text" class="form-control" id="disabled-field" value="Lorem Ipsum" disabled>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="text-field-with-icon" class="col-sm-4 control-label">Text Field w/ Icon</label>
+        <div class="col-sm-7">
+          <div class="input-group">
+            <input type="text" class="form-control" id="text-field-with-icon">
+            <span class="input-group-addon">
+              <i class="fa fa-plus"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="text-field-with-button" class="col-sm-4 control-label">Text Field w/ Button</label>
+        <div class="col-sm-7">
+          <div class="input-group">
+            <input type="text" class="form-control" id="text-field-with-button" placeholder="Add your text here">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">Button</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="text-field-with-dropdown" class="col-sm-4 control-label">Text Field Dropdown</label>
+        <div class="col-sm-7">
+          <div class="input-group">
+            <input type="text" class="form-control" id="text-field-with-dropdown" placeholder="Add your text here">
+            <span class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Action <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+              </ul>
+            </span>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
-  <div class="col-xs-3">
-    <input type="text" class="form-control" placeholder=".col-xs-3">
+  <div class="col-sm-6">
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="text-box" class="col-sm-4 control-label">Text Box</label>
+        <div class="col-sm-7">
+          <textarea type="textarea" class="form-control" id="text-box" placeholder="Add your text here" rows="5"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="checkbox" class="col-sm-4 control-label">Checkbox</label>
+        <div class="col-sm-7">
+          <input type="checkbox" id="checkbox">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-4 control-label">Radio buttons</label>
+        <div class="col-sm-7">
+          <input type="radio" name="radio-button" value="1" checked>&nbsp;
+          <input type="radio" name="radio-button" value="2">&nbsp;
+          <input type="radio" name="radio-button" value="3">
+        </div>
+      </div>
+    </form>
   </div>
-  <div class="col-xs-4">
-    <input type="text" class="form-control" placeholder=".col-xs-4">
-  </div>
 </div>
-<div class="form-group has-success has-feedback">
-  <label class="control-label" for="inputSuccess2">Input with success</label>
-  <input type="text" class="form-control" id="inputSuccess2">
-  <span class="glyphicon glyphicon-ok form-control-feedback"></span>
-</div>
-<div class="form-group has-warning has-feedback">
-  <label class="control-label" for="inputWarning2">Input with warning</label>
-  <input type="text" class="form-control" id="inputWarning2">
-  <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
-</div>
-<div class="form-group has-error has-feedback">
-  <label class="control-label" for="inputError2">Input with error</label>
-  <input type="text" class="form-control" id="inputError2">
-  <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-</div>
-<textarea class="form-control" rows="3"></textarea>
-<div class="checkbox">
-  <label>
-    <input type="checkbox" value="">
-    Option one is this and that&mdash;be sure to include why it's great
-  </label>
-</div>
-
-<div class="radio">
-  <label>
-    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
-    Option one is this and that&mdash;be sure to include why it's great
-  </label>
-</div>
-<div class="radio">
-  <label>
-    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
-    Option two can be something else and selecting it will deselect option one
-  </label>
-</div>
-<h3>Inline checkboxes</h3>
-<label class="checkbox-inline">
-  <input type="checkbox" id="inlineCheckbox1" value="option1"> 1
-</label>
-<label class="checkbox-inline">
-  <input type="checkbox" id="inlineCheckbox2" value="option2"> 2
-</label>
-<label class="checkbox-inline">
-  <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
-</label>
-<select class="form-control">
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-</select>
-
-<select multiple class="form-control">
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-</select>
