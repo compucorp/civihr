@@ -172,13 +172,17 @@ class CRM_Export_BAO_Export {
    *   Group By Clause
    */
   public static function getGroupBy($exportMode, $queryMode, $returnProperties, $query) {
-    if (!empty($returnProperties['tags']) || !empty($returnProperties['groups']) ||
+    // @custom HRJobContract extension override by PCHR-1409.
+    // We don't want to group Contacts by their ID as it doesn't allow
+    // to export Job Contracts and their revisions. So the block below
+    // is commented out.
+    /*if (!empty($returnProperties['tags']) || !empty($returnProperties['groups']) ||
       CRM_Utils_Array::value('notes', $returnProperties) ||
       // CRM-9552
       ($queryMode & CRM_Contact_BAO_Query::MODE_CONTACTS && $query->_useGroupBy)
     ) {
       $groupBy = " GROUP BY contact_a.id";
-    }
+    }*/
 
     switch ($exportMode) {
       case CRM_Export_Form_Select::CONTRIBUTE_EXPORT:
