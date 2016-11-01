@@ -9,7 +9,7 @@ use CRM_HRRecruitment_Test_Fabricator_HRVacancy as VacancyFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_VacancyValueTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $vacancyID;
 
@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseIm
     $this->vacancyID = VacancyFabricator::fabricate()['id'];
   }
 
-  public function testIterate() {
+  public function testProcess() {
     CaseTypeFabricator::fabricate();
     $caseID = CaseFabricator::fabricate()['id'];
 
@@ -34,7 +34,7 @@ class CRM_HRSampleData_Importer_VacancyValueTest extends CRM_HRSampleData_BaseIm
       ['vacancy_mapping', $this->vacancyID],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_VacancyValue', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_VacancyValue', $this->rows, $mapping);
 
     $vacancyValue = $this->apiGet('CustomValue', ['entity_id' => $caseID, 'entity_table' => 'Case']);
 

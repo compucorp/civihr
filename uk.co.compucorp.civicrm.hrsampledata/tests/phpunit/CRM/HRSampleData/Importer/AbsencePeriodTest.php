@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_AbsencePeriodTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       '2016',
       '2016 (Jan 1 to Dec 31)',
@@ -20,7 +20,7 @@ class CRM_HRSampleData_Importer_AbsencePeriodTest extends CRM_HRSampleData_BaseI
       '2017-01-01 01:59:59',
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_AbsencePeriod', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_AbsencePeriod', $this->rows);
 
     $absencePeriod = $this->apiGet('HRAbsencePeriod', ['name' => '2016']);
 

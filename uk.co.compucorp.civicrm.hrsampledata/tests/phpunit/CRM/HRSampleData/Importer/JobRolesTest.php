@@ -9,7 +9,7 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -36,7 +36,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
     }
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testJobContract['id'],
       'Subject Head - Computer Basics',
@@ -61,7 +61,7 @@ class CRM_HRSampleData_Importer_JobRolesTest extends CRM_HRSampleData_BaseImport
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_JobRoles', $this->rows, $mapping);
 
     $jobRole = $this->apiGet('HrJobRoles', ['job_contract_id' => $this->testJobContract['id']]);
 

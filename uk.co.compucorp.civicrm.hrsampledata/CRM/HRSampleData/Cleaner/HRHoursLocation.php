@@ -3,13 +3,13 @@
 /**
  * Class CRM_HRSampleData_Cleaner_HRHoursLocation
  */
-class CRM_HRSampleData_Cleaner_HRHoursLocation extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Cleaner_HRHoursLocation extends CRM_HRSampleData_CSVCleanerVisitor
 {
 
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
     $this->deleteRecord('HRHoursLocation', ['location' => $row['location']]);
   }
 

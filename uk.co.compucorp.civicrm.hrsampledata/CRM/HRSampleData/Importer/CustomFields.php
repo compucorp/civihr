@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Importer_VacancyStage
  */
-class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_CSVImporterVisitor
 {
 
   /**
@@ -21,11 +21,18 @@ class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_CSVHandler
 
   /**
    * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
+   * {@inheritdoc}
    * Generic method to handle custom fields import
    *
    * @param array $row
    */
-  protected function operate(array $row) {
+  protected function importRecord(array $row) {
     $toInsert['entity_id'] = $row['entity_id'];
 
     foreach($row as $colName => $value) {

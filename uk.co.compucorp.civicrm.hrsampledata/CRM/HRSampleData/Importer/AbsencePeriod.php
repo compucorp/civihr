@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Importer_AbsencePeriod
  */
-class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVImporterVisitor
 {
 
   public function __construct() {
@@ -13,7 +13,14 @@ class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVHandle
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function importRecord(array $row) {
     $this->callAPI('HRAbsencePeriod', 'create', $row);
   }
 

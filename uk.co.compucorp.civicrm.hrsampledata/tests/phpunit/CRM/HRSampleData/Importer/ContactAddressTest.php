@@ -1,24 +1,29 @@
 <?php
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRCore_Test_Fabricator_LocationType as LocationTypeFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_ContactAddressTest
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_ContactAddressTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
+
+  private $testLocationType;
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
 
     $this->testContact = ContactFabricator::fabricate();
+
+    $this->testLocationType = LocationTypeFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testContact['id'],
       1,
@@ -28,14 +33,14 @@ class CRM_HRSampleData_Importer_ContactAddressTest extends CRM_HRSampleData_Base
       'London',
       'SW1W 9RP',
       '',
-      'Main',
+      $this->testLocationType['name'],
     ];
 
     $mapping = [
       ['contact_mapping', $this->testContact['id']]
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_ContactAddress', $this->rows, $mapping);
 
     $address = $this->apiGet('Address', ['street_address' => '39 Elizabeth St,']);
 

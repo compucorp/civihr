@@ -4,7 +4,7 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=classloader', 'phpcode'));
 
-require_once 'CRM/HRSampleData/BaseImporterTest.php';
+require_once 'CRM/HRSampleData/BaseCSVProcessorTest.php';
 
 /**
  * Call the "cv" command.

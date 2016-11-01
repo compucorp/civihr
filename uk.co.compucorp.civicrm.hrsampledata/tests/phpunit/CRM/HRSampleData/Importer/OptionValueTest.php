@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_OptionValueTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'activity_type',
       'Compassionate_Leave',
@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_OptionValueTest extends CRM_HRSampleData_BaseImp
       ''
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_OptionValue', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_OptionValue', $this->rows);
 
     $optionValue = $this->apiGet(
       'OptionValue',

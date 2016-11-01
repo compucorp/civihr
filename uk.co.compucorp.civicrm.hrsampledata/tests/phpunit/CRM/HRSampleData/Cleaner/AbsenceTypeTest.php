@@ -7,29 +7,29 @@ use CRM_HRAbsence_Test_Fabricator_HRAbsenceType as AbsenceTypeFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Cleaner_AbsenceTypeTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Cleaner_AbsenceTypeTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $absenceType = AbsenceTypeFabricator::fabricate();
-    $testAbsenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType['name']]);
-    $this->assertEquals($absenceType['name'], $testAbsenceType['name']);
+    $testAbsenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType->name]);
+    $this->assertEquals($absenceType->name, $testAbsenceType['name']);
 
     $this->rows[] = [
-      $absenceType['name'],
-      $absenceType['name'],
+      $absenceType->name,
+      $absenceType->name,
       1,
       0,
       1,
     ];
 
-    $this->runIterator('CRM_HRSampleData_Cleaner_AbsenceType', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Cleaner_AbsenceType', $this->rows);
 
-    $absenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType['name']]);
+    $absenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType->name]);
     $this->assertEmpty($absenceType);
   }
 

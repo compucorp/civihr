@@ -8,7 +8,7 @@ use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_RelationshipsTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContactA;
 
@@ -26,7 +26,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
     $this->relationshipType = RelationshipTypeFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testContactA['id'],
       $this->testContactB['id'],
@@ -40,7 +40,7 @@ class CRM_HRSampleData_Importer_RelationshipsTest extends CRM_HRSampleData_BaseI
       ['contact_mapping', $this->testContactB['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_Relationships', $this->rows, $mapping);
 
     $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
 

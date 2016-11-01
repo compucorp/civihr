@@ -3,13 +3,13 @@
 /**
  * Class CRM_HRSampleData_Cleaner_AbsenceType
  */
-class CRM_HRSampleData_Cleaner_AbsenceType extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Cleaner_AbsenceType extends CRM_HRSampleData_CSVCleanerVisitor
 {
 
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
     $this->deleteRecord('HRAbsenceType', ['name' => $row['name']]);
   }
 

@@ -7,7 +7,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_BankDetailsTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testContact['id'],
       'Peter Agodi',
@@ -32,7 +32,7 @@ class CRM_HRSampleData_Importer_BankDetailsTest extends CRM_HRSampleData_BaseImp
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_BankDetails', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_BankDetails', $this->rows, $mapping);
 
     $bankDetails = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

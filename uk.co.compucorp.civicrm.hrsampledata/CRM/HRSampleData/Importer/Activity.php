@@ -3,13 +3,20 @@
 /**
  * Class CRM_HRSampleData_Importer_Activity
  */
-class CRM_HRSampleData_Importer_Activity extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_Activity extends CRM_HRSampleData_CSVImporterVisitor
 {
 
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function importRecord(array $row) {
     $currentID = $this->unsetArrayElement($row, 'id');
 
     if (!empty($row['source_record_id'])) {

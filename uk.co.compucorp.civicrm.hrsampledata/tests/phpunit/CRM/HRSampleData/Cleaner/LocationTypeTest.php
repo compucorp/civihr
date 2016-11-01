@@ -7,14 +7,14 @@ use CRM_HRCore_Test_Fabricator_LocationType as LocationTypeFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $locationType = LocationTypeFabricator::fabricate();
     $testLocationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
     $this->assertEquals($locationType['name'], $testLocationType['name']);
@@ -29,7 +29,7 @@ class CRM_HRSampleData_Cleaner_LocationTypeTest extends CRM_HRSampleData_BaseImp
       0
     ];
 
-    $this->runIterator('CRM_HRSampleData_Cleaner_LocationType', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Cleaner_LocationType', $this->rows);
 
     $locationType = $this->apiGet('LocationType', ['name' => $locationType['name']]);
     $this->assertEmpty($locationType);

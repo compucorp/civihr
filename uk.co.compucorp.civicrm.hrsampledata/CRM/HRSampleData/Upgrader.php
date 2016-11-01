@@ -66,11 +66,13 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     ];
 
     foreach($filesToClean as $class => $file) {
+      $fileToClean = new SplFileObject("{$this->csvDir}/{$file}.csv");
+      $processor = new CRM_HRSampleData_CSVProcessor($fileToClean);
+
       $cleanerClassName = "CRM_HRSampleData_Cleaner_{$class}";
       $dataCleaner = new $cleanerClassName();
 
-      $file = new SplFileObject("{$this->csvDir}/{$file}.csv");
-      $dataCleaner->iterate($file);
+      $processor->process($dataCleaner);
     }
   }
 
@@ -104,11 +106,13 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     ];
 
     foreach($csvFiles as $class => $file) {
+      $fileToImport = new SplFileObject("{$this->csvDir}/{$file}.csv");
+      $processor = new CRM_HRSampleData_CSVProcessor($fileToImport);
+
       $importerClassName = "CRM_HRSampleData_Importer_{$class}";
       $importer = new $importerClassName();
 
-      $fileToImport = new SplFileObject("{$this->csvDir}/{$file}.csv");
-      $importer->iterate($fileToImport);
+      $processor->process($importer);
     }
   }
 

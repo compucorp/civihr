@@ -7,7 +7,7 @@ use CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation as HoursLocationFabricator
  *
  * @group headless
  */
-class CRM_HRSampleData_Cleaner_HRHoursLocationTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Cleaner_HRHoursLocationTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
@@ -25,7 +25,7 @@ class CRM_HRSampleData_Cleaner_HRHoursLocationTest extends CRM_HRSampleData_Base
       "Week",
     ];
 
-    $this->runIterator('CRM_HRSampleData_Cleaner_HRHoursLocation', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Cleaner_HRHoursLocation', $this->rows);
 
     $hourLocation = $this->apiGet('HRHoursLocation', ['location' => $hourLocation['location']]);
     $this->assertEmpty($hourLocation);

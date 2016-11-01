@@ -7,7 +7,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_ExtendedDemographicsTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_ExtendedDemographicsTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_ExtendedDemographicsTest extends CRM_HRSampleDat
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testContact['id'],
       1020,
@@ -32,7 +32,7 @@ class CRM_HRSampleData_Importer_ExtendedDemographicsTest extends CRM_HRSampleDat
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_ExtendedDemographics', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_ExtendedDemographics', $this->rows, $mapping);
 
     $extendedDemographic = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_ContactTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       '235',
       'Individual',
@@ -43,7 +43,7 @@ class CRM_HRSampleData_Importer_ContactTest extends CRM_HRSampleData_BaseImporte
       0,
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Contact', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_Contact', $this->rows);
 
     $contact = $this->apiGet('Contact', ['display_name' => 'Mr. Peter Agodi']);
 

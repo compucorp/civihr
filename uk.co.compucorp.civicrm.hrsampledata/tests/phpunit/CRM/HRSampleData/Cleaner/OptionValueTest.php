@@ -7,14 +7,14 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $optionValue = OptionValueFabricator::fabricate(['option_group_id' => 'activity_type']);
     $testOptionValue = $this->apiGet(
       'OptionValue',
@@ -35,7 +35,7 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseImpo
       '',
     ];
 
-    $this->runIterator('CRM_HRSampleData_Cleaner_OptionValue', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Cleaner_OptionValue', $this->rows);
 
     $optionValue = $this->apiGet(
       'OptionValue',

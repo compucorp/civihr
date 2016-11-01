@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Cleaner_LocationType
  */
-class CRM_HRSampleData_Cleaner_LocationType extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Cleaner_LocationType extends CRM_HRSampleData_CSVCleanerVisitor
 {
 
   /**
@@ -12,7 +12,7 @@ class CRM_HRSampleData_Cleaner_LocationType extends CRM_HRSampleData_CSVHandler
    * @param array $row
    *   Should at least contain `name`
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
     $this->deleteRecord('LocationType', ['name' => $row['name']]);
   }
 

@@ -3,8 +3,15 @@
 /**
  * Class CRM_HRSampleData_Importer_Contact
  */
-class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVImporterVisitor
 {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
 
   /**
    * {@inheritdoc}
@@ -12,7 +19,7 @@ class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVHandler
    * @param array $row
    *   Should at least contain `id` & `contact_type`
    */
-  protected function operate(array $row) {
+  protected function importRecord(array $row) {
     $currentID = $row['id'];
 
     // for "default organization" contact => id = 1 , keep the ID to update it instead of creating it twice

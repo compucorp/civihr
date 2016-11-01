@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Cleaner_PhotoFilesCleaner
  */
-class CRM_HRSampleData_Cleaner_PhotoFilesCleaner extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Cleaner_PhotoFilesCleaner extends CRM_HRSampleData_CSVCleanerVisitor
 {
   private $uploadDir;
 
@@ -15,7 +15,7 @@ class CRM_HRSampleData_Cleaner_PhotoFilesCleaner extends CRM_HRSampleData_CSVHan
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
     if (!empty($row['image_URL'])) {
       $this->deletePhoto($row['image_URL']);
     }
@@ -27,7 +27,11 @@ class CRM_HRSampleData_Cleaner_PhotoFilesCleaner extends CRM_HRSampleData_CSVHan
    * @param $photoName
    */
   private function deletePhoto($photoName) {
-    unlink("{$this->uploadDir}/{$photoName}");
+    $photoPath = "{$this->uploadDir}/{$photoName}";
+
+    if(file_exists($photoPath)){
+      unlink($photoPath);
+    }
   }
 
 }

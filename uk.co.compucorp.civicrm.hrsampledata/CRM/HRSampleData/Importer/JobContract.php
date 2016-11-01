@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Importer_JobContract
  */
-class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_CSVImporterVisitor
 {
 
   /**
@@ -37,7 +37,14 @@ class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_CSVHandler
   /**
    * {@inheritdoc}
    */
-  protected function operate(array $row) {
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function importRecord(array $row) {
     $entities = $this->parseRow($row);
 
     $currentID = $this->unsetArrayElement($entities['HRJobContract'], 'id');

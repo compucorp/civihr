@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'Compassionate_Leave',
       'Compassionate Leave',
@@ -21,7 +21,7 @@ class CRM_HRSampleData_Importer_AbsenceTypeTest extends CRM_HRSampleData_BaseImp
       1,
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
 
     $absenceType = $this->apiGet('HRAbsenceType', ['name' => 'Compassionate_Leave']);
 

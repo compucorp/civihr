@@ -3,8 +3,15 @@
 /**
  * Class CRM_HRSampleData_Importer_Relationships
  */
-class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_CSVImporterVisitor
 {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
 
   /**
    * Stores relationships types IDs/Names
@@ -23,7 +30,7 @@ class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_CSVHandle
    * @param array $row
    *   Should at least contain `contact_id_a`, `contact_id_b` & `relationship_type_id`
    */
-  protected function operate(array $row) {
+  protected function importRecord(array $row) {
     $row['contact_id_a'] = $this->getDataMapping('contact_mapping', $row['contact_id_a']);
     $row['contact_id_b'] = $this->getDataMapping('contact_mapping', $row['contact_id_b']);
 

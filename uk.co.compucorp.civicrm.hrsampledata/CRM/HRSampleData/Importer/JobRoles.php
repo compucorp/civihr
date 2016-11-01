@@ -3,7 +3,7 @@
 /**
  * Class CRM_HRSampleData_Importer_JobRoles
  */
-class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVImporterVisitor
 {
 
   /**
@@ -22,11 +22,18 @@ class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVHandler
 
   /**
    * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
+   * {@inheritdoc}
    *
    * @param array $row
    *   Should at least contain `job_contract_id`
    */
-  protected function operate(array $row) {
+  protected function importRecord(array $row) {
     $row['job_contract_id'] = $this->getDataMapping('contracts_mapping', $row['job_contract_id']);
 
     if (!empty($row['funder'])) {

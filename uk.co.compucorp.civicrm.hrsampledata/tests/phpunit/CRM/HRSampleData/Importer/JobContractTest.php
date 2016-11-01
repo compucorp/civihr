@@ -10,7 +10,7 @@ use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as PayScaleFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -41,7 +41,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
     }
   }
 
-  public function testIterate() {
+  public function testProcess() {
 
     $this->rows[] = [
       25,
@@ -95,7 +95,7 @@ class CRM_HRSampleData_Importer_JobContractTest extends CRM_HRSampleData_BaseImp
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_JobContract', $this->rows, $mapping);
 
     $contract = $this->apiGet('HRJobContract', ['contact_id' => $this->testContact['id']]);
     $this->assertEquals($this->testContact['id'], $contract['contact_id']);

@@ -5,21 +5,21 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'Islington',
       38,
       'Week',
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_HRHoursLocation', $this->rows);
 
     $hoursLocation = $this->apiGet('HRHoursLocation', ['location' => 'Islington']);
 

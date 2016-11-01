@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'E2',
       'Head of Department',
@@ -21,7 +21,7 @@ class CRM_HRSampleData_Importer_HRPayScaleTest extends CRM_HRSampleData_BaseImpo
       'Year'
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_HRPayScale', $this->rows);
 
     $payScale = $this->apiGet('HRPayScale', ['pay_scale' => 'E2']);
 

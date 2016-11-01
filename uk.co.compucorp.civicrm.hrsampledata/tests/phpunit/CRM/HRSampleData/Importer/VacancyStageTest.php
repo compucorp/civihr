@@ -7,7 +7,7 @@ use CRM_HRRecruitment_Test_Fabricator_HRVacancy as VacancyFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_VacancyStageTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $vacancyID;
 
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseIm
     $this->vacancyID = VacancyFabricator::fabricate()['id'];
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'Open',
       $this->vacancyID,
@@ -29,7 +29,7 @@ class CRM_HRSampleData_Importer_VacancyStageTest extends CRM_HRSampleData_BaseIm
       ['vacancy_mapping', $this->vacancyID],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_VacancyStage', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_VacancyStage', $this->rows, $mapping);
 
     $vacancyStage = $this->apiGet('HRVacancyStage', ['vacancy_id' => $this->vacancyID]);
 

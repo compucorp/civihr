@@ -3,8 +3,15 @@
 /**
  * Class CRM_HRSampleData_Importer_ContactEmail
  */
-class CRM_HRSampleData_Importer_ContactEmail extends CRM_HRSampleData_CSVHandler
+class CRM_HRSampleData_Importer_ContactEmail extends CRM_HRSampleData_CSVImporterVisitor
 {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
 
   /**
    * {@inheritdoc}
@@ -12,7 +19,7 @@ class CRM_HRSampleData_Importer_ContactEmail extends CRM_HRSampleData_CSVHandler
    * @param array $row
    *   Should at least contain `contact_id` & `email`
    */
-  protected function operate(array $row) {
+  protected function importRecord(array $row) {
     $row['contact_id'] = $this->getDataMapping('contact_mapping', $row['contact_id']);
     $this->callAPI('Email', 'create', $row);
   }

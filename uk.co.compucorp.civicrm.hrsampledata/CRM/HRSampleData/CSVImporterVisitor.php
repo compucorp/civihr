@@ -1,7 +1,8 @@
 <?php
 
-abstract class CRM_HRSampleData_CSVHandler
-{
+use CRM_HRSampleData_CSVProcessingVisitor as CSVProcessingVisitor;
+
+abstract class CRM_HRSampleData_CSVImporterVisitor extends CSVProcessingVisitor {
 
   /**
    * Caches common import data , such as option values mapping
@@ -10,6 +11,15 @@ abstract class CRM_HRSampleData_CSVHandler
    * @var array
    */
   private static $data = [];
+
+  /**
+   * Import (insert) one row from the
+   * CSV file into the database
+   *
+   * @param array $row
+   *   CSV file row data
+   */
+  protected abstract function importRecord(array $row);
 
   /**
    * Stores data mapping for old and new ID or value.
@@ -35,77 +45,6 @@ abstract class CRM_HRSampleData_CSVHandler
    */
   public function getDataMapping($mappingKey, $oldValue) {
     return self::$data[$mappingKey][$oldValue];
-  }
-
-  /**
-   * Iterate through CSV file rows one by one
-   * and allows you to operate on them, So you can insert
-   * the row data to the database or remove the matching
-   * record from the database or anything else you want to
-   * do with the row data.
-   *
-   * @param SplFileObject $fileHandler
-   */
-  public function iterate(SplFileObject $fileHandler) {
-    $header = null;
-
-    while (!$fileHandler->eof()) {
-      $row = $fileHandler->fgetcsv();
-
-      if ($header === null) {
-        $header = $row;
-        continue;
-      }
-
-      $row = array_combine($header, $row);
-      $this->operate($row);
-    }
-  }
-
-  /**
-   * Gives you the control to operate on
-   * a single CSV row data
-   *
-   *
-   * @param array $row
-   *   Array of key=>value data to be inserted
-   *
-   */
-  protected abstract function operate(array $row);
-
-
-  /**
-   * A wrapper for CiviCRM API.
-   *
-   * @param string $entity
-   *   A valid CiviCRM API entity
-   * @param string $action
-   *   A valid entity action (e.g : create,delete,get..etc)
-   * @param array $params
-   *   Parameters to be passed to the API method.
-   *
-   * @return array
-   */
-  protected function callAPI($entity, $action, $params) {
-    return civicrm_api3($entity, $action, $params);
-  }
-
-  /**
-   * Deletes entity record from the database based on
-   * search criteria
-   *
-   * @param string $entity
-   * @param array $searchParams
-   */
-  protected function deleteRecord($entity, $searchParams) {
-    $searchParams['options'] = ['limit' => 0];
-
-    $entityResult = $this->callAPI($entity, 'get', $searchParams);
-
-    if (!empty($entityResult['id'])) {
-      $entityID = $entityResult['id'];
-      $this->callAPI($entity, 'delete', ['id' => $entityID]);
-    }
   }
 
   /**

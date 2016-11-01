@@ -7,7 +7,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_EmergencyContactsTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_B
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       $this->testContact['id'],
       '070 8891 9127',
@@ -38,7 +38,7 @@ class CRM_HRSampleData_Importer_EmergencyContactsTest extends CRM_HRSampleData_B
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_EmergencyContacts', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_EmergencyContacts', $this->rows, $mapping);
 
     $emergencyContact = $this->apiGet('CustomValue', ['entity_id' => $this->testContact['id']]);
 

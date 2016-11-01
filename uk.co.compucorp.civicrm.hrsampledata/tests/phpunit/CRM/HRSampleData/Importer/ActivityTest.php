@@ -8,7 +8,7 @@ use CRM_HRCore_Test_Fabricator_Activity as ActivityFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_ActivityTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -19,7 +19,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
     $this->testContact = ContactFabricator::fabricate();
   }
 
-  public function testIterateWithoutSourceRecord() {
+  public function testProcessWithoutSourceRecord() {
     $this->rows[] = [
       1,
       '',
@@ -39,7 +39,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
     $activity = $this->apiGet('Activity', ['subject' => "New Year's Day"]);
 
@@ -48,7 +48,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
     $this->assertEquals($this->testContact['id'], $activity['source_contact_id']);
   }
 
-  public function testIterateWithSourceRecord() {
+  public function testProcessWithSourceRecord() {
     $sourceRecordID = ActivityFabricator::fabricate()['id'];
 
     $this->rows[] = [
@@ -71,7 +71,7 @@ class CRM_HRSampleData_Importer_ActivityTest extends CRM_HRSampleData_BaseImport
       ['contact_mapping', $this->testContact['id']],
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_Activity', $this->rows, $mapping);
 
     $activity = $this->apiGet('Activity', ['source_record_id' => $sourceRecordID]);
 

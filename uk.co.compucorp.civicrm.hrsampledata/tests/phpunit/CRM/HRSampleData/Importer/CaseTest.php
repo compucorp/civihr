@@ -8,7 +8,7 @@ use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_CaseTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testContact;
 
@@ -22,7 +22,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
     $this->testCaseType = CaseTypeFabricator::fabricate();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       1,
       'test case',
@@ -38,7 +38,7 @@ class CRM_HRSampleData_Importer_CaseTest extends CRM_HRSampleData_BaseImporterTe
       ['contact_mapping', $this->testContact['id']]
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
+    $this->runProcessor('CRM_HRSampleData_Importer_Case', $this->rows, $mapping);
 
     $case = $this->apiGet('Case', ['subject' => 'test case']);
 

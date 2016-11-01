@@ -5,14 +5,14 @@
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_LocationTypeTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       'Correspondence',
       'Correspondence',
@@ -23,7 +23,7 @@ class CRM_HRSampleData_Importer_LocationTypeTest extends CRM_HRSampleData_BaseIm
       0
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_LocationType', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_LocationType', $this->rows);
 
     $locationType = $this->apiGet('LocationType', ['name' => 'Correspondence']);
 

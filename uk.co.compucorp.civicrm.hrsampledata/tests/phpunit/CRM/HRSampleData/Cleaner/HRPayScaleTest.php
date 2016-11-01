@@ -7,14 +7,14 @@ use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as PayScaleFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $payScale = PayScaleFabricator::fabricate();
     $testPayScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
     $this->assertEquals($payScale['pay_scale'], $testPayScale['pay_scale']);
@@ -27,7 +27,7 @@ class CRM_HRSampleData_Cleaner_HRPayScaleTest extends CRM_HRSampleData_BaseImpor
       'Year',
     ];
 
-    $this->runIterator('CRM_HRSampleData_Cleaner_HRPayScale', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Cleaner_HRPayScale', $this->rows);
 
     $payScale = $this->apiGet('HRPayScale', ['pay_scale' => $payScale['pay_scale']]);
     $this->assertEmpty($payScale);

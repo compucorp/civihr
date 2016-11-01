@@ -7,7 +7,7 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  *
  * @group headless
  */
-class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporterTest {
+class CRM_HRSampleData_CSVProcessor_VacancyTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $locationOption;
 
@@ -18,7 +18,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
     $this->locationOption = OptionValueFabricator::fabricate(['option_group_id' => 'hrjc_location']);
   }
 
-  public function testIterate() {
+  public function testProcess() {
     $this->rows[] = [
       2,
       25000,
@@ -33,7 +33,7 @@ class CRM_HRSampleData_Importer_VacancyTest extends CRM_HRSampleData_BaseImporte
       '2016-09-30 00:00:00',
     ];
 
-    $this->runIterator('CRM_HRSampleData_Importer_Vacancy', $this->rows);
+    $this->runProcessor('CRM_HRSampleData_Importer_Vacancy', $this->rows);
 
     $vacancy = $this->apiGet('HRVacancy', ['position' => 'Junior Programme Coordinator']);
 
