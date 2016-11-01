@@ -62,6 +62,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'HRPayScale' => 'civicrm_hrpay_scale',
       'LocationType' => 'civicrm_location_type',
       'OptionValue' => 'civicrm_option_value',
+      'PhotoFilesCleaner' => 'civicrm_contact',
     ];
 
     foreach($filesToClean as $class => $file) {
