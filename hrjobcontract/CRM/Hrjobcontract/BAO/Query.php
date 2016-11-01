@@ -318,10 +318,17 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     switch ($name) {
       case 'civicrm_contact':
         $from .= " $side JOIN civicrm_hrjobcontract hrjobcontract ON hrjobcontract.contact_id = contact_a.id AND hrjobcontract.deleted = 0
-            $side JOIN civicrm_hrjobcontract_revision rev ON rev.jobcontract_id = hrjobcontract.id "
-              . " AND ("
-              . "   rev.id = (SELECT id FROM civicrm_hrjobcontract_revision WHERE jobcontract_id = hrjobcontract.id "
-              . "   AND (effective_end_date >= '{$todayDate}' OR effective_end_date IS NULL) AND deleted = 0 AND overrided = 0 ORDER BY effective_date ASC LIMIT 1) "
+            $side JOIN civicrm_hrjobcontract_revision rev ON rev.jobcontract_id = ("
+              . " SELECT hrjc.id
+                                                                        FROM civicrm_hrjobcontract hrjc
+                                                                          LEFT JOIN civicrm_hrjobcontract_revision hrjr
+                                                                            ON hrjr.jobcontract_id = hrjc.id
+                                                                        WHERE hrjc.contact_id = contact_a.id
+                                                                              AND hrjr.effective_date <= '{$todayDate}'
+                                                                              AND hrjc.deleted = 0
+                                                                              AND hrjr.deleted = 0
+                                                                        ORDER BY hrjr.effective_date DESC , created_date DESC
+                                                                        LIMIT 1"
               . " ) ";
       break;
       case 'civicrm_hrjobcontract':

@@ -70,7 +70,7 @@ function hrstaffdir_civicrm_searchColumns($objectName, &$headers, &$values, &$se
             'id'
           );
           $imageCol[] = ($imageUrl) ? '<a href="' . $imageUrl . '" class="crm-image-popup"><img src="' . $imageUrl . '" height = "56" width="100"></a>' : "";
-          $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/profile/view', "reset=1&id={$matches[1]}&gid={$profileId }") . "'>{$value[1]}</a>";
+          $value[1] = "<a href='" . CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid={$matches[1]}") . "'>{$value[1]}</a>";
           $value = array_merge($imageCol, $value);
         }
       }

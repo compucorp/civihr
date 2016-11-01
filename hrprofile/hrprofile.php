@@ -158,3 +158,12 @@ function hrprofile_updateNavigation($orginalUrl, $updatedUrl) {
   $navigation = CRM_Core_BAO_Navigation::processUpdate($navigationParams,$navigationParamsNew);
   return true;
 }
+
+/**
+ * Implementation of hook_civicrm_queryObjects
+ */
+function hrprofile_civicrm_queryObjects(&$queryObjects, $type) {
+  if ($type == 'Contact') {
+    $queryObjects[] = new CRM_HRProfile_BAO_Query();
+  }
+}
