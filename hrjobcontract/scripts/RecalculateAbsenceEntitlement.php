@@ -7,7 +7,7 @@ $jobContracts = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_hrjobcontract 
 $i = 0;
 while ($jobContracts->fetch()) {
     echo "Recalculating Absence Entitlement by Job Contract #{$jobContracts->id}...";
-    CRM_Hrjobcontract_BAO_HRJobLeave::recalculateAbsenceEntitlement($jobContracts->id);
+    CRM_HRAbsence_BAO_HRAbsenceEntitlement::recalculateAbsenceEntitlement($jobContracts->id);
     echo "OK.\n";
     $i++;
 }
