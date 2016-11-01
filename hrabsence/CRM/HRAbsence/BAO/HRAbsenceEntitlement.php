@@ -185,4 +185,32 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
 
     return $result['values'];
   }
+
+  /**
+   * Process all the items on the EntitlementRecalculation Queue
+   *
+   * @return int
+   *  The number of items processed
+   */
+  public static function processEntitlementRecalculationQueue() {
+    $numberOfItemsProcessed = 0;
+
+    $queue = CRM_HRAbsence_Queue_EntitlementRecalculation::getQueue();
+    $runner = new CRM_Queue_Runner([
+      'title' => ts('Entitlement Recalculation Runner'),
+      'queue' => $queue,
+      'errorMode'=> CRM_Queue_Runner::ERROR_CONTINUE,
+    ]);
+
+    $continue = true;
+    while($continue) {
+      $result = $runner->runNext(false);
+      $numberOfItemsProcessed++;
+      if (!$result['is_continue']) {
+        $continue = false; //all items in the queue are processed
+      }
+    }
+
+    return $numberOfItemsProcessed;
+  }
 }
