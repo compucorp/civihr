@@ -6,23 +6,49 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobLeave extends CRM_Hrjobcontrac
   }
 
   public function handle(array $params, CRM_Hrjobcontract_DAO_HRJobContractRevision $contractRevision, array &$previousRevision) {
-    if(!isset($params['HRJobLeave-leave_amount'])) {
-      return null;
+    $leaveAmounts = [];
+    if (!empty($params['HRJobLeave-leave_amount'])) {
+      $leaveAmounts = $params['HRJobLeave-leave_amount'];
     }
 
-    $entities = array();
+    $leaveData = $this->prepareLeaveData(
+      $leaveAmounts, $contractRevision->jobcontract_id, $contractRevision->id
+    );
 
-    foreach ($params['HRJobLeave-leave_amount'] as $leaveTypeId => $leaveAmount) {
-      $entityParams = $this->extractFields($params);
-      $entityParams['import'] = 1;
-      $entityParams['jobcontract_id'] = $contractRevision->jobcontract_id;
-      $entityParams['jobcontract_revision_id'] = $contractRevision->id;
-      $entityParams['leave_type'] = $leaveTypeId;
-      $entityParams['leave_amount'] = $leaveAmount;
+    return civicrm_api3('HRJobLeave', 'replace', [
+      'sequential' => 1,
+      'values' => $leaveData,
+      'jobcontract_id' => $contractRevision->jobcontract_id,
+      'jobcontract_revision_id' => $contractRevision->id,
+    ])['values'][0];
+  }
 
-      $entities[] = CRM_Hrjobcontract_BAO_HRJobLeave::create($entityParams);
+  /**
+   * Prepares Job Leave entity data to a valid API format.
+   *
+   * @param array $leaveEntitlements
+   *   Job leave entity data.
+   * @param int $contractID
+   * @param int $revisionID
+   *
+   * @return array
+   */
+  private function prepareLeaveData($leaveEntitlements, $contractID, $revisionID) {
+    $leaveRows = [];
+    $leaveTypes = CRM_Hrjobcontract_SelectValues::buildLeaveTypes();
+
+    foreach($leaveTypes as $leaveType) {
+      $leaveAmount = isset($leaveEntitlements[$leaveType['id']]) ?  $leaveEntitlements[$leaveType['id']] : 0;
+
+      $leaveRows[] = [
+        'leave_type' => "{$leaveType['id']}",
+        'leave_amount' => "{$leaveAmount}",
+        'add_public_holidays' => "0",
+        "jobcontract_revision_id" => "{$revisionID}",
+        "jobcontract_id" => "{$contractID}",
+      ];
     }
 
-    return $entities;
+    return $leaveRows;
   }
 }

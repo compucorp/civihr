@@ -23,8 +23,13 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   {
     $upgrader = CRM_Hrjobcontract_Upgrader::instance();
     $upgrader->install();
+
+    $upgrader = CRM_HRAbsence_Upgrader::instance();
+    $upgrader->install();
+
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
+
     $this->_contractTypeID = $this->creatTestContractType();
   }
 
@@ -384,6 +389,48 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
 
     $importResponse = $this->runImport($params);
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
+  }
+
+  function testMandatoryFieldsImportOnlyWillCreateRevisionForAllOtherEntities() {
+    $contact2Params = array(
+      'first_name' => 'John_3',
+      'last_name' => 'Snow_3',
+      'email' => 'a3@b3.com',
+      'contact_type' => 'Individual',
+    );
+    $contactID = $this->createTestContact($contact2Params);
+    $params = array(
+      'HRJobContract-email' => $contact2Params['email'],
+      'HRJobDetails-title' => 'Test Contract Title',
+      'HRJobDetails-position' => 'Test Contract Position',
+      'HRJobDetails-contract_type' => $this->_contractTypeID,
+      'HRJobDetails-period_start_date' => '2016-01-01',
+    );
+
+    $importResponse = $this->runImport($params);
+    $this->assertEquals(CRM_Import_Parser::VALID, $importResponse);
+
+    $this->validateResult($contactID);
+
+    $revision = civicrm_api3('HRJobContract', 'get', [
+      'sequential' => 1,
+      'api.HRJobContractRevision.get' => [],
+      'contact_id' => $contactID,
+    ])['values'][0];
+    $revision = $revision['api.HRJobContractRevision.get']['values'][0];
+
+    $entityFields = [
+      'details_revision_id',
+      'health_revision_id',
+      'hour_revision_id',
+      'leave_revision_id',
+      'pay_revision_id',
+      'pension_revision_id'
+    ];
+
+    foreach($entityFields as $field) {
+      $this->assertNotEmpty($revision[$field]);
+    }
   }
 
   private function runImport($params)  {
