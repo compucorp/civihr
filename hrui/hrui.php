@@ -629,13 +629,21 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
     $content .= _hrui_updateContactSummaryUI();
   }
 
-  if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
+  if (
+    $context == "form" &&
+    (
+      $tplName == "CRM/Contact/Import/Form/MapField.tpl" ||
+      $tplName == "CRM/Export/Form/Map.tpl"
+    )
+  ) {
     $columnToHide = array(
       'formal_title',
       'job_title',
       'legal_identifier',     //Legal Identifier
       'addressee',            //Addressee
       'addressee_custom',     //Addressee Custom
+      'current_employer', // Current employer
+      'current_employer_id', // Current Employer ID
       'do_not_email',         //Do Not Email
       'do_not_mail',          //Do Not Mail
       'do_not_phone',         //Do Not Phone
@@ -645,10 +653,17 @@ function hrui_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
       'email_greeting_custom',//Email Greeting Custom
       'geo_code_1',           //Latitude
       'master_id',            //Master Address Belongs To
+      'is_bulkmail', // Use for Bulk Mail
       'is_opt_out',           //No Bulk Emails (User Opt Out)
+      'on_hold', // on hold
+      'street_number', // street number
+      'street_number_suffix', // street_number_suffix
+      'street_unit', // street unit
       'openid',               //OpenID
+      'user_unique_id', // Unique ID (OpenID)
       'postal_greeting',      //Postal Greeting
       'postal_greeting_custom',//Postal Greeting Custom
+      'communication_style_id', // Communication style
       'preferred_communication_method',//Preferred Communication Method
       'preferred_language',    //Preferred Language
       'preferred_mail_format',//Preferred Mail Format
