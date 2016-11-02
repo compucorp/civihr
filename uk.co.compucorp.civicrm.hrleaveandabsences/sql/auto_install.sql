@@ -351,3 +351,24 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_request_date` (
     UNIQUE INDEX `unique_leave_request_date`(date, leave_request_id),
     CONSTRAINT FK_civicrm_hrlaa_leave_request_date_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_work_pattern_attribution
+-- *
+-- * Represents the attribution of a work pattern to an employee
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_work_pattern_attribution` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkPatternAttribution ID',
+     `contact_id` int unsigned NOT NULL   COMMENT 'FK to the Contact representing the employee',
+     `pattern_id` int unsigned NOT NULL   COMMENT 'FK to the Work Pattern the attributed to an employee',
+     `effective_date` date NOT NULL   COMMENT 'The date this attribution will start to be considered active',
+     `effective_end_date` date  COMMENT 'The date this attribution will stop being considered active',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_attribution_per_effective_date`(contact_id, effective_date),
+    CONSTRAINT FK_civicrm_hrlaa_work_pattern_attribution_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_work_pattern_attribution_pattern_id FOREIGN KEY (`pattern_id`) REFERENCES `civicrm_hrleaveandabsences_work_pattern`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

@@ -12,4 +12,5 @@
     <xi:include href="LeaveBalanceChange.xml" parse="xml" />
     <xi:include href="LeaveRequest.xml" parse="xml" />
     <xi:include href="LeaveRequestDate.xml" parse="xml" />
+    <xi:include href="WorkPatternAttribution.xml" parse="xml" />
 </tables>
