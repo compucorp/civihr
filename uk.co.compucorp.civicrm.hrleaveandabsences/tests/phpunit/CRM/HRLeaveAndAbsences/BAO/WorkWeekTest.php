@@ -1,8 +1,8 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkWeek as WorkWeek;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest
@@ -13,7 +13,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends BaseHeadlessTest {
   protected $workPattern = null;
 
   public function setUp() {
-    $this->instantiateWorkPattern();
+    $this->workPattern = WorkPatternFabricator::fabricate();
   }
 
   public function testNumberShouldAlwaysBeMaxNumberPlus1OnCreate() {
@@ -174,12 +174,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeekTest extends BaseHeadlessTest {
     CRM_HRLeaveAndAbsences_BAO_WorkWeek::create($params);
 
     return WorkWeek::findById($id);
-  }
-
-  private function instantiateWorkPattern() {
-    $this->workPattern = WorkPattern::create([
-      'label' => 'Pattern ' . microtime()
-    ]);
   }
 
   private function getWorkDaysForWeek($weekId) {
