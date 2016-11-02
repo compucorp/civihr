@@ -10,11 +10,12 @@
 
     <field>
         <name>id</name>
-        <type>Job Role ID</type>
         <type>int unsigned</type>
+        <title>Job Role ID</title>
         <required>true</required>
         <comment>Unique HrJobRoles ID</comment>
         <export>true</export>
+        <import>true</import>
         <add>4.5</add>
     </field>
     <primaryKey>
@@ -27,14 +28,14 @@
         <title>Job ID</title>
         <type>int unsigned</type>
         <required>true</required>
+        <export>true</export>
+        <import>true</import>
         <comment>FK to Contract</comment>
     </field>
-    <foreignKey>
-        <name>job_contract_id</name>
-        <table>civicrm_hrjobcontract</table>
-        <key>id</key>
-        <onDelete>CASCADE</onDelete>
-    </foreignKey>
+    <index>
+      <name>index_job_contract_id</name>
+      <fieldName>job_contract_id</fieldName>
+    </index>
 
     <field>
         <name>title</name>
@@ -45,6 +46,7 @@
         <comment>Title or Project name for the Job Role.</comment>
         <add>4.5</add>
         <export>true</export>
+        <import>true</import>
     </field>
 
     <field>
@@ -53,6 +55,7 @@
         <type>text</type>
         <comment>Negotiated name for the role</comment>
         <export>true</export>
+      <import>true</import>
     </field>
 
     <field>
@@ -64,27 +67,6 @@
         <comment>Job Role Status (Active / Inactive)</comment>
         <export>true</export>
         <add>4.5</add>
-    </field>
-
-    <field>
-        <name>hours</name>
-        <title>Job Role Hours</title>
-        <type>float</type>
-        <default>0</default>
-        <comment>Amount of time allocated for work (in a given week)</comment>
-        <export>true</export>
-        <uniqueName>hrjc_role_hours</uniqueName>
-    </field>
-
-    <field>
-        <name>role_hours_unit</name>
-        <title>Job Role Hours Unit</title>
-        <type>varchar</type>
-        <length>63</length>
-        <comment>Period during which hours are allocated (eg 5 hours per day; 5 hours per week)</comment>
-        <export>true</export>
-        <import>true</import>
-        <uniqueName>hrjc_role_unit</uniqueName>
     </field>
 
     <field>
@@ -153,18 +135,6 @@
         <key>id</key>
         <onDelete>SET NULL</onDelete>
     </foreignKey>
-
-    <field>
-        <name>functional_area</name>
-        <title>Job Role Functional Area</title>
-        <type>varchar</type>
-        <length>127</length>
-        <export>true</export>
-    </field>
-    <index>
-        <name>index_functional_area</name>
-        <fieldName>functional_area</fieldName>
-    </index>
 
     <field>
         <name>organization</name>
@@ -240,6 +210,7 @@
         <default>0</default>
         <comment>List of attached Funder contact IDs</comment>
         <export>true</export>
+      <import>true</import>
     </field>
 
     <field>
