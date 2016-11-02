@@ -207,4 +207,35 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($lengthOfServiceYmdExpected, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfServiceYmd($contactId));
   }
 
+  public function testPermanentlyDeleteAllContracts() {
+    $contact = array('first_name' => 'Timothy', 'last_name' => 'Dalton');
+    $contactId = $this->createContact($contact);
+
+    // Create three Job Contracts.
+    $params = array(
+      'position' => 'spiders boss1',
+      'title' => 'spiders boss1');
+    $this->createJobContract($contactId, '2014-06-01', '2014-10-01', $params);
+    $params = array(
+      'position' => 'spiders boss2',
+      'title' => 'spiders boss2');
+    $this->createJobContract($contactId, '2015-06-01', '2015-10-01', $params);
+    $params = array(
+      'position' => 'spiders boss3',
+      'title' => 'spiders boss3');
+    $this->createJobContract($contactId, '2016-06-01', '2016-10-01', $params);
+
+    // Check if there are three Job Contracts created.
+    $jobContract = new CRM_Hrjobcontract_BAO_HRJobContract();
+    $jobContract->contact_id = $contactId;
+    $jobContract->find();
+    $this->assertEquals(3, $jobContract->count());
+
+    // Permanently delete the Job Contracts.
+    CRM_Hrjobcontract_BAO_HRJobContract::deleteAllContractsPermanently($contactId);
+
+    // Check if there is no Job Contracts.
+    $jobContract->find();
+    $this->assertEquals(0, $jobContract->count());
+  }
 }
