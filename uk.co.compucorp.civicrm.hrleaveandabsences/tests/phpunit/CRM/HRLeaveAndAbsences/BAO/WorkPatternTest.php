@@ -368,6 +368,16 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     ));
   }
 
+  public function testGetDefault() {
+    $defaultWorkPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    WorkPatternFabricator::fabricate();
+    WorkPatternFabricator::fabricate();
+
+    $fetchedDefaultWorkPattern = WorkPattern::getDefault();
+    $this->assertInstanceOf(WorkPattern::class, $fetchedDefaultWorkPattern);
+    $this->assertEquals($defaultWorkPattern->id, $fetchedDefaultWorkPattern->id);
+  }
+
   private function updateBasicWorkPattern($id, $params) {
     $params['id'] = $id;
     return WorkPatternFabricator::fabricate($params);

@@ -125,6 +125,19 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Returns the default WorkPattern
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  public static function getDefault() {
+    $workPattern = new self();
+    $workPattern->is_default = 1;
+    $workPattern->find(true);
+
+    return $workPattern;
+  }
+
+  /**
    * This method works like find() (it actually uses it)
    * but it includes the number_of_weeks and number_of_hours
    * for each pattern.
