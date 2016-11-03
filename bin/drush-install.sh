@@ -9,7 +9,7 @@
 ##################################
 ## List of CiviHR core extensions
 CORE_EXTS=\
-uk.co.compucorp.civicrm.civihrcore
+uk.co.compucorp.civicrm.hrcore
 
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
