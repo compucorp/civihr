@@ -123,3 +123,42 @@ _styleguide_civix_civicrm_angularModules($angularModules);
 function styleguide_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _styleguide_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function styleguide_civicrm_navigationMenu(&$menu) {
+  _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer', array(
+    'label' => ts('Style Guide', array('domain' => 'org.civicrm.styleguide')),
+    'name' => 'developer_styleguide',
+    'permission' => 'access CiviCRM',
+    'child' => array(),
+    'operator' => 'OR',
+    'separator' => 0,
+  ));
+  foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
+    _styleguide_civix_insert_navigation_menu($menu, 'Support/Developer/developer_styleguide', array(
+      'label' => $styleGuide['label'],
+      'name' => 'developer_styleguide_' . $styleGuide['name'],
+      'url' => 'civicrm/styleguide/' . $styleGuide['name'],
+      'permission' => 'access CiviCRM',
+      'operator' => 'OR',
+      'separator' => 0,
+    ));
+  }
+}
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_container
+ */
+function styleguide_civicrm_container(\Symfony\Component\DependencyInjection\ContainerBuilder $container) {
+  $container->setDefinition('style_guides', new \Symfony\Component\DependencyInjection\Definition(
+    'CRM_StyleGuide_StyleGuides',
+    array()
+  ));
+
+}
