@@ -967,6 +967,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return true;
   }
 
+  /**
+   * Update Job Contract tables constraints with cascade delete.
+   *
+   * @return TRUE
+   */
+  function upgrade_1021() {
+    $this->executeSqlFile('sql/pchr-1655-alter_constraints_on_delete_cascade.sql');
+
+    return TRUE;
+  }
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();

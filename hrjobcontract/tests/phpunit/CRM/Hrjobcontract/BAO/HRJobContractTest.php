@@ -3,6 +3,9 @@
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+
 /**
  * Class CRM_Hrjobcontract_BAO_HRJobContractTest
  *
@@ -15,7 +18,10 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
   use HRJobContractTestTrait;
 
   public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
+    return \Civi\Test::headless()
+      ->install('uk.co.compucorp.civicrm.hrcore')
+      ->installMe(__DIR__)
+      ->apply();
   }
 
   public function testGetActiveContractsDoesntIncludeContractsWithoutDetails() {
@@ -207,4 +213,28 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($lengthOfServiceYmdExpected, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfServiceYmd($contactId));
   }
 
+  public function testCascadeDeleteAllContractsOfDeletedContact() {
+    $contact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
+
+    // Create three Job Contracts.
+    HRJobContractFabricator::fabricate(['contact_id' => $contact['id']], ['period_start_date' => '2014-06-01', 'period_end_date' => '2014-10-01']);
+    HRJobContractFabricator::fabricate(['contact_id' => $contact['id']], ['period_start_date' => '2015-06-01', 'period_end_date' => '2015-10-01']);
+    HRJobContractFabricator::fabricate(['contact_id' => $contact['id']], ['period_start_date' => '2016-06-01', 'period_end_date' => '2016-10-01']);
+
+    // Check if there are three Job Contracts created.
+    $jobContract = new CRM_Hrjobcontract_BAO_HRJobContract();
+    $jobContract->contact_id = $contact['id'];
+    $jobContract->find();
+    $this->assertEquals(3, $jobContract->count());
+
+    // Delete the Contact.
+    $contactInstance = new CRM_Contact_BAO_Contact();
+    $contactInstance->id = $contact['id'];
+    $contactInstance->find(TRUE);
+    $contactInstance->delete();
+
+    // Check if there is no Job Contracts.
+    $jobContract->find();
+    $this->assertEquals(0, $jobContract->count());
+  }
 }
