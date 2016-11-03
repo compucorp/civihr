@@ -536,4 +536,10 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     return TRUE;
   }
+
+  public function upgrade_1401() {
+    _hrabsence_add_processentitlementrecalculationqueue_scheduled_job();
+
+    return TRUE;
+  }
 }

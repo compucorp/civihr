@@ -26,7 +26,9 @@ org.civicrm.hremergency \
 com.civicrm.hrjobroles \
 hrjobcontract \
 org.civicrm.reqangular \
-hrabsence
+uk.co.compucorp.civicrm.appraisals \
+uk.co.compucorp.civicrm.hrcore \
+uk.co.compucorp.civicrm.hrleaveandabsences
 )
 
 set -e
