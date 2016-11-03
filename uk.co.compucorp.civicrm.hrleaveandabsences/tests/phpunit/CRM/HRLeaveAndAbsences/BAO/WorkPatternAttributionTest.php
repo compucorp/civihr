@@ -37,4 +37,29 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttributionTest extends BaseHeadless
     $this->fail('Expected an DB error, but the attribution was created successfully');
   }
 
+  public function testTheEffectiveEndDateShouldBeAutomaticallyUpdatedWhenANewWorkPatternIsAttributedToAnEmployee() {
+    $workPattern1 = WorkPatternFabricator::fabricate();
+
+    $attribution1 = WorkPatternAttribution::create([
+      'contact_id' => 2,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $attribution1 = WorkPatternAttribution::findById($attribution1->id);
+    $this->assertNull($attribution1->effective_end_date);
+
+    $attribution2 = WorkPatternAttribution::create([
+      'contact_id' => 2,
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => CRM_Utils_Date::processDate('2016-04-02'),
+    ]);
+
+    $attribution1 = WorkPatternAttribution::findById($attribution1->id);
+    $this->assertEquals('2016-04-01', $attribution1->effective_end_date);
+
+    $attribution2 = WorkPatternAttribution::findById($attribution2->id);
+    $this->assertNull($attribution2->effective_end_date);
+  }
+
 }
