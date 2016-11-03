@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+
 class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAbsences_DAO_WorkPatternAttribution {
 
   /**
@@ -62,5 +64,64 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Returns the WorkPattern active during the given date for the contact with
+   * the given $contactID.
+   *
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern|null
+   */
+  public static function getWorkPatternForDate($contactID, DateTime $date) {
+    $attributionTableName = self::getTableName();
+    $workPatternTableName = WorkPattern::getTableName();
+
+    $query = "SELECT wp.* FROM {$attributionTableName} wpa
+              INNER JOIN {$workPatternTableName} wp
+                ON wpa.pattern_id = wp.id
+              WHERE wpa.contact_id = %1 AND 
+                    wpa.effective_date <= %2 AND 
+                    (wpa.effective_end_date >= %2 OR wpa.effective_end_date IS NULL)";
+
+    $params = [
+      1 => [$contactID, 'Integer'],
+      2 => [$date->format('Y-m-d'), 'String']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+    if($result->N == 1) {
+      $result->fetch();
+
+      return self::buildWorkPatternFromDBResult($result);
+    }
+
+    return WorkPattern::getDefault();
+  }
+
+  /**
+   * Builds a WorkPattern instance based on the values of a DB result
+   *
+   * @param $result
+   *  The result of a DB query, returned by CRM_Core_DAO::executeQuery()
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  private static function buildWorkPatternFromDBResult($result) {
+    $workPattern = new WorkPattern();
+
+    $fields = WorkPattern::fields();
+    foreach($fields as $field) {
+      if(!property_exists($result, $field['name'])) {
+        throw Exception("The DB result doesn't contain all the required fields");
+      }
+
+      $workPattern->$field['name'] = $result->$field['name'];
+    }
+
+    return $workPattern;
   }
 }
