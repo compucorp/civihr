@@ -76,20 +76,18 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals(1, $contact1Entitlement->N);
     $this->assertEquals(0, $contact1Entitlement->amount);
 
-    $contact1Entitlement = new CRM_HRAbsence_BAO_HRAbsenceEntitlement();
-    $contact1Entitlement->contact_id = $contact2['id'];
-    $contact1Entitlement->period_id = $period->id;
-    $contact1Entitlement->type_id = $absenceType->id;
-    $contact1Entitlement->find(true);
+    $contact2Entitlement = new CRM_HRAbsence_BAO_HRAbsenceEntitlement();
+    $contact2Entitlement->contact_id = $contact2['id'];
+    $contact2Entitlement->period_id = $period->id;
+    $contact2Entitlement->type_id = $absenceType->id;
+    $contact2Entitlement->find(true);
 
     // The absence_entitlement record is created for contact 2,
     // and since their contract overlaps the absence period,
     // the leave_amount will be fetched from the contractual
     // entitlement set in Job Leave
-    $this->assertEquals(1, $contact1Entitlement->N);
-    $this->assertEquals(23, $contact1Entitlement->amount);
+    $this->assertEquals(1, $contact2Entitlement->N);
+    $this->assertEquals(23, $contact2Entitlement->amount);
   }
-
-
 
 }
