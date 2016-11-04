@@ -968,12 +968,32 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Update Job Contract tables constraints with cascade delete.
+   * Remove unnecessary constraints from hrjobcontract entity tables.
    *
    * @return TRUE
    */
-  function upgrade_1021() {
-    $this->executeSqlFile('sql/pchr-1655-alter_constraints_on_delete_cascade.sql');
+  function upgrade_1022() {
+    $tables = [
+      'details',
+      'health',
+      'hour',
+      'leave',
+      'pay',
+      'pension',
+      'role',
+    ];
+
+    foreach ($tables as $table) {
+      // We use try/catch block because removing constraint which doesn't exist
+      // causes an exception throwing which breaks the code execution.
+      try {
+        CRM_Core_DAO::executeQuery(
+          'ALTER TABLE `civicrm_hrjobcontract_%1` DROP FOREIGN KEY `FK_civicrm_hrjobcontract_%1_contract_revision_id`',
+          [ 1 => [ $table, 'String' ] ]
+        );
+      } catch (Exception $e) {
+      }
+    }
 
     return TRUE;
   }

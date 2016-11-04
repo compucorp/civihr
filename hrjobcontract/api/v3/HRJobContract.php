@@ -92,34 +92,6 @@ function civicrm_api3_h_r_job_contract_deletecontract($params) {
 }
 
 /**
- * HRJobContract.deletecontractpermanently API
- *
- * @param array $params
- * @return array API result descriptor
- * @throws API_Exception
- */
-function civicrm_api3_h_r_job_contract_deletecontractpermanently($params) {
-  if (empty($params['jobcontract_id'])) {
-    throw new API_Exception(ts("Please specify 'jobcontract_id' value."));
-  }
-  return CRM_Hrjobcontract_BAO_HRJobContract::deleteContractPermanently((int)$params['jobcontract_id']);
-}
-
-/**
- * HRJobContract.deleteallcontractspermanently API
- *
- * @param array $params
- * @return array API result descriptor
- * @throws API_Exception
- */
-function civicrm_api3_h_r_job_contract_deleteallcontractspermanently($params) {
-  if (empty($params['contact_id'])) {
-    throw new API_Exception(ts("Please specify 'contact_id' value."));
-  }
-  return CRM_Hrjobcontract_BAO_HRJobContract::deleteAllContractsPermanently((int)$params['contact_id']);
-}
-
-/**
  * HRJobContract.getlengthofservice
  * 
  * Return a number of Length of Service in days for specific 'contact_id'.

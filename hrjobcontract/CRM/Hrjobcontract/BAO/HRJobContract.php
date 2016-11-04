@@ -649,7 +649,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @return bool
    * @throw Exception
    */
-  public static function deleteContractPermanently($contractId) {
+  private static function deleteContractPermanently($contractId) {
 
     if (empty($contractId)) {
       throw new Exception('Please specify contract ID to delete.');
@@ -659,11 +659,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     try {
       $contract = new self();
       $contract->id = $contractId;
-      $contract->find(TRUE);
-
-      if (empty($contract->id))
-      {
-          throw new Exception('Cannot find Job Contract with specified ID.');
+      if (!$contract->find(TRUE)) {
+        throw new Exception('Cannot find Job Contract with specified ID.');
       }
 
       $contactId = $contract->contact_id;
@@ -691,9 +688,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *
    * @param CRM_Hrjobcontract_BAO_HRJobContractRevision $revision
    */
-  protected static function deleteRevisionPermanently(CRM_Hrjobcontract_BAO_HRJobContractRevision $revision) {
+  private static function deleteRevisionPermanently(CRM_Hrjobcontract_BAO_HRJobContractRevision $revision) {
 
-    $entityNames = array(
+    $entityNames = [
       'HRJobDetails' => 'details',
       'HRJobHealth' => 'health',
       'HRJobHour' => 'hour',
@@ -701,10 +698,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       'HRJobPay' => 'pay',
       'HRJobPension' => 'pension',
       'HRJobRole' => 'role',
-    );
+    ];
 
-    foreach ($entityNames as $entityName => $prefix)
-    {
+    foreach ($entityNames as $entityName => $prefix) {
       self::deleteEntityRevisionPermanently('CRM_Hrjobcontract_BAO_' . $entityName, $revision->{$prefix . '_revision_id'});
     }
 
@@ -719,7 +715,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @param string $className
    * @param int $revisionId
    */
-  protected static function deleteEntityRevisionPermanently($className, $revisionId) {
+  private static function deleteEntityRevisionPermanently($className, $revisionId) {
 
     $entity = new $className();
     $entity->jobcontract_revision_id = $revisionId;
@@ -736,7 +732,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @param string $className
    * @param int $entityId
    */
-  protected static function deleteEntityPermanently($className, $entityId) {
+  private static function deleteEntityPermanently($className, $entityId) {
     $deleteEntity = new $className();
     $deleteEntity->id = $entityId;
     $deleteEntity->delete();
