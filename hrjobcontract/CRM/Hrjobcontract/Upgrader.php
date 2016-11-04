@@ -978,6 +978,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Changes `change reason` field type, from integer to string, to support
+   * custom values
+   *
+   * @return TRUE
+   */
+  function upgrade_1022() {
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` CHANGE `change_reason` `change_reason` VARCHAR(512) NULL DEFAULT NULL;");
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return true;
+  }
+
   function decToFraction($fte) {
     $fteDecimalPart = explode('.', $fte);
     $array = array();
