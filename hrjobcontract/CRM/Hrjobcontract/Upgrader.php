@@ -984,7 +984,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return TRUE
    */
-  function upgrade_1022() {
+  function upgrade_1023() {
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` CHANGE `change_reason` `change_reason` VARCHAR(512) NULL DEFAULT NULL;");
     CRM_Core_BAO_Navigation::resetNavigation();
 
