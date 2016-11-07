@@ -985,6 +985,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'civicrm_hrjobcontract_pension' => 'FK_civicrm_hrjobcontract_pension_jobcontract_revision_id',
       'civicrm_hrjobcontract_role' => 'FK_civicrm_hrjobcontract_role_jobcontract_revision_id',
     ];
+    $messages = [];
 
     foreach ($constraints as $table => $index) {
       // We use try/catch block because removing constraint which doesn't exist
@@ -994,6 +995,13 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
           "ALTER TABLE `{$table}` DROP FOREIGN KEY `$index`"
         );
       } catch (Exception $e) {
+        $messages[] = "Error while removing {$index} key from {$table} table: " . $e->getMessage();
+      }
+    }
+
+    if (!empty($messages) && function_exists('drupal_set_message')) {
+      foreach ($messages as $message) {
+        drupal_set_message($message);
       }
     }
 
