@@ -14,8 +14,8 @@
     <title>Job Role ID</title>
     <required>true</required>
     <comment>Unique HrJobRoles ID</comment>
-    <export>true</export>
-    <import>true</import>
+    <export>false</export>
+    <import>false</import>
     <add>4.5</add>
   </field>
   <primaryKey>

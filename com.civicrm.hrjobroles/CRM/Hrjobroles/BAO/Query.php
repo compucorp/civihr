@@ -46,6 +46,13 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     public function &getFields() {
         if (empty($this->hrjobRoleFields)) {
             $this->hrjobRoleFields = CRM_Hrjobroles_DAO_HrJobRoles::export();
+
+          $this->hrjobRoleFields['hrjobrole_id'] = [
+            'name'  => 'role_id',
+            'title' => 'Job Role ID',
+            'type'  => CRM_Utils_Type::T_INT,
+            'where' => 'civicrm_hrjobroles.id'
+          ];
         }
 
         return $this->hrjobRoleFields;

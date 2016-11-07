@@ -244,11 +244,11 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'title' => ts('Job Role ID') ,
           'description' => 'Unique HrJobRoles ID',
           'required' => true,
-          'import' => true,
+          'import' => false,
           'where' => 'civicrm_hrjobroles.id',
           'headerPattern' => '',
           'dataPattern' => '',
-          'export' => true,
+          'export' => false,
         ) ,
         'job_contract_id' => array(
           'name' => 'job_contract_id',
