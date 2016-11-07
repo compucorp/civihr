@@ -63,11 +63,11 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlementTest extends PHPUnit_Framework_TestC
 
     CRM_HRAbsence_BAO_HRAbsenceEntitlement::recalculateAbsenceEntitlementsForPeriod($period->id);
 
-    $contact1Entitlement = new CRM_HRAbsence_BAO_HRAbsenceEntitlement();
-    $contact1Entitlement->contact_id = $contact1['id'];
-    $contact1Entitlement->period_id = $period->id;
-    $contact1Entitlement->type_id = $absenceType->id;
-    $contact1Entitlement->find(true);
+    $contact1Entitlement = $entitlement = $this->getAbsenceTypeEntitlementForPeriod(
+      $contact1['id'],
+      $period->id,
+      $absenceType->id
+    );
 
     // The absence_entitlement record is created for contact 1,
     // but since their contract doesn't overlap the absence period,
@@ -76,11 +76,11 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlementTest extends PHPUnit_Framework_TestC
     $this->assertEquals(1, $contact1Entitlement->N);
     $this->assertEquals(0, $contact1Entitlement->amount);
 
-    $contact2Entitlement = new CRM_HRAbsence_BAO_HRAbsenceEntitlement();
-    $contact2Entitlement->contact_id = $contact2['id'];
-    $contact2Entitlement->period_id = $period->id;
-    $contact2Entitlement->type_id = $absenceType->id;
-    $contact2Entitlement->find(true);
+    $contact2Entitlement = $this->getAbsenceTypeEntitlementForPeriod(
+      $contact2['id'],
+      $period->id,
+      $absenceType->id
+    );
 
     // The absence_entitlement record is created for contact 2,
     // and since their contract overlaps the absence period,
