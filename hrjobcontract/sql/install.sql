@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_hrjobcontract_details` (
     KEY `index_contract_typ` (`contract_type`),
     KEY `index_location` (`location`),
     KEY `index_jobcontract_revision_id` (`jobcontract_revision_id`),
-    CONSTRAINT `FK_civicrm_hrjobcontract_details_contract_revision_id` FOREIGN KEY (`jobcontract_revision_id`) REFERENCES `civicrm_hrjobcontract_revision` (`details_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_details_contract_revision_id` FOREIGN KEY (`jobcontract_revision_id`) REFERENCES `civicrm_hrjobcontract_revision` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -122,7 +122,7 @@ CREATE TABLE `civicrm_hrjobcontract_pay` (
     INDEX `index_pay_scale`(pay_scale),
     INDEX `index_is_paid`(is_paid),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
-    CONSTRAINT `FK_civicrm_hrjobcontract_pay_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`pay_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_pay_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -153,7 +153,7 @@ CREATE TABLE `civicrm_hrjobcontract_health` (
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
     CONSTRAINT `FK_civicrm_hrjobcontract_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
     CONSTRAINT `FK_civicrm_hrjobcontract_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `FK_civicrm_hrjobcontract_health_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`health_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_health_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -177,7 +177,7 @@ CREATE TABLE `civicrm_hrjobcontract_hour` (
     PRIMARY KEY ( `id` ),
     INDEX `index_hours_type`(hours_type),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
-    CONSTRAINT `FK_civicrm_hrjobcontract_hour_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`hour_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_hour_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -196,7 +196,7 @@ CREATE TABLE `civicrm_hrjobcontract_leave` (
     `jobcontract_revision_id` INT(10) UNSIGNED DEFAULT NULL,
     PRIMARY KEY ( `id` ),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
-    CONSTRAINT `FK_civicrm_hrjobcontract_leave_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`leave_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_leave_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -220,7 +220,7 @@ CREATE TABLE `civicrm_hrjobcontract_pension` (
     PRIMARY KEY ( `id` ),
     INDEX `index_is_enrolled`(is_enrolled),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
-    CONSTRAINT `FK_civicrm_hrjobcontract_pension_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`pension_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_pension_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 
@@ -262,7 +262,7 @@ CREATE TABLE `civicrm_hrjobcontract_role` (
     INDEX `index_location`(location),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
     CONSTRAINT FK_civicrm_hrjobcontract_role_manager_contact_id FOREIGN KEY (`manager_contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `FK_civicrm_hrjobcontract_role_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`role_revision_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_role_jobcontract_revision_id`  FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`)  ON DELETE NO ACTION  ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 SET FOREIGN_KEY_CHECKS=1;
