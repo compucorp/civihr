@@ -974,20 +974,20 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   function upgrade_1022() {
     $constraints = [
-      'civicrm_hrjobcontract' => 'FK_civicrm_hrjobcontract_contact_id',
-      'civicrm_hrjobcontract_revision' => 'FK_civicrm_hrjobcontract_revision_jobcontract_id',
-      'civicrm_hrjobcontract_details' => 'FK_civicrm_hrjobcontract_details_contract_revision_id',
-      'civicrm_hrjobcontract_details' => 'FK_civicrm_hrjobcontract_details_jobcontract_revision_id',
-      'civicrm_hrjobcontract_health' => 'FK_civicrm_hrjobcontract_health_jobcontract_revision_id',
-      'civicrm_hrjobcontract_hour' => 'FK_civicrm_hrjobcontract_hour_jobcontract_revision_id',
-      'civicrm_hrjobcontract_leave' => 'FK_civicrm_hrjobcontract_leave_jobcontract_revision_id',
-      'civicrm_hrjobcontract_pay' => 'FK_civicrm_hrjobcontract_pay_jobcontract_revision_id',
-      'civicrm_hrjobcontract_pension' => 'FK_civicrm_hrjobcontract_pension_jobcontract_revision_id',
-      'civicrm_hrjobcontract_role' => 'FK_civicrm_hrjobcontract_role_jobcontract_revision_id',
+      'FK_civicrm_hrjobcontract_contact_id' => 'civicrm_hrjobcontract',
+      'FK_civicrm_hrjobcontract_revision_jobcontract_id' => 'civicrm_hrjobcontract_revision',
+      'FK_civicrm_hrjobcontract_details_contract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_details_jobcontract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_health_jobcontract_revision_id' => 'civicrm_hrjobcontract_health',
+      'FK_civicrm_hrjobcontract_hour_jobcontract_revision_id' => 'civicrm_hrjobcontract_hour',
+      'FK_civicrm_hrjobcontract_leave_jobcontract_revision_id' => 'civicrm_hrjobcontract_leave',
+      'FK_civicrm_hrjobcontract_pay_jobcontract_revision_id' => 'civicrm_hrjobcontract_pay',
+      'FK_civicrm_hrjobcontract_pension_jobcontract_revision_id' => 'civicrm_hrjobcontract_pension',
+      'FK_civicrm_hrjobcontract_role_jobcontract_revision_id' => 'civicrm_hrjobcontract_role',
     ];
     $messages = [];
 
-    foreach ($constraints as $table => $index) {
+    foreach ($constraints as $index => $table) {
       // We use try/catch block because removing constraint which doesn't exist
       // causes an exception throwing which breaks the code execution.
       try {
