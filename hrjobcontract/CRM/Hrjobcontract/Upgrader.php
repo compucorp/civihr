@@ -976,6 +976,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $constraints = [
       'civicrm_hrjobcontract' => 'FK_civicrm_hrjobcontract_contact_id',
       'civicrm_hrjobcontract_revision' => 'FK_civicrm_hrjobcontract_revision_jobcontract_id',
+      'civicrm_hrjobcontract_details' => 'FK_civicrm_hrjobcontract_details_contract_revision_id',
       'civicrm_hrjobcontract_details' => 'FK_civicrm_hrjobcontract_details_jobcontract_revision_id',
       'civicrm_hrjobcontract_health' => 'FK_civicrm_hrjobcontract_health_jobcontract_revision_id',
       'civicrm_hrjobcontract_hour' => 'FK_civicrm_hrjobcontract_hour_jobcontract_revision_id',
