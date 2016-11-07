@@ -213,7 +213,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($lengthOfServiceYmdExpected, CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfServiceYmd($contactId));
   }
 
-  public function testCascadeDeleteAllContractsOfDeletedContact() {
+  public function testPermanentlyDeleteAllContracts() {
     $contact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
 
     // Create three Job Contracts.
@@ -227,11 +227,8 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase
     $jobContract->find();
     $this->assertEquals(3, $jobContract->count());
 
-    // Delete the Contact.
-    $contactInstance = new CRM_Contact_BAO_Contact();
-    $contactInstance->id = $contact['id'];
-    $contactInstance->find(TRUE);
-    $contactInstance->delete();
+    // Permanently delete the Job Contracts.
+    CRM_Hrjobcontract_BAO_HRJobContract::deleteAllContractsPermanently($contact['id']);
 
     // Check if there is no Job Contracts.
     $jobContract->find();
