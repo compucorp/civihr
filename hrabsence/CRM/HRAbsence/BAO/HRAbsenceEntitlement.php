@@ -74,7 +74,7 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
 
     $contacts = self::getAllIndividuals();
     foreach($contacts as $contact) {
-      self::overwriteContactEntitlementForPeriods($contact['id'], $periods);
+      self::saveContactEntitlementForPeriods($contact['id'], $periods);
     }
   }
 
@@ -86,7 +86,7 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
   public static function recalculateAbsenceEntitlementForContact($contactId) {
     $periods = AbsencePeriod::getAbsencePeriods();
 
-    self::overwriteContactEntitlementForPeriods($contactId, $periods);
+    self::saveContactEntitlementForPeriods($contactId, $periods);
   }
 
   /**
@@ -106,46 +106,52 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
     $endDate   = isset($jobContract['period_end_date']) ? date('Y-m-d H:i:s', strtotime($jobContract['period_end_date'])) : NULL;
     $periods   = AbsencePeriod::getAbsencePeriods($startDate, $endDate);
 
-    self::overwriteContactEntitlementForPeriods($jobContract['contact_id'], $periods);
+    self::saveContactEntitlementForPeriods($jobContract['contact_id'], $periods);
   }
 
   /**
-   * Overwrite the contact entitlement for the given periods
+   * Saves the contact entitlement for the given periods
    *
    * @param int $contactId
    * @param array $periods
    */
-  private static function overwriteContactEntitlementForPeriods($contactId, $periods) {
+  private static function saveContactEntitlementForPeriods($contactId, $periods) {
     foreach ($periods as $periodId => $periodValue) {
       $leaves = JobLeave::getLeavesForPeriod($contactId, $periodValue['start'], $periodValue['end']);
-      self::overwriteAbsenceEntitlementPeriod($contactId, $periodId, $leaves);
+      foreach ($leaves as $leaveType => $leaveAmount) {
+        if(!self::hasAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType)) {
+          self::saveAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $leaveAmount);
+        }
+      }
     }
   }
 
   /**
-   * Overwrites the absence entitlement for the given contact during the given
-   * period.
+   * Checks if we already have the entitlement for the given contact ID, period ID
+   * and leave type
    *
    * @param int $contactId
    * @param int $periodId
-   * @param array $leaves
+   * @param int $leaveType
+   *
+   * @return bool
    */
-  private static function overwriteAbsenceEntitlementPeriod($contactId, $periodId, array $leaves) {
-    $query = 'DELETE FROM civicrm_hrabsence_entitlement WHERE contact_id = %1 AND period_id = %2';
+  private static function hasAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType) {
+    $query = 'SELECT id FROM civicrm_hrabsence_entitlement WHERE contact_id = %1 AND period_id = %2 AND type_id = %3';
+
     $params = [
       1 => [$contactId, 'Integer'],
       2 => [$periodId, 'Integer'],
+      3 => [$leaveType, 'Integer'],
     ];
 
-    CRM_Core_DAO::executeQuery($query, $params);
+    $result = CRM_Core_DAO::executeQuery($query, $params);
 
-    foreach ($leaves as $leaveType => $leaveAmount) {
-      self::overwriteAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $leaveAmount);
-    }
+    return $result->N == 1;
   }
 
   /**
-   * Overwrites the absence entitlement for a single leave type for the given
+   * Saves the absence entitlement for a single leave type for the given
    * contact during the given period.
    *
    * @param int $contactId
@@ -153,7 +159,7 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlement extends CRM_HRAbsence_DAO_HRAbsence
    * @param int $leaveType
    * @param float $amount
    */
-  private static function overwriteAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $amount) {
+  private static function saveAbsenceTypeEntitlementForPeriod($contactId, $periodId, $leaveType, $amount) {
     $query = 'INSERT INTO civicrm_hrabsence_entitlement SET contact_id = %1, period_id = %2, type_id = %3, amount = %4';
     $params = [
       1 => [$contactId, 'Integer'],

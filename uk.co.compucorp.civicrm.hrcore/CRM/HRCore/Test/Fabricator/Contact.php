@@ -9,7 +9,7 @@ class CRM_HRCore_Test_Fabricator_Contact {
     'sequential'   => 1
   ];
 
-  public static function fabricate($params) {
+  public static function fabricate($params = []) {
     $params                 = array_merge(self::$defaultParams, $params);
     $params['display_name'] = "{$params['first_name']} {$params['last_name']}";
 
