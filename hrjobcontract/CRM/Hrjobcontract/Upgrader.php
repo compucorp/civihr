@@ -968,12 +968,42 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Update Job Contract tables constraints with cascade delete.
+   * Remove unnecessary constraints from hrjobcontract entity tables.
    *
    * @return TRUE
    */
-  function upgrade_1021() {
-    $this->executeSqlFile('sql/pchr-1655-alter_constraints_on_delete_cascade.sql');
+  function upgrade_1022() {
+    $constraints = [
+      'FK_civicrm_hrjobcontract_contact_id' => 'civicrm_hrjobcontract',
+      'FK_civicrm_hrjobcontract_revision_jobcontract_id' => 'civicrm_hrjobcontract_revision',
+      'FK_civicrm_hrjobcontract_details_contract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_details_jobcontract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_health_jobcontract_revision_id' => 'civicrm_hrjobcontract_health',
+      'FK_civicrm_hrjobcontract_hour_jobcontract_revision_id' => 'civicrm_hrjobcontract_hour',
+      'FK_civicrm_hrjobcontract_leave_jobcontract_revision_id' => 'civicrm_hrjobcontract_leave',
+      'FK_civicrm_hrjobcontract_pay_jobcontract_revision_id' => 'civicrm_hrjobcontract_pay',
+      'FK_civicrm_hrjobcontract_pension_jobcontract_revision_id' => 'civicrm_hrjobcontract_pension',
+      'FK_civicrm_hrjobcontract_role_jobcontract_revision_id' => 'civicrm_hrjobcontract_role',
+    ];
+    $messages = [];
+
+    foreach ($constraints as $index => $table) {
+      // We use try/catch block because removing constraint which doesn't exist
+      // causes an exception throwing which breaks the code execution.
+      try {
+        CRM_Core_DAO::executeQuery(
+          "ALTER TABLE `{$table}` DROP FOREIGN KEY `$index`"
+        );
+      } catch (Exception $e) {
+        $messages[] = "Error while removing {$index} key from {$table} table: " . $e->getMessage();
+      }
+    }
+
+    if (!empty($messages) && function_exists('drupal_set_message')) {
+      foreach ($messages as $message) {
+        drupal_set_message($message);
+      }
+    }
 
     return TRUE;
   }

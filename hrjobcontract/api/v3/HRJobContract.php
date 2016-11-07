@@ -92,17 +92,6 @@ function civicrm_api3_h_r_job_contract_deletecontract($params) {
 }
 
 /**
- * HRJobContract.deletecontract API
- *
- * @param array $params
- * @return array API result descriptor
- * @throws API_Exception
- */
-function civicrm_api3_h_r_job_contract_deletecontractpermanently($params) {
-  return _civicrm_hrjobcontract_api3_deletecontractpermanently($params);
-}
-
-/**
  * HRJobContract.getlengthofservice
  * 
  * Return a number of Length of Service in days for specific 'contact_id'.
