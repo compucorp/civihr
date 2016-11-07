@@ -27,8 +27,8 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlementTest extends PHPUnit_Framework_TestC
   public function testRecalculateAbsenceEntitlementsForPeriodCreatesTheContactsEntitlementsForThatPeriod() {
     $absenceType = AbsenceTypeFabricator::fabricate();
 
-    $contact1 = ContactFabricator::fabricate([]);
-    $contact2 = ContactFabricator::fabricate([]);
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
 
     $contract1 = JobContractFabricator::fabricate(['contact_id' => $contact1['id']], [
       'period_start_date' => '2015-01-01',
@@ -93,7 +93,7 @@ class CRM_HRAbsence_BAO_HRAbsenceEntitlementTest extends PHPUnit_Framework_TestC
   public function testRecalculateAbsenceEntitlementDoesNotOverwriteExistingEntitlements() {
     $absenceType = AbsenceTypeFabricator::fabricate();
 
-    $contact = ContactFabricator::fabricate([]);
+    $contact = ContactFabricator::fabricate();
 
     $contract = JobContractFabricator::fabricate(['contact_id' => $contact['id']], [
       'period_start_date' => '2016-01-01',
