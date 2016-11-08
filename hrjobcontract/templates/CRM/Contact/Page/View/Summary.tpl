@@ -174,7 +174,9 @@
                     </div>
                     <div class="crm-summary-row">
                       <div class="crm-label">
-                        {ts}Contact ID{/ts}{if !empty($userRecordUrl)} / {ts}User ID{/ts}{/if}
+                        {ts}Contact ID{/ts}
+                        {if !empty($userRecordUrl)} / {ts}User ID{/ts}{/if}
+                        {if !empty($hookContent.username)} / {ts}Username{/ts}{/if}
                       </div>
                       <div class="crm-content">
                         <span class="crm-contact-contact_id">{$contactId}</span>
@@ -182,6 +184,18 @@
                           <span class="crm-contact-user_record_id">
                             &nbsp;/&nbsp;<a title="View user record" class="user-record-link"
                                             href="{$userRecordUrl}">{$userRecordId}</a>
+                          </span>
+                        {/if}
+                        {if !empty($hookContent.username)}
+                          <span class="crm-contact-username">
+                            &nbsp;/&nbsp;
+                            {if !empty($userRecordUrl)}
+                              <a title="View user record" class="user-record-link" href="{$userRecordUrl}">
+                            {/if}
+                              {$hookContent.username}
+                            {if !empty($userRecordUrl)}
+                              </a>
+                            {/if}
                           </span>
                         {/if}
                       </div>
