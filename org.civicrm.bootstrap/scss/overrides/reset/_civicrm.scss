@@ -36,6 +36,12 @@ table {
   }
 }
 
+.collapsed {
+  @include initial(background, none);
+  @include initial(cursor, auto);
+  @include initial(padding, 0);
+}
+
 .panel {
   @include initial(position, static);
   @include initial(padding, 0);
