@@ -3,7 +3,9 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
+use CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution as WorkPatternAttribution;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
@@ -13,6 +15,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
  */
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
 
@@ -505,6 +508,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ]);
 
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testCanCreateBalanceChangesForALeaveRequest() {
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $workPatternAttribution = WorkPatternAttribution::create([
+      'pattern_id' => $workPattern->id,
+      'contact_id' => 2,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => $workPatternAttribution->contact_id,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    // One balance change must be created for each leave request date
+    $this->assertCount(4, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+
+    // Only 2 of the 4 days of the LeaveRequest are working days, so
+    $this->assertEquals(2, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {

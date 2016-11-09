@@ -3,6 +3,8 @@
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution as WorkPatternAttribution;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -27,6 +29,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  /**
+   * Creates LeaveBalanceChanges for each of the LeaveRequestDates of the given
+   * LeaveRequest.
+   *
+   * The amount for each balance change will be calculated accordingly to the
+   * WorkPattern(s) of the contact of the LeaveRequest.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  public static function createForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
+
+    foreach($leaveRequest->getDates() as $date) {
+      self::create([
+        'source_id'   => $date->id,
+        'source_type' => self::SOURCE_LEAVE_REQUEST_DAY,
+        'type_id'     => $balanceChangeTypes['Leave'],
+        'amount'      => self::calculateBalanceChangeAmountForDate(
+          $leaveRequest->contact_id,
+          new \DateTime($date->date)
+        )
+      ]);
+    }
   }
 
   /**
@@ -408,5 +435,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     // Finally, since this is a list of conditions separate
     // by OR, we wrap it in parenthesis
     return "($whereLeaveRequestDates)";
+  }
+
+  /**
+   * Calculates the amount to be deducted for a leave taken by the given contact
+   * on the given date.
+   *
+   * This works by fetching the contact's work pattern active during the given
+   * date and then using it to get the amount of days to be deducted.
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return float
+   */
+  private static function calculateBalanceChangeAmountForDate($contactID, DateTime $date) {
+    $attribution = WorkPatternAttribution::getForDate($contactID, $date);
+    $workPattern = WorkPattern::findById($attribution->pattern_id);
+
+    return $workPattern->getLeaveDaysForDate($date, new \DateTime($attribution->effective_date));
   }
 }

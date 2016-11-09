@@ -67,9 +67,38 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Returns the WorkPatternAttribution instance for the given contact and $date
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution|null
+   */
+  public static function getForDate($contactID, DateTime $date) {
+    $attributionTableName = self::getTableName();
+
+    $query = "SELECT * FROM {$attributionTableName}
+              WHERE contact_id = %1 AND 
+                    effective_date <= %2 AND 
+                    (effective_end_date >= %2 OR effective_end_date IS NULL)";
+
+    $params = [
+      1 => [$contactID, 'Integer'],
+      2 => [$date->format('Y-m-d'), 'String']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+    if($result->N == 1) {
+      $result->fetch();
+      return $result;
+    }
+
+    return null;
+  }
+
+  /**
    * Returns the WorkPattern active during the given date for the contact with
    * the given $contactID.
-   *
    *
    * @param int $contactID
    * @param \DateTime $date
