@@ -8,7 +8,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Create a new LeaveRequest based on array-data
    *
    * @param array $params key-value pairs
-   * @return \CRM_HRLeaveAndAbsences_DAO_LeaveRequest|NULL
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    *
    * @throws \Exception
    */
