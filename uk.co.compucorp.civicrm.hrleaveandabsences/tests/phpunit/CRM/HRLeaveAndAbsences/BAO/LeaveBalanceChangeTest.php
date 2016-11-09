@@ -3,6 +3,8 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
@@ -432,6 +434,77 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       new Datetime('+10 days')
     );
     $this->assertEquals(-1, $balance);
+  }
+
+  public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    $expectedLeaveBalanceChanges = [];
+    foreach($leaveRequest->getDates() as $date) {
+      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+    }
+
+    // This balance change will not be returned because it's not linked to
+    // the leave request
+    LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => 100,
+      'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+    ]);
+
+    $breakdownBalanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+
+    $this->assertCount(2, $breakdownBalanceChanges);
+    foreach($expectedLeaveBalanceChanges as $i => $balanceChange) {
+      $this->assertEquals($balanceChange->id, $breakdownBalanceChanges[$i]->id);
+      $this->assertEquals($balanceChange->source_id, $breakdownBalanceChanges[$i]->source_id);
+      $this->assertEquals($balanceChange->source_type, $breakdownBalanceChanges[$i]->source_type);
+      $this->assertEquals($balanceChange->amount, $breakdownBalanceChanges[$i]->amount);
+    }
+  }
+
+  public function testTheLeaveRequestBreakdownReturnsAnEmptyArrayIfThereAreNoBalanceChangesForLeaveRequestDates() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    $this->assertCount(0, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheSumOfAllItsLeaveBalanceChanges() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    $expectedLeaveBalanceChanges = [];
+    foreach($leaveRequest->getDates() as $date) {
+      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+    }
+
+    // The balance changes created by the fabricator deduct 1 day for each date,
+    // so the total for the 4 days should be 4
+    $this->assertEquals(-4, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheTotalBalanceChangeForALeaveRequesWithoutBalanceChangesShouldBeZero() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {

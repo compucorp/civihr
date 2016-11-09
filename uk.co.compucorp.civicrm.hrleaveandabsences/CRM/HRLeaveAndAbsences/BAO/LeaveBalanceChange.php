@@ -219,6 +219,69 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
+   * Returns all the LeaveBalanceChanges linked to the LeaveRequestDates of the
+   * given LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  public static function getBreakdownForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+
+    $query = "
+      SELECT bc.*
+      FROM {$balanceChangeTable} bc
+      INNER JOIN {$leaveRequestDateTable} lrd 
+        ON bc.source_id = lrd.id AND bc.source_type = %1
+      INNER JOIN {$leaveRequestTable} lr
+        ON lrd.leave_request_id = lr.id
+      WHERE lr.id = %2
+      ORDER BY id
+    ";
+
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$leaveRequest->id, 'Integer'],
+    ];
+
+    $changes = [];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+    while($result->fetch()) {
+      $changes[] = clone $result;
+    }
+
+    return $changes;
+  }
+
+  /**
+   * Returns the sum of all LeaveBalanceChanges linked to the LeaveRequestDates
+   * of the given LeaveRequest.
+   *
+   * This basically gets the output of getBreakdownForLeaveRequest()
+   * and sums up the amount of the returned LeaveBalanceChange instances.
+   *
+   * @see \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getBreakdownForLeaveRequest()
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return float
+   */
+  public static function getTotalBalanceChangeForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChanges = self::getBreakdownForLeaveRequest($leaveRequest);
+
+    $balance = 0.0;
+    foreach($balanceChanges as $balanceChange) {
+      $balance += (float)$balanceChange->amount;
+    }
+
+    return $balance;
+  }
+
+  /**
    * This method checks every leave balance change record with an expiry_date in
    * the past and that still don't have a record for the expired days (that is,
    * a balance change record of this same type and with an expired_balance_change_id
