@@ -444,15 +444,64 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * This works by fetching the contact's work pattern active during the given
    * date and then using it to get the amount of days to be deducted.
    *
+   * This method also takes in consideration the existence of Public Holidays
+   * Leave Requests overlapping the dates of the LeaveRequest. For those dates,
+   * the amount of days to be deducted will be 0.
+   *
    * @param int $contactID
    * @param \DateTime $date
    *
    * @return float
    */
   private static function calculateBalanceChangeAmountForDate($contactID, DateTime $date) {
+    if(self::thereIsAPublicHolidayLeaveRequest($contactID, $date)) {
+      return 0.0;
+    }
+
     $attribution = WorkPatternAttribution::getForDate($contactID, $date);
     $workPattern = WorkPattern::findById($attribution->pattern_id);
 
     return $workPattern->getLeaveDaysForDate($date, new \DateTime($attribution->effective_date));
+  }
+
+  /**
+   * Returns if there is a Public Holiday Leave Request for the given
+   * contact on the given date
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return bool
+   */
+  private static function thereIsAPublicHolidayLeaveRequest($contactID, DateTime $date) {
+    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
+
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+
+    $query = "
+      SELECT bc.id
+      FROM {$balanceChangeTable} bc
+      INNER JOIN {$leaveRequestDateTable} lrd 
+        ON bc.source_id = lrd.id AND bc.source_type = %1
+      INNER JOIN {$leaveRequestTable} lr
+        ON lrd.leave_request_id = lr.id
+      WHERE bc.type_id = %2 AND 
+            lrd.date = %3 AND
+            lr.contact_id = %4
+      ORDER BY id
+    ";
+
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$balanceChangeTypes['Public Holiday'], 'Integer'],
+      3 => [$date->format('Y-m-d'), 'String'],
+      4 => [$contactID, 'Integer']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params);
+
+    return $result->N == 1;
   }
 }

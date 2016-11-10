@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
@@ -7,6 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution as WorkPatternAttribution;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
@@ -533,6 +535,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // Only 2 of the 4 days of the LeaveRequest are working days, so
     $this->assertEquals(2, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheBalanceChangeForALeaveRequestDateOverlappingAPublicHolidayLeaveRequestShouldBeZero() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-01-01');
+    $publicHolidayLeaveRequestCreation = new PublicHolidayLeaveRequestCreation();
+    $publicHolidayLeaveRequestCreation->createForContact($leaveRequest->contact_id, $publicHoliday);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(1, $balanceChanges);
+    $this->assertEquals(0, $balanceChanges[0]->amount);
   }
 
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
