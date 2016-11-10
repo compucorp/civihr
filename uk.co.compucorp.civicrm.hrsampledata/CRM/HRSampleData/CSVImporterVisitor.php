@@ -13,6 +13,13 @@ abstract class CRM_HRSampleData_CSVImporterVisitor extends CSVProcessingVisitor 
   private static $data = [];
 
   /**
+   * {@inheritdoc}
+   */
+  public function visit(array $row) {
+    $this->importRecord($row);
+  }
+
+  /**
    * Import (insert) one row from the
    * CSV file into the database
    *

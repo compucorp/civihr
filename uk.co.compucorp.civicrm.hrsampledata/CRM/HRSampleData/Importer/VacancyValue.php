@@ -13,13 +13,6 @@ class CRM_HRSampleData_Importer_VacancyValue extends CRM_HRSampleData_Importer_C
   /**
    * {@inheritdoc}
    */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function importRecord(array $row) {
     $row['entity_id'] = $this->getDataMapping('case_mapping', $row['entity_id']);
 

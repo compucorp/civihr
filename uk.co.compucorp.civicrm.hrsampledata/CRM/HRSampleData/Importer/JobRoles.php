@@ -22,13 +22,6 @@ class CRM_HRSampleData_Importer_JobRoles extends CRM_HRSampleData_CSVImporterVis
 
   /**
    * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @param array $row
    *   Should at least contain `job_contract_id`

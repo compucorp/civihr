@@ -18,7 +18,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
 
   private $testPayScale;
 
-  private $optionVales = [];
+  private $optionValues = [];
 
   public function setUp() {
     $this->rows = [];
@@ -37,7 +37,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       'hrjc_pension_type',
     ];
     foreach($contractOptionValues as $group) {
-      $this->optionVales[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
+      $this->optionValues[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -49,15 +49,15 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       'Subject Head - Literacy',
       'Subject Head - Literacy',
       'Donor funded position',
-      $this->optionVales['hrjc_contract_type']['name'],
+      $this->optionValues['hrjc_contract_type']['name'],
       '2012-04-28',
       '2016-07-28',
-      $this->optionVales['hrjc_contract_end_reason']['name'],
+      $this->optionValues['hrjc_contract_end_reason']['name'],
       3,
       'Month',
       3,
       'Month',
-      $this->optionVales['hrjc_location']['name'],
+      $this->optionValues['hrjc_location']['name'],
       $this->testContact['id'],
       'Individual',
       'GP helpline, NHS cashback & up to 75% no claims discount',
@@ -87,7 +87,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       1,
       5,
       5,
-      $this->optionVales['hrjc_pension_type']['name'],
+      $this->optionValues['hrjc_pension_type']['name'],
       'Sick:0,Vacation:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
     ];
 

@@ -13,13 +13,6 @@ class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVImport
   /**
    * {@inheritdoc}
    */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function importRecord(array $row) {
     $this->callAPI('HRAbsencePeriod', 'create', $row);
   }

@@ -24,7 +24,7 @@ class CRM_HRSampleData_Cleaner_PhotoFilesCleaner extends CRM_HRSampleData_CSVCle
   /**
    * Deletes contact photo
    *
-   * @param $photoName
+   * @param string $photoName
    */
   private function deletePhoto($photoName) {
     $photoPath = "{$this->uploadDir}/{$photoName}";

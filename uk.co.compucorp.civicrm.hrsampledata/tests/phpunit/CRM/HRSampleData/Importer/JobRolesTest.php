@@ -15,7 +15,7 @@ class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCS
 
   private $testJobContract;
 
-  private $optionVales = [];
+  private $optionValues = [];
 
   public function setUp() {
     $this->rows = [];
@@ -32,7 +32,7 @@ class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCS
       'hrjc_location',
     ];
     foreach($rolesOptionValues as $group) {
-      $this->optionVales[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
+      $this->optionValues[$group] = OptionValueFabricator::fabricate(['option_group_id' => $group]);
     }
   }
 
@@ -41,9 +41,9 @@ class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCS
       $this->testJobContract['id'],
       'Subject Head - Computer Basics',
       'West London',
-      $this->optionVales['hrjc_department']['name'],
-      $this->optionVales['hrjc_level_type']['name'],
-      $this->optionVales['cost_centres']['name'],
+      $this->optionValues['hrjc_department']['name'],
+      $this->optionValues['hrjc_level_type']['name'],
+      $this->optionValues['cost_centres']['name'],
       1,
       100,
       0,
@@ -51,7 +51,7 @@ class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCS
       1,
       100,
       0,
-      $this->optionVales['hrjc_location']['name'],
+      $this->optionValues['hrjc_location']['name'],
       '2014-01-01 18:30:00',
       '2019-06-29 18:30:00',
     ];

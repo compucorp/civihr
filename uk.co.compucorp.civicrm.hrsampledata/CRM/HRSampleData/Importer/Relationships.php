@@ -7,13 +7,6 @@ class CRM_HRSampleData_Importer_Relationships extends CRM_HRSampleData_CSVImport
 {
 
   /**
-   * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
    * Stores relationships types IDs/Names
    *
    * @var array

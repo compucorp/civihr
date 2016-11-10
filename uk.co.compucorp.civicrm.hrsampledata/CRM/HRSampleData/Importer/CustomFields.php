@@ -21,13 +21,6 @@ class CRM_HRSampleData_Importer_CustomFields extends CRM_HRSampleData_CSVImporte
 
   /**
    * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
    * Generic method to handle custom fields import
    *
    * @param array $row

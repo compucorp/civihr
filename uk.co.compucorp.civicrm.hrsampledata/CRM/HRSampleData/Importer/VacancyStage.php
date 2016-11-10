@@ -7,13 +7,6 @@ class CRM_HRSampleData_Importer_VacancyStage extends CRM_HRSampleData_CSVImporte
 {
 
   /**
-   * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
    * Stores case statuses names/values
    *
    * @var array

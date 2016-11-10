@@ -9,13 +9,6 @@ class CRM_HRSampleData_Importer_Activity extends CRM_HRSampleData_CSVImporterVis
   /**
    * {@inheritdoc}
    */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function importRecord(array $row) {
     $currentID = $this->unsetArrayElement($row, 'id');
 

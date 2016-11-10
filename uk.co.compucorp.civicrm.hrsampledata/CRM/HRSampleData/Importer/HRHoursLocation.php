@@ -9,13 +9,6 @@ class CRM_HRSampleData_Importer_HRHoursLocation extends CRM_HRSampleData_CSVImpo
   /**
    * {@inheritdoc}
    */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function importRecord(array $row) {
     $hourLocationExists = $this->callAPI('HRHoursLocation', 'getcount', $row);
     if (!$hourLocationExists) {

@@ -8,13 +8,6 @@ class CRM_HRSampleData_Importer_ContactEmail extends CRM_HRSampleData_CSVImporte
 
   /**
    * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @param array $row
    *   Should at least contain `contact_id` & `email`

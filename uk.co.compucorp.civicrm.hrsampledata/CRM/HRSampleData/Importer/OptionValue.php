@@ -8,13 +8,6 @@ class CRM_HRSampleData_Importer_OptionValue extends CRM_HRSampleData_CSVImporter
 
   /**
    * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
-  /**
-   * {@inheritdoc}
    *
    * @param array $row
    *   Should at least contain `option_group_id` & `name`

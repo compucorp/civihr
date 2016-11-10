@@ -5,14 +5,6 @@
  */
 class CRM_HRSampleData_Importer_Contact extends CRM_HRSampleData_CSVImporterVisitor
 {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function visit(array $row) {
-    $this->importRecord($row);
-  }
-
   /**
    * {@inheritdoc}
    *
