@@ -341,7 +341,10 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 }
 
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectRef->activity_type_id)) {
+  // PCHR-1177: $objectRef is just an instance of CRM_Activity_DAO_Activity, with values set from parameters sent through request.
+  // Thus, it cannot be used to obtain data for activity that could be in database for given activity id.  We need to load the info from DB first!
+  // Passing activity id instead of object, so data can be loaded from DB within function.
+  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectId)) {
     $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
     $hrjob = civicrm_api3('HRJobContract', 'get', array(
@@ -447,10 +450,16 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
 /**
  * function to check if the activity is created by task and assignments extension
  *
- * @param int $activity_type_id
+ * @param int $activity_id
  * @return boolean
  */
-function activityCreatedByTaskandAssignments($activity_type_id) {
+function activityCreatedByTaskandAssignments($activity_id) {
+  // PCHR-1177 - Status update from task lists caused a null activity type id to passed as parameter for this method.
+  // Passed activity_id instead to load data from db instead.
+  $params = array('id' => $activity_id);
+  $taskInDB = CRM_Activity_BAO_Activity::retrieve($params);
+  $activity_type_id = $taskInDB->activity_type_id;
+
   // check if task and assignments is enabled
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
   if(!$isEnabled) {
