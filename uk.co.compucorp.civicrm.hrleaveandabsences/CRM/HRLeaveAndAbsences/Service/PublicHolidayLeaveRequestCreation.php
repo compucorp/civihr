@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
@@ -45,11 +46,26 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
+      $this->zeroDeductionForOverlappingLeaveRequestDate($leaveRequest->contact_id, $date);
+
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
         'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
         'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
         'amount'      => -1
+      ]);
+    }
+  }
+
+  private function zeroDeductionForOverlappingLeaveRequestDate($contactID, LeaveRequestDate $leaveRequestDate) {
+    $date = new DateTime($leaveRequestDate->date);
+
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($contactID, $date);
+
+    if($leaveBalanceChange) {
+      LeaveBalanceChange::create([
+        'id' => $leaveBalanceChange->id,
+        'amount' => 0
       ]);
     }
   }

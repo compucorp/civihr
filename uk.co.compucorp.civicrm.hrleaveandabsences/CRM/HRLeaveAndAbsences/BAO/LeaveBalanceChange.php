@@ -474,34 +474,56 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return bool
    */
   private static function thereIsAPublicHolidayLeaveRequest($contactID, DateTime $date) {
+    $balanceChange = self::getExistingBalanceChangeForALeaveRequestDate($contactID, $date);
+
+    if(is_null($balanceChange)) {
+      return false;
+    }
+
     $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
 
+    return $balanceChange->type_id == $balanceChangeTypes['Public Holiday'];
+  }
+
+  /**
+   * Returns an existing LeaveBalanceChange record for the given contact on the
+   * given date
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \CRM_Core_DAO|null|object
+   */
+  public static function getExistingBalanceChangeForALeaveRequestDate($contactID, DateTime $date) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
 
     $query = "
-      SELECT bc.id
+      SELECT bc.*
       FROM {$balanceChangeTable} bc
       INNER JOIN {$leaveRequestDateTable} lrd 
         ON bc.source_id = lrd.id AND bc.source_type = %1
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
-      WHERE bc.type_id = %2 AND 
-            lrd.date = %3 AND
-            lr.contact_id = %4
+      WHERE lrd.date = %2 AND
+            lr.contact_id = %3
       ORDER BY id
     ";
 
     $params = [
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
-      2 => [$balanceChangeTypes['Public Holiday'], 'Integer'],
-      3 => [$date->format('Y-m-d'), 'String'],
-      4 => [$contactID, 'Integer']
+      2 => [$date->format('Y-m-d'), 'String'],
+      3 => [$contactID, 'Integer']
     ];
 
-    $result = CRM_Core_DAO::executeQuery($query, $params);
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
 
-    return $result->N == 1;
+    if($result->N == 1) {
+      $result->fetch();
+      return $result;
+    }
+
+    return null;
   }
 }

@@ -1,16 +1,24 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
 
   private static $leaveRequestStatuses;
   private static $dayTypes;
 
-  public static function fabricate($params) {
+  public static function fabricate($params, $withBalanceChanges = false) {
     $params = self::mergeDefaultParams($params);
 
-    return LeaveRequest::create($params);
+    $leaveRequest = LeaveRequest::create($params);
+    if($withBalanceChanges) {
+      foreach($leaveRequest->getDates() as $date) {
+        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+      }
+    }
+
+    return $leaveRequest;
   }
 
   private static function mergeDefaultParams($params) {
