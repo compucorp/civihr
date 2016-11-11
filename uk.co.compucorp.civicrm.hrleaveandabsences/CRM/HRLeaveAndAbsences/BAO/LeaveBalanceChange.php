@@ -49,7 +49,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         'source_type' => self::SOURCE_LEAVE_REQUEST_DAY,
         'type_id'     => $balanceChangeTypes['Leave'],
         'amount'      => self::calculateBalanceChangeAmountForDate(
-          $leaveRequest->contact_id,
+          $leaveRequest,
           new \DateTime($date->date)
         )
       ]);
@@ -448,17 +448,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Leave Requests overlapping the dates of the LeaveRequest. For those dates,
    * the amount of days to be deducted will be 0.
    *
-   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *  The LeaveRequest which the $date belongs to
    * @param \DateTime $date
    *
    * @return float
    */
-  private static function calculateBalanceChangeAmountForDate($contactID, DateTime $date) {
-    if(self::thereIsAPublicHolidayLeaveRequest($contactID, $date)) {
+  private static function calculateBalanceChangeAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
+    if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
       return 0.0;
     }
 
-    $attribution = WorkPatternAttribution::getForDate($contactID, $date);
+    $attribution = WorkPatternAttribution::getForDate($leaveRequest->contact_id, $date);
     $workPattern = WorkPattern::findById($attribution->pattern_id);
 
     return $workPattern->getLeaveDaysForDate($date, new \DateTime($attribution->effective_date));
@@ -466,15 +467,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
   /**
    * Returns if there is a Public Holiday Leave Request for the given
-   * contact on the given date
+   * $date and with the same contact_id and type_id as the given $leaveRequest
    *
-   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    * @param \DateTime $date
    *
    * @return bool
    */
-  private static function thereIsAPublicHolidayLeaveRequest($contactID, DateTime $date) {
-    $balanceChange = self::getExistingBalanceChangeForALeaveRequestDate($contactID, $date);
+  private static function thereIsAPublicHolidayLeaveRequest(LeaveRequest $leaveRequest, DateTime $date) {
+    $balanceChange = self::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
 
     if(is_null($balanceChange)) {
       return false;
@@ -486,15 +487,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Returns an existing LeaveBalanceChange record for the given contact on the
-   * given date
+   * Returns an existing LeaveBalanceChange record linked to a LeaveRequestDate
+   * with the same date as $date and belonging to a LeaveRequest with the same
+   * contact_id and type_id as those of the given $leaveRequest.
    *
-   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    * @param \DateTime $date
    *
    * @return \CRM_Core_DAO|null|object
    */
-  public static function getExistingBalanceChangeForALeaveRequestDate($contactID, DateTime $date) {
+  public static function getExistingBalanceChangeForALeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -502,19 +504,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $query = "
       SELECT bc.*
       FROM {$balanceChangeTable} bc
-      INNER JOIN {$leaveRequestDateTable} lrd 
+      INNER JOIN {$leaveRequestDateTable} lrd
         ON bc.source_id = lrd.id AND bc.source_type = %1
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
       WHERE lrd.date = %2 AND
-            lr.contact_id = %3
+            lr.contact_id = %3 AND 
+            lr.type_id = %4
       ORDER BY id
     ";
 
     $params = [
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$date->format('Y-m-d'), 'String'],
-      3 => [$contactID, 'Integer']
+      3 => [$leaveRequest->contact_id, 'Integer'],
+      4 => [$leaveRequest->type_id, 'Integer']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);

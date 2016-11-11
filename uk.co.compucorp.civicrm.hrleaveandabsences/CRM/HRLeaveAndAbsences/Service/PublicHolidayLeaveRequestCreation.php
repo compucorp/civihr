@@ -46,7 +46,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $dates = $leaveRequest->getDates();
     foreach($dates as $date) {
-      $this->zeroDeductionForOverlappingLeaveRequestDate($leaveRequest->contact_id, $date);
+      $this->zeroDeductionForOverlappingLeaveRequestDate($leaveRequest, $date);
 
       LeaveBalanceChange::create([
         'source_id'   => $date->id,
@@ -57,10 +57,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     }
   }
 
-  private function zeroDeductionForOverlappingLeaveRequestDate($contactID, LeaveRequestDate $leaveRequestDate) {
+  private function zeroDeductionForOverlappingLeaveRequestDate(LeaveRequest $leaveRequest, LeaveRequestDate $leaveRequestDate) {
     $date = new DateTime($leaveRequestDate->date);
 
-    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($contactID, $date);
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
 
     if($leaveBalanceChange) {
       LeaveBalanceChange::create([
