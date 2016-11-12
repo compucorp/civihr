@@ -31,6 +31,7 @@ class CRM_StyleGuide_Page_StyleGuide extends CRM_Core_Page {
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrap', 'js/scrollspy.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrap', 'js/dropdown.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrap', 'js/collapse.js', 1000);
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrap', 'js/tab.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.styleguide', 'js/sg-plugins.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.styleguide', 'js/sg-scripts.js', 1000);
   }
