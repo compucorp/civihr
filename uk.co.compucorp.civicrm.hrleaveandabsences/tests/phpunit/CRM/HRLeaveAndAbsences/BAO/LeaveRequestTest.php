@@ -1,6 +1,9 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -9,11 +12,26 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
  */
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
+  /**
+   * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
+   */
+  private $absenceType;
+
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+
+    // We delete everything two avoid problems with the default absence types
+    // created during the extension installation
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    // This is needed for the tests regarding public holiday leave requests
+    $this->absenceType = AbsenceTypeFabricator::fabricate([
+      'must_take_public_holiday_as_leave' => 1
+    ]);
   }
 
   public function tearDown() {
@@ -88,5 +106,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(2, $dates);
     $this->assertEquals($fromDate->format('Y-m-d'), $dates[0]->date);
     $this->assertEquals($toDate->format('Y-m-d'), $dates[1]->date);
+  }
+
+  public function testCanFindAPublicHolidayLeaveRequestForAContact() {
+    $contactID = 2;
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-01';
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday));
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+
+    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
+    $this->assertEquals($publicHoliday->date, $leaveRequest->from_date);
+    $this->assertEquals($contactID, $leaveRequest->contact_id);
+  }
+
+  public function testShouldReturnNullIfItCantFindAPublicHolidayLeaveRequestForAContact() {
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-03';
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest(3, $publicHoliday));
   }
 }
