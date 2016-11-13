@@ -544,6 +544,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
+   * Deletes the LeaveBalanceChange linked to the given LeaveRequestDate
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate $date
+   */
+  public static function deleteForLeaveRequestDate(LeaveRequestDate $date) {
+    $leaveBalanceChangeTable = self::getTableName();
+    $query = "DELETE FROM {$leaveBalanceChangeTable} WHERE source_id = %1 AND source_type = %2";
+
+    $params = [
+      1 => [$date->id, 'Integer'],
+      2 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
    * Fetches the contract of the given contact overlapping the given date and
    * then return it's period start date as a DateTime object. Null is returned
    * if there's no contract is found.

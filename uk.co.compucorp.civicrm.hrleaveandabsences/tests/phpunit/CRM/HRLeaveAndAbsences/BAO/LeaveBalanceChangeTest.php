@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
@@ -713,6 +714,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
 
     $this->assertNotNull($leaveBalanceChange);
+  }
+
+  public function testCanDeleteTheBalanceChangeForALeaveRequestDate() {
+    $leaveRequestDate = LeaveRequestDate::create([
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'leave_request_id' => 1
+    ]);
+
+    $balanceChange = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($leaveRequestDate);
+
+    LeaveBalanceChange::deleteForLeaveRequestDate($leaveRequestDate);
+
+    try {
+      $balanceChange = LeaveBalanceChange::findById($balanceChange->id);
+      $this->fail('Expected the balance change to be deleted, but it was find');
+    } catch(Exception $e) {
+      $exceptionMessage = "Unable to find a CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange with id {$balanceChange->id}.";
+      $this->assertEquals($exceptionMessage, $e->getMessage());
+    }
   }
 
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
