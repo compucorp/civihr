@@ -12,8 +12,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
     return WorkPattern::create($params);
   }
 
-  public static function fabricateWithA40HourWorkWeek() {
-    $params = self::getDefaultParams();
+  public static function fabricateWithA40HourWorkWeek($params = []) {
+    $params = array_merge(self::getDefaultParams(), $params);
     $params['weeks'] = self::get40HoursWeekParams();
 
     return WorkPattern::create($params);

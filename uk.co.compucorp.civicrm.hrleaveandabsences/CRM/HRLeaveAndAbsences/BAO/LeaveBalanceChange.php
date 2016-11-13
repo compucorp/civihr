@@ -442,7 +442,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * on the given date.
    *
    * This works by fetching the contact's work pattern active during the given
-   * date and then using it to get the amount of days to be deducted.
+   * date and then using it to get the amount of days to be deducted. If there's
+   * no work pattern assigned to the contact, the default work pattern will be
+   * used instead.
    *
    * This method also takes in consideration the existence of Public Holidays
    * Leave Requests overlapping the dates of the LeaveRequest. For those dates,
@@ -460,9 +462,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     }
 
     $attribution = WorkPatternAttribution::getForDate($leaveRequest->contact_id, $date);
-    $workPattern = WorkPattern::findById($attribution->pattern_id);
+    if(is_null($attribution)) {
+      $workPattern = WorkPattern::getDefault();
+      $startDate = self::getStartDateOfContractOverlappingDate($leaveRequest->contact_id, $date);
+    } else {
+      $workPattern = WorkPattern::findById($attribution->pattern_id);
+      $startDate = new \DateTime($attribution->effective_date);
+    }
 
-    return $workPattern->getLeaveDaysForDate($date, new \DateTime($attribution->effective_date));
+    if(!$workPattern || !$startDate) {
+      return 0.0;
+    }
+
+    return $workPattern->getLeaveDaysForDate($date, $startDate);
   }
 
   /**
@@ -526,6 +538,30 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     if($result->N == 1) {
       $result->fetch();
       return $result;
+    }
+
+    return null;
+  }
+
+  /**
+   * Fetches the contract of the given contact overlapping the given date and
+   * then return it's period start date as a DateTime object. Null is returned
+   * if there's no contract is found.
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \DateTime|null
+   */
+  private static function getStartDateOfContractOverlappingDate($contactID, DateTime $date) {
+    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+      'contact_id' => $contactID,
+      'start_date' => $date->format('Y-m-d'),
+      'sequential' => 1
+    ]);
+
+    if(!empty($result['values'])) {
+      return new DateTime($result['values'][0]['period_start_date']);
     }
 
     return null;
