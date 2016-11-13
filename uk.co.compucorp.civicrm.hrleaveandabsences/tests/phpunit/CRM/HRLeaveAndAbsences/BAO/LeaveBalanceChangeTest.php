@@ -536,7 +536,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertCount(4, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
 
     // Only 2 of the 4 days of the LeaveRequest are working days, so
-    $this->assertEquals(2, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+    $this->assertEquals(-2, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
   public function testCanCreateBalanceChangesForALeaveRequestUsingTheDefaultWorkPattern() {
@@ -564,7 +564,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertCount(2, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
 
     // Only 1 of the 2 days of the LeaveRequest are working days, so
-    $this->assertEquals(1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
   public function testTheBalanceChangesForALeaveRequestOfAContactWithoutAContractShouldBeZero() {

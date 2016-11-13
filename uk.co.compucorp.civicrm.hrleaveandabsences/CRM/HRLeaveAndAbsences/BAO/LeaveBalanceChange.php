@@ -474,7 +474,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return 0.0;
     }
 
-    return $workPattern->getLeaveDaysForDate($date, $startDate);
+    return $workPattern->getLeaveDaysForDate($date, $startDate) * -1;
   }
 
   /**
