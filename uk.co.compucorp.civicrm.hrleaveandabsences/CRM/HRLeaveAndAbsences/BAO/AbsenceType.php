@@ -410,6 +410,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
   /**
    * Returns a list of all enabled Absence Types, ordered by weight
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
    */
   public static function getEnabledAbsenceTypes()
   {
