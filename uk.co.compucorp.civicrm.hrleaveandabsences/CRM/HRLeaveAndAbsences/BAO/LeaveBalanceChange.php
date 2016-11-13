@@ -456,7 +456,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * @return float
    */
-  private static function calculateBalanceChangeAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
+  public static function calculateBalanceChangeAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
     if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
       return 0.0;
     }
