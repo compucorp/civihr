@@ -62,7 +62,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $this->assertNull($contactWorkPattern2->effective_end_date);
   }
 
-  public function testGetWorkPatternForDateReturnsTheActiveWorkPatternForAnEmployeeAtTheGivenDate() {
+  public function testGetForDateReturnsTheActiveWorkPatternForAnEmployeeAtTheGivenDate() {
     $workPattern1 = WorkPatternFabricator::fabricate();
     $workPattern2 = WorkPatternFabricator::fabricate();
     $workPattern3 = WorkPatternFabricator::fabricate();
@@ -87,32 +87,22 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
       'effective_date' => CRM_Utils_Date::processDate('2016-12-15'),
     ]);
 
-    $workPattern = ContactWorkPattern::getWorkPatternForDate($contactID, new DateTime('2016-03-25'));
-    $this->assertEquals($workPattern1->id, $workPattern->id);
+    $contactWorkPattern = ContactWorkPattern::getForDate($contactID, new DateTime('2016-03-25'));
+    $this->assertEquals($workPattern1->id, $contactWorkPattern->pattern_id);
 
-    $workPattern = ContactWorkPattern::getWorkPatternForDate($contactID, new DateTime('2016-07-23'));
-    $this->assertEquals($workPattern2->id, $workPattern->id);
+    $contactWorkPattern = ContactWorkPattern::getForDate($contactID, new DateTime('2016-07-23'));
+    $this->assertEquals($workPattern2->id, $contactWorkPattern->pattern_id);
 
-    $workPattern = ContactWorkPattern::getWorkPatternForDate($contactID, new DateTime('2017-07-23'));
-    $this->assertEquals($workPattern3->id, $workPattern->id);
+    $contactWorkPattern = ContactWorkPattern::getForDate($contactID, new DateTime('2017-07-23'));
+    $this->assertEquals($workPattern3->id, $contactWorkPattern->pattern_id);
   }
 
-  public function testGetWorkPatternForDateReturnsTheDefaultWorkPatternIfTheEmployeeHasNoWorkPatterns() {
-    $defaultWorkPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
-    WorkPatternFabricator::fabricate();
-
-    $workPattern = ContactWorkPattern::getWorkPatternForDate(2, new DateTime('2016-03-25'));
-    $this->assertEquals($defaultWorkPattern->id, $workPattern->id);
-
-    $workPattern = ContactWorkPattern::getWorkPatternForDate(2, new DateTime('2017-11-01'));
-    $this->assertEquals($defaultWorkPattern->id, $workPattern->id);
-
-    $workPattern = ContactWorkPattern::getWorkPatternForDate(2, new DateTime('2013-01-01'));
-    $this->assertEquals($defaultWorkPattern->id, $workPattern->id);
+  public function testGetForDateReturnsNullIfTheEmployeeHasNoWorkPatterns() {
+    $contactWorkPattern = ContactWorkPattern::getForDate(2, new DateTime('2016-03-25'));
+    $this->assertNull($contactWorkPattern);
   }
 
-  public function testGetWorkPatternForDateReturnsTheDefaultWorkPatternIfTheEmployeeHasWorkPatternsButTheGivenDateDoesNotOverlapAny() {
-    $defaultWorkPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+  public function testGetForDateReturnsNullIfTheEmployeeHasWorkPatternsButTheGivenDateDoesNotOverlapAny() {
     $workPattern1 = WorkPatternFabricator::fabricate();
     $workPattern2 = WorkPatternFabricator::fabricate();
 
@@ -131,9 +121,9 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     ]);
 
     // The given date is before the effective date of the first work pattern, so
-    // the default one will be returned
-    $workPattern = ContactWorkPattern::getWorkPatternForDate($contactID, new DateTime('2015-12-31'));
-    $this->assertEquals($defaultWorkPattern->id, $workPattern->id);
+    // none will be returned
+    $contactWorkPattern = ContactWorkPattern::getForDate($contactID, new DateTime('2015-12-31'));
+    $this->assertNull($contactWorkPattern);
   }
 
 }
