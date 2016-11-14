@@ -343,10 +343,14 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
 /**
  * Implementation of hook_civicrm_post, executed after task creation/update
  *
- * @param $op string, the type of operation being performed;
- * @param $objectName string, type of object being processed
- * @param $objectId string, id of object
- * @param $objectRef CRM_Activity_DAO_Activity, object being used to process operation.
+ * @param string $op
+ *   The type of operation being performed
+ * @param string $objectName
+ *   Type of object being processed
+ * @param string $objectId string 
+ *   Id of object
+ * @param CRM_Activity_DAO_Activity $objectRef
+ *   Object being used to process operation
  */
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
   if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectId)) {
@@ -461,7 +465,6 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
 function activityCreatedByTaskandAssignments($activity_id) {
   $params = ['id' => $activity_id];
   $activity = CRM_Activity_BAO_Activity::retrieve($params);
-  $activity->activity_type_id;
 
   // check if task and assignments is enabled
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
