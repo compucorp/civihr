@@ -298,77 +298,77 @@ function hrleaveandabsences_civicrm_alterSettingsFolders(&$metaDataFolders = NUL
  * Implementation of hook_civicrm_entityTypes
  */
 function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes[] = array(
+  $entityTypes[] = [
       'name'  => 'AbsenceType',
       'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
       'table' => 'civicrm_hrleaveandabsences_absence_type',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'NotificationReceiver',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_NotificationReceiver',
     'table' => 'civicrm_hrleaveandabsences_notification_receiver',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'WorkPattern',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkPattern',
     'table' => 'civicrm_hrleaveandabsences_work_pattern',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'WorkWeek',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkWeek',
     'table' => 'civicrm_hrleaveandabsences_work_week',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'WorkDay',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkDay',
     'table' => 'civicrm_hrleaveandabsences_work_day',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'AbsencePeriod',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod',
     'table' => 'civicrm_hrleaveandabsences_absence_period',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'PublicHoliday',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday',
     'table' => 'civicrm_hrleaveandabsences_public_holiday',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'LeavePeriodEntitlement',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement',
     'table' => 'civicrm_hrleaveandabsences_leave_period_entitlement',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'LeaveBalanceChange',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange',
     'table' => 'civicrm_hrleaveandabsences_leave_balance_change',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'LeaveRequest',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequest',
     'table' => 'civicrm_hrleaveandabsences_leave_request',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'LeaveRequestDate',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate',
     'table' => 'civicrm_hrleaveandabsences_leave_request_date',
-  );
+  ];
 
-  $entityTypes[] = array(
+  $entityTypes[] = [
     'name'  => 'ContactWorkPattern',
     'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
     'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
-  );
+  ];
 }
 
 /**
