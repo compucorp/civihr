@@ -1,8 +1,16 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
@@ -11,6 +19,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
  */
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
 
@@ -434,6 +443,298 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $balance);
   }
 
+  public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    $expectedLeaveBalanceChanges = [];
+    foreach($leaveRequest->getDates() as $date) {
+      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+    }
+
+    // This balance change will not be returned because it's not linked to
+    // the leave request
+    LeaveBalanceChangeFabricator::fabricate([
+      'source_id' => 100,
+      'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+    ]);
+
+    $breakdownBalanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+
+    $this->assertCount(2, $breakdownBalanceChanges);
+    foreach($expectedLeaveBalanceChanges as $i => $balanceChange) {
+      $this->assertEquals($balanceChange->id, $breakdownBalanceChanges[$i]->id);
+      $this->assertEquals($balanceChange->source_id, $breakdownBalanceChanges[$i]->source_id);
+      $this->assertEquals($balanceChange->source_type, $breakdownBalanceChanges[$i]->source_type);
+      $this->assertEquals($balanceChange->amount, $breakdownBalanceChanges[$i]->amount);
+    }
+  }
+
+  public function testTheLeaveRequestBreakdownReturnsAnEmptyArrayIfThereAreNoBalanceChangesForLeaveRequestDates() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+    ]);
+
+    $this->assertCount(0, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheSumOfAllItsLeaveBalanceChanges() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    $expectedLeaveBalanceChanges = [];
+    foreach($leaveRequest->getDates() as $date) {
+      $expectedLeaveBalanceChanges[] = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+    }
+
+    // The balance changes created by the fabricator deduct 1 day for each date,
+    // so the total for the 4 days should be 4
+    $this->assertEquals(-4, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheTotalBalanceChangeForALeaveRequestWithoutBalanceChangesShouldBeZero() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testCanCreateBalanceChangesForALeaveRequest() {
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $contactWorkPattern = ContactWorkPattern::create([
+      'pattern_id' => $workPattern->id,
+      'contact_id' => 2,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => $contactWorkPattern->contact_id,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-04'),
+    ]);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    // One balance change must be created for each leave request date
+    $this->assertCount(4, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+
+    // Only 2 of the 4 days of the LeaveRequest are working days, so
+    $this->assertEquals(-2, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testCanCreateBalanceChangesForALeaveRequestUsingTheDefaultWorkPattern() {
+    // The default work pattern will be used if there's no work pattern
+    // for a contact
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    // To properly rotate the weeks of a work pattern, we need a base start date.
+    // When using a pattern linked to a contact, this date will be the
+    // pattern effective date. When using the default work pattern, the date
+    // will be the start date of the contract overlapping the leave request date
+    $this->createContract();
+    $this->setContractDates('2016-01-01', '2016-12-31');
+
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => $this->contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-08-05'), //Friday
+      'to_date' => CRM_Utils_Date::processDate('2016-08-06'), //Saturday
+    ]);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    // One balance change must be created for each leave request date
+    $this->assertCount(2, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+
+    // Only 1 of the 2 days of the LeaveRequest are working days, so
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheBalanceChangesForALeaveRequestOfAContactWithoutAContractShouldBeZero() {
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-11-08'),
+    ]);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    // One balance change must be created for each leave request date
+    $this->assertCount(4, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+
+    // The amount for each balance change should be 0, as well as the Total
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheBalanceChangesForALeaveRequestOfAContactWithoutAWorkPatternShouldBeZeroIfTheresNoDefaultWorkPattern() {
+    $this->deleteDefaultWorkPattern();
+
+    $this->createContract();
+    $this->setContractDates('2016-01-01', '2016-12-31');
+
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-11-08'),
+    ]);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    // One balance change must be created for each leave request date
+    $this->assertCount(4, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
+
+    // The amount for each balance change should be 0, as well as the Total
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testTheBalanceChangeForALeaveRequestDateOverlappingAPublicHolidayLeaveRequestShouldBeZero() {
+    $leaveRequest = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-01-01');
+    $publicHolidayLeaveRequestCreation = new PublicHolidayLeaveRequestCreation();
+    $publicHolidayLeaveRequestCreation->createForContact($leaveRequest->contact_id, $publicHoliday);
+
+    LeaveBalanceChange::createForLeaveRequest($leaveRequest);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(1, $balanceChanges);
+    $this->assertEquals(0, $balanceChanges[0]->amount);
+  }
+
+  public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestDateWithTheGivenDate() {
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 2;
+    $leaveRequest->type_id = 1;
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $leaveRequest->contact_id,
+      'type_id' => $leaveRequest->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+    ], true);
+
+    // Now we check that there's already a LeaveBalanceChange linked to a
+    // a leave request with the same contact_id and type_id of the given leave
+    // request but with a different date, so it should return null
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate(
+      $leaveRequest,
+      new DateTime('2016-01-02')
+    );
+
+    $this->assertNull($leaveBalanceChange);
+  }
+
+  public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestWithTheGivenContact() {
+    $date = new DateTime('2017-01-01');
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 2;
+    $leaveRequest->type_id = 1;
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => $leaveRequest->type_id,
+      'from_date' => $date->format('YmdHis')
+    ], true);
+
+    // Now we since the contact_id on $leaveRequest is different than the one
+    // used by the fabricator, no LeaveBalanceChange will be returned
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate(
+      $leaveRequest,
+      $date
+    );
+
+    $this->assertNull($leaveBalanceChange);
+  }
+
+  public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestWithTheGivenAbsenceType() {
+    $date = new DateTime('2017-01-01');
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 2;
+    $leaveRequest->type_id = 1;
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $leaveRequest->contact_id,
+      'type_id' => 2,
+      'from_date' => $date->format('YmdHis')
+    ], true);
+
+    // Now we since the type_id on $leaveRequest is different than the one
+    // used by the fabricator, no LeaveBalanceChange will be returned
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate(
+      $leaveRequest,
+      $date
+    );
+
+    $this->assertNull($leaveBalanceChange);
+  }
+
+  public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnARecordIfItIsLinkedToALeaveRequestForTheSameContactTypeAndDate() {
+    $date = new DateTime('2017-01-01');
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = 2;
+    $leaveRequest->type_id = 1;
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $leaveRequest->contact_id,
+      'type_id' => $leaveRequest->type_id,
+      'from_date' => $date->format('YmdHis')
+    ], true);
+
+    // Now we check that there's already a LeaveBalanceChange linked to a
+    // a leave request with the same contact_id and type_id of the given leave
+    // request and also linked to a leave request date with the given date
+    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
+
+    $this->assertNotNull($leaveBalanceChange);
+  }
+
+  public function testCanDeleteTheBalanceChangeForALeaveRequestDate() {
+    $leaveRequestDate = LeaveRequestDate::create([
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'leave_request_id' => 1
+    ]);
+
+    $balanceChange = LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($leaveRequestDate);
+
+    LeaveBalanceChange::deleteForLeaveRequestDate($leaveRequestDate);
+
+    try {
+      $balanceChange = LeaveBalanceChange::findById($balanceChange->id);
+      $this->fail('Expected the balance change to be deleted, but it was find');
+    } catch(Exception $e) {
+      $exceptionMessage = "Unable to find a CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange with id {$balanceChange->id}.";
+      $this->assertEquals($exceptionMessage, $e->getMessage());
+    }
+  }
+
 //  public function testCreateExpirationRecordsCreatesRecordsForExpiredBalanceChanges() {
 //    $this->createBroughtForwardBalanceChange(1, 5, date('YmdHis', strtotime('-1 day')));
 //    $this->createBroughtForwardBalanceChange(2, 7, date('YmdHis', strtotime('-8 days')));
@@ -591,5 +892,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     }
 
     return null;
+  }
+
+  private function deleteDefaultWorkPattern() {
+    $workPatternTable = WorkPattern::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$workPatternTable} WHERE is_default = 1");
   }
 }

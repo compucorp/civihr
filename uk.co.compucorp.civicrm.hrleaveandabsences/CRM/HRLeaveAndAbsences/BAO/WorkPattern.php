@@ -125,6 +125,19 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Returns the default WorkPattern
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  public static function getDefault() {
+    $workPattern = new self();
+    $workPattern->is_default = 1;
+    $workPattern->find(true);
+
+    return $workPattern;
+  }
+
+  /**
    * This method works like find() (it actually uses it)
    * but it includes the number_of_weeks and number_of_hours
    * for each pattern.
@@ -258,8 +271,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * Returns the leave_days amount for the given $date, based on the $startDate
-   * and $endDate.
+   * Returns the leave_days amount for the given $date, based on the $startDate.
    *
    * This method will rotate through the pattern's weeks to get the return value.
    * That is, starting from $startDate, if the $date falls on the first week, we
@@ -268,18 +280,17 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * week, we rotate and get the value from the pattern's first week again and
    * so on.
    *
-   * If the $date is not between $startDate and $endDate, it will return 0.
+   * If the $date is not greater than or equal the $startDate, it will return 0.
    *
    * If the WorkPattern doesn’t have weeks, it will return 0.
    *
    * @param \DateTime $date
    * @param \DateTime $startDate
-   * @param \DateTime $endDate
    *
    * @return float
    */
-  public function getLeaveDaysForDate(DateTime $date, DateTime $startDate, DateTime $endDate) {
-    if($date < $startDate || $date > $endDate) {
+  public function getLeaveDaysForDate(DateTime $date, DateTime $startDate) {
+    if($date < $startDate) {
       return 0;
     }
 

@@ -3,6 +3,8 @@
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -27,6 +29,31 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  /**
+   * Creates LeaveBalanceChanges for each of the LeaveRequestDates of the given
+   * LeaveRequest.
+   *
+   * The amount for each balance change will be calculated accordingly to the
+   * WorkPattern(s) of the contact of the LeaveRequest.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  public static function createForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
+
+    foreach($leaveRequest->getDates() as $date) {
+      self::create([
+        'source_id'   => $date->id,
+        'source_type' => self::SOURCE_LEAVE_REQUEST_DAY,
+        'type_id'     => $balanceChangeTypes['Leave'],
+        'amount'      => self::calculateAmountForDate(
+          $leaveRequest,
+          new \DateTime($date->date)
+        )
+      ]);
+    }
   }
 
   /**
@@ -219,6 +246,69 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
+   * Returns all the LeaveBalanceChanges linked to the LeaveRequestDates of the
+   * given LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  public static function getBreakdownForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+
+    $query = "
+      SELECT bc.*
+      FROM {$balanceChangeTable} bc
+      INNER JOIN {$leaveRequestDateTable} lrd 
+        ON bc.source_id = lrd.id AND bc.source_type = %1
+      INNER JOIN {$leaveRequestTable} lr
+        ON lrd.leave_request_id = lr.id
+      WHERE lr.id = %2
+      ORDER BY id
+    ";
+
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$leaveRequest->id, 'Integer'],
+    ];
+
+    $changes = [];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+    while($result->fetch()) {
+      $changes[] = clone $result;
+    }
+
+    return $changes;
+  }
+
+  /**
+   * Returns the sum of all LeaveBalanceChanges linked to the LeaveRequestDates
+   * of the given LeaveRequest.
+   *
+   * This basically gets the output of getBreakdownForLeaveRequest()
+   * and sums up the amount of the returned LeaveBalanceChange instances.
+   *
+   * @see \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getBreakdownForLeaveRequest()
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return float
+   */
+  public static function getTotalBalanceChangeForLeaveRequest(LeaveRequest $leaveRequest) {
+    $balanceChanges = self::getBreakdownForLeaveRequest($leaveRequest);
+
+    $balance = 0.0;
+    foreach($balanceChanges as $balanceChange) {
+      $balance += (float)$balanceChange->amount;
+    }
+
+    return $balance;
+  }
+
+  /**
    * This method checks every leave balance change record with an expiry_date in
    * the past and that still don't have a record for the expired days (that is,
    * a balance change record of this same type and with an expired_balance_change_id
@@ -345,5 +435,152 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     // Finally, since this is a list of conditions separate
     // by OR, we wrap it in parenthesis
     return "($whereLeaveRequestDates)";
+  }
+
+  /**
+   * Calculates the amount to be deducted for a leave taken by the given contact
+   * on the given date.
+   *
+   * This works by fetching the contact's work pattern active during the given
+   * date and then using it to get the amount of days to be deducted. If there's
+   * no work pattern assigned to the contact, the default work pattern will be
+   * used instead.
+   *
+   * This method also considers the existence of Public Holidays Leave Requests
+   * overlapping the dates of the LeaveRequest. For those dates, the amount of
+   * days to be deducted will be 0.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *  The LeaveRequest which the $date belongs to
+   * @param \DateTime $date
+   *
+   * @return float
+   */
+  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
+    if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
+      return 0.0;
+    }
+
+    $contactWorkPattern = ContactWorkPattern::getForDate($leaveRequest->contact_id, $date);
+    if(is_null($contactWorkPattern)) {
+      $workPattern = WorkPattern::getDefault();
+      $startDate = self::getStartDateOfContractOverlappingDate($leaveRequest->contact_id, $date);
+    } else {
+      $workPattern = WorkPattern::findById($contactWorkPattern->pattern_id);
+      $startDate = new \DateTime($contactWorkPattern->effective_date);
+    }
+
+    if(!$workPattern || !$startDate) {
+      return 0.0;
+    }
+
+    return $workPattern->getLeaveDaysForDate($date, $startDate) * -1;
+  }
+
+  /**
+   * Returns if there is a Public Holiday Leave Request for the given
+   * $date and with the same contact_id and type_id as the given $leaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   * @param \DateTime $date
+   *
+   * @return bool
+   */
+  private static function thereIsAPublicHolidayLeaveRequest(LeaveRequest $leaveRequest, DateTime $date) {
+    $balanceChange = self::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
+
+    if(is_null($balanceChange)) {
+      return false;
+    }
+
+    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
+
+    return $balanceChange->type_id == $balanceChangeTypes['Public Holiday'];
+  }
+
+  /**
+   * Returns an existing LeaveBalanceChange record linked to a LeaveRequestDate
+   * with the same date as $date and belonging to a LeaveRequest with the same
+   * contact_id and type_id as those of the given $leaveRequest.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   * @param \DateTime $date
+   *
+   * @return \CRM_Core_DAO|null|object
+   */
+  public static function getExistingBalanceChangeForALeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
+    $balanceChangeTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveRequestTable = LeaveRequest::getTableName();
+
+    $query = "
+      SELECT bc.*
+      FROM {$balanceChangeTable} bc
+      INNER JOIN {$leaveRequestDateTable} lrd
+        ON bc.source_id = lrd.id AND bc.source_type = %1
+      INNER JOIN {$leaveRequestTable} lr
+        ON lrd.leave_request_id = lr.id
+      WHERE lrd.date = %2 AND
+            lr.contact_id = %3 AND 
+            lr.type_id = %4
+      ORDER BY id
+    ";
+
+    $params = [
+      1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$date->format('Y-m-d'), 'String'],
+      3 => [$leaveRequest->contact_id, 'Integer'],
+      4 => [$leaveRequest->type_id, 'Integer']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+
+    if($result->N == 1) {
+      $result->fetch();
+      return $result;
+    }
+
+    return null;
+  }
+
+  /**
+   * Deletes the LeaveBalanceChange linked to the given LeaveRequestDate
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate $date
+   */
+  public static function deleteForLeaveRequestDate(LeaveRequestDate $date) {
+    $leaveBalanceChangeTable = self::getTableName();
+    $query = "DELETE FROM {$leaveBalanceChangeTable} WHERE source_id = %1 AND source_type = %2";
+
+    $params = [
+      1 => [$date->id, 'Integer'],
+      2 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String']
+    ];
+
+    CRM_Core_DAO::executeQuery($query, $params);
+  }
+
+  /**
+   * Fetches the contract of the given contact overlapping the given date and
+   * then return it's period start date as a DateTime object. Null is returned
+   * if there's no contract is found.
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \DateTime|null
+   */
+  private static function getStartDateOfContractOverlappingDate($contactID, DateTime $date) {
+    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+      'contact_id' => $contactID,
+      'start_date' => $date->format('Y-m-d'),
+      'sequential' => 1
+    ]);
+
+    if(!empty($result['values'])) {
+      return new DateTime($result['values'][0]['period_start_date']);
+    }
+
+    return null;
   }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
@@ -8,7 +10,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Create a new LeaveRequest based on array-data
    *
    * @param array $params key-value pairs
-   * @return \CRM_HRLeaveAndAbsences_DAO_LeaveRequest|NULL
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|NULL
    *
    * @throws \Exception
    */
@@ -35,6 +37,52 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
+  }
+
+  /**
+   * Returns a LeaveRequest instance representing the Public Holiday Leave Request
+   * for the given $publicHoliday and assigned to the Contact with the given
+   * $contactID
+   *
+   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
+   */
+  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday) {
+    $leaveRequestTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+
+    $query = "
+      SELECT lr.* FROM {$leaveRequestTable} lr
+      INNER JOIN {$leaveRequestDateTable} lrd 
+        ON lrd.leave_request_id = lr.id
+      INNER JOIN {$leaveBalanceChangeTable} lbc
+        ON lbc.source_id = lrd.id AND lbc.source_type = %1
+      WHERE lr.contact_id = %2 AND 
+            lrd.date = %3 AND
+            lbc.type_id = %4
+    ";
+
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$contactID, 'Integer'],
+      3 => [CRM_Utils_Date::processDate($publicHoliday->date), 'Integer'],
+      4 => [$balanceChangeTypes['Public Holiday'], 'Integer']
+    ];
+
+    $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+
+    if($leaveRequest->N == 1) {
+      $leaveRequest->fetch();
+
+      return $leaveRequest;
+    }
+
+    return null;
   }
 
   /**
