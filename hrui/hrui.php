@@ -232,7 +232,7 @@ function hrui_civicrm_install() {
   // make sure only relevant components are enabled
   $params = array(
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviCase'),
+    'enable_components' => array('CiviReport','CiviCase'),
   );
   $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
@@ -260,6 +260,30 @@ function hrui_civicrm_install() {
     if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
       CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
       throw new CRM_Core_Exception('Failed to disable contact type');
+    }
+  }
+
+
+  // Delete unnecessary reports
+  $reports = array("Constituent Summary", "Constituent Detail", "Current Employers");
+  if (!empty($reports)) {
+    foreach ($reports as $reportTitle) {
+      $reportID = CRM_Core_DAO::getFieldValue(
+        'CRM_Report_DAO_ReportInstance',
+        $reportTitle,
+        'id',
+        'title'
+      );
+      if ($reportID) {
+        $paramsReport = array(
+          'id' => $reportID,
+        );
+        $resultContactType = civicrm_api3('report_instance', 'delete', $paramsReport);
+        if (CRM_Utils_Array::value('is_error', $resultContactType, FALSE)) {
+          CRM_Core_Error::debug_var('contact_type-create result for is_active', $resultContactType);
+          throw new CRM_Core_Exception('Failed to disable contact type');
+        }
+      }
     }
   }
 
@@ -876,7 +900,7 @@ function _hrui_coreMenuChanges(&$params) {
     'Search builder',
     'Custom searches',
     'Find Cases',
-    'Find Activities'
+    'Find Activities',
   ];
   foreach($toRemove as $item) {
     if (
@@ -896,6 +920,7 @@ function _hrui_coreMenuChanges(&$params) {
     'Manage Tags (Categories)',
     'New Activity',
     'Import Activities',
+    'Contact Reports',
   ];
   foreach($toRemove as $item) {
     if (
@@ -908,10 +933,19 @@ function _hrui_coreMenuChanges(&$params) {
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
+  // remove main Reports menu
+  $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
+  unset($params[$reportsNavId]);
+
   // Remove Admin items
   $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+
+  $civiReportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviReport', 'id', 'name');
+
   $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
   $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
+
+  unset($params[$adminNavId]['child'][$civiReportNavId]);
   unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
 }
 

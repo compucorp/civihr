@@ -8,15 +8,11 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobHealth extends CRM_Hrjobcontra
   public function handle(array $params, CRM_Hrjobcontract_DAO_HRJobContractRevision $contractRevision, array &$previousRevision) {
     $entityParams = $this->extractFields($params);
 
-    if(count($entityParams) === 0) {
-      return array();
-    }
-
-    $entityParams['import'] = 1;
+    $entityParams['sequential'] = 1;
     $entityParams['jobcontract_id'] = $contractRevision->jobcontract_id;
     $entityParams['jobcontract_revision_id'] = $contractRevision->id;
 
-    return array(CRM_Hrjobcontract_BAO_HRJobHealth::create($entityParams));
+    return civicrm_api3('HRJobHealth', 'create', $entityParams)['values'][0];
   }
 
   /**

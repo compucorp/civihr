@@ -24,6 +24,67 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       return $result;
   }
 
+  protected function populateTableWithEntity($tableName, $entity, array $fields, $revisionId)
+  {
+    $insertQuery = "INSERT INTO {$tableName} SET ";
+    $insertParams = array(1 => array($revisionId, 'Integer'));
+
+    foreach ($fields as $name => $type)
+    {
+        $value = $entity->{$name};
+        if ($value !== null)
+        {
+            switch ($type)
+            {
+                case 'String':
+                case 'Date':
+                case 'Timestamp':
+                    $value = '"' . $value . '"';
+                break;
+            }
+        }
+        else
+        {
+            $value = 'NULL';
+        }
+
+        $insertQuery .= "{$name} = {$value},";
+    }
+    $insertQuery .= "jobcontract_revision_id = %1";
+
+    return CRM_Core_DAO::executeQuery($insertQuery, $insertParams);
+  }
+
+  public function getPayScaleId($payScale)
+  {
+    if (!$payScale)
+    {
+        return null;
+    }
+
+    $selectPayScaleQuery = 'SELECT id FROM civicrm_hrpay_scale WHERE pay_scale = %1 LIMIT 1';
+    $selectPayScaleParams = array(
+        1 => array($payScale, 'String'),
+    );
+    $payScaleResult = CRM_Core_DAO::executeQuery($selectPayScaleQuery, $selectPayScaleParams, false);
+
+    $payScaleId = null;
+    if ($payScaleResult->fetch())
+    {
+        $payScaleId = $payScaleResult->id;
+    }
+    else
+    {
+        //$insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1, pay_grade = %2, currency = %3, amount = %4, periodicity = %5';
+        $insertPayScaleQuery = 'INSERT INTO civicrm_hrpay_scale SET pay_scale = %1';
+        CRM_Core_DAO::executeQuery($insertPayScaleQuery, $selectPayScaleParams, false);
+
+        $payScaleId = (int)CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
+    }
+
+    return $payScaleId;
+  }
+
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
     $this->executeCustomDataFile('xml/option_group_install.xml');
@@ -480,7 +541,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1015();
     $this->upgrade_1016();
     $this->upgrade_1017();
-    $this->upgrade_1019();
+    $this->upgrade_1020();
   }
 
   function upgrade_1001() {
@@ -781,14 +842,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * contact merge code in core civicrm files. So here we just insure that it will
    * be created for existing installations.
    */
+    try {
+      $result = civicrm_api3('OptionValue', 'getsingle', array(
+        'sequential' => 1,
+        'name' => "Contact Deleted by Merge",
+      ));
+      $is_error = !empty($result['is_error']);
+    } catch (CiviCRM_API3_Exception $e) {
+      $is_error = true;
+    }
 
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'name' => "Contact Deleted by Merge",
-      'options' => array('limit' => 1),
-    ));
-
-    if (!empty($result[0]['values']))  {
+    if ($is_error)  {
       civicrm_api3('OptionValue', 'create', array(
         'sequential' => 1,
         'option_group_id' => "activity_type",
@@ -858,10 +922,22 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Upgrade Length of Service values.
+   *
+   * @return TRUE
+   */
+  function upgrade_1019() {
+    CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfServiceAllContacts();
+
+    return true;
+  }
+
+
+  /**
    * Create civicrm_hrpay_scale table and its default data if it is not exist
    *
    */
-  function upgrade_1019() {
+  function upgrade_1020() {
     CRM_Core_DAO::executeQuery("
         CREATE TABLE IF NOT EXISTS `civicrm_hrpay_scale` (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -887,6 +963,60 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
     }
+
+    return true;
+  }
+
+  /**
+   * Remove unnecessary constraints from hrjobcontract entity tables.
+   *
+   * @return TRUE
+   */
+  function upgrade_1022() {
+    $constraints = [
+      'FK_civicrm_hrjobcontract_contact_id' => 'civicrm_hrjobcontract',
+      'FK_civicrm_hrjobcontract_revision_jobcontract_id' => 'civicrm_hrjobcontract_revision',
+      'FK_civicrm_hrjobcontract_details_contract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_details_jobcontract_revision_id' => 'civicrm_hrjobcontract_details',
+      'FK_civicrm_hrjobcontract_health_jobcontract_revision_id' => 'civicrm_hrjobcontract_health',
+      'FK_civicrm_hrjobcontract_hour_jobcontract_revision_id' => 'civicrm_hrjobcontract_hour',
+      'FK_civicrm_hrjobcontract_leave_jobcontract_revision_id' => 'civicrm_hrjobcontract_leave',
+      'FK_civicrm_hrjobcontract_pay_jobcontract_revision_id' => 'civicrm_hrjobcontract_pay',
+      'FK_civicrm_hrjobcontract_pension_jobcontract_revision_id' => 'civicrm_hrjobcontract_pension',
+      'FK_civicrm_hrjobcontract_role_jobcontract_revision_id' => 'civicrm_hrjobcontract_role',
+    ];
+    $messages = [];
+
+    foreach ($constraints as $index => $table) {
+      // We use try/catch block because removing constraint which doesn't exist
+      // causes an exception throwing which breaks the code execution.
+      try {
+        CRM_Core_DAO::executeQuery(
+          "ALTER TABLE `{$table}` DROP FOREIGN KEY `$index`"
+        );
+      } catch (Exception $e) {
+        $messages[] = "Error while removing {$index} key from {$table} table: " . $e->getMessage();
+      }
+    }
+
+    if (!empty($messages) && function_exists('drupal_set_message')) {
+      foreach ($messages as $message) {
+        drupal_set_message($message);
+      }
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Changes `change reason` field type, from integer to string, to support
+   * custom values
+   *
+   * @return TRUE
+   */
+  function upgrade_1023() {
+    CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` CHANGE `change_reason` `change_reason` VARCHAR(512) NULL DEFAULT NULL;");
+    CRM_Core_BAO_Navigation::resetNavigation();
 
     return true;
   }
