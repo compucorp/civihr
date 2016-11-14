@@ -12,6 +12,9 @@ use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobDetails as HRJobDetailsFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_EntitlementCalculationTest
@@ -36,7 +39,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   public function setUp() {
-    $this->createContract();
+    $this->contract = HRJobContractFabricator::fabricate(['contact_id' => 2]);
     $this->contact = ['id' => $this->contract['contact_id']];
   }
 
@@ -967,7 +970,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {
-    CRM_Hrjobcontract_BAO_HRJobLeave::create([
+    HRJobLeaveFabricator::fabricate([
       'jobcontract_id' => $this->contract['id'],
       'leave_type' => $type->id,
       'leave_amount' => $leaveAmount,

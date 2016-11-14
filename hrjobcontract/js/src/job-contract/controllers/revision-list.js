@@ -1,18 +1,18 @@
 define([
+    'common/lodash',
     'job-contract/controllers/controllers',
     'job-contract/services/contract'
-], function (controllers) {
+], function (_, controllers) {
     'use strict';
 
     controllers.controller('RevisionListCtrl',['$scope', '$filter', '$q', '$uibModal', '$rootElement', 'settings', 'ContractService',
-        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log',
+        'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractFilesService', '$log', 'ContractRevisionService',
         function ($scope, $filter, $q, $modal, $rootElement, settings, ContractService,
-                 ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log) {
+                 ContractDetailsService, ContractHourService, ContractPayService, ContractFilesService, $log, ContractRevisionService) {
             $log.debug('Controller: RevisionListCtrl');
 
             var contractId = $scope.contract.id,
-                revisionDataListLocal = $scope.revisionDataList = $scope.$parent.$parent.$parent.$parent.revisionDataList;
-                $scope.revisionCurrent = $scope.$parent.$parent.$parent.$parent.revisionCurrent;
+                revisionDataListLocal = $scope.revisionDataList;
 
             $scope.currentPage = 1;
             $scope.itemsPerPage = 5;
@@ -81,51 +81,96 @@ define([
                 return null;
             }
 
+            /**
+             * Takes in a bulk of data, the result of a joined api call, and
+             * returns an object containing such data divided in different properties
+             *
+             * @param  {Object} aggregated
+             * @return {Object}
+             */
+            function expandAggregatedRevisionDetails(aggregated) {
+              return {
+                details: {
+                  position: aggregated['details_revision_id.position'],
+                  location: aggregated['details_revision_id.location'],
+                },
+                hour: {
+                  hours_type: aggregated['hour_revision_id.hours_type']
+                },
+                pay: {
+                  pay_annualized_est: aggregated['pay_revision_id.pay_annualized_est'],
+                  pay_currency: aggregated['pay_revision_id.pay_currency'],
+                  pay_scale: aggregated['pay_revision_id.pay_scale']
+                }
+              };
+            }
+
+            /**
+             * Fetches the details of the given revision, like files, pay, etc
+             *
+             * The bulk of the data is fetched via a joined api call, whose aggregated
+             * result is then expanded before being returned
+             *
+             * @param  {Object} revision
+             * @return {Promise} resolves to an object containing the details
+             */
+            function fetchRevisionDetails(revision) {
+              revision.effective_date = revision.effective_date || '';
+
+              return $q.all({
+                files: $q.all({
+                  details: ContractFilesService.get(revision.details_revision_id,'civicrm_hrjobcontract_details')
+                }),
+                aggregated: ContractRevisionService.get({
+                  action: 'getsingle',
+                  json: {
+                    sequential: 1,
+                    id: revision.id,
+                    return: [
+                      'details_revision_id.position',
+                      'details_revision_id.location',
+                      'hour_revision_id.hours_type',
+                      'pay_revision_id.pay_scale',
+                      'pay_revision_id.pay_annualized_est',
+                      'pay_revision_id.pay_currency'
+                    ]
+                  }
+                })
+                .$promise.then(function (aggregated) {
+                  return aggregated;
+                })
+              })
+              .then(function (results) {
+                return _.assign({
+                  revisionEntityIdObj: revision,
+                  files: results.files
+                }, expandAggregatedRevisionDetails(results.aggregated));
+              });
+            }
+
             function fetchRevisions(contractId){
                 $scope.revisionList.length = 0;
                 $scope.revisionDataList.length = 0;
 
-                ContractService.getRevision(contractId).then(function(revisionList){
-                    var promiseRevisionList = [];
+                ContractService.getRevision(contractId)
+                  .then(function (revisionList) {
+                    revisionList = $filter('orderBy')(revisionList, ['-effective_date', '-id']);
+                    Array.prototype.push.apply($scope.revisionList, revisionList);
 
-                    revisionList = $filter('orderBy')(revisionList, ['-effective_date','-id']);
+                    return $q.all(revisionList.map(fetchRevisionDetails));
+                  })
+                  .then(function(results){
+                    Array.prototype.push.apply($scope.revisionDataList,results);
 
-                    $scope.revisionList.push.apply($scope.revisionList,revisionList);
-
-                    angular.forEach(revisionList, function(revision){
-                        revision.effective_date = revision.effective_date || '';
-
-                        promiseRevisionList.push($q.all({
-                            revisionEntityIdObj: revision,
-                            details: ContractDetailsService.getOne({
-                                jobcontract_revision_id: revision.details_revision_id,
-                                return: 'position, location'
-                            }),
-                            hour: ContractHourService.getOne({
-                                jobcontract_revision_id: revision.hour_revision_id,
-                                return: 'hours_type'
-                            }),
-                            pay: ContractPayService.getOne({
-                                jobcontract_revision_id: revision.pay_revision_id,
-                                return: 'pay_scale, pay_annualized_est, pay_currency'
-                            }),
-                            files: $q.all({
-                                details: ContractFilesService.get(revision.details_revision_id,'civicrm_hrjobcontract_details')
-                            })
-                        }));
-                    });
-
-                    return $q.all(promiseRevisionList);
-
-                }).then(function(results){
-                    $scope.revisionDataList.push.apply($scope.revisionDataList,results);
-                });
+                    $scope.$broadcast('hrjc-loader-hide');
+                  });
             };
+
             fetchRevisions(contractId);
 
             function urlCSVBuild(){
                 var url = settings.pathReport + (settings.pathReport.indexOf('?') > -1 ? '&' : '?' ),
-                    fields = $scope.$parent.fields;
+                    fields = $scope.fields;
 
                 angular.forEach(fields, function(entityFields, entityName){
                     url += 'fields['+entityName+'_revision_id]=1&';
@@ -192,7 +237,7 @@ define([
 
                 modalInstance.result.then(function(confirm){
                     if (confirm) {
-                        $scope.$parent.$parent.$parent.$broadcast('hrjc-loader-show');
+                        $scope.$broadcast('hrjc-loader-show');
                         ContractService.deleteRevision(revisionId).then(function(results){
                             var i = 0, len = $scope.revisionList.length;
                             if (!results.is_error) {
@@ -213,7 +258,7 @@ define([
                                     return
                                 }
 
-                                $scope.$parent.$parent.$parent.$broadcast('hrjc-loader-hide');
+                                $scope.$broadcast('hrjc-loader-hide');
                             }
                         });
                     }

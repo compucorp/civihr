@@ -321,8 +321,6 @@ function _civicrm_hrjobcontract_api3_replace($entity, $params, $forceRevisionId 
  * @return array|int
  */
 function _civicrm_hrjobcontract_api3_deletecontract($params) {
-    $entityNames = array('HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole');
-    
   $transaction = new CRM_Core_Transaction();
   try {
     if (empty($params['id'])) {
@@ -342,61 +340,6 @@ function _civicrm_hrjobcontract_api3_deletecontract($params) {
     }
     civicrm_api3('HRJobContract', 'create', array('version' => 3, 'id' => $contract['id'], 'deleted' => 1));
     CRM_Hrjobcontract_JobContractDates::removeDates($contract['id']);
-    
-    return 1;
-  }
-  catch(PEAR_Exception $e) {
-    $transaction->rollback();
-    return civicrm_api3_create_error($e->getMessage());
-  }
-  catch(Exception $e) {
-    $transaction->rollback();
-    return civicrm_api3_create_error($e->getMessage());
-  }
-}
-
-/**
- * HRJobContract implementation of the "delete" contract action.
- *
- * Deletes whole contract with its all revisions and entities.
- *
- * @param string $entity entity name
- * @param array $params params from civicrm_api, including 'jobcontract_id'
- * @return array|int
- */
-function _civicrm_hrjobcontract_api3_deletecontractpermanently($params) {
-    $entityNames = array('HRJobDetails', 'HRJobHealth', 'HRJobHour', 'HRJobLeave', 'HRJobPay', 'HRJobPension', 'HRJobRole');
-    
-  $transaction = new CRM_Core_Transaction();
-  try {
-    if (empty($params['id'])) {
-      throw new Exception("Cannot permanently delete Job Contract: please specify id value.");
-    }
-
-    $contract = civicrm_api('HRJobContract', 'get', $params);
-    if (empty($contract['id']))
-    {
-        throw new Exception("Cannot find Job Contract with given id (" . $params['id'] . ").");
-    }
-    
-    $revisions = civicrm_api('HRJobContractRevision', 'get', array('sequential' => 1, 'options' => array('limit' => 0), 'version' => 3, 'jobcontract_id' => $params['id']));
-    foreach ($revisions['values'] as $revision)
-    {
-        foreach ($entityNames as $entityName)
-        {
-            $tableName = _civicrm_get_table_name($entityName);
-            $entities = civicrm_api3($entityName, 'get', array('sequential' => 1, 'options' => array('limit' => 0), 'version' => 3, 'jobcontract_revision_id' => (int)$revision[$tableName . '_revision_id']));
-            if (!empty($entities['values']))
-            {
-                foreach ($entities['values'] as $entity)
-                {
-                    civicrm_api3($entityName, 'delete', array('version' => 3, 'id' => $entity['id']));
-                }
-            }
-        }
-        civicrm_api3('HRJobContractRevision', 'delete', array('version' => 3, 'id' => $revision['id']));
-    }
-    civicrm_api3('HRJobContract', 'delete', array('version' => 3, 'id' => $contract['id']));
     
     return 1;
   }
