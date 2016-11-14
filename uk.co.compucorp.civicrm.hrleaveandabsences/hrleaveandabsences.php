@@ -363,6 +363,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate',
     'table' => 'civicrm_hrleaveandabsences_leave_request_date',
   );
+
+  $entityTypes[] = array(
+    'name'  => 'ContactWorkPattern',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
+    'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
+  );
 }
 
 /**
