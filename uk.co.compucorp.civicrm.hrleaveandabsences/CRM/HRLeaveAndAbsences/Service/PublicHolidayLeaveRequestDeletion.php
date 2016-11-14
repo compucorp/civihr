@@ -45,7 +45,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
 
     if($leaveBalanceChange) {
-      $deduction = LeaveBalanceChange::calculateBalanceChangeAmountForDate(
+      $deduction = LeaveBalanceChange::calculateAmountForDate(
         $leaveRequest,
         $date
       );
