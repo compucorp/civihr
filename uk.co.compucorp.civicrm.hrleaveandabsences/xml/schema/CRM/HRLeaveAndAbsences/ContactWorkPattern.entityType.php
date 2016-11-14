@@ -4,8 +4,8 @@
 return array (
   0 =>
   array (
-    'name' => 'WorkPatternAttribution',
-    'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkPatternAttribution',
-    'table' => 'civicrm_hrleaveandabsences_work_pattern_attribution',
+    'name' => 'ContactWorkPattern',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
+    'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
   ),
 );

@@ -6,7 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
-use CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution as WorkPatternAttribution;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
@@ -517,14 +517,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testCanCreateBalanceChangesForALeaveRequest() {
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
 
-    $workPatternAttribution = WorkPatternAttribution::create([
+    $contactWorkPattern = ContactWorkPattern::create([
       'pattern_id' => $workPattern->id,
       'contact_id' => 2,
       'effective_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
 
     $leaveRequest = LeaveRequestFabricator::fabricate([
-      'contact_id' => $workPatternAttribution->contact_id,
+      'contact_id' => $contactWorkPattern->contact_id,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-04'),
@@ -545,7 +545,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
 
     // To properly rotate the weeks of a work pattern, we need a base start date.
-    // When using a pattern attributed to a contact, this date will be the
+    // When using a pattern linked to a contact, this date will be the
     // pattern effective date. When using the default work pattern, the date
     // will be the start date of the contract overlapping the leave request date
     $this->createContract();

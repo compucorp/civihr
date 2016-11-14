@@ -2,9 +2,9 @@
 
 <table>
   <base>CRM/HRLeaveAndAbsences</base>
-  <class>WorkPatternAttribution</class>
-  <name>civicrm_hrleaveandabsences_work_pattern_attribution</name>
-  <comment>Represents the attribution of a work pattern to an employee</comment>
+  <class>ContactWorkPattern</class>
+  <name>civicrm_hrleaveandabsences_contact_work_pattern</name>
+  <comment>Represents the work patterns linked to an employee</comment>
   <add>4.4</add>
   <log>true</log>
 
@@ -12,7 +12,7 @@
     <name>id</name>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Unique WorkPatternAttribution ID</comment>
+    <comment>Unique ContactWorkPattern ID</comment>
     <add>4.4</add>
   </field>
   <primaryKey>
@@ -38,7 +38,7 @@
   <field>
     <name>pattern_id</name>
     <type>int unsigned</type>
-    <comment>FK to the Work Pattern the attributed to an employee</comment>
+    <comment>FK to the Work Pattern linked to an employee</comment>
     <required>true</required>
     <add>4.4</add>
   </field>
@@ -53,7 +53,7 @@
   <field>
     <name>effective_date</name>
     <type>date</type>
-    <comment>The date this attribution will start to be considered active</comment>
+    <comment>The date this work pattern will start to be considered active</comment>
     <required>true</required>
     <add>4.4</add>
   </field>
@@ -61,12 +61,12 @@
   <field>
     <name>effective_end_date</name>
     <type>date</type>
-    <comment>The date this attribution will stop being considered active</comment>
+    <comment>The date this work pattern will stop being considered active</comment>
     <add>4.4</add>
   </field>
 
   <index>
-    <name>unique_attribution_per_effective_date</name>
+    <name>unique_pattern_per_effective_date</name>
     <fieldName>contact_id</fieldName>
     <fieldName>effective_date</fieldName>
     <comment>An employee cannot have more than one work pattern</comment>

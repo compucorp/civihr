@@ -2,20 +2,20 @@
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 
-class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAbsences_DAO_WorkPatternAttribution {
+class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
   /**
-   * Create a new WorkPatternAttribution based on array-data
+   * Create a new ContactWorkPattern based on array-data
    *
    * @param array $params
    *  Key-value pairs
    *
-   * @return \CRM_HRLeaveAndAbsences_DAO_WorkPatternAttribution|NULL
+   * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern|NULL
    *
    * @throws \Exception
    */
   public static function create($params) {
-    $entityName = 'WorkPatternAttribution';
+    $entityName = 'ContactWorkPattern';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
@@ -24,7 +24,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
 
     $transaction = new CRM_Core_Transaction();
     try {
-      self::endEmployeePreviousAttribution($params);
+      self::endEmployeePreviousWorkPattern($params);
       $instance->save();
       $transaction->commit();
 
@@ -40,16 +40,16 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Updates the effective_end_date of the current WorkPatternAttribution for the
-   * Contact which we're trying to add a new WorkPatternAttribution. The end date
-   * will be the effective date of the new attribution - 1 day.
+   * Updates the effective_end_date of the current ContactWorkPattern for the
+   * Contact which we're trying to add a new WorkPattern. The end date
+   * will be the effective date of the new one - 1 day.
    *
    * @param $params
    *  The params array passed to the create() method
    */
-  private static function endEmployeePreviousAttribution($params) {
-    $newAttributionEffectiveDate = strtotime($params['effective_date']);
-    $oldAttributionEndDate = date('Y-m-d', strtotime('-1 day', $newAttributionEffectiveDate));
+  private static function endEmployeePreviousWorkPattern($params) {
+    $newPatternEffectiveDate = strtotime($params['effective_date']);
+    $oldPatternEndDate = date('Y-m-d', strtotime('-1 day', $newPatternEffectiveDate));
 
     $tableName = self::getTableName();
 
@@ -59,7 +59,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
                     effective_end_date IS NULL";
 
     $params = [
-      1 => [$oldAttributionEndDate, 'String'],
+      1 => [$oldPatternEndDate, 'String'],
       2 => [$params['contact_id'], 'Integer']
     ];
 
@@ -67,17 +67,17 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Returns the WorkPatternAttribution instance for the given contact and $date
+   * Returns the ContactWorkPattern instance for the given contact and $date
    *
    * @param int $contactID
    * @param \DateTime $date
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution|null
+   * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern|null
    */
   public static function getForDate($contactID, DateTime $date) {
-    $attributionTableName = self::getTableName();
+    $tableName = self::getTableName();
 
-    $query = "SELECT * FROM {$attributionTableName}
+    $query = "SELECT * FROM {$tableName}
               WHERE contact_id = %1 AND 
                     effective_date <= %2 AND 
                     (effective_end_date >= %2 OR effective_end_date IS NULL)";
@@ -106,15 +106,15 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution extends CRM_HRLeaveAndAb
    * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern|null
    */
   public static function getWorkPatternForDate($contactID, DateTime $date) {
-    $attributionTableName = self::getTableName();
+    $tableName = self::getTableName();
     $workPatternTableName = WorkPattern::getTableName();
 
-    $query = "SELECT wp.* FROM {$attributionTableName} wpa
+    $query = "SELECT wp.* FROM {$tableName} cwp
               INNER JOIN {$workPatternTableName} wp
-                ON wpa.pattern_id = wp.id
-              WHERE wpa.contact_id = %1 AND 
-                    wpa.effective_date <= %2 AND 
-                    (wpa.effective_end_date >= %2 OR wpa.effective_end_date IS NULL)";
+                ON cwp.pattern_id = wp.id
+              WHERE cwp.contact_id = %1 AND 
+                    cwp.effective_date <= %2 AND 
+                    (cwp.effective_end_date >= %2 OR cwp.effective_end_date IS NULL)";
 
     $params = [
       1 => [$contactID, 'Integer'],

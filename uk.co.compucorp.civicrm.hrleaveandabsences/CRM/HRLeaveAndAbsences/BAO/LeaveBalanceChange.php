@@ -4,7 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
-use CRM_HRLeaveAndAbsences_BAO_WorkPatternAttribution as WorkPatternAttribution;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -446,9 +446,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * no work pattern assigned to the contact, the default work pattern will be
    * used instead.
    *
-   * This method also takes in consideration the existence of Public Holidays
-   * Leave Requests overlapping the dates of the LeaveRequest. For those dates,
-   * the amount of days to be deducted will be 0.
+   * This method also considers the existence of Public Holidays Leave Requests
+   * overlapping the dates of the LeaveRequest. For those dates, the amount of
+   * days to be deducted will be 0.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *  The LeaveRequest which the $date belongs to
@@ -461,13 +461,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return 0.0;
     }
 
-    $attribution = WorkPatternAttribution::getForDate($leaveRequest->contact_id, $date);
-    if(is_null($attribution)) {
+    $contactWorkPattern = ContactWorkPattern::getForDate($leaveRequest->contact_id, $date);
+    if(is_null($contactWorkPattern)) {
       $workPattern = WorkPattern::getDefault();
       $startDate = self::getStartDateOfContractOverlappingDate($leaveRequest->contact_id, $date);
     } else {
-      $workPattern = WorkPattern::findById($attribution->pattern_id);
-      $startDate = new \DateTime($attribution->effective_date);
+      $workPattern = WorkPattern::findById($contactWorkPattern->pattern_id);
+      $startDate = new \DateTime($contactWorkPattern->effective_date);
     }
 
     if(!$workPattern || !$startDate) {
