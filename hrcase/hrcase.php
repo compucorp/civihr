@@ -340,10 +340,15 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
   }
 }
 
+/**
+ * Implementation of hook_civicrm_post, executed after task creation/update
+ *
+ * @param $op string, the type of operation being performed;
+ * @param $objectName string, type of object being processed
+ * @param $objectId string, id of object
+ * @param $objectRef CRM_Activity_DAO_Activity, object being used to process operation.
+ */
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  // PCHR-1177: $objectRef is just an instance of CRM_Activity_DAO_Activity, with values set from parameters sent through request.
-  // Thus, it cannot be used to obtain data for activity that could be in database for given activity id.  We need to load the info from DB first!
-  // Passing activity id instead of object, so data can be loaded from DB within function.
   if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectId)) {
     $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
@@ -454,11 +459,9 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
  * @return boolean
  */
 function activityCreatedByTaskandAssignments($activity_id) {
-  // PCHR-1177 - Status update from task lists caused a null activity type id to passed as parameter for this method.
-  // Passed activity_id instead to load data from db instead.
-  $params = array('id' => $activity_id);
-  $taskInDB = CRM_Activity_BAO_Activity::retrieve($params);
-  $activity_type_id = $taskInDB->activity_type_id;
+  $params = ['id' => $activity_id];
+  $activity = CRM_Activity_BAO_Activity::retrieve($params);
+  $activity->activity_type_id;
 
   // check if task and assignments is enabled
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
@@ -478,7 +481,7 @@ function activityCreatedByTaskandAssignments($activity_id) {
   $result = civicrm_api3('OptionValue', 'getsingle', array(
     'sequential' => 1,
     'option_group_id' => $optionGroup['id'],
-    'value' => $activity_type_id,
+    'value' => $activity->activity_type_id,
   ));
 
   if (!empty($result['component_id']) && in_array($result['component_id'], $tasksAssignmentsComponentIds)) {
