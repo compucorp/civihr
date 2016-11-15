@@ -239,8 +239,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     );
   }
 
-  public function testGetNumberOfPublicHolidaysDoesntCountNonActiveHolidays()
-  {
+  public function testGetNumberOfPublicHolidaysDoesntCountNonActiveHolidays() {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-02-01')
     ]);
@@ -258,8 +257,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     );
   }
 
-  public function testGetNumberOfPublicHolidaysCanExcludeWeekendsFromCount()
-  {
+  public function testGetNumberOfPublicHolidaysCanExcludeWeekendsFromCount() {
     PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('2016-02-01')
     ]);
@@ -279,8 +277,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     );
   }
 
-  public function testGetNumberOfPublicHolidaysForCurrentPeriod()
-  {
+  public function testGetNumberOfPublicHolidaysForCurrentPeriod() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('first day of January'),
       'end_date' => CRM_Utils_Date::processDate('last day of December'),
@@ -312,8 +309,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     );
   }
 
-  public function testGetNumberOfPublicHolidaysForCurrentPeriodCanExcludeWeekendsFromCount()
-  {
+  public function testGetNumberOfPublicHolidaysForCurrentPeriodCanExcludeWeekendsFromCount() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('first day of January'),
       'end_date' => CRM_Utils_Date::processDate('last day of December'),
@@ -331,6 +327,26 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
       1,
       PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends)
     );
+  }
+
+  public function testGetNumberOfPublicHolidaysForPeriodWithoutEndDateShouldCountAllTheHolidaysStartingFromTheStartDate() {
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2017-05-03')
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2090-12-13')
+    ]);
+
+    $this->assertEquals(2, PublicHoliday::getNumberOfPublicHolidaysForPeriod('2016-01-03'));
   }
 
   public function testGetPublicHolidaysForPeriod() {
@@ -413,6 +429,32 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-01', '2016-01-31', $excludeWeekends);
     $this->assertCount(1, $publicHolidays);
     $this->assertEquals('Holiday 1', $publicHolidays[0]->title);
+  }
+
+  public function testGetPublicHolidaysForPeriodWithoutEndDateShouldReturnAllTheHolidaysStartingFromTheStartDate() {
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2016-01-02')
+    ]);
+
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2017-05-03')
+    ]);
+
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('2090-12-13')
+    ]);
+
+    $publicHolidays = PublicHoliday::getPublicHolidaysForPeriod('2016-01-03');
+    $this->assertCount(2, $publicHolidays);
+    $this->assertEquals($publicHoliday1->title, $publicHolidays[0]->title);
+    $this->assertEquals($publicHoliday1->id, $publicHolidays[0]->id);
+
+    $this->assertEquals($publicHoliday2->title, $publicHolidays[1]->title);
+    $this->assertEquals($publicHoliday2->id, $publicHolidays[1]->id);
   }
 
 }
