@@ -339,4 +339,14 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
       throw new InvalidPublicHolidayException('The date cannot be outside the existing absence periods');
     }
   }
+
+  /**
+   * Returns all the Public Holidays in the future. That is, all where date is
+   * >= today. Including Public Holidays that fall on weekends
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
+   */
+  public static function getAllInFuture() {
+    return self::getPublicHolidaysForPeriod(date('Ymd'));
+  }
 }

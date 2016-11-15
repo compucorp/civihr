@@ -457,4 +457,37 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $this->assertEquals($publicHoliday2->id, $publicHolidays[1]->id);
   }
 
+  public function testGetAllInFutureShouldReturnOnlyFutureHolidays() {
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('yesterday'),
+    ]);
+
+    $today = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('today')
+    ]);
+
+    $tomorrow = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $publicHolidays = PublicHoliday::getAllInFuture();
+    $this->assertCount(2, $publicHolidays);
+    $this->assertEquals($today->title, $publicHolidays[0]->title);
+    $this->assertEquals($today->id, $publicHolidays[0]->id);
+
+    $this->assertEquals($tomorrow->title, $publicHolidays[1]->title);
+    $this->assertEquals($tomorrow->id, $publicHolidays[1]->id);
+  }
+
+  public function testGetAllInFutureShouldIncludeFutureHolidaysOnAWeekend() {
+    $nextSunday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('next sunday')
+    ]);
+
+    $publicHolidays = PublicHoliday::getAllInFuture();
+    $this->assertCount(1, $publicHolidays);
+    $this->assertEquals($nextSunday->title, $publicHolidays[0]->title);
+    $this->assertEquals($nextSunday->id, $publicHolidays[0]->id);
+  }
+
 }
