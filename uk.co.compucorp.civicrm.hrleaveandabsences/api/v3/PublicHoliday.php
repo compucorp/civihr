@@ -64,5 +64,5 @@ function _civicrm_api3_public_holiday_getcountforcurrentperiod_spec(&$spec) {
  */
 function civicrm_api3_public_holiday_getcountforcurrentperiod($params) {
   $excludeWeekends = empty($params['exclude_weekends']) ? false : true;
-  return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends);
+  return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getCountForCurrentPeriod($excludeWeekends);
 }

@@ -174,7 +174,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int The Number of Public Holidays for the given Period
    */
-  public static function getNumberOfPublicHolidaysForPeriod($startDate, $endDate = null, $excludeWeekends = false) {
+  public static function getCountForPeriod($startDate, $endDate = null, $excludeWeekends = false) {
     $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Ymd');
 
     $queryParams = [
@@ -218,14 +218,14 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    *
    * @return int
    */
-  public static function getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends = false) {
+  public static function getCountForCurrentPeriod($excludeWeekends = false) {
     $currentPeriod = AbsencePeriod::getCurrentPeriod();
 
     if(!$currentPeriod) {
       return 0;
     }
 
-    return self::getNumberOfPublicHolidaysForPeriod(
+    return self::getCountForPeriod(
       $currentPeriod->start_date,
       $currentPeriod->end_date,
       $excludeWeekends
@@ -248,7 +248,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    *
    * @return CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
    */
-  public static function getPublicHolidaysForPeriod($startDate, $endDate = null, $excludeWeekends = false) {
+  public static function getAllForPeriod($startDate, $endDate = null, $excludeWeekends = false) {
     $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Ymd');
 
     $queryParams = [
@@ -347,6 +347,6 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
    */
   public static function getAllInFuture() {
-    return self::getPublicHolidaysForPeriod(date('Ymd'));
+    return self::getAllForPeriod(date('Ymd'));
   }
 }
