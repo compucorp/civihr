@@ -3,8 +3,11 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletion;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
@@ -76,6 +79,47 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $deletionLogic->deleteForContact($this->contract['contact_id'], $publicHoliday);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
+  public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidays() {
+    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2016-01-01'),
+      new DateTime('+2 years')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ], [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('yesterday')
+    ]);
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+5 days')
+    ]);
+    $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+2 years')
+    ]);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+
+    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic->deleteAllInTheFuture();
+
+    // It's -1 instead of 0 because the public holiday 1 is in the past and its
+    // respective leave request will not be deleted
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
   private function instantiatePublicHoliday($date) {
