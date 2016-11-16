@@ -65,7 +65,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedException There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
    */
   public function testThereShouldBeOnlyOneTypeWithAddPublicHolidayToEntitlementOnCreate() {
     $basicEntity = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
@@ -77,7 +77,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedException There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
    */
   public function testThereShouldBeOnlyOneTypeWithAddPublicHolidayToEntitlementOnUpdate() {
     $basicEntity1 = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
@@ -96,6 +96,41 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $this->assertEquals(1, $entity1->add_public_holiday_to_entitlement);
 
     $this->updateBasicType($entity1->id, ['add_public_holiday_to_entitlement' => true]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   */
+  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnCreate() {
+    $basicEntity = $this->createBasicType(['must_take_public_holiday_as_leave' => true]);
+    $entity1 = $this->findTypeByID($basicEntity->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+
+    $this->createBasicType(['must_take_public_holiday_as_leave' => true]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   */
+  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnUpdate() {
+    $basicEntity1 = $this->createBasicType(['must_take_public_holiday_as_leave' => true]);
+    $basicEntity2 = $this->createBasicType();
+    $entity1 = $this->findTypeByID($basicEntity1->id);
+    $entity2 = $this->findTypeByID($basicEntity2->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+    $this->assertEquals(0, $entity2->must_take_public_holiday_as_leave);
+
+    $this->updateBasicType($basicEntity2->id, ['must_take_public_holiday_as_leave' => true]);
+  }
+
+  public function testUpdatingATypeWithMustTakePublicHolidayAsLeaveShouldNotTriggerErrorAboutHavingAnotherTypeWithItSelected() {
+    $basicEntity = $this->createBasicType(['must_take_public_holiday_as_leave' => true]);
+    $entity1 = $this->findTypeByID($basicEntity->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+
+    $this->updateBasicType($entity1->id, ['must_take_public_holiday_as_leave' => true]);
   }
 
   /**

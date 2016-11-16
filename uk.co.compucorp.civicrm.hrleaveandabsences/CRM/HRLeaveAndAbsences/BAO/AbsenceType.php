@@ -198,6 +198,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       self::validateAddPublicHolidayToEntitlement($params);
     }
 
+    if(!empty($params['must_take_public_holiday_as_leave'])) {
+      self::validateMustTakePublicHolidayAsLeave($params);
+    }
+
     if (!empty($params['allow_request_cancelation']) &&
         !array_key_exists($params['allow_request_cancelation'], self::getRequestCancelationOptions())
     ) {
@@ -217,24 +221,65 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * method checks if one such type already exists and throws an error if that
    * is the case.
    *
-   * @param array $params The params array received by the create method
+   * @param array $params
+   *  The params array received by the create method
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
   private static function validateAddPublicHolidayToEntitlement($params) {
+    if(!self::fieldIsUnique('add_public_holiday_to_entitlement', 1, $params)) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
+        'There is already one Absence Type where public holidays should be added to it'
+      );
+    }
+  }
+
+  /**
+   * Validates the must_take_public_holiday_as_leave field.
+   *
+   * There can be only one AbsenceType where this field is true. So this
+   * method checks if one such type already exists and throws an error if that
+   * is the case.
+   *
+   * @param array $params
+   *  The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
+  private static function validateMustTakePublicHolidayAsLeave($params) {
+    if(!self::fieldIsUnique('must_take_public_holiday_as_leave', 1, $params)) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
+        'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
+      );
+    }
+  }
+
+  /**
+   * Checks if there's only one record with the given value for the given field.
+   *
+   * This method also considers the existence of an ID on the $params array when
+   * checking for uniqueness. When the ID is present, it searches for records
+   * with the given field and value, but with a different ID.
+   *
+   * @param string $fieldName
+   *  The field to be checked for uniqueness
+   * @param string $value
+   *  The value to be checked for uniqueness
+   * @param array $params
+   *  The params array passed to the create method
+   *
+   * @return bool
+   */
+  private static function fieldIsUnique($fieldName, $value, $params) {
     $dao = new self();
-    $dao->add_public_holiday_to_entitlement = 1;
+    $dao->$fieldName = $value;
 
     $id = empty($params['id']) ? null : intval($params['id']);
     if($id) {
       $dao->whereAdd("id <> {$id}");
     }
 
-    if($dao->count() > 0) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
-      );
-    }
+    return $dao->count() == 0;
   }
 
   /**
