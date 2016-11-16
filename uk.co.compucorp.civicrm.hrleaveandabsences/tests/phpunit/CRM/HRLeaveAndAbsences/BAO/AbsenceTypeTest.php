@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
  *
@@ -435,6 +437,30 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
     $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
     $this->assertCount(1, $absenceTypes);
+  }
+
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnTheAbsenceTypeIfItExists() {
+    $expectedAbsenceType = $this->createBasicType(['must_take_public_holiday_as_leave' => true, 'is_active' => true]);
+
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertEquals($expectedAbsenceType->id, $absenceType->id);
+  }
+
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnADisabledAbsenceType() {
+    $this->createBasicType(['must_take_public_holiday_as_leave' => true, 'is_active' => false]);
+
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertNull($absenceType);
+  }
+
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnNullIfThereIsNoSuchAbsenceType() {
+    $this->createBasicType(['must_take_public_holiday_as_leave' => false]);
+
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertNull($absenceType);
   }
 
   private function createBasicType($params = array()) {
