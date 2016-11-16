@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
@@ -100,5 +101,18 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $creationLogic->createForAbsenceType($this->absenceType);
 
     $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   * @expectedExceptionMessage It's not possible to create Public Holidays for Absence Types where 'Must take public holiday as leave' is false
+   */
+  public function testTryingToCreatePublicHolidaysLeaveRequestsForAnAbsenceTypeWithoutMTPHLShouldThrowAnException() {
+    $absenceType = new AbsenceType();
+    // MTPHL: must take public holiday as leave
+    $absenceType->must_take_public_holiday_as_leave = false;
+
+    $creationLogic = new PublicHolidayLeaveRequestCreation();
+    $creationLogic->createForAbsenceType($absenceType);
   }
 }

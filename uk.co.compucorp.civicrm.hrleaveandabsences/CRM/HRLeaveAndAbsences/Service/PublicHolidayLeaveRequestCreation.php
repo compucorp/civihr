@@ -19,7 +19,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    */
   public function createForAbsenceType(AbsenceType $absenceType) {
     if(!$absenceType->must_take_public_holiday_as_leave) {
-      return;
+      throw new InvalidArgumentException("It's not possible to create Public Holidays for Absence Types where 'Must take public holiday as leave' is false");
     }
 
     $futurePublicHolidays = PublicHoliday::getAllInFuture();
