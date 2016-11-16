@@ -9,17 +9,17 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
   /**
-   * Creates Public Holiday Leave Requests based on an AbsenceType.
+   * Creates Public Holiday Leave Requests for all the existing Public Holidays
+   * int the future
    *
-   * This method will get all Public Holidays in the future and then will
-   * create a Leave Request for each of them, for all the contacts with
-   * contracts overlapping any of the holiday dates
-   *
-   * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   * For each contract overlapping one Public Holiday, a Leave Request will be
+   * created for the contract's contact and the public holiday date.
    */
-  public function createForAbsenceType(AbsenceType $absenceType) {
-    if(!$absenceType->must_take_public_holiday_as_leave) {
-      throw new InvalidArgumentException("It's not possible to create Public Holidays for Absence Types where 'Must take public holiday as leave' is false");
+  public function createForAllInTheFuture() {
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    if(!$absenceType) {
+      return;
     }
 
     $futurePublicHolidays = PublicHoliday::getAllInFuture();

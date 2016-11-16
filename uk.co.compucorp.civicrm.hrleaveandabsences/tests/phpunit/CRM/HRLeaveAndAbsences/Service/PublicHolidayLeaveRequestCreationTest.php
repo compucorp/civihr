@@ -69,13 +69,12 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
-  public function testCanCreatePublicHolidayLeaveRequestsForAnAbsenceType() {
+  public function testCanCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInTheFuture() {
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
     $periodEntitlement->contact_id = $contact['id'];
     $periodEntitlement->type_id = $this->absenceType->id;
-
 
     HRJobContractFabricator::fabricate([
       'contact_id' => $contact['id']
@@ -98,21 +97,32 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     ]);
 
     $creationLogic = new PublicHolidayLeaveRequestCreation();
-    $creationLogic->createForAbsenceType($this->absenceType);
+    $creationLogic->createForAllInTheFuture();
 
+    // It's -2 instead of -3 because the first public holiday is in the past
+    // and we should not create a leave request for it
     $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
-  /**
-   * @expectedException InvalidArgumentException
-   * @expectedExceptionMessage It's not possible to create Public Holidays for Absence Types where 'Must take public holiday as leave' is false
-   */
-  public function testTryingToCreatePublicHolidaysLeaveRequestsForAnAbsenceTypeWithoutMTPHLShouldThrowAnException() {
-    $absenceType = new AbsenceType();
-    // MTPHL: must take public holiday as leave
-    $absenceType->must_take_public_holiday_as_leave = false;
+  public function testItDoesntCreateLeaveRequestsForAllPublicHolidaysInTheFutureIfThereIsNoMTPHLAbsenceTypes() {
+    AbsenceType::del($this->absenceType->id);
+
+    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('tomorrow')
+    ]);
 
     $creationLogic = new PublicHolidayLeaveRequestCreation();
-    $creationLogic->createForAbsenceType($absenceType);
+    $creationLogic->createForAllInTheFuture();
+
+    // The Balance is still 0 because no Leave Request was created
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 }
