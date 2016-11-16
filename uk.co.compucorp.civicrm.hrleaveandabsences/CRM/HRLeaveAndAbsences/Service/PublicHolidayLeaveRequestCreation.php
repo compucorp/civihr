@@ -47,10 +47,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function createForContact($contactID, PublicHoliday $publicHoliday) {
-    $absenceTypes = $this->getAbsenceTypesWherePublicHolidaysMustBeTakenAsLeave();
-    foreach($absenceTypes as $absenceType) {
-      $this->create($contactID, $absenceType, $publicHoliday);
-    }
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+    $this->create($contactID, $absenceType, $publicHoliday);
   }
 
   /**
@@ -64,20 +62,6 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   private function create($contactID, AbsenceType $absenceType, PublicHoliday $publicHoliday) {
     $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
-  }
-
-  /**
-   * Returns a list of all enabled Absence Types where the "Must Take Public
-   * Holiday as Leave" option is set
-   *
-   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
-   */
-  private function getAbsenceTypesWherePublicHolidaysMustBeTakenAsLeave() {
-    $allAbsenceTypes = AbsenceType::getEnabledAbsenceTypes();
-
-    return array_filter($allAbsenceTypes, function(AbsenceType $absenceType) {
-      return boolval($absenceType->must_take_public_holiday_as_leave);
-    });
   }
 
   /**
