@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
@@ -455,6 +456,59 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
 
     $this->assertNull($absenceType);
+  }
+
+  public function testItEnqueueAnUpdateWhenCreatingAnAbsenceTypeWithMustTakePublicHolidayAsLeave() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      $item->data->callback[0]
+    );
+  }
+
+  public function testItDoesntEnqueueAnUpdateWhenCreatingAnAbsenceTypeWithoutMustTakePublicHolidayAsLeave() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItEnqueueAnUpdateWhenChangingTheMustTakePublicHolidayAsLeaveValueForAnAbsenceTypeFromFalseToTrue() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+
+    $this->updateBasicType($absenceType->id, ['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+  }
+
+  public function testItEnqueueAnUpdateWhenChangingTheMustTakePublicHolidayAsLeaveValueForAnAbsenceTypeFromTrueToFalse() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $this->updateBasicType($absenceType->id, ['must_take_public_holiday_as_leave' => false]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(2, $queue->numberOfItems());
+  }
+
+  public function testItDoesntEnqueueAnUpdateWhenUpdatingAnAbsenceTypeWithoutChangingMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $this->updateBasicType($absenceType->id, ['title' => 'Other title']);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
   }
 
   private function updateBasicType($id, $params) {

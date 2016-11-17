@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+
 class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_AbsenceType {
 
   const EXPIRATION_UNIT_DAYS = 1;
@@ -69,6 +71,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     unset($params['is_reserved']);
 
+    $mustUpdatePublicHolidaysLeaveRequests = self::mustUpdatePublicHolidayLeaveRequests($params);
+
     $instance = new $className();
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
@@ -78,6 +82,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       self::saveNotificationReceivers($instance->id, $params['notification_receivers_ids']);
     }
 
+    if($mustUpdatePublicHolidaysLeaveRequests) {
+      self::enqueuePublicHolidayLeaveRequestUpdateTask();
+    }
     $transaction->commit();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
@@ -424,6 +431,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function getNotificationReceiversIDs($typeId) {
     return CRM_HRLeaveAndAbsences_BAO_NotificationReceiver::getReceiversIDsForAbsenceType($typeId);
+  }
+
+  /**
+   * Checks, based on the $params array, if the Public Holiday Leave Requests
+   * must be updated after saving the Absence Type.
+   *
+   * They must be updated if one of these conditions is true:
+   *
+   * - If this is a new absence type and must_take_public_holiday_as_leave is true
+   * - If this is an existing absence type and the value of must_take_public_holiday_as_leave has changed
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private static function mustUpdatePublicHolidayLeaveRequests($params) {
+    if(!array_key_exists('must_take_public_holiday_as_leave', $params)) {
+      return false;
+    }
+
+    if(!empty($params['id'])) {
+      $oldValue = self::getFieldValue(self::class, $params['id'], 'must_take_public_holiday_as_leave');
+
+      return $oldValue != $params['must_take_public_holiday_as_leave'];
+    }
+
+    return (bool)$params['must_take_public_holiday_as_leave'];
+  }
+
+  /**
+   * Enqueue a new task to update the Public Holiday Leave Requests due to
+   * changes on one Absence Type
+   */
+  private static function enqueuePublicHolidayLeaveRequestUpdateTask() {
+    $task = new CRM_Queue_Task(
+      ['CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests', 'run'],
+      []
+    );
+
+    PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
   }
 
   /**
