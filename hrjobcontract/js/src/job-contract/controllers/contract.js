@@ -73,9 +73,8 @@ define([
 
                 //Is contract end date changed
                 if ($scope.details.period_end_date ?
-                new Date($scope.details.period_end_date).getTime() !== new Date(newEndDate).getTime() :
-                !!$scope.details.period_end_date !== !!newEndDate) {
-
+                  new Date($scope.details.period_end_date).getTime() == new Date(newEndDate).getTime() :
+                  !!$scope.details.period_end_date !== !!newEndDate) {
                     isCurrentContract = !newEndDate || new Date(newEndDate).setHours(0,0,0,0) >= new Date().setHours(0,0,0,0);
 
                     if (isCurrentContract != !!+$scope.$parent.contract.is_current) {
@@ -250,9 +249,7 @@ define([
                                 (dateEffectiveRevisionCurrent > dateToday &&
                                 dateEffectiveRevisionCreated <= dateEffectiveRevisionCurrent);
 
-                        if (isCurrentRevision) {
-                            updateContractList(results.details.period_end_date);
-                        }
+                        updateContractList(results.details.period_end_date);
 
                         if (results.files) {
                             if (isCurrentRevision) {
