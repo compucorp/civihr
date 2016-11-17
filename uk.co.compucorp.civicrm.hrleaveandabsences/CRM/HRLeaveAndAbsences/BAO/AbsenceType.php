@@ -101,8 +101,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
    */
-  public static function del($id)
-  {
+  public static function del($id) {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
     $absenceType->id = $id;
     $absenceType->find(true);
@@ -112,6 +111,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     $absenceType->delete();
+
+    if($absenceType->must_take_public_holiday_as_leave) {
+      self::enqueuePublicHolidayLeaveRequestUpdateTask();
+    }
   }
 
   /**

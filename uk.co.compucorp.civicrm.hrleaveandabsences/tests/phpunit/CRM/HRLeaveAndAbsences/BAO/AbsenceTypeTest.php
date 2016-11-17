@@ -511,6 +511,24 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $this->assertEquals(1, $queue->numberOfItems());
   }
 
+  public function testItDoesntEnqueueAnUpdateWhenDeletingAnAbsenceTypeWithoutMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+    AbsenceType::del($absenceType->id);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItShouldEnqueueAnUpdateWhenDeletingAnAbsenceTypeWithMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+    AbsenceType::del($absenceType->id);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    // The number is two because another update was added when the absence type was
+    // created
+    $this->assertEquals(2, $queue->numberOfItems());
+  }
+
   private function updateBasicType($id, $params) {
     $params['id'] = $id;
     return AbsenceTypeFabricator::fabricate($params);
