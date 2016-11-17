@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException as InvalidPublicHolidayException;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DAO_PublicHoliday {
 
@@ -348,5 +349,33 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    */
   public static function getAllInFuture() {
     return self::getAllForPeriod(date('Ymd'));
+  }
+
+  /**
+   * Process all the items on the PublicHolidayLeaveRequestUpdates Queue
+   *
+   * @return int
+   *  The number of items processed
+   */
+  public static function processPublicHolidayLeaveRequestUpdatesQueue() {
+    $numberOfItemsProcessed = 0;
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $runner = new CRM_Queue_Runner([
+      'title' => ts('Public Holiday Leave Request Updates Runner'),
+      'queue' => $queue,
+      'errorMode'=> CRM_Queue_Runner::ERROR_CONTINUE,
+    ]);
+
+    $continue = true;
+    while($continue) {
+      $result = $runner->runNext(false);
+      $numberOfItemsProcessed++;
+      if (!$result['is_continue']) {
+        $continue = false; //all items in the queue are processed
+      }
+    }
+
+    return $numberOfItemsProcessed;
   }
 }
