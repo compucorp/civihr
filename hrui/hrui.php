@@ -426,7 +426,7 @@ function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
   if (empty($uf) || empty($uf['id'])) {
     return NULL;
   }
-  $user = _get_drupal_user_by_id($uf['id']);
+  $user = user_load($uf['id']);
   $content['userid'] = $uf['id'];
   $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
