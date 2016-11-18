@@ -336,7 +336,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
         }
       }
 
-      $numberOfPublicHolidays = PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+      $numberOfPublicHolidays = PublicHoliday::getCountForPeriod(
         $this->start_date,
         $this->end_date,
         true

@@ -1,5 +1,10 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest
  *
@@ -17,7 +22,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function setUp() {
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    $tableName = AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 
@@ -26,64 +31,64 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage DB Error: already exists
    */
   public function testTypeTitlesShouldBeUnique() {
-    $this->createBasicType(['title' => 'Type 1']);
-    $this->createBasicType(['title' => 'Type 1']);
+    AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
+    AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
   }
 
   public function testThereShouldBeOnlyOneDefaultTypeOnCreate() {
-    $basicEntity = $this->createBasicType(['is_default' => true]);
-    $entity1 = $this->findTypeByID($basicEntity->id);
+    $basicEntity = AbsenceTypeFabricator::fabricate(['is_default' => true]);
+    $entity1 = AbsenceType::findById($basicEntity->id);
     $this->assertEquals(1, $entity1->is_default);
 
-    $basicEntity = $this->createBasicType(['is_default' => true]);
-    $entity2 = $this->findTypeByID($basicEntity->id);
-    $entity1 = $this->findTypeByID($entity1->id);
+    $basicEntity = AbsenceTypeFabricator::fabricate(['is_default' => true]);
+    $entity2 = AbsenceType::findById($basicEntity->id);
+    $entity1 = AbsenceType::findById($entity1->id);
     $this->assertEquals(0,  $entity1->is_default);
     $this->assertEquals(1, $entity2->is_default);
   }
 
   public function testThereShouldBeOnlyOneDefaultTypeOnUpdate() {
-    $basicEntity1 = $this->createBasicType(['is_default' => false]);
-    $basicEntity2 = $this->createBasicType(['is_default' => false]);
-    $entity1 = $this->findTypeByID($basicEntity1->id);
-    $entity2 = $this->findTypeByID($basicEntity2->id);
+    $basicEntity1 = AbsenceTypeFabricator::fabricate(['is_default' => false]);
+    $basicEntity2 = AbsenceTypeFabricator::fabricate(['is_default' => false]);
+    $entity1 = AbsenceType::findById($basicEntity1->id);
+    $entity2 = AbsenceType::findById($basicEntity2->id);
     $this->assertEquals(0,  $entity1->is_default);
     $this->assertEquals(0,  $entity2->is_default);
 
     $this->updateBasicType($basicEntity1->id, ['is_default' => true]);
-    $entity1 = $this->findTypeByID($basicEntity1->id);
-    $entity2 = $this->findTypeByID($basicEntity2->id);
+    $entity1 = AbsenceType::findById($basicEntity1->id);
+    $entity2 = AbsenceType::findById($basicEntity2->id);
     $this->assertEquals(1, $entity1->is_default);
     $this->assertEquals(0,  $entity2->is_default);
 
     $this->updateBasicType($basicEntity2->id, ['is_default' => true]);
-    $entity1 = $this->findTypeByID($basicEntity1->id);
-    $entity2 = $this->findTypeByID($basicEntity2->id);
+    $entity1 = AbsenceType::findById($basicEntity1->id);
+    $entity2 = AbsenceType::findById($basicEntity2->id);
     $this->assertEquals(0,  $entity1->is_default);
     $this->assertEquals(1, $entity2->is_default);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedException There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
    */
   public function testThereShouldBeOnlyOneTypeWithAddPublicHolidayToEntitlementOnCreate() {
-    $basicEntity = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
-    $entity1 = $this->findTypeByID($basicEntity->id);
+    $basicEntity = AbsenceTypeFabricator::fabricate(['add_public_holiday_to_entitlement' => true]);
+    $entity1 = AbsenceType::findById($basicEntity->id);
     $this->assertEquals(1, $entity1->add_public_holiday_to_entitlement);
 
-    $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
+    AbsenceTypeFabricator::fabricate(['add_public_holiday_to_entitlement' => true]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedException There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
    */
   public function testThereShouldBeOnlyOneTypeWithAddPublicHolidayToEntitlementOnUpdate() {
-    $basicEntity1 = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
-    $basicEntity2 = $this->createBasicType();
-    $entity1 = $this->findTypeByID($basicEntity1->id);
-    $entity2 = $this->findTypeByID($basicEntity2->id);
+    $basicEntity1 = AbsenceTypeFabricator::fabricate(['add_public_holiday_to_entitlement' => true]);
+    $basicEntity2 = AbsenceTypeFabricator::fabricate();
+    $entity1 = AbsenceType::findById($basicEntity1->id);
+    $entity2 = AbsenceType::findById($basicEntity2->id);
     $this->assertEquals(1, $entity1->add_public_holiday_to_entitlement);
     $this->assertEquals(0, $entity2->add_public_holiday_to_entitlement);
 
@@ -91,8 +96,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   }
 
   public function testUpdatingATypeWithAddPublicHolidayToEntitlementShouldNotTriggerErrorAboutHavingAnotherTypeWithItSelected() {
-    $basicEntity = $this->createBasicType(['add_public_holiday_to_entitlement' => true]);
-    $entity1 = $this->findTypeByID($basicEntity->id);
+    $basicEntity = AbsenceTypeFabricator::fabricate(['add_public_holiday_to_entitlement' => true]);
+    $entity1 = AbsenceType::findById($basicEntity->id);
     $this->assertEquals(1, $entity1->add_public_holiday_to_entitlement);
 
     $this->updateBasicType($entity1->id, ['add_public_holiday_to_entitlement' => true]);
@@ -100,10 +105,45 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   */
+  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnCreate() {
+    $basicEntity = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+    $entity1 = AbsenceType::findById($basicEntity->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
+   */
+  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnUpdate() {
+    $basicEntity1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+    $basicEntity2 = AbsenceTypeFabricator::fabricate();
+    $entity1 = AbsenceType::findById($basicEntity1->id);
+    $entity2 = AbsenceType::findById($basicEntity2->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+    $this->assertEquals(0, $entity2->must_take_public_holiday_as_leave);
+
+    $this->updateBasicType($basicEntity2->id, ['must_take_public_holiday_as_leave' => true]);
+  }
+
+  public function testUpdatingATypeWithMustTakePublicHolidayAsLeaveShouldNotTriggerErrorAboutHavingAnotherTypeWithItSelected() {
+    $basicEntity = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+    $entity1 = AbsenceType::findById($basicEntity->id);
+    $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
+
+    $this->updateBasicType($entity1->id, ['must_take_public_holiday_as_leave' => true]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage To set maximum amount of leave that can be accrued you must allow staff to accrue additional days
    */
   public function testAllowAccrualsRequestShouldBeTrueIfMaxLeaveAccrualIsNotEmpty() {
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_accruals_request' => false,
         'max_leave_accrual' => 1
     ]);
@@ -114,7 +154,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage To allow accrue in the past you must allow staff to accrue additional days
    */
   public function testAllowAccrualsRequestShouldBeTrueIfAllowAccrueInThePast() {
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_accruals_request'   => false,
         'allow_accrue_in_the_past' => 1
     ]);
@@ -125,10 +165,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage To set the accrual expiry duration you must allow staff to accrue additional days
    */
   public function testAllowAccrualsRequestShouldBeTrueIfAllowAccrualDurationAndUnitAreNotEmpty() {
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_accruals_request' => false,
         'accrual_expiration_duration' => 1,
-        'accrual_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS
+        'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
     ]);
   }
 
@@ -138,12 +178,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidAccrualExpirationUnit($expirationUnit, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+          InvalidAbsenceTypeException::class,
           'Invalid Accrual Expiration Unit'
       );
     }
 
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_accruals_request' => true,
         'accrual_expiration_duration' => 1,
         'accrual_expiration_unit' => $expirationUnit
@@ -156,12 +196,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowAccrualExpirationUnitWithoutDurationAndViceVersa($unit, $duration, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+          InvalidAbsenceTypeException::class,
           'Invalid Accrual Expiration. It should have both Unit and Duration'
       );
     }
 
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_accruals_request' => true,
         'accrual_expiration_unit' => $unit,
         'accrual_expiration_duration' => $duration,
@@ -173,7 +213,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage To set the Max Number of Days to Carry Forward you must allow Carry Forward
    */
   public function testAllowCarryForwardShouldBeTrueIfMaxNumberOfDaysToCarryForwardIsNotEmpty() {
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_carry_forward'   => false,
         'max_number_of_days_to_carry_forward' => 1
     ]);
@@ -184,10 +224,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedExceptionMessage To set the carry forward expiry duration you must allow Carry Forward
    */
   public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDurationAndUnitAreNotEmpty() {
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_carry_forward' => false,
         'carry_forward_expiration_duration' => 1,
-        'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS
+        'carry_forward_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
     ]);
   }
 
@@ -197,12 +237,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowCarryForwardExpirationUnitWithoutDurationAndViceVersa($unit, $duration, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+          InvalidAbsenceTypeException::class,
           'Invalid Carry Forward Expiration. It should have both Unit and Duration'
       );
     }
 
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_carry_forward' => true,
         'carry_forward_expiration_unit' => $unit,
         'carry_forward_expiration_duration' => $duration,
@@ -215,12 +255,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidCarryForwardExpirationUnit($expirationUnit, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+          InvalidAbsenceTypeException::class,
           'Invalid Carry Forward Expiration Unit'
       );
     }
 
-    $this->createBasicType([
+    AbsenceTypeFabricator::fabricate([
         'allow_carry_forward' => true,
         'carry_forward_expiration_duration' => 1,
         'carry_forward_expiration_unit' => $expirationUnit
@@ -233,41 +273,38 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidRequestCancelationOptions($requestCancelationOption, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+          InvalidAbsenceTypeException::class,
           'Invalid Request Cancelation Option'
       );
     }
 
-    $this->createBasicType(['allow_request_cancelation' => $requestCancelationOption]);
+    AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => $requestCancelationOption]);
   }
 
-  public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate()
-  {
-    $firstEntity = $this->createBasicType();
+  public function testWeightShouldAlwaysBeMaxWeightPlus1OnCreate() {
+    $firstEntity = AbsenceTypeFabricator::fabricate();
     $this->assertNotEmpty($firstEntity->weight);
 
-    $secondEntity = $this->createBasicType();
+    $secondEntity = AbsenceTypeFabricator::fabricate();
     $this->assertNotEmpty($secondEntity->weight);
     $this->assertEquals($firstEntity->weight + 1, $secondEntity->weight);
   }
 
   public function testShouldHaveAllTheColorsAvailableIfTheresNotTypeCreated() {
-    $this->deleteAllAbsenceTypes();
-    $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+    $availableColors = AbsenceType::getAvailableColors();
     foreach($this->allColors as $color) {
       $this->assertContains($color, $availableColors);
     }
   }
 
   public function testShouldNotAllowColorToBeReusedUntilAllColorsHaveBeenUsed() {
-    $this->deleteAllAbsenceTypes();
     $usedColors = [];
     $numberOfColors = count($this->allColors);
     for($i = 0; $i < $numberOfColors; $i++) {
       $color = $this->allColors[$i];
-      $this->createBasicType(['color' => $color]);
+      AbsenceTypeFabricator::fabricate(['color' => $color]);
       $usedColors[] = $color;
-      $availableColors = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors();
+      $availableColors = AbsenceType::getAvailableColors();
 
       $isLastColor = ($i == $numberOfColors - 1);
       foreach($usedColors as $usedColor) {
@@ -281,12 +318,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   }
 
   public function testIsReservedCannotBeSetOnCreate() {
-    $entity = $this->createBasicType(['is_reserved' => 1]);
+    $entity = AbsenceTypeFabricator::fabricate(['is_reserved' => 1]);
     $this->assertEquals(0, $entity->is_reserved);
   }
 
   public function testIsReservedCannotBeSetOnUpdate() {
-    $entity = $this->createBasicType();
+    $entity = AbsenceTypeFabricator::fabricate();
     $this->assertEquals(0, $entity->is_reserved);
     $entity = $this->updateBasicType($entity->id, ['is_reserved' => 1]);
     $this->assertEquals(0, $entity->is_reserved);
@@ -296,20 +333,22 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_OperationNotAllowedException
    * @expectedExceptionMessage Reserved types cannot be deleted!
    */
-  public function testShouldNotBeAllowedToDeleteReservedTypes()
-  {
+  public function testShouldNotBeAllowedToDeleteReservedTypes() {
     $id = $this->createReservedType();
     $this->assertNotNull($id);
-    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($id);
+    AbsenceType::del($id);
   }
 
-  public function testShouldBeAllowedToDeleteReservedTypes()
-  {
-    $entity = $this->createBasicType();
+  public function testShouldBeAllowedToDeleteNonReservedTypes() {
+    $entity = AbsenceTypeFabricator::fabricate();
     $this->assertNotNull($entity->id);
-    CRM_HRLeaveAndAbsences_BAO_AbsenceType::del($entity->id);
-    $entity = $this->findTypeByID($entity->id);
-    $this->assertNull($entity);
+    AbsenceType::del($entity->id);
+
+    $this->setExpectedException(
+      Exception::class,
+      "Unable to find a CRM_HRLeaveAndAbsences_BAO_AbsenceType with id {$entity->id}"
+    );
+    AbsenceType::findById($entity->id);
   }
 
   public function testGetValuesArrayShouldReturnAbsenceTypeValues() {
@@ -323,64 +362,58 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'allow_carry_forward'                 => 1,
       'max_number_of_days_to_carry_forward' => 10,
     ];
-    $entity = $this->createBasicType($params);
-    $values = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getValuesArray($entity->id);
+    $entity = AbsenceTypeFabricator::fabricate($params);
+    $values = AbsenceType::getValuesArray($entity->id);
     foreach ($params as $field => $value) {
       $this->assertEquals($value, $values[$field]);
     }
   }
 
-  public function testHasExpirationDuration()
-  {
-    $absenceType1 = $this->createBasicType([
+  public function testHasExpirationDuration() {
+    $absenceType1 = AbsenceTypeFabricator::fabricate([
       'allow_carry_forward' => true
     ]);
 
-    $absenceType2 = $this->createBasicType([
+    $absenceType2 = AbsenceTypeFabricator::fabricate([
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 3,
-      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS,
+      'carry_forward_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS,
     ]);
 
     $this->assertFalse($absenceType1->hasExpirationDuration());
     $this->assertTrue($absenceType2->hasExpirationDuration());
   }
 
-  public function testCarryForwardNeverExpiresShouldReturnTrueIfTypeHasNoExpirationDuration()
-  {
-    $absenceType = $this->createBasicType(['allow_carry_forward' => true]);
+  public function testCarryForwardNeverExpiresShouldReturnTrueIfTypeHasNoExpirationDuration() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_carry_forward' => true]);
     $this->assertTrue($absenceType->carryForwardNeverExpires());
   }
 
-  public function testCarryForwardNeverExpiresShouldReturnFalseIfTypeHasExpirationDuration()
-  {
-    $absenceType = $this->createBasicType([
+  public function testCarryForwardNeverExpiresShouldReturnFalseIfTypeHasExpirationDuration() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_carry_forward' => true,
       'carry_forward_expiration_duration' => 4,
-      'carry_forward_expiration_unit' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS
+      'carry_forward_expiration_unit' => AbsenceType::EXPIRATION_UNIT_MONTHS
     ]);
     $this->assertFalse($absenceType->carryForwardNeverExpires());
   }
 
-  public function testCarryForwardNeverExpiresShouldBeNullIfTypeDoesAllowCarryForward()
-  {
-    $absenceType = $this->createBasicType(['allow_carry_forward' => false]);
+  public function testCarryForwardNeverExpiresShouldBeNullIfTypeDoesAllowCarryForward() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_carry_forward' => false]);
     $this->assertNull($absenceType->carryForwardNeverExpires());
   }
 
-  public function testGetEnabledAbsenceTypesShouldReturnAListOfEnabledAbsenceTypesOrderedByWeight()
-  {
-    $this->deleteAllAbsenceTypes();
-    $absenceType1 = $this->createBasicType();
-    $absenceType2 = $this->createBasicType();
-    $absenceType3 = $this->createBasicType();
+  public function testGetEnabledAbsenceTypesShouldReturnAListOfEnabledAbsenceTypesOrderedByWeight() {
+    $absenceType1 = AbsenceTypeFabricator::fabricate();
+    $absenceType2 = AbsenceTypeFabricator::fabricate();
+    $absenceType3 = AbsenceTypeFabricator::fabricate();
 
     // Let's change the types order
     $absenceType2 = $this->updateBasicType($absenceType2->id, ['weight' => 1]);
     $absenceType3 = $this->updateBasicType($absenceType3->id, ['weight' => 2]);
     $absenceType1 = $this->updateBasicType($absenceType1->id, ['weight' => 3]);
 
-    $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
     $this->assertCount(3, $absenceTypes);
 
     $this->assertEquals($absenceType2->id, $absenceTypes[0]->id);
@@ -394,41 +427,111 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   }
 
   public function testGetEnabledAbsenceTypesShouldNotIncludeDisabledTypes() {
-    $this->deleteAllAbsenceTypes();
-    $this->createBasicType(['is_active' => 1]);
-    $this->createBasicType(['is_active' => 0]);
+    AbsenceTypeFabricator::fabricate(['is_active' => 1]);
+    AbsenceTypeFabricator::fabricate(['is_active' => 0]);
 
-    $absenceTypes = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
     $this->assertCount(1, $absenceTypes);
   }
 
-  private function createBasicType($params = array()) {
-    $basicRequiredFields = [
-        'title' => 'Type ' . microtime(),
-        'color' => '#000000',
-        'default_entitlement' => 20,
-        'allow_request_cancelation' => 1,
-    ];
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnTheAbsenceTypeIfItExists() {
+    $expectedAbsenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true, 'is_active' => true]);
 
-    $params = array_merge($basicRequiredFields, $params);
-    return CRM_HRLeaveAndAbsences_BAO_AbsenceType::create($params);
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertEquals($expectedAbsenceType->id, $absenceType->id);
+  }
+
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnADisabledAbsenceType() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true, 'is_active' => false]);
+
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertNull($absenceType);
+  }
+
+  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnNullIfThereIsNoSuchAbsenceType() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $this->assertNull($absenceType);
+  }
+
+  public function testItEnqueueAnUpdateWhenCreatingAnAbsenceTypeWithMustTakePublicHolidayAsLeave() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      $item->data->callback[0]
+    );
+  }
+
+  public function testItDoesntEnqueueAnUpdateWhenCreatingAnAbsenceTypeWithoutMustTakePublicHolidayAsLeave() {
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItEnqueueAnUpdateWhenChangingTheMustTakePublicHolidayAsLeaveValueForAnAbsenceTypeFromFalseToTrue() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+
+    $this->updateBasicType($absenceType->id, ['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+  }
+
+  public function testItEnqueueAnUpdateWhenChangingTheMustTakePublicHolidayAsLeaveValueForAnAbsenceTypeFromTrueToFalse() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $this->updateBasicType($absenceType->id, ['must_take_public_holiday_as_leave' => false]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(2, $queue->numberOfItems());
+  }
+
+  public function testItDoesntEnqueueAnUpdateWhenUpdatingAnAbsenceTypeWithoutChangingMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $this->updateBasicType($absenceType->id, ['title' => 'Other title']);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+  }
+
+  public function testItDoesntEnqueueAnUpdateWhenDeletingAnAbsenceTypeWithoutMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => false]);
+    AbsenceType::del($absenceType->id);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItShouldEnqueueAnUpdateWhenDeletingAnAbsenceTypeWithMustTakePublicHolidayAsLeave() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+    AbsenceType::del($absenceType->id);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    // The number is two because another update was added when the absence type was
+    // created
+    $this->assertEquals(2, $queue->numberOfItems());
   }
 
   private function updateBasicType($id, $params) {
     $params['id'] = $id;
-    return $this->createBasicType($params);
-  }
-
-  private function findTypeByID($id) {
-    $entity = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $entity->id = $id;
-    $entity->find(true);
-
-    if($entity->N == 0) {
-      return null;
-    }
-
-    return $entity;
+    return AbsenceTypeFabricator::fabricate($params);
   }
 
   public function expirationUnitDataProvider() {
@@ -436,7 +539,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
         [rand(3, PHP_INT_MAX), true],
         [rand(3, PHP_INT_MAX), true],
     ];
-    $validOptions = array_keys(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getExpirationUnitOptions());
+    $validOptions = array_keys(AbsenceType::getExpirationUnitOptions());
     foreach($validOptions as $option) {
       $data[] = [$option, false];
     }
@@ -445,9 +548,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   public function accrualExpirationUnitAndDurationDataProvider() {
     return [
-      [CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_DAYS, null, true],
+      [AbsenceType::EXPIRATION_UNIT_DAYS, null, true],
       [null, 10, true],
-      [CRM_HRLeaveAndAbsences_BAO_AbsenceType::EXPIRATION_UNIT_MONTHS, 5, false],
+      [AbsenceType::EXPIRATION_UNIT_MONTHS, 5, false],
     ];
   }
 
@@ -456,7 +559,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
         [rand(3, PHP_INT_MAX), true],
         [rand(3, PHP_INT_MAX), true],
     ];
-    $validOptions = array_keys(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getRequestCancelationOptions());
+    $validOptions = array_keys(AbsenceType::getRequestCancelationOptions());
     foreach($validOptions as $option) {
       $data[] = [$option, false];
     }
@@ -480,8 +583,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    * we have this helper method to insert one directly in
    * the database
    */
-  private function createReservedType()
-  {
+  private function createReservedType() {
     $title = 'Title ' . microtime();
     $query = "
       INSERT INTO
@@ -498,9 +600,5 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     }
 
     return null;
-  }
-
-  private function deleteAllAbsenceTypes() {
-    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_hrleaveandabsences_absence_type');
   }
 }

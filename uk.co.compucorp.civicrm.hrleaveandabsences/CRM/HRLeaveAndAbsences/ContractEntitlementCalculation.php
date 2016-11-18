@@ -101,7 +101,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
     $jobLeave = $this->getJobLeave();
 
     if(!empty($jobLeave['add_public_holidays'])) {
-      return PublicHoliday::getNumberOfPublicHolidaysForPeriod(
+      return PublicHoliday::getCountForPeriod(
         $this->contract['period_start_date'],
         $this->contract['period_end_date']
       );
@@ -120,7 +120,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
     $jobLeave = $this->getJobLeave();
 
     if(!empty($jobLeave['add_public_holidays'])) {
-      return PublicHoliday::getPublicHolidaysForPeriod(
+      return PublicHoliday::getAllForPeriod(
         $this->contract['period_start_date'],
         $this->contract['period_end_date']
       );
