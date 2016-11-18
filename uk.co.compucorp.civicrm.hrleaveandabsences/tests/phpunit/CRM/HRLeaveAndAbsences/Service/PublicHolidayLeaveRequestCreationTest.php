@@ -70,7 +70,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testCanCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInTheFuture() {
-    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+    $contact = ContactFabricator::fabricate();
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('2016-01-01'),
@@ -110,7 +110,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   public function testItDoesntCreateLeaveRequestsForAllPublicHolidaysInTheFutureIfThereIsNoMTPHLAbsenceTypes() {
     AbsenceType::del($this->absenceType->id);
 
-    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+    $contact = ContactFabricator::fabricate();
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime()

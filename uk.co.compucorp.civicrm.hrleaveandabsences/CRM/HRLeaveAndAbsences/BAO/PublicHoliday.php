@@ -9,7 +9,8 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
   /**
    * Create a new PublicHoliday based on array-data
    *
-   * @param array $params key-value pairs
+   * @param array $params
+   *   key-value pairs
    * @return CRM_HRLeaveAndAbsences_DAO_PublicHoliday|NULL
    **/
   public static function create($params) {
@@ -45,6 +46,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Return an array containing properties of Public Holiday with given ID.
    *
    * @param int $id
+   *
    * @return array|NULL
    */
   public static function getValuesArray($id) {
@@ -215,7 +217,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Returns the number of Public Holidays in the Current Period
    *
    * @param bool $excludeWeekends
-   *  If true, public holidays that falls on a weekend won't be counted. Default is false
+   *   If true, public holidays that falls on a weekend won't be counted. Default is false
    *
    * @return int
    */
@@ -295,7 +297,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * today at 00:00:00
    *
    * @param string $date
-   *  A date string in any format supported by strtotime
+   *   A date string in any format supported by strtotime
    *
    * @return bool
    */
@@ -313,7 +315,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * updated.
    *
    * @param array $params
-   *  The params array passed to the create() method
+   *   The params array passed to the create() method
    *
    * @return string|null
    */
@@ -355,7 +357,7 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Process all the items on the PublicHolidayLeaveRequestUpdates Queue
    *
    * @return int
-   *  The number of items processed
+   *   The number of items processed
    */
   public static function processPublicHolidayLeaveRequestUpdatesQueue() {
     $numberOfItemsProcessed = 0;

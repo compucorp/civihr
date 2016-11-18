@@ -159,7 +159,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * dates of the given $contract
    *
    * @param array $contract
-   *  An contract as returned by the HRJobContract.getcontractswithdetailsinperiod API
+   *   An contract as returned by the HRJobContract.getcontractswithdetailsinperiod API
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    *
    * @return bool

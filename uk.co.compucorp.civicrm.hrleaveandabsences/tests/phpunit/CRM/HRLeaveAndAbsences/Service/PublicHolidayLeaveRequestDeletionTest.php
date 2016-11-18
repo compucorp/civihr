@@ -82,7 +82,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
   }
 
   public function testCanDeleteAllPublicHolidayLeaveRequestsForFuturePublicHolidays() {
-    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+    $contact = ContactFabricator::fabricate();
 
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('2016-01-01'),
