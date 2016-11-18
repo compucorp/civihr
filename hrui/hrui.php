@@ -423,11 +423,11 @@ function hrui_setViewOptionsSetting($options = array()) {
  */
 function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
   $uf = _get_uf_match_contact($contactId);
-  if (empty($uf) || empty($uf['id'])) {
+  if (empty($uf) || empty($uf['uf_id'])) {
     return NULL;
   }
-  $user = user_load($uf['id']);
-  $content['userid'] = $uf['id'];
+  $user = user_load($uf['uf_id']);
+  $content['userid'] = $uf['uf_id'];
   $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
 }
