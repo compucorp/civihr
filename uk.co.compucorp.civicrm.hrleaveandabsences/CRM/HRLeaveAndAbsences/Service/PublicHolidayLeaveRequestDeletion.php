@@ -32,6 +32,31 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
   }
 
   /**
+   * Deletes all the Public Holiday Leave Requests between the start and end
+   * dates of the given contract.
+   *
+   * @param $contractID
+   */
+  public function deleteAllForContract($contractID) {
+    $contract = $this->getContractByID($contractID);
+
+    if(!$contract) {
+      return;
+    }
+    
+    $publicHolidays = PublicHoliday::getAllForPeriod(
+      $contract['period_start_date'],
+      $contract['period_end_date']
+    );
+
+    foreach($publicHolidays as $publicHoliday) {
+      if(strtotime($publicHoliday->date) >= strtotime('today')) {
+        $this->deleteForContact($contract['contact_id'], $publicHoliday);
+      }
+    }
+  }
+
+  /**
    * Deletes all the Public Holiday Leave Requests for Public Holidays in the
    * future
    */
@@ -93,6 +118,35 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     ]);
 
     return $result['values'];
+  }
+
+  /**
+   * Uses the HRJobContract API to get the contract for the given ID.
+   *
+   * The returned fields are: id, contact_id, period_start_date and period_end_date
+   *
+   * @param int $contractID
+   *
+   * @return array|null
+   */
+  private function getContractByID($contractID) {
+    $result = civicrm_api3('HRJobContract', 'get', [
+      'sequential' => 1,
+      'id'         => $contractID,
+      'return'     => 'period_start_date,period_end_date,id,contact_id'
+    ]);
+
+    if(empty($result['values'])) {
+      return null;
+    }
+
+    $contract = $result['values'][0];
+
+    if(!array_key_exists('period_end_date', $contract)) {
+      $contract['period_end_date'] = null;
+    }
+
+    return $contract;
   }
 
 }

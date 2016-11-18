@@ -122,10 +122,121 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
+  public function testItDeletesLeaveRequestsForPublicHolidaysInTheFutureOverlappingTheContractDates() {
+    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('yesterday'),
+      new DateTime('+300 days')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $contract = HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ], [
+      'period_start_date' => CRM_Utils_Date::processDate('yesterday'),
+      'period_end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('yesterday')
+    ]);
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+5 days')
+    ]);
+    $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+201 days')
+    ]);
+
+    // The Fabricator will create the leave request even for public holidays in
+    // the past
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+
+    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic->deleteAllForContract($contract['id']);
+
+    // It's -2 instead of 0 because the public holiday 1 is in the past and its
+    // respective leave request will not be deleted and the public holiday 3 is
+    // after the contract end date and will not be deleted as well
+    $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+  }
+
+  public function testItDeletesLeaveRequestsForAllPublicHolidaysInTheFutureOverlappingAContractWithNoEndDate() {
+    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+
+    $contract = HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ], [
+      'period_start_date' =>  CRM_Utils_Date::processDate('yesterday'),
+    ]);
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('-10 days'),
+      new DateTime('+400 days')
+    );
+    $periodEntitlement->contact_id = $contact['id'];
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('yesterday')
+    ]);
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+5 days')
+    ]);
+    $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('+201 days')
+    ]);
+
+    // The Fabricator will create the leave request even for public holidays in
+    // the past
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+
+    $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic->deleteAllForContract($contract['id']);
+
+    // It's -1 instead of 0 because the public holiday 1 is in the past and its
+    // respective leave request will not be deleted
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+  }
+
+  public function testItDoesntDeleteAnythingIfTheContractIDDoesntExist() {
+    $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
+
+    $publicHoliday = $this->instantiatePublicHoliday('today');
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
+
+    $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic->deleteAllForContract(9998398298);
+
+    $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());
+  }
+
   private function instantiatePublicHoliday($date) {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = CRM_Utils_Date::processDate($date);
 
     return $publicHoliday;
   }
+
+  private function countNumberOfPublicHolidayBalanceChanges() {
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $bao = new LeaveBalanceChange();
+    $bao->type_id = $balanceChangeTypes['Public Holiday'];
+    $bao->source_type = LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY;
+
+    return $bao->count();
+  }
+
 }
