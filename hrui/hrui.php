@@ -422,12 +422,13 @@ function hrui_setViewOptionsSetting($options = array()) {
  * @param int $contentPlacement
  */
 function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
-  $user = _get_uf_match_contact($contactId);
-  if (empty($user)) {
+  $uf = _get_uf_match_contact($contactId);
+  if (empty($uf) || empty($uf['id'])) {
     return NULL;
   }
-
-  $content['username'] = $user['uf_name'];
+  $user = _get_drupal_user_by_id($uf['id']);
+  $content['userid'] = $uf['id'];
+  $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
 }
 
