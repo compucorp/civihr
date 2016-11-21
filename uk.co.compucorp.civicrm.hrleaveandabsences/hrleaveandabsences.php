@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
+
 require_once 'hrleaveandabsences.civix.php';
 
 /**
@@ -404,6 +406,48 @@ function hrleaveandabsences_civicrm_searchTasks($objectType, &$tasks) {
       'title' => ts('Manage leave entitlements'),
       'class' => 'CRM_HRLeaveAndAbsences_Form_Task_ManageEntitlements'
     ];
+  }
+}
+
+/**
+ * Implementation of the hook_civicrm_post.
+ *
+ * Basically, this is a decoupled way for this extension to execute tasks after
+ * actions are executed on entities of other extensions
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param int $objectId
+ * @param object $objectRef
+ */
+function hrleaveandabsences_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  $postFunction = "_hrleaveandabsences_civicrm_post_" . strtolower($objectName);
+  if(!function_exists($postFunction)) {
+    return;
+  }
+
+  call_user_func_array($postFunction, [$op, $objectId, $objectRef]);
+}
+
+/**
+ * Function which will be called when hook_civicrm_post is executed for the
+ * HRJobDetails entity
+ *
+ * @param string $op
+ * @param int $objectId
+ * @param object $objectRef
+ */
+function _hrleaveandabsences_civicrm_post_hrjobdetails($op, $objectId, &$objectRef) {
+  if(in_array($op, ['create', 'edit'])) {
+
+    try {
+      $revision = civicrm_api3('HRJobContractRevision', 'getsingle', [
+        'id' => $objectRef->jobcontract_revision_id
+      ]);
+
+      $service = PublicHolidayLeaveRequestServiceFactory::create();
+      $service->updateAllInTheFutureForContract($revision['jobcontract_id']);
+    } catch(Exception $e) {}
   }
 }
 
