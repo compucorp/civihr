@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequest
     $deletionLogic = new PublicHolidayLeaveRequestDeletion($jobContractService);
 
     $service = new PublicHolidayLeaveRequestService($creationLogic, $deletionLogic);
-    $service->updateAllLeaveRequestsInTheFuture();
+    $service->updateAllInTheFuture();
   }
 
 }

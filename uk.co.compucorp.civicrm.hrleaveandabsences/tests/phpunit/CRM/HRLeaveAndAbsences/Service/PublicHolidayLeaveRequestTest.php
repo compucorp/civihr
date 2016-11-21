@@ -29,7 +29,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
                       ->method('createForAllInTheFuture');
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
-    $service->updateAllLeaveRequestsInTheFuture();
+    $service->updateAllInTheFuture();
   }
 
   public function testUpdateAllInTheFutureForContract() {

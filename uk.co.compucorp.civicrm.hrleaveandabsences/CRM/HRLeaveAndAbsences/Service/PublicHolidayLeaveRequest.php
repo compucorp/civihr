@@ -30,7 +30,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllInTheFuture()
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAllInTheFuture()
    */
-  public function updateAllLeaveRequestsInTheFuture() {
+  public function updateAllInTheFuture() {
     $this->deletionLogic->deleteAllInTheFuture();
     $this->creationLogic->createForAllInTheFuture();
   }
