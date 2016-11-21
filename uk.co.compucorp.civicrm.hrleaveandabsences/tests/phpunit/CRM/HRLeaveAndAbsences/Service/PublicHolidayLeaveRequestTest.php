@@ -32,4 +32,28 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     $service->updateAllLeaveRequestsInTheFuture();
   }
 
+  public function testUpdateAllInTheFutureForContract() {
+    $contactID = 10;
+
+    $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+                              ->disableOriginalConstructor()
+                              ->setMethods(['deleteAllForContract'])
+                              ->getMock();
+
+    $deletionLogicMock->expects($this->once())
+                      ->method('deleteAllForContract')
+                      ->with($this->identicalTo($contactID));
+
+    $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+                              ->disableOriginalConstructor()
+                              ->setMethods(['createAllForContract'])
+                              ->getMock();
+
+    $creationLogicMock->expects($this->once())
+                      ->method('createAllForContract')
+                      ->with($this->identicalTo($contactID));
+
+    $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
+    $service->updateAllInTheFutureForContract($contactID);
+  }
 }
