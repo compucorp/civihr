@@ -13,6 +13,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
   public function testUpdateAllLeaveRequestsInTheFuture() {
     $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+                              ->disableOriginalConstructor()
                               ->setMethods(['deleteAllInTheFuture'])
                               ->getMock();
 
@@ -20,6 +21,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
                       ->method('deleteAllInTheFuture');
 
     $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+                              ->disableOriginalConstructor()
                               ->setMethods(['createForAllInTheFuture'])
                               ->getMock();
 

@@ -3,8 +3,18 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
+
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_JobContract
+   */
+  private $jobContractService;
+
+  public function __construct(JobContractService $jobContractService) {
+    $this->jobContractService = $jobContractService;
+  }
 
   /**
    * Deletes the Public Holiday Leave Request for the contact and Public Holiday.
@@ -35,15 +45,15 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * Deletes all the Public Holiday Leave Requests between the start and end
    * dates of the given contract.
    *
-   * @param $contractID
+   * @param int $contractID
    */
   public function deleteAllForContract($contractID) {
-    $contract = $this->getContractByID($contractID);
+    $contract = $this->jobContractService->getContractByID($contractID);
 
     if(!$contract) {
       return;
     }
-    
+
     $publicHolidays = PublicHoliday::getAllForPeriod(
       $contract['period_start_date'],
       $contract['period_end_date']
@@ -64,7 +74,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     $futurePublicHolidays = PublicHoliday::getAllInFuture();
     $lastPublicHoliday = end($futurePublicHolidays);
 
-    $contracts = $this->getContractsForPeriod(
+    $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime(),
       new DateTime($lastPublicHoliday->date)
     );
@@ -101,52 +111,4 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
       ]);
     }
   }
-
-  /**
-   * Gets all the contracts overlapping the given $startDate and $endDate
-   *
-   * @param \DateTime $startDate
-   * @param \DateTime $endDate
-   *
-   * @return mixed
-   */
-  private function getContractsForPeriod(DateTime $startDate, DateTime $endDate) {
-    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
-      'start_date' => $startDate->format('Y-m-d'),
-      'end_date'   => $endDate->format('Y-m-d'),
-      'sequential' => 1
-    ]);
-
-    return $result['values'];
-  }
-
-  /**
-   * Uses the HRJobContract API to get the contract for the given ID.
-   *
-   * The returned fields are: id, contact_id, period_start_date and period_end_date
-   *
-   * @param int $contractID
-   *
-   * @return array|null
-   */
-  private function getContractByID($contractID) {
-    $result = civicrm_api3('HRJobContract', 'get', [
-      'sequential' => 1,
-      'id'         => $contractID,
-      'return'     => 'period_start_date,period_end_date,id,contact_id'
-    ]);
-
-    if(empty($result['values'])) {
-      return null;
-    }
-
-    $contract = $result['values'][0];
-
-    if(!array_key_exists('period_end_date', $contract)) {
-      $contract['period_end_date'] = null;
-    }
-
-    return $contract;
-  }
-
 }

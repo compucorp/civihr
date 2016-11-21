@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletion;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
@@ -48,7 +49,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
@@ -75,7 +76,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteForContact($this->contract['contact_id'], $publicHoliday);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
@@ -114,7 +115,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllInTheFuture();
 
     // It's -1 instead of 0 because the public holiday 1 is in the past and its
@@ -157,7 +158,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForContract($contract['id']);
 
     // It's -2 instead of 0 because the public holiday 1 is in the past and its
@@ -200,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForContract($contract['id']);
 
     // It's -1 instead of 0 because the public holiday 1 is in the past and its
@@ -216,7 +217,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());
 
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForContract(9998398298);
 
     $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());

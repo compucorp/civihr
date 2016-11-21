@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
@@ -17,7 +18,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public static function fabricate($contactID, PublicHoliday $publicHoliday) {
-    $creationLogic = new PublicHolidayLeaveRequestCreation();
+    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
     $creationLogic->createForContact($contactID, $publicHoliday);
   }
 
