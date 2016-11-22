@@ -1,9 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestService;
-use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
-use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletion;
-
+use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
 
 /**
  * This is the Queue Task which will be executed by the whenever the
@@ -15,11 +12,8 @@ use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHo
 class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests {
 
   public function run(CRM_Queue_TaskContext $ctx) {
-    $creationLogic = new PublicHolidayLeaveRequestCreation();
-    $deletionLogic = new PublicHolidayLeaveRequestDeletion();
-
-    $service = new PublicHolidayLeaveRequestService($creationLogic, $deletionLogic);
-    $service->updateAllLeaveRequestsInTheFuture();
+    $service = PublicHolidayLeaveRequestServiceFactory::create();
+    $service->updateAllInTheFuture();
   }
 
 }

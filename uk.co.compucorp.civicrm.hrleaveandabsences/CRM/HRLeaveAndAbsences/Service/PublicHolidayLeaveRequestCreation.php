@@ -5,8 +5,18 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
+
+  /**
+   * @var \CRM_HRLeaveAndAbsence_Service_JobContract
+   */
+  private $jobContractService;
+
+  public function __construct(JobContractService $jobContractService) {
+    $this->jobContractService = $jobContractService;
+  }
 
   /**
    * Creates Public Holiday Leave Requests for all the existing Public Holidays
@@ -25,7 +35,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $futurePublicHolidays = PublicHoliday::getAllInFuture();
     $lastPublicHoliday = end($futurePublicHolidays);
 
-    $contracts = $this->getContractsForPeriod(
+    $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime(),
       new DateTime($lastPublicHoliday->date)
     );
@@ -35,6 +45,31 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
         if($this->publicHolidayOverlapsContract($contract, $publicHoliday)) {
           $this->create($contract['contact_id'], $absenceType, $publicHoliday);
         }
+      }
+    }
+  }
+
+  /**
+   * Creates Public Holiday Leave Requests for all Public Holidays in the
+   * Future overlapping the start and end dates of the given contract
+   *
+   * @param int $contractID
+   */
+  public function createAllForContract($contractID) {
+    $contract = $this->jobContractService->getContractByID($contractID);
+
+    if (!$contract) {
+      return;
+    }
+
+    $publicHolidays = PublicHoliday::getAllForPeriod(
+      $contract['period_start_date'],
+      $contract['period_end_date']
+    );
+
+    foreach($publicHolidays as $publicHoliday) {
+      if(strtotime($publicHoliday->date) >= strtotime('today')) {
+        $this->createForContact($contract['contact_id'], $publicHoliday);
       }
     }
   }
@@ -134,24 +169,6 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
         'amount' => 0
       ]);
     }
-  }
-
-  /**
-   * Gets all the contracts overlapping the given $startDate and $endDate
-   *
-   * @param \DateTime $startDate
-   * @param \DateTime $endDate
-   *
-   * @return mixed
-   */
-  private function getContractsForPeriod(DateTime $startDate, DateTime $endDate) {
-    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
-      'start_date' => $startDate->format('Y-m-d'),
-      'end_date' => $endDate->format('Y-m-d'),
-      'sequential' => 1
-    ]);
-
-    return $result['values'];
   }
 
   /**
