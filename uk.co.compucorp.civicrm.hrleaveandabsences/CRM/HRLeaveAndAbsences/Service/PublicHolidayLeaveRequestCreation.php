@@ -19,6 +19,25 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   }
 
   /**
+   * Creates Public Holiday Leave Requests for all the contacts with contracts
+   * overlapping the date of the given Public Holiday
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   */
+  public function createForAllContacts(PublicHoliday $publicHoliday) {
+    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+
+    $contracts = $this->jobContractService->getContractsForPeriod(
+      new DateTime($publicHoliday->date),
+      new DateTime($publicHoliday->date)
+    );
+
+    foreach($contracts as $contract) {
+      $this->create($contract['contact_id'], $absenceType, $publicHoliday);
+    }
+  }
+
+  /**
    * Creates Public Holiday Leave Requests for all the existing Public Holidays
    * int the future
    *
