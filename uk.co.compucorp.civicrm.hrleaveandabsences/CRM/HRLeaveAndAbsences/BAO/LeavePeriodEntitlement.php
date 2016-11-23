@@ -399,11 +399,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 	/**
 	 * Returns the future balance for this LeavePeriodEntitlement.
 	 *
-	 * The balance only includes:
-	 * - Brought Forward
-	 * - Public Holidays
-	 * - Expired Balance Changes
-	 * - Approved Leave Requests
+	 * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Waiting Approval
+   * and More Information Requested statuses are accounted for in the calculation apart from the usual
+   * Approved and Admin Approved Statuses.
 	 *
 	 * @return float
 	 */
@@ -527,13 +525,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
 	/**
 	 * Returns formatted result for getting the balance for an entitlement period given an
-	 * Entitlement Id or (Contact ID + Absence Period ID), When params contains the include_future parameter and its true,
-	 * It returns also future balance for an entitlement taking the Awaiting Approval and More Information Requested leave statuses
-	 * into consideration
+	 * Entitlement Id or (Contact ID + Absence Period ID).
+   * When params contains the include_future parameter and its true,
+	 * It returns also future balance for an entitlement taking the Awaiting Approval
+   * and More Information Requested leave statuses into consideration
 	 *
-	 * Sample param: $params = ['entitlement_id'=>1, 'contact_id'=>9, 'include_future'=>false]
-	 *
-	 * @param $params
+	 * @param $params array
+   * Sample param: $params = ['entitlement_id' => 1, 'contact_id' => 9, 'include_future' => false]
+   *
 	 * @return an array of formatted results
 	 *
 	 *  [
