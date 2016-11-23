@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Exception_InvalidPublicHolidayException as InvalidPublicHolidayException;
@@ -502,4 +503,109 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     PublicHoliday::del($publicHoliday->id);
   }
 
+  public function testItEnqueuesOnlyATaskToCreateLeaveRequestsWhenCreatingANewPublicHoliday() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $date = CRM_Utils_Date::processDate('tomorrow');
+    PublicHolidayFabricator::fabricate(['date' => $date]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+
+    $this->assertEquals(date('Y-m-d', strtotime($date)), $item->data->arguments[0]);
+  }
+
+  public function testItEnqueuesATaskToDeleteAndATaskToUpdateLeaveRequestsWhenChangingTheDatesOfAPublicHoliday() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('+3 days')
+    ]);
+
+    $date1 = CRM_Utils_Date::processDate('+2 days');
+    $date2 = CRM_Utils_Date::processDate('+3 days');
+
+    $publicHoliday = PublicHolidayFabricator::fabricate(['date' => $date1]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $queue->deleteItem($item);
+
+    PublicHoliday::create([
+      'id' => $publicHoliday->id,
+      'date' => $date2
+    ]);
+
+    $this->assertEquals(2, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_DeleteAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date1)), $item->data->arguments[0]);
+    $queue->deleteItem($item);
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date2)), $item->data->arguments[0]);
+    $queue->deleteItem($item);
+  }
+
+  public function testItDoesNotEnqueueTasksToCreateOrDeleteLeaveRequestsIfTheDateDidntChange() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date' => CRM_Utils_Date::processDate('+3 days')
+    ]);
+
+    // The fabricateWithoutValidation will not create any task
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('today')
+    ]);
+
+    PublicHoliday::create([
+      'id' => $publicHoliday->id,
+      'title' => 'New Title'
+    ]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testItEnqueuesATaskToDeleteLeaveRequestsWhenDeletingAPublicHoliday() {
+    // The fabricateWithoutValidation will not create any task
+    $date = CRM_Utils_Date::processDate('tomorrow');
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => $date
+    ]);
+
+    PublicHoliday::del($publicHoliday->id);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_DeleteAllLeaveRequestsForAPublicHoliday',
+      $item->data->callback[0]
+    );
+    $this->assertEquals(date('Y-m-d', strtotime($date)), $item->data->arguments[0]);
+  }
 }

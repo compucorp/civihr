@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as CreationLogic;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as DeletionLogic;
 
@@ -47,6 +48,26 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
   public function updateAllInTheFutureForContract($contractID) {
     $this->deletionLogic->deleteAllForContract($contractID);
     $this->creationLogic->createAllForContract($contractID);
+  }
+
+  /**
+   * Creates Leave Requests for all the contacts with contracts overlapping the
+   * date of the given Public Holiday
+   *
+   * @param \PublicHoliday $publicHoliday
+   */
+  public function createForAllContacts(PublicHoliday $publicHoliday) {
+    $this->creationLogic->createForAllContacts($publicHoliday);
+  }
+
+  /**
+   * Deletes Leave Requests for the given Public Holiday from all the contacts
+   * with contracts overlapping the date of the given Public Holiday
+   *
+   * @param \PublicHoliday $publicHoliday
+   */
+  public function deleteForAllContacts(PublicHoliday $publicHoliday) {
+    $this->deletionLogic->deleteForAllContacts($publicHoliday);
   }
 
 }

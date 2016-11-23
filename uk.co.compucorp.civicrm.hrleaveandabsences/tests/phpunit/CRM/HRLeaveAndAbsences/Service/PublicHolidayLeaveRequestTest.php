@@ -5,6 +5,7 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestService;
@@ -168,5 +169,47 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday1));
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday2));
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday3));
+  }
+
+  public function testCreateForAllContacts() {
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->id = 1;
+
+    $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
+    $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+                              ->disableOriginalConstructor()
+                              ->setMethods(['createForAllContacts'])
+                              ->getMock();
+
+    $creationLogicMock->expects($this->once())
+                      ->method('createForAllContacts')
+                      ->with($this->identicalTo($publicHoliday));
+
+    $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
+    $service->createForAllContacts($publicHoliday);
+  }
+
+  public function testDeleteForAllContacts() {
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->id = 1;
+
+    $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
+    $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+                              ->disableOriginalConstructor()
+                              ->setMethods(['deleteForAllContacts'])
+                              ->getMock();
+
+    $deletionLogicMock->expects($this->once())
+                      ->method('deleteForAllContacts')
+                      ->with($this->identicalTo($publicHoliday));
+
+    $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
+    $service->deleteForAllContacts($publicHoliday);
   }
 }
