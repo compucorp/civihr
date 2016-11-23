@@ -70,7 +70,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $params = [
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$contactID, 'Integer'],
-      3 => [CRM_Utils_Date::processDate($publicHoliday->date), 'Integer'],
+      3 => [CRM_Utils_Date::processDate($publicHoliday->date, null, false, 'Y-m-d'), 'String'],
       4 => [$balanceChangeTypes['Public Holiday'], 'Integer']
     ];
 
