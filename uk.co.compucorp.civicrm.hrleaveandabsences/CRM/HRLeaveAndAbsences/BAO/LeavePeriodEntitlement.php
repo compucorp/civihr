@@ -123,11 +123,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
 	/**
-	 * Returns an array of entitlements for a contact for a specific Absence Period ID
-	 * @param int $contactId The ID of the contact
-	 * @param int $periodId The ID of the absence period
+	 * Returns an array of LeavePeriodEntitlements for a contact for a specific Absence Period ID
 	 *
-	 * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|[]
+	 * @param $contactId
+	 * @param $periodId
+	 *
+	 * @return CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement[]
 	 * If there are no entitlements, an empty array will be returned
 	 */
 	public static function getPeriodEntitlementsForContact($contactId, $periodId) {
@@ -144,8 +145,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $entitlement->find();
     $leaveEntitlements = [];
 
-    while($entitlement->fetch()){
-	    $id = $entitlement->id;
+    while($entitlement->fetch()) {
 	    $leaveEntitlements[] = clone $entitlement;
     }
     return $leaveEntitlements;
@@ -536,38 +536,34 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 	 * @param $params
 	 * @return an array of formatted results
 	 *
-	 * [
-	 * ['id'=>1, 'remainder'=>['current'=>30, 'future'=>20]]
-	 * ]
+	 *  [
+	 *  ['id' => 1, 'remainder' => ['current' => 30, 'future' => 20]]
+	 *  ]
 	 */
 	public static function getLeavePeriodEntitlementRemainder($params){
 
-	  $results = [];
-    if($params['entitlement_id']){
-	    $leaveEntitlement = self::findById($params['entitlement_id']);
-	    if(!empty($params['include_future'])){
-		    $results[] = ['id'=> $leaveEntitlement->id, 'remainder' =>[ 'current' => $leaveEntitlement->getBalance(), 'future' => $leaveEntitlement->getFutureBalance()]];
-	    }
-	    else{
-		    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' => ['current' => $leaveEntitlement->getBalance()]];
-	    }
-    }
-    elseif($params['contact_id'] && $params['period_id']){
-	    $leaveEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
+		$leavePeriodEntitlements = $results = [];
 
-	    foreach($leaveEntitlements as $leaveEntitlement){
-		    if(!empty($params['include_future'])){
-			    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' =>[ 'current' => $leaveEntitlement->getBalance(), 'future' => $leaveEntitlement->getFutureBalance()]];
-		    }
-		    else{
-			    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' => ['current' => $leaveEntitlement->getBalance()]];
-		    }
+    if(!empty($params['entitlement_id'])) {
+	    $leavePeriodEntitlements[] = self::findById($params['entitlement_id']);
+    }
 
-	    }
+    if(!empty($params['contact_id']) && !empty($params['period_id'])){
+	    $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
     }
-    else{
-	    throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id to get a list of entitlements");
-    }
+
+		foreach($leavePeriodEntitlements as $leavePeriodEntitlement){
+			$remainder = ['current' => $leavePeriodEntitlement->getBalance()];
+			if(!empty($params['include_future'])){
+				 $remainder['future'] = $leavePeriodEntitlement->getFutureBalance();
+			}
+
+			$results[] = [
+				'id' => $leavePeriodEntitlement->id,
+				'remainder' => $remainder
+			];
+
+		}
     return $results;
   }
 
