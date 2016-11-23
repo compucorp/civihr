@@ -490,4 +490,16 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHolidayTest extends BaseHeadlessTest {
     $this->assertEquals($nextSunday->id, $publicHolidays[0]->id);
   }
 
+  /**
+   * @expectedException RuntimeException
+   * @expectedExceptionMessage Past Public Holidays cannot be deleted
+   */
+  public function testPublicHolidaysInThePastCannotBeDeleted() {
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' => CRM_Utils_Date::processDate('yesterday')
+    ]);
+
+    PublicHoliday::del($publicHoliday->id);
+  }
+
 }

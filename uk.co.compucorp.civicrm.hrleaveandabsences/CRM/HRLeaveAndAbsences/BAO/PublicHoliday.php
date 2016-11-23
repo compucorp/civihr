@@ -34,11 +34,18 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Delete a PublicHoliday with given ID.
    *
    * @param int $id
+   *
+   * @throws RuntimeException
    */
   public static function del($id) {
     $publicHoliday = new CRM_HRLeaveAndAbsences_DAO_PublicHoliday();
     $publicHoliday->id = $id;
     $publicHoliday->find(true);
+
+    if($publicHoliday->date && self::dateIsInThePast($publicHoliday->date)) {
+      throw new RuntimeException('Past Public Holidays cannot be deleted');
+    }
+
     $publicHoliday->delete();
   }
 
