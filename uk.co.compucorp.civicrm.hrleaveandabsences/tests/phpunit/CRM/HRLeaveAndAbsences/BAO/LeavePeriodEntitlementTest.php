@@ -688,6 +688,43 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     return $calculation;
   }
 
+	public function testBalanceShouldIncludeOpenLeaveRequests() {
+		$periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+
+		$this->createLeaveBalanceChange($periodEntitlement->id, 10);
+		$this->assertEquals(10, $periodEntitlement->getBalance());
+
+		// This leave request will deduct 3 days from the entitlement
+		$this->createLeaveRequestBalanceChange(
+			$periodEntitlement->type_id,
+			$periodEntitlement->contact_id,
+			$this->leaveRequestStatuses['Approved'],
+			date('YmdHis'),
+			date('YmdHis', strtotime('+2 day'))
+		);
+
+		// This would deduct 2 days, but it's waiting approval
+		// but its expected to be included in the balance
+		$this->createLeaveRequestBalanceChange(
+			$periodEntitlement->type_id,
+			$periodEntitlement->contact_id,
+			$this->leaveRequestStatuses['Waiting Approval'],
+			date('YmdHis'),
+			date('YmdHis', strtotime('+1 day'))
+		);
+
+		// This would deduct 1 day, but it's waiting for more information
+		// but its expected to be included in the balance
+		$this->createLeaveRequestBalanceChange(
+			$periodEntitlement->type_id,
+			$periodEntitlement->contact_id,
+			$this->leaveRequestStatuses['More Information Requested'],
+			date('YmdHis')
+		);
+
+		$this->assertEquals(4, $periodEntitlement->getFutureBalance());
+	}
+
   /**
    * Some tests on this class use the HRJobDetails API which uses the
    * HRJobContractRevision API that depends on the the global $user.

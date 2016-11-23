@@ -44,3 +44,23 @@ function civicrm_api3_leave_period_entitlement_delete($params) {
 function civicrm_api3_leave_period_entitlement_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * LeavePeriod Entitlement.getremainder API
+ *
+ * @param $params
+ * @return array API result descriptor
+ * @throws InvalidArgumentException
+ */
+function civicrm_api3_leave_period_entitlement_getremainder($params){
+ $results = CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement::getLeavePeriodEntitlementRemainder($params);
+ return civicrm_api3_create_success($results);
+
+}
+
+function _civicrm_api3_leave_period_entitlement_getremainder_spec(&$params){
+ $params['entitlement_id']['api.required'] = 0;
+ $params['contact_id']['api.required'] = 0;
+
+
+}

@@ -122,6 +122,35 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     return null;
   }
 
+	/**
+	 * Returns an array of entitlements for a contact for a specific Absence Period ID
+	 * @param int $contactId The ID of the contact
+	 * @param int $periodId The ID of the absence period
+	 *
+	 * @return \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement|[]
+	 * If there are no entitlements, an empty array will be returned
+	 */
+	public static function getPeriodEntitlementsForContact($contactId, $periodId) {
+
+    if(!$contactId) {
+      throw new InvalidArgumentException("You must inform the Contact ID");
+    }
+    if(!$periodId) {
+      throw new InvalidArgumentException("You must inform the AbsencePeriod ID");
+    }
+    $entitlement = new self();
+    $entitlement->contact_id = (int)$contactId;
+    $entitlement->period_id = (int)$periodId;
+    $entitlement->find();
+    $leaveEntitlements = [];
+
+    while($entitlement->fetch()){
+	    $id = $entitlement->id;
+	    $leaveEntitlements[] = clone $entitlement;
+    }
+    return $leaveEntitlements;
+  }
+
   /**
    * This method saves a new LeavePeriodEntitlement and the respective
    * LeaveBalanceChanges based on the given EntitlementCalculation.
@@ -367,6 +396,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
+	/**
+	 * Returns the future balance for this LeavePeriodEntitlement.
+	 *
+	 * The balance only includes:
+	 * - Brought Forward
+	 * - Public Holidays
+	 * - Expired Balance Changes
+	 * - Approved Leave Requests
+	 *
+	 * @return float
+	 */
+	public function getFutureBalance() {
+		$leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+		$filterStatuses = [
+			$leaveRequestStatus['Approved'],
+			$leaveRequestStatus['Admin Approved'],
+			$leaveRequestStatus['Waiting Approval'],
+			$leaveRequestStatus['More Information Requested'],
+		];
+		return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
+	}
+
   /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
    *
@@ -473,4 +524,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     return $contractsDates;
   }
+
+	/**
+	 * Returns formatted result for getting the balance for an entitlement period given an
+	 * Entitlement Id or (Contact ID + Absence Period ID), When params contains the include_future parameter and its true,
+	 * It returns also future balance for an entitlement taking the Awaiting Approval and More Information Requested leave statuses
+	 * into consideration
+	 *
+	 * Sample param: $params = ['entitlement_id'=>1, 'contact_id'=>9, 'include_future'=>false]
+	 *
+	 * @param $params
+	 * @return an array of formatted results
+	 *
+	 * [
+	 * ['id'=>1, 'remainder'=>['current'=>30, 'future'=>20]]
+	 * ]
+	 */
+	public static function getLeavePeriodEntitlementRemainder($params){
+
+	  $results = [];
+    if($params['entitlement_id']){
+	    $leaveEntitlement = self::findById($params['entitlement_id']);
+	    if(!empty($params['include_future'])){
+		    $results[] = ['id'=> $leaveEntitlement->id, 'remainder' =>[ 'current' => $leaveEntitlement->getBalance(), 'future' => $leaveEntitlement->getFutureBalance()]];
+	    }
+	    else{
+		    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' => ['current' => $leaveEntitlement->getBalance()]];
+	    }
+    }
+    elseif($params['contact_id'] && $params['period_id']){
+	    $leaveEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
+
+	    foreach($leaveEntitlements as $leaveEntitlement){
+		    if(!empty($params['include_future'])){
+			    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' =>[ 'current' => $leaveEntitlement->getBalance(), 'future' => $leaveEntitlement->getFutureBalance()]];
+		    }
+		    else{
+			    $results[] =  ['id'=> $leaveEntitlement->id, 'remainder' => ['current' => $leaveEntitlement->getBalance()]];
+		    }
+
+	    }
+    }
+    else{
+	    throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id to get a list of entitlements");
+    }
+    return $results;
+  }
+
 }
