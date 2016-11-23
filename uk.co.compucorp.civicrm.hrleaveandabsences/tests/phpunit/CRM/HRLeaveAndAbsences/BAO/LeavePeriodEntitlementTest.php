@@ -758,7 +758,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $result = $periodEntitlement::getLeavePeriodEntitlementRemainder($params);
     $this->assertEquals(1, count($result));
     $this->assertEquals(7, $result[0]['remainder']['current']);
-
   }
 
   public function testgetLeavePeriodEntitlementRemainderWithIncludeFuture() {
@@ -780,7 +779,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(1, count($result));
     $this->assertEquals(10, $result[0]['remainder']['current']);
     $this->assertEquals(7, $result[0]['remainder']['future']);
-
   }
 
   public function testgetLeavePeriodEntitlementRemainderWithContactAndPeriodId() {
@@ -793,7 +791,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $result = LeavePeriodEntitlement::getLeavePeriodEntitlementRemainder($params);
     $this->assertEquals(1, count($result));
     $this->assertEquals(10, $result[0]['remainder']['current']);
-
   }
 
   /**
