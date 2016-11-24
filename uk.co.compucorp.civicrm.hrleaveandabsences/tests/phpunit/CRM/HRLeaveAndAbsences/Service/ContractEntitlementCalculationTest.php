@@ -2,16 +2,16 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
-use CRM_HRLeaveAndAbsences_ContractEntitlementCalculation as ContractEntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation as ContractEntitlementCalculation;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 
 /**
- * Class CRM_HRLeaveAndAbsences_EntitlementCalculationTest
+ * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculationTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
 

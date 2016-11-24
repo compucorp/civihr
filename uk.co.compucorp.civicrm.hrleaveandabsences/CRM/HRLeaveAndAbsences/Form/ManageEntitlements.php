@@ -4,7 +4,7 @@ require_once 'CRM/Core/Form.php';
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
-use CRM_HRLeaveAndAbsences_EntitlementCalculator as EntitlementCalculator;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculator as EntitlementCalculator;
 
 /**
  * Form controller class
@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   /**
    * The Entitlement Calculations for this form AbsencePeriod
    *
-   * @var CRM_HRLeaveAndAbsences_EntitlementCalculation[]
+   * @var CRM_HRLeaveAndAbsences_Service_EntitlementCalculation[]
    */
   private $calculations;
 

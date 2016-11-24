@@ -5,9 +5,9 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 
 /**
- * Class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation
+ * Class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation
  */
-class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
+class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation {
 
   private $contract;
   private $period;
