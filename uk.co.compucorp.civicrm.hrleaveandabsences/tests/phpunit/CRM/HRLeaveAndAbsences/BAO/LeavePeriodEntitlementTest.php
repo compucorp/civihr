@@ -768,7 +768,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertArrayNotHasKey('future', $result[0]['remainder']);
   }
 
-  public function testGetMultipleLeavePeriodEntitlementRemainder() {
+  public function testGetLeavePeriodEntitlementRemainderWithMultipleRecords() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
 
