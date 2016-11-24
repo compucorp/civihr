@@ -717,17 +717,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetPeriodEntitlementsForContact() {
-    LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 1,
-      'contact_id' => 1
-    ]);
-
-    LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 2,
-      'contact_id' => 1
-    ]);
+    LeavePeriodEntitlementFabricator::fabricate();
+    LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
     $contact_id = 1;
     $period_id = 1;
 
@@ -739,23 +730,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetPeriodEntitlementsForContactWhenWrongContactIsPassed() {
-    LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 1,
-      'contact_id' => 1
-    ]);
-
-    LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 2,
-      'contact_id' => 1
-    ]);
-
-    LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 2,
-      'contact_id' => 2
-    ]);
+    LeavePeriodEntitlementFabricator::fabricate();
+    LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
+    LeavePeriodEntitlementFabricator::fabricate(['contact_id' => 2]);
 
     $contact_id = 1;
     $period_id = 1;
