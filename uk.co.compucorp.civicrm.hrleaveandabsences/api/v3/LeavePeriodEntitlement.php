@@ -58,6 +58,9 @@ function civicrm_api3_leave_period_entitlement_getremainder($params){
   if(empty($params['entitlement_id']) && (empty($params['contact_id']) || empty($params['period_id']))) {
     throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id");
   }
+  if(!empty($params['entitlement_id']) && (!empty($params['contact_id']) || !empty($params['period_id']))) {
+    throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id");
+  }
   $results = CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement::getRemainder($params);
   return civicrm_api3_create_success($results);
 }

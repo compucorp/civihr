@@ -25,7 +25,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
+   * @expectedExceptionMessage You must include either the id of a specific entitlement, or both the contact and period id
    */
   public function testGetRemainderWhenAllParametersArePassed() {
     civicrm_api3('LeavePeriodEntitlement', 'getremainder', ['entitlement_id'=> 1, 'period_id' => 1, 'contact_id'=>1]);
@@ -33,7 +33,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
+   * @expectedExceptionMessage You must include either the id of a specific entitlement, or both the contact and period id
    */
   public function testGetRemainderWhenEntitlentIdAndPeriodIdArePassed() {
     civicrm_api3('LeavePeriodEntitlement', 'getremainder', ['entitlement_id'=> 1, 'contact_id'=>1]);
