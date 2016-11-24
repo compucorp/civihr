@@ -129,7 +129,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @param int $periodId
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement[]
-   * If there are no entitlements, an empty array will be returned
+   *   If there are no entitlements, an empty array will be returned
    */
   public static function getPeriodEntitlementsForContact($contactId, $periodId) {
 
