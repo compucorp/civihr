@@ -15,6 +15,13 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
   private $jobLeave = false;
 
   /**
+   * @var int
+   *   Caches the value returned by the getNumberOfPublicHolidaysInEntitlement()
+   *   method
+   */
+  private $numberOfPublicHolidaysInEntitlement = null;
+
+  /**
    * Creates a new Contract Entitlement Calculation based on the give Absence
    * Period, Contract and AbsenceType
    *
@@ -98,16 +105,20 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
    * @return int
    */
   public function getNumberOfPublicHolidaysInEntitlement() {
-    $jobLeave = $this->getJobLeave();
+    if(is_null($this->numberOfPublicHolidaysInEntitlement)) {
+      $this->numberOfPublicHolidaysInEntitlement = 0;
 
-    if(!empty($jobLeave['add_public_holidays'])) {
-      return PublicHoliday::getCountForPeriod(
-        $this->contract['period_start_date'],
-        $this->contract['period_end_date']
-      );
+      $jobLeave = $this->getJobLeave();
+
+      if(!empty($jobLeave['add_public_holidays'])) {
+        $this->numberOfPublicHolidaysInEntitlement = PublicHoliday::getCountForPeriod(
+          $this->contract['period_start_date'],
+          $this->contract['period_end_date']
+        );
+      }
     }
 
-    return 0;
+    return $this->numberOfPublicHolidaysInEntitlement;
   }
 
   /**
