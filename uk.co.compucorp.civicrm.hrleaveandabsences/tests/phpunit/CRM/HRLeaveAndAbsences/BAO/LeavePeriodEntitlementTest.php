@@ -7,6 +7,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -288,7 +290,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetEntitlementShouldIncludeOnlyPositiveLeaveBroughtForwardAndPublicHolidays() {
-    $periodEntitlement = $this->createPeriodEntitlement();
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
@@ -613,14 +615,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     ]);
   }
 
-  private function createPeriodEntitlement() {
-    return LeavePeriodEntitlement::create([
-      'type_id'     => 1,
-      'period_id'   => 1,
-      'contact_id' => 1
-    ]);
-  }
-
   /**
    * Mock the calculation, as we only need to test
    * if the LeavePeriodEntitlement BAO can create an new LeavePeriodEntitlement
@@ -686,6 +680,163 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
                 ->will($this->returnValue($publicHolidaysReturn));
 
     return $calculation;
+  }
+
+  public function testFutureBalanceShouldIncludeOpenAndApprovedLeaveRequests() {
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    // This leave request will deduct 3 days from the entitlement
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['Approved'],
+      date('YmdHis'),
+      date('YmdHis', strtotime('+2 day'))
+    );
+
+    // This will deduct 2 days
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['Waiting Approval'],
+      date('YmdHis'),
+      date('YmdHis', strtotime('+1 day'))
+    );
+
+    // This will deduct 1 day
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['More Information Requested'],
+      date('YmdHis')
+    );
+
+    $this->assertEquals(4, $periodEntitlement->getFutureBalance());
+  }
+
+  public function testGetPeriodEntitlementsForContact() {
+    $contactId = 1;
+    $periodId = 1;
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId
+    ]);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
+
+
+    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
+    $this->assertCount(2, $entitlements);
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
+    $this->assertEquals($periodEntitlement1->id, $entitlements[0]->id);
+    $this->assertEquals($periodEntitlement2->id, $entitlements[1]->id);
+  }
+
+  public function testGetPeriodEntitlementsForContactWhenWrongContactIsPassed() {
+    $contactId = 1;
+    $periodId = 1;
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId
+    ]);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 2,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
+
+    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
+    $this->assertCount(2, $entitlements);
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
+    $this->assertEquals($periodEntitlement1->id, $entitlements[0]->id);
+    $this->assertEquals($periodEntitlement2->id, $entitlements[1]->id);
+  }
+
+  public function testGetLeavePeriodEntitlementRemainder() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    // This leave request will deduct 3 days from the entitlement
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['Approved'],
+      date('YmdHis'),
+      date('YmdHis', strtotime('+2 day'))
+    );
+
+    $params = ['entitlement_id' => $periodEntitlement->id];
+    $result = LeavePeriodEntitlement::getRemainder($params);
+    $this->assertEquals(1, count($result));
+    $this->assertEquals(7, $result[0]['remainder']['current']);
+    $this->assertEquals(7, $result[0]['remainder']['current']);
+    $this->assertArrayNotHasKey('future', $result[0]['remainder']);
+  }
+
+  public function testGetLeavePeriodEntitlementRemainderWithMultipleRecords() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
+
+    //create two more LeavePeriodEntitlement within same period with same contactid
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 2]);
+    $periodEntitlement3 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 3]);
+
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, 4);
+    $this->createLeaveBalanceChange($periodEntitlement3->id, 3);
+
+    $params = ['contact_id' => $periodEntitlement1->contact_id, 'period_id' => $absencePeriod->id];
+    $result = LeavePeriodEntitlement::getRemainder($params);
+    $this->assertCount(3, $result);
+    $this->assertEquals(10, $result[0]['remainder']['current']);
+    $this->assertEquals(4, $result[1]['remainder']['current']);
+    $this->assertEquals(3, $result[2]['remainder']['current']);
+  }
+
+  public function testGetLeavePeriodEntitlementRemainderWithIncludeFuture() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    // This leave request will deduct 3 days from the entitlement
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['Waiting Approval'],
+      date('YmdHis'),
+      date('YmdHis', strtotime('+2 day'))
+    );
+
+    $params = ['entitlement_id' => $periodEntitlement->id, 'include_future' => true];
+    $result = LeavePeriodEntitlement::getRemainder($params);
+    $this->assertCount(1, $result);
+    $this->assertEquals(10, $result[0]['remainder']['current']);
+    $this->assertEquals(7, $result[0]['remainder']['future']);
+  }
+
+  public function testGetLeavePeriodEntitlementRemainderWithContactAndPeriodId() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    $params = ['contact_id' => $periodEntitlement->contact_id, 'period_id' => $periodEntitlement->period_id];
+    $result = LeavePeriodEntitlement::getRemainder($params);
+    $this->assertCount(1, $result);
+    $this->assertEquals(10, $result[0]['remainder']['current']);
   }
 
   /**
