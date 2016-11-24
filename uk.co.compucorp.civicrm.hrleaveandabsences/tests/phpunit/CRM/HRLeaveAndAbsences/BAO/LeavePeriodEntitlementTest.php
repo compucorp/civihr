@@ -717,33 +717,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetPeriodEntitlementsForContact() {
-    LeavePeriodEntitlementFabricator::fabricate();
-    LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
     $contactId = 1;
     $periodId = 1;
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId
+    ]);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
+
 
     $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
-    $this->assertObjectHasAttribute('id', $entitlements[0]);
-    $this->assertObjectHasAttribute('id', $entitlements[1]);
+    $this->assertEquals($periodEntitlement1->id, $entitlements[0]->id);
+    $this->assertEquals($periodEntitlement2->id, $entitlements[1]->id);
   }
 
   public function testGetPeriodEntitlementsForContactWhenWrongContactIsPassed() {
-    LeavePeriodEntitlementFabricator::fabricate();
-    LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
-    LeavePeriodEntitlementFabricator::fabricate(['contact_id' => 2]);
-
     $contactId = 1;
     $periodId = 1;
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId
+    ]);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 2,
+      'period_id' => $periodId,
+      'type_id' => 2
+    ]);
 
     $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
-    $this->assertObjectHasAttribute('id', $entitlements[0]);
-    $this->assertObjectHasAttribute('id', $entitlements[1]);
+    $this->assertEquals($periodEntitlement1->id, $entitlements[0]->id);
+    $this->assertEquals($periodEntitlement2->id, $entitlements[1]->id);
   }
 
   public function testGetLeavePeriodEntitlementRemainder() {
