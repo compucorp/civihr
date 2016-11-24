@@ -726,6 +726,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
+    $this->assertObjectHasAttribute('id', $entitlements[0]);
+    $this->assertObjectHasAttribute('id', $entitlements[1]);
   }
 
   public function testGetPeriodEntitlementsForContactWhenWrongContactIsPassed() {
@@ -740,6 +742,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
     $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[1]);
+    $this->assertObjectHasAttribute('id', $entitlements[0]);
+    $this->assertObjectHasAttribute('id', $entitlements[1]);
   }
 
   public function testGetLeavePeriodEntitlementRemainder() {
