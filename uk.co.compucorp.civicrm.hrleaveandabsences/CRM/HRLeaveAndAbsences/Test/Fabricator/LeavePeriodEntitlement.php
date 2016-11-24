@@ -5,7 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 class CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement extends
   CRM_HRLeaveAndAbsences_Test_Fabricator_SequentialTitle  {
 
-  public static function fabricate($params = [], $loadAfterSave = false) {
+  public static function fabricate($params = []) {
     $params = array_merge(static::getDefaultParams(), $params);
 
     if(empty($params['title'])) {
@@ -13,10 +13,6 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement extends
     }
 
     $leaveEntitlementPeriod = LeavePeriodEntitlement::create($params);
-
-    if($loadAfterSave) {
-      $leaveEntitlementPeriod = LeavePeriodEntitlement::findById($leaveEntitlementPeriod->id);
-    }
 
     return $leaveEntitlementPeriod;
   }

@@ -290,7 +290,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetEntitlementShouldIncludeOnlyPositiveLeaveBroughtForwardAndPublicHolidays() {
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 6);
     $this->createBroughtForwardBalanceChange($periodEntitlement->id, 3);
@@ -769,7 +769,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testGetLeavePeriodEntitlementRemainder() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
     // This leave request will deduct 3 days from the entitlement
@@ -791,11 +791,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testGetMultipleLeavePeriodEntitlementRemainder() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
-    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id], true);
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
 
     //create two more LeavePeriodEntitlement within same period with same contactid
-    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 2], true);
-    $periodEntitlement3 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 3], true);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 2]);
+    $periodEntitlement3 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id, 'type_id' => 3]);
 
     $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
     $this->createLeaveBalanceChange($periodEntitlement2->id, 10);
@@ -811,7 +811,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testGetLeavePeriodEntitlementRemainderWithIncludeFuture() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
     // This leave request will deduct 3 days from the entitlement
@@ -832,7 +832,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testGetLeavePeriodEntitlementRemainderWithContactAndPeriodId() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id], true);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
