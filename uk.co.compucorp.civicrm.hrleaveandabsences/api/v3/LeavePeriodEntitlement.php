@@ -54,7 +54,7 @@ function civicrm_api3_leave_period_entitlement_get($params) {
  *
  * @throws InvalidArgumentException
  */
-function civicrm_api3_leave_period_entitlement_getremainder($params){
+function civicrm_api3_leave_period_entitlement_getremainder($params) {
   $hasEntitlementID = !empty($params['entitlement_id']);
   $hasContactAndPeriodID = !empty($params['contact_id']) && !empty($params['period_id']);
   $hasContactOrPeriodID = !empty($params['contact_id']) || !empty($params['period_id']);
@@ -72,7 +72,7 @@ function civicrm_api3_leave_period_entitlement_getremainder($params){
  *
  * @return void
  */
-function _civicrm_api3_leave_period_entitlement_getremainder_spec(&$params){
+function _civicrm_api3_leave_period_entitlement_getremainder_spec(&$params) {
   $params['entitlement_id']['api.required'] = 0;
   $params['contact_id']['api.required'] = 0;
   $params['period_id']['api.required'] = 0;
