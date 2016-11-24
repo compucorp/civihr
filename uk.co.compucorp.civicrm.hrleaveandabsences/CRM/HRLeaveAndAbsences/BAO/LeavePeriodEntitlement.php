@@ -122,16 +122,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     return null;
   }
 
-	/**
-	 * Returns an array of LeavePeriodEntitlements for a contact for a specific Absence Period ID
-	 *
-	 * @param $contactId
-	 * @param $periodId
-	 *
-	 * @return CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement[]
-	 * If there are no entitlements, an empty array will be returned
-	 */
-	public static function getPeriodEntitlementsForContact($contactId, $periodId) {
+  /**
+   * Returns an array of LeavePeriodEntitlements for a contact for a specific Absence Period ID
+   *
+   * @param int $contactId
+   * @param int $periodId
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement[]
+   * If there are no entitlements, an empty array will be returned
+   */
+  public static function getPeriodEntitlementsForContact($contactId, $periodId) {
 
     if(!$contactId) {
       throw new InvalidArgumentException("You must inform the Contact ID");
@@ -146,7 +146,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $leaveEntitlements = [];
 
     while($entitlement->fetch()) {
-	    $leaveEntitlements[] = clone $entitlement;
+      $leaveEntitlements[] = clone $entitlement;
     }
     return $leaveEntitlements;
   }
@@ -396,25 +396,25 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
   }
 
-	/**
-	 * Returns the future balance for this LeavePeriodEntitlement.
-	 *
-	 * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Waiting Approval
+  /**
+   * Returns the future balance for this LeavePeriodEntitlement.
+   *
+   * Future Balance is the Balance/Remainder for an entitlement when Leave Requests with Waiting Approval
    * and More Information Requested statuses are accounted for in the calculation apart from the usual
    * Approved and Admin Approved Statuses.
-	 *
-	 * @return float
-	 */
-	public function getFutureBalance() {
-		$leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
-		$filterStatuses = [
-			$leaveRequestStatus['Approved'],
-			$leaveRequestStatus['Admin Approved'],
-			$leaveRequestStatus['Waiting Approval'],
-			$leaveRequestStatus['More Information Requested'],
-		];
-		return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
-	}
+   *
+   * @return float
+   */
+  public function getFutureBalance() {
+    $leaveRequestStatus = array_flip(LeaveRequest::buildOptions('status_id'));
+    $filterStatuses = [
+      $leaveRequestStatus['Approved'],
+      $leaveRequestStatus['Admin Approved'],
+      $leaveRequestStatus['Waiting Approval'],
+      $leaveRequestStatus['More Information Requested'],
+    ];
+    return LeaveBalanceChange::getBalanceForEntitlement($this, $filterStatuses);
+  }
 
   /**
    * Returns the entitlement (number of days) for this LeavePeriodEntitlement.
@@ -523,46 +523,53 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     return $contractsDates;
   }
 
-	/**
-	 * Returns formatted result for getting the balance for an entitlement period given an
-	 * Entitlement Id or (Contact ID + Absence Period ID).
+  /**
+   * Returns formatted result for getting the balance for an entitlement period given an
+   * Entitlement Id or (Contact ID + Absence Period ID).
    * When params contains the include_future parameter and its true,
-	 * It returns also future balance for an entitlement taking the Awaiting Approval
+   * It returns also future balance for an entitlement taking the Awaiting Approval
    * and More Information Requested leave statuses into consideration
-	 *
-	 * @param $params array
+   *
+   * @param array $params
    * Sample param: $params = ['entitlement_id' => 1, 'contact_id' => 9, 'include_future' => false]
    *
-	 * @return an array of formatted results
-	 *
-	 *  [
-	 *  ['id' => 1, 'remainder' => ['current' => 30, 'future' => 20]]
-	 *  ]
-	 */
-	public static function getLeavePeriodEntitlementRemainder($params){
+   * @return array
+   * an array of formatted results
+   * [
+   *   [
+   *     'id' => 1,
+   *     'remainder' => [
+   *       'current => 30,
+   *       'future' => 20
+   *     ]
+   *   ]
+   * [
+   *
+   */
+  public static function getRemainder($params){
 
-		$leavePeriodEntitlements = $results = [];
+    $leavePeriodEntitlements = [];
 
     if(!empty($params['entitlement_id'])) {
-	    $leavePeriodEntitlements[] = self::findById($params['entitlement_id']);
+      $leavePeriodEntitlements[] = self::findById($params['entitlement_id']);
     }
 
     if(!empty($params['contact_id']) && !empty($params['period_id'])){
-	    $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
+      $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
     }
+    $results = [];
+    foreach($leavePeriodEntitlements as $leavePeriodEntitlement){
+      $remainder = ['current' => $leavePeriodEntitlement->getBalance()];
+      if(!empty($params['include_future'])){
+         $remainder['future'] = $leavePeriodEntitlement->getFutureBalance();
+      }
 
-		foreach($leavePeriodEntitlements as $leavePeriodEntitlement){
-			$remainder = ['current' => $leavePeriodEntitlement->getBalance()];
-			if(!empty($params['include_future'])){
-				 $remainder['future'] = $leavePeriodEntitlement->getFutureBalance();
-			}
+      $results[] = [
+        'id' => $leavePeriodEntitlement->id,
+        'remainder' => $remainder
+      ];
 
-			$results[] = [
-				'id' => $leavePeriodEntitlement->id,
-				'remainder' => $remainder
-			];
-
-		}
+    }
     return $results;
   }
 
