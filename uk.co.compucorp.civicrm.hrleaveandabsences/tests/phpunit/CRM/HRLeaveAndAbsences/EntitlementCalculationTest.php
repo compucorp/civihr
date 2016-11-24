@@ -247,7 +247,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends BaseHeadlessTest
     $this->assertEquals(3, $calculation->getProRata());
   }
 
-  public function testProRataShouldNotIncludePublicHolidaysBetweenContractDatesEvenIfContractSaysPublicHolidaysShouldBeAdded() {
+  public function testProRataIncludePublicHolidaysBetweenContractDatesEvenIfContractSaysTheyShouldBeAdded() {
     $type = AbsenceTypeFabricator::fabricate();
 
     // 261 working days
@@ -270,8 +270,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends BaseHeadlessTest
 
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
 
-    // 10 * (141/261) = 10.80 = 11 (rounded up to the nearest half day)
-    $this->assertEquals(11, $calculation->getProRata());
+    // 10 * (141/261) = 10.80 + 1 (Public Holiday) = 11.80 = 12 (rounded up to the nearest half day)
+    $this->assertEquals(12, $calculation->getProRata());
   }
 
   public function testProRataShouldBeTheSumOfTheProRataForEachContractDuringTheAbsencePeriod() {
@@ -426,59 +426,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends BaseHeadlessTest
     // Proposed entitlement: Pro Rata + Number of days brought from previous period
     // Proposed entitlement: 3 + 10
     $this->assertEquals(13, $calculation->getProposedEntitlement());
-  }
-
-  public function testProposedEntitlementShouldIncludePublicHolidaysBetweenContractsWhereTheyShouldBeAdded() {
-    $type = AbsenceTypeFabricator::fabricate([
-      'max_number_of_days_to_carry_forward' => 20,
-    ]);
-
-    // 261 working days
-    $currentPeriod = AbsencePeriodFabricator::fabricate([
-      'start_date' => date('YmdHis', strtotime('2016-01-01')),
-      'end_date'   => date('YmdHis', strtotime('2016-12-31')),
-    ], true);
-
-    // Set the contractual entitlement as 10 days
-    $this->createJobLeaveEntitlement($type, 10, TRUE);
-
-    // 64 days to work
-    $this->setContractDates(
-      date('YmdHis', strtotime('2016-01-01')),
-      date('YmdHis', strtotime('2016-03-30'))
-    );
-
-    // This will not be included since it's before the contract start date
-    PublicHolidayFabricator::fabricateWithoutValidation([
-      'date'  => date('YmdHis', strtotime('2015-01-01'))
-    ]);
-
-    // This will be included since it's between the contract dates
-    PublicHolidayFabricator::fabricateWithoutValidation([
-      'date'  => date('YmdHis', strtotime('2016-01-01'))
-    ]);
-
-    // This will not be included since it's after the contract start date
-    PublicHolidayFabricator::fabricateWithoutValidation([
-      'date'  => date('YmdHis', strtotime('2016-05-04'))
-    ]);
-
-    // Working days in Period = 261 - 3 (public holidays) = 259
-    // Working days to work = 64 - 1 (the single public holiday between contract dates) = 63
-    // (63/259) * 10 = 2.43 = 2.5 rounded
-    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(2.5, $calculation->getProRata());
-
-    // Number of days brought from previous period: 0 (No previous period)
-    // Number of Working days: 259
-    // Number of Days to work: 63
-    // Contractual Entitlement: 10
-    // Number of Public Holidays: 1
-    // Pro Rata: (Number of days to work / Number working days) * Contractual Entitlement
-    // Pro Rata: (63/259) * 10 = 2.43 = 2.5 rounded
-    // Proposed entitlement: Pro Rata + Brought Forward + Public Holidays
-    // Proposed entitlement: 2.5 + 0 + 1
-    $this->assertEquals(3.5, $calculation->getProposedEntitlement());
   }
 
   public function testGetOverriddenEntitlementShouldBeZeroIfTheresNoPreviousPeriodEntitlement() {

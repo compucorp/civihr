@@ -33,7 +33,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
   /**
    * Calculates the Pro Rata for the contract, which is given by:
    *
-   * CE * (WDTW / WD)
+   * (CE * (WDTW / WD)) + Number of Public Holidays
    *
    * Where:
    * CE: Contractual Entitlement
@@ -50,7 +50,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
 
     $proRata = ($numberOfWorkingDaysToWork / $numberOfWorkingDays) * $contractualEntitlement;
 
-    return $proRata;
+    return $proRata + $this->getNumberOfPublicHolidaysInEntitlement();
   }
 
   /**
@@ -127,16 +127,6 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculation {
     }
 
     return [];
-  }
-
-  /**
-   * Returns the calculated Total Entitlement for this contract, which is given
-   * by Pro Rata + Number Of Public Holidays
-   *
-   * @return float
-   */
-  public function getTotalEntitlement() {
-    return $this->getProRata() + $this->getNumberOfPublicHolidaysInEntitlement();
   }
 
   /**

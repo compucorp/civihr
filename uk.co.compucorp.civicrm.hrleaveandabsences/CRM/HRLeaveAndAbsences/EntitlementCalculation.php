@@ -168,15 +168,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   /**
    * Returns the calculated proposed entitlement.
    *
-   * This is basically the Pro Rata + the number of days brought forward + any
-   * public holidays added for contracts with "Add public holiday?"
+   * This is basically the Pro Rata + the number of days brought forward
    *
    * @return float
    */
   public function getProposedEntitlement() {
     return $this->getProRata() +
-           $this->getBroughtForward() +
-           $this->getNumberOfPublicHolidaysInEntitlement();
+           $this->getBroughtForward();
   }
 
   /**
