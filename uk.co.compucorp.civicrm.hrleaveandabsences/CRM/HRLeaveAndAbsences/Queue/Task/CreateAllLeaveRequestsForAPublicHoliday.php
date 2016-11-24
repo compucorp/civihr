@@ -10,7 +10,7 @@ use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHol
  */
 class CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday {
 
-  public function run(CRM_Queue_TaskContext $ctx, $date) {
+  public static function run(CRM_Queue_TaskContext $ctx, $date) {
     $date = new DateTime($date);
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('Y-m-d');

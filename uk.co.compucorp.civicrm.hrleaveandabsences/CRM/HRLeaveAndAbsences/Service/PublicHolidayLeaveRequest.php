@@ -54,7 +54,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * Creates Leave Requests for all the contacts with contracts overlapping the
    * date of the given Public Holiday
    *
-   * @param \PublicHoliday $publicHoliday
+   * @param PublicHoliday $publicHoliday
    */
   public function createForAllContacts(PublicHoliday $publicHoliday) {
     $this->creationLogic->createForAllContacts($publicHoliday);
@@ -64,7 +64,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * Deletes Leave Requests for the given Public Holiday from all the contacts
    * with contracts overlapping the date of the given Public Holiday
    *
-   * @param \PublicHoliday $publicHoliday
+   * @param PublicHoliday $publicHoliday
    */
   public function deleteForAllContacts(PublicHoliday $publicHoliday) {
     $this->deletionLogic->deleteForAllContacts($publicHoliday);
