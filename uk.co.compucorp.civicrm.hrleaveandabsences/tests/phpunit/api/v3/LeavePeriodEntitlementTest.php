@@ -27,7 +27,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
    */
-  public function testGetRemainderWhenAllParametersArePassed(){
+  public function testGetRemainderWhenAllParametersArePassed() {
     civicrm_api3('LeavePeriodEntitlement', 'getremainder', ['entitlement_id'=> 1, 'period_id' => 1, 'contact_id'=>1]);
   }
 
@@ -35,11 +35,11 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
    */
-  public function testGetRemainderWhenEntitlentIdAndPeriodIdArePassed(){
+  public function testGetRemainderWhenEntitlentIdAndPeriodIdArePassed() {
     civicrm_api3('LeavePeriodEntitlement', 'getremainder', ['entitlement_id'=> 1, 'contact_id'=>1]);
   }
 
-  public function testGetRemainderWhenContactAndPeriodIdArePassed(){
+  public function testGetRemainderWhenContactAndPeriodIdArePassed() {
     $result = civicrm_api3('LeavePeriodEntitlement', 'getremainder', ['period_id'=> 1, 'contact_id'=>1]);
     $this->assertEmpty($result['values']);
   }
