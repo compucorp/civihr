@@ -719,10 +719,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetPeriodEntitlementsForContact() {
     LeavePeriodEntitlementFabricator::fabricate();
     LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
-    $contact_id = 1;
-    $period_id = 1;
+    $contactId = 1;
+    $periodId = 1;
 
-    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contact_id, $period_id);
+    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement', $entitlements[0]);
     $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement', $entitlements[1]);
@@ -734,10 +734,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     LeavePeriodEntitlementFabricator::fabricate(['type_id' => 2]);
     LeavePeriodEntitlementFabricator::fabricate(['contact_id' => 2]);
 
-    $contact_id = 1;
-    $period_id = 1;
+    $contactId = 1;
+    $periodId = 1;
 
-    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contact_id, $period_id);
+    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId);
     $this->assertCount(2, $entitlements);
     $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement', $entitlements[0]);
     $this->assertInstanceOf('CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement', $entitlements[1]);
