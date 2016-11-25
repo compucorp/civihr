@@ -129,16 +129,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    */
-  public static function getBreakdownBalanceChangesForEntitlement($entitlementID) {
+  public static function getBreakdownBalanceChangesForEntitlement($entitlementID, $returnExpired=false) {
     $entitlementID = (int)$entitlementID;
     $balanceChangeTable = self::getTableName();
+
+    if(!$returnExpired){
+      $expiredBalanceWhereCondition = " AND expired_balance_change_id IS NULL";
+    }
+    if($returnExpired){
+      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < NOW()))";
+    }
 
     $query = "
       SELECT *
       FROM {$balanceChangeTable}
       WHERE source_id = {$entitlementID} AND
-            source_type = '" . self::SOURCE_ENTITLEMENT . "' AND 
-            expired_balance_change_id IS NULL
+            source_type = '" . self::SOURCE_ENTITLEMENT . "' {$expiredBalanceWhereCondition}
       ORDER BY id
     ";
 
