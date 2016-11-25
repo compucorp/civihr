@@ -44,3 +44,57 @@ function civicrm_api3_leave_request_delete($params) {
 function civicrm_api3_leave_request_get($params) {
   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
+
+/**
+ * LeaveRequest.getBalanceChangeByAbsenceType API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) {
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+  ];
+
+  $spec['period_id'] = [
+    'name' => 'period_id',
+    'title' => 'Absence Period ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+  ];
+
+  $spec['statuses'] = [
+    'name' => 'statuses',
+    'title' => 'Leave Request status',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+  ];
+
+  $spec['public_holiday'] = [
+    'name' => 'public_holiday',
+    'title' => 'Include only Public Holiday Leave Requests?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
+}
+
+/**
+ * LeaveRequest.getBalanceChangeByAbsenceType API
+ *
+ * Returns the total balance change for each
+ *
+ * @param array $params
+ *  An array of params passed to the API
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
+  $values = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getBalanceChangeByAbsenceType(
+    $params['contact_id'],
+    $params['period_id']
+  );
+
+  return civicrm_api3_create_success($values);
+}

@@ -1,8 +1,12 @@
 <?php
 
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 
 /**
@@ -130,4 +134,83 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest(3, $publicHoliday));
   }
+
+  public function testGetBalanceChangeByAbsenceTypeShouldIncludeBalanceForAllAbsenceTypes() {
+    $contact = ContactFabricator::fabricate();
+
+    $absenceType1 = AbsenceTypeFabricator::fabricate();
+    $absenceType2 = AbsenceTypeFabricator::fabricate();
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1->id
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType2->id
+    ]);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType1->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+5 days')
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType1->id,
+      'from_date' => CRM_Utils_Date::processDate('+8 days'),
+      'to_date' => CRM_Utils_Date::processDate('+9 days')
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType2->id,
+      'from_date' => CRM_Utils_Date::processDate('+20 days'),
+      'to_date' => CRM_Utils_Date::processDate('+35 days')
+    ], true);
+
+    $result = LeaveRequest::getBalanceChangeByAbsenceType($contact['id'], $absencePeriod->id);
+
+    $expectedResult = [
+      $absenceType1->id => -7,
+      $absenceType2->id => -16,
+    ];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testGetBalanceChangeByAbsenceTypeShouldShouldReturn0ForAnAbsenceTypeWithNoLeaveRequests() {
+    $contact = ContactFabricator::fabricate();
+
+    $absenceType1 = AbsenceTypeFabricator::fabricate();
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType1->id
+    ]);
+
+    $result = LeaveRequest::getBalanceChangeByAbsenceType($contact['id'], $absencePeriod->id);
+
+    $expectedResult = [ $absenceType1->id => 0];
+
+    $this->assertEquals($expectedResult, $result);
+  }
+
+
 }

@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
@@ -83,6 +84,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return null;
+  }
+
+  /**
+   * Returns a list of all Absence Types, together with its total balance change.
+   * That is, the sum of all the Leave Balance Changes for Leave Requests of that
+   * Absence Type, for the given $contactID during the given $periodID.
+   *
+   * @param int $contactID
+   * @param int $periodID
+   *
+   * @return array
+   */
+  public static function getBalanceChangeByAbsenceType($contactID, $periodID) {
+    $periodEntitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactID, $periodID);
+
+    $results = [];
+    foreach($periodEntitlements as $periodEntitlement) {
+      $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement);
+      $results[$periodEntitlement->type_id] = $balance;
+    }
+
+    return $results;
   }
 
   /**
