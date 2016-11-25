@@ -1,8 +1,4 @@
 contact_id,email,is_primary,location_type_id
-229,admin_personal@sample.org,1,Main
-230,staff@sample.com,1,Main
-231,civihr_manager@compucorp.co.uk,1,Main
-216,support@compucorp.co.uk,1,
 235,peter@sccs.org,1,Work
 239,john@sccs.org,1,Work
 240,phoebe@sccs.org,1,Work
@@ -111,7 +107,3 @@ contact_id,email,is_primary,location_type_id
 288,zoe123@qmail.com,0,Personal
 324,adamhenry@dmail.com,0,Personal
 306,rightmyer.adam@qmail.com,0,Personal
-348,test@test.com,1,Main
-349,nina@example.com,1,Main
-349,ninanina@example.com,0,Personal
-350,admin_personal@sample.org,1,Main

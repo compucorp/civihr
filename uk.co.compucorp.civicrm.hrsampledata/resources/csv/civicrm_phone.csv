@@ -212,4 +212,3 @@ contact_id,is_primary,phone,phone_numeric,phone_type_id,location_type_id
 288,0,020 1234 1234,2012341234,Phone,Personal
 324,0,020 3344 5566,2033445566,Phone,Personal
 306,0,020 5555 7777,2055557777,Phone,Personal
-349,1,98098098098,98098098098,Phone,Personal

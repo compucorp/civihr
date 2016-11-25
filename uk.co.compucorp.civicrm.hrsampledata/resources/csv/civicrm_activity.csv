@@ -1,46 +1,6 @@
 id,source_record_id,activity_type_id,subject,activity_date_time,duration,details,status_id,priority_id,source_contact_id,assignee_id,target_id
-1,,Public Holiday,New Year's Day,2016-01-01 00:00:00,,,Scheduled,Normal,229,,
-2,,Public Holiday,Good Friday,2016-03-25 00:00:00,,,Scheduled,Normal,229,,
-3,,Public Holiday,Easter Monday,2016-03-28 00:00:00,,,Scheduled,Normal,229,,
-4,,Public Holiday,Early May Bank Holiday,2016-05-02 00:00:00,,,Scheduled,Normal,229,,
-5,,Public Holiday,Spring Bank Holiday,2016-05-30 00:00:00,,,Scheduled,Normal,229,,
-6,,Public Holiday,Summer Bank Holiday,2016-08-29 00:00:00,,,Scheduled,Normal,229,,
-7,,Public Holiday,Christmas Day,2016-12-25 00:00:00,,,Scheduled,Normal,229,,
-8,,Public Holiday,Boxing Day,2016-12-26 00:00:00,,,Scheduled,Normal,229,,
-9,,Public Holiday,Christmas Day (substitute day),2016-12-27 00:00:00,,,Scheduled,Normal,229,,
-10,,Public Holiday,New Year's Day,2017-01-01 00:00:00,,,Scheduled,Normal,229,,
-11,,Public Holiday,New Year's Day (Substitute Day),2017-01-02 00:00:00,,,Scheduled,Normal,229,,
-12,,Public Holiday,Good Friday,2017-04-14 00:00:00,,,Scheduled,Normal,229,,
-13,,Public Holiday,Easter Monday,2017-04-17 00:00:00,,,Scheduled,Normal,229,,
-14,,Public Holiday,Early May Bank Holiday,2017-05-01 00:00:00,,,Scheduled,Normal,229,,
-15,,Public Holiday,Spring Bank Holiday,2017-05-29 00:00:00,,,Scheduled,Normal,229,,
-16,,Public Holiday,Summer Bank Holiday,2017-08-28 00:00:00,,,Scheduled,Normal,229,,
-17,,Public Holiday,Christmas Day,2017-12-25 00:00:00,,,Scheduled,Normal,229,,
-18,,Public Holiday,Boxing Day,2017-12-26 00:00:00,,,Scheduled,Normal,229,,
-20,,Exiting document 2,,2016-09-02 00:00:00,,<p>ga</p>,Scheduled,Normal,306,230,257
-21,,Vacation,,2016-09-02 16:19:08,,,Completed,Normal,229,324,288
-25,,TOIL (Credit),,2016-09-02 16:19:46,,,Completed,Normal,229,324,288
-27,,TOIL,,2016-09-02 16:20:13,,,Completed,Normal,229,324,288
-29,,Sick,,2016-09-02 16:20:36,,,Completed,Normal,229,324,288
-31,,Sick,,2016-09-02 16:21:10,,,Completed,Normal,229,324,288
-33,,Vacation,,2016-09-02 16:21:52,,,Completed,Normal,229,324,288
 39,,Sick,,2016-09-02 10:56:24,,,Scheduled,Normal,288,324,288
 41,,TOIL (Credit),,2016-09-02 10:58:46,,,Scheduled,Normal,288,324,288
-43,,Vacation,,2016-09-02 16:36:31,,,Completed,Normal,229,306,324
-47,,Vacation,,2016-09-02 16:37:19,,,Completed,Normal,229,306,324
-50,,Sick,,2016-09-02 16:37:49,,,Completed,Normal,229,306,324
-53,,TOIL (Credit),,2016-09-02 16:38:20,,,Completed,Normal,229,306,324
-55,,TOIL,,2016-09-02 16:38:42,,,Completed,Normal,229,306,324
-57,,TOIL (Credit),,2016-09-02 16:39:24,,,Completed,Normal,229,306,324
-59,,TOIL (Credit),,2016-09-02 16:39:49,,,Completed,Normal,229,306,324
-61,,Vacation,,2016-09-02 16:40:39,,,Completed,Normal,229,306,324
-65,,Compassionate_Leave,,2016-09-02 16:47:30,,,Completed,Normal,229,324,288
-67,,Paternity,,2016-09-02 16:57:08,,,Completed,Normal,229,306,324
-73,,Sick,,2016-09-02 17:08:09,,,Completed,Normal,229,269,306
-75,,Vacation,,2016-09-02 17:08:32,,,Completed,Normal,229,269,306
-80,,TOIL (Credit),,2016-09-02 17:08:53,,,Completed,Normal,229,269,306
-82,,TOIL,,2016-09-02 17:09:12,,,Completed,Normal,229,269,306
-84,,Compassionate_Leave,,2016-09-02 17:09:33,,,Completed,Normal,229,269,306
 86,,Vacation,,2016-09-02 11:42:57,,,Scheduled,Normal,288,324,288
 90,,Sick,,2016-09-02 11:45:56,,,Scheduled,Normal,324,306,324
 92,,Vacation,,2016-09-02 11:48:22,,,Scheduled,Normal,306,269,306
@@ -60,8 +20,6 @@ id,source_record_id,activity_type_id,subject,activity_date_time,duration,details
                     ",Scheduled,Normal,306,306,306
 122,,VISA,,2016-09-17 00:00:00,,"
                     ",Scheduled,Normal,306,324,324
-124,,Passport,,2017-01-07 00:00:00,,"
-                    ",Scheduled,Normal,229,240,288
 125,,Vacation,,2016-09-07 21:24:43,,,Scheduled,Normal,324,306,324
 127,,Probation appraisal (start probation workflow),test,2016-09-07 00:00:00,,<p>test</p>,Completed,Normal,306,288,288
 128,,Vacation,,2016-09-07 22:08:25,,,Completed,Normal,306,269,306
@@ -72,48 +30,8 @@ id,source_record_id,activity_type_id,subject,activity_date_time,duration,details
 144,,"Get ""No Dues"" certification",,2016-11-10 00:00:00,,"
                     ",Completed,Normal,306,288,257
 145,,Vacation,,2016-09-29 14:05:13,,Leave request. ,Scheduled,Normal,288,324,288
-22,21,Absence,,2016-01-06 00:00:00,480,,Completed,Normal,229,,
-23,21,Absence,,2016-01-07 00:00:00,480,,Completed,Normal,229,,
-24,21,Absence,,2016-01-08 00:00:00,480,,Completed,Normal,229,,
-26,25,Absence,,2016-03-26 00:00:00,480,,Completed,Normal,229,,
-28,27,Absence,,2016-04-04 00:00:00,480,,Completed,Normal,229,,
-30,29,Absence,,2016-02-17 00:00:00,480,,Completed,Normal,229,,
-32,31,Absence,,2016-06-14 00:00:00,480,,Completed,Normal,229,,
-34,33,Absence,,2016-08-08 00:00:00,480,,Completed,Normal,229,,
-35,33,Absence,,2016-08-09 00:00:00,480,,Completed,Normal,229,,
-36,33,Absence,,2016-08-10 00:00:00,480,,Completed,Normal,229,,
-37,33,Absence,,2016-08-11 00:00:00,480,,Completed,Normal,229,,
-38,33,Absence,,2016-08-12 00:00:00,480,,Completed,Normal,229,,
 40,39,Absence,,2016-09-02 00:00:00,240,,Scheduled,Normal,288,,
 42,41,Absence,,2016-09-09 00:00:00,240,,Scheduled,Normal,288,,
-44,43,Absence,,2016-02-02 00:00:00,480,,Completed,Normal,229,,
-45,43,Absence,,2016-02-03 00:00:00,480,,Completed,Normal,229,,
-46,43,Absence,,2016-02-04 00:00:00,240,,Completed,Normal,229,,
-48,47,Absence,,2016-05-31 00:00:00,480,,Completed,Normal,229,,
-49,47,Absence,,2016-06-01 00:00:00,480,,Completed,Normal,229,,
-51,50,Absence,,2016-07-12 00:00:00,480,,Completed,Normal,229,,
-52,50,Absence,,2016-07-13 00:00:00,480,,Completed,Normal,229,,
-54,53,Absence,,2016-03-05 00:00:00,480,,Completed,Normal,229,,
-56,55,Absence,,2016-03-07 00:00:00,480,,Completed,Normal,229,,
-58,57,Absence,,2016-06-25 00:00:00,240,,Completed,Normal,229,,
-60,59,Absence,,2016-09-03 00:00:00,240,,Completed,Normal,229,,
-62,61,Absence,,2016-12-28 00:00:00,480,,Completed,Normal,229,,
-63,61,Absence,,2016-12-29 00:00:00,480,,Completed,Normal,229,,
-64,61,Absence,,2016-12-30 00:00:00,480,,Completed,Normal,229,,
-66,65,Absence,,2016-04-19 00:00:00,480,,Completed,Normal,229,,
-68,67,Absence,,2016-08-01 00:00:00,480,,Completed,Normal,229,,
-69,67,Absence,,2016-08-02 00:00:00,480,,Completed,Normal,229,,
-70,67,Absence,,2016-08-03 00:00:00,480,,Completed,Normal,229,,
-71,67,Absence,,2016-08-04 00:00:00,480,,Completed,Normal,229,,
-72,67,Absence,,2016-08-05 00:00:00,480,,Completed,Normal,229,,
-74,73,Absence,,2016-01-05 00:00:00,480,,Completed,Normal,229,,
-76,75,Absence,,2016-03-21 00:00:00,480,,Completed,Normal,229,,
-77,75,Absence,,2016-03-22 00:00:00,480,,Completed,Normal,229,,
-78,75,Absence,,2016-03-23 00:00:00,480,,Completed,Normal,229,,
-79,75,Absence,,2016-03-24 00:00:00,480,,Completed,Normal,229,,
-81,80,Absence,,2016-07-02 00:00:00,240,,Completed,Normal,229,,
-83,82,Absence,,2016-08-01 00:00:00,240,,Completed,Normal,229,,
-85,84,Absence,,2016-07-28 00:00:00,480,,Completed,Normal,229,,
 87,86,Absence,,2016-11-01 00:00:00,480,,Scheduled,Normal,288,,
 88,86,Absence,,2016-11-02 00:00:00,480,,Scheduled,Normal,288,,
 89,86,Absence,,2016-11-03 00:00:00,480,,Scheduled,Normal,288,,

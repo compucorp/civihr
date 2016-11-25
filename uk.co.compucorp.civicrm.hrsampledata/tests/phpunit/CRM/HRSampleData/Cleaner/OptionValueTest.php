@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRCore_Test_Fabricator_OptionGroup as OptionGroupFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 
 /**
@@ -9,21 +10,28 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  */
 class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
+  private $testOptionGroup;
+
   public function setUp() {
     $this->rows = [];
     $this->rows[] = $this->importHeadersFixture();
+
+    $this->testOptionGroup = OptionGroupFabricator::fabricate();
   }
 
-  public function testProcess() {
-    $optionValue = OptionValueFabricator::fabricate(['option_group_id' => 'activity_type']);
+  public function testProcessWithOptionGroupName() {
+    $optionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
+
     $testOptionValue = $this->apiGet(
       'OptionValue',
-      ['name' => $optionValue['name'], 'option_group_id' => 'activity_type']
+      ['name' => $optionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
     );
+
     $this->assertEquals($optionValue['name'], $testOptionValue['name']);
 
     $this->rows[] = [
-      'activity_type',
+      'name',
+      $this->testOptionGroup['name'],
       $optionValue['name'],
       $optionValue['name'],
       $optionValue['name'],
@@ -39,13 +47,47 @@ class CRM_HRSampleData_Cleaner_OptionValueTest extends CRM_HRSampleData_BaseCSVP
 
     $optionValue = $this->apiGet(
       'OptionValue',
-      ['name' => $optionValue['name'], 'option_group_id' => 'activity_type']
+      ['name' => $optionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
+    );
+    $this->assertEmpty($optionValue);
+  }
+
+  public function testProcessWithOptionGroupTitle() {
+    $optionValue = OptionValueFabricator::fabricate(['option_group_id' => $this->testOptionGroup['name']]);
+
+    $testOptionValue = $this->apiGet(
+      'OptionValue',
+      ['name' => $optionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
+    );
+
+    $this->assertEquals($optionValue['name'], $testOptionValue['name']);
+
+    $this->rows[] = [
+      'title',
+      $this->testOptionGroup['title'],
+      $optionValue['name'],
+      $optionValue['name'],
+      $optionValue['name'],
+      '',
+      '',
+      0,
+      0,
+      0,
+      '',
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_OptionValue', $this->rows);
+
+    $optionValue = $this->apiGet(
+      'OptionValue',
+      ['name' => $optionValue['name'], 'option_group_id' => $this->testOptionGroup['name']]
     );
     $this->assertEmpty($optionValue);
   }
 
   private function importHeadersFixture() {
     return [
+      'option_group_id_type',
       'option_group_id',
       'label',
       'value',
