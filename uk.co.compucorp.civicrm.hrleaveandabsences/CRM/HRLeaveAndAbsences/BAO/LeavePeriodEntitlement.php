@@ -587,12 +587,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   /**
    * Returns formatted results for getting the breakdown for a period entitlement
    * i.e all of the leave balance changes given a leavePeriodEntitlement ID or (ContactID + periodId)
+   * It also returns either valid or expired leave balance changes based on
+   * whether the expired parameter is true or false
    *
    * @param array $params
    *
    * @return array
    */
-  public function getBreakdown($params) {
+  public static function getBreakdown($params) {
 
     $leavePeriodEntitlements = [];
 
@@ -610,8 +612,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     foreach($leaveBalanceChangeTypeIdOptions as $key => $label){
       $leaveBalanceTypeIdOptionsGroup[$key] = [
         'id' => $key,
-        'label' => $label,
-        'value' => CRM_Core_Pseudoconstant::getName('LeaveBalanceChange', 'type_id', $key)
+        'value' => CRM_Core_Pseudoconstant::getName(LeaveBalanceChange::class, 'type_id', $key),
+        'label' => $label
       ];
     }
 
@@ -619,13 +621,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $returnExpired = !empty($params['expired']) ? true : false;
     $i = 0;
     foreach($leavePeriodEntitlements as $leavePeriodEntitlement){
-      $result[$i]['id'] = $leavePeriodEntitlement->id;
+      $results[$i]['id'] = $leavePeriodEntitlement->id;
       $breakDowns = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
       foreach($breakDowns as $breakDown){
         $results[$i]['breakdown'][] = [
           'amount' => $breakDown->amount,
           'expiry_date' => $breakDown->expiry_date,
-          'type' => $leaveBalanceChangeTypeIdOptions[$breakDown->type_id],
+          'type' => $leaveBalanceTypeIdOptionsGroup[$breakDown->type_id],
         ];
       }
       $i++;

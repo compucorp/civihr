@@ -137,7 +137,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $expiredBalanceWhereCondition = " AND expired_balance_change_id IS NULL";
     }
     if($returnExpired){
-      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < NOW()))";
+      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < NOW())";
     }
 
     $query = "
