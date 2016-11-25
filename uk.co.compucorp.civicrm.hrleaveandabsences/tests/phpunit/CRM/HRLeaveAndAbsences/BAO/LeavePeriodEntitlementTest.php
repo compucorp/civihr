@@ -782,7 +782,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $result = LeavePeriodEntitlement::getRemainder($params);
     $this->assertEquals(1, count($result));
     $this->assertEquals(7, $result[0]['remainder']['current']);
-    $this->assertEquals(7, $result[0]['remainder']['current']);
     $this->assertArrayNotHasKey('future', $result[0]['remainder']);
   }
 
@@ -839,6 +838,162 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(10, $result[0]['remainder']['current']);
   }
 
+  public function testgetBreakdownBalanceChangesShouldIncludeOnlyNonExpiredBalancesWhenFalseIsPassed() {
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
+    $breakdowns = $periodEntitlement->getBreakdownBalanceChanges(false);
+
+    //there should only be three leave balance changes for this period entitlement that are not expired
+    $this->assertCount(3, $breakdowns);
+    $this->assertInstanceOf(LeaveBalanceChange::class, $breakdowns[0]);
+    $this->assertInstanceOf(LeaveBalanceChange::class, $breakdowns[1]);
+    $this->assertInstanceOf(LeaveBalanceChange::class, $breakdowns[2]);
+    $this->assertEquals($periodEntitlement->id, $breakdowns[0]->source_id);
+    $this->assertEquals(10, $breakdowns[0]->amount);
+    $this->assertEquals('entitlement', $breakdowns[0]->source_type);
+    $this->assertEquals($periodEntitlement->id, $breakdowns[1]->source_id);
+    $this->assertEquals(9, $breakdowns[1]->amount);
+    $this->assertEquals('entitlement', $breakdowns[1]->source_type);
+    $this->assertEquals($periodEntitlement->id, $breakdowns[2]->source_id);
+    $this->assertEquals(8, $breakdowns[2]->amount);
+    $this->assertEquals('entitlement', $breakdowns[2]->source_type);
+  }
+
+  public function testgetBreakdownBalanceChangesShouldIncludeOnlyExpiredBalancesWhenTrueIsPassed() {
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
+    $breakdowns = $periodEntitlement->getBreakdownBalanceChanges(true);
+
+    //there should only be two leave balance changes for this period entitlement that are expired
+    $this->assertCount(2, $breakdowns);
+    $this->assertInstanceOf(LeaveBalanceChange::class, $breakdowns[0]);
+    $this->assertInstanceOf(LeaveBalanceChange::class, $breakdowns[1]);
+    $this->assertEquals($periodEntitlement->id, $breakdowns[0]->source_id);
+    $this->assertEquals(-5, $breakdowns[0]->amount);
+    $this->assertEquals('entitlement', $breakdowns[0]->source_type);
+    $this->assertEquals($periodEntitlement->id, $breakdowns[1]->source_id);
+    $this->assertEquals(-3, $breakdowns[1]->amount);
+    $this->assertEquals('entitlement', $breakdowns[1]->source_type);
+  }
+
+  public function testGetLeavePeriodEntitlementBreakdown() {
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    $params = ['entitlement_id' => $periodEntitlement->id];
+    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $this->assertCount(1, $result);
+    $this->assertArrayHasKey('id', $result[0]);
+    $this->assertEquals($periodEntitlement->id, $result[0]['id']);
+    $this->assertCount(3, $result[0]['breakdown']);
+    $this->assertEquals(9, $result[0]['breakdown'][0]['amount']);
+    $this->assertEquals(8, $result[0]['breakdown'][1]['amount']);
+    $this->assertEquals(10, $result[0]['breakdown'][2]['amount']);
+  }
+
+  public function testGetLeavePeriodEntitlementBreakdownWithExpiredSetToTrue() {
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate();
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement->id, 8, 3);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    $params = ['entitlement_id' => $periodEntitlement->id, 'expired' => true];
+    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $this->assertCount(1, $result);
+    $this->assertArrayHasKey('id', $result[0]);
+    $this->assertEquals($periodEntitlement->id, $result[0]['id']);
+    $this->assertCount(2, $result[0]['breakdown']);
+    $this->assertEquals(-5, $result[0]['breakdown'][0]['amount']);
+    $this->assertEquals(-3, $result[0]['breakdown'][1]['amount']);
+  }
+
+  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodId() {
+    $contactId = 1;
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 2
+    ]);
+
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 8, 3);
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 5, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 3, 3);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, 2);
+
+    $params = ['contact_id' => $contactId, 'period_id' => $absencePeriod->id];
+
+    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $this->assertCount(2, $result);
+    $this->assertArrayHasKey('id', $result[0]);
+    $this->assertArrayHasKey('id', $result[1]);
+
+    $this->assertEquals($periodEntitlement1->id, $result[0]['id']);
+    $this->assertCount(3, $result[0]['breakdown']);
+    $this->assertEquals(9, $result[0]['breakdown'][0]['amount']);
+    $this->assertEquals(8, $result[0]['breakdown'][1]['amount']);
+    $this->assertEquals(10, $result[0]['breakdown'][2]['amount']);
+
+    $this->assertEquals($periodEntitlement2->id, $result[1]['id']);
+    $this->assertCount(3, $result[1]['breakdown']);
+    $this->assertEquals(5, $result[1]['breakdown'][0]['amount']);
+    $this->assertEquals(3, $result[1]['breakdown'][1]['amount']);
+    $this->assertEquals(2, $result[1]['breakdown'][2]['amount']);
+  }
+
+  public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
+    $contactId = 1;
+    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 2
+    ]);
+
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 9, 5);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement1->id, 8, 3);
+    $this->createLeaveBalanceChange($periodEntitlement1->id, 10);
+
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 5, 3);
+    $this->createExpiredBroughtForwardBalanceChange($periodEntitlement2->id, 3, 2);
+    $this->createLeaveBalanceChange($periodEntitlement2->id, 2);
+
+    $params = ['contact_id' => $contactId, 'period_id' => $absencePeriod->id, 'expired' => true];
+
+    $result = LeavePeriodEntitlement::getBreakdown($params);
+    $this->assertCount(2, $result);
+    $this->assertArrayHasKey('id', $result[0]);
+    $this->assertArrayHasKey('id', $result[1]);
+
+    $this->assertEquals($periodEntitlement1->id, $result[0]['id']);
+    $this->assertCount(2, $result[0]['breakdown']);
+    $this->assertEquals(-5, $result[0]['breakdown'][0]['amount']);
+    $this->assertEquals(-3, $result[0]['breakdown'][1]['amount']);
+
+    $this->assertEquals($periodEntitlement2->id, $result[1]['id']);
+    $this->assertCount(2, $result[1]['breakdown']);
+    $this->assertEquals(-7, $result[1]['breakdown'][0]['amount']);
+    $this->assertEquals(-2, $result[1]['breakdown'][1]['amount']);
+  }
   /**
    * Some tests on this class use the HRJobDetails API which uses the
    * HRJobContractRevision API that depends on the the global $user.

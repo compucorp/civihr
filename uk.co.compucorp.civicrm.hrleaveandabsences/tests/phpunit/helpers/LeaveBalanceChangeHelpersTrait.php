@@ -78,7 +78,8 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
       'source_id' => $entitlementID,
       'source_type' => 'entitlement',
       'amount' => $expiredAmount * -1, //expired amounts should be negative
-      'expired_balance_change_id' => $broughtForwardBalanceChangeID
+      'expired_balance_change_id' => $broughtForwardBalanceChangeID,
+      'expiry_date' => date('YmdHis', strtotime('-2 day'))
     ]);
   }
 
