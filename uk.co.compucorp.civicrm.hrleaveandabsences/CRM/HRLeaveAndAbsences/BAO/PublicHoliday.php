@@ -19,11 +19,25 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
 
     self::validateParams($params);
 
+    $oldDate = self::getOldDate($params);
+    $dateHasChanged = $oldDate &&
+                      array_key_exists('date', $params) &&
+                      strtotime($oldDate) != strtotime($params['date']);
+
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new self();
     $instance->copyValues($params);
     $transaction = new CRM_Core_Transaction();
     $instance->save();
+
+    if($dateHasChanged) {
+      self::enqueueLeaveRequestDeletionTask($oldDate);
+    }
+
+    if($hook == 'create' || $dateHasChanged) {
+      self::enqueueLeaveRequestCreationTask($instance->date);
+    }
+
     $transaction->commit();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
@@ -34,11 +48,22 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
    * Delete a PublicHoliday with given ID.
    *
    * @param int $id
+   *
+   * @throws RuntimeException
    */
   public static function del($id) {
     $publicHoliday = new CRM_HRLeaveAndAbsences_DAO_PublicHoliday();
     $publicHoliday->id = $id;
     $publicHoliday->find(true);
+
+    if($publicHoliday->date && self::dateIsInThePast($publicHoliday->date)) {
+      throw new RuntimeException('Past Public Holidays cannot be deleted');
+    }
+
+    if($publicHoliday->date) {
+      self::enqueueLeaveRequestDeletionTask($publicHoliday->date);
+    }
+
     $publicHoliday->delete();
   }
 
@@ -379,5 +404,39 @@ class CRM_HRLeaveAndAbsences_BAO_PublicHoliday extends CRM_HRLeaveAndAbsences_DA
     }
 
     return $numberOfItemsProcessed;
+  }
+
+  /**
+   * Enqueue a new task to delete Public Holiday Leave Requests due to changes
+   * or deletion of a Public Holiday
+   *
+   * @param string $oldDate
+   *   The old date (before the update) of the Public Holiday. In case of a
+   *   deletion, this is the date of the deleted Public Holiday
+   */
+  private static function enqueueLeaveRequestDeletionTask($oldDate) {
+    $task = new CRM_Queue_Task(
+      ['CRM_HRLeaveAndAbsences_Queue_Task_DeleteAllLeaveRequestsForAPublicHoliday', 'run'],
+      [date('Y-m-d', strtotime($oldDate))]
+    );
+
+    PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
+  }
+
+  /**
+   * Enqueue a new task to create Public Holiday Leave Requests due to changes
+   * or creation of a Public Holiday
+   *
+   * @param string $date
+   *   The date of the Public Holiday to which the Leave Requests will be
+   *   created
+   */
+  private static function enqueueLeaveRequestCreationTask($date) {
+    $task = new CRM_Queue_Task(
+      ['CRM_HRLeaveAndAbsences_Queue_Task_CreateAllLeaveRequestsForAPublicHoliday', 'run'],
+      [date('Y-m-d', strtotime($date))]
+    );
+
+    PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
   }
 }

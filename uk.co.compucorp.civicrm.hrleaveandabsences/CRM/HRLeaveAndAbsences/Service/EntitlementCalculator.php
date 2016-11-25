@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
@@ -8,7 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
  * This class encapsulates the creation of EntitlementCalculations for an
  * specific AbsencePeriod.
  */
-class CRM_HRLeaveAndAbsences_EntitlementCalculator {
+class CRM_HRLeaveAndAbsences_Service_EntitlementCalculator {
 
   /**
    * The AbsencePeriod to calculate the entitlements for
@@ -26,7 +26,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculator {
   private $absenceTypes = [];
 
   /**
-   * CRM_HRLeaveAndAbsences_EntitlementCalculator constructor.
+   * CRM_HRLeaveAndAbsences_Service_EntitlementCalculator constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod $period
    */

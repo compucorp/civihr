@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletion;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
@@ -221,6 +222,69 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $deletionLogic->deleteAllForContract(9998398298);
 
     $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());
+  }
+
+  public function testItDeletesLeaveRequestsForAllContactsWithContractsOverlappingTheGivenPublicHoliday() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact1['id']
+    ], [
+      'period_start_date' =>  CRM_Utils_Date::processDate('yesterday'),
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ], [
+      'period_start_date' =>  CRM_Utils_Date::processDate('yesterday'),
+    ]);
+
+    $publicHoliday = $this->instantiatePublicHoliday('+5 days');
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteForAllContacts($publicHoliday);
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+  }
+
+  public function testItDoesntDeleteLeaveRequestsForAllContactsWithoutContractsOverlappingTheGivenPublicHoliday() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact1['id']
+    ], [
+      'period_start_date' =>  CRM_Utils_Date::processDate('-10 days'),
+      'period_end_date' => CRM_Utils_Date::processDate('today')
+    ]);
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact2['id']
+    ], [
+      'period_start_date' =>  CRM_Utils_Date::processDate('+2 days'),
+    ]);
+
+    $publicHoliday = $this->instantiatePublicHoliday('+1 day');
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteForAllContacts($publicHoliday);
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
   }
 
   private function instantiatePublicHoliday($date) {

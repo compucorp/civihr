@@ -1,16 +1,16 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_EntitlementCalculator as EntitlementCalculator;
-use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculator as EntitlementCalculator;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
- * Class CRM_HRLeaveAndAbsences_EntitlementCalculator
+ * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_EntitlementCalculatorTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadlessTest {
 
   public function testCanReturnCalculationsForMultipleAbsenceTypes()
   {

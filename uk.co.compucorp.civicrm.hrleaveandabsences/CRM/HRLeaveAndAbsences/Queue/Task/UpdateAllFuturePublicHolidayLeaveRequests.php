@@ -11,7 +11,7 @@ use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHol
  */
 class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests {
 
-  public function run(CRM_Queue_TaskContext $ctx) {
+  public static function run(CRM_Queue_TaskContext $ctx) {
     $service = PublicHolidayLeaveRequestServiceFactory::create();
     $service->updateAllInTheFuture();
   }

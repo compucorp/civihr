@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_ContractEntitlementCalculation as ContractEntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation as ContractEntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
@@ -12,7 +12,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
  * calculate the Pro Rata, Number of days brought forward, Contractual
  * Entitlement and a Proposed Entitlement.
  */
-class CRM_HRLeaveAndAbsences_EntitlementCalculation {
+class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
 
   /**
    * The AbsencePeriod this calculation is based on
@@ -72,7 +72,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Variable to cache the return from the getContractEntitlementCalculations()
    * method.
    *
-   * @var \CRM_HRLeaveAndAbsences_ContractEntitlementCalculation[]
+   * @var \CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation[]
    */
   private $contractsEntitlementCalculations = null;
 
@@ -117,7 +117,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
    * Returns an array of ContractEntitlementCalculation instances for all the
    * contracts of this calculation's contact during the Absence Period
    *
-   * @return \CRM_HRLeaveAndAbsences_ContractEntitlementCalculation[]
+   * @return \CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation[]
    */
   public function getContractEntitlementCalculations() {
     if($this->contractsEntitlementCalculations === null) {
@@ -168,15 +168,13 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculation {
   /**
    * Returns the calculated proposed entitlement.
    *
-   * This is basically the Pro Rata + the number of days brought forward + any
-   * public holidays added for contracts with "Add public holiday?"
+   * This is basically the Pro Rata + the number of days brought forward
    *
    * @return float
    */
   public function getProposedEntitlement() {
     return $this->getProRata() +
-           $this->getBroughtForward() +
-           $this->getNumberOfPublicHolidaysInEntitlement();
+           $this->getBroughtForward();
   }
 
   /**

@@ -2,16 +2,16 @@
 
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
-use CRM_HRLeaveAndAbsences_ContractEntitlementCalculation as ContractEntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation as ContractEntitlementCalculation;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 
 /**
- * Class CRM_HRLeaveAndAbsences_EntitlementCalculationTest
+ * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest
  *
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculationTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
 
@@ -44,7 +44,7 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHead
     $this->assertEquals(0, $calculation->getProRata());
   }
 
-  public function testProRataShouldNotIncludePublicHolidaysBetweenContractDatesEvenIfContractSaysPublicHolidaysShouldBeAdded() {
+  public function testProRataIncludePublicHolidaysBetweenContractDatesIfContractSaysTheyShouldBeAdded() {
     $this->contract['period_start_date'] = '2016-03-10';
     $this->contract['period_end_date'] = '2016-09-23';
 
@@ -72,8 +72,8 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHead
 
     $calculation = new ContractEntitlementCalculation($period, $this->contract, $type);
 
-    // 20 * (141/260) = 10.84 (If public holidays were included, this would be 11.84)
-    $this->assertEquals((20 * (141/260)), $calculation->getProRata());
+    // (20 * (141/260)) + 1 = 11.84
+    $this->assertEquals((20 * (141/260)) + 1, $calculation->getProRata());
   }
 
   public function testNumberOfWorkingDaysShouldBeTheNumberOfWorkingDaysInTheCalculationAbsencePeriod() {
@@ -259,46 +259,6 @@ class CRM_HRLeaveAndAbsences_ContractEntitlementCalculationTest extends BaseHead
     $this->assertCount(2, $publicHolidays);
     $this->assertEquals($publicHoliday1->title, $publicHolidays[0]->title);
     $this->assertEquals($publicHoliday2->title, $publicHolidays[1]->title);
-  }
-
-  public function testTotalEntitlementShouldBeProRataPlusNumberOfPublicHolidays() {
-    $this->contract['period_start_date'] = '2016-03-10';
-    $this->contract['period_end_date'] = '2016-09-23';
-
-    $type = AbsenceTypeFabricator::fabricate();
-
-    $period = $this->getAbsencePeriodMock([
-      'getNumberOfWorkingDays' => [
-        'expects' => $this->exactly(2),
-        'willReturn' => 260
-      ],
-      'getNumberOfWorkingDaysToWork' => [
-        'expects' => $this->exactly(2),
-        'withParams' => [
-          $this->contract['period_start_date'],
-          $this->contract['period_end_date']
-        ],
-        'willReturn' => 141
-      ]
-    ]);
-
-    $this->createJobLeaveEntitlement($type, 20, true);
-
-    PublicHolidayFabricator::fabricateWithoutValidation([
-      'date' => date('YmdHis', strtotime('2016-05-18'))
-    ]);
-
-    $calculation = new ContractEntitlementCalculation($period, $this->contract, $type);
-
-    // 20 * (141/260) = 10.84 (If public holidays were included, this would be 11.84)
-    $expectedProRata = (20 * (141/260));
-    $this->assertEquals($expectedProRata, $calculation->getProRata());
-
-    $expectedNumberOfPublicHolidays = 1;
-    $this->assertEquals($expectedNumberOfPublicHolidays, $calculation->getNumberOfPublicHolidaysInEntitlement());
-
-    $expectedTotalEntitlement = $expectedProRata + $expectedNumberOfPublicHolidays;
-    $this->assertEquals($expectedTotalEntitlement, $calculation->getTotalEntitlement());
   }
 
   public function testGetContractStartDateReturnsTheContractPeriodStartDate() {

@@ -23,16 +23,15 @@
     {assign var=workingDays value=$contractCalculation->getNumberOfWorkingDays()}
     {assign var=proRata value=$contractCalculation->getProRata()|string_format:"%.2f"}
     {assign var=publicHolidays value=$contractCalculation->getNumberOfPublicHolidaysInEntitlement()}
-    {assign var=totalEntitlement value=$contractCalculation->getTotalEntitlement()|string_format:"%.2f"}
 
     <div>
       <p>
         Contract {$number}: {$startDate} - {$endDate}
         <br>
         1) ( (<span class="base-contractual-entitlement">{$contractualEntitlement}</span>) * (<span class="working-days-to-work">{$workingDaysToWork}</span> /
-            <span class="working-days-in-period">{$workingDays}</span>) ) = {$proRata}
+            <span class="working-days-in-period">{$workingDays}</span>) ) = {$proRata-$publicHolidays}
         <br>
-        2) ({$proRata}) + ({$publicHolidays}) = <span class="contract-{$number}-pro-rata">{$totalEntitlement}</span>
+        2) ({$proRata-$publicHolidays}) + ({$publicHolidays}) = <span class="contract-{$number}-pro-rata">{$proRata}</span>
       </p>
     </div>
   {/foreach}
@@ -45,6 +44,6 @@
   <p>
     3) {$proRataCalculationDescription} (Rounded up to the nearest half day)
     <br>
-    4) <span class="calculation-pro-rata">{$periodProRata + $periodPublicHolidays}</span> + {$broughtForward} = Period entitlement: {$periodEntitlement}
+    4) <span class="calculation-pro-rata">{$periodProRata}</span> + {$broughtForward} = Period entitlement: {$periodEntitlement}
   </p>
 </div>

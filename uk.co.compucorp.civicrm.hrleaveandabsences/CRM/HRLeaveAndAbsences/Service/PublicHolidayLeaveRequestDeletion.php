@@ -17,6 +17,23 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
   }
 
   /**
+   * Deletes all the existing LeaveRequests for the given Public Holiday for
+   * all contacts
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   */
+  public function deleteForAllContacts(PublicHoliday $publicHoliday) {
+    $contracts = $this->jobContractService->getContractsForPeriod(
+      new DateTime($publicHoliday->date),
+      new DateTime($publicHoliday->date)
+    );
+
+    foreach($contracts as $contract) {
+      $this->deleteForContact($contract['contact_id'], $publicHoliday);
+    }
+  }
+
+  /**
    * Deletes the Public Holiday Leave Request for the contact and Public Holiday.
    *
    * If there are LeaveRequestDates overlapping the public holiday, their

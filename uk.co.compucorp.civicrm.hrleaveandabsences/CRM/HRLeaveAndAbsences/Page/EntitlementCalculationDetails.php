@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Page_EntitlementCalculationDetails
@@ -39,7 +39,7 @@ class CRM_HRLeaveAndAbsences_Page_EntitlementCalculationDetails extends CRM_Core
    *
    * This was created basically to remove all this logic from the template
    *
-   * @param CRM_HRLeaveAndAbsences_EntitlementCalculation $entitlementCalculation
+   * @param CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $entitlementCalculation
    *
    * @return string
    */

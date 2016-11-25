@@ -1,5 +1,5 @@
 <?php
-use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
@@ -164,7 +164,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * If a calculation comment is given, the current logged in user will be stored
    * as the comment's author.
    *
-   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param float|null $overriddenEntitlement
    *  A value to override the calculation's proposed entitlement
    * @param string|null $calculationComment
@@ -197,7 +197,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param boolean $overriddenEntitlement
    * @param string $calculationComment
    *
@@ -233,7 +233,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * Saves the Entitlement Calculation Pro Rata as a Balance Change of the "Leave
    * Type".
    *
-   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    * @param int $overriddenEntitlement
    */
@@ -272,7 +272,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * Saves the Entitlement Calculation Brought Forward as a Balance Change of the
    * "Brought Forward" type.
    *
-   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    */
   private static function saveBroughtForwardBalanceChange(
@@ -305,7 +305,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * the Public Holidays, a LeaveRequest will be created, including it's respective
    * LeaveRequestDates and LeaveBalanceChanges.
    *
-   * @param \CRM_HRLeaveAndAbsences_EntitlementCalculation $calculation
+   * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    *
    * @TODO Once we get a way to related a job contract to a work pattern, we'll
