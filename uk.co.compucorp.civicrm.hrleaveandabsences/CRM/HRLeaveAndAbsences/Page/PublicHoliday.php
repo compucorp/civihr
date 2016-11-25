@@ -35,14 +35,14 @@ class CRM_HRLeaveAndAbsences_Page_PublicHoliday extends CRM_Core_Page_Basic {
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/public_holidays', 'reset=1');
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday', 'id', $returnURL);
 
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     $this->assign('rows', $rows);
   }
 
   /**
    * Edit action.
-   * 
+   *
    * @param string $action
    * @param int $id
    * @param bool $imageUpload
@@ -58,7 +58,7 @@ class CRM_HRLeaveAndAbsences_Page_PublicHoliday extends CRM_Core_Page_Basic {
 
   /**
    * Delete action.
-   * 
+   *
    * @param int $id
    */
   public function delete($id) {
@@ -154,7 +154,7 @@ class CRM_HRLeaveAndAbsences_Page_PublicHoliday extends CRM_Core_Page_Basic {
 
   /**
    * Return Link mask value depending on Public Holiday properties.
-   * 
+   *
    * @param CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    * @return int
    */
