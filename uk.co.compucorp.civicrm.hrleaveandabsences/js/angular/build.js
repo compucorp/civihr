@@ -1,10 +1,12 @@
 ({
   baseUrl : 'src',
-  out: 'dist/leave-absences.min.js',
-  name: 'leave-absences',
-  skipModuleInsertion: true,
+  dir: 'dist',
+  wrapShim: true,
+  modules: [
+    { name: 'my-leave' }
+  ],
+  mainConfigFile: 'src/leave-absences/shared/config.js',
   paths: {
-    'common': 'empty:',
-    'leave-absences/vendor/ui-router': 'leave-absences/vendor/angular-ui-router.min'
+    'common': 'empty:'
   }
 })

@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var gulpSequence = require('gulp-sequence')
 var clean = require('gulp-clean');
 var rename = require('gulp-rename');
 var replace = require('gulp-replace');
@@ -9,6 +10,33 @@ var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
 
+gulp.task('requirejs', function (cb) {
+  gulpSequence('requirejs:optimizer', 'requirejs:rename', 'requirejs:clean')(cb);
+});
+
+gulp.task('requirejs:clean', function () {
+  return gulp.src([
+    'js/angular/dist/leave-absences',
+    'js/angular/dist/build.txt',
+    'js/angular/dist/*.js',
+    '!js/angular/dist/*.min.js'
+  ], { read: false })
+  .pipe(clean());
+});
+
+gulp.task('requirejs:optimizer', function (done) {
+  exec('r.js -o js/angular/build.js', function (err, stdout, stderr) {
+    err && err.code && console.log(stdout);
+    done();
+  });
+});
+
+gulp.task('requirejs:rename', function () {
+  return gulp.src('js/angular/dist/*.js')
+    .pipe(rename(function (path) { path.basename += '.min'; }))
+    .pipe(gulp.dest('js/angular/dist'));
+});
+
 gulp.task('sass', function () {
   return gulp.src('scss/*.scss')
     .pipe(bulk())
@@ -16,16 +44,9 @@ gulp.task('sass', function () {
     .pipe(gulp.dest('css/'));
 });
 
-gulp.task('requirejs-bundle', function (done) {
-  exec('r.js -o js/angular/build.js', function (err, stdout, stderr) {
-    err && err.code && console.log(stdout);
-    done();
-  });
-});
-
 gulp.task('watch', function () {
   gulp.watch('scss/**/*.scss', ['sass']);
-  gulp.watch('js/angular/src/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+  gulp.watch('js/angular/src/**/*.js', ['requirejs']).on('change', function (file) {
     try { test.for(file.path); } catch (ex) { test.all(); };
   });
   gulp.watch(['js/angular/test/**/*.js', '!js/angular/test/mocks/**/*.js', '!js/angular/test/test-main.js'])
@@ -38,7 +59,7 @@ gulp.task('test', function (done) {
   test.all();
 });
 
-gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
+gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
 
 var test = (function () {
