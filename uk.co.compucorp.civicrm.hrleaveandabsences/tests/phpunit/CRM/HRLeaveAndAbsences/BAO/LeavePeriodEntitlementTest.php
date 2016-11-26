@@ -991,7 +991,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     $this->assertEquals($periodEntitlement2->id, $result[1]['id']);
     $this->assertCount(2, $result[1]['breakdown']);
-    $this->assertEquals(-7, $result[1]['breakdown'][0]['amount']);
+    $this->assertEquals(-3, $result[1]['breakdown'][0]['amount']);
     $this->assertEquals(-2, $result[1]['breakdown'][1]['amount']);
   }
   /**
