@@ -16,25 +16,14 @@
     <div class="container">
       <ul class="nav nav-tabs nav-justified nav-tabs-header">
         <li role="presentation" class="active">
-          <a href="#report">Report</a>
+          <a ui-sref="my-leave.report">Report</a>
         </li>
         <li role="presentation">
-          <a href="#calendar">Calendar</a>
+          <a ui-sref="my-leave.calendar">Calendar</a>
         </li>
       </ul>
       <div class="tab-content">
-        <div id="report" class="tab-pane fade in active">
-          <h3>Report</h3>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-        <div id="calendar" class="tab-pane fade">
-          <h3>Calendar</h3>
-          <p>
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodoconsequat.
-          </p>
-        </div>
+        <div ui-view></div>
       </div>
     </div>
   </div>
