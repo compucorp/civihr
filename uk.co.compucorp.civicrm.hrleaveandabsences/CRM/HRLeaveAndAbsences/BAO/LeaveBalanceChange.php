@@ -129,6 +129,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @param int $entitlementID
    *   The ID of the LeavePeriodEntitlement to get the Breakdown to
    * @param boolean $returnExpiredOnly
+   *   Whether to return Only Expired or Only Non Expired LeaveBalanceChanges
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    */
