@@ -619,16 +619,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
     }
 
-    $leaveBalanceTypeIdOptionsGroup = [];
-    $leaveBalanceChangeTypeIdOptions = LeaveBalanceChange::buildOptions('type_id');
-    foreach($leaveBalanceChangeTypeIdOptions as $key => $label) {
-      $leaveBalanceTypeIdOptionsGroup[$key] = [
-        'id' => $key,
-        'value' => CRM_Core_Pseudoconstant::getName(LeaveBalanceChange::class, 'type_id', $key),
-        'label' => $label
-      ];
-    }
-
+    $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceTypeIdOptionsGroup();
     $results = [];
     $returnExpired = !empty($params['expired']);
     $i = 0;
@@ -645,6 +636,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $i++;
     }
     return $results;
+  }
+
+  /**
+   * Returns LeaveBalanceChange Options for Type ID in a key-value pair
+   *
+   * @return array
+   */
+  private static function getLeaveBalanceTypeIdOptionsGroup() {
+    $leaveBalanceTypeIdOptionsGroup = [];
+    $leaveBalanceChangeTypeIdOptions = LeaveBalanceChange::buildOptions('type_id');
+    foreach($leaveBalanceChangeTypeIdOptions as $key => $label) {
+      $leaveBalanceTypeIdOptionsGroup[$key] = [
+        'id' => $key,
+        'value' => CRM_Core_Pseudoconstant::getName(LeaveBalanceChange::class, 'type_id', $key),
+        'label' => $label
+      ];
+    }
+    return $leaveBalanceTypeIdOptionsGroup;
   }
 
 }
