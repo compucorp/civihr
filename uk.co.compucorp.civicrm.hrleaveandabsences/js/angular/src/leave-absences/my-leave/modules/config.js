@@ -20,7 +20,7 @@
               template: '<my-leave contact-id="$resolve.contactId"></my-leave>',
               resolve: {
                 contactId: function () {
-                  return CRM.vars.leaveAbsences.contactId;
+                  return CRM.vars.leaveAndAbsences.contactId;
                 }
               }
             })

@@ -1,7 +1,7 @@
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
-var mocksPath = CRM.vars.leaveAbsences.baseURL + '/js/angular/test/mocks';
-var srcPath = CRM.vars.leaveAbsences.baseURL + '/js/angular/src/leave-absences';
+var mocksPath = CRM.vars.leaveAndAbsences.baseURL + '/js/angular/test/mocks';
+var srcPath = CRM.vars.leaveAndAbsences.baseURL + '/js/angular/src/leave-absences';
 
 Object.keys(window.__karma__.files).forEach(function(file) {
   if (TEST_REGEXP.test(file)) {

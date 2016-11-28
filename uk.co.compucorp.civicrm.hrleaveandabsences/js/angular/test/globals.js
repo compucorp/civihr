@@ -1,7 +1,8 @@
 (function (CRM) {
   CRM.vars = {
-    leaveAbsences: {
-      baseURL: '/base/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences'
+    leaveAndAbsences: {
+      baseURL: '/base/tools/extensions/civihr/uk.co.compucorp.civicrm.hrleaveandabsences',
+      contactId: '202'
     }
   };
 

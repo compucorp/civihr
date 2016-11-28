@@ -1,5 +1,5 @@
 (function (require) {
-  var srcPath = CRM.vars.leaveAbsences.baseURL + '/js/angular/src/leave-absences';
+  var srcPath = CRM.vars.leaveAndAbsences.baseURL + '/js/angular/src/leave-absences';
 
   require.config({
     urlArgs: 'bust=' + (new Date()).getTime(),
