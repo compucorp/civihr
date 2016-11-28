@@ -1,6 +1,6 @@
 (function (require) {
   define(function () {
-    var srcPath = CRM.vars.leaveAbsences.baseURL + '/js/angular/src/leave-absences/shared';
+    var srcPath = CRM.vars.leaveAndAbsences.baseURL + '/js/angular/src/leave-absences/shared';
 
     // This require.config will picked up by the r.js optimizer
     require.config({
