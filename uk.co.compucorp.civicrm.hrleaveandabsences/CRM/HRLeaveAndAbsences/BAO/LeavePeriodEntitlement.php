@@ -593,6 +593,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @param array $params
    *
    * @return array
+   *   an array of formatted results
+   *   [
+   *    'id' => 1,
+   *     'breakdown => [
+   *       'amount' => '5.00',
+   *       'expiry_date' => null,
+   *       'type' => [
+   *         'id' => 2,
+   *         'value' => 'brought_forward'
+   *         'label' => 'Brought Forward'
+   *         ]
+   *     ]
+   *   ]
    */
   public static function getBreakdown($params) {
 
