@@ -1,0 +1,30 @@
+<div class="my-leave-page">
+  <div class="button-container">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary dropdown-toggle"
+        data-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        Record New Absence
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Action 1</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tabs-container">
+    <div class="container">
+      <ul class="nav nav-tabs nav-justified nav-tabs-header">
+        <li ui-sref-active="active">
+          <a ui-sref="my-leave.report">Report</a>
+        </li>
+        <li ui-sref-active="active">
+          <a ui-sref="my-leave.calendar">Calendar</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div ui-view></div>
+      </div>
+    </div>
+  </div>
+</div>
