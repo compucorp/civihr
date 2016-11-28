@@ -434,7 +434,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   /**
    * Returns the balance changes for this LeavePeriodEntitlement
    *
-   * @param boolean $returnExpired
+   * @param boolean $returnExpiredOnly
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    */
@@ -591,6 +591,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * whether the expired parameter is true or false
    *
    * @param array $params
+   *   [
+   *    'entitlement_id' => 1
+   *   ]
    *
    * @return array
    *   an array of formatted results
