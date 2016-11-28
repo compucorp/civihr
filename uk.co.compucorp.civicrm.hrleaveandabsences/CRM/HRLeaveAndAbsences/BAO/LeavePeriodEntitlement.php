@@ -618,7 +618,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     }
 
     $results = [];
-    $returnExpired = !empty($params['expired']) ? true : false;
+    $returnExpired = !empty($params['expired']);
     $i = 0;
     foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
       $results[$i]['id'] = $leavePeriodEntitlement->id;
