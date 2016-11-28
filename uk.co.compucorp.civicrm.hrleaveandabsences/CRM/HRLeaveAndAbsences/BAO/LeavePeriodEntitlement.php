@@ -622,18 +622,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceTypeIdOptionsGroup();
     $results = [];
     $returnExpired = !empty($params['expired']);
-    $i = 0;
     foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
-      $results[$i]['id'] = $leavePeriodEntitlement->id;
-      $breakDowns = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
-      foreach($breakDowns as $breakDown) {
-        $results[$i]['breakdown'][] = [
-          'amount' => $breakDown->amount,
-          'expiry_date' => $breakDown->expiry_date,
-          'type' => $leaveBalanceTypeIdOptionsGroup[$breakDown->type_id],
+      $periodEntitlementInfo = [
+        'id' => $leavePeriodEntitlement->id,
+        'breakdown' => []
+      ];
+      $balanceChanges = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
+      foreach($balanceChanges as $balanceChange) {
+        $periodEntitlementInfo['breakdown'][] = [
+          'amount' => $balanceChange->amount,
+          'expiry_date' => $balanceChange->expiry_date,
+          'type' => $leaveBalanceTypeIdOptionsGroup[$balanceChange->type_id],
         ];
       }
-      $i++;
+      $results[] = $periodEntitlementInfo;
     }
     return $results;
   }
