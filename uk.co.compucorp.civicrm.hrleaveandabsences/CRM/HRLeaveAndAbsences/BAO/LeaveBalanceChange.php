@@ -123,12 +123,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Forward and the Public Holidays. These are all balance changes, where the
    * source_id is the LeavePeriodEntitlement's ID and source_type is equal to
    * "entitlement", since they're are created during the entitlement calculation.
+   * Passing true for $returnExpiredOnly parameter will return only expired leave balance changes
+   * while Passing false will return only Non expired leave balance changes for the entitlement ID
    *
    * @param int $entitlementID
    *   The ID of the LeavePeriodEntitlement to get the Breakdown to
    * @param boolean $returnExpiredOnly
-   *   Passing true for this parameter will return only expired leave balance changes
-   *   Passing false will return only Non expired leave balance changes for the entitlement ID
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    */
