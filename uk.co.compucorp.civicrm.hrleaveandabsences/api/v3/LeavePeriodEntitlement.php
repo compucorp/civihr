@@ -130,7 +130,7 @@ function _civicrm_api3_leave_period_entitlement_getbreakdown_spec(&$spec) {
 
   $spec['expired'] = [
     'name' => 'expired',
-    'title' => 'ExpiredOnly Balance Changes',
+    'title' => 'Return expired only',
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0
   ];
