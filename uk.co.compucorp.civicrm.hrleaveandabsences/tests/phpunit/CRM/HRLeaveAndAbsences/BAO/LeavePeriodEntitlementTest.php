@@ -765,7 +765,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetLeavePeriodEntitlementRemainder() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $absencePeriod = AbsencePeriodFabricator::fabricate([]);
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
@@ -786,7 +786,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetLeavePeriodEntitlementRemainderWithMultipleRecords() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $absencePeriod = AbsencePeriodFabricator::fabricate([]);
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
 
     //create two more LeavePeriodEntitlement within same period with same contactid
@@ -806,7 +806,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetLeavePeriodEntitlementRemainderWithIncludeFuture() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $absencePeriod = AbsencePeriodFabricator::fabricate([]);
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
 
@@ -827,7 +827,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetLeavePeriodEntitlementRemainderWithContactAndPeriodId() {
-    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $absencePeriod = AbsencePeriodFabricator::fabricate([]);
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate(['period_id' => $absencePeriod->id]);
 
     $this->createLeaveBalanceChange($periodEntitlement->id, 10);
@@ -1070,7 +1070,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testGetLeavePeriodEntitlementBreakdownWithContactAndPeriodIdAndExpiredSetToTrue() {
     $contactId = 1;
-    $absencePeriod = AbsencePeriodFabricator::fabricate([], true);
+    $absencePeriod = AbsencePeriodFabricator::fabricate([]);
     $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => $contactId,
       'period_id' => $absencePeriod->id
