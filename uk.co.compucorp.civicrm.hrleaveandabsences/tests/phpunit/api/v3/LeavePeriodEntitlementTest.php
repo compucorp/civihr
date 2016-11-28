@@ -1,5 +1,8 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+
 /**
  * Class api_v3_LeavePeriodEntitlementTest
  *
@@ -81,12 +84,26 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
     $this->assertEmpty($result['values']);
   }
 
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
-   */
   public function testGetBreakdownWhenOnlyEntitlementIdIsPassed() {
-    $result = civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id' => 1]);
-    $this->assertEmpty($result['values']);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate();
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'period_id' => $absencePeriod->id
+    ]);
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id' => $periodEntitlement->id]);
+
+    $expectedResult = [
+      'is_error' => 0,
+      'version' => 3,
+      'count' => 1,
+      'id' => 0,
+      'values' => [
+        [
+          'id' => $periodEntitlement->id,
+          'breakdown' => []
+        ]
+      ]
+    ];
+    $this->assertEquals($expectedResult, $result);
   }
 }
