@@ -434,8 +434,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   /**
    * Returns the balance changes for this LeavePeriodEntitlement
    *
-   * @return array
-   * An array of \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange objects
+   * @param boolean $returnExpired
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    *
    */
   public function getBreakdownBalanceChanges($returnExpired) {
@@ -600,16 +601,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     if(!empty($params['entitlement_id'])) {
       $leavePeriodEntitlements[] = self::findById($params['entitlement_id']);
-
     }
 
-    if(!empty($params['contact_id']) && !empty($params['period_id'])){
+    if(!empty($params['contact_id']) && !empty($params['period_id'])) {
       $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
     }
 
     $leaveBalanceTypeIdOptionsGroup = [];
     $leaveBalanceChangeTypeIdOptions = LeaveBalanceChange::buildOptions('type_id');
-    foreach($leaveBalanceChangeTypeIdOptions as $key => $label){
+    foreach($leaveBalanceChangeTypeIdOptions as $key => $label) {
       $leaveBalanceTypeIdOptionsGroup[$key] = [
         'id' => $key,
         'value' => CRM_Core_Pseudoconstant::getName(LeaveBalanceChange::class, 'type_id', $key),
@@ -620,10 +620,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $results = [];
     $returnExpired = !empty($params['expired']) ? true : false;
     $i = 0;
-    foreach($leavePeriodEntitlements as $leavePeriodEntitlement){
+    foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
       $results[$i]['id'] = $leavePeriodEntitlement->id;
       $breakDowns = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
-      foreach($breakDowns as $breakDown){
+      foreach($breakDowns as $breakDown) {
         $results[$i]['breakdown'][] = [
           'amount' => $breakDown->amount,
           'expiry_date' => $breakDown->expiry_date,
