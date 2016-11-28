@@ -65,7 +65,7 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
    * @expectedExceptionMessage You must include either the id of a specific entitlement, or both the contact and period id
    */
   public function testGetBreakdownWhenAllParametersArePassed() {
-    civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id'=> 1, 'period_id' => 1, 'contact_id'=>1]);
+    civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id' => 1, 'period_id' => 1, 'contact_id' => 1]);
   }
 
   /**
@@ -73,13 +73,20 @@ class api_v3_LeavePeriodEntitlementTest extends BaseHeadlessTest {
    * @expectedExceptionMessage You must include either the id of a specific entitlement, or both the contact and period id
    */
   public function testGetBreakdownWhenEntitlentIdAndPeriodIdArePassed() {
-    civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id'=> 1, 'contact_id'=>1]);
+    civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id' => 1, 'contact_id' => 1]);
   }
 
   public function testGetBreakdownWhenContactAndPeriodIdArePassed() {
-    $result = civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['period_id'=> 1, 'contact_id'=>1]);
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['period_id' => 1, 'contact_id' => 1]);
     $this->assertEmpty($result['values']);
   }
 
-
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Unable to find a CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement with id 1
+   */
+  public function testGetBreakdownWhenOnlyEntitlementIdIsPassed() {
+    $result = civicrm_api3('LeavePeriodEntitlement', 'getbreakdown', ['entitlement_id' => 1]);
+    $this->assertEmpty($result['values']);
+  }
 }
