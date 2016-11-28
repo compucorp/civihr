@@ -140,7 +140,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       $expiredBalanceWhereCondition = " AND expired_balance_change_id IS NULL";
     }
     if($returnExpiredOnly){
-      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < NOW())";
+      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < %1)";
     }
 
     $query = "
@@ -152,8 +152,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     ";
 
     $changes = [];
+    $params = [
+      1 => [date('Y-m-d'), 'String']
+    ];
 
-    $result = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
     while($result->fetch()) {
       $changes[] = clone $result;
     }
