@@ -437,10 +437,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @param boolean $returnExpired
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
-   *
    */
-  public function getBreakdownBalanceChanges($returnExpired) {
-    return LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($this->id, $returnExpired);
+  public function getBreakdownBalanceChanges($returnExpiredOnly) {
+    return LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($this->id, $returnExpiredOnly);
   }
 
   /**
