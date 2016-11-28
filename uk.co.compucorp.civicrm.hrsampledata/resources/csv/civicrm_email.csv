@@ -104,6 +104,6 @@ contact_id,email,is_primary,location_type_id
 340,alicia@sccs.org,1,Work
 341,adok@sccs.org,1,Work
 342,robin@sccs.org,1,Work
-288,zoe123@qmail.com,0,Personal
-324,adamhenry@dmail.com,0,Personal
-306,rightmyer.adam@qmail.com,0,Personal
+288,zoe123@qmail.com,0,Home
+324,adamhenry@dmail.com,0,Home
+306,rightmyer.adam@qmail.com,0,Home
