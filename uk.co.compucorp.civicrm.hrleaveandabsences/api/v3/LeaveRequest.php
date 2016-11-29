@@ -92,11 +92,13 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
  */
 function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
   $statuses = _civicrm_api3_leave_request_get_statuses_from_params($params);
+  $publicHolidayOnly = empty($params['public_holiday']) ? false : true;
 
   $values = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getBalanceChangeByAbsenceType(
     $params['contact_id'],
     $params['period_id'],
-    $statuses
+    $statuses,
+    $publicHolidayOnly
   );
 
   return civicrm_api3_create_success($values);
