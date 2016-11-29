@@ -591,9 +591,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * whether the expired parameter is true or false
    *
    * @param array $params
-   *   [
-   *    'entitlement_id' => 1
-   *   ]
+   *   The param array passed to the LeavePeriodEntitlement.getBreakdown API Endpoint
+   *   The supported values are:
+   *   - entitlement_id: The id for a LeavePeriodEntitlement
+   *   - contact_id: The id for a Contact
+   *   - period_id: The id for a AbsencePeriod
+   *   - expired: A boolean flag. When it's true, only expired records will be returned. Otherwise, only non-expired
    *
    * @return array
    *   an array of formatted results
@@ -644,9 +647,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Returns LeaveBalanceChange Options for Type ID in a key-value pair
+   * Returns LeaveBalanceChange Options for Type ID in a nested array format
+   * with the Type ID key as the array key and details about the Type ID as the value
    *
    * @return array
+   *   [
+   *     1 => [
+   *     'id' => 1,
+   *     'value' => 'leave',
+   *     'label' => 'Leave'
+   *     ],
+   *     2 => [
+   *     'id' => 2,
+   *     'value' => 'brought_forward',
+   *     'label' => 'Brought Forward'
+   *     ]
+   *   ]
    */
   private static function getLeaveBalanceChangeTypeIdOptionsGroup() {
     $leaveBalanceTypeIdOptionsGroup = [];
