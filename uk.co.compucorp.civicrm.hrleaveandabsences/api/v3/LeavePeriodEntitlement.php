@@ -52,7 +52,7 @@ function civicrm_api3_leave_period_entitlement_get($params) {
  *
  * @return array API result descriptor
  *
- * @throws InvalidArgumentException
+ * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_period_entitlement_getremainder($params) {
   $hasEntitlementID = !empty($params['entitlement_id']);
@@ -77,6 +77,63 @@ function _civicrm_api3_leave_period_entitlement_getremainder_spec(&$params) {
   $params['contact_id']['api.required'] = 0;
   $params['period_id']['api.required'] = 0;
   $params['include_future']['api.required'] = 0;
+}
+
+/**
+ * LeavePeriodEntitlement.getbreakdown API
+ *
+ * @param array $params
+ *
+ * @return array API result descriptor
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_period_entitlement_getbreakdown($params) {
+  $hasEntitlementID = !empty($params['entitlement_id']);
+  $hasContactAndPeriodID = !empty($params['contact_id']) && !empty($params['period_id']);
+  $hasContactOrPeriodID = !empty($params['contact_id']) || !empty($params['period_id']);
+  if(($hasEntitlementID && $hasContactOrPeriodID) || (!$hasEntitlementID && !$hasContactAndPeriodID)) {
+    throw new InvalidArgumentException("You must include either the id of a specific entitlement, or both the contact and period id");
+  }
+  $results = CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement::getBreakdown($params);
+  return civicrm_api3_create_success($results);
+}
+
+/**
+ * LeavePeriodEntitlement.getbreakdown specification
+ *
+ * @param array $params
+ *
+ * @return void
+ */
+function _civicrm_api3_leave_period_entitlement_getbreakdown_spec(&$spec) {
+  $spec['entitlement_id'] = [
+    'name' => 'entitlement_id',
+    'title' => 'Leave Period Entitlement ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+
+  $spec['period_id'] = [
+    'name' => 'period_id',
+    'title' => 'Absence Period ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0
+  ];
+
+  $spec['expired'] = [
+    'name' => 'expired',
+    'title' => 'Return expired only',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0
+  ];
 }
 
 

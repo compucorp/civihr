@@ -432,6 +432,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
+   * Returns the balance changes for this LeavePeriodEntitlement
+   *
+   * @param boolean $returnExpiredOnly
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  public function getBreakdownBalanceChanges($returnExpiredOnly) {
+    return LeaveBalanceChange::getBreakdownBalanceChangesForEntitlement($this->id, $returnExpiredOnly);
+  }
+
+  /**
    * Returns the current LeaveRequest balance for this LeavePeriodEntitlement. That
    * is, a balance that sums up only the balance changes caused by Leave Requests.
    *
@@ -571,6 +582,99 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     }
     return $results;
+  }
+
+  /**
+   * Returns formatted results for getting the breakdown for a period entitlement
+   * i.e all of the leave balance changes given a leavePeriodEntitlement ID or (ContactID + periodId)
+   * It also returns either valid or expired leave balance changes based on
+   * whether the expired parameter is true or false
+   *
+   * @param array $params
+   *   The param array passed to the LeavePeriodEntitlement.getBreakdown API Endpoint
+   *   The supported values are:
+   *   - entitlement_id: The id for a LeavePeriodEntitlement
+   *   - contact_id: The id for a Contact
+   *   - period_id: The id for a AbsencePeriod
+   *   - expired: A boolean flag. When it's true, only expired records will be returned. Otherwise, only non-expired
+   *
+   * @return array
+   *   an array of formatted results
+   *   [
+   *    'id' => 1,
+   *     'breakdown => [
+   *       'amount' => '5.00',
+   *       'expiry_date' => null,
+   *       'type' => [
+   *         'id' => 2,
+   *         'value' => 'brought_forward'
+   *         'label' => 'Brought Forward'
+   *         ]
+   *     ]
+   *   ]
+   */
+  public static function getBreakdown($params) {
+
+    $leavePeriodEntitlements = [];
+
+    if(!empty($params['entitlement_id'])) {
+      $leavePeriodEntitlements[] = self::findById($params['entitlement_id']);
+    }
+
+    if(!empty($params['contact_id']) && !empty($params['period_id'])) {
+      $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
+    }
+
+    $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceChangeTypeIdOptionsGroup();
+    $results = [];
+    $returnExpired = !empty($params['expired']);
+    foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
+      $periodEntitlementInfo = [
+        'id' => $leavePeriodEntitlement->id,
+        'breakdown' => []
+      ];
+      $balanceChanges = $leavePeriodEntitlement->getBreakdownBalanceChanges($returnExpired);
+      foreach($balanceChanges as $balanceChange) {
+        $periodEntitlementInfo['breakdown'][] = [
+          'amount' => $balanceChange->amount,
+          'expiry_date' => $balanceChange->expiry_date,
+          'type' => $leaveBalanceTypeIdOptionsGroup[$balanceChange->type_id],
+        ];
+      }
+      $results[] = $periodEntitlementInfo;
+    }
+    return $results;
+  }
+
+  /**
+   * Returns LeaveBalanceChange Options for Type ID in a nested array format
+   * with the Type ID key as the array key and details about the Type ID as the value
+   *
+   * @return array
+   *   [
+   *     1 => [
+   *     'id' => 1,
+   *     'value' => 'leave',
+   *     'label' => 'Leave'
+   *     ],
+   *     2 => [
+   *     'id' => 2,
+   *     'value' => 'brought_forward',
+   *     'label' => 'Brought Forward'
+   *     ]
+   *   ]
+   */
+  private static function getLeaveBalanceChangeTypeIdOptionsGroup() {
+    $leaveBalanceTypeIdOptionsGroup = [];
+    $leaveBalanceChangeTypeIdOptions = LeaveBalanceChange::buildOptions('type_id');
+    foreach($leaveBalanceChangeTypeIdOptions as $key => $label) {
+      $leaveBalanceTypeIdOptionsGroup[$key] = [
+        'id' => $key,
+        'value' => CRM_Core_Pseudoconstant::getName(LeaveBalanceChange::class, 'type_id', $key),
+        'label' => $label
+      ];
+    }
+    return $leaveBalanceTypeIdOptionsGroup;
   }
 
 }

@@ -123,28 +123,41 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * Forward and the Public Holidays. These are all balance changes, where the
    * source_id is the LeavePeriodEntitlement's ID and source_type is equal to
    * "entitlement", since they're are created during the entitlement calculation.
+   * Passing true for $returnExpiredOnly parameter will return only expired leave balance changes
+   * while Passing false will return only Non expired leave balance changes for the entitlement ID
    *
    * @param int $entitlementID
    *   The ID of the LeavePeriodEntitlement to get the Breakdown to
+   * @param boolean $returnExpiredOnly
+   *   Whether to return Only Expired or Only Non Expired LeaveBalanceChanges
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
    */
-  public static function getBreakdownBalanceChangesForEntitlement($entitlementID) {
+  public static function getBreakdownBalanceChangesForEntitlement($entitlementID, $returnExpiredOnly = false) {
     $entitlementID = (int)$entitlementID;
     $balanceChangeTable = self::getTableName();
+
+    if(!$returnExpiredOnly){
+      $expiredBalanceWhereCondition = " AND expired_balance_change_id IS NULL";
+    }
+    if($returnExpiredOnly){
+      $expiredBalanceWhereCondition = " AND (expired_balance_change_id IS NOT NULL AND expiry_date < %1)";
+    }
 
     $query = "
       SELECT *
       FROM {$balanceChangeTable}
       WHERE source_id = {$entitlementID} AND
-            source_type = '" . self::SOURCE_ENTITLEMENT . "' AND 
-            expired_balance_change_id IS NULL
+            source_type = '" . self::SOURCE_ENTITLEMENT . "' {$expiredBalanceWhereCondition}
       ORDER BY id
     ";
 
     $changes = [];
+    $params = [
+      1 => [date('Y-m-d'), 'String']
+    ];
 
-    $result = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
     while($result->fetch()) {
       $changes[] = clone $result;
     }
