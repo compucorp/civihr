@@ -643,6 +643,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @param \DateTime $date
    *
    * @return array
+   *   \CRM_HRLeaveAndAbsences_BAO_WorkPattern $workPattern
+   *   \DateTime $startDate
    */
   private static function getContactWorkPatternAndStartDate($contactId, DateTime $date) {
     $contactWorkPattern = ContactWorkPattern::getForDate($contactId, $date);
