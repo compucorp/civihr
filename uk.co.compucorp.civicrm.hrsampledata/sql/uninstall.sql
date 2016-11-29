@@ -6,13 +6,11 @@ TRUNCATE TABLE civicrm_case;
 TRUNCATE TABLE civicrm_case_activity;
 TRUNCATE TABLE civicrm_case_contact;
 
-DELETE FROM civicrm_contact
-WHERE id !=1
-      AND id NOT IN (SELECT contact_id FROM civicrm_uf_match);
+DELETE FROM civicrm_contact WHERE id !=1;
 
-DELETE FROM civicrm_email
-WHERE contact_id !=1
-      AND id NOT IN (SELECT contact_id FROM civicrm_uf_match);
+DELETE FROM civicrm_email WHERE contact_id !=1;
+
+DELETE FROM civicrm_uf_match;
 
 TRUNCATE TABLE civicrm_contactaccessrights_rights;
 TRUNCATE TABLE civicrm_group_contact;

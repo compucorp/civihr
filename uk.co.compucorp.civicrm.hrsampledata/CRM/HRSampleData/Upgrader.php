@@ -139,48 +139,31 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'civihr_staff@compucorp.co.uk' => 'zoe@sccs.org',
     ];
 
-    foreach($usersToNewContacts as $ufName => $newContactEmail) {
-      $userRecord = civicrm_api3('UFMatch', 'get', [
-        'sequential' => 1,
-        'uf_name' => $ufName,
-      ]);
+    foreach($usersToNewContacts as $originalEmail => $newContactEmail) {
 
-      if (!empty($userRecord['values'])) {
-        $userRecord = array_shift($userRecord['values']);
-
-        $this->updateUFMatchContact($userRecord['id'], $newContactEmail);
-        $this->updateCMSUserEmail($userRecord['uf_id'], $newContactEmail);
-        $this->deleteContact($userRecord['contact_id']);
+      $userToChangeID = $this->getCMSUserIDByEmail($originalEmail);
+      if ($userToChangeID) {
+        $this->updateCMSUserEmail($userToChangeID, $newContactEmail);
       }
-
     }
   }
 
   /**
-   * Updates UFMatch attached contact given the record
-   * ID and the new contact email.
+   * Get CMS user ID by email.
+   * (Currently Supports Drupal 7 CMS Only)
    *
-   * @param int $ufmatchID
-   * @param string $newContactEmail
+   * @param string $email
+   *
+   * @return int|boolean
+   *   CMS User ID or false if no user found
    */
-  private function updateUFMatchContact($ufmatchID, $newContactEmail) {
-    $newContact = civicrm_api3('Email', 'get', [
-      'sequential' => 1,
-      'return' => ['email', 'contact_id'],
-      'email' => $newContactEmail,
-    ]);
-
-    if (!empty($newContact['values'])) {
-      $newContact = array_shift($newContact['values']);
-      $currentDomainID = $this->getCurrentDomainID();
-
-      civicrm_api3('UFMatch', 'create', [
-        'id' => $ufmatchID,
-        'uf_name' => $newContact['email'],
-        'contact_id' => $newContact['contact_id'],
-        'domain_id' => $currentDomainID,
-      ]);
+  private function getCMSUserIDByEmail($email) {
+    $userObject = user_load_by_mail($email);
+    if ($userObject) {
+      return $userObject->uid;
     }
+
+    return false;
   }
 
   /**
@@ -196,29 +179,4 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     // save new user email
     user_save($existingUser, ['mail' => $newEmail]);
   }
-
-  /**
-   * Deletes contact by ID
-   *
-   * @param int $id
-   */
-  private function deleteContact($id) {
-    civicrm_api3('Contact', 'delete', [
-      'id' => $id,
-    ]);
-  }
-
-  /**
-   * Gets current domain ID
-   */
-  private function getCurrentDomainID() {
-    $domain = civicrm_api3('Domain', 'get', [
-      'sequential' => 1,
-      'return' => ['id'],
-      'current_domain' => 1,
-    ]);
-
-    return $domain['id'];
-  }
-
 }
