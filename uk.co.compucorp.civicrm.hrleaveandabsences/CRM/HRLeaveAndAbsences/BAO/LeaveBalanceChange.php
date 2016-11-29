@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -503,27 +504,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * Returns the type of this day whether its a Working Day, Non Working Day or Weekend
-   * The value are returned as integers which are stored as constants in CRM_HRLeaveAndAbsences_BAO_WorkDay
+   * Returns the type of this day whether its a Working Day, Non Working Day, Weekend or Public Holiday
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *   The LeaveRequest which the $date belongs to
    * @param \DateTime $date
    *
-   * @return int
+   * @return string
+   *   Can be any of the following:
+   *   - Public Holiday: When work day is a public holiday
+   *   - Weekend: When work day is weekend
+   *   - No: When work day is Non working day
+   *   - Yes: When work day is working day or All day
    */
   public static function getWorkDayTypeForDate(LeaveRequest $leaveRequest, DateTime $date) {
     if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
-      return 0.0;
+      return 'Public Holiday';
     }
 
     list($workPattern, $startDate) = self::getContactWorkPatternAndStartDate($leaveRequest->contact_id, $date);
+    $workDayOptionsType = WorkDay::getWorkTypeOptions();
 
     if(!$workPattern || !$startDate) {
-      return 0.0;
+      return $workDayOptionsType[Workday::WORK_DAY_OPTION_NO];
     }
 
-    return $workPattern->getWorkDayTypeForDate($date, $startDate) * -1;
+    $workDayTypeId = $workPattern->getWorkDayTypeForDate($date, $startDate);
+    return $workDayOptionsType[$workDayTypeId];
   }
 
   /**
