@@ -26,7 +26,7 @@
             })
             .state('my-leave.report', {
               url: '/report',
-              template: '<h3>Report</h3>'
+              templateUrl: settings.pathTpl + "report.html"
             })
             .state('my-leave.calendar', {
               url: '/calendar',
