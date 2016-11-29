@@ -622,7 +622,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $leavePeriodEntitlements = self::getPeriodEntitlementsForContact($params['contact_id'], $params['period_id']);
     }
 
-    $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceTypeIdOptionsGroup();
+    $leaveBalanceTypeIdOptionsGroup = self::getLeaveBalanceChangeTypeIdOptionsGroup();
     $results = [];
     $returnExpired = !empty($params['expired']);
     foreach($leavePeriodEntitlements as $leavePeriodEntitlement) {
@@ -648,7 +648,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *
    * @return array
    */
-  private static function getLeaveBalanceTypeIdOptionsGroup() {
+  private static function getLeaveBalanceChangeTypeIdOptionsGroup() {
     $leaveBalanceTypeIdOptionsGroup = [];
     $leaveBalanceChangeTypeIdOptions = LeaveBalanceChange::buildOptions('type_id');
     foreach($leaveBalanceChangeTypeIdOptions as $key => $label) {
