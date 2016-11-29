@@ -472,6 +472,83 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-11, $balance);
   }
 
+  public function testLeaveRequestBalanceForEntitlementCanIncludeOnlyBalanceChangesForPublicHolidayLeaveRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    // This will deduct 11 days
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    $publicHoliday1 = new PublicHoliday();
+    $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
+
+    $publicHoliday2 = new PublicHoliday();
+    $publicHoliday2->date = date('Y-m-d', strtotime('+47 days'));
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday2);
+
+    // Balance excluding the days deducted from the leave request
+    $includePublicHolidaysOnly = true;
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement,
+      [],
+      null,
+      null,
+      false,
+      $includePublicHolidaysOnly
+    );
+    $this->assertEquals(-2, $balance);
+  }
+
+  public function testLeaveRequestBalanceForEntitlementWithParamsToBothExcludeAndIncludePublicHolidaysShouldReturnZero() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    // This will deduct 11 days
+    $this->createLeaveRequestBalanceChange(
+      $entitlement->type_id,
+      $entitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+10 days'))
+    );
+
+    $publicHoliday1 = new PublicHoliday();
+    $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
+
+    // Balance excluding the days deducted from the leave request
+    $excludePublicHolidays = true;
+    $includePublicHolidaysOnly = true;
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $entitlement,
+      [],
+      null,
+      null,
+      $excludePublicHolidays,
+      $includePublicHolidaysOnly
+    );
+    $this->assertEquals(0, $balance);
+  }
+
   public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
     $leaveRequest = LeaveRequestFabricator::fabricate([
       'contact_id' => 1,
