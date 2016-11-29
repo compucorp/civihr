@@ -93,15 +93,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param int $contactID
    * @param int $periodID
+   * @param array $leaveRequestStatus
+   *   And array of values from the Leave Request Status OptionGroup
    *
    * @return array
    */
-  public static function getBalanceChangeByAbsenceType($contactID, $periodID) {
+  public static function getBalanceChangeByAbsenceType($contactID, $periodID, $leaveRequestStatus = []) {
     $periodEntitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactID, $periodID);
 
     $results = [];
     foreach($periodEntitlements as $periodEntitlement) {
-      $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement);
+      $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement, $leaveRequestStatus);
       $results[$periodEntitlement->type_id] = $balance;
     }
 

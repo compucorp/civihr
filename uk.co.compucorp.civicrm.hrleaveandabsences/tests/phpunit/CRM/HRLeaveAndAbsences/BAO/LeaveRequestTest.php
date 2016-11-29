@@ -212,5 +212,75 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testGetBalanceChangeByAbsenceTypeCanReturnTheBalanceForLeaveRequestsWithSpecificsStatuses() {
+    $contact = ContactFabricator::fabricate();
+
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType->id,
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+3 days'),
+      'to_date' => CRM_Utils_Date::processDate('+5 days'),
+      'status_id' => $leaveRequestStatuses['More Information Requested']
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+6 days'),
+      'to_date' => CRM_Utils_Date::processDate('+9 days'),
+      'status_id' => $leaveRequestStatuses['Cancelled']
+    ], true);
+
+    $result = LeaveRequest::getBalanceChangeByAbsenceType(
+      $contact['id'],
+      $absencePeriod->id,
+      [$leaveRequestStatuses['Waiting Approval']]
+    );
+    $expectedResult = [$absenceType->id => -2];
+    $this->assertEquals($expectedResult, $result);
+
+    $result = LeaveRequest::getBalanceChangeByAbsenceType(
+      $contact['id'],
+      $absencePeriod->id,
+      [$leaveRequestStatuses['More Information Requested']]
+    );
+    $expectedResult = [$absenceType->id => -3];
+    $this->assertEquals($expectedResult, $result);
+
+    $result = LeaveRequest::getBalanceChangeByAbsenceType(
+      $contact['id'],
+      $absencePeriod->id,
+      [
+        $leaveRequestStatuses['Waiting Approval'],
+        $leaveRequestStatuses['More Information Requested'],
+        $leaveRequestStatuses['Cancelled'],
+      ]
+    );
+    $expectedResult = [$absenceType->id => -9];
+    $this->assertEquals($expectedResult, $result);
+  }
 
 }

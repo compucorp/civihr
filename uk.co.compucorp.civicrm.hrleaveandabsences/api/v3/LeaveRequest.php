@@ -91,10 +91,41 @@ function _civicrm_api3_leave_request_getbalancechangebyabsencetype_spec(&$spec) 
  * @return array
  */
 function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
+  $statuses = _civicrm_api3_leave_request_get_statuses_from_params($params);
+
   $values = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getBalanceChangeByAbsenceType(
     $params['contact_id'],
-    $params['period_id']
+    $params['period_id'],
+    $statuses
   );
 
   return civicrm_api3_create_success($values);
+}
+
+/**
+ * Extracts the list of statuses from the $params array
+ *
+ * Currently, we only support the IN operator for passing an array of statuses.
+ * Supporting other operators would be extremely complex and it would not even
+ * make sense to support operators like >= and <.
+ *
+ * @param array $params
+ *   The $params array passed to the LeaveRequest.getBalanceChangeByAbsenceType API
+ *
+ * @return array
+ */
+function _civicrm_api3_leave_request_get_statuses_from_params($params) {
+  if(empty($params['statuses'])) {
+    return [];
+  }
+
+  if(!is_array($params['statuses'])) {
+    return [$params['statuses']];
+  }
+
+  if(!array_key_exists('IN', $params['statuses'])) {
+    throw new InvalidArgumentException('The statuses parameter only supports the IN operator');
+  }
+
+  return $params['statuses']['IN'];
 }
