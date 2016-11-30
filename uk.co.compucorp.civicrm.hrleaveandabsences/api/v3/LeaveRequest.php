@@ -69,6 +69,68 @@ function civicrm_api3_leave_request_get($params) {
 }
 
 /**
+ * LeaveRequest.calculateBalanceChange specification
+ *
+ * @param array $spec
+ *
+ * @return void
+ */
+function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1
+  ];
+
+  $spec['from_date'] = [
+    'name' => 'from_date',
+    'title' => 'Starting Day of the Leave Period',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 1
+  ];
+
+  $spec['from_type'] = [
+    'name' => 'from_type',
+    'title' => 'Starting Day Type',
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 1
+  ];
+
+  $spec['to_date'] = [
+    'name' => 'to_date',
+    'title' => 'Ending Day of the Leave Period',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 1
+  ];
+
+  $spec['to_type'] = [
+    'name' => 'to_type',
+    'title' => 'Ending Day Type',
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.calculateBalanceChange API
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_leave_request_calculateBalanceChange($params) {
+  $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
+    $params['contact_id'],
+    $params['from_date'],
+    $params['from_type'],
+    $params['to_date'],
+    $params['to_type']
+  );
+  return civicrm_api3_create_success($result);
+}
+
+/**
  * LeaveRequest.getBalanceChangeByAbsenceType API spec
  *
  * @param array $spec
