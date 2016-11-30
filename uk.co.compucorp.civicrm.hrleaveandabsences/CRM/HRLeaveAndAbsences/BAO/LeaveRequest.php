@@ -175,4 +175,67 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private function deleteDates() {
     LeaveRequestDate::deleteDatesForLeaveRequest($this->id);
   }
+
+  /**
+   * Calculates the overall balance change that a Leave Request will create given a
+   * start and end date and also returns the breakdown by days
+   *
+   * @param $params
+   *   - contact_id
+   *   - from_date: The starting date of the leave period
+   *   - from_type: The from type e.g 1/2 AM, 1/2 PM
+   *   - to_date: The ending day of the leave period
+   *   - to_type: Same description as from_type
+   *
+   * @return array
+   *   An array of formatted results
+   */
+  public static function calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType) {
+
+    $leaveRequest = new self();
+    $leaveRequest->contact_id = $contactId;
+
+    $startDate = new DateTime($fromDate);
+    $endDate = new DateTime($toDate);
+    // add one day to end date to include it in DatePeriod
+    $endDate->modify('+1 day');
+    $interval   = new DateInterval('P1D');
+    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+
+
+    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
+    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
+    $breakdown = [];
+    foreach ($datePeriod as $date) {
+      $skipLeaveRequestBaoCall = false;
+
+      if($fromDateIsHalfDay && $date->format('Y-m-d') == $fromDate) {
+        $amount = 0.5;
+        $type =  $fromType;
+        $skipLeaveRequestBaoCall = true;
+      }
+
+      if($toDateIsHalfDay && $date->format('Y-m-d') == $toDate) {
+        $amount =  0.5;
+        $type = $toType;
+        $skipLeaveRequestBaoCall = true;
+      }
+
+      if(!$skipLeaveRequestBaoCall){
+        $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
+        $type = LeaveBalanceChange::getWorkDayTypeForDate($leaveRequest, $date);
+
+      }
+      $result = [
+        'date' => $date->format('Y-m-d'),
+        'amount' => $amount,
+        'type' => $type
+      ];
+      $breakdown[] = $result;
+    }
+
+
+
+
+  }
 }
