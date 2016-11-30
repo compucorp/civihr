@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -318,5 +321,168 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     );
     $expectedResult = [$this->absenceType->id => -1];
     $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testCalculateBalanceChangeForALeaveRequestForAContact() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+      [
+        'period_start_date' => $periodStartDate,
+        'title' => $title
+      ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    //attach the work pattern to the contact
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $contactId = $contact['id'];
+    $fromDate = date("Y-11-05");
+    $toDate = date("Y-11-08");
+    $fromType = '1/2 AM';
+    $toType = '1/2 AM';
+
+    //Leave Request Start Date
+    $startDate = new DateTime($fromDate);
+    //Leave Request End Date
+    $endDate = new DateTime($toDate);
+
+    $endDateUnmodified = new DateTime($toDate);
+    // add one day to end date to include it in DatePeriod
+    $endDate->modify('+1 day');
+    $interval   = new DateInterval('P1D');
+    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
+    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
+
+    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
+    foreach ($datePeriod as $date) {
+      if(in_array($date->format('N'), [6, 7])){
+        $amount = 0;
+        $type = 'Weekend';
+      }
+      else{
+        $amount = -1 * 1;
+        $type = 'All day';
+      }
+
+      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      $result = [
+        'date' => $date->format('Y-m-d'),
+        'amount' => abs($amount),
+        'type' => $type
+      ];
+      $expectedResultsBreakdown['amount'] += $amount;
+      $expectedResultsBreakdown['breakdown'][] = $result;
+
+    }
+    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+      [
+        'period_start_date' => $periodStartDate,
+        'title' => $title
+      ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    //attach the work pattern to the contact
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //create a public holiday for a date that is between the leave request days
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('Y-11-07');
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
+
+    $contactId = $contact['id'];
+    $fromDate = date("Y-11-05");
+    $toDate = date("Y-11-08");
+    $fromType = '1/2 AM';
+    $toType = 'All Day';
+
+    $startDate = new DateTime($fromDate);
+    $endDate = new DateTime($toDate);
+    $endDateUnmodified = new DateTime($toDate);
+    // add one day to end date to include it in DatePeriod
+    $endDate->modify('+1 day');
+    $interval   = new DateInterval('P1D');
+    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
+    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
+
+    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
+    foreach ($datePeriod as $date) {
+      if(in_array($date->format('N'), [6, 7])){
+        $amount = 0;
+        $type = 'Weekend';
+      }
+      else{
+        $amount = -1 * 1;
+        $type = 'All day';
+      }
+
+      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      //For this day, LeaveRequest::calculateBalanceChange should see it as a public holiday
+      if($date->format('Y-m-d') == date('Y-11-07')) {
+        $amount = 0;
+        $type =  'Public Holiday';
+      }
+
+      $result = [
+        'date' => $date->format('Y-m-d'),
+        'amount' => abs($amount),
+        'type' => $type
+      ];
+      $expectedResultsBreakdown['amount'] += $amount;
+      $expectedResultsBreakdown['breakdown'][] = $result;
+
+    }
+    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
   }
 }
