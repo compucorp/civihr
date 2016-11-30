@@ -577,7 +577,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
       WHERE lrd.date = %2 AND
-            lr.contact_id = %3 AND 
+            lr.contact_id = %3
       ORDER BY id
     ";
 
