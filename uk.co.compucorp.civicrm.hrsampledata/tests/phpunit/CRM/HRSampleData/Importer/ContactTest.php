@@ -41,6 +41,7 @@ class CRM_HRSampleData_CSVProcessor_ContactTest extends CRM_HRSampleData_BaseCSV
       '1957-10-02',
       '',
       0,
+      511,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Importer_Contact', $this->rows);
@@ -82,6 +83,7 @@ class CRM_HRSampleData_CSVProcessor_ContactTest extends CRM_HRSampleData_BaseCSV
       'birth_date',
       'organization_name',
       'is_deleted',
+      'external_identifier'
     ];
   }
 
