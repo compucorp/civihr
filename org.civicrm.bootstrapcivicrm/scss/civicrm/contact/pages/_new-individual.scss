@@ -33,9 +33,13 @@
           }
         }
 
+        // Add padding to only select type markup
+        select.crm-form-select {
+          padding-right: 40px !important;
+        }
+
         .select2-container,
         .crm-form-select {
-            width: 120px !important;
             min-width: 120px !important;
 
             + .crm-option-edit-link {
