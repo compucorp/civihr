@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
@@ -83,6 +84,49 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return null;
+  }
+
+  /**
+   * Returns a list of all Absence Types, together with its total balance change.
+   * That is, the sum of all the Leave Balance Changes for Leave Requests of that
+   * Absence Type, for the given $contactID during the given $periodID.
+   *
+   * Balance Changes for Public Holiday Leave Requests won't be considered,
+   * except when $publicHolidays is true. In that case, on the balance changes
+   * for that type of request will be considered.
+   *
+   * @param int $contactID
+   * @param int $periodID
+   * @param array $leaveRequestStatus
+   *   And array of values from the Leave Request Status OptionGroup
+   * @param bool $publicHolidaysOnly
+   *   When true, will get the balance change only for the Public Holiday Leave Requests
+   *
+   * @return array
+   */
+  public static function getBalanceChangeByAbsenceType(
+    $contactID,
+    $periodID,
+    $leaveRequestStatus = [],
+    $publicHolidaysOnly = false
+  ) {
+    $periodEntitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactID, $periodID);
+
+    $results = [];
+    $excludePublicHolidays = !$publicHolidaysOnly;
+    foreach($periodEntitlements as $periodEntitlement) {
+      $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+        $periodEntitlement,
+        $leaveRequestStatus,
+        null,
+        null,
+        $excludePublicHolidays,
+        $publicHolidaysOnly
+      );
+      $results[$periodEntitlement->type_id] = $balance;
+    }
+
+    return $results;
   }
 
   /**

@@ -198,19 +198,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * specific statuses. For this, one can pass an array of statuses as the
    * $leaveRequestStatus parameter.
    *
-   * Since balance changes caused by LeaveRequests are negative, this method
-   * will return a negative number.
-   *
    * It's also possible to get the balance only for leave requests taken between
    * a given date range. For this, one can use the $dateLimit and $dateStart params.
    *
+   * Public Holidays may also be stored as Leave Requests. If you want to exclude
+   * them from the sum, or only sum their balance changes, you can use the
+   * $excludePublicHolidays or $includePublicHolidaysOnly params.
+   *
+   * Since balance changes caused by LeaveRequests are negative, this method
+   * will return a negative number.
+   *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
    * @param array $leaveRequestStatus
-   *    An array of values from Leave Request Status option list
+   *   An array of values from Leave Request Status option list
    * @param \DateTime $dateLimit
-   *    When given, will make the method count only days taken as leave up to this date
+   *   When given, will make the method count only days taken as leave up to this date
    * @param \DateTime $dateStart
-   *    When given, will make the method count only days taken as leave starting from this date
+   *   When given, will make the method count only days taken as leave starting from this date
+   * @param bool $excludePublicHolidays
+   *   When true, it won't sum the balance changes for Public Holiday Leave Requests
+   * @param bool $includePublicHolidaysOnly
+   *   When true, it won't sum only the balance changes for Public Holiday Leave Requests
    *
    * @return float
    */
@@ -218,7 +226,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     LeavePeriodEntitlement $periodEntitlement,
     $leaveRequestStatus = [],
     DateTime $dateLimit = NULL,
-    DateTime $dateStart = NULL
+    DateTime $dateStart = NULL,
+    $excludePublicHolidays = false,
+    $includePublicHolidaysOnly = false
   ) {
 
     $balanceChangeTable = self::getTableName();
@@ -241,15 +251,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     if(is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
-      $query .= ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .')';
+      $query .= ' AND leave_request.status_id IN('. implode(', ', $leaveRequestStatus) .') ';
     }
 
     if($dateLimit) {
-      $query .= " AND leave_request_date.date <= '{$dateLimit->format('Y-m-d')}'";
+      $query .= " AND leave_request_date.date <= '{$dateLimit->format('Y-m-d')}' ";
     }
 
     if($dateStart) {
-      $query .= " AND leave_request_date.date >= '{$dateStart->format('Y-m-d')}'";
+      $query .= " AND leave_request_date.date >= '{$dateStart->format('Y-m-d')}' ";
+    }
+
+    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
+    if($excludePublicHolidays) {
+      $query .= " AND leave_balance_change.type_id != '{$balanceChangeTypes['Public Holiday']}'";
+    }
+
+    if($includePublicHolidaysOnly) {
+      $query .= " AND leave_balance_change.type_id = '{$balanceChangeTypes['Public Holiday']}'";
     }
 
     $result = CRM_Core_DAO::executeQuery($query);
