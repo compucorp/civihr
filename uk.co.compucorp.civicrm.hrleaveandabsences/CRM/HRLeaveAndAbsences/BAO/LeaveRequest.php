@@ -197,6 +197,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $startDate = new DateTime($fromDate);
     $endDate = new DateTime($toDate);
+    $endDateUnmodified = new DateTime($toDate);
     // add one day to end date to include it in DatePeriod
     $endDate->modify('+1 day');
     $interval   = new DateInterval('P1D');
@@ -205,37 +206,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
     $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
-    $breakdown = [];
+    $resultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
     foreach ($datePeriod as $date) {
-      $skipLeaveRequestBaoCall = false;
-
-      if($fromDateIsHalfDay && $date->format('Y-m-d') == $fromDate) {
-        $amount = 0.5;
-        $type =  $fromType;
-        $skipLeaveRequestBaoCall = true;
-      }
-
-      if($toDateIsHalfDay && $date->format('Y-m-d') == $toDate) {
-        $amount =  0.5;
-        $type = $toType;
-        $skipLeaveRequestBaoCall = true;
-      }
-
-      if(!$skipLeaveRequestBaoCall){
         $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
         $type = LeaveBalanceChange::getWorkDayTypeForDate($leaveRequest, $date);
 
+      //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
+      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
       }
+
+      //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
+      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount !=0) {
+        $amount =  -1 * 0.5;
+        $type = $toType;
+      }
+      //replacing the sting values to that which is expected by frontend
+      $type = str_replace(['Yes', 'No'], ['All day', 'Non working day'], $type);
+
       $result = [
         'date' => $date->format('Y-m-d'),
-        'amount' => $amount,
+        'amount' => abs($amount),
         'type' => $type
       ];
-      $breakdown[] = $result;
+      $resultsBreakdown['amount'] += $amount;
+      $resultsBreakdown['breakdown'][] = $result;
     }
-
-
-
-
+    return $resultsBreakdown;
   }
 }
