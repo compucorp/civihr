@@ -75,6 +75,65 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(0, $values['is_error']);
   }
 
+  public function testGetBalanceChangeByAbsenceTypeCanBeFilteredByStatuses() {
+    $contact = ContactFabricator::fabricate();
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+100 days')
+    ]);
+
+    LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'type_id' => $absenceType->id
+    ]);
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+5 days'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+8 days'),
+      'to_date' => CRM_Utils_Date::processDate('+9 days'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+20 days'),
+      'to_date' => CRM_Utils_Date::processDate('+35 days'),
+      'status_id' => $leaveRequestStatuses['Rejected']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'getbalancechangebyabsencetype', [
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'statuses' => ['IN' => [$leaveRequestStatuses['Approved'], $leaveRequestStatuses['Rejected']]]
+    ]);
+    $expectedResult = [$absenceType->id => -21];
+    $this->assertEquals($expectedResult, $result['values']);
+
+    $result = civicrm_api3('LeaveRequest', 'getbalancechangebyabsencetype', [
+      'contact_id' => $contact['id'],
+      'period_id' => $absencePeriod->id,
+      'statuses' => ['IN' => [$leaveRequestStatuses['Waiting Approval'], $leaveRequestStatuses['Rejected']]]
+    ]);
+    $expectedResult = [$absenceType->id => -18];
+    $this->assertEquals($expectedResult, $result['values']);
+  }
+
   public function testGetBalanceChangeByAbsenceTypeCanBeFilteredForPublicHolidays() {
     $contact = ContactFabricator::fabricate();
 
