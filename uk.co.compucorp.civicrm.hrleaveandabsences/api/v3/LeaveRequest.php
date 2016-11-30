@@ -35,14 +35,63 @@ function civicrm_api3_leave_request_delete($params) {
 }
 
 /**
+ * LeaveRequest.get API specification
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_get_spec(&$spec) {
+  $spec['public_holiday'] = [
+    'name' => 'public_holiday',
+    'title' => 'Include only Public Holiday Leave Requests?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
+}
+
+/**
  * LeaveRequest.get API
  *
+ * This API accepts a special param, named public_holiday. It does not map
+ * directly to one of the LeaveRequests fields, but it can be used to make the
+ * response include only Public Holiday Leave Requests. When it's not present,
+ * or if it's false, the API will return all Leave Requests, except the Public
+ * Holiday ones.
+ *
  * @param array $params
+ *
  * @return array API result descriptor
- * @throws API_Exception
+ *
+ * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $query = new \Civi\API\SelectQuery(CRM_HRLeaveAndAbsences_BAO_LeaveRequest::class, $params, false);
+
+  $balanceChangeJoinConditions = [
+    'lbc.source_id = lrd.id',
+    "lbc.source_type = '" . CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
+  ];
+
+  $leaveBalanceChangeTypes = array_flip(CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::buildOptions('type_id'));
+  if(empty($params['public_holiday'])) {
+    $balanceChangeJoinConditions[] = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
+  } else {
+    $balanceChangeJoinConditions[] = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
+  }
+
+  $query->join(
+    'INNER',
+    CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate::getTableName(),
+    'lrd',
+    ['lrd.leave_request_id = a.id']
+  );
+  $query->join(
+    'INNER',
+    CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getTableName(),
+    'lbc',
+    $balanceChangeJoinConditions
+  );
+
+  return civicrm_api3_create_success($query->run(), $params, '', 'get');
 }
 
 /**
