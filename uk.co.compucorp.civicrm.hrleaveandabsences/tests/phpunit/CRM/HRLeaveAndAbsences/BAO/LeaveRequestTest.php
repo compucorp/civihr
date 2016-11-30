@@ -372,7 +372,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         $type = 'Weekend';
       }
       else{
-        $amount = -1 * 1;
+        $amount = -1 * 1.0;
         $type = 'All day';
       }
 
@@ -453,7 +453,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         $type = 'Weekend';
       }
       else{
-        $amount = -1 * 1;
+        $amount = -1 * 1.0;
         $type = 'All day';
       }
 
@@ -482,6 +482,165 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       $expectedResultsBreakdown['breakdown'][] = $result;
 
     }
+    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForALeaveRequestForAContactWithMultipleWeeks() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+      [
+        'period_start_date' => $periodStartDate,
+        'title' => $title
+      ]);
+
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    //attach the work pattern to the contact
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $pattern->id
+    ]);
+
+    $contactId = $contact['id'];
+    $fromDate = '2016-07-31';
+    $toDate = '2016-08-15';
+    $fromType = 'All day';
+    $toType = '1/2 AM';
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    $start = new DateTime('2016-07-31'); // A sunday
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-07-31',
+      'amount' => 0,
+      'type' => 'Weekend'
+    ];
+
+    // Since the start date is a sunday, the end of the week, the following day
+    // (2016-08-01) should be on the second week. Monday of the second week is
+    // not a working day
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-01',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+
+    // The next day is a tuesday, which is a working day on the second week, so
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-02',
+      'amount' => 1.0,
+      'type' => 'All day'
+    ];
+
+    // Wednesday is not a working day on the second week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-03',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+
+    // Thursday is a working day on the second week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-04',
+      'amount' => 1.0,
+      'type' => 'All day'
+    ];
+
+    // Friday, Saturday and Sunday are not working days on the second week,
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-05',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-06',
+      'amount' => 0,
+      'type' => 'Weekend'
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-07',
+      'amount' => 0,
+      'type' => 'Weekend'
+    ];
+
+    // Now, since we hit sunday, the following day will be on the third week
+    // since the start date, but the work pattern only has 2 weeks, so we
+    // rotate back to use the week 1 from the pattern
+
+    // Monday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-08',
+      'amount' => 1.0,
+      'type' => 'All day'
+    ];
+
+    // Tuesday is not a working day on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-09',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+    // Wednesday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-10',
+      'amount' => 1.0,
+      'type' => 'All day'
+    ];
+    // Thursday is not a working day on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-11',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+
+    // Friday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-12',
+      'amount' => 1.0,
+      'type' => 'All day'
+    ];
+
+    // Saturday and Sunday are not working days on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-13',
+      'amount' => 0,
+      'type' => 'Weekend'
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-14',
+      'amount' => 0,
+      'type' => 'Weekend'
+    ];
+    // Hit sunday again, so we are now on the fourth week since the start date.
+    // The work pattern will rotate and use the week 2
+
+    // Monday is not a working day on week 2
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-15',
+      'amount' => 0,
+      'type' => 'Non working day'
+    ];
+    $expectedResultsBreakdown['amount'] *= -1;
+
     $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
