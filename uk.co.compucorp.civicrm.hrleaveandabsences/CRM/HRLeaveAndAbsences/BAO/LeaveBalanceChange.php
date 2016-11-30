@@ -578,7 +578,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         ON lrd.leave_request_id = lr.id
       WHERE lrd.date = %2 AND
             lr.contact_id = %3 AND 
-            lr.type_id = %4
       ORDER BY id
     ";
 
@@ -586,7 +585,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$date->format('Y-m-d'), 'String'],
       3 => [$leaveRequest->contact_id, 'Integer'],
-      4 => [$leaveRequest->type_id, 'Integer']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
