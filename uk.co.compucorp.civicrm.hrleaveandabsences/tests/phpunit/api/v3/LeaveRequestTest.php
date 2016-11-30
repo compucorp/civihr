@@ -288,90 +288,92 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['IS NOT NULL'],
     ];
   }
-}/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type, to_date, to_type
- *
- */
-public function testCalculateBalanceChangeShouldNotAllowNullParams() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
-}
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
- */
-public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'from_date' => "2016-11-05",
-    'from_type' => "1/2 AM",
-    'to_date' => "2016-11-10",
-    'to_type' => "1/2 PM",
-  ]);
-}
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type, to_date, to_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowNullParams() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
+  }
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: from_date
- */
-public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDate() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'contact_id' => 1,
-    'from_type' => "1/2 AM",
-    'to_date' => "2016-11-10",
-    'to_type' => "1/2 PM",
-  ]);
-}
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'from_date' => "2016-11-05",
+      'from_type' => "1/2 AM",
+      'to_date' => "2016-11-10",
+      'to_type' => "1/2 PM",
+    ]);
+  }
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date
- */
-public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDate() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'contact_id' => 1,
-    'from_date' => "2016-11-05",
-    'from_type' => "1/2 AM",
-    'to_type' => "1/2 PM",
-  ]);
-}
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_date
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_type' => "1/2 AM",
+      'to_date' => "2016-11-10",
+      'to_type' => "1/2 PM",
+    ]);
+  }
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: from_type
- */
-public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'contact_id' => 1,
-    'from_date' => "2016-11-05",
-    'to_date' => "2016-11-10",
-    'to_type' => "1/2 PM",
-  ]);
-}
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'from_type' => "1/2 AM",
+      'to_type' => "1/2 PM",
+    ]);
+  }
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage Mandatory key(s) missing from params array: to_type
- */
-public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToType() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'contact_id' => 1,
-    'from_date' => "2016-11-05",
-    'from_type' => "1/2 AM",
-    'to_date' => "2016-11-10",
-  ]);
-}
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'to_date' => "2016-11-10",
+      'to_type' => "1/2 PM",
+    ]);
+  }
 
-/**
- * @expectedException CiviCRM_API3_Exception
- * @expectedExceptionMessage from_date is not a valid date: 2016-19-05
- */
-public function testCalculateBalanceChangeShouldNotAllowInvalidDate() {
-  civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-    'contact_id' => 1,
-    'from_date' => "2016-19-05",
-    'from_type' => "1/2 AM",
-    'to_date' => "2016-11-10",
-    'to_type' => "1/2 PM",
-  ]);
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToType() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'from_type' => "1/2 AM",
+      'to_date' => "2016-11-10",
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage from_date is not a valid date: 2016-19-05
+   */
+  public function testCalculateBalanceChangeShouldNotAllowInvalidDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-19-05",
+      'from_type' => "1/2 AM",
+      'to_date' => "2016-11-10",
+      'to_type' => "1/2 PM",
+    ]);
+  }
+
 }
