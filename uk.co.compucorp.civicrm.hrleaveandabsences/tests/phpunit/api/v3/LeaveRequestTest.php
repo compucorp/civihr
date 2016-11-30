@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -374,6 +377,87 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => "2016-11-10",
       'to_type' => "1/2 PM",
     ]);
+  }
+  public function testCalculateBalanceChangeWithAllRequiredParameters() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+      [
+        'period_start_date' => $periodStartDate,
+        'title' => $title
+      ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    //attach the work pattern to the contact
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $contactId = $contact['id'];
+    $fromDate = date("Y-11-05");
+    $toDate = date("Y-11-08");
+    $fromType = '1/2 AM';
+    $toType = '1/2 AM';
+
+    //Leave Request Start Date
+    $startDate = new DateTime($fromDate);
+    //Leave Request End Date
+    $endDate = new DateTime($toDate);
+
+    $endDateUnmodified = new DateTime($toDate);
+    // add one day to end date to include it in DatePeriod
+    $endDate->modify('+1 day');
+    $interval   = new DateInterval('P1D');
+    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
+    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
+
+    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
+    foreach ($datePeriod as $date) {
+      if(in_array($date->format('N'), [6, 7])){
+        $amount = 0;
+        $type = 'Weekend';
+      }
+      else{
+        $amount = -1 * 1.0;
+        $type = 'All day';
+      }
+
+      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
+        $amount = -1 * 0.5;
+        $type =  $fromType;
+      }
+
+      $result = [
+        'date' => $date->format('Y-m-d'),
+        'amount' => abs($amount),
+        'type' => $type
+      ];
+      $expectedResultsBreakdown['amount'] += $amount;
+      $expectedResultsBreakdown['breakdown'][] = $result;
+
+    }
+    $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => $contactId,
+      'from_date' => $fromDate,
+      'from_type' => $fromType,
+      'to_date' => $toDate,
+      'to_type' => $toType
+    ]);
+    $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
 
 }
