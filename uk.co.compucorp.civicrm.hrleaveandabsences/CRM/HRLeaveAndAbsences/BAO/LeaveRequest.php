@@ -4,6 +4,8 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -203,39 +205,122 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $interval   = new DateInterval('P1D');
     $datePeriod = new DatePeriod($startDate, $interval, $endDate);
 
-
     $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
     $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
     $resultsBreakdown = [
       'amount' => 0,
       'breakdown' => []
     ];
+    $leaveRequestDayTypeOptionsGroup = self::getLeaveRequestDayTypeOptionsGroup();
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
+
     foreach ($datePeriod as $date) {
+      //check if date is a public holiday
+      if(self::publicHolidayLeaveRequestExists($contactId, $date)){
+        $amount = 0.0;
+        $leaveRequestDayType = self::getLeaveRequestDayTypeFromWorkDayType('Public Holiday');
+      }
+      else{
         $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
-        $type = LeaveBalanceChange::getWorkDayTypeForDate($leaveRequest, $date);
+        $type = WorkPattern::getWorkDayType($contactId, $date);
+        $leaveRequestDayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
+      }
 
       //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
-      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
+      if($fromDateIsHalfDay && $date == $startDate && $amount != 0) {
         $amount = -1 * 0.5;
-        $type =  $fromType;
+        $leaveRequestDayType = $leaveRequestDayTypes[$fromType];
       }
 
       //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
-      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount !=0) {
+      if($toDateIsHalfDay && $date == $endDateUnmodified && $amount !=0) {
         $amount =  -1 * 0.5;
-        $type = $toType;
+        $leaveRequestDayType = $leaveRequestDayTypes[$toType];;
       }
-      //replacing the sting values to that which is expected by frontend
-      $type = str_replace(['Yes', 'No'], ['All day', 'Non working day'], $type);
 
       $result = [
         'date' => $date->format('Y-m-d'),
         'amount' => abs($amount),
-        'type' => $type
+        'type' => $leaveRequestDayTypeOptionsGroup[$leaveRequestDayType]
       ];
       $resultsBreakdown['amount'] += $amount;
       $resultsBreakdown['breakdown'][] = $result;
     }
     return $resultsBreakdown;
+  }
+
+  /**
+   * Returns the LeaveRequest Day Type ID equivalent of a WorkDay Type ID based on a mapping
+   *
+   * @param int|string $type
+   *   The WorkDay Type ID
+   *
+   * @return int|null
+   *   The LeaveRequest Day Type ID
+   */
+  private static function getLeaveRequestDayTypeFromWorkDayType($type) {
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
+
+    switch($type) {
+      case WorkDay::WORK_DAY_OPTION_NO:
+        return $leaveRequestDayTypes['Non Working Day'];
+
+      case WorkDay::WORK_DAY_OPTION_YES:
+        return $leaveRequestDayTypes['All Day'];
+
+      case WorkDay::WORK_DAY_OPTION_WEEKEND:
+        return $leaveRequestDayTypes['Weekend'];
+
+      case 'Public Holiday':
+        return $leaveRequestDayTypes['Public Holiday'];
+
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Returns LeaveRequest Day Type Options in a nested array format
+   * with the day_type_id key as the array key and details about the day_type_id as the value
+   *
+   * @return array
+   *   [
+   *     1 => [
+   *     'id' => 1,
+   *     'value' => 'All Day',
+   *     'label' => 'all_day'
+   *     ],
+   *     2 => [
+   *     'id' => 2,
+   *     'value' => '1/2 AM',
+   *     'label' => 'half_day_am'
+   *     ]
+   *   ]
+   */
+  private static function getLeaveRequestDayTypeOptionsGroup() {
+    $leaveRequestDayTypeOptionsGroup = [];
+    $leaveRequestDayTypeOptions = self::buildOptions('from_date_type');
+    foreach($leaveRequestDayTypeOptions  as $key => $label) {
+      $leaveRequestDayTypeOptionsGroup[$key] = [
+        'id' => $key,
+        'value' => CRM_Core_Pseudoconstant::getName(self::class, 'from_date_type', $key),
+        'label' => $label
+      ];
+    }
+    return $leaveRequestDayTypeOptionsGroup;
+  }
+
+  /**
+   * Returns a LeaveRequest Object if a public holiday leave request exists for the given date
+   *
+   * @param $contactID
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
+   */
+  private static function publicHolidayLeaveRequestExists($contactID, DateTime $date) {
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = $date->format('Y-m-d');
+    return self::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
   }
 }
