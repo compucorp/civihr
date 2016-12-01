@@ -983,45 +983,5 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $workPatternTable = WorkPattern::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$workPatternTable} WHERE is_default = 1");
   }
-
-  public function testGetWorkDayTypeForDate() {
-    $contact = ContactFabricator::fabricate();
-    $periodStartDate = date('Y-01-01');
-    $title = 'Job Title';
-
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-        'period_start_date' => $periodStartDate,
-        'title' => $title
-    ]);
-    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id
-    ]);
-
-    $startDate = date("Y-11-05");
-    $startDateTime = new DateTime($startDate);
-
-    //Create a leave request instance with just contact_id, thats all the LeaveBalanceChange::getWorkDayTypeForDate needs to run
-    $leaveRequest = new LeaveRequest();
-    $leaveRequest->contact_id = $contact['id'];
-
-
-    $dayType = LeaveBalanceChange::getWorkDayTypeForDate($leaveRequest, $startDateTime);
-
-    // saturdays and sundays are weekends in the 40 hour week.
-    if(in_array($startDateTime->format('N'), [6, 7])){
-      $type = 'Weekend';
-    }
-    else{
-      $type = 'Yes';
-    }
-
-    $this->assertEquals($type, $dayType);
-  }
-
 }
 
