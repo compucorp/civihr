@@ -94,7 +94,6 @@ class CRM_HRAbsence_Page_EmployeeAbsencePage extends CRM_Core_Page {
       ->addScriptFile('civicrm', 'packages/backbone/backbone.marionette.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'packages/backbone/backbone.modelbinder.js', 125, 'html-header', FALSE)
       ->addScriptFile('civicrm', 'js/crm.backbone.js', 130, 'html-header', FALSE)
-      ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css', 140, 'html-header')
       ->addStyleFile('org.civicrm.hrabsence', 'css/jquery.multiselect.css', 140, 'html-header')
       ->addScriptFile('org.civicrm.hrabsence', 'js/jquery.multiselect.js', 140, 'html-header');
 

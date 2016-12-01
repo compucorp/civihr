@@ -51,8 +51,8 @@
                     <div class="col-sm-6">
                         <p class="form-control-static">
                             <span class="subfield">({{details.period_start_date | formatDate}} - {{details.period_end_date | formatDate}})</span>
-                            <span ng-if="details.notice_amount" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
-                            <span ng-if="details.notice_amount_employee" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
+                            <span ng-if="details.notice_amount && details.notice_amount != 0" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
+                            <span ng-if="details.notice_amount_employee && details.notice_amount != 0" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
                             <span ng-if="details.end_reason" class="subfield"><strong>End Reason:</strong> {{options.details.end_reason[details.end_reason]}}</span>
                         </p>
                     </div>

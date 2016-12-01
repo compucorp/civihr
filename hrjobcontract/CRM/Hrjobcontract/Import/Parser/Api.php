@@ -229,7 +229,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
 
     return 'CRM_Hrjobcontract_BAO_' . $entity;
   }
-  
+
   function validateFields($entity, $params, $action = 'create') {
     $BAOName = $this->getBAOName($entity);
     $fields = call_user_func(array($BAOName, 'fields'));
@@ -261,7 +261,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         $params[$fieldName] = $mappedParams[$value];
       }
     }
-    
+
     return $params;
   }
 
@@ -272,7 +272,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
   function setEntity($entity) {
     $this->_entity = $entity;
   }
-  
+
   /**
    * Return params for specified entity
    * @param string $entity
@@ -478,7 +478,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
             : new CRM_Hrjobcontract_Import_EntityHandler_Generic($entity);
 
           $entityInstance = $handler->handle($params, $contractRevision, $this->_previousRevision);
-          $this->_previousRevision['local'][$tableName] = isset($entityInstance[0]) ? $entityInstance[0]->id : null;
+          $this->_previousRevision['local'][$tableName] = isset($entityInstance) ? $entityInstance['id'] : null;
           $this->_previousRevision['imported'][$tableName] = $revisionParams[$tableName . '_revision_id'];
         }
       }
@@ -490,7 +490,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
    * or if any value is not valid , convert the value to something can be inserted into database
    * and finally set _params attribute to the new converted values
    *
-   * @return array  array of error messages for the invalid or missing fields if there is any
+   * @return array Of error messages for the invalid or missing fields if there is any
    * @access private
    */
   private function validateFieldsValues()  {
@@ -523,6 +523,14 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
       if (!in_array($item, $this->_mapperKeys) || $params[$item] == '')  {
         CRM_Contact_Import_Parser_Contact::addToErrorMsg("{$this->_fields[$item]->_title} is required", $errorMessages);
       }
+    }
+
+    if (!empty($params['HRJobDetails-period_end_date']) && empty($params['HRJobDetails-end_reason'])) {
+      CRM_Contact_Import_Parser_Contact::addToErrorMsg(ts("Contract end reason is required when there end date is present"), $errorMessages);
+    }
+
+    if (empty($params['HRJobDetails-period_end_date']) && !empty($params['HRJobDetails-end_reason'])) {
+      CRM_Contact_Import_Parser_Contact::addToErrorMsg(ts("Contract End date does not exist"), $errorMessages);
     }
 
     foreach ($params as $key => $val) {
@@ -599,7 +607,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
         break;
       case 'HRJobHealth-plan_type':
       case 'HRJobHealth-plan_type_life_insurance':
-        case 'HRJobPay-pay_unit':
+      case 'HRJobPay-pay_unit':
       case 'HRJobDetails-notice_unit_employee':
       case 'HRJobDetails-notice_unit':
       case 'HRJobPension-is_enrolled':

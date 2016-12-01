@@ -208,34 +208,6 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
   }
 
   /**
-   * Get a reasons for creating new revision
-   */
-  static function getRevisionChangeReasons() {
-    $change_reason = array();
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'option_group_id' =>'hrjc_revision_change_reason',
-    ));
-    foreach ($result['values'] as $key => $val) {
-      $change_reason[$val['value']] = $val['name'];
-    }
-    return $change_reason;
-  }
-
-  /**
-   * Get a reasons for job contract end
-   */
-  static function getContractEndReasons() {
-    $end_reason = array();
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'option_group_id' =>'hrjc_contract_end_reason',
-    ));
-    foreach ($result['values'] as $key => $val) {
-      $end_reason[$val['value']] = $val['name'];
-    }
-    return $end_reason;
-  }
-
-  /**
    * Get custom options by option group name
    */
   static function getCustomOptions($optionGroupName) {

@@ -61,10 +61,6 @@
   /* add the styling for the awesomness of the resizer */
   /* copy the popover code from bootstrap so this will work even without it */
   padding: 20px;
-  /**
-   * An extension of Bootstraps' input-group,
-   * so that the addon has no background or border set
-   */
   /*
   .hrjobroles-panel-action {
   
@@ -2808,7 +2804,6 @@
   text-decoration: none;
 }
 #hrjobroles a:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4196,7 +4191,6 @@
 #hrjobroles input[type="file"]:focus,
 #hrjobroles input[type="radio"]:focus,
 #hrjobroles input[type="checkbox"]:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4240,6 +4234,10 @@
 }
 #hrjobroles .form-control::-webkit-input-placeholder {
   color: #999;
+}
+#hrjobroles .form-control::-ms-expand {
+  border: 0;
+  background-color: transparent;
 }
 #hrjobroles .form-control[disabled], #hrjobroles .form-control[readonly], fieldset[disabled] #hrjobroles .form-control {
   background-color: #f4f7f8;
@@ -4707,7 +4705,7 @@ fieldset[disabled]
 }
 @media (min-width: 768px) {
   #hrjobroles .form-horizontal .form-group-lg .control-label {
-    padding-top: 14.333333px;
+    padding-top: 11px;
     font-size: 17px;
   }
 }
@@ -4738,7 +4736,6 @@ fieldset[disabled]
   user-select: none;
 }
 #hrjobroles .btn:focus, #hrjobroles .btn.focus, #hrjobroles .btn:active:focus, #hrjobroles .btn:active.focus, #hrjobroles .btn.active:focus, #hrjobroles .btn.active.focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -4790,7 +4787,7 @@ fieldset[disabled]
 #hrjobroles .btn-default:active, #hrjobroles .btn-default.active, .open > #hrjobroles .btn-default.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-default.disabled, #hrjobroles .btn-default.disabled:hover, #hrjobroles .btn-default.disabled:focus, #hrjobroles .btn-default.disabled.focus, #hrjobroles .btn-default.disabled:active, #hrjobroles .btn-default.disabled.active, #hrjobroles .btn-default[disabled], #hrjobroles .btn-default[disabled]:hover, #hrjobroles .btn-default[disabled]:focus, #hrjobroles .btn-default[disabled].focus, #hrjobroles .btn-default[disabled]:active, #hrjobroles .btn-default[disabled].active, fieldset[disabled] #hrjobroles .btn-default, fieldset[disabled] #hrjobroles .btn-default:hover, fieldset[disabled] #hrjobroles .btn-default:focus, fieldset[disabled] #hrjobroles .btn-default.focus, fieldset[disabled] #hrjobroles .btn-default:active, fieldset[disabled] #hrjobroles .btn-default.active {
+#hrjobroles .btn-default.disabled:hover, #hrjobroles .btn-default.disabled:focus, #hrjobroles .btn-default.disabled.focus, #hrjobroles .btn-default[disabled]:hover, #hrjobroles .btn-default[disabled]:focus, #hrjobroles .btn-default[disabled].focus, fieldset[disabled] #hrjobroles .btn-default:hover, fieldset[disabled] #hrjobroles .btn-default:focus, fieldset[disabled] #hrjobroles .btn-default.focus {
   background-color: #fff;
   border-color: #727e8a;
 }
@@ -4826,7 +4823,7 @@ fieldset[disabled]
 #hrjobroles .btn-primary:active, #hrjobroles .btn-primary.active, .open > #hrjobroles .btn-primary.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-primary.disabled, #hrjobroles .btn-primary.disabled:hover, #hrjobroles .btn-primary.disabled:focus, #hrjobroles .btn-primary.disabled.focus, #hrjobroles .btn-primary.disabled:active, #hrjobroles .btn-primary.disabled.active, #hrjobroles .btn-primary[disabled], #hrjobroles .btn-primary[disabled]:hover, #hrjobroles .btn-primary[disabled]:focus, #hrjobroles .btn-primary[disabled].focus, #hrjobroles .btn-primary[disabled]:active, #hrjobroles .btn-primary[disabled].active, fieldset[disabled] #hrjobroles .btn-primary, fieldset[disabled] #hrjobroles .btn-primary:hover, fieldset[disabled] #hrjobroles .btn-primary:focus, fieldset[disabled] #hrjobroles .btn-primary.focus, fieldset[disabled] #hrjobroles .btn-primary:active, fieldset[disabled] #hrjobroles .btn-primary.active {
+#hrjobroles .btn-primary.disabled:hover, #hrjobroles .btn-primary.disabled:focus, #hrjobroles .btn-primary.disabled.focus, #hrjobroles .btn-primary[disabled]:hover, #hrjobroles .btn-primary[disabled]:focus, #hrjobroles .btn-primary[disabled].focus, fieldset[disabled] #hrjobroles .btn-primary:hover, fieldset[disabled] #hrjobroles .btn-primary:focus, fieldset[disabled] #hrjobroles .btn-primary.focus {
   background-color: #41afcb;
   border-color: #34a2be;
 }
@@ -4862,7 +4859,7 @@ fieldset[disabled]
 #hrjobroles .btn-success:active, #hrjobroles .btn-success.active, .open > #hrjobroles .btn-success.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-success.disabled, #hrjobroles .btn-success.disabled:hover, #hrjobroles .btn-success.disabled:focus, #hrjobroles .btn-success.disabled.focus, #hrjobroles .btn-success.disabled:active, #hrjobroles .btn-success.disabled.active, #hrjobroles .btn-success[disabled], #hrjobroles .btn-success[disabled]:hover, #hrjobroles .btn-success[disabled]:focus, #hrjobroles .btn-success[disabled].focus, #hrjobroles .btn-success[disabled]:active, #hrjobroles .btn-success[disabled].active, fieldset[disabled] #hrjobroles .btn-success, fieldset[disabled] #hrjobroles .btn-success:hover, fieldset[disabled] #hrjobroles .btn-success:focus, fieldset[disabled] #hrjobroles .btn-success.focus, fieldset[disabled] #hrjobroles .btn-success:active, fieldset[disabled] #hrjobroles .btn-success.active {
+#hrjobroles .btn-success.disabled:hover, #hrjobroles .btn-success.disabled:focus, #hrjobroles .btn-success.disabled.focus, #hrjobroles .btn-success[disabled]:hover, #hrjobroles .btn-success[disabled]:focus, #hrjobroles .btn-success[disabled].focus, fieldset[disabled] #hrjobroles .btn-success:hover, fieldset[disabled] #hrjobroles .btn-success:focus, fieldset[disabled] #hrjobroles .btn-success.focus {
   background-color: #7dc4a7;
   border-color: #6bbc9b;
 }
@@ -4898,7 +4895,7 @@ fieldset[disabled]
 #hrjobroles .btn-info:active, #hrjobroles .btn-info.active, .open > #hrjobroles .btn-info.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-info.disabled, #hrjobroles .btn-info.disabled:hover, #hrjobroles .btn-info.disabled:focus, #hrjobroles .btn-info.disabled.focus, #hrjobroles .btn-info.disabled:active, #hrjobroles .btn-info.disabled.active, #hrjobroles .btn-info[disabled], #hrjobroles .btn-info[disabled]:hover, #hrjobroles .btn-info[disabled]:focus, #hrjobroles .btn-info[disabled].focus, #hrjobroles .btn-info[disabled]:active, #hrjobroles .btn-info[disabled].active, fieldset[disabled] #hrjobroles .btn-info, fieldset[disabled] #hrjobroles .btn-info:hover, fieldset[disabled] #hrjobroles .btn-info:focus, fieldset[disabled] #hrjobroles .btn-info.focus, fieldset[disabled] #hrjobroles .btn-info:active, fieldset[disabled] #hrjobroles .btn-info.active {
+#hrjobroles .btn-info.disabled:hover, #hrjobroles .btn-info.disabled:focus, #hrjobroles .btn-info.disabled.focus, #hrjobroles .btn-info[disabled]:hover, #hrjobroles .btn-info[disabled]:focus, #hrjobroles .btn-info[disabled].focus, fieldset[disabled] #hrjobroles .btn-info:hover, fieldset[disabled] #hrjobroles .btn-info:focus, fieldset[disabled] #hrjobroles .btn-info.focus {
   background-color: #5bc0de;
   border-color: #46b8da;
 }
@@ -4934,7 +4931,7 @@ fieldset[disabled]
 #hrjobroles .btn-warning:active, #hrjobroles .btn-warning.active, .open > #hrjobroles .btn-warning.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-warning.disabled, #hrjobroles .btn-warning.disabled:hover, #hrjobroles .btn-warning.disabled:focus, #hrjobroles .btn-warning.disabled.focus, #hrjobroles .btn-warning.disabled:active, #hrjobroles .btn-warning.disabled.active, #hrjobroles .btn-warning[disabled], #hrjobroles .btn-warning[disabled]:hover, #hrjobroles .btn-warning[disabled]:focus, #hrjobroles .btn-warning[disabled].focus, #hrjobroles .btn-warning[disabled]:active, #hrjobroles .btn-warning[disabled].active, fieldset[disabled] #hrjobroles .btn-warning, fieldset[disabled] #hrjobroles .btn-warning:hover, fieldset[disabled] #hrjobroles .btn-warning:focus, fieldset[disabled] #hrjobroles .btn-warning.focus, fieldset[disabled] #hrjobroles .btn-warning:active, fieldset[disabled] #hrjobroles .btn-warning.active {
+#hrjobroles .btn-warning.disabled:hover, #hrjobroles .btn-warning.disabled:focus, #hrjobroles .btn-warning.disabled.focus, #hrjobroles .btn-warning[disabled]:hover, #hrjobroles .btn-warning[disabled]:focus, #hrjobroles .btn-warning[disabled].focus, fieldset[disabled] #hrjobroles .btn-warning:hover, fieldset[disabled] #hrjobroles .btn-warning:focus, fieldset[disabled] #hrjobroles .btn-warning.focus {
   background-color: #f7b284;
   border-color: #f5a36c;
 }
@@ -4970,7 +4967,7 @@ fieldset[disabled]
 #hrjobroles .btn-danger:active, #hrjobroles .btn-danger.active, .open > #hrjobroles .btn-danger.dropdown-toggle {
   background-image: none;
 }
-#hrjobroles .btn-danger.disabled, #hrjobroles .btn-danger.disabled:hover, #hrjobroles .btn-danger.disabled:focus, #hrjobroles .btn-danger.disabled.focus, #hrjobroles .btn-danger.disabled:active, #hrjobroles .btn-danger.disabled.active, #hrjobroles .btn-danger[disabled], #hrjobroles .btn-danger[disabled]:hover, #hrjobroles .btn-danger[disabled]:focus, #hrjobroles .btn-danger[disabled].focus, #hrjobroles .btn-danger[disabled]:active, #hrjobroles .btn-danger[disabled].active, fieldset[disabled] #hrjobroles .btn-danger, fieldset[disabled] #hrjobroles .btn-danger:hover, fieldset[disabled] #hrjobroles .btn-danger:focus, fieldset[disabled] #hrjobroles .btn-danger.focus, fieldset[disabled] #hrjobroles .btn-danger:active, fieldset[disabled] #hrjobroles .btn-danger.active {
+#hrjobroles .btn-danger.disabled:hover, #hrjobroles .btn-danger.disabled:focus, #hrjobroles .btn-danger.disabled.focus, #hrjobroles .btn-danger[disabled]:hover, #hrjobroles .btn-danger[disabled]:focus, #hrjobroles .btn-danger[disabled].focus, fieldset[disabled] #hrjobroles .btn-danger:hover, fieldset[disabled] #hrjobroles .btn-danger:focus, fieldset[disabled] #hrjobroles .btn-danger.focus {
   background-color: #e6807f;
   border-color: #e6807f;
 }
@@ -5332,13 +5329,15 @@ fieldset[disabled]
 }
 #hrjobroles .btn-group-vertical > .btn:first-child:not(:last-child) {
   border-top-right-radius: 0;
+  border-top-left-radius: 0;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 #hrjobroles .btn-group-vertical > .btn:last-child:not(:first-child) {
-  border-bottom-left-radius: 0;
   border-top-right-radius: 0;
   border-top-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
 #hrjobroles .btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn {
   border-radius: 0;
@@ -5394,6 +5393,9 @@ fieldset[disabled]
   float: left;
   width: 100%;
   margin-bottom: 0;
+}
+#hrjobroles .input-group .form-control:focus {
+  z-index: 3;
 }
 #hrjobroles .input-group-addon,
 #hrjobroles .input-group-btn,
@@ -6200,7 +6202,7 @@ fieldset[disabled]
 #hrjobroles .pagination > li > a:hover, #hrjobroles .pagination > li > a:focus,
 #hrjobroles .pagination > li > span:hover,
 #hrjobroles .pagination > li > span:focus {
-  z-index: 3;
+  z-index: 2;
   color: #298096;
   background-color: #e8eef0;
   border-color: #ddd;
@@ -6209,7 +6211,7 @@ fieldset[disabled]
 #hrjobroles .pagination > .active > span,
 #hrjobroles .pagination > .active > span:hover,
 #hrjobroles .pagination > .active > span:focus {
-  z-index: 2;
+  z-index: 3;
   color: #fff;
   background-color: #41afcb;
   border-color: #41afcb;
@@ -6427,6 +6429,8 @@ fieldset[disabled]
 }
 .container #hrjobroles .jumbotron, .container-fluid #hrjobroles .jumbotron {
   border-radius: 0;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 #hrjobroles .jumbotron .container {
   max-width: 100%;
@@ -7752,6 +7756,7 @@ fieldset[disabled]
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  background-color: transparent;
 }
 #hrjobroles .carousel-control.left {
   background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
@@ -7860,16 +7865,16 @@ fieldset[disabled]
   #hrjobroles .carousel-control .icon-next {
     width: 30px;
     height: 30px;
-    margin-top: -15px;
+    margin-top: -10px;
     font-size: 30px;
   }
   #hrjobroles .carousel-control .glyphicon-chevron-left,
   #hrjobroles .carousel-control .icon-prev {
-    margin-left: -15px;
+    margin-left: -10px;
   }
   #hrjobroles .carousel-control .glyphicon-chevron-right,
   #hrjobroles .carousel-control .icon-next {
-    margin-right: -15px;
+    margin-right: -10px;
   }
   #hrjobroles .carousel-caption {
     left: 20%;
@@ -9333,11 +9338,15 @@ fieldset[disabled]
 #hrjobroles .form-group .editable-empty:focus {
   color: #727e8a;
 }
-#hrjobroles .input-group-unstyled .input-group-addon,
-#hrjobroles .input-group-unstyled .input-group-btn > button {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+#hrjobroles .input-group-addon {
+  border: solid 1px #535a67 !important;
+  border-left: 0 !important;
+  color: #41afcb;
+  cursor: pointer;
+  width: 0;
+}
+#hrjobroles .input-group-addon a {
+  color: #333333;
 }
 #hrjobroles .hrjobroles-list-role {
   list-style: none;

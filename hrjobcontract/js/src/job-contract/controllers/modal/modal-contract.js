@@ -10,18 +10,19 @@ define([
     'job-contract/services/contract-health',
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
-    'job-contract/services/utils'
+    'job-contract/services/utils',
+    'common/services/pub-sub',
 ], function (angular, controllers) {
     'use strict';
 
     controllers.controller('ModalContractCtrl',['$scope','$uibModal', '$uibModalInstance','$q', '$rootElement','$rootScope','$filter',
         'ContractService', 'ContractRevisionService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'action', 'entity',
-        'content', 'files', 'UtilsService', 'utils', 'settings', '$log',
+        'content', 'files', 'UtilsService', 'utils', 'settings', '$log', 'pubSub',
         function ($scope, $modal, $modalInstance, $q, $rootElement, $rootScope, $filter, ContractService, ContractRevisionService,
                  ContractDetailsService, ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
                  ContractPensionService, ContractFilesService, action, entity, content, files,
-                 UtilsService, utils, settings, $log) {
+                 UtilsService, utils, settings, $log, pubSub) {
             $log.debug('Controller: ModalContractCtrl');
 
             var content = content || {},
@@ -389,6 +390,8 @@ define([
                 }).then(function(results){
                     $scope.$broadcast('hrjc-loader-hide');
                     $modalInstance.close(results);
+
+                    pubSub.publish('contract-refresh');
                 },function(reason){
                     $scope.$broadcast('hrjc-loader-hide');
                     CRM.alert(reason, 'Error', 'error');
@@ -458,7 +461,6 @@ define([
                 }
 
                 if (entityChangedListLen) {
-
                     UtilsService.prepareEntityIds(entityChangedList[0].data,entity.contract.id);
 
                     entityChangedList[0].service.save(entityChangedList[0].data).then(function(results){
@@ -575,9 +577,9 @@ define([
                         return results;
 
                     }).then(function(results){
-
                         $scope.$broadcast('hrjc-loader-hide');
                         $modalInstance.close(results);
+                        pubSub.publish('contract-refresh');
                     });
                 } else {
                     $scope.$broadcast('hrjc-loader-hide');

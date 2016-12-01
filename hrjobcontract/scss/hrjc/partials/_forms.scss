@@ -85,22 +85,17 @@ $customselect-padding-right: $customselect-caret-width + 12;
   }
 }
 
+.input-group-addon {
+  border: solid 1px $gray-dark !important;
+  border-left: 0 !important;
+  color: $brand-primary;
+  cursor: pointer;
+  width: 0;
 
-
-/**
- * An extension of Bootstraps' input-group,
- * so that the addon has no background or border set
- */
-.input-group-unstyled {
-
-    .input-group-addon,
-    .input-group-btn > button {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
+  a {
+    color: #333333;
+  }
 }
-
 
 /**
  * Ad-hoc customizations

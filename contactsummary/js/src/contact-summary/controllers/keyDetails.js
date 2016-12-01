@@ -1,65 +1,73 @@
 define([
-    'common/moment',
-    'contact-summary/modules/controllers',
-    'contact-summary/services/contactDetails',
-    'contact-summary/services/contract'
+  'common/moment',
+  'contact-summary/modules/controllers',
+  'contact-summary/services/contactDetails',
+  'contact-summary/services/contract',
+  'common/services/pub-sub',
 ], function (moment, controllers) {
-'use strict';
+  'use strict';
+
+  /**
+   * @ngdoc controller
+   * @name KeyDetailsCtrl
+   * @param $log
+   * @param {ContactDetailsService} ContactDetails
+   * @param {ContractService} Contract
+   * @param {pubSub} pubSub
+   * @constructor
+   */
+  function KeyDetailsCtrl($log, ContactDetails, Contract, pubSub) {
+    $log.debug('Controller: KeyDetailsCtrl');
+
+    this.ready = false;
+
 
     /**
-     * @ngdoc controller
-     * @name KeyDetailsCtrl
-     * @param $log
-     * @param {ContactDetailsService} ContactDetails
-     * @param {ContractService} Contract
-     * @constructor
+     * Fetch Contacts from Server
+     * @ngdoc method
+     * @name getContacts
+     * @methodOf KeyDetailsCtrl
+     * @returns void
      */
-    function KeyDetailsCtrl($log, ContactDetails, Contract) {
-        $log.debug('Controller: KeyDetailsCtrl');
-
-        this.ready = false;
-
-        ContactDetails.get()
-            .then(function (response) {
-                this.contactDetails = response;
-
-                return Contract.getPrimary();
-            }.bind(this))
-            .then(function (response) {
-                if (_.isEmpty(response)) {
-                    return;
-                }
-
-                this.primaryContract = response;
-                this.primaryContract.lengthOfService = getLengthOfService(response.start_date, response.end_date);
-            }.bind(this))
-            .finally(function () {
-                this.ready = true;
-            }.bind(this));
-    }
-
-    /////////////////////
-    // Private Members //
-    /////////////////////
-
-    function getLengthOfService(start, end) {
-        var now = moment();
-
-        start = moment(start, 'YYYY-MM-DD');
-        end = end ? moment(end, 'YYYY-MM-DD') : now;
-
-        if(end.isAfter(now)) {
-            end = now;
+    var getContacts = function(){
+      ContactDetails.get()
+        .then(function (response) {
+          this.contactDetails = response;
+          return Contract.getPrimary();
+        }.bind(this))
+        .then(function (response) {
+          if (_.isEmpty(response)) {
+            this.primaryContract = null;
+            return;
+          }
+          this.primaryContract = response;
+        }.bind(this))
+        .then(function (response) {
+          return Contract.getLengthOfService();
+        })
+        .then(function (response) {
+          this.lengthOfService = response;
         }
+          .bind(this))
+        .finally(function () {
+          this.ready = true;
+        }.bind(this));
+    }.bind(this);
 
-        var lengthOfService = moment.duration(end.diff(start));
+    var resetKeyDetails = function() {
+      Contract.resetContracts();
+      ContactDetails.data.item = {};
+      getContacts();
+    };
 
-        return {
-            days: lengthOfService.days(),
-            months: lengthOfService.months(),
-            years: lengthOfService.years()
-        };
-    }
+    getContacts();
 
-    controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', KeyDetailsCtrl]);
+    pubSub.subscribe('contract-refresh',  resetKeyDetails);
+  }
+
+  /////////////////////
+  // Private Members //
+  /////////////////////
+
+  controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', 'pubSub', KeyDetailsCtrl]);
 });

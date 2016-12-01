@@ -90,8 +90,8 @@
                                 <uib-tab heading="Summary">
                                     <div ng-include src="pathTpl + 'contractSummary.html?v=446466'"></div>
                                 </uib-tab>
-                                <uib-tab heading="Full History" disabled="!revisionDataList.length">
-                                    <div ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
+                                <uib-tab select="showRevisions()" heading="Full History" disabled="!revisionDataList.length">
+                                    <div ng-if="revisionsShown" ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
                                 </uib-tab>
                             </uib-tabset>
                         </div>

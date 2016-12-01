@@ -92,10 +92,10 @@ function civicrm_api3_h_r_job_leave_replace($params) {
         }
     }
     $result =  _civicrm_hrjobcontract_api3_replace(_civicrm_get_entity_name(_civicrm_api3_get_BAO(__FUNCTION__)), $params, $validRevisionId);
-    
+
     if (!empty($params['values'])) {
       $firstLeaveEntry = CRM_Utils_Array::first($params['values']);
-      
+
       $jobContractId = isset($firstLeaveEntry['jobcontract_id']) ? $firstLeaveEntry['jobcontract_id'] : null;
       if (!$jobContractId && isset($firstLeaveEntry['jobcontract_revision_id'])) {
         $revision = civicrm_api3('HRJobContractRevision', 'get', array(
@@ -105,11 +105,11 @@ function civicrm_api3_h_r_job_leave_replace($params) {
         $revisionData = CRM_Utils_Array::first($revision['values']);
         $jobContractId = $revisionData['jobcontract_id'];
       }
-      
+
       if ($jobContractId) {
-        CRM_Hrjobcontract_BAO_HRJobLeave::recalculateAbsenceEntitlement($jobContractId);
+        CRM_HRAbsence_BAO_HRAbsenceEntitlement::recalculateAbsenceEntitlement($jobContractId);
       }
     }
-    
+
     return $result;
 }

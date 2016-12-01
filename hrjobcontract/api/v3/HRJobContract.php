@@ -92,16 +92,14 @@ function civicrm_api3_h_r_job_contract_deletecontract($params) {
 }
 
 /**
- * HRJobContract.deletecontract API
- *
+ * HRJobContract.getlengthofservice
+ * 
+ * Return a number of Length of Service in days for specific 'contact_id'.
+ * 
  * @param array $params
  * @return array API result descriptor
  * @throws API_Exception
  */
-function civicrm_api3_h_r_job_contract_deletecontractpermanently($params) {
-  return _civicrm_hrjobcontract_api3_deletecontractpermanently($params);
-}
-
 function civicrm_api3_h_r_job_contract_getlengthofservice($params) {
   if (empty($params['contact_id'])) {
     throw new API_Exception(ts("Please specify 'contact_id' value."));
@@ -110,6 +108,35 @@ function civicrm_api3_h_r_job_contract_getlengthofservice($params) {
   return civicrm_api3_create_success($result, $params);
 }
 
+/**
+ * HRJobContract.getlengthofserviceymd
+ * 
+ * Return an object containing years, months and days of Length of Service
+ * for specific 'contact_id'.
+ * Useful for front-end part of Contact Summary block.
+ * 
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
+function civicrm_api3_h_r_job_contract_getlengthofserviceymd($params) {
+  if (empty($params['contact_id'])) {
+    throw new API_Exception(ts("Please specify 'contact_id' value."));
+  }
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getLengthOfServiceYmd($params['contact_id']);
+  return civicrm_api3_create_success($result, $params);
+}
+
+/**
+ * HRJobContract.updatelengthofservice
+ * 
+ * Update Length of Service values for specific 'contact_id' or for every Contact
+ * if $params['contact_id'] is not specified.
+ * 
+ * @param array $params
+ * @return array API result descriptor
+ * @throws API_Exception
+ */
 function civicrm_api3_h_r_job_contract_updatelengthofservice($params) {
   if (empty($params['contact_id'])) {
     $result = CRM_Hrjobcontract_BAO_HRJobContract::updateLengthOfServiceAllContacts();
@@ -203,4 +230,31 @@ function civicrm_api3_h_r_job_contract_getcurrentcontract($params) {
     }
   }
   return civicrm_api3_create_success($return, $params);
+}
+
+/**
+ * HRJobContract.getfulldetails API specification
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ */
+function _civicrm_api3_h_r_job_contract_getfulldetails_spec(&$spec) {
+  $spec['jobcontract_id'] = array(
+   'name' => 'jobcontract_id',
+   'title' => 'Job Contract ID',
+   'type' => 1,
+   'api.required' => 1,
+  );
+}
+
+/**
+ * HRJobContract.getfulldetails API
+ *
+ * @param array $params
+ * @return array
+ */
+function civicrm_api3_h_r_job_contract_getfulldetails($params) {
+  $currentRevision = _civicrm_hrjobcontract_api3_get_current_revision($params)['values'];
+
+  return CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails($currentRevision);
 }

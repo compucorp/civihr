@@ -9,6 +9,8 @@ define([
 ], function(_, services, moment) {
   'use strict';
 
+  var promiseCache = {};
+
   /**
    * @param {ApiService} Api
    * @param {ModelService} Model
@@ -18,7 +20,6 @@ define([
    * @returns {ModelService|Object|*}
    * @constructor
    */
-
   function LeaveService($q, $log, $filter, Api, Model, ContactDetails) {
     $log.debug('Service: LeaveService');
 
@@ -93,20 +94,24 @@ define([
       var deferred = $q.defer();
       var periodId;
 
-      factory.getCurrentPeriod()
-        .then(function(response) {
-          if (response.hasOwnProperty('id')) {
-            periodId = response.id;
+      if (!promiseCache.getCurrent) {
+        factory.getCurrentPeriod()
+          .then(function (response) {
+            if (response.hasOwnProperty('id')) {
+              periodId = response.id;
 
-            init(periodId).then(function() {
-              deferred.resolve(self.collection.getItem(periodId));
-            });
-          } else {
-            deferred.resolve({});
-          }
-        });
+              init(periodId).then(function () {
+                deferred.resolve(self.collection.getItem(periodId));
+              });
+            } else {
+              deferred.resolve({});
+            }
+          });
 
-      return deferred.promise;
+        promiseCache.getCurrent = deferred.promise;
+      }
+
+      return promiseCache.getCurrent;
     };
 
     factory.getPrevious = function() {

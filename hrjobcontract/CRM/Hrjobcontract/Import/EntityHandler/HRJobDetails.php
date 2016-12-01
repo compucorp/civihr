@@ -15,15 +15,16 @@ class CRM_Hrjobcontract_Import_EntityHandler_HRJobDetails extends CRM_Hrjobcontr
       return array();
     }
 
-    $entityParams['import'] = 1;
+    $entityParams['sequential'] = 1;
     $entityParams['jobcontract_id'] = $contractRevision->jobcontract_id;
     $entityParams['jobcontract_revision_id'] = $contractRevision->id;
 
-    $detailsInstance = CRM_Hrjobcontract_BAO_HRJobDetails::create($entityParams);
+    $detailsInstance = civicrm_api3('HRJobDetails', 'create', $entityParams)['values'][0];
+
     if($this->isCurrent($entityParams)) {
       CRM_Hrjobcontract_BAO_HRJobContract::changePrimary($contractRevision->jobcontract_id);
     }
-    return array($detailsInstance);
+    return $detailsInstance;
   }
 
   /**

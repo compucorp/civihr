@@ -216,8 +216,14 @@ cac.record_type_id = {$targetValue} ";
           }
           if (array_key_exists("{$fieldName}_value", $this->_params)) {
             if ($field['name'] == 'activity_type_id' && count($this->_params["{$fieldName}_value"])) {
-              $sqlOp = $this->getSQLOperator(CRM_Utils_Array::value("{$fieldName}_op", $this->_params));
-              $clause = "absence.{$fieldName} {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
+              // If the activity_type_id_value is not an array that's mean it is Not
+              // coming from the (absence type) select filter and it should be discarded.
+              if (!is_array($this->_params["{$fieldName}_value"])) {
+                unset($this->_params["{$fieldName}_value"]);
+              } else {
+                $sqlOp = $this->getSQLOperator(CRM_Utils_Array::value("{$fieldName}_op", $this->_params));
+                $clause = "absence.{$fieldName} {$sqlOp} (" . implode(',',$this->_params["{$fieldName}_value"]) . ") ";
+              }
             }
 
             if ($field['name'] == 'sort_name' && $this->_params["{$fieldName}_value"]) {

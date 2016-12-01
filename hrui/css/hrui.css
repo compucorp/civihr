@@ -1,3 +1,11 @@
+/**
+ * Ensures that there is the same top padding regardless whether
+ * the user can see the admin toolbar or not
+ */
+body:not(.toolbar-drawer) {
+  padding-top: 30px;
+}
+
 .crm-tooltip table td {
   width: 50%;
   word-wrap: break-word;
@@ -19,4 +27,8 @@
 #civicrm-menu #crm-qsearch {
   line-height: 28px;
   height: 30px !important;
+}
+
+div.crm-summary-block > div.crm-summary-row > div.crm-content a.user-record-link {
+  color: #42AFCB;
 }

@@ -86,14 +86,14 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
    * @static
    */
   static $_log = true;
-  
+
   /**
    * Unique HRJob ID
    *
    * @var int unsigned
    */
   public $id;
-  
+
   /**
    * FK to Contact
    *
@@ -194,7 +194,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
         ) ,
         'change_reason' => array(
           'name' => 'change_reason',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Change reason') ,
           'required' => false,
           'export' => true,

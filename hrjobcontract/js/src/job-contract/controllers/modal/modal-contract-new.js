@@ -9,19 +9,18 @@ define([
     'job-contract/services/contract-health',
     'job-contract/services/contract-pension',
     'job-contract/services/contract-files',
-    'job-contract/services/utils'
+    'job-contract/services/utils',
+    'common/services/pub-sub',
 ], function (angular, controllers) {
     'use strict';
-
     controllers.controller('ModalContractNewCtrl', ['$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
         'Contract','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
         'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService', 'utils',
-        'settings', '$log',
+        'settings', '$log', 'pubSub',
         function ($scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
                  ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
-                 ContractFilesService, model, UtilsService, utils, settings, $log) {
+                 ContractFilesService, model, UtilsService, utils, settings, $log, pubSub) {
             $log.debug('Controller: ModalContractNewCtrl');
-
             $scope.allowSave = true;
             $scope.action = 'new';
             $scope.copy = {
@@ -268,6 +267,8 @@ define([
               }).then(function () {
                 $scope.$broadcast('hrjc-loader-hide');
                 $modalInstance.close(contract);
+
+                pubSub.publish('contract-refresh');
               });
 
             },function(reason){

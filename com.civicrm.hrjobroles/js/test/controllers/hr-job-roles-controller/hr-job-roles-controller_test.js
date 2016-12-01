@@ -445,10 +445,6 @@ define([
                     it('does not try to fetch any job role', function () {
                         expect(HRJobRolesService.getAllJobRoles).not.toHaveBeenCalled();
                     });
-
-                    it('shows a message', function () {
-                        expect(ctrl.empty).toEqual(jasmine.any(String));
-                    });
                 });
 
                 describe('when the user does have a contract', function () {
@@ -479,10 +475,6 @@ define([
                     it('it separates past and present job roles', function () {
                       expect(ctrl.present_job_roles.length).toBe(2);
                       expect(ctrl.past_job_roles.length).toBe(2);
-                    });
-
-                    it('does not show any message', function () {
-                        expect(ctrl.empty).not.toEqual(jasmine.any(String));
                     });
                 });
             });

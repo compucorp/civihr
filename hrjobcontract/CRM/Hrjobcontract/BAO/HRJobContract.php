@@ -20,6 +20,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $instance = new self();
     $instance->copyValues($params);
     $instance->save();
+    $instance->find(true);
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     if ((is_numeric(CRM_Utils_Array::value('is_primary', $params)) || $hook === 'create') && empty($params['import'])) {
@@ -30,6 +31,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     if ($deleted)
     {
         CRM_Hrjobcontract_JobContractDates::removeDates($instance->id);
+        self::updateLengthOfService($instance->contact_id);
     }
 
     if (function_exists('module_exists') && module_exists('rules')) {
@@ -109,7 +111,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Return 'length_of_service' in days for given Contact ID, and optionally
+   * Calculate 'length_of_service' in days for given Contact ID, and optionally
    * Date and Break (allowed number of days between Contracts).
    *
    * @param int     $contactId  CiviCRM Contact ID
@@ -119,10 +121,10 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @throws Exception
    * @return int
    */
-  public static function getLengthOfService($contactId, $date = null, $break = 14) {
+  public static function calculateLengthOfService($contactId, $date = null, $break = 14) {
     if (empty($contactId))
     {
-      throw new Exception("Cannot update Length of Service: no Contact ID provided.");
+      throw new Exception("Cannot get Length of Service: no Contact ID provided.");
     }
 
     // Setting $date to today if it's not specified.
@@ -131,16 +133,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
 
     // Getting all Job Contracts for given Contact ID.
-    $contracts = civicrm_api3('HRJobContract', 'get', array(
-      'sequential' => 1,
-      'contact_id' => (int)$contactId,
-      'deleted' => 0,
-      'options' => array('limit' => 0),
-    ));
+    $contracts = self::getContactContracts($contactId);
 
     return self::calculateLength(
       self::getServiceDates(
-        self::getContractDates($contracts),
+        self::getContractDates($contracts, $date),
         $break
       ),
       $date,
@@ -157,6 +154,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     $contracts = civicrm_api3('HRJobContract', 'get', array(
       'sequential' => 1,
       'contact_id' => $cuid,
+      'deleted' => 0,
+      'options' => array('limit' => 0),
     ));
     $contracts = $contracts['values'];
     $contractsList = array();
@@ -175,41 +174,25 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Return an associative array with Contracts dates.
+   * Return an associative array with Contracts dates in format below:
+   * [
+   *   'start_date1' => 'end_date1',
+   *   'start_date2' => 'end_date2',
+   *   'start_date3' => 'end_date3',
+   * ];
    *
    * @param array $contracts
+   * @param string $date Y-m-d format of a date for which we calculate the result 
    *
    * @return array
    */
-  protected static function getContractDates($contracts) {
+  protected static function getContractDates($contracts, $date) {
     $dates = array();
-    // Fill $dates array with the Contract Start and End dates
-    // to get the data structure as below:
-    // $dates = [
-    //   'start_date1' => 'end_date1',
-    //   'start_date2' => 'end_date2',
-    //   'start_date3' => 'end_date3',
-    // ];
-    // If there are two (or more) Contracts starting on the same day
-    // then we pick only the one with latest End date.
-    foreach ($contracts['values'] as $contract) {
-      $details = civicrm_api3('HRJobDetails', 'getsingle', array(
-        'sequential' => 1,
-        'jobcontract_id' => (int)$contract['id'],
-      ));
-      if (empty($details['period_end_date'])) {
-        $dates[$details['period_start_date']] = null;
-        break;
+    foreach ($contracts as $contract) {
+      if ($contract['period_start_date'] <= $date) {
+        $dates[$contract['period_start_date']] = !empty($contract['period_end_date']) ? $contract['period_end_date']  : null;
       }
-      if (!empty($dates[$details['period_start_date']])) {
-        if ($details['period_end_date'] > $dates[$details['period_end_date']]) {
-          $dates[$details['period_start_date']] = $details['period_end_date'];
-        }
-        continue;
-      }
-      $dates[$details['period_start_date']] = $details['period_end_date'];
     }
-
     // Sorting $dates array by keys.
     ksort($dates);
 
@@ -262,20 +245,19 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    * @return int
    */
   protected static function calculateLength($serviceDates, $date, $break) {
+    if (empty($serviceDates['startDate'])) {
+      return 0;
+    }
     // Restrict $serviceEndDate to the specified date,
     // so we won't get an infinite Service length.
     if (!$serviceDates['endDate'] || $serviceDates['endDate'] > $date) {
       $serviceDates['endDate'] = $date;
     }
-    // If the latest Contract has ended more than $break days ago, we return 0.
-    if ($date > self::sumDateAndBreak($serviceDates['endDate'], $break)) {
-      return 0;
-    }
 
     $dateTimeStart = new DateTime($serviceDates['startDate']);
     $dateTimeEnd  = new DateTime($serviceDates['endDate']);
     $diff = $dateTimeStart->diff($dateTimeEnd);
-    return $diff->days;
+    return $diff->days + 1;
   }
 
   /**
@@ -299,6 +281,8 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   /**
    * Update Length of Service for specific Contact.
    *
+   * @param int $contactId
+   *
    * @return bool
    */
   public static function updateLengthOfService($contactId) {
@@ -314,7 +298,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     );
     $customFieldID = $customField['id'];
     // Get Length of Service for the Contact.
-    $lengthOfService = self::getLengthOfService($contactId);
+    $lengthOfService = self::calculateLengthOfService($contactId);
     // Update the Length of Service for the Contact.
     civicrm_api3('Contact', 'create', array(
       'id' => $contactId,
@@ -341,6 +325,44 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
     }
     return TRUE;
 
+  }
+
+  /**
+   * Get Length of Service value in days for specific Contact ID.
+   * 
+   * @param type $contactId
+   * @return int
+   */
+  public static function getLengthOfService($contactId) {
+    $result = CRM_Core_DAO::executeQuery(
+      'SELECT length_of_service FROM `civicrm_value_length_of_service_11` WHERE entity_id = %1 LIMIT 1',
+      array(
+        1 => array($contactId, 'Integer'),
+      )
+    );
+    if ($result->fetch()) {
+      return (int)$result->length_of_service;
+    }
+    return 0;
+  }
+
+  /**
+   * Get an assotiative array of days, months and years counted for
+   * specific Contact ID.
+   * 
+   * @param int contactId
+   * @return array
+   */
+  public static function getLengthOfServiceYmd($contactId) {
+    $lengthOfService = self::getLengthOfService($contactId);
+    $today = new DateTime();
+    $past = (new DateTime())->sub(new DateInterval('P' . $lengthOfService . 'D'));
+    $interval = $today->diff($past);
+    return array(
+      'days' => (int)$interval->format('%d'),
+      'months' => (int)$interval->format('%m'),
+      'years' => (int)$interval->format('%y'),
+    );
   }
 
   /**
@@ -593,5 +615,126 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       }
     }
     return null;
+  }
+
+  /**
+   * Permanently delete all contracts for given contact ID.
+   *
+   * @param int $contactId
+   *
+   * @return boolean
+   * @throw Exception
+   */
+  public static function deleteAllContractsPermanently($contactId) {
+
+    if (empty($contactId)) {
+      throw new Exception('Please specify contact ID.');
+    }
+
+    $contract = new self();
+    $contract->contact_id = $contactId;
+    $contract->find();
+    while ($contract->fetch()) {
+      self::deleteContractPermanently($contract->id);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Permanently delete whole contract with its all revisions and entities.
+   *
+   * @param int $contractId
+   *
+   * @return bool
+   * @throw Exception
+   */
+  private static function deleteContractPermanently($contractId) {
+
+    if (empty($contractId)) {
+      throw new Exception('Please specify contract ID to delete.');
+    }
+
+    $transaction = new CRM_Core_Transaction();
+    try {
+      $contract = new self();
+      $contract->id = $contractId;
+      if (!$contract->find(TRUE)) {
+        throw new Exception('Cannot find Job Contract with specified ID.');
+      }
+
+      $contactId = $contract->contact_id;
+      $revision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
+      $revision->jobcontract_id = $contract->id;
+      $revision->find();
+
+      while ($revision->fetch()) {
+        self::deleteRevisionPermanently($revision);
+      }
+
+      $contract->delete();
+      CRM_Hrjobcontract_JobContractDates::removeDates($contractId);
+      self::updateLengthOfService($contactId);
+    } catch(Exception $e) {
+      $transaction->rollback();
+      throw new Exception($e);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Delete all contract entities of given revision and the revision itself.
+   *
+   * @param CRM_Hrjobcontract_BAO_HRJobContractRevision $revision
+   */
+  private static function deleteRevisionPermanently(CRM_Hrjobcontract_BAO_HRJobContractRevision $revision) {
+
+    $entityNames = [
+      'HRJobDetails' => 'details',
+      'HRJobHealth' => 'health',
+      'HRJobHour' => 'hour',
+      'HRJobLeave' => 'leave',
+      'HRJobPay' => 'pay',
+      'HRJobPension' => 'pension',
+      'HRJobRole' => 'role',
+    ];
+
+    foreach ($entityNames as $entityName => $prefix) {
+      self::deleteEntityRevisionPermanently('CRM_Hrjobcontract_BAO_' . $entityName, $revision->{$prefix . '_revision_id'});
+    }
+
+    $deleteRevision = new CRM_Hrjobcontract_BAO_HRJobContractRevision();
+    $deleteRevision->id = $revision->id;
+    $deleteRevision->delete();
+  }
+
+  /**
+   * Delete each entity entry of specified revision ID.
+   *
+   * @param string $className
+   * @param int $revisionId
+   */
+  private static function deleteEntityRevisionPermanently($className, $revisionId) {
+
+    $entity = new $className();
+    $entity->jobcontract_revision_id = $revisionId;
+    $entity->find();
+
+    while ($entity->fetch()) {
+      self::deleteEntityPermanently($className, $entity->id);
+    }
+  }
+
+  /**
+   * Delete a single entity entry of given class and ID.
+   *
+   * @param string $className
+   * @param int $entityId
+   */
+  private static function deleteEntityPermanently($className, $entityId) {
+    $deleteEntity = new $className();
+    $deleteEntity->id = $entityId;
+    $deleteEntity->delete();
   }
 }

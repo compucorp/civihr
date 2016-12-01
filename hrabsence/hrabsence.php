@@ -235,6 +235,8 @@ function hrabsence_civicrm_install() {
   );
   civicrm_api3('message_template', 'create', $msg_params);
 
+  _hrabsence_add_scheduled_jobs();
+
   return _hrabsence_civix_civicrm_install();
 }
 
@@ -577,4 +579,43 @@ function _hrabsencereport_getId () {
     $report_id[$dao->name] = $dao->entity_id;
   }
   return $report_id;
+}
+
+
+function hrabsence_civicrm_pageRun($page) {
+  $page = get_class($page);
+  if (preg_match("/^CRM_HRAbsence*/",  $page)) {
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('org.civicrm.hrabsence', 'css/hrabsence.css');
+  }
+}
+
+/**
+ * Creates all the scheduled jobs for this extension
+ */
+function _hrabsence_add_scheduled_jobs() {
+  _hrabsence_add_processentitlementrecalculationqueue_scheduled_job();
+}
+
+/**
+ * Creates the scheduled job which process the entitlement recalculation queue
+ */
+function _hrabsence_add_processentitlementrecalculationqueue_scheduled_job() {
+  $dao             = new CRM_Core_DAO_Job();
+  $dao->api_entity = 'HRAbsenceEntitlement';
+  $dao->api_action = 'processentitlementrecalculationqueue';
+  $dao->find(TRUE);
+
+  if (!$dao->id) {
+    $dao                = new CRM_Core_DAO_Job();
+    $dao->api_entity    = 'HRAbsenceEntitlement';
+    $dao->api_action    = 'processentitlementrecalculationqueue';
+    $dao->domain_id     = CRM_Core_Config::domainID();
+    $dao->run_frequency = 'Hourly';
+    $dao->parameters    = NULL;
+    $dao->name          = 'Process the Entitlement Recalculation Queue';
+    $dao->description   = 'Recalculates the entitlement for newly added Absence Periods';
+    $dao->is_active     = 1;
+    $dao->save();
+  }
 }

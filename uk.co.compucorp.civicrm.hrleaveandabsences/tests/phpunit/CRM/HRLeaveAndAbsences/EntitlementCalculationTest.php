@@ -7,6 +7,9 @@ use CRM_HRLeaveAndAbsences_BAO_Entitlement as Entitlement;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_EntitlementCalculation as EntitlementCalculation;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobDetails as HRJobDetailsFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_EntitlementCalculationTest
@@ -27,9 +30,8 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     $jobContractUpgrader->install();
   }
 
-  public function setUp()
-  {
-    $this->createContract();
+  public function setUp() {
+    $this->contract = HRJobContractFabricator::fabricate(['contact_id' => 2]);
   }
 
   public function testBroughtForwardShouldBeZeroIfAbsenceTypeDoesntAllowCarryForward()
@@ -578,15 +580,6 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
     return $currentPeriod;
   }
 
-  private function createContract() {
-    $result = civicrm_api3('HRJobContract', 'create', [
-      'contact_id' => 2, //Existing contact from civicrm_data.mysql,
-      'is_primary' => 1,
-      'sequential' => 1
-    ]);
-    $this->contract = $result['values'][0];
-  }
-
   private function createEntitlement($period, $type, $proposedEntitlement = 20) {
     Entitlement::create([
       'period_id'            => $period->id,
@@ -610,7 +603,7 @@ class CRM_HRLeaveAndAbsences_EntitlementCalculationTest extends PHPUnit_Framewor
   }
 
   private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {
-    CRM_Hrjobcontract_BAO_HRJobLeave::create([
+    HRJobLeaveFabricator::fabricate([
       'jobcontract_id' => $this->contract['id'],
       'leave_type' => $type->id,
       'leave_amount' => $leaveAmount,

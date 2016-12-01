@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_hrjobcontract_revision` (
     `modified_date` datetime DEFAULT NULL,
     `effective_date` DATE NULL DEFAULT NULL,
     `effective_end_date` DATE NULL DEFAULT NULL,
-    `change_reason` INT(3) NULL DEFAULT NULL,
+    `change_reason` varchar(512) NULL DEFAULT NULL,
     `status` tinyint(4) DEFAULT NULL,
     `details_revision_id` int(10) unsigned DEFAULT NULL,
     `health_revision_id` int(10) unsigned DEFAULT NULL,
@@ -57,12 +57,12 @@ CREATE TABLE IF NOT EXISTS `civicrm_hrjobcontract_revision` (
     `overrided` BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (`id`),
     KEY `index_jobcontract_id` (`jobcontract_id`),
-    KEY `index_details_revision_id` (`details_revision_id`), 
-    KEY `index_health_revision_id` (`health_revision_id`), 
-    KEY `index_hour_revision_id` (`hour_revision_id`), 
-    KEY `index_leave_revision_id` (`leave_revision_id`), 
-    KEY `index_pay_revision_id` (`pay_revision_id`), 
-    KEY `index_pension_revision_id` (`pension_revision_id`), 
+    KEY `index_details_revision_id` (`details_revision_id`),
+    KEY `index_health_revision_id` (`health_revision_id`),
+    KEY `index_hour_revision_id` (`hour_revision_id`),
+    KEY `index_leave_revision_id` (`leave_revision_id`),
+    KEY `index_pay_revision_id` (`pay_revision_id`),
+    KEY `index_pension_revision_id` (`pension_revision_id`),
     KEY `index_role_revision_id` (`role_revision_id`),
     CONSTRAINT `FK_civicrm_hrjobcontract_revision_jobcontract_id` FOREIGN KEY (`jobcontract_id`) REFERENCES `civicrm_hrjobcontract` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `civicrm_hrjobcontract_details` (
     KEY `index_contract_typ` (`contract_type`),
     KEY `index_location` (`location`),
     KEY `index_jobcontract_revision_id` (`jobcontract_revision_id`),
-    CONSTRAINT `FK_civicrm_hrjobcontract_details_contract_revision_id` FOREIGN KEY (`jobcontract_revision_id`) REFERENCES `civicrm_hrjobcontract_revision` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+    CONSTRAINT `FK_civicrm_hrjobcontract_details_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`) REFERENCES `civicrm_hrjobcontract_revision` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 

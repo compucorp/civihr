@@ -12,12 +12,9 @@
             <dd>{{ KeyDetails.contactDetails.dateOfBirth }}</dd>
             <dt>Length of Service</dt>
             <dd>
-                <span ng-if="KeyDetails.primaryContract.lengthOfService.years > 0">{{KeyDetails.primaryContract.lengthOfService.years}} years</span>
-                <span ng-if="KeyDetails.primaryContract.lengthOfService.months > 0">{{KeyDetails.primaryContract.lengthOfService.months}} months</span>
-                <span ng-if="
-                    KeyDetails.primaryContract.lengthOfService.days > 0
-                    && KeyDetails.primaryContract.lengthOfService.months == 0
-                    && KeyDetails.primaryContract.lengthOfService.years == 0">{{KeyDetails.primaryContract.lengthOfService.days}} days</span>
+                <span ng-if="KeyDetails.lengthOfService.years > 0">{{KeyDetails.lengthOfService.years}} years</span>
+                <span ng-if="KeyDetails.lengthOfService.months > 0">{{KeyDetails.lengthOfService.months}} months</span>
+                <span ng-if="KeyDetails.lengthOfService.days > 0">{{KeyDetails.lengthOfService.days}} days</span>
             </dd>
             <dt>Contract Type</dt>
             <dd>{{ KeyDetails.primaryContract.type }}</dd>
