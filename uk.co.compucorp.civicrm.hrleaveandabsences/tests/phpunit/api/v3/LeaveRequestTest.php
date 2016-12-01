@@ -421,6 +421,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
 
     //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
+    //this will only work for the normal 40 hour work week fabricated
     foreach ($datePeriod as $date) {
       if(in_array($date->format('N'), [6, 7])){
         $amount = 0;
