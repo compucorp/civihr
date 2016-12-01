@@ -501,11 +501,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $pattern->id
     ]);
 
-    $contactId = $contact['id'];
     $fromDate = '2016-07-31';
     $toDate = '2016-08-15';
-    $fromType = 'All Day';
-    $toType = '1/2 AM';
+    $fromType = $this->leaveRequestDayTypes['All Day']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
 
     $expectedResultsBreakdown = [
       'amount' => 0,
@@ -698,7 +697,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 }

@@ -2,6 +2,9 @@
 
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest
@@ -126,4 +129,47 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $this->assertNull($contactWorkPattern);
   }
 
+  public function testGetWorkPatternForContact() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+    $date= new DateTime('2016-01-20');
+
+    $returnedWorkPattern = ContactWorkPattern::getWorkPattern($contact['id'], $date);
+    $this->assertEquals($workPattern->id, $returnedWorkPattern->id);
+  }
+
+  public function testGetContactWorkPatternStartDate() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = new DateTime('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate->format('Y-m-d'),
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+    $date= new DateTime('2016-01-20');
+
+    $returnedStartDate = ContactWorkPattern::getStartDate($contact['id'], $date);
+    $this->assertEquals($periodStartDate, $returnedStartDate);
+  }
 }
