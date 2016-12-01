@@ -17,6 +17,11 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
 class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function setUp() {
+    // In order to make tests simpler, we disable the foreign key checks,
+    // as a way to allow the creation of leave request records related
+    // to a non-existing leave period entitlement
+    CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
@@ -184,6 +189,86 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $expectedResult = [$absenceType->id => -2];
     $this->assertEquals($expectedResult, $result['values']);
+  }
+
+  public function testGetDoesntReturnPublicHolidayLeaveRequestsIfThePublicHolidayParamIsNotPresentOrIsFalse() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('Y-m-d', strtotime('+10 days'));
+    PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+    $this->assertCount(2, $result['values']);
+    $this->assertEquals($leaveRequest1->contact_id, $result['values'][$leaveRequest1->id]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][$leaveRequest1->id]['type_id']);
+    $this->assertEquals($leaveRequest1->status_id, $result['values'][$leaveRequest1->id]['status_id']);
+
+    $this->assertEquals($leaveRequest2->contact_id, $result['values'][$leaveRequest2->id]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][$leaveRequest2->id]['type_id']);
+    $this->assertEquals($leaveRequest2->status_id, $result['values'][$leaveRequest2->id]['status_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['public_holiday' => false]);
+    $this->assertCount(2, $result['values']);
+    $this->assertEquals($leaveRequest1->contact_id, $result['values'][$leaveRequest1->id]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][$leaveRequest1->id]['type_id']);
+    $this->assertEquals($leaveRequest1->status_id, $result['values'][$leaveRequest1->id]['status_id']);
+
+    $this->assertEquals($leaveRequest2->contact_id, $result['values'][$leaveRequest2->id]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][$leaveRequest2->id]['type_id']);
+    $this->assertEquals($leaveRequest2->status_id, $result['values'][$leaveRequest2->id]['status_id']);
+  }
+
+  public function testGetReturnsOnlyPublicHolidayLeaveRequestsIfThePublicHolidayIsTrue() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 2,
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+2 days'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('Y-m-d', strtotime('+10 days'));
+    PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['public_holiday' => true, 'sequential' => 1]);
+    $this->assertCount(1, $result['values']);
+    $this->assertNotEquals($leaveRequest1->contact_id, $result['values'][0]['id']);
+    $this->assertNotEquals($leaveRequest2->contact_id, $result['values'][0]['id']);
+    $this->assertEquals(1, $result['values'][0]['contact_id']);
+    $this->assertEquals($absenceType->id, $result['values'][0]['type_id']);
+    $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
   }
 
   public function invalidGetBalanceChangeByAbsenceTypeStatusesOperators() {
