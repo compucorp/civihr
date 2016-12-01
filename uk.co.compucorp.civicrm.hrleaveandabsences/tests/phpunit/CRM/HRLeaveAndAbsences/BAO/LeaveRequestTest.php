@@ -23,6 +23,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
    */
   private $absenceType;
+  private $leaveRequestDayTypes = [];
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
@@ -39,6 +40,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'must_take_public_holiday_as_leave' => 1
     ]);
+    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
+  }
+
+  private static function leaveRequestDayTypeOptionsBuilder() {
+      $leaveRequestDayTypeOptionsGroup = [];
+      $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
+      foreach($leaveRequestDayTypeOptions  as $key => $label) {
+        $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
+        $leaveRequestDayTypeOptionsGroup[$label] = [
+          'id' => $key,
+          'value' => $key,
+          'name' => $name
+        ];
+      }
+      return $leaveRequestDayTypeOptionsGroup;
   }
 
   public function tearDown() {
@@ -331,10 +347,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     HRJobContractFabricator::fabricate([
       'contact_id' => $contact['id']
     ],
-      [
-        'period_start_date' => $periodStartDate,
-        'title' => $title
-      ]);
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
     //attach the work pattern to the contact
     ContactWorkPatternFabricator::fabricate([
@@ -343,74 +359,70 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $contactId = $contact['id'];
-    $fromDate = date("Y-11-05");
-    $toDate = date("Y-11-08");
-    $fromType = '1/2 AM';
-    $toType = '1/2 AM';
+    $fromDate = date("2016-11-13");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
 
-    //Leave Request Start Date
-    $startDate = new DateTime($fromDate);
-    //Leave Request End Date
-    $endDate = new DateTime($toDate);
-
-    $endDateUnmodified = new DateTime($toDate);
-    // add one day to end date to include it in DatePeriod
-    $endDate->modify('+1 day');
-    $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
     $expectedResultsBreakdown = [
       'amount' => 0,
       'breakdown' => []
     ];
-    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
-    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
 
-    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
-    foreach ($datePeriod as $date) {
-      if(in_array($date->format('N'), [6, 7])){
-        $amount = 0;
-        $type = 'Weekend';
-      }
-      else{
-        $amount = -1 * 1.0;
-        $type = 'All day';
-      }
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
+    ];
 
-      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
+    ];
 
-      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 0.5;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 0.5,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
+        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
+        'label' => '1/2 AM'
+      ]
+    ];
 
-      $result = [
-        'date' => $date->format('Y-m-d'),
-        'amount' => abs($amount),
-        'type' => $type
-      ];
-      $expectedResultsBreakdown['amount'] += $amount;
-      $expectedResultsBreakdown['breakdown'][] = $result;
+    $expectedResultsBreakdown['amount'] *= -1;
 
-    }
     $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
+
   }
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $contact = ContactFabricator::fabricate();
-    $periodStartDate = date('Y-01-01');
+    $periodStartDate = date('2016-01-01');
     $title = 'Job Title';
 
     HRJobContractFabricator::fabricate([
       'contact_id' => $contact['id']
     ],
-      [
-        'period_start_date' => $periodStartDate,
-        'title' => $title
-      ]);
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
 
     //attach the work pattern to the contact
@@ -421,67 +433,48 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     //create a public holiday for a date that is between the leave request days
     $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = date('Y-11-07');
+    $publicHoliday->date = date('2016-11-14');
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
     PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
     $contactId = $contact['id'];
-    $fromDate = date("Y-11-05");
-    $toDate = date("Y-11-08");
-    $fromType = '1/2 AM';
-    $toType = 'All Day';
+    $fromDate = date("2016-11-14");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['All Day']['name'];
+    $toType = $this->leaveRequestDayTypes['All Day']['name'];
 
-    $startDate = new DateTime($fromDate);
-    $endDate = new DateTime($toDate);
-    $endDateUnmodified = new DateTime($toDate);
-    // add one day to end date to include it in DatePeriod
-    $endDate->modify('+1 day');
-    $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
     $expectedResultsBreakdown = [
       'amount' => 0,
       'breakdown' => []
     ];
-    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
-    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
 
-    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
-    foreach ($datePeriod as $date) {
-      if(in_array($date->format('N'), [6, 7])){
-        $amount = 0;
-        $type = 'Weekend';
-      }
-      else{
-        $amount = -1 * 1.0;
-        $type = 'All day';
-      }
+    // Starting date is a monday, but a public holiday
+    $expectedResultsBreakdown['amount'] += 0;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Public Holiday']['id'],
+        'value' => $this->leaveRequestDayTypes['Public Holiday']['value'],
+        'label' => 'Public Holiday'
+      ]
+    ];
 
-      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 1.0;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
+    ];
 
-      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    $expectedResultsBreakdown['amount'] *= -1;
 
-      //For this day, LeaveRequest::calculateBalanceChange should see it as a public holiday
-      if($date->format('Y-m-d') == date('Y-11-07')) {
-        $amount = 0;
-        $type =  'Public Holiday';
-      }
-
-      $result = [
-        'date' => $date->format('Y-m-d'),
-        'amount' => abs($amount),
-        'type' => $type
-      ];
-      $expectedResultsBreakdown['amount'] += $amount;
-      $expectedResultsBreakdown['breakdown'][] = $result;
-
-    }
     $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
@@ -494,10 +487,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     HRJobContractFabricator::fabricate([
       'contact_id' => $contact['id']
     ],
-      [
-        'period_start_date' => $periodStartDate,
-        'title' => $title
-      ]);
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
 
     // Week 1 weekdays: monday, wednesday and friday
     // Week 2 weekdays: tuesday and thursday
@@ -511,7 +504,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $contactId = $contact['id'];
     $fromDate = '2016-07-31';
     $toDate = '2016-08-15';
-    $fromType = 'All day';
+    $fromType = 'All Day';
     $toType = '1/2 AM';
 
     $expectedResultsBreakdown = [
@@ -524,7 +517,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-07-31',
       'amount' => 0,
-      'type' => 'Weekend'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
     ];
 
     // Since the start date is a sunday, the end of the week, the following day
@@ -533,7 +530,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-01',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
 
     // The next day is a tuesday, which is a working day on the second week, so
@@ -541,14 +542,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-02',
       'amount' => 1.0,
-      'type' => 'All day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
     ];
 
     // Wednesday is not a working day on the second week
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-03',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
 
     // Thursday is a working day on the second week
@@ -556,26 +565,42 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-04',
       'amount' => 1.0,
-      'type' => 'All day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
     ];
 
     // Friday, Saturday and Sunday are not working days on the second week,
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-05',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
 
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-06',
       'amount' => 0,
-      'type' => 'Weekend'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
     ];
 
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-07',
       'amount' => 0,
-      'type' => 'Weekend'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
     ];
 
     // Now, since we hit sunday, the following day will be on the third week
@@ -587,27 +612,43 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-08',
       'amount' => 1.0,
-      'type' => 'All day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
     ];
 
     // Tuesday is not a working day on the first week
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-09',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
     // Wednesday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-10',
       'amount' => 1.0,
-      'type' => 'All day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
     ];
     // Thursday is not a working day on the first week
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-11',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
 
     // Friday is a working day on the first week
@@ -615,20 +656,32 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-12',
       'amount' => 1.0,
-      'type' => 'All day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
     ];
 
     // Saturday and Sunday are not working days on the first week
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-13',
       'amount' => 0,
-      'type' => 'Weekend'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
     ];
 
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-14',
       'amount' => 0,
-      'type' => 'Weekend'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
     ];
     // Hit sunday again, so we are now on the fourth week since the start date.
     // The work pattern will rotate and use the week 2
@@ -637,7 +690,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-08-15',
       'amount' => 0,
-      'type' => 'Non working day'
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => 'Non Working Day'
+      ]
     ];
     $expectedResultsBreakdown['amount'] *= -1;
 

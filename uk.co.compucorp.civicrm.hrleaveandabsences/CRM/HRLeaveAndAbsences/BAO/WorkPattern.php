@@ -451,12 +451,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @param int $contactId
    * @param \DateTime $date
    *
-   * @return string
-   *   Can be any of the following:
-   *   - Public Holiday: When work day is a public holiday
-   *   - Weekend: When work day is weekend
-   *   - No: When work day is Non working day
-   *   - Yes: When work day is working day or All day
+   * @return int
+   *   The WorkDay Type
    */
   public static function getWorkDayType($contactId, DateTime $date) {
 
