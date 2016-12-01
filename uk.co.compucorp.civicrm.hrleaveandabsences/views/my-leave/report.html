@@ -1,23 +1,18 @@
 <div id="report" class="tab-pane fade in active">
-  <div class="container-fluid chr-container">
-    <div class="row chr-container__row">
+  <div class="container-fluid chr_container">
+    <div class="row chr_container__row--header">
       <table class="table table-borderless">
         <thead>
           <tr>
-            <th colspan="2">
+            <th width="75%">
               <a href="#">
                 <i class="fa fa-download fa-fw" aria-hidden="true"></i>
-                <span class="chr-margin-left-10">Export CSV</span>
+                <span>Export CSV</span>
               </a>
             </th>
-            <th colspan="2"></th>
-            <th colspan="2"></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th colspan="3">
-              <div class="chr_custom-select chr-width-full">
-                <select class="chr-container__split-button">
+            <th width="25%">
+              <div class="chr_custom-select chr_custom-select--full">
+                <select>
                   <option value="value1" selected>
                     Current Period (2015)
                   </option>
@@ -28,14 +23,14 @@
         </thead>
       </table>
     </div>
-    <div class="chr-separator"></div>
-    <div class="row chr-container__row">
+    <div class="chr_separator"></div>
+    <div class="row chr_container__row">
       <table class="table table-borderless">
         <thead>
           <tr>
-            <th colspan="2"></th>
-            <th colspan="2">Dates</th>
-            <th colspan="2">Status</th>
+            <th></th>
+            <th>Dates</th>
+            <th>Status</th>
             <th>Vacation</th>
             <th>TOIL</th>
             <th>Maternity</th>
@@ -46,24 +41,23 @@
         </thead>
       </table>
     </div>
-    <div class="chr-separator"></div>
-    <div class="row panel panel-default chr-grid">
-      <div class="panel-heading chr-grid__panel-heading">
+    <div class="chr_separator"></div>
+    <div class="row panel panel-default chr_grid">
+      <div class="panel-heading chr_grid__panel-heading">
         <h4 class="panel-title">
           <div class="table-responsive">
             <table class="table table-borderless">
               <thead>
                 <tr class="civi-grid--open">
-                  <th colspan="4">
-                    <i class="fa fa-chevron-down chr-padding-left-medium"
+                  <th>
+                    <i class="fa fa-chevron-down"
                       aria-hidden="true"></i>
-                    <span class="chr-margin-left-15">
+                    <span>
                       Period Entitlement
                     </span>
                   </th>
-                  <th colspan="2"></th>
                   <th>31</th>
-                  <th class="chr-grid__row__cell--dark">3</th>
+                  <th>3</th>
                   <th>0</th>
                   <th>0</th>
                   <th>0</th>
@@ -75,16 +69,16 @@
         </h4>
       </div>
       <div class="panel-collapse collapse in">
-        <div class="panel-body chr-grid__body">
+        <div class="panel-body chr_grid__body">
           <div class="row">
             <div class="col-xs-12">
               <div class="table-responsive">
                 <table class="table table-hover">
-                  <thead class="chr-grid__row--header">
+                  <thead class="chr_grid__row--header">
                     <tr>
-                      <th colspan="2"></th>
-                      <th colspan="2">Dates</th>
-                      <th colspan="2">Status</th>
+                      <th></th>
+                      <th>Dates</th>
+                      <th>Status</th>
                       <th>Vacation</th>
                       <th>TOIL</th>
                       <th>Maternity</th>
@@ -94,42 +88,42 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Brought forward (expires 31/3/2016)</td>
-                      <td colspan="2"></td>
-                      <td colspan="2"></td>
-                      <td class="chr-grid__row__cell--light">3</td>
-                      <td class="chr-grid__row__cell--light">3</td>
-                      <td class="chr-grid__row__cell--light">0</td>
+                    <tr>
+                      <td>Brought forward (expires 31/3/2016)</td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td>3</td>
+                      <td>3</td>
+                      <td>0</td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Leave</td>
-                      <td colspan="2"></td>
-                      <td colspan="2"></td>
-                      <td class="chr-grid__row__cell--light">20</td>
+                    <tr>
+                      <td>Leave</td>
+                      <td></td>
+                      <td></td>
+                      <td>20</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Public Holidays</td>
-                      <td colspan="2"></td>
-                      <td colspan="2"></td>
-                      <td class="chr-grid__row__cell--light">8</td>
+                    <tr>
+                      <td>Public Holidays</td>
+                      <td></td>
+                      <td></td>
+                      <td>8</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
@@ -141,17 +135,17 @@
         </div>
       </div>
     </div>
-    <div class="row panel panel-default chr-grid">
-      <div class="panel-heading chr-grid__panel-heading">
+    <div class="row panel panel-default chr_grid">
+      <div class="panel-heading chr_grid__panel-heading">
         <h4 class="panel-title">
           <div class="table-responsive">
             <table class="table table-borderless">
               <thead>
                 <tr class="civi-grid--open">
-                  <th colspan="4">
-                    <i class="fa fa-chevron-down chr-padding-left-medium"
+                  <th>
+                    <i class="fa fa-chevron-down"
                       aria-hidden="true"></i>
-                    <span class="chr-margin-left-15">
+                    <span>
                       Public Holidays
                     </span>
                   </th>
@@ -159,6 +153,8 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
             </table>
@@ -166,16 +162,16 @@
         </h4>
       </div>
       <div class="panel-collapse collapse in">
-        <div class="panel-body chr-grid__body">
+        <div class="panel-body chr_grid__body">
           <div class="row">
             <div class="col-xs-12">
               <div class="table-responsive">
                 <table class="table table-hover">
-                  <thead class="chr-grid__row--header">
+                  <thead class="chr_grid__row--header">
                     <tr>
-                      <th colspan="2"></th>
-                      <th colspan="2">Dates</th>
-                      <th colspan="2">Status</th>
+                      <th></th>
+                      <th>Dates</th>
+                      <th>Status</th>
                       <th>Vacation</th>
                       <th>TOIL</th>
                       <th>Maternity</th>
@@ -185,42 +181,42 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Public Holiday</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">31/5/2016</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Admin Approved</td>
-                      <td class="chr-grid__row__cell--light">-1</td>
+                    <tr>
+                      <td>Public Holiday</td>
+                      <td>31/5/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Public Holiday</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">31/5/2016</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Admin Approved</td>
-                      <td class="chr-grid__row__cell--light">-1</td>
+                    <tr>
+                      <td>Public Holiday</td>
+                      <td>31/5/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Public Holiday</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">31/5/2016</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Admin Approved</td>
-                      <td class="chr-grid__row__cell--light">-1</td>
+                    <tr>
+                      <td>Public Holiday</td>
+                      <td>31/5/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
@@ -232,21 +228,20 @@
         </div>
       </div>
     </div>
-    <div class="row panel panel-default chr-grid">
-      <div class="panel-heading chr-grid__panel-heading">
+    <div class="row panel panel-default chr_grid">
+      <div class="panel-heading chr_grid__panel-heading">
         <h4 class="panel-title">
           <div class="table-responsive">
             <table class="table table-borderless">
               <thead>
                 <tr class="civi-grid--open">
-                  <th colspan="4">
-                    <i class="fa fa-chevron-down chr-padding-left-medium"
+                  <th>
+                    <i class="fa fa-chevron-down"
                       aria-hidden="true"></i>
-                    <span class="chr-margin-left-15">
+                    <span>
                       Approved Requests
                     </span>
                   </th>
-                  <th colspan="2"></th>
                   <th>-4</th>
                   <th>-2</th>
                   <th>-21</th>
@@ -260,16 +255,16 @@
         </h4>
       </div>
       <div class="panel-collapse collapse in">
-        <div class="panel-body chr-grid__body">
+        <div class="panel-body chr_grid__body">
           <div class="row">
             <div class="col-xs-12">
               <div class="table-responsive">
                 <table class="table table-hover">
-                  <thead class="chr-grid__row--header">
+                  <thead class="chr_grid__row--header">
                     <tr>
-                      <th colspan="2"></th>
-                      <th colspan="2">Dates</th>
-                      <th colspan="2">Status</th>
+                      <th></th>
+                      <th>Dates</th>
+                      <th>Status</th>
                       <th>Vacation</th>
                       <th>TOIL</th>
                       <th>Maternity</th>
@@ -279,81 +274,81 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Vacation</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light">-4</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Vacation</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td>-4</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Sick</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">-2</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Sick</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>-2</td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Accrued TOIL(Expires 20/03/2015)</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">-2</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Accrued TOIL(Expires 20/03/2015)</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>-2</td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">TOIL</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">2</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">-2</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>TOIL</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td>2</td>
+                      <td></td>
+                      <td>-2</td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Maternity</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">-4</td>
-                      <td class="chr-grid__row__cell--light">-21</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Maternity</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td>-4</td>
+                      <td>-21</td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Other</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Approved</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">-1</td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Other</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>-1</td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
@@ -365,14 +360,16 @@
         </div>
       </div>
     </div>
-    <div class="row chr-container__row--summary">
+    <div class="row chr_container__row chr_container__row--summary">
       <div class="table-responsive">
         <table class="table table-borderless">
           <thead>
             <tr>
-              <th colspan="6" class="chr-padding-left-large">
-                <p>Balance</p>
+              <th>
+                Balance
               </th>
+              <th></th>
+              <th></th>
               <th>19</th>
               <th>1</th>
               <th>-21</th>
@@ -384,25 +381,24 @@
         </table>
       </div>
     </div>
-    <div class="row panel panel-default chr-grid">
-      <div class="panel-heading chr-grid__panel-heading">
+    <div class="row panel panel-default chr_grid">
+      <div class="panel-heading chr_grid__panel-heading">
         <h4 class="panel-title">
           <div class="table-responsive">
             <table class="table table-borderless">
               <thead>
                 <tr class="civi-grid--open">
-                  <th colspan="4">
-                    <i class="fa fa-chevron-down chr-padding-left-medium"
+                  <th>
+                    <i class="fa fa-chevron-down"
                       aria-hidden="true"></i>
-                    <span class="chr-margin-left-15">
+                    <span>
                       Open Requests
                     </span>
                   </th>
-                  <th colspan="2"></th>
+                  <th></th>
+                  <th></th>
                   <th>-4</th>
                   <th>1</th>
-                  <th></th>
-                  <th></th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -412,16 +408,16 @@
         </h4>
       </div>
       <div class="panel-collapse collapse in">
-        <div class="panel-body chr-grid__body">
+        <div class="panel-body chr_grid__body">
           <div class="row">
             <div class="col-xs-12">
               <div class="table-responsive">
                 <table class="table table-hover">
-                  <thead class="chr-grid__row--header">
+                  <thead class="chr_grid__row--header">
                     <tr>
-                      <th colspan="2"></th>
-                      <th colspan="2">Dates</th>
-                      <th colspan="2">Status</th>
+                      <th></th>
+                      <th>Dates</th>
+                      <th>Status</th>
                       <th>Vacation</th>
                       <th>TOIL</th>
                       <th>Maternity</th>
@@ -431,29 +427,29 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Vacation</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Awaiting Approval</td>
-                      <td class="chr-grid__row__cell--light">-4</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Vacation</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Awaiting Approval</td>
+                      <td>-4</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Accrued TOIL(Expires 20/03/2015)</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">More information required</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">1</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Accrued TOIL(Expires 20/03/2015)</td>
+                      <td>18/01/2015</td>
+                      <td>More information required</td>
+                      <td></td>
+                      <td>1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
@@ -465,14 +461,16 @@
         </div>
       </div>
     </div>
-    <div class="row chr-container__row chr-container__row--summary">
+    <div class="row chr_container__row chr_container__row--summary">
       <div class="table-responsive">
         <table class="table table-borderless">
           <thead>
             <tr>
-              <th colspan="6" class="chr-padding-left-large">
-                <p>Future Balance</p>
+              <th>
+                Future Balance
               </th>
+              <th></th>
+              <th></th>
               <th>15</th>
               <th>2</th>
               <th></th>
@@ -484,21 +482,20 @@
         </table>
       </div>
     </div>
-    <div class="row panel panel-default chr-grid">
-      <div class="panel-heading chr-grid__panel-heading">
+    <div class="row panel panel-default chr_grid">
+      <div class="panel-heading chr_grid__panel-heading">
         <h4 class="panel-title">
           <div class="table-responsive">
             <table class="table table-borderless">
               <thead>
                 <tr class="civi-grid--open">
-                  <th colspan="4">
-                    <i class="fa fa-chevron-down chr-padding-left-medium"
+                  <th>
+                    <i class="fa fa-chevron-down"
                       aria-hidden="true"></i>
-                    <span class="chr-margin-left-15">
+                    <span>
                       Cancelled and Other
                     </span>
                   </th>
-                  <th colspan="2"></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -512,16 +509,16 @@
         </h4>
       </div>
       <div class="panel-collapse collapse in">
-        <div class="panel-body chr-grid__body">
+        <div class="panel-body chr_grid__body">
           <div class="row">
             <div class="col-xs-12">
               <div class="table-responsive">
                 <table class="table table-hover">
-                  <thead class="chr-grid__row--header">
+                  <thead class="chr_grid__row--header">
                     <tr>
-                      <th colspan="2"></th>
-                      <th colspan="2">Dates</th>
-                      <th colspan="2">Status</th>
+                      <th></th>
+                      <th>Dates</th>
+                      <th>Status</th>
                       <th>Vacation</th>
                       <th>TOIL</th>
                       <th>Maternity</th>
@@ -531,55 +528,55 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Sickness</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Rejected</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Sickness</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Rejected</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Vacation</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">18/01/2015 - 22/01/2015</td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Cancelled</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Vacation</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Cancelled</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Accrued TOIL(Expires 20/03/2015)</td>
-                      <td colspan="2" class="chr-grid__row__cell--light"></td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Expired</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">1</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Accrued TOIL(Expires 20/03/2015)</td>
+                      <td></td>
+                      <td>Expired</td>
+                      <td></td>
+                      <td>1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
-                    <tr class="chr-grid__row">
-                      <td colspan="2">Brough Forward(Expires 20/03/2015)</td>
-                      <td colspan="2" class="chr-grid__row__cell--light"></td>
-                      <td colspan="2" class="chr-grid__row__cell--light">Expired</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light">1</td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="chr-grid__row__cell--light"></td>
-                      <td class="text-right">
+                    <tr>
+                      <td>Brough Forward(Expires 20/03/2015)</td>
+                      <td></td>
+                      <td>Expired</td>
+                      <td></td>
+                      <td>1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="text-center">
                         <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                       </td>
                     </tr>
