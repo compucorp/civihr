@@ -236,6 +236,7 @@ define([
                     }
 
                     ContractService.updateHeaderInfo();
+                    updateContractView(results);
 
                     if (results.revisionCreated) {
 
@@ -255,7 +256,6 @@ define([
 
                         if (isCurrentRevision) {
                             updateContractList(results.details.period_end_date);
-                            updateContractView(results);
                         }
 
                         if (results.files) {
@@ -279,7 +279,6 @@ define([
                         var revisionListEntitiesView = ['details','hour','pay'], i, objExt;
 
                         updateContractList(results.details.period_end_date);
-                        updateContractView(results);
 
                         if ($scope.contract.is_primary != results.contract.is_primary) {
                             $scope.$parent.$parent.toggleIsPrimary($scope.contract.id);
@@ -375,7 +374,7 @@ define([
               ContractService
                 .fullDetails($scope.revisionCurrent.jobcontract_id)
                 .then(function (results) {
-                  updateContractView(results)
+                  updateContractView(results);
                   $scope.$broadcast('hrjc-loader-hide');
                 })
                 .then(updateContractFiles);
