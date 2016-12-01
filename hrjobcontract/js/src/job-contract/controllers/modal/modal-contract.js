@@ -461,7 +461,6 @@ define([
                 }
 
                 if (entityChangedListLen) {
-
                     UtilsService.prepareEntityIds(entityChangedList[0].data,entity.contract.id);
 
                     entityChangedList[0].service.save(entityChangedList[0].data).then(function(results){
@@ -578,7 +577,6 @@ define([
                         return results;
 
                     }).then(function(results){
-
                         $scope.$broadcast('hrjc-loader-hide');
                         $modalInstance.close(results);
                         pubSub.publish('contract-refresh');

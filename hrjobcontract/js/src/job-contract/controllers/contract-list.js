@@ -12,13 +12,15 @@ define([
 ], function (controllers) {
     'use strict';
 
-    controllers.controller('ContractListCtrl',['$scope','$rootElement','$rootScope','$uibModal','$q', '$filter', '$sce',
-        'contractList','ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService',
-        'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService','settings', '$log', 'pubSub',
-        function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, contractList, ContractService, ContractDetailsService,
-                 ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
+    controllers.controller('ContractListCtrl',[
+        '$scope', '$rootElement', '$rootScope', '$uibModal', '$q', '$filter', '$sce', '$window',
+        'contractList','ContractService', 'ContractDetailsService', 'ContractHourService',
+        'ContractPayService', 'ContractLeaveService', 'ContractHealthService', 'ContractPensionService',
+        'UtilsService', 'settings', '$log', 'pubSub',
+        function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, $window,
+                 contractList, ContractService, ContractDetailsService, ContractHourService,
+                 ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
                  UtilsService, settings, $log, pubSub){
-
             $log.debug('Controller: ContractListCtrl');
 
             var entityServices = {
