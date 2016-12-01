@@ -64,33 +64,7 @@ function _civicrm_api3_leave_request_get_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_get($params) {
-  $query = new \Civi\API\SelectQuery(CRM_HRLeaveAndAbsences_BAO_LeaveRequest::class, $params, false);
-
-  $balanceChangeJoinConditions = [
-    'lbc.source_id = lrd.id',
-    "lbc.source_type = '" . CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
-  ];
-
-  $leaveBalanceChangeTypes = array_flip(CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::buildOptions('type_id'));
-  if(empty($params['public_holiday'])) {
-    $balanceChangeJoinConditions[] = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
-  } else {
-    $balanceChangeJoinConditions[] = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
-  }
-
-  $query->join(
-    'INNER',
-    CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate::getTableName(),
-    'lrd',
-    ['lrd.leave_request_id = a.id']
-  );
-  $query->join(
-    'INNER',
-    CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getTableName(),
-    'lbc',
-    $balanceChangeJoinConditions
-  );
-
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
   return civicrm_api3_create_success($query->run(), $params, '', 'get');
 }
 
