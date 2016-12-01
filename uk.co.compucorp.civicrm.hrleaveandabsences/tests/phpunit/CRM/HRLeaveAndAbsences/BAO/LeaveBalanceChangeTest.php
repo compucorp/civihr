@@ -1023,37 +1023,5 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals($type, $dayType);
   }
 
-  public function testGetWorkDayTypeForDateWhenDateIsPublicHoliday() {
-    //create a contact with valid contract and a Work pattern assigned
-    $contact = ContactFabricator::fabricate();
-    $periodStartDate = date('Y-01-01');
-
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-        'period_start_date' => $periodStartDate,
-    ]);
-    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id
-    ]);
-
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = date('Y-11-05');
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
-    $startDate = date("Y-11-05");
-    $startDateTime = new DateTime($startDate);
-
-    //Create a leave request instance with just contact_id, thats all the LeaveBalanceChange::getWorkDayTypeForDate needs to run
-    $leaveRequest = new LeaveRequest();
-    $leaveRequest->contact_id = $contact['id'];
-
-    $type = 'Public Holiday';
-    $dayType = LeaveBalanceChange::getWorkDayTypeForDate($leaveRequest, $startDateTime);
-    $this->assertEquals($type, $dayType);
-  }
 }
 
