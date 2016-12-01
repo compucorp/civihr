@@ -3,14 +3,10 @@
 use CRM_HRLeaveAndAbsences_Test_Fabricator_SequentialTitle as SequentialTitle;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 
-class CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern extends SequentialTitle{
+class CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern extends SequentialTitle {
 
   public static function fabricate($params = []) {
     $params = array_merge(static::getDefaultParams(), $params);
-
-    if(empty($params['title'])) {
-      $params['title'] = static::nextSequentialTitle();
-    }
 
     $contactWorkPattern = ContactWorkPattern::create($params);
 
