@@ -356,6 +356,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage to_date and to_type must be included together
+   */
+  public function testCalculateBalanceChangeShouldNotAllowToTypeParameterWhenToDateIsNotPresent() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+    ]);
+  }
+
   public function testCalculateBalanceChangeWithAllRequiredParameters() {
     $contact = ContactFabricator::fabricate();
     $periodStartDate = date('Y-01-01');

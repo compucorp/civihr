@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest
@@ -145,13 +146,99 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
       'contact_id' => $contact['id'],
       'pattern_id' => $workPattern->id
     ]);
-    $date= new DateTime('2016-01-20');
+    $date = new DateTime('2016-01-20');
 
     $returnedWorkPattern = ContactWorkPattern::getWorkPattern($contact['id'], $date);
     $this->assertEquals($workPattern->id, $returnedWorkPattern->id);
   }
 
-  public function testGetContactWorkPatternStartDate() {
+  public function testGetWorkPatternForContactReturnsDefaultWorkPatternWhenContactHasNoWorkPatternAssigned() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    $defaultWorkPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+    $date = new DateTime('2016-01-20');
+
+    $returnedWorkPattern = ContactWorkPattern::getWorkPattern($contact['id'], $date);
+    $this->assertEquals($defaultWorkPattern->id, $returnedWorkPattern->id);
+  }
+
+  public function testGetWorkPatternForContactReturnsRightWorkPatternWhenContactHasMultipleWorkPattern() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    $workPattern1 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    $workPattern2 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $startDateContactPattern1 = new DateTime('2016-01-30');
+    $startDateContactPattern2 = new DateTime('2016-04-01');
+    $endDateContactPattern1 = new DateTime('2016-03-30');
+    $endDateContactPattern2 = new DateTime('2016-11-30');
+
+    //this contact work pattern will expire march ending 2016
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => $startDateContactPattern1->format('YmdHis'),
+      'effective_end_date' => $endDateContactPattern1->format('YmdHis')
+    ]);
+
+    //contract valid till 2016-11-30
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => $startDateContactPattern2->format('YmdHis'),
+      'effective_end_date' => $endDateContactPattern2->format('YmdHis')
+    ]);
+
+    $date = new DateTime('2016-10-20');
+
+    $returnedWorkPattern = ContactWorkPattern::getWorkPattern($contact['id'], $date);
+    $this->assertEquals($workPattern2->id, $returnedWorkPattern->id);
+  }
+
+  public function testGetWorkPatternForContactReturnsDefaultWorkPatternWhenDateGivenToWorkPatternIsBeforeEffectiveDate() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $startDateContactPattern = new DateTime('2016-03-01');
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => $startDateContactPattern->format('YmdHis'),
+    ]);
+    $defaultWorkPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+
+    $date = new DateTime('2016-01-20');
+
+    $returnedWorkPattern = ContactWorkPattern::getWorkPattern($contact['id'], $date);
+    $this->assertEquals($defaultWorkPattern->id, $returnedWorkPattern->id);
+  }
+
+  public function testGetContactWorkPatternStartDateWhenContactHasOneWorkPattern() {
     //create a contact with valid contract and a Work pattern assigned
     $contact = ContactFabricator::fabricate();
     $periodStartDate = new DateTime('2016-01-01');
@@ -162,14 +249,162 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     [
       'period_start_date' => $periodStartDate->format('Y-m-d'),
     ]);
+
+    $startDateContactPattern = new DateTime('2016-04-01');
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => $startDateContactPattern->format('YmdHis'),
+    ]);
+    $date = new DateTime('2016-05-20');
+
+    $returnedStartDate = ContactWorkPattern::getStartDate($contact['id'], $date);
+    $this->assertEquals($startDateContactPattern, $returnedStartDate);
+  }
+
+  public function testGetContactWorkPatternStartDateReturnsTheRightDateWhenContactHasMultipleWorkPattern() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    $workPattern1 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    $workPattern2 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $startDateContactPattern1 = new DateTime('2016-01-30');
+    $startDateContactPattern2 = new DateTime('2016-04-01');
+    $endDateContactPattern1 = new DateTime('2016-03-30');
+    $endDateContactPattern2 = new DateTime('2016-11-30');
+
+    //this contact work pattern will expire march ending 2016
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern1->id,
+      'effective_date' => $startDateContactPattern1->format('YmdHis'),
+      'effective_end_date' => $endDateContactPattern1->format('YmdHis')
+    ]);
+
+    //contract valid till 2016-11-30
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern2->id,
+      'effective_date' => $startDateContactPattern2->format('YmdHis'),
+      'effective_end_date' => $endDateContactPattern2->format('YmdHis')
+    ]);
+
+    $date = new DateTime('2016-10-20');
+
+    $startDate = ContactWorkPattern::getStartDate($contact['id'], $date);
+    $this->assertEquals($startDateContactPattern2, $startDate);
+  }
+
+  public function testGetContactWorkPatternStartDateReturnsStartDateOfOverlappingContractWhenContactHasNoWorkPattern() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = new DateTime('2016-01-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate->format('Y-m-d'),
+    ]);
+
+    $date = new DateTime('2016-01-20');
+
+    $startDate = ContactWorkPattern::getStartDate($contact['id'], $date);
+    $this->assertEquals($periodStartDate, $startDate);
+  }
+
+  public function testGetContactWorkPatternStartDateReturnsNullWhenContactHasNoWorkPatternAssignedAndNoContractOverlappingDate() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = new DateTime('2016-05-01');
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate->format('Y-m-d'),
+    ]);
+
+    $date = new DateTime('2016-01-20');
+
+    $startDate = ContactWorkPattern::getStartDate($contact['id'], $date);
+    $this->assertNull($startDate);
+  }
+
+  public function testGetWorkDayTypeForSingleWeekWorkPattern() {
+    //create a contact with valid contract and a Work pattern assigned
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = '2016-01-01';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
     ContactWorkPatternFabricator::fabricate([
       'contact_id' => $contact['id'],
       'pattern_id' => $workPattern->id
     ]);
-    $date= new DateTime('2016-01-20');
 
-    $returnedStartDate = ContactWorkPattern::getStartDate($contact['id'], $date);
-    $this->assertEquals($periodStartDate, $returnedStartDate);
+    $startDateTime = new DateTime('2016-11-30');
+    $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime);
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $dayType);
+
+    $startDateTime2 = new DateTime('2016-11-27');
+    $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime2);
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $dayType);
+  }
+
+  public function testGetWorkDayTypeForWorkPatternWithMultipleWeeks() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = '2016-01-01';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+    ]);
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //A sunday which is weekend on week 1
+    $startDateTime1 = new DateTime('2016-07-31');
+    $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime1);
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $dayType);
+
+
+    // Since the start date is a sunday, the end of the week, the following day
+    // (2016-08-01) should be on the second week. Monday of the second week is
+    // not a working day
+    $startDateTime2 = new DateTime('2016-08-01');
+    $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime2);
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_NO, $dayType);
+
+
+    // Now, since we hit sunday, the following day will be on the third week
+    // since the start date, but the work pattern only has 2 weeks, so we
+    // rotate back to use the week 1 from the pattern
+    // Monday is a working day on the first week
+    $startDateTime3 = new DateTime('2016-08-08');
+    $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime3);
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $dayType);
+
   }
 }

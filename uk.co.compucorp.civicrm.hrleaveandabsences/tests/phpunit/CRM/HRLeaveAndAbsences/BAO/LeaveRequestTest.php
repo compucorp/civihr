@@ -361,7 +361,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
 
@@ -373,7 +373,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -385,7 +385,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
         'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
-        'label' => '1/2 AM'
+        'label' => $this->leaveRequestDayTypes['1/2 AM']['label']
       ]
     ];
 
@@ -439,7 +439,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Public Holiday']['id'],
         'value' => $this->leaveRequestDayTypes['Public Holiday']['value'],
-        'label' => 'Public Holiday'
+        'label' => $this->leaveRequestDayTypes['Public Holiday']['label']
       ]
     ];
 
@@ -451,7 +451,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -499,7 +499,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
 
@@ -512,7 +512,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
 
@@ -524,7 +524,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -535,7 +535,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
 
@@ -547,7 +547,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -558,7 +558,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
 
@@ -568,7 +568,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
 
@@ -578,7 +578,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
 
@@ -594,7 +594,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -605,7 +605,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
     // Wednesday is a working day on the first week
@@ -616,7 +616,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
     // Thursday is not a working day on the first week
@@ -626,7 +626,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
 
@@ -638,7 +638,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['All Day']['id'],
         'value' => $this->leaveRequestDayTypes['All Day']['value'],
-        'label' => 'All Day'
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
       ]
     ];
 
@@ -649,7 +649,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
 
@@ -659,7 +659,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Weekend']['id'],
         'value' => $this->leaveRequestDayTypes['Weekend']['value'],
-        'label' => 'Weekend'
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
       ]
     ];
     // Hit sunday again, so we are now on the fourth week since the start date.
@@ -672,7 +672,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type' => [
         'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
         'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
-        'label' => 'Non Working Day'
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
       ]
     ];
     $expectedResultsBreakdown['amount'] *= -1;

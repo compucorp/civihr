@@ -3,9 +3,6 @@
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
-use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest
@@ -504,27 +501,5 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-15'), $start
     ));
-  }
-  public function testGetWorkDayType() {
-    //create a contact with valid contract and a Work pattern assigned
-    $contact = ContactFabricator::fabricate();
-    $periodStartDate = date('2016-01-01');
-
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-      'period_start_date' => $periodStartDate,
-    ]);
-    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id
-    ]);
-    $startDateTime = new DateTime('2016-11-30');
-
-    $type = WorKday::WORK_DAY_OPTION_YES;
-    $dayType = WorkPattern::getWorkDayType($contact['id'], $startDateTime);
-    $this->assertEquals($type, $dayType);
   }
 }
