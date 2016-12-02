@@ -389,14 +389,12 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime1);
     $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $dayType);
 
-
     // Since the start date is a sunday, the end of the week, the following day
     // (2016-08-01) should be on the second week. Monday of the second week is
     // not a working day
     $startDateTime2 = new DateTime('2016-08-01');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime2);
     $this->assertEquals(WorkDay::WORK_DAY_OPTION_NO, $dayType);
-
 
     // Now, since we hit sunday, the following day will be on the third week
     // since the start date, but the work pattern only has 2 weeks, so we
