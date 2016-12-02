@@ -57,7 +57,7 @@ do
   sedi "s|\(<releaseDate>\)[^<>]*\(</releaseDate>\)|\1${releaseDate}\2|" "$CONF"
   fileName="$fileName ${var}"/info.xml
 done
-git commit -m "Update CiviHR Version (${version}) and Release Date (${releaseDate})" $fileName
-git tag -a ${version} -m "CiviHR Version ${version}"
-echo ""
-echo "Created tag, ${version}. Please push the branch and tag!"
+# git commit -m "Update CiviHR Version (${version}) and Release Date (${releaseDate})" $fileName
+# git tag -a ${version} -m "CiviHR Version ${version}"
+# echo ""
+# echo "Created tag, ${version}. Please push the branch and tag!"
