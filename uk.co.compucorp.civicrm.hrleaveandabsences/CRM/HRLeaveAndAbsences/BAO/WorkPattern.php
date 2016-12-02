@@ -1,8 +1,5 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
-use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
-
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
 
   /**
@@ -284,7 +281,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @return float
    */
   public function getLeaveDaysForDate(DateTime $date, DateTime $startDate) {
-    $day = $this->getWorkDayforDate($date, $startDate);
+    $day = $this->getWorkDayForDate($date, $startDate);
     return isset($day['leave_days']) ? (float)$day['leave_days'] : 0;
   }
 
@@ -299,7 +296,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @return int
    */
   public function getWorkDayTypeForDate(DateTime $date, DateTime $startDate) {
-    $day = $this->getWorkDayforDate($date, $startDate);
+    $day = $this->getWorkDayForDate($date, $startDate);
     return $day['type'];
   }
 
@@ -322,7 +319,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @return array
    *   An array containing information about the work day
    */
-  public function getWorkDayforDate(DateTime $date, DateTime $startDate) {
+  public function getWorkDayForDate(DateTime $date, DateTime $startDate) {
     if($date < $startDate) {
       return 0;
     }
@@ -441,31 +438,4 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
       'id' => "{$workWeekTable}:pattern_id"
     ];
   }
-
-  /**
-   * Returns the type of this day for the contact whether its a Working Day, Non Working Day, Weekend or Public Holiday
-   * The method first of all finds the valid work pattern for this contact for the given date
-   * and also the effective start date of the contact work pattern
-   * This information is then used to find the work day type
-   *
-   * @param int $contactId
-   * @param \DateTime $date
-   *
-   * @return int
-   *   The WorkDay Type
-   */
-  public static function getWorkDayType($contactId, DateTime $date) {
-
-    $workPattern = ContactWorkPattern::getWorkPattern($contactId, $date);
-    $startDate = ContactWorkPattern::getStartDate($contactId, $date);
-
-    if(!$workPattern || !$startDate) {
-      return Workday::WORK_DAY_OPTION_NO;
-    }
-
-    $workDayTypeId = $workPattern->getWorkDayTypeForDate($date, $startDate);
-    return $workDayTypeId;
-  }
-
-
 }

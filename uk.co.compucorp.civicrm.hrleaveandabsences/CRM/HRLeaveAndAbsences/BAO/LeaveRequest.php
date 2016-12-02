@@ -4,7 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
@@ -216,17 +216,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       'breakdown' => []
     ];
     $leaveRequestDayTypeOptionsGroup = self::getLeaveRequestDayTypeOptionsGroup();
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
 
     foreach ($datePeriod as $date) {
       //check if date is a public holiday
       if(self::publicHolidayLeaveRequestExists($contactId, $date)){
         $amount = 0.0;
-        $key = self::getLeaveRequestDayTypeFromWorkDayType('Public Holiday');
+        $key = $leaveRequestDayTypes['Public Holiday'];
         $leaveRequestDayTypeName = CRM_Core_Pseudoconstant::getName(self::class, 'from_date_type', $key);
       }
       else{
         $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
-        $type = WorkPattern::getWorkDayType($contactId, $date);
+        $type = ContactWorkPattern::getWorkDayType($contactId, $date);
         $key = self::getLeaveRequestDayTypeFromWorkDayType($type);
         $leaveRequestDayTypeName = CRM_Core_Pseudoconstant::getName(self::class, 'from_date_type', $key);
       }
@@ -276,9 +277,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       case WorkDay::WORK_DAY_OPTION_WEEKEND:
         return $leaveRequestDayTypes['Weekend'];
 
-      case 'Public Holiday':
-        return $leaveRequestDayTypes['Public Holiday'];
-
       default:
         return '';
     }
@@ -319,7 +317,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   /**
    * Returns a LeaveRequest Object if a public holiday leave request exists for the given date
    *
-   * @param $contactID
+   * @param int $contactID
    * @param \DateTime $date
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null

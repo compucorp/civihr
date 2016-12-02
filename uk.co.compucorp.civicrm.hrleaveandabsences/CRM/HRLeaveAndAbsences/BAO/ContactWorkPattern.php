@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
@@ -162,4 +163,29 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
 
     return null;
   }
+
+  /**
+   * Returns the type of this day for the contact whether its a Working Day, Non Working Day or Weekend
+   * The method first of all finds the valid work pattern for this contact for the given date
+   * and also the effective start date of the contact work pattern
+   * This information is then used to find the work day type
+   *
+   * @param int $contactId
+   * @param \DateTime $date
+   *
+   * @return int
+   *   The WorkDay Type
+   */
+  public static function getWorkDayType($contactId, DateTime $date) {
+    $workPattern = self::getWorkPattern($contactId, $date);
+    $startDate = self::getStartDate($contactId, $date);
+
+    if(!$workPattern || !$startDate) {
+      return Workday::WORK_DAY_OPTION_NO;
+    }
+
+    $workDayTypeId = $workPattern->getWorkDayTypeForDate($date, $startDate);
+    return $workDayTypeId;
+  }
+
 }
