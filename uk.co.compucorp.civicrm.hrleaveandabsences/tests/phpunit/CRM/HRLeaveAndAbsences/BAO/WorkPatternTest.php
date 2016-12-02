@@ -379,7 +379,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     return WorkPatternFabricator::fabricate($params);
   }
 
-  public function testgetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithOnlyOneWeek() {
+  public function testGetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithOnlyOneWeek() {
     $pattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
 
     $start = new DateTime('2016-01-01');
@@ -420,7 +420,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     ));
   }
 
-  public function testgetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithMultipleWeeks() {
+  public function testGetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithMultipleWeeks() {
     // Week 1 weekdays: monday, wednesday and friday
     // Week 2 weekdays: tuesday and thursday
     $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();

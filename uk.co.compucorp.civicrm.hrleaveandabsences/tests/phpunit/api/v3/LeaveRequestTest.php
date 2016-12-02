@@ -19,6 +19,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
  */
 class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
@@ -29,6 +31,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
   }
 
   /**
@@ -294,7 +297,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type, to_date, to_type
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type
    */
   public function testCalculateBalanceChangeShouldNotAllowNullParams() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
@@ -307,9 +310,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'from_date' => "2016-11-05",
-      'from_type' => "1/2 AM",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
       'to_date' => "2016-11-10",
-      'to_type' => "1/2 PM",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
     ]);
   }
 
@@ -320,22 +323,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDate() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
-      'from_type' => "1/2 AM",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
       'to_date' => "2016-11-10",
-      'to_type' => "1/2 PM",
-    ]);
-  }
-
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date
-   */
-  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDate() {
-    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-      'contact_id' => 1,
-      'from_date' => "2016-11-05",
-      'from_type' => "1/2 AM",
-      'to_type' => "1/2 PM",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
     ]);
   }
 
@@ -348,20 +338,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'from_date' => "2016-11-05",
       'to_date' => "2016-11-10",
-      'to_type' => "1/2 PM",
-    ]);
-  }
-
-  /**
-   * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_type
-   */
-  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToType() {
-    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-      'contact_id' => 1,
-      'from_date' => "2016-11-05",
-      'from_type' => "1/2 AM",
-      'to_date' => "2016-11-10",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
     ]);
   }
 
@@ -373,11 +350,12 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => "2016-19-05",
-      'from_type' => "1/2 AM",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
       'to_date' => "2016-11-10",
-      'to_type' => "1/2 PM",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name']
     ]);
   }
+
   public function testCalculateBalanceChangeWithAllRequiredParameters() {
     $contact = ContactFabricator::fabricate();
     $periodStartDate = date('Y-01-01');
@@ -386,10 +364,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     HRJobContractFabricator::fabricate([
       'contact_id' => $contact['id']
     ],
-      [
-        'period_start_date' => $periodStartDate,
-        'title' => $title
-      ]);
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
     //attach the work pattern to the contact
     ContactWorkPatternFabricator::fabricate([
@@ -397,62 +375,55 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    $contactId = $contact['id'];
-    $fromDate = date("Y-11-05");
-    $toDate = date("Y-11-08");
-    $fromType = '1/2 AM';
-    $toType = '1/2 AM';
+    $fromDate = date("2016-11-13");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
 
-    //Leave Request Start Date
-    $startDate = new DateTime($fromDate);
-    //Leave Request End Date
-    $endDate = new DateTime($toDate);
-
-    $endDateUnmodified = new DateTime($toDate);
-    // add one day to end date to include it in DatePeriod
-    $endDate->modify('+1 day');
-    $interval   = new DateInterval('P1D');
-    $datePeriod = new DatePeriod($startDate, $interval, $endDate);
     $expectedResultsBreakdown = [
       'amount' => 0,
       'breakdown' => []
     ];
-    $fromDateIsHalfDay = in_array($fromType, ['1/2 AM', '1/2 PM']);
-    $toDateIsHalfDay = in_array($toType, ['1/2 AM', '1/2 PM']);
 
-    //mimick how LeaveRequest::calculateBalanceChange will handle this to get an expected result
-    //this will only work for the normal 40 hour work week fabricated
-    foreach ($datePeriod as $date) {
-      if(in_array($date->format('N'), [6, 7])){
-        $amount = 0;
-        $type = 'Weekend';
-      }
-      else{
-        $amount = -1 * 1.0;
-        $type = 'All day';
-      }
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
+    ];
 
-      if($fromDateIsHalfDay && $date->format('Y-m-d') == $startDate->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
+    ];
 
-      if($toDateIsHalfDay && $date->format('Y-m-d') == $endDateUnmodified->format('Y-m-d') && $amount != 0) {
-        $amount = -1 * 0.5;
-        $type =  $fromType;
-      }
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 0.5;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 0.5,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
+        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
+        'label' => '1/2 AM'
+      ]
+    ];
 
-      $result = [
-        'date' => $date->format('Y-m-d'),
-        'amount' => abs($amount),
-        'type' => $type
-      ];
-      $expectedResultsBreakdown['amount'] += $amount;
-      $expectedResultsBreakdown['breakdown'][] = $result;
+    $expectedResultsBreakdown['amount'] *= -1;
 
-    }
     $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
-      'contact_id' => $contactId,
+      'contact_id' => $contact['id'],
       'from_date' => $fromDate,
       'from_type' => $fromType,
       'to_date' => $toDate,
@@ -460,5 +431,4 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
-
 }

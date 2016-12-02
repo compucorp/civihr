@@ -8,6 +8,7 @@ require_once 'BaseHeadlessTest.php';
 require_once 'helpers/ContractHelpersTrait.php';
 require_once 'helpers/LeaveBalanceChangeHelpersTrait.php';
 require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
+require_once 'helpers/LeaveRequestHelpersTrait.php';
 
 /**
  * Call the "cv" command.

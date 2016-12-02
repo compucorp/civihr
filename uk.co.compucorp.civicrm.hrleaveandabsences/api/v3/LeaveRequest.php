@@ -101,14 +101,14 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
     'name' => 'to_date',
     'title' => 'Ending Day of the Leave Period',
     'type' => CRM_Utils_Type::T_DATE,
-    'api.required' => 1
+    'api.required' => 0
   ];
 
   $spec['to_type'] = [
     'name' => 'to_type',
     'title' => 'Ending Day Type',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1
+    'api.required' => 0
   ];
 }
 
@@ -120,12 +120,21 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_leave_request_calculateBalanceChange($params) {
+  $hasToDate = !empty($params['to_date']);
+  $hasToType = !empty($params['to_type']);
+
+  if (($hasToDate && !$hasToType) || ($hasToType && !$hasToDate)) {
+    throw new InvalidArgumentException("to_date and to_type must be included together");
+  }
+  $toDate = !empty($params['to_date']) ? $params['to_date'] : null;
+  $toType = !empty($params['to_type']) ? $params['to_type'] : null;
+
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
     $params['from_date'],
     $params['from_type'],
-    $params['to_date'],
-    $params['to_type']
+    $toDate,
+    $toType
   );
   return civicrm_api3_create_success($result);
 }

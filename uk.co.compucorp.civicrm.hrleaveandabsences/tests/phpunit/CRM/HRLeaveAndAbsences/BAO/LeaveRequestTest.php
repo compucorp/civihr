@@ -19,11 +19,12 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
  */
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
+
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
    */
   private $absenceType;
-  private $leaveRequestDayTypes = [];
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
@@ -41,20 +42,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'must_take_public_holiday_as_leave' => 1
     ]);
     $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
-  }
-
-  private static function leaveRequestDayTypeOptionsBuilder() {
-      $leaveRequestDayTypeOptionsGroup = [];
-      $leaveRequestDayTypeOptions = LeaveRequest::buildOptions('from_date_type');
-      foreach($leaveRequestDayTypeOptions  as $key => $label) {
-        $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'from_date_type', $key);
-        $leaveRequestDayTypeOptionsGroup[$label] = [
-          'id' => $key,
-          'value' => $key,
-          'name' => $name
-        ];
-      }
-      return $leaveRequestDayTypeOptionsGroup;
   }
 
   public function tearDown() {
@@ -352,13 +339,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'title' => $title
     ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    //attach the work pattern to the contact
     ContactWorkPatternFabricator::fabricate([
       'contact_id' => $contact['id'],
       'pattern_id' => $workPattern->id
     ]);
 
-    $contactId = $contact['id'];
     $fromDate = date("2016-11-13");
     $toDate = date("2016-11-15");
     $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
@@ -406,9 +391,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
-
   }
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
@@ -425,7 +409,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
     $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
 
-    //attach the work pattern to the contact
     ContactWorkPatternFabricator::fabricate([
       'contact_id' => $contact['id'],
       'pattern_id' => $workPattern->id
@@ -438,7 +421,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
     PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
-    $contactId = $contact['id'];
     $fromDate = date("2016-11-14");
     $toDate = date("2016-11-15");
     $fromType = $this->leaveRequestDayTypes['All Day']['name'];
@@ -461,7 +443,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    // last day is a tuesday, which is a working day, half day will be deducted
+    // last day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 1.0;
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-11-15',
@@ -475,7 +457,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
@@ -495,7 +477,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // Week 1 weekdays: monday, wednesday and friday
     // Week 2 weekdays: tuesday and thursday
     $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
-    //attach the work pattern to the contact
     ContactWorkPatternFabricator::fabricate([
       'contact_id' => $contact['id'],
       'pattern_id' => $pattern->id
@@ -511,8 +492,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'breakdown' => []
     ];
 
-    $start = new DateTime('2016-07-31'); // A sunday
-
+    // Start day (2016-07-31), a sunday
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-07-31',
       'amount' => 0,
