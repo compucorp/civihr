@@ -561,7 +561,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     ));
     $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
     $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
-    $domainEmailAddress = CRM_Core_BAO_Domain::getNameAndEmail()[1];
+
+    $domainData = civicrm_api3('Domain', 'get', ['sequential' => 1, 'current_domain' => 1]);
+    $domainEmailAddress = $domainData['values'][0]['from_email'];
 
     $tplParams = array(
       'messageTemplateID' => $msgTempResult['values'][$msgTempResult['id']]['id'],
