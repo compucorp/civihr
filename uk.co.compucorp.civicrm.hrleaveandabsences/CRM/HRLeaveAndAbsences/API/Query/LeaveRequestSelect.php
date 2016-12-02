@@ -1,9 +1,12 @@
 <?php
 
-use \Civi\API\SelectQuery;
-use \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
-use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use \CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
+use Civi\API\SelectQuery;
+use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
+use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
+use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 /**
  * This class is basically a wrapper around Civi\API\SelectQuery.
@@ -42,15 +45,81 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * of the Public Holiday type will be returned.
    */
   private function addJoins() {
+    $this->addDateAndBalanceChangeJoins();
+    $this->addContractJoins();
+  }
+
+  /**
+   * Executes the query
+   *
+   * @return array
+   */
+  public function run() {
+    return $this->query->run();
+  }
+
+  /**
+   * Joins the Leave Request with Job Contracts, in order to only return
+   * the requests which overlap contracts. That is, the request where the start
+   * and/or the end date is between the start and end dates of of the contracts
+   * of the Leave Request contact.
+   */
+  private function addContractJoins() {
+    $this->query->join(
+      'INNER',
+      HRJobContract::getTableName(),
+      'jc',
+      [
+        'a.contact_id = jc.contact_id',
+        'jc.deleted = 0'
+      ]
+    );
+    $this->query->join(
+      'INNER',
+      HRJobContractRevision::getTableName(),
+      'jcr',
+      [
+        'jcr.id = (SELECT id
+                    FROM ' . HRJobContractRevision::getTableName() . ' jcr2
+                    WHERE
+                    jcr2.jobcontract_id = jc.id
+                    ORDER BY jcr2.effective_date DESC
+                    LIMIT 1)'
+      ]
+    );
+    $this->query->join(
+      'INNER',
+      HRJobDetails::getTableName(),
+      'jd',
+      [
+        'jd.jobcontract_revision_id = jcr.details_revision_id',
+        '(
+          a.from_date <= jd.period_end_date OR
+          jd.period_end_date IS NULL
+        )',
+        '(
+          a.to_date >= jd.period_start_date OR
+          (a.to_date IS NULL AND a.from_date >= jd.period_start_date)
+        )'
+      ]
+    );
+  }
+
+  /**
+   * Joins the Leave Request with its respective LeaveRequestDates and
+   * LeaveBalanceChange
+   */
+  private function addDateAndBalanceChangeJoins() {
     $balanceChangeJoinConditions = [
       'lbc.source_id = lrd.id',
       "lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
     ];
 
     $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-    if(empty($this->params['public_holiday'])) {
+    if (empty($this->params['public_holiday'])) {
       $balanceChangeJoinConditions[] = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
-    } else {
+    }
+    else {
       $balanceChangeJoinConditions[] = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
     }
 
@@ -66,15 +135,6 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       'lbc',
       $balanceChangeJoinConditions
     );
-  }
-
-  /**
-   * Executes the query
-   *
-   * @return array
-   */
-  public function run() {
-    return $this->query->run();
   }
 
 }

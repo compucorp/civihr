@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
@@ -8,7 +9,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
-use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
@@ -200,6 +200,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testGetDoesntReturnPublicHolidayLeaveRequestsIfThePublicHolidayParamIsNotPresentOrIsFalse() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
+    // The get endpoint only returns leave requests overlapping contracts, so
+    // we need them in place
+    HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '-1 day']);
+    HRJobContractFabricator::fabricate(['contact_id' => 2], ['period_start_date' => '-1 day']);
+
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
     $leaveRequest1 = LeaveRequestFabricator::fabricate([
@@ -246,6 +251,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testGetReturnsOnlyPublicHolidayLeaveRequestsIfThePublicHolidayIsTrue() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
+    // The get endpoint only returns leave requests overlapping contracts, so
+    // we need them in place
+    HRJobContractFabricator::fabricate(['contact_id' => 1], ['period_start_date' => '-1 day']);
+    HRJobContractFabricator::fabricate(['contact_id' => 2], ['period_start_date' => '-1 day']);
+
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
     $leaveRequest1 = LeaveRequestFabricator::fabricate([
@@ -275,6 +285,205 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(1, $result['values'][0]['contact_id']);
     $this->assertEquals($absenceType->id, $result['values'][0]['type_id']);
     $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
+  }
+
+  public function testGetCanReturnALeaveRequestWhichOverlapsAContractWithoutEndDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => 1
+    ],
+    [
+      'period_start_date' => '2016-01-01'
+    ]);
+
+    //This leave request is before the contract start date and will not be returned
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    //This will be returned as it is after the contract start date
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+    $this->assertCount(1, $result['values']);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+  }
+
+  public function testGetCanReturnLeaveRequestsWhichOverlapAContractWithEndDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => 1
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+      'period_end_date' => '2016-10-01'
+    ]);
+
+    //This leave request is before the contract start date and will not be returned
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    // This will be returned
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-03'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    // This will be returned
+    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-09-07'),
+      'to_date' => CRM_Utils_Date::processDate('2016-09-08'),
+      'status_id' => $leaveRequestStatuses['Approved']
+    ], true);
+
+    //This will not be returned as it is after the contract start date
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
+      'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
+      'status_id' => $leaveRequestStatuses['Waiting Approval']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+    $this->assertCount(2, $result['values']);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
+  }
+
+  public function testGetCanReturnLeaveRequestsWithoutToDateWhichOverlapAContractWithoutEndDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => 1
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+    ]);
+
+    //This leave request is before the contract start date and will not be returned
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'status_id' => $leaveRequestStatuses['Cancelled']
+    ], true);
+
+    // This will be returned as it's after the contract start date
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-09-02'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    // This will be returned as it's after the contract start date as well
+    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2018-01-02'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+    $this->assertCount(2, $result['values']);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
+  }
+
+  public function testGetCanReturnLeaveRequestsWithoutToDateWhichOverlapAContractWithEndDate() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => 1
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+      'period_end_date' => '2016-10-01'
+    ]);
+
+    //This leave request is before the contract start date and will not be returned
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'status_id' => $leaveRequestStatuses['Cancelled']
+    ], true);
+
+    // This will be returned
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    // This will be returned
+    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    //This will not be returned as it is after the contract start date
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
+      'status_id' => $leaveRequestStatuses['Rejected']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get');
+    $this->assertCount(2, $result['values']);
+    $this->assertNotEmpty($result['values'][$leaveRequest2->id]);
+    $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
+  }
+
+  public function testGetDoesNotReturnALeaveRequestNotOverlappingAContractEvenIfItMatchesTheDatesParams() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => 1
+    ],
+    [
+      'period_start_date' => '2016-01-01',
+      'period_end_date' => '2016-10-01'
+    ]);
+
+    //This leave request matches the date params, but not the contract dates,
+    //so it will not be returned
+    LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
+      'status_id' => $leaveRequestStatuses['Cancelled']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['from_date' => '2015-12-30']);
+    $this->assertCount(0, $result['values']);
   }
 
   public function invalidGetBalanceChangeByAbsenceTypeStatusesOperators() {
