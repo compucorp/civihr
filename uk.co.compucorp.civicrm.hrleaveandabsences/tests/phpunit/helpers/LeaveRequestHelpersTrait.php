@@ -19,5 +19,4 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     }
     return $leaveRequestDayTypeOptionsGroup;
   }
-
 }
