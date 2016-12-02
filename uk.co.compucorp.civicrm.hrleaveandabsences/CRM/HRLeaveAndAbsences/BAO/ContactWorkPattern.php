@@ -118,7 +118,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
   }
 
   /**
-   * This method returns the effective start date of the Contact Work  Pattern for a contact ID
+   * This method returns the effective start date of the Contact Work Pattern for a contact ID
    * valid for the $date parameter supplied.
    * If the contact has no work pattern, the start date of
    * the contact's contract that overlaps with the $date parameter supplied is returned.

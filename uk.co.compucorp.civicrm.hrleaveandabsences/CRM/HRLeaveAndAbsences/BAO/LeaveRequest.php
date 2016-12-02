@@ -182,21 +182,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Calculates the overall balance change that a Leave Request will create given a
    * start and end date and also returns the breakdown by days
    *
-   * @param $params
-   *   - contact_id
-   *   - from_date: The starting date of the leave period
-   *   - from_type: The from type e.g 1/2 AM, 1/2 PM
-   *   - to_date: The ending day of the leave period
-   *   - to_type: Same description as from_type
+   * @param int $contactId
+   * @param \DateTime $fromDate
+   * @param string $fromType
+   * @param null|\DateTime $toDate
+   * @param null|string $toType
    *
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, $fromDate, $fromType, $toDate, $toType) {
+  public static function calculateBalanceChange($contactId, $fromDate, $fromType, $toDate = null, $toType = null) {
 
     $leaveRequest = new self();
     $leaveRequest->contact_id = $contactId;
 
+    //For single day leave requests
+    if (!$toDate) {
+      $toDate = $fromDate;
+    }
     $startDate = new DateTime($fromDate);
     $endDate = new DateTime($toDate);
     $endDateUnmodified = new DateTime($toDate);
@@ -287,14 +290,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @return array
    *   [
-   *     1 => [
+   *     'all_day' => [
    *     'id' => 1,
-   *     'value' => 'All Day',
+   *     'value' => '1',
    *     'label' => 'all_day'
    *     ],
-   *     2 => [
+   *     'half_day-am => [
    *     'id' => 2,
-   *     'value' => '1/2 AM',
+   *     'value' => '2',
    *     'label' => 'half_day_am'
    *     ]
    *   ]

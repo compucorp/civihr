@@ -458,7 +458,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
 
     $workPattern = ContactWorkPattern::getWorkPattern($contactId, $date);
     $startDate = ContactWorkPattern::getStartDate($contactId, $date);
-    $workPattern->getWorkDayTypeForDate($date, $startDate);
 
     if(!$workPattern || !$startDate) {
       return Workday::WORK_DAY_OPTION_NO;
