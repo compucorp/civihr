@@ -340,8 +340,20 @@ function hrcase_civicrm_alterContent( &$content, $context, $tplName, &$object ) 
   }
 }
 
+/**
+ * Implementation of hook_civicrm_post, executed after task creation/update
+ *
+ * @param string $op
+ *   The type of operation being performed
+ * @param string $objectName
+ *   Type of object being processed
+ * @param string $objectId string 
+ *   Id of object
+ * @param CRM_Activity_DAO_Activity $objectRef
+ *   Object being used to process operation
+ */
 function hrcase_civicrm_post( $op, $objectName, $objectId, &$objectRef ) {
-  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectRef->activity_type_id)) {
+  if ($objectName == 'Activity' && isset($objectRef->case_id) && !activityCreatedByTaskandAssignments($objectId)) {
     $component_id = CRM_Core_Component::getComponentID('CiviCase');
     $contact_id =  CRM_Case_BAO_Case::retrieveContactIdsByCaseId($objectRef->case_id);
     $hrjob = civicrm_api3('HRJobContract', 'get', array(
@@ -447,10 +459,13 @@ function hrcase_getActionsSchedule($getNamesOnly = FALSE) {
 /**
  * function to check if the activity is created by task and assignments extension
  *
- * @param int $activity_type_id
+ * @param int $activity_id
  * @return boolean
  */
-function activityCreatedByTaskandAssignments($activity_type_id) {
+function activityCreatedByTaskandAssignments($activity_id) {
+  $params = ['id' => $activity_id];
+  $activity = CRM_Activity_BAO_Activity::retrieve($params);
+
   // check if task and assignments is enabled
   $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'uk.co.compucorp.civicrm.tasksassignments', 'is_active', 'full_name');
   if(!$isEnabled) {
@@ -469,7 +484,7 @@ function activityCreatedByTaskandAssignments($activity_type_id) {
   $result = civicrm_api3('OptionValue', 'getsingle', array(
     'sequential' => 1,
     'option_group_id' => $optionGroup['id'],
-    'value' => $activity_type_id,
+    'value' => $activity->activity_type_id,
   ));
 
   if (!empty($result['component_id']) && in_array($result['component_id'], $tasksAssignmentsComponentIds)) {

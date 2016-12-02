@@ -28,3 +28,7 @@ body:not(.toolbar-drawer) {
   line-height: 28px;
   height: 30px !important;
 }
+
+div.crm-summary-block > div.crm-summary-row > div.crm-content a.user-record-link {
+  color: #42AFCB;
+}

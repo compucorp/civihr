@@ -562,6 +562,9 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
     $mailprm[$this->_targetContactID]['display_name'] = $targetContactResult['values'][$this->_targetContactID]['display_name'];
     $mailprm[$this->_targetContactID]['email'] = $targetContactResult['values'][$this->_targetContactID]['email'];
 
+    $domainData = civicrm_api3('Domain', 'get', ['sequential' => 1, 'current_domain' => 1]);
+    $domainEmailAddress = $domainData['values'][0]['from_email'];
+
     $tplParams = array(
       'messageTemplateID' => $msgTempResult['values'][$msgTempResult['id']]['id'],
       'empName' => $mailprm[$this->_targetContactID]['display_name'],
@@ -634,7 +637,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
       }
 
       if (array_key_exists('_qf_AbsenceRequest_done_save', $submitValues)) {
-        $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+        $sendTemplateParams['from'] = "{$mailprm[$this->_targetContactID]['display_name']} <$domainEmailAddress>";
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied.'), ts('Saved'), 'success');
       }
       elseif (array_key_exists('_qf_AbsenceRequest_done_saveandapprove', $submitValues) || $isAdmin) {
@@ -642,7 +645,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
-          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
+          $sendTemplateParams['from'] = "{$emailID['values'][$emailID['id']]['display_name']} <$domainEmailAddress>";
         }
         $sendTemplateParams['tplParams']['approval'] = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been applied and approved.'), ts('Saved'), 'success');
@@ -676,7 +679,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         foreach($subact['values'] as $key=>$val) {
           civicrm_api3('Activity', 'create', array('id' =>$val['id'] ,'status_id' => $statusId,));
         }
-        $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+        $sendTemplateParams['from'] = "{$mailprm[$this->_targetContactID]['display_name']} <$domainEmailAddress>";
         $sendTemplateParams['tplParams']['cancel'] = $sendMail = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been Cancelled.'), ts('Cancelled'), 'success');
         $session->pushUserContext(CRM_Utils_System::url('civicrm/absence/set', "reset=1&action=view&aid={$result['id']}"));
@@ -713,7 +716,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
-          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
+          $sendTemplateParams['from'] = "{$emailID['values'][$emailID['id']]['display_name']} <$domainEmailAddress>";
         }
         $sendTemplateParams['tplParams']['approval'] = $sendMail = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been Approved.'), ts('Approved'), 'success');
@@ -735,7 +738,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
           $emailID = civicrm_api3('contact', 'get', array(
             'id' => $this->_loginUserID,
           ));
-          $sendTemplateParams['from'] = $emailID['values'][$emailID['id']]['email'];
+          $sendTemplateParams['from'] = "{$emailID['values'][$emailID['id']]['display_name']} <$domainEmailAddress>";
         }
         $sendTemplateParams['tplParams']['reject'] = $sendMail = TRUE;
         CRM_Core_Session::setStatus(ts('Absence(s) have been Rejected.'), ts('Rejected'), 'success');
@@ -766,7 +769,7 @@ class CRM_HRAbsence_Form_AbsenceRequest extends CRM_Core_Form {
         $buttonName = $this->controller->getButtonName();
         if ($buttonName == "_qf_AbsenceRequest_done_save") {
           $this->_aid = $submitValues['source_record_id'];
-          $sendTemplateParams['from'] = $mailprm[$this->_targetContactID]['email'];
+          $sendTemplateParams['from'] = "{$mailprm[$this->_targetContactID]['display_name']} <$domainEmailAddress>";
           $sendTemplateParams['tplParams']['save'] = $sendMail = TRUE;
           $session->pushUserContext(CRM_Utils_System::url('civicrm/absences', "reset=1&cid={$this->_targetContactID}", false, 'hrabsence/list'));
         }

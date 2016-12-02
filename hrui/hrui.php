@@ -415,6 +415,24 @@ function hrui_setViewOptionsSetting($options = array()) {
 }
 
 /**
+ * Implementation of hook_civicrm_summary
+ *
+ * @param int $contactId
+ * @param mixed $content
+ * @param int $contentPlacement
+ */
+function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
+  $uf = _get_uf_match_contact($contactId);
+  if (empty($uf) || empty($uf['uf_id'])) {
+    return NULL;
+  }
+  $user = user_load($uf['uf_id']);
+  $content['userid'] = $uf['uf_id'];
+  $content['username'] = !empty($user->name) ? $user->name : '';
+  $contentPlacement = NULL;
+}
+
+/**
  * Implementation of hook_civicrm_enable
  */
 function hrui_civicrm_enable() {
