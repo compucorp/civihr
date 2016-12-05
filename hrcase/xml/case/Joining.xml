@@ -3,27 +3,8 @@
 <CaseType>
   <name>Joining</name>
   <weight>3</weight>
+  <componentName>CiviTask</componentName>
   <ActivityTypes>
-    <ActivityType>
-      <name>Open Case</name>
-      <max_instances>1</max_instances>
-    </ActivityType>
-    <ActivityType>
-      <name>Follow up</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Type</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Status</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Change Case Start Date</name>
-    </ActivityType>
-    <ActivityType>
-      <name>Link Cases</name>
-    </ActivityType>
-
     <ActivityType>
       <name>Schedule joining date</name>
     </ActivityType>
@@ -54,52 +35,55 @@
     <ActivityType>
       <name>References Check</name>
     </ActivityType>
+    <ActivityType>
+      <name>Confirm End of Probation Date</name>
+    </ActivityType>
+    <ActivityType>
+      <name>Start Probation workflow</name>
+    </ActivityType>
   </ActivityTypes>
 
   <ActivitySets>
     <ActivitySet>
       <name>standard_timeline</name>
       <label>Standard Timeline</label>
-      <timeline>false</timeline>
+      <timeline>true</timeline>
       <ActivityTypes>
         <ActivityType>
           <name>Schedule joining date</name>
-          <reference_offset>0</reference_offset>
+          <reference_offset>-10</reference_offset>
         </ActivityType>
-	<ActivityType>
+        <ActivityType>
           <name>Issue appointment letter</name>
-          <reference_offset>1</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-10</reference_offset>
         </ActivityType>
-	<ActivityType>
+        <ActivityType>
           <name>Fill Employee Details Form</name>
-          <reference_offset>1</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-10</reference_offset>
         </ActivityType>
-	<ActivityType>
+        <ActivityType>
           <name>Submission of ID/Residence proofs and photos</name>
-          <reference_offset>1</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-10</reference_offset>
         </ActivityType>
-	<ActivityType>
-          <name>Program and work induction by program supervisor</name>
-          <reference_offset>1</reference_offset>
-          <reference_select>newest</reference_select>
-        </ActivityType>
-	<ActivityType>
+        <ActivityType>
           <name>Enter employee data in CiviHR</name>
-          <reference_offset>3</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>-7</reference_offset>
         </ActivityType>
-	<ActivityType>
+        <ActivityType>
+          <name>Program and work induction by program supervisor</name>
+          <reference_offset>-10</reference_offset>
+        </ActivityType>
+        <ActivityType>
           <name>Group Orientation to organization, values, policies</name>
-          <reference_offset>30</reference_offset>
-          <reference_select>newest</reference_select>
+          <reference_offset>7</reference_offset>
         </ActivityType>
-	<ActivityType>
-          <name>Probation appraisal (start probation workflow)</name>
-          <reference_offset>90</reference_offset>
-          <reference_select>newest</reference_select>
+        <ActivityType>
+          <name>Confirm End of Probation Date</name>
+          <reference_offset>30</reference_offset>
+        </ActivityType>
+        <ActivityType>
+          <name>Start Probation workflow</name>
+          <reference_offset>30</reference_offset>
         </ActivityType>
       </ActivityTypes>
     </ActivitySet>
