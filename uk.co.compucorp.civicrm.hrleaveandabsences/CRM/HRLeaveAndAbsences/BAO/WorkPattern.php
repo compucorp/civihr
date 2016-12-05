@@ -273,12 +273,41 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   /**
    * Returns the leave_days amount for the given $date, based on the $startDate.
    *
+   * If the $date is not greater than or equal the $startDate, it will return 0.
+   *
+   * @param \DateTime $date
+   * @param \DateTime $startDate
+   *
+   * @return float
+   */
+  public function getLeaveDaysForDate(DateTime $date, DateTime $startDate) {
+    $day = $this->getWorkDayForDate($date, $startDate);
+    return isset($day['leave_days']) ? (float)$day['leave_days'] : 0;
+  }
+
+  /**
+   * Returns the Work day type for the given date, based on the $startDate
+   *
+   * If the $date is not greater than or equal the $startDate, it will return 0.
+   *
+   * @param \DateTime $date
+   * @param \DateTime $startDate
+   *
+   * @return int
+   */
+  public function getWorkDayTypeForDate(DateTime $date, DateTime $startDate) {
+    $day = $this->getWorkDayForDate($date, $startDate);
+    return $day['type'];
+  }
+
+  /**
+   * This method returns the work day for the given date
+   *
    * This method will rotate through the pattern's weeks to get the return value.
    * That is, starting from $startDate, if the $date falls on the first week, we
    * get the leave_days amount from the first week of the pattern; if it falls on
    * second week, we get it from the pattern's second week; if it's on the third
    * week, we rotate and get the value from the pattern's first week again and
-   * so on.
    *
    * If the $date is not greater than or equal the $startDate, it will return 0.
    *
@@ -287,9 +316,10 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
    * @param \DateTime $date
    * @param \DateTime $startDate
    *
-   * @return float
+   * @return array
+   *   An array containing information about the work day
    */
-  public function getLeaveDaysForDate(DateTime $date, DateTime $startDate) {
+  public function getWorkDayForDate(DateTime $date, DateTime $startDate) {
     if($date < $startDate) {
       return 0;
     }
@@ -299,32 +329,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     if(empty($weeks)) {
       return 0;
     }
-
     $dateDayOfTheWeek = $date->format('N');
-    $weekToUse = $this->getWeekForDateFromStartDate($date, $startDate);
+    $week = $this->getWeekForDateFromStartDate($date, $startDate);
 
-    return $this->getLeaveDaysForDayOfTheWeekInWeek($dateDayOfTheWeek, $weekToUse);
-  }
-
-  /**
-   * Loops through all the $week days and return the leave_days value for the
-   * day with the given $dayOfTheWeek
-   *
-   * @param int $dayOfTheWeek
-   *  An ISO-8601 numeric representation of the day of the week. 1=Monday, 2=Tuesday and son on
-   * @param array $week
-   *  An week array, as the one returned from getValuesArray()
-   *
-   * @return float
-   */
-  private function getLeaveDaysForDayOfTheWeekInWeek($dayOfTheWeek, $week) {
     foreach($week['days'] as $day) {
-      if($day['day_of_the_week'] == $dayOfTheWeek) {
-        return isset($day['leave_days']) ? (float)$day['leave_days'] : 0;
+      if($day['day_of_the_week'] == $dateDayOfTheWeek) {
+        return $day;
       }
     }
-
-    return 0;
   }
 
   /**

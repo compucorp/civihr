@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -15,6 +18,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
  * @group headless
  */
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
+
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -36,6 +41,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'must_take_public_holiday_as_leave' => 1
     ]);
+    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
   }
 
   public function tearDown() {
@@ -318,5 +324,360 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     );
     $expectedResult = [$this->absenceType->id => -1];
     $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testCalculateBalanceChangeForALeaveRequestForAContact() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $fromDate = date("2016-11-13");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 0.5;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 0.5,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
+        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
+        'label' => $this->leaveRequestDayTypes['1/2 AM']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('2016-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    //create a public holiday for a date that is between the leave request days
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = date('2016-11-14');
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
+
+    $fromDate = date("2016-11-14");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['All Day']['name'];
+    $toType = $this->leaveRequestDayTypes['All Day']['name'];
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Starting date is a monday, but a public holiday
+    $expectedResultsBreakdown['amount'] += 0;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Public Holiday']['id'],
+        'value' => $this->leaveRequestDayTypes['Public Holiday']['value'],
+        'label' => $this->leaveRequestDayTypes['Public Holiday']['label']
+      ]
+    ];
+
+    // last day is a tuesday, which is a working day
+    $expectedResultsBreakdown['amount'] += 1.0;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForALeaveRequestForAContactWithMultipleWeeks() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $pattern->id
+    ]);
+
+    $fromDate = '2016-07-31';
+    $toDate = '2016-08-15';
+    $fromType = $this->leaveRequestDayTypes['All Day']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start day (2016-07-31), a sunday
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-07-31',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+
+    // Since the start date is a sunday, the end of the week, the following day
+    // (2016-08-01) should be on the second week. Monday of the second week is
+    // not a working day
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-01',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+
+    // The next day is a tuesday, which is a working day on the second week, so
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-02',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    // Wednesday is not a working day on the second week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-03',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+
+    // Thursday is a working day on the second week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-04',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    // Friday, Saturday and Sunday are not working days on the second week,
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-05',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-06',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-07',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+
+    // Now, since we hit sunday, the following day will be on the third week
+    // since the start date, but the work pattern only has 2 weeks, so we
+    // rotate back to use the week 1 from the pattern
+
+    // Monday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-08',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    // Tuesday is not a working day on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-09',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+    // Wednesday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-10',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+    // Thursday is not a working day on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-11',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+
+    // Friday is a working day on the first week
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-12',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => $this->leaveRequestDayTypes['All Day']['label']
+      ]
+    ];
+
+    // Saturday and Sunday are not working days on the first week
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-14',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['Weekend']['label']
+      ]
+    ];
+    // Hit sunday again, so we are now on the fourth week since the start date.
+    // The work pattern will rotate and use the week 2
+
+    // Monday is not a working day on week 2
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-08-15',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Non Working Day']['id'],
+        'value' => $this->leaveRequestDayTypes['Non Working Day']['value'],
+        'label' => $this->leaveRequestDayTypes['Non Working Day']['label']
+      ]
+    ];
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
+    $this->assertEquals($expectedResultsBreakdown, $result);
   }
 }

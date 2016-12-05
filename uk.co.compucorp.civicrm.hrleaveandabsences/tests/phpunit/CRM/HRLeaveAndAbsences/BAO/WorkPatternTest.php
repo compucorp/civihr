@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest
@@ -373,5 +374,132 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   private function updateBasicWorkPattern($id, $params) {
     $params['id'] = $id;
     return WorkPatternFabricator::fabricate($params);
+  }
+
+  public function testGetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithOnlyOneWeek() {
+    $pattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+
+    $start = new DateTime('2016-01-01');
+
+    // A friday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-01-01'), $start
+    ));
+
+    // A saturday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-02-13'), $start
+    ));
+
+    // A sunday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-03-06'), $start
+    ));
+
+    // A monday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-04-04'), $start
+    ));
+
+    // A tuesday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-05-24'), $start
+    ));
+
+    // A wednesday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-06-15'), $start
+    ));
+
+    // A thursday
+    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-07-28'), $start
+    ));
+  }
+
+  public function testGetWorkDayTypeForDateShouldHaveCorrectDayTypeForPatternsWithMultipleWeeks() {
+    // Week 1 weekdays: monday, wednesday and friday
+    // Week 2 weekdays: tuesday and thursday
+    $pattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+
+    $start = new DateTime('2016-07-31'); // A sunday
+
+    // Since the start date is a sunday, the end of the week, the following day
+    // (2016-08-01) should be on the second week. Monday of the second week is
+    // not a working day
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-01'), $start
+    ));
+
+    // The next day is a tuesday, which is a working day on the second week, so
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-02'), $start
+    ));
+
+    // Wednesday is not a working day on the second week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-03'), $start
+    ));
+
+    // Thursday is a working day on the second week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-04'), $start
+    ));
+
+    // Friday, Saturday and Sunday are not working days on the second week,
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-05'), $start
+    ));
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-06'), $start
+    ));
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-07'), $start
+    ));
+
+    // Now, since we hit sunday, the following day will be on the third week
+    // since the start date, but the work pattern only has 2 weeks, so we
+    // rotate back to use the week 1 from the pattern
+
+    // Monday is a working day on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-08'), $start
+    ));
+
+    // Tuesday is not a working day on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-09'), $start
+    ));
+
+    // Wednesday is a working day on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-10'), $start
+    ));
+
+    // Thursday is not a working day on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-11'), $start
+    ));
+
+    // Friday is a working day on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-12'), $start
+    ));
+
+    // Saturday and Sunday are not working days on the first week
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-13'), $start
+    ));
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-14'), $start
+    ));
+
+    // Hit sunday again, so we are now on the fourth week since the start date.
+    // The work pattern will rotate and use the week 2
+
+    // Monday is not a working day on week 2
+    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+      new DateTime('2016-08-15'), $start
+    ));
   }
 }

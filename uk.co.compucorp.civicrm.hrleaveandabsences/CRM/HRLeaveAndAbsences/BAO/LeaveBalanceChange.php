@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -493,14 +494,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return 0.0;
     }
 
-    $contactWorkPattern = ContactWorkPattern::getForDate($leaveRequest->contact_id, $date);
-    if(is_null($contactWorkPattern)) {
-      $workPattern = WorkPattern::getDefault();
-      $startDate = self::getStartDateOfContractOverlappingDate($leaveRequest->contact_id, $date);
-    } else {
-      $workPattern = WorkPattern::findById($contactWorkPattern->pattern_id);
-      $startDate = new \DateTime($contactWorkPattern->effective_date);
-    }
+    $workPattern = ContactWorkPattern::getWorkPattern($leaveRequest->contact_id, $date);
+    $startDate = ContactWorkPattern::getStartDate($leaveRequest->contact_id, $date);
 
     if(!$workPattern || !$startDate) {
       return 0.0;
@@ -553,8 +548,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       INNER JOIN {$leaveRequestTable} lr
         ON lrd.leave_request_id = lr.id
       WHERE lrd.date = %2 AND
-            lr.contact_id = %3 AND 
-            lr.type_id = %4
+            lr.contact_id = %3
       ORDER BY id
     ";
 
@@ -562,7 +556,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [$date->format('Y-m-d'), 'String'],
       3 => [$leaveRequest->contact_id, 'Integer'],
-      4 => [$leaveRequest->type_id, 'Integer']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
@@ -590,29 +583,5 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     ];
 
     CRM_Core_DAO::executeQuery($query, $params);
-  }
-
-  /**
-   * Fetches the contract of the given contact overlapping the given date and
-   * then return it's period start date as a DateTime object. Null is returned
-   * if there's no contract is found.
-   *
-   * @param int $contactID
-   * @param \DateTime $date
-   *
-   * @return \DateTime|null
-   */
-  private static function getStartDateOfContractOverlappingDate($contactID, DateTime $date) {
-    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
-      'contact_id' => $contactID,
-      'start_date' => $date->format('Y-m-d'),
-      'sequential' => 1
-    ]);
-
-    if(!empty($result['values'])) {
-      return new DateTime($result['values'][0]['period_start_date']);
-    }
-
-    return null;
   }
 }

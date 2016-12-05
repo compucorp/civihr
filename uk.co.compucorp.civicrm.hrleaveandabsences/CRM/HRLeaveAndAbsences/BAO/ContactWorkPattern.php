@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
@@ -95,4 +96,96 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
 
     return null;
   }
+
+  /**
+   * This method returns the Work Pattern for a contact ID
+   * valid for the $date parameter supplied.
+   * If the contact has no work pattern, the default work pattern is returned.
+   *
+   * @param int $contactId
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_WorkPattern
+   */
+  public static function getWorkPattern($contactId, DateTime $date) {
+    $contactWorkPattern = self::getForDate($contactId, $date);
+    if (is_null($contactWorkPattern)) {
+      $workPattern = WorkPattern::getDefault();
+    }
+    else {
+      $workPattern = WorkPattern::findById($contactWorkPattern->pattern_id);
+    }
+    return $workPattern;
+  }
+
+  /**
+   * This method returns the effective start date of the Contact Work Pattern for a contact ID
+   * valid for the $date parameter supplied.
+   * If the contact has no work pattern, the start date of
+   * the contact's contract that overlaps with the $date parameter supplied is returned.
+   *
+   * @param int $contactId
+   * @param \DateTime $date
+   *
+   * @return \DateTime
+   */
+  public static function getStartDate($contactId, DateTime $date) {
+    $contactWorkPattern = self::getForDate($contactId, $date);
+    if (is_null($contactWorkPattern)) {
+      $startDate = self::getStartDateOfContractOverlappingDate($contactId, $date);
+    }
+    else {
+      $startDate = new \DateTime($contactWorkPattern->effective_date);
+    }
+    return $startDate;
+  }
+
+  /**
+   * Fetches the contract of the given contact overlapping the given date and
+   * then return it's period start date as a DateTime object. Null is returned
+   * if there's no contract is found.
+   *
+   * @param int $contactID
+   * @param \DateTime $date
+   *
+   * @return \DateTime|null
+   */
+  private static function getStartDateOfContractOverlappingDate($contactID, DateTime $date) {
+    $result = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+      'contact_id' => $contactID,
+      'start_date' => $date->format('Y-m-d'),
+      'sequential' => 1
+    ]);
+
+    if(!empty($result['values'])) {
+      return new DateTime($result['values'][0]['period_start_date']);
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the type of this day for the contact whether its a Working Day, Non Working Day or Weekend
+   * The method first of all finds the valid work pattern for this contact for the given date
+   * and also the effective start date of the contact work pattern
+   * This information is then used to find the work day type
+   *
+   * @param int $contactId
+   * @param \DateTime $date
+   *
+   * @return int
+   *   The WorkDay Type
+   */
+  public static function getWorkDayType($contactId, DateTime $date) {
+    $workPattern = self::getWorkPattern($contactId, $date);
+    $startDate = self::getStartDate($contactId, $date);
+
+    if(!$workPattern || !$startDate) {
+      return Workday::WORK_DAY_OPTION_NO;
+    }
+
+    $workDayTypeId = $workPattern->getWorkDayTypeForDate($date, $startDate);
+    return $workDayTypeId;
+  }
+
 }

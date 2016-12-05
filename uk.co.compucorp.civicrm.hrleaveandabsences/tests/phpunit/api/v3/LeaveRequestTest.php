@@ -8,6 +8,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -15,6 +18,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHo
  * @group headless
  */
 class api_v3_LeaveRequestTest extends BaseHeadlessTest {
+
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
@@ -26,6 +31,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->leaveRequestDayTypes = $this->leaveRequestDayTypeOptionsBuilder();
   }
 
   /**
@@ -287,5 +293,155 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['IS NULL'],
       ['IS NOT NULL'],
     ];
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowNullParams() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutContactID() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'from_date' => "2016-11-05",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'to_date' => "2016-11-10",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_date
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'to_date' => "2016-11-10",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_type
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'to_date' => "2016-11-10",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage from_date is not a valid date: 2016-19-05
+   */
+  public function testCalculateBalanceChangeShouldNotAllowInvalidDate() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-19-05",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'to_date' => "2016-11-10",
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name']
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage to_date and to_type must be included together
+   */
+  public function testCalculateBalanceChangeShouldNotAllowToTypeParameterWhenToDateIsNotPresent() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => "2016-11-05",
+      'from_type' => $this->leaveRequestDayTypes['1/2 AM']['name'],
+      'to_type' => $this->leaveRequestDayTypes['1/2 PM']['name'],
+    ]);
+  }
+
+  public function testCalculateBalanceChangeWithAllRequiredParameters() {
+    $contact = ContactFabricator::fabricate();
+    $periodStartDate = date('Y-01-01');
+    $title = 'Job Title';
+
+    HRJobContractFabricator::fabricate([
+      'contact_id' => $contact['id']
+    ],
+    [
+      'period_start_date' => $periodStartDate,
+      'title' => $title
+    ]);
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    //attach the work pattern to the contact
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id
+    ]);
+
+    $fromDate = date("2016-11-13");
+    $toDate = date("2016-11-15");
+    $fromType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+    $toType = $this->leaveRequestDayTypes['1/2 AM']['name'];
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['Weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['Weekend']['value'],
+        'label' => 'Weekend'
+      ]
+    ];
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 1;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 1.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['All Day']['id'],
+        'value' => $this->leaveRequestDayTypes['All Day']['value'],
+        'label' => 'All Day'
+      ]
+    ];
+
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 0.5;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 0.5,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['1/2 AM']['id'],
+        'value' => $this->leaveRequestDayTypes['1/2 AM']['value'],
+        'label' => '1/2 AM'
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => $contact['id'],
+      'from_date' => $fromDate,
+      'from_type' => $fromType,
+      'to_date' => $toDate,
+      'to_type' => $toType
+    ]);
+    $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
 }

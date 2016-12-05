@@ -777,29 +777,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertNull($leaveBalanceChange);
   }
 
-  public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnNullIfThereIsNoRecordLinkedToALeaveRequestWithTheGivenAbsenceType() {
-    $date = new DateTime('2017-01-01');
-
-    $leaveRequest = new LeaveRequest();
-    $leaveRequest->contact_id = 2;
-    $leaveRequest->type_id = 1;
-
-    LeaveRequestFabricator::fabricate([
-      'contact_id' => $leaveRequest->contact_id,
-      'type_id' => 2,
-      'from_date' => $date->format('YmdHis')
-    ], true);
-
-    // Now we since the type_id on $leaveRequest is different than the one
-    // used by the fabricator, no LeaveBalanceChange will be returned
-    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate(
-      $leaveRequest,
-      $date
-    );
-
-    $this->assertNull($leaveBalanceChange);
-  }
-
   public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnARecordIfItIsLinkedToALeaveRequestForTheSameContactTypeAndDate() {
     $date = new DateTime('2017-01-01');
 
@@ -1004,3 +981,4 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     CRM_Core_DAO::executeQuery("DELETE FROM {$workPatternTable} WHERE is_default = 1");
   }
 }
+
