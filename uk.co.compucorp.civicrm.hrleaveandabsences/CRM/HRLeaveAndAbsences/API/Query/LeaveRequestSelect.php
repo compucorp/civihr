@@ -34,6 +34,7 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     $this->params = $params;
     $this->query = new SelectQuery(LeaveRequest::class, $params, false);
     $this->addJoins();
+    $this->addGroupBy();
   }
 
   /**
@@ -135,6 +136,21 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       'lbc',
       $balanceChangeJoinConditions
     );
+  }
+
+  /**
+   * Add a GROUP BY to the query, group the results
+   *
+   * Since we join with Leave Request Dates and Leave Balance Change, we might
+   * end up with multiple records for the same Leave Request. The API infrastructure
+   * is smart enough to remove those duplicates once the records are fetched, but
+   * this would cause problems with the LIMIT option, as it would be added to
+   * the query and the duplicated records would also be included on the limit.
+   */
+  private function addGroupBy() {
+    $groupBy = new CRM_Utils_SQL_Select(LeaveRequest::getTableName() . ' as a');
+    $groupBy->groupBy(['a.id']);
+    $this->query->merge($groupBy);
   }
 
 }
