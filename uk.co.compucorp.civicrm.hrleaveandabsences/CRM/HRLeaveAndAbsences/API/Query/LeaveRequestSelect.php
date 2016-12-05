@@ -32,9 +32,50 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
 
   public function __construct($params) {
     $this->params = $params;
-    $this->query = new SelectQuery(LeaveRequest::class, $params, false);
-    $this->addJoins();
-    $this->addGroupBy();
+    $this->buildCustomQuery();
+  }
+
+  /**
+   * Build the custom query, joining LeaveRequests with LeaveRequestDates,
+   * LeaveBalanceChanges, HRJobContract and HRJobDetails.
+   *
+   * It also add conditions in order to only return the LeaveRequests overlapping
+   * a contract and, in case the 'public_holiday' param is set, it only returns
+   * Public Holiday Leave Requests.
+   */
+  private function buildCustomQuery() {
+    $customQuery = CRM_Utils_SQL_Select::from(LeaveRequest::getTableName() . ' as a');
+
+    $this->addJoins($customQuery);
+    $this->addWhere($customQuery);
+    $this->addGroupBy($customQuery);
+
+    $this->query = new SelectQuery(LeaveRequest::class, $this->params, false);
+    $this->query->merge($customQuery);
+  }
+
+  /**
+   * Add the conditions to the query.
+   *
+   * This where we make sure we only return Leave Requests overlapping non
+   * deleted contracts and with balance changes
+   *
+   * @param \CRM_Utils_SQL_Select $customQuery
+   */
+  private function addWhere(CRM_Utils_SQL_Select $customQuery) {
+    $customQuery->where([
+      'jc.deleted = 0',
+      '(
+          a.from_date <= jd.period_end_date OR
+          jd.period_end_date IS NULL
+       )',
+      '(
+          a.to_date >= jd.period_start_date OR
+          (a.to_date IS NULL AND a.from_date >= jd.period_start_date)
+        )',
+      'lbc.source_id = lrd.id',
+      "lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
+    ]);
   }
 
   /**
@@ -44,10 +85,29 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * If the $params array has the public_holiday flag set and it's true, the
    * join condition will make sure only LeaveRequests linked to a LeaveBalanceChange
    * of the Public Holiday type will be returned.
+   *
+   * @param \CRM_Utils_SQL_Select $query
    */
-  private function addJoins() {
-    $this->addDateAndBalanceChangeJoins();
-    $this->addContractJoins();
+  private function addJoins(CRM_Utils_SQL_Select $query) {
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $balanceChangeJoinCondition = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
+    if (!empty($this->params['public_holiday'])) {
+      $balanceChangeJoinCondition = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
+    }
+
+    $query->join(null, [
+      'INNER JOIN ' . LeaveRequestDate::getTableName() . ' lrd ON lrd.leave_request_id = a.id',
+      'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc ON ' . $balanceChangeJoinCondition,
+      'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON a.contact_id = jc.contact_id',
+      'INNER JOIN ' . HRJobContractRevision::getTableName() . ' jcr ON jcr.id = (SELECT id
+                    FROM ' . HRJobContractRevision::getTableName() . ' jcr2
+                    WHERE
+                    jcr2.jobcontract_id = jc.id
+                    ORDER BY jcr2.effective_date DESC
+                    LIMIT 1)',
+      'INNER JOIN ' . HRJobDetails::getTableName() . ' jd ON jd.jobcontract_revision_id = jcr.details_revision_id'
+    ]);
   }
 
   /**
@@ -60,85 +120,6 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   }
 
   /**
-   * Joins the Leave Request with Job Contracts, in order to only return
-   * the requests which overlap contracts. That is, the request where the start
-   * and/or the end date is between the start and end dates of of the contracts
-   * of the Leave Request contact.
-   */
-  private function addContractJoins() {
-    $this->query->join(
-      'INNER',
-      HRJobContract::getTableName(),
-      'jc',
-      [
-        'a.contact_id = jc.contact_id',
-        'jc.deleted = 0'
-      ]
-    );
-    $this->query->join(
-      'INNER',
-      HRJobContractRevision::getTableName(),
-      'jcr',
-      [
-        'jcr.id = (SELECT id
-                    FROM ' . HRJobContractRevision::getTableName() . ' jcr2
-                    WHERE
-                    jcr2.jobcontract_id = jc.id
-                    ORDER BY jcr2.effective_date DESC
-                    LIMIT 1)'
-      ]
-    );
-    $this->query->join(
-      'INNER',
-      HRJobDetails::getTableName(),
-      'jd',
-      [
-        'jd.jobcontract_revision_id = jcr.details_revision_id',
-        '(
-          a.from_date <= jd.period_end_date OR
-          jd.period_end_date IS NULL
-        )',
-        '(
-          a.to_date >= jd.period_start_date OR
-          (a.to_date IS NULL AND a.from_date >= jd.period_start_date)
-        )'
-      ]
-    );
-  }
-
-  /**
-   * Joins the Leave Request with its respective LeaveRequestDates and
-   * LeaveBalanceChange
-   */
-  private function addDateAndBalanceChangeJoins() {
-    $balanceChangeJoinConditions = [
-      'lbc.source_id = lrd.id',
-      "lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'",
-    ];
-
-    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
-    if (empty($this->params['public_holiday'])) {
-      $balanceChangeJoinConditions[] = "lbc.type_id <> {$leaveBalanceChangeTypes['Public Holiday']}";
-    }
-    else {
-      $balanceChangeJoinConditions[] = "lbc.type_id = {$leaveBalanceChangeTypes['Public Holiday']}";
-    }
-
-    $this->query->join(
-      'INNER',
-      LeaveRequestDate::getTableName(),
-      'lrd',
-      ['lrd.leave_request_id = a.id']
-    );
-    $this->query->join(
-      'INNER',
-      LeaveBalanceChange::getTableName(),
-      'lbc',
-      $balanceChangeJoinConditions
-    );
-  }
-
-  /**
    * Add a GROUP BY to the query, group the results
    *
    * Since we join with Leave Request Dates and Leave Balance Change, we might
@@ -146,11 +127,11 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    * is smart enough to remove those duplicates once the records are fetched, but
    * this would cause problems with the LIMIT option, as it would be added to
    * the query and the duplicated records would also be included on the limit.
+   *
+   * @param \CRM_Utils_SQL_Select $query
    */
-  private function addGroupBy() {
-    $groupBy = new CRM_Utils_SQL_Select(LeaveRequest::getTableName() . ' as a');
-    $groupBy->groupBy(['a.id']);
-    $this->query->merge($groupBy);
+  private function addGroupBy(CRM_Utils_SQL_Select $query) {
+    $query->groupBy(['a.id']);
   }
 
 }
