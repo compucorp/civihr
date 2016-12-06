@@ -541,4 +541,34 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
 
     return [$startDate, $endDate];
   }
+
+  /**
+   * Returns the absence period that the contains both the fromdate and todate
+   * If the fromdate and todate have dates in two absence periods(i.e an overlap),
+   * null is returned.
+   *
+   * @param string $fromDate
+   * @param string $toDate
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  public static function getPeriodContainingDates($fromDate, $toDate) {
+    $tableName = self::getTableName();
+    $query = "
+      SELECT * FROM {$tableName}
+      WHERE (start_date <= %1) AND (end_date >= %2)
+    ";
+    $queryParams = [
+      1 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
+      2 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String']
+    ];
+
+    $absencePeriod = CRM_Core_DAO::executeQuery($query, $queryParams, true, self::class);
+
+    if($absencePeriod->N == 1) {
+      $absencePeriod->fetch();
+      return $absencePeriod;
+    }
+    return null;
+  }
 }
