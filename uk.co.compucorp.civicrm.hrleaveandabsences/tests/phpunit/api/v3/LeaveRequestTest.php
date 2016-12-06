@@ -462,6 +462,49 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotEmpty($result['values'][$leaveRequest3->id]);
   }
 
+  public function testGetFullIncludesTheBalanceChangeAndDatesForTheReturnedLeaveRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    // This will be returned. The balance change will be -1
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    // This will be returned. The balance change will be -4
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'contact_id' => 1,
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'status_id' => $leaveRequestStatuses['Admin Approved']
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull');
+    $this->assertCount(2, $result['values']);
+
+    $this->assertEquals(-1, $result['values'][$leaveRequest1->id]['balance_change']);
+    $this->assertCount(1, $result['values'][$leaveRequest1->id]['dates']);
+    $this->assertEquals('2016-03-02', $result['values'][$leaveRequest1->id]['dates'][0]['date']);
+
+    $this->assertEquals(-4, $result['values'][$leaveRequest2->id]['balance_change']);
+    $this->assertCount(4, $result['values'][$leaveRequest2->id]['dates']);
+    $this->assertEquals('2016-02-20', $result['values'][$leaveRequest2->id]['dates'][0]['date']);
+    $this->assertEquals('2016-02-21', $result['values'][$leaveRequest2->id]['dates'][1]['date']);
+    $this->assertEquals('2016-02-22', $result['values'][$leaveRequest2->id]['dates'][2]['date']);
+    $this->assertEquals('2016-02-23', $result['values'][$leaveRequest2->id]['dates'][3]['date']);
+  }
+
   public function testGetDoesNotReturnALeaveRequestNotOverlappingAContractEvenIfItMatchesTheDatesParams() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
