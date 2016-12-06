@@ -46,7 +46,8 @@ class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rig
       rights.contact_id contact_id,
       rights.entity_type entity_type,
       rights.entity_id entity_id,
-      ov.label label
+      ov.label label,
+      ov.value value
 
     FROM civicrm_contactaccessrights_rights rights
 
