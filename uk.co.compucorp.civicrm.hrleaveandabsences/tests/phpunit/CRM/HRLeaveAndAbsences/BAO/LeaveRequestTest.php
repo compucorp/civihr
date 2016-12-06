@@ -107,6 +107,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequest::create([
       'id' => $leaveRequest->id,
+      'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'to_date' => $toDate->format('YmdHis'),
       'to_date_type' => 1,
@@ -679,5 +680,384 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $result = LeaveRequest::calculateBalanceChange($contact['id'], $fromDate, $fromType, $toDate, $toType);
     $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Requests should have a start date
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutAStartDate() {
+    LeaveRequest::create([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date_type' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage Leave Request start date cannot be greater than the end date
+   */
+  public function testALeaveRequestEndDateShouldNotBeGreaterThanStartDate() {
+    $fromDate = new DateTime('+4 days');
+    $toDate = new DateTime();
+    LeaveRequest::create([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
+  public function testFindOverlappingLeaveRequestsForOneOverlappingLeaveRequest() {
+    $contactID = 1;
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    //The start date and end date has dates in only leaveRequest1
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-03';
+
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $this->assertCount(1, $overlappingRequests);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
+  }
+
+  public function testFindOverlappingLeaveRequestsForMoreThanOneOverlappingLeaveRequests() {
+    $contactID = 1;
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-06';
+
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $this->assertCount(2, $overlappingRequests);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
+
+    $this->assertEquals($leaveRequest2->id, $overlappingRequests[1]->id);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[1]);
+  }
+
+  public function testFindOverlappingLeaveRequestsForMultipleOverlappingLeaveRequestAndExcludePublicHolidayTrue() {
+    $contactID = 1;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-11-11';
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayleaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
+    //public holiday is excluded by default
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-12';
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $this->assertCount(2, $overlappingRequests);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
+
+    $this->assertEquals($leaveRequest2->id, $overlappingRequests[1]->id);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[1]);
+  }
+
+  public function testFindOverlappingLeaveRequestsForMultipleOverlappingLeaveRequestAndExcludePublicHolidayFalse() {
+    $contactID = 1;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-11-11';
+
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+
+    //The start date and end date has dates in both leave request dates in both leaveRequest1,
+    //leaveRequest2 and public holiday
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-12';
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, [], false);
+    $this->assertCount(3, $overlappingRequests);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
+
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[1]);
+    $this->assertEquals($leaveRequest2->id, $overlappingRequests[1]->id);
+
+    $this->assertEquals($publicHolidayLeaveRequest->id, $overlappingRequests[2]->id);
+    $this->assertEquals($publicHolidayLeaveRequest->id, $overlappingRequests[2]->id);
+  }
+
+  public function testFindOverlappingLeaveRequestsFilteredBySpecificStatusesAndPublicHolidayCondition() {
+    $contactID = 1;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-11-11';
+
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $fromDate3 = new DateTime('2016-11-12');
+    $toDate3 = new DateTime('2016-11-15');
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['More Information Requested'],
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest3 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Rejected'],
+      'from_date' => $fromDate3->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate3->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+
+    //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested'
+    //therefore only one overlapping Leave Request is expected
+    $startDate = '2016-11-02';
+    $endDate = '2016-11-15';
+    $filterStatus = [$leaveRequestStatuses['More Information Requested']];
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus);
+    $this->assertCount(1, $overlappingRequests);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
+
+    //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2,
+    //leaveRequest3 and PublicHolidayLeaveRequest, but we have filtered by only 'More Information Requested' and 'Waiting Approval'
+    //and overlapping public holiday leave requests is not excluded.
+    //However two leave request is expected because, Public holiday leave requests have status 'Admin Approved' by default
+    $startDate = '2016-11-01';
+    $endDate = '2016-11-16';
+    $filterStatus = [$leaveRequestStatuses['More Information Requested'], $leaveRequestStatuses['Waiting Approval']];
+    $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus, false);
+    $this->assertCount(2, $overlappingRequests2);
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+    $this->assertEquals($leaveRequest1->id, $overlappingRequests2[0]->id);
+
+    $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests2[1]);
+    $this->assertEquals($leaveRequest2->id, $overlappingRequests2[1]->id);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage This Leave request has dates that overlapps with an existing leave request
+   */
+  public function testALeaveRequestShouldNotBeCreatedWhenThereAreOverlappingLeaveRequests() {
+    $contactID = 1;
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Rejected'],
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+
+    $fromDate = new DateTime('2016-11-03');
+    $toDate = new DateTime('2016-11-05');
+    LeaveRequest::create([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+  }
+
+  public function testALeaveRequestWhenThereAreNoOverlappingLeaveRequests() {
+    $contactID = 1;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-11-11';
+
+    $fromDate1 = new DateTime('2016-11-02');
+    $toDate1 = new DateTime('2016-11-04');
+
+    $fromDate2 = new DateTime('2016-11-05');
+    $toDate2 = new DateTime('2016-11-10');
+
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Waiting Approval'],
+      'from_date' => $fromDate1->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate1->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => 1,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['Rejected'],
+      'from_date' => $fromDate2->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate2->format('YmdHis'),
+      'to_date_type' => 1
+    ], true);
+
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+
+    //this date overlapps with public holiday and a Rejected status leave request
+    $fromDate = new DateTime('2016-11-05');
+    $toDate = new DateTime('2016-11-11');
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => 1,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_type' => 1
+    ]);
+    $this->assertEquals($leaveRequest->from_date, $fromDate->format('YmdHis'));
   }
 }
