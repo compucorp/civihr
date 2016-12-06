@@ -1,0 +1,106 @@
+job_contract_id,title,region,department,level_type,cost_center,cost_center_val_type,percent_pay_cost_center,amount_pay_cost_center,funder,funder_val_type,percent_pay_funder,amount_pay_funder,location,start_date,end_date
+1,Area Manager - Clapham,South London,Project,3,Corpus,1,100,0,,,0,0,Clapham,2015-04-14 18:30:00,2017-10-30 18:30:00
+3,Subject Head - Computer Basics,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2014-01-01 18:30:00,2019-06-29 18:30:00
+4,Corporate Partnerships Assistant,Central London,Programmes,5,,,0,0,,,0,0,Victoria,2014-03-25 18:30:00,
+5,Subject Head - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-02-09 18:30:00,
+6,Area Manager - Hammersmith,West London,Project,3,Corpus,1,100,0,,,0,0,Hammersmith,2014-01-01 18:30:00,
+7,Manager - Finance,Central London,Programme Funding,3,Corpus,1,100,0,,,0,0,Victoria,2016-01-27 18:30:00,
+8,Subject Head - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-04-15 18:30:00,
+9,Head of Operations,Central London,Project,2,Corpus,1,100,0,,,0,0,Victoria,2016-04-05 18:30:00,2020-03-14 18:30:00
+10,Office Assistant,South London,Project,5,OP - C,1,100,0,343,1,100,0,Clapham,2015-07-20 18:30:00,2016-12-11 18:30:00
+11,Direct Marketing Assistant,Central London,Programmes,5,,,0,0,,,0,0,Victoria,2014-10-18 18:30:00,
+12,Area Manager - Islington,North London,Project,3,Corpus,1,100,0,,,0,0,Islington,2015-04-05 18:30:00,2020-05-07 18:30:00
+13,Subject Head - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-09-04 18:30:00,
+14,Teacher - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-10-19 18:30:00,
+15,Teacher - Computer Basics,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-05-01 18:30:00,
+16,Manager - Corporate Partnerships,Central London,Programmes,3,Corpus,1,100,0,,,0,0,Victoria,2015-03-17 18:30:00,2017-12-30 18:30:00
+17,Office Assistant,West London,Project,5,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-04-07 18:30:00,
+18,Teacher - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-05-18 18:30:00,
+19,Subject Head - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2013-12-31 18:30:00,
+20,Manager - Administration,Central London,Resources,3,Corpus,1,100,0,,,0,0,Victoria,2016-03-15 18:30:00,
+21,Office Assistant,North London,Project,5,OP - I,1,100,0,344,1,100,0,Islington,2014-11-14 18:30:00,2016-11-14 18:30:00
+22,Teacher - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-09-21 18:30:00,
+23,Manager - IT,Central London,Resources,3,Corpus,1,100,0,,,0,0,Victoria,2014-12-19 18:30:00,
+24,Teacher - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-02-06 18:30:00,
+25,Subject Head - Literacy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-05-29 00:00:00,2016-09-02 14:06:34
+26,External Relations Assistant,Central London,Programmes,5,,,0,0,,,0,0,Victoria,2015-09-23 18:30:00,2020-11-16 18:30:00
+27,Teacher - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-01-19 18:30:00,
+28,Community Mobilizer,West London,Project,5,OP - H,1,100,0,238,1,100,0,Hammersmith,2014-09-30 18:30:00,
+29,Subject Head - Computer Basics,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-01-05 18:30:00,
+30,Teacher - Computer Basics,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-01-08 18:30:00,
+31,Teacher - Computer Basics,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-11-08 18:30:00,
+32,Subject Head - Literacy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-06-06 18:30:00,
+33,CEO,Central London,Resources,1,Corpus,1,100,0,0,,0,0,Victoria,2016-04-21 18:30:00,
+34,Subject Head - Numeracy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-11-09 18:30:00,2017-07-29 18:30:00
+35,Office Assistant,East London,Project,5,OP - S,1,100,0,345,1,100,0,Stratford,2014-11-14 18:30:00,2022-03-30 18:30:00
+36,Teacher - Computer Basics,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2016-05-31 18:30:00,
+37,Teacher - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-11-11 18:30:00,2016-09-21 18:30:00
+38,Teacher - Computer Basics,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-09-06 18:30:00,
+39,Community Mobilizer,West London,Project,5,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-03-20 18:30:00,
+40,Accountant,Central London,Programme Funding,4,,,0,0,,,0,0,Victoria,2015-08-20 18:30:00,
+41,Teacher - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-04-21 18:30:00,
+42,Subject Head - Numeracy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-01-06 18:30:00,
+43,Teacher - Computer Basics,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2014-05-08 18:30:00,
+44,Communications Assistant,Central London,Programmes,5,,,0,0,,,0,0,Victoria,2015-09-25 18:30:00,
+45,Manager - Brand and Content,Central London,Programmes,3,Corpus,1,100,0,,,0,0,Victoria,2013-07-26 18:30:00,2016-10-14 18:30:00
+46,Community Mobilizer,North London,Project,5,OP - I,1,100,0,344,1,100,0,Islington,2014-04-02 18:30:00,
+47,Teacher - Computer Basics,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-07-15 18:30:00,
+48,Community Mobilizer,South London,Project,5,OP - C,1,100,0,343,1,100,0,Clapham,2015-04-01 18:30:00,
+49,Community Mobilizer,East London,Project,5,OP - S,1,100,0,345,1,100,0,Stratford,2015-08-18 18:30:00,
+50,Teacher - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-07-16 18:30:00,
+51,Community Mobilizer,South London,Project,5,OP - C,1,100,0,343,1,100,0,Clapham,2016-04-06 18:30:00,
+52,Office Assistant,Central London,Resources,5,,,0,0,,,0,0,Victoria,2014-11-29 18:30:00,
+53,Teacher - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2014-10-09 18:30:00,
+54,Teacher - Literacy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-05-31 18:30:00,
+55,Teacher - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2016-01-05 18:30:00,2016-11-22 18:30:00
+56,Head of Finance,Central London,Programme Funding,2,Corpus,1,100,0,,,0,0,Victoria,2014-05-24 18:30:00,
+57,Community Mobilizer,North London,Project,5,OP - I,1,100,0,344,1,100,0,Islington,2016-01-16 18:30:00,
+58,Teacher - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-07-30 18:30:00,2018-07-10 18:30:00
+59,Manager - Events,Central London,Programmes,3,Corpus,1,100,0,,,0,0,Victoria,2015-06-12 18:30:00,
+60,Community Mobilizer,East London,Project,5,OP - S,1,100,0,345,1,100,0,Stratford,2014-07-26 18:30:00,
+61,Teacher - Literacy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-08-07 18:30:00,
+62,Teacher - Literacy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2014-10-23 18:30:00,
+63,Teacher - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-12-30 18:30:00,
+64,Teacher - Literacy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-06-02 18:30:00,
+65,Teacher - Literacy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2014-03-07 18:30:00,
+66,Events Assistant,Central London,Programmes,5,,,0,0,,,0,0,Victoria,2015-03-02 18:30:00,
+67,Teacher - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-12-13 18:30:00,2019-12-13 18:30:00
+68,Subject Head - Numeracy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2016-01-16 18:30:00,
+69,Area Manager - Stratford,East London,Project,3,Corpus,1,100,0,,,0,0,Stratford,2016-05-30 18:30:00,
+70,Senior Manager HR,Central London,Resources,2,Corpus,1,100,0,,,0,0,Victoria,2014-01-28 18:30:00,
+71,Teacher - Numeracy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-03-11 18:30:00,
+72,Teacher - Numeracy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-03-25 18:30:00,
+73,Manager - External Relations,Central London,Programmes,3,Corpus,1,100,0,,,0,0,Victoria,2016-02-04 18:30:00,
+74,Teacher - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-08-07 18:30:00,
+75,Teacher - Numeracy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-03-18 18:30:00,
+76,Teacher - Literacy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2016-05-16 18:30:00,
+77,Teacher - Numeracy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2015-11-23 18:30:00,2017-11-23 18:30:00
+78,Teacher - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2014-06-09 18:30:00,
+79,Teacher - Numeracy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-06-07 18:30:00,
+80,Teacher - Numeracy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-12-28 18:30:00,
+81,Teacher - Literacy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2014-04-24 18:30:00,
+82,Head of Marketing & Fundraising,Central London,Programmes,2,Corpus,1,100,0,,,0,0,Victoria,2016-03-17 18:30:00,
+83,Teacher - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-11-27 18:30:00,
+84,Teacher - Numeracy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-02-01 18:30:00,
+85,Teacher - Computer Basics,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2014-01-13 18:30:00,2019-08-14 18:30:00
+86,Teacher - Numeracy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-06-07 18:30:00,
+87,Teacher - Literacy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-10-14 18:30:00,
+88,Deputy Manager - HR,Central London,Resources,3,Corpus,1,100,0,0,,0,0,Victoria,2016-01-29 18:30:00,
+89,Teacher - Literacy,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2016-01-04 18:30:00,
+90,Teacher - Numeracy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-09-28 18:30:00,
+91,Manager - Direct Marketing,Central London,Programmes,3,Corpus,1,100,0,,,0,0,Victoria,2014-10-28 18:30:00,
+92,Teacher - Numeracy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2015-02-14 18:30:00,
+93,Teacher - Numeracy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-07-22 18:30:00,
+94,Teacher - Numeracy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2016-02-26 18:30:00,2018-02-25 18:30:00
+95,Teacher - Numeracy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2014-01-19 18:30:00,
+96,Teacher - Computer Basics,West London,Project,4,OP - H,1,100,0,238,1,100,0,Hammersmith,2015-09-26 18:30:00,
+97,Teacher - Computer Basics,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-10-31 18:30:00,
+98,Book Keeper,Central London,Programme Funding,5,,,0,0,,,0,0,Victoria,2015-05-27 18:30:00,
+99,Teacher - Numeracy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-04-17 18:30:00,
+100,Teacher - Literacy,South London,Project,4,OP - C,1,100,0,343,1,100,0,Clapham,2014-10-03 18:30:00,
+101,Subject Head - Numeracy,North London,Project,4,OP - I,1,100,0,344,1,100,0,Islington,2015-06-24 18:30:00,
+102,Teacher - Numeracy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2016-06-25 18:30:00,
+103,Community Mobilizer,South London,Project,5,OP - C,1,100,0,343,1,100,0,Clapham,2014-12-27 18:30:00,
+104,Teacher - Numeracy,East London,Project,4,OP - S,1,100,0,,,0,0,Clapham,2015-08-05 00:00:00,2016-09-02 14:08:00
+105,Teacher - Numeracy,East London,Project,4,OP - S,1,100,0,345,1,100,0,Stratford,2014-09-17 18:30:00,
+106,Teacher - Numeracy,South London,Project,4,OP - C,1,100,0,,,0,0,Stratford,2015-01-31 18:30:00,
