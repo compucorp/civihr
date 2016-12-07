@@ -48,13 +48,13 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
               [
                 'is_visible' => true,
                 'days' => [
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWeekendTypeValue()],
+                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWeekendTypeValue()],
                 ]
               ]
             ]
@@ -269,7 +269,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
      */
     private function validateWorkDay($weekIndex, $dayIndex, $day, &$errors)
     {
-      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES) {
+      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()) {
         $this->validateWorkingDay($weekIndex, $dayIndex, $day, $errors);
       } else {
         $this->validateNonWorkingDay($weekIndex, $dayIndex, $day, $errors);

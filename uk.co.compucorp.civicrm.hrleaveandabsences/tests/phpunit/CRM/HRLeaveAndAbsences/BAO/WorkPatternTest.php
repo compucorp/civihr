@@ -382,37 +382,37 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $start = new DateTime('2016-01-01');
 
     // A friday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-01-01'), $start
     ));
 
     // A saturday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-02-13'), $start
     ));
 
     // A sunday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-03-06'), $start
     ));
 
     // A monday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-04-04'), $start
     ));
 
     // A tuesday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-05-24'), $start
     ));
 
     // A wednesday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-06-15'), $start
     ));
 
     // A thursday
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-07-28'), $start
     ));
   }
@@ -427,33 +427,33 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     // Since the start date is a sunday, the end of the week, the following day
     // (2016-08-01) should be on the second week. Monday of the second week is
     // not a working day
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-01'), $start
     ));
 
     // The next day is a tuesday, which is a working day on the second week, so
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-02'), $start
     ));
 
     // Wednesday is not a working day on the second week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-03'), $start
     ));
 
     // Thursday is a working day on the second week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-04'), $start
     ));
 
     // Friday, Saturday and Sunday are not working days on the second week,
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-05'), $start
     ));
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-06'), $start
     ));
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-07'), $start
     ));
 
@@ -462,35 +462,35 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     // rotate back to use the week 1 from the pattern
 
     // Monday is a working day on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-08'), $start
     ));
 
     // Tuesday is not a working day on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-09'), $start
     ));
 
     // Wednesday is a working day on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-10'), $start
     ));
 
     // Thursday is not a working day on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-11'), $start
     ));
 
     // Friday is a working day on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_YES, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-12'), $start
     ));
 
     // Saturday and Sunday are not working days on the first week
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-13'), $start
     ));
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_WEEKEND, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getWeekendTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-14'), $start
     ));
 
@@ -498,7 +498,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     // The work pattern will rotate and use the week 2
 
     // Monday is not a working day on week 2
-    $this->assertSame(WorkDay::WORK_DAY_OPTION_NO, $pattern->getWorkDayTypeForDate(
+    $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-15'), $start
     ));
   }

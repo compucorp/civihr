@@ -95,7 +95,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
         'type' => $day['type']
       ];
 
-      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES) {
+      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()) {
         $workDayParams['time_from'] = $day['time_from'];
         $workDayParams['time_to'] = $day['time_to'];
         $workDayParams['break'] = $day['break'];

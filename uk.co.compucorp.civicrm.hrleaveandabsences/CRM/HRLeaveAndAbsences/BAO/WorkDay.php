@@ -2,9 +2,12 @@
 
 class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_WorkDay {
 
-  const WORK_DAY_OPTION_NO = '1';
-  const WORK_DAY_OPTION_YES = '2';
-  const WORK_DAY_OPTION_WEEKEND = '3';
+  /**
+   * @var array|null
+   *   Caches the list of option values for the type field.
+   *   When it is null, it means the values were not loaded yet
+   */
+  private static $workDayTypes;
 
   /**
    * Create a new WorkDay based on array-data
@@ -24,7 +27,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     }
 
     $params['number_of_hours'] = null;
-    if($params['type'] == self::WORK_DAY_OPTION_YES) {
+    if($params['type'] == self::getWorkingDayTypeValue()) {
       $params['number_of_hours'] = self::calculateNumberOfHours(
           $params['time_from'],
           $params['time_to'],
@@ -42,6 +45,56 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
   }
 
   /**
+   * Returns the value for the option value, of the Work Day Type option group,
+   * with the given name.
+   *
+   * @param string $optionName
+   *
+   * @return string
+   */
+  private static function getTypeValue($optionName) {
+    if(is_null(self::$workDayTypes)) {
+      self::$workDayTypes = array_flip(self::buildOptions('type', 'validate'));
+
+      // The option value values are stored as strings on the database, so we
+      // need to make sure the values will always be returned as strings, even
+      // if they're numeric.
+      array_walk(self::$workDayTypes, function(&$type) {
+        $type = (string)$type;
+      });
+    }
+
+    return self::$workDayTypes[$optionName];
+  }
+
+  /**
+   * Returns the value of the option value for the "Working Day" Work Day type
+   *
+   * @return string
+   */
+  public static function getWorkingDayTypeValue() {
+    return self::getTypeValue('working_day');
+  }
+
+  /**
+   * Returns the value of the option value for the "Non-Working Day" Work Day type
+   *
+   * @return string
+   */
+  public static function getNonWorkingDayTypeValue() {
+    return self::getTypeValue('non_working_day');
+  }
+
+  /**
+   * Returns the value of the option value for the "Weekend" Work Day type
+   *
+   * @return string
+   */
+  public static function getWeekendTypeValue() {
+    return self::getTypeValue('weekend');
+  }
+
+  /**
    * Return a list of possible options for the WorkDay::type field.
    *
    * The list is the format $value => $label, so it can be used
@@ -52,9 +105,9 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
   public static function getWorkTypeOptions()
   {
     return [
-      self::WORK_DAY_OPTION_NO => ts('No'),
-      self::WORK_DAY_OPTION_YES => ts('Yes'),
-      self::WORK_DAY_OPTION_WEEKEND => ts('Weekend'),
+      self::getNonWorkingDayTypeValue() => ts('No'),
+      self::getWorkingDayTypeValue() => ts('Yes'),
+      self::getWeekendTypeValue() => ts('Weekend'),
     ];
   }
 
@@ -83,7 +136,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     $break = empty($params['break']) ? null : $params['break'];
 
     $hasTimesOrBreak = $timeFrom || $timeTo || $break;
-    $isWorkingDay = $typeOfDay == self::WORK_DAY_OPTION_YES;
+    $isWorkingDay = $typeOfDay == self::getWorkingDayTypeValue();
     if(!$isWorkingDay && $hasTimesOrBreak) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
         'Time From, Time To and Break should be empty for Non Working Days and Weekends'

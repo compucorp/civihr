@@ -62,7 +62,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
    */
   public function testTimeFromTimeToAndBreakShouldBeRequiredIfItsAWorkingDay($timeTo, $timeFrom, $break) {
     $params = [
-      'type' => WorkDay::WORK_DAY_OPTION_YES,
+      'type' => WorkDay::getWorkingDayTypeValue(),
       'time_to' => $timeTo,
       'time_from' => $timeFrom,
       'break' => $break
@@ -78,7 +78,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
    */
   public function testTimeFromTimeToAndBreakShouldBeEmptyIfItsNotAWorkingDay($timeTo, $timeFrom, $break) {
     $params = [
-      'type' => WorkDay::WORK_DAY_OPTION_NO,
+      'type' => WorkDay::getNonWorkingDayTypeValue(),
       'time_to' => $timeTo,
       'time_from' => $timeFrom,
       'break' => $break
@@ -107,7 +107,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
    */
   public function testBreakShouldNotBeGreaterThenThePeriodBetweenTimeFromAndTimeTo($timeFrom, $timeTo, $break) {
     $params = [
-      'type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES,
+      'type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue(),
       'time_to' => $timeTo,
       'time_from' => $timeFrom,
       'break' => $break
@@ -126,7 +126,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
     // If type is not Working Day, we must set times and break to null,
     // otherwise we will get another validation error
     $params = ['type' => $type];
-    if($type != WorkDay::WORK_DAY_OPTION_YES) {
+    if($type != WorkDay::getWorkingDayTypeValue()) {
       $params['time_from'] = null;
       $params['time_to'] = null;
       $params['break'] = null;
@@ -168,10 +168,25 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
     $this->assertEquals($expectedNumberOfHours, $entity->number_of_hours);
   }
 
+  public function testGetNonWorkingDayTypeValueReturnsTheOptionValueValueAsString() {
+    $workDayTypes = array_flip(WorkDay::buildOptions('type', 'validate'));
+    $this->assertSame((string)$workDayTypes['non_working_day'], WorkDay::getNonWorkingDayTypeValue());
+  }
+
+  public function testGetWorkingDayTypeValueReturnsTheOptionValueValueAsString() {
+    $workDayTypes = array_flip(WorkDay::buildOptions('type', 'validate'));
+    $this->assertSame((string)$workDayTypes['working_day'], WorkDay::getWorkingDayTypeValue());
+  }
+
+  public function testGetWeekendTypeValueReturnsTheOptionValueValueAsString() {
+    $workDayTypes = array_flip(WorkDay::buildOptions('type', 'validate'));
+    $this->assertSame((string)$workDayTypes['weekend'], WorkDay::getWeekendTypeValue());
+  }
+
   private function createBasicWorkDay($params = []) {
     $basicDefaultParams = [
       'day_of_the_week' => 1,
-      'type' => WorkDay::WORK_DAY_OPTION_YES,
+      'type' => WorkDay::getWorkingDayTypeValue(),
       'week_id' => $this->workWeek->id,
       'time_from' => '09:00',
       'time_to' => '18:00',
@@ -278,9 +293,9 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
   public function workDayTypeDataProvider() {
     return [
       [0, true],
-      [WorkDay::WORK_DAY_OPTION_YES, false],
-      [WorkDay::WORK_DAY_OPTION_NO, false],
-      [WorkDay::WORK_DAY_OPTION_WEEKEND, false],
+      [WorkDay::getWorkingDayTypeValue(), false],
+      [WorkDay::getNonWorkingDayTypeValue(), false],
+      [WorkDay::getWeekendTypeValue(), false],
       ['adasdsa', true],
       [rand(4, PHP_INT_MAX), true],
     ];

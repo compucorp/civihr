@@ -268,13 +268,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type'));
 
     switch($type) {
-      case WorkDay::WORK_DAY_OPTION_NO:
+      case WorkDay::getNonWorkingDayTypeValue():
         return $leaveRequestDayTypes['Non Working Day'];
 
-      case WorkDay::WORK_DAY_OPTION_YES:
+      case WorkDay::getWorkingDayTypeValue():
         return $leaveRequestDayTypes['All Day'];
 
-      case WorkDay::WORK_DAY_OPTION_WEEKEND:
+      case WorkDay::getWeekendTypeValue():
         return $leaveRequestDayTypes['Weekend'];
 
       default:
