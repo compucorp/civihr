@@ -174,7 +174,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             'select',
             "weeks[$i][days][$j][type]",
             false,
-            CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions(),
+            CRM_HRLeaveAndAbsences_BAO_WorkDay::buildOptions('type'),
             false,
             ['class' => 'work-day-type']
           );

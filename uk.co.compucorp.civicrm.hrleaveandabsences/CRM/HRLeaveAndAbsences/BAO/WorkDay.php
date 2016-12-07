@@ -64,7 +64,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
       });
     }
 
-    return self::$workDayTypes[$optionName];
+    return empty(self::$workDayTypes[$optionName]) ? null : self::$workDayTypes[$optionName];
   }
 
   /**
@@ -92,23 +92,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
    */
   public static function getWeekendTypeValue() {
     return self::getTypeValue('weekend');
-  }
-
-  /**
-   * Return a list of possible options for the WorkDay::type field.
-   *
-   * The list is the format $value => $label, so it can be used
-   * to populate select controls.
-   *
-   * @return array the list of possible options
-   */
-  public static function getWorkTypeOptions()
-  {
-    return [
-      self::getNonWorkingDayTypeValue() => ts('No'),
-      self::getWorkingDayTypeValue() => ts('Yes'),
-      self::getWeekendTypeValue() => ts('Weekend'),
-    ];
   }
 
   private static function validateParams($params) {
@@ -178,9 +161,20 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     }
   }
 
+  /**
+   * Validates if the the type of the given work day is one of the values of the
+   * option values in the Work Day Type option group
+   *
+   * @param array $params
+   *   The array passed to the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   */
   private static function validateWorkDayType($params) {
     $type = empty($params['type']) ? null : $params['type'];
-    if(!in_array($type, array_keys(self::getWorkTypeOptions()))) {
+    $validTypes = array_keys(self::buildOptions('type'));
+
+    if(!in_array($type, $validTypes)) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
         'Invalid Work Day Type'
       );
