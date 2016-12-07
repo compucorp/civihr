@@ -555,13 +555,21 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   public static function getPeriodContainingDates($fromDate, $toDate) {
     $tableName = self::getTableName();
     $query = "
-      SELECT * FROM {$tableName}
-      WHERE (start_date <= %1) AND (end_date >= %2)
-    ";
+      SELECT * FROM {$tableName} WHERE";
+
+    if (!empty($toDate)) {
+      $query .= " (start_date <= %1) AND (end_date >= %2)";
+    }
+    else{
+      $query .= " (start_date <= %1) AND (end_date >= %1)";
+    }
     $queryParams = [
       1 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
-      2 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String']
     ];
+
+    if (!empty($toDate)) {
+      $queryParams[2] = [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'];
+    }
 
     $absencePeriod = CRM_Core_DAO::executeQuery($query, $queryParams, true, self::class);
 
