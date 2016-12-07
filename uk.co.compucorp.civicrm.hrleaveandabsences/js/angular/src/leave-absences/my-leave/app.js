@@ -10,8 +10,12 @@ define([
     'ngResource',
     'ui.bootstrap',
     'ui.router',
+    'common.apis',
     'my-leave.config',
-    'my-leave.components'
+    'my-leave.components',
+    'leave-absences.apis',
+    'leave-absences.models',
+    'leave-absences.models.instances',
   ])
   .run(['$log', function ($log) {
     $log.debug('app.run');

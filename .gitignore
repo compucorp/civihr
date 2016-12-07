@@ -11,4 +11,4 @@ hrabsence/build
 
 # Exclude sass cache from all extension directories
 */.sass-cache/
-
+tags

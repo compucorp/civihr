@@ -48,7 +48,8 @@ module.exports = function (config) {
       extPath + 'js/angular/test/test-main.js'
     ],
     exclude: [
-      extPath + 'js/angular/src/leave-absences.js'
+      //extPath + 'js/angular/src/leave-absences.js'
+      extPath + 'js/angular/src/my-leave.js'
     ],
     // Used to transform angular templates in JS strings
     preprocessors: (function (obj) {
