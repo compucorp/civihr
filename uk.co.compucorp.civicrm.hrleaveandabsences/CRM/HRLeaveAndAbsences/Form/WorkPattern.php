@@ -2,6 +2,9 @@
 
 require_once 'CRM/Core/Form.php';
 
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+
 /**
  * Form controller class
  *
@@ -36,7 +39,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
     public function setDefaultValues() {
       if (empty($this->defaultValues)) {
         if ($this->_id) {
-          $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
+          $this->defaultValues = WorkPattern::getValuesArray($this->_id);
           $this->setIsVisibleForWeeksInDefaultValues();
 
         } else {
@@ -48,13 +51,13 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
               [
                 'is_visible' => true,
                 'days' => [
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWeekendTypeValue()],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::getWeekendTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWeekendTypeValue()],
+                  ['type' => WorkDay::getWeekendTypeValue()],
                 ]
               ]
             ]
@@ -116,7 +119,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 
             $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
             try {
-                $workPattern = CRM_HRLeaveAndAbsences_BAO_WorkPattern::create($params);
+                $workPattern = WorkPattern::create($params);
                 CRM_Core_Session::setStatus(ts("The Work Pattern '%1' has been $actionDescription.", array( 1 => $workPattern->label)), 'Success', 'success');
             } catch(Exception $ex) {
                 $message = ts("The Work Pattern could not be $actionDescription.");
@@ -174,7 +177,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             'select',
             "weeks[$i][days][$j][type]",
             false,
-            CRM_HRLeaveAndAbsences_BAO_WorkDay::buildOptions('type'),
+            WorkDay::buildOptions('type'),
             false,
             ['class' => 'work-day-type']
           );
@@ -269,7 +272,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
      */
     private function validateWorkDay($weekIndex, $dayIndex, $day, &$errors)
     {
-      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkingDayTypeValue()) {
+      if($day['type'] == WorkDay::getWorkingDayTypeValue()) {
         $this->validateWorkingDay($weekIndex, $dayIndex, $day, $errors);
       } else {
         $this->validateNonWorkingDay($weekIndex, $dayIndex, $day, $errors);

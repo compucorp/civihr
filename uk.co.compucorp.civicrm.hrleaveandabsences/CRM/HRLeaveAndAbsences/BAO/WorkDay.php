@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException as InvalidWorkDayException;
+
 class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_WorkDay {
 
   /**
@@ -17,7 +19,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
    *
    */
   public static function create($params) {
-    $className = 'CRM_HRLeaveAndAbsences_DAO_WorkDay';
     $entityName = 'WorkDay';
     $hook = empty($params['id']) ? 'create' : 'edit';
     self::validateParams($params);
@@ -36,7 +37,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new $className();
+    $instance = new self();
     $instance->copyValues($params);
     $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
@@ -94,25 +95,51 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     return self::getTypeValue('weekend');
   }
 
+  /**
+   * Validates the $params array passed to the create method
+   *
+   * @param array $params
+   *   The array passed to the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   */
   private static function validateParams($params) {
     self::validateWorkDayType($params);
     self::validateDayOfTheWeek($params);
     self::validateWorkHours($params);
   }
 
-  private static function validateDayOfTheWeek($params)
-  {
+  /**
+   * Validates if the day of the week in $params is valid according to ISO-8601
+   *
+   * @param array $params
+   *   The array passed to the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   */
+  private static function validateDayOfTheWeek($params) {
     $dayOfTheWeek = empty($params['day_of_the_week']) ? null : $params['day_of_the_week'];
 
     if(!is_int($dayOfTheWeek) || ($dayOfTheWeek < 1 || $dayOfTheWeek > 7)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Day of the Week should be a number between 1 and 7, according to ISO-8601'
       );
     }
   }
 
-  private static function validateWorkHours($params)
-  {
+  /**
+   * Validates the hours of a work day:
+   * - If type is Working Day, then hours are required
+   * - From time should not be greater than to time
+   * - Break cannot be more than the number of hours between from and to time
+   * - Hours should be in a HH:mm format
+   *
+   * @param array $params
+   *   The array passed to the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException
+   */
+  private static function validateWorkHours($params) {
     $typeOfDay = empty($params['type']) ? null : $params['type'];
     $timeFrom = empty($params['time_from']) ? null : $params['time_from'];
     $timeTo = empty($params['time_to']) ? null : $params['time_to'];
@@ -121,33 +148,33 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     $hasTimesOrBreak = $timeFrom || $timeTo || $break;
     $isWorkingDay = $typeOfDay == self::getWorkingDayTypeValue();
     if(!$isWorkingDay && $hasTimesOrBreak) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Time From, Time To and Break should be empty for Non Working Days and Weekends'
       );
     }
 
     if($timeFrom && !preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $timeFrom)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Time From format should be hh:mm'
       );
     }
 
     if($timeTo && !preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $timeTo)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Time To format should be hh:mm'
       );
     }
 
     $hasTimesAndBreak = $timeFrom && $timeTo && $break;
     if($isWorkingDay && !$hasTimesAndBreak) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Time From, Time To and Break are required for Working Days'
       );
     }
 
     $hasTimes = !is_null($timeFrom) && !is_null($timeTo);
     if($hasTimes && (strtotime($timeFrom) >= strtotime($timeTo))) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
           'Time From should be less than Time To'
       );
     }
@@ -155,7 +182,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     $secondsInWorkingHours = strtotime($timeTo) - strtotime($timeFrom);
     $secondsInBreak = $break * 3600;
     if($hasTimes && ($secondsInBreak >= $secondsInWorkingHours)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
           'Break should be less than the number of hours between Time From and Time To'
       );
     }
@@ -175,26 +202,30 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     $validTypes = array_keys(self::buildOptions('type'));
 
     if(!in_array($type, $validTypes)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException(
+      throw new InvalidWorkDayException(
         'Invalid Work Day Type'
       );
     }
   }
 
-  private static function calculateNumberOfHours($timeFrom, $timeTo, $break)
-  {
+  /**
+   * Calculate the number of hours to work on this work day, based on the time
+   * from, time to and break
+   *
+   * @param string $timeFrom
+   *   The time from hour, in HH:mm format
+   * @param string $timeTo
+   *   The time to hour, in HH:mm format
+   * @param float $break
+   *   The amount of break hours
+   *
+   * @return float
+   */
+  private static function calculateNumberOfHours($timeFrom, $timeTo, $break) {
     $timeFromInHours = strtotime($timeFrom) / 3600;
     $timeToInHours = strtotime($timeTo) / 3600;
     $numberOfHours = $timeToInHours - $timeFromInHours - $break;
 
     return $numberOfHours;
-  }
-
-  public function links()
-  {
-    $workWeekTable = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getTableName();
-    return [
-        'week_id' => "{$workWeekTable}:id",
-    ];
   }
 }
