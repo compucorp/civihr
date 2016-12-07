@@ -75,8 +75,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method validates that a leave request has a valid absence period
-   * and also that a leave request does not overlapp two or more absence periods
+   * This method validates that a leave request has dates within a valid absence period
+   * and also that a leave request dates does not overlap two or more absence periods
    *
    * @param array $params
    *   The params array received by the create method
@@ -88,6 +88,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $period = AbsencePeriod::getPeriodContainingDates($params['from_date'], $toDate);
 
     //this condition means that no absence period was found that contains both the start and end date
+    //either there was an overlap or the absence period does not simply exist.
     if (!$period) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException(
         "The Leave request dates is not contained within a valid absence period"
@@ -364,7 +365,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
 
-    if($leaveRequest->N > 0) {
+    if ($leaveRequest->N > 0) {
       $overlappingLeaveRequests = [];
       while($leaveRequest->fetch()) {
         $overlappingLeaveRequests[] = clone $leaveRequest;
@@ -373,7 +374,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
     return null;
   }
-
 
   /**
    * Returns a list of all Absence Types, together with its total balance change.

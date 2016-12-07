@@ -124,6 +124,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
   /**
    * Returns an array of LeavePeriodEntitlements for a contact for a specific Absence Period ID
+   * If the Absence Type ID parameter is also supplied, it returns the LeavePeriodEntitlement for the absence type
    *
    * @param int $contactId
    * @param int $periodId
