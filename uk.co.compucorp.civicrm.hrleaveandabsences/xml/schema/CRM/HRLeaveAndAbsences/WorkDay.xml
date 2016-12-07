@@ -31,11 +31,15 @@
 
   <field>
     <name>type</name>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>512</length>
     <label>Type</label>
     <required>true</required>
-    <comment>The type of this day: yes (working day), no (non working day), weekend</comment>
+    <comment>The type of this day, according to the values on the Work Day Type Option Group</comment>
     <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_work_day_type</optionGroupName>
+    </pseudoconstant>
   </field>
 
   <field>
