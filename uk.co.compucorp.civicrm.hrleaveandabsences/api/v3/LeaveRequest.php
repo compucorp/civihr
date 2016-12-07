@@ -69,6 +69,39 @@ function civicrm_api3_leave_request_get($params) {
 }
 
 /**
+ * LeaveRequest.getFull API specification
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getfull_spec(&$spec) {
+  $spec['public_holiday'] = [
+    'name' => 'public_holiday',
+    'title' => 'Include only Public Holiday Leave Requests?',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+  ];
+}
+
+/**
+ * LeaveRequest.getFull API
+ *
+ * This API works exactly as LeaveRequest.get, but it will, for each returned
+ * Leave Request, include the balance change and the Leave Request dates.
+ *
+ * @param array $params
+ *
+ * @return array API result descriptor
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_request_getfull($params) {
+  $query = new CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect($params);
+  $query->setReturnFullDetails(true);
+
+  return civicrm_api3_create_success($query->run(), $params, '', 'getfull');
+}
+
+/**
  * LeaveRequest.calculateBalanceChange specification
  *
  * @param array $spec

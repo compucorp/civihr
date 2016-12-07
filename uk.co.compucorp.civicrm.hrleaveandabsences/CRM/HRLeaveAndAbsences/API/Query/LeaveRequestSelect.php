@@ -30,6 +30,13 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
    */
   private $query;
 
+  /**
+   * @var bool
+   *   A flag indicating if the returned Leave Requests will also include the
+   *   balance change and the Leave Request dates
+   */
+  private $returnFullDetails = false;
+
   public function __construct($params) {
     $this->params = $params;
     $this->buildCustomQuery();
@@ -111,12 +118,61 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
   }
 
   /**
+   * Sets if this query should return the Leave Requests with full details. That
+   * is, with its balance change and its dates
+   *
+   * @param boolean $value
+   */
+  public function setReturnFullDetails($value) {
+    $this->returnFullDetails = $value;
+  }
+
+  /**
    * Executes the query
    *
    * @return array
    */
   public function run() {
-    return $this->query->run();
+    $results = $this->query->run();
+
+    if($this->returnFullDetails) {
+      $this->addFullDetails($results);
+    }
+
+    return $results;
+  }
+
+  /**
+   * Adds the balance_change and dates to the Leave Requests array returned by
+   * the SelectQuery.
+   *
+   * This is not the best code in terms of performance, since it will trigger
+   * two SQL queries for each returned Leave Request (one to get the balance, and
+   * another one to get the dates). But, since we want the query to work just
+   * like LeaveRequest.get (including all the params and options) and the SelectQuery
+   * class is not much flexible regarding returning calculated fields (the balance
+   * change is the sum of the amount of all balance changes) and related records,
+   * this is how it will work for now.
+   *
+   * @param array $results
+   */
+  private function addFullDetails(&$results) {
+    foreach($results as $i => $leaveRequest) {
+      $leaveRequestBao = new LeaveRequest();
+      $leaveRequestBao->copyValues($leaveRequest);
+
+      $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequestBao);
+      $results[$i]['balance_change'] = $balanceChange;
+
+      $dates = $leaveRequestBao->getDates();
+      $results[$i]['dates'] = [];
+      foreach($dates as $date) {
+        $results[$i]['dates'][] = [
+          'id' => $date->id,
+          'date' => $date->date
+        ];
+      }
+    }
   }
 
   /**
