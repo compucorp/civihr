@@ -10,7 +10,6 @@ define([
     'ngResource',
     'ui.bootstrap',
     'ui.router',
-    'common.apis',
     'my-leave.config',
     'my-leave.components',
     'leave-absences.apis',

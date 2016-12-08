@@ -10,78 +10,60 @@ define([
     return api.extend({
 
       /**
-       * This method returns all the entitlements (no pagination required), but optionally
-       * it can chain `Entitlement.remainder` (PCHR-1132) to return also the balance (current and future)
-       * among the rest of the data.
+       * This method returns all the entitlements.
+       * It can also return the remainder (current and future) among the rest of
+       * the data when passed withRemainder.
        *
-       * If chaining, it should normalize the result by removing the `Entitlement.balance` property
-       * from the result, so that the Model doesn't have to use a property that is specific to the
-       * current API implementation
-       *
-       * @param  {Object} params      matches the api endpoint params (period_id, contact_id, etc)
-       * @param  {boolean} withRemainder
+       * @param  {Object} params  matches the api endpoint params (period_id, contact_id, etc)
+       * @param  {boolean} withRemainder  can be set to true to return remainder of entitlements
        * @return {Promise}
        */
       all: function (params, withRemainder) {
-        $log.debug('api.leave-absences.entitlement.all');
+        $log.debug('EntitlementAPI');
 
         var params = {};
-        /*params = {
-          sequential: 1
-        }*/
 
         if (withRemainder) {
           params['api.LeavePeriodEntitlement.getremainder'] = {
-            "entitlement_id": "$value.id",
-            "include_future": true
+            'entitlement_id': '$value.id',
+            'include_future': true
           }
         }
 
         return this.sendGET('LeavePeriodEntitlement', 'get', params)
-          .then(function (data) { return data.values; })
+          .then(function (data) {
+            return data.values;
+          })
           .then(function (entitlements) {
             if (withRemainder) {
-              /* normalize the results
-              {
-                id: '1',
-                contract_id: '2',
-                type_id: '4',
-                //...
-                balance: {
-                  current: 20,
-                  future: 10
+              //entitlements data will have key 'api.LeavePeriodEntitlement.getremainder'
+              //which is normalized with a friendlier 'remainder' key
+              entitlements.map(function (entitlement) {
+                var remainderValues = entitlement['api.LeavePeriodEntitlement.getremainder']['values'];
+                if (remainderValues.length) {
+                  entitlement['remainder'] = remainderValues[0]['remainder'];
                 }
-              }
-              */
-              //the data will have key 'api.LeavePeriodEntitlement.getremainder'
-              _.map(entitlements, function(entitlement){
-                //get array of values for remainder
-                var remainder_values = entitlement['api.LeavePeriodEntitlement.getremainder']['values'];
-                //this entitlement will have only one value so obtain that
-                if(remainder_values.length === 1) {
-                  entitlement['remainder'] = remainder_values[0]['remainder'];
-                }
-                //remove the chained key
                 delete entitlement['api.LeavePeriodEntitlement.getremainder'];
                 return entitlement;
-              })
+              });
             }
             return entitlements;
           });
       },
       /**
-       * This method returns all the leave balance changes of entitlement.
+       * This method returns the breakdown of entitlement from various types of leave balances.
        *
-       * @param  {Object} params      matches the api endpoint params (period_id, contact_id, etc)
-       * @return {Promise}
+       * @param  {Object} params  matches the api endpoint params (period_id, contact_id, etc)
+       * @return {Promise}  will return a promise which when resolved will contain breakdown
+       * details along with entitlement id
        */
       breakdown: function (params) {
-        $log.debug('api.leave-absences.entitlement.breakdown');
+        $log.debug('EntitlementAPI');
 
         return this.sendGET('LeavePeriodEntitlement', 'getbreakdown', params)
-            .then(function (data) {
-                return data.values;
-            });
+          .then(function (data) {
+            return data.values;
+          });
       }
     });
   }]);

@@ -1,23 +1,32 @@
 //intercepts paths for real APIs and returns mock data
 define([
   'mocks/module',
-  'mocks/apis/data/entitlement-data',
+  'mocks/data/entitlement-data',
   'common/angularMocks',
-], function (mocks, mock_data) {
+], function (mocks, mockData) {
   'use strict';
 
-  mocks.factory('api.leave-absences.entitlement.mock', ['$httpBackend', function($httpBackend) {
-    //when the URL has this pattern entity=LeavePeriodEntitlement&action=get
-    //civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement
-    $httpBackend.whenGET(/action=get&entity=LeavePeriodEntitlement/)
-      .respond(mock_data.all_data);
+  mocks.factory('EntitlementAPIMock', ['$q', function ($q) {
 
-    ///civicrm/ajax/rest?action=getbreakdown&entity=LeavePeriodEntitlement&json={}&sequential=1
-    $httpBackend.whenGET(/action=getbreakdown&entity=LeavePeriodEntitlement/)
-      .respond(mock_data.breakdown_data);
+    return {
+      all: function (params, withBalance) {
+        if(withBalance){
 
-    //GET /civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement&json={"sequential":1,"api.LeavePeriodEntitlement.getremainder":{"entitlement_id":"$value.id","include_future":true}}&sequential=1
-    $httpBackend.whenGET(/api\.LeavePeriodEntitlement\.getremainder/)
-      .respond(mock_data.all_data_with_remainder);
+          return $q(function (resolve, reject) {
+            resolve(mockData.all({}, true).values);
+          });
+        }
+
+        return $q(function (resolve, reject) {
+          resolve(mockData.all().values);
+        });
+      },
+      breakdown: function (params) {
+
+        return $q(function (resolve, reject) {
+          resolve(mockData.breakdown().values);
+        });
+      }
+    }
   }]);
 });

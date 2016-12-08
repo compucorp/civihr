@@ -1,10 +1,10 @@
 define([
-    'common/angular',
-    'common/modules/apis',
+  'common/angular',
+  'common/modules/apis',
 ], function (angular) {
-    'use strict';
+  'use strict';
 
-    return angular.module('leave-absences.apis', [
-        'common.apis',
-    ]);
+  return angular.module('leave-absences.apis', [
+    'common.apis',
+  ]);
 });

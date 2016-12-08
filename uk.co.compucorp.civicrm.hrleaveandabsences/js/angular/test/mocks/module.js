@@ -1,8 +1,7 @@
 define([
   'common/angularMocks',
-], function(mocks) {
-    'use strict';
+], function (mocks) {
+  'use strict';
 
-    return angular.module('leave-absences.mocks',[]
-    );
+  return angular.module('leave-absences.mocks', []);
 });

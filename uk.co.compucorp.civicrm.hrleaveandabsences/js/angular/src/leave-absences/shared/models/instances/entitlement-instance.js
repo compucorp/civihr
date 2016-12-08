@@ -8,26 +8,33 @@ define([
 
     return ModelInstance.extend({
       /**
-       * Returns the default custom data (as in, not given by the API)
+       * Returns the default custom data (as in, not given by the Entitlement API)
        * with its default values
        *
        * @return {object}
        */
       defaultCustomData: function () {
+
         return {
-          remainder: { current: 0, future: 0 },
+          remainder: {
+            current: 0,
+            future: 0
+          },
           breakdown: []
         }
       },
 
       /**
-       * Loads internally the breakdown of the entitlement, by passing to the api
-       * the entitlement id
+       * Populates the breakdown of the entitlement, by passing to the api
+       * the entitlement id.
        *
-       * @return {Promise}
+       * @return {Promise} with updated entitlement model instance
        */
       breakdown: function () {
-        return entitlementAPI.breakdown({ entitlement_id: this.id })
+
+        return entitlementAPI.breakdown({
+            entitlement_id: this.id
+          })
           .then(function (breakdown) {
             this.breakdown = breakdown;
           }.bind(this));
