@@ -550,11 +550,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheLeaveRequestBreakdownReturnsOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
     ]);
 
     $expectedLeaveBalanceChanges = [];
@@ -581,22 +582,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheLeaveRequestBreakdownReturnsAnEmptyArrayIfThereAreNoBalanceChangesForLeaveRequestDates() {
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
+      'status_id' => 1
     ]);
 
     $this->assertCount(0, LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest));
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestShouldBeTheSumOfAllItsLeaveBalanceChanges() {
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+      'status_id' => 1
     ]);
 
     $expectedLeaveBalanceChanges = [];
@@ -610,11 +613,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheTotalBalanceChangeForALeaveRequestWithoutBalanceChangesShouldBeZero() {
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-04'),
+      'status_id' => 1
     ]);
 
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
@@ -629,11 +633,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'effective_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contactWorkPattern->contact_id,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'status_id' => 1
     ]);
 
     LeaveBalanceChange::createForLeaveRequest($leaveRequest);
@@ -657,11 +662,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createContract();
     $this->setContractDates('2016-01-01', '2016-12-31');
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $this->contract['contact_id'],
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-08-05'), //Friday
       'to_date' => CRM_Utils_Date::processDate('2016-08-06'), //Saturday
+      'status_id' => 1
     ]);
 
     LeaveBalanceChange::createForLeaveRequest($leaveRequest);
@@ -676,11 +682,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   public function testTheBalanceChangesForALeaveRequestOfAContactWithoutAContractShouldBeZero() {
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-11-08'),
+      'status_id' => 1
     ]);
 
     LeaveBalanceChange::createForLeaveRequest($leaveRequest);
@@ -698,11 +705,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->createContract();
     $this->setContractDates('2016-01-01', '2016-12-31');
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-11-08'),
+      'status_id' => 1
     ]);
 
     LeaveBalanceChange::createForLeaveRequest($leaveRequest);
@@ -715,10 +723,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testTheBalanceChangeForALeaveRequestDateOverlappingAPublicHolidayLeaveRequestShouldBeZero() {
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'status_id' => 1
     ]);
 
     $publicHoliday = new PublicHoliday();
@@ -737,10 +746,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = 2;
     $leaveRequest->type_id = 1;
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $leaveRequest->contact_id,
       'type_id' => $leaveRequest->type_id,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'status_id' => 1
     ], true);
 
     // Now we check that there's already a LeaveBalanceChange linked to a
@@ -761,10 +771,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = 2;
     $leaveRequest->type_id = 1;
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $leaveRequest->type_id,
-      'from_date' => $date->format('YmdHis')
+      'from_date' => $date->format('YmdHis'),
+      'status_id' => 1
     ], true);
 
     // Now we since the contact_id on $leaveRequest is different than the one
@@ -784,10 +795,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = 2;
     $leaveRequest->type_id = 1;
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $leaveRequest->contact_id,
       'type_id' => $leaveRequest->type_id,
-      'from_date' => $date->format('YmdHis')
+      'from_date' => $date->format('YmdHis'),
+      'status_id' => 1
     ], true);
 
     // Now we check that there's already a LeaveBalanceChange linked to a

@@ -738,6 +738,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($periodEntitlement2->id, $entitlements[1]->id);
   }
 
+  public function testGetPeriodEntitlementsForContactWithTypeID() {
+    $contactId = 1;
+    $periodId = 1;
+    $typeID = 2;
+    $periodEntitlement1 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId
+    ]);
+    $periodEntitlement2 = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contactId,
+      'period_id' => $periodId,
+      'type_id' => $typeID
+    ]);
+
+    $entitlements = LeavePeriodEntitlement::getPeriodEntitlementsForContact($contactId, $periodId, $typeID);
+    $this->assertCount(1, $entitlements);
+    $this->assertInstanceOf(LeavePeriodEntitlement::class, $entitlements[0]);
+    $this->assertEquals($periodEntitlement2->id, $entitlements[0]->id);
+  }
+
   public function testGetPeriodEntitlementsForContactWhenWrongContactIsPassed() {
     $contactId = 1;
     $periodId = 1;

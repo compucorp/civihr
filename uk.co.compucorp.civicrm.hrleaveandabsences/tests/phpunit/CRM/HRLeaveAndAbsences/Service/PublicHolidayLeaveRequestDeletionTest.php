@@ -65,10 +65,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('2016-10-10');
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
       'contact_id' => $this->contract['contact_id'],
-      'type_id' => $this->absenceType->id
+      'type_id' => $this->absenceType->id,
+      'status_id' => 1
     ], true);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));

@@ -124,14 +124,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
   /**
    * Returns an array of LeavePeriodEntitlements for a contact for a specific Absence Period ID
+   * If the Absence Type ID parameter is also supplied, it returns the LeavePeriodEntitlement for the absence type
    *
    * @param int $contactId
    * @param int $periodId
+   * @param int|null $absenceTypeId
    *
    * @return CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement[]
    *   If there are no entitlements, an empty array will be returned
    */
-  public static function getPeriodEntitlementsForContact($contactId, $periodId) {
+  public static function getPeriodEntitlementsForContact($contactId, $periodId, $absenceTypeId = null) {
 
     if(!$contactId) {
       throw new InvalidArgumentException("You must inform the Contact ID");
@@ -142,6 +144,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $entitlement = new self();
     $entitlement->contact_id = (int)$contactId;
     $entitlement->period_id = (int)$periodId;
+
+    if ($absenceTypeId) {
+      $entitlement->type_id = $absenceTypeId;
+    }
     $entitlement->find();
     $leaveEntitlements = [];
 

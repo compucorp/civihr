@@ -6,6 +6,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -17,11 +20,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @throws \Exception
    */
-  public static function create($params) {
+  public static function create($params, $validate = true) {
     $entityName = 'LeaveRequest';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
+    if($validate){
+      self::validateParams($params);
+    }
     $instance = new self();
     $instance->copyValues($params);
 
@@ -42,6 +48,210 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     return $instance;
   }
 
+  /**
+   * A method for validating the params passed to the Leave Request create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateParams($params) {
+    if (empty($params['from_date'])) {
+      throw new InvalidLeaveRequestException(
+        "Leave Requests should have a start date"
+      );
+    }
+
+    if (!empty($params['to_date'])) {
+      self::validateStartDateNotGreaterThanEndDate($params);
+    }
+
+    self::validateAbsencePeriod($params);
+    self::validateNoOverlappingLeaveRequests($params);
+    self::validateBalanceChange($params);
+    self::validateWorkingDay($params);
+    self::validateLeaveDatesDoesNotOverlapContracts($params);
+  }
+
+  /**
+   * This method validates that a leave request has dates within a valid absence period
+   * and also that a leave request dates does not overlap two or more absence periods
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateAbsencePeriod($params) {
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
+    $fromDate = new DateTime($params['from_date']);
+    $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+
+    //this condition means that no absence period was found that contains both the start and end date
+    //either there was an overlap or the absence period does not simply exist.
+    if (!$period) {
+      throw new InvalidLeaveRequestException(
+        "The Leave request dates is not contained within a valid absence period"
+      );
+    }
+  }
+
+  /**
+   * This method validates that the leave request does not have dates in more than one contract period
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateLeaveDatesDoesNotOverlapContracts($params) {
+    if (empty($params['to_date'])) {
+      return;
+    }
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+
+    $contract = civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', [
+      'contact_id' => $params['contact_id'],
+      'start_date' => $fromDate->format('Y-m-d'),
+      'end_date' => $toDate->format('Y-m-d'),
+    ]);
+
+    if ($contract['count'] > 1) {
+      throw new InvalidLeaveRequestException(
+        "The Leave request dates must not have dates in more than one contract period"
+      );
+    }
+  }
+
+  /**
+   * This method checks and ensures that the balance change for the leave request is
+   * not greater than the remaining balance of the period if the Request’s AbsenceType
+   * do not allow overuse.
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateBalanceChange($params) {
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
+    $fromDate = new DateTime($params['from_date']);
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+
+    $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact($params['contact_id'], $period->id, $params['type_id']);
+    $currentBalance = $leavePeriodEntitlement->getBalance();
+    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
+
+    if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
+      throw new InvalidLeaveRequestException(
+        "Balance change for the leave request cannot be greater than the remaining balance of the period"
+      );
+    }
+  }
+
+  /**
+   * This method returns the balance change that a leave request will have
+   * based on the params received by the create method
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @return float
+   */
+  private static function calculateBalanceChangeFromCreateParams($params) {
+    $toDate = !empty($params['to_date']) ? $params['to_date'] : '';
+    $leaveRequestOptionsValue = self::getLeaveRequestDayTypeOptionsGroupByValue();
+    $fromDateType = $leaveRequestOptionsValue[$params['from_date_type']];
+    $toDateType = !empty($params['to_date_type']) ? $leaveRequestOptionsValue[$params['to_date_type']] : '';
+    $leaveRequestBalance =
+      self::calculateBalanceChange
+      (
+        $params['contact_id'],
+        $params['from_date'],
+        $fromDateType,
+        $toDate,
+        $toDateType
+      );
+    return abs($leaveRequestBalance['amount']);
+  }
+
+  /**
+   * This method validates that the leave request to be created has at least one day
+   * The logic is based on the fact that if there's no working day for a leave request
+   * the returned balance change will be Zero.
+   *
+   * @param array $params
+   *  The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateWorkingDay($params) {
+    $leaveRequestBalance = self::calculateBalanceChangeFromCreateParams($params);
+    if ($leaveRequestBalance == 0) {
+      throw new InvalidLeaveRequestException(
+        "Leave Request must have at least one working day to be created"
+      );
+    }
+  }
+
+  /**
+   * This method checks that there is no overlapping leave request
+   * with the status Approved, Admin Approved, Waiting Approval or More Information Requested
+   * (Exception: if the other Leave Request is a Public Holiday Leave Request, then it can overlap).
+   *
+   * @params array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateNoOverlappingLeaveRequests($params) {
+    $leaveRequestStatuses = array_flip(self::buildOptions('status_id'));
+
+    $leaveRequestStatusFilter = [
+      $leaveRequestStatuses['Approved'],
+      $leaveRequestStatuses['Admin Approved'],
+      $leaveRequestStatuses['Waiting Approval'],
+      $leaveRequestStatuses['More Information Requested'],
+    ];
+
+    $toDate = !empty($params['from_date']) ? $params['from_date'] : '';
+
+    $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
+      $params['contact_id'],
+      $params['from_date'],
+      $toDate,
+      $leaveRequestStatusFilter
+    );
+
+    if ($overlappingLeaveRequests) {
+      throw new InvalidLeaveRequestException(
+        "This Leave request has dates that overlapps with an existing leave request"
+      );
+    }
+  }
+  /**
+   * This method checks that the start date of a leave request should not be
+   * greater than the end date provided the request is for a non single day leave request.
+   * For single day leave requests, the end date is optional
+   *
+   * @param array $params
+   *   The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateStartDateNotGreaterThanEndDate($params) {
+      $fromDate = new DateTime($params['from_date']);
+      $toDate = new DateTime($params['to_date']);
+
+      if ($fromDate > $toDate) {
+        throw new InvalidLeaveRequestException(
+          "Leave Request start date cannot be greater than the end date"
+        );
+      }
+  }
   /**
    * Returns a LeaveRequest instance representing the Public Holiday Leave Request
    * for the given $publicHoliday and assigned to the Contact with the given
@@ -86,6 +296,70 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return null;
+  }
+
+  /**
+   * Returns the leave request days already existing for the given contact
+   * within the $fromDate to $todDate period and having the statuses supplied.
+   *
+   * @param int $contactID
+   * @param string $fromDate
+   * @param string $toDate
+   * @param array $leaveRequestStatus
+   * @param boolean $excludePublicHolidayLeaveRequests
+   *   Whether to exclude public holiday leave requests from overlapping leave requests or not
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest[]|null
+   */
+  public static function findOverlappingLeaveRequests($contactID, $fromDate, $toDate, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
+    $leaveRequestTable = self::getTableName();
+    $leaveRequestDateTable = LeaveRequestDate::getTableName();
+    $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+
+    $query = "
+      SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
+      INNER JOIN {$leaveRequestDateTable} lrd 
+        ON lrd.leave_request_id = lr.id
+      INNER JOIN {$leaveBalanceChangeTable} lbc
+        ON lbc.source_id = lrd.id AND lbc.source_type = %1
+      WHERE lr.contact_id = %2
+    ";
+
+    if (!empty($toDate)){
+      $query .= ' AND lrd.date BETWEEN %3 AND %4';
+    }
+    else{
+      $query .= ' AND lrd.date = %3';
+    }
+
+    if (is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
+      array_walk($leaveRequestStatus, 'intval');
+      $query .= ' AND lr.status_id IN('. implode(', ', $leaveRequestStatus) .')';
+    }
+
+    if ($excludePublicHolidayLeaveRequests) {
+      $query .= " AND lbc.type_id != %5";
+    }
+
+    $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+
+    $params = [
+      1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
+      2 => [$contactID, 'Integer'],
+      3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
+      5 => [$balanceChangeTypes['Public Holiday'], 'Integer']
+    ];
+    if (!empty($toDate)) {
+      $params[4] = [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'];
+    }
+
+    $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+
+    $overlappingLeaveRequests = [];
+    while($leaveRequest->fetch()) {
+      $overlappingLeaveRequests[] = clone $leaveRequest;
+    }
+    return $overlappingLeaveRequests;
   }
 
   /**
@@ -326,5 +600,37 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('Y-m-d');
     return self::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+  }
+
+  /**
+   * Returns LeaveRequest Day Type Options in a nested array format
+   * with the day_type_id key as the array key and details about the day_type_id as the value
+   *
+   * @return array
+   *   [
+   *     '1' => [
+   *     'id' => 1,
+   *     'value' => '1',
+   *     'name' => 'all_day'
+   *     ],
+   *     '2 => [
+   *     'id' => 2,
+   *     'value' => '2',
+   *     'name' => 'half_day_am',
+   *     ]
+   *   ]
+   */
+  private static function getLeaveRequestDayTypeOptionsGroupByValue() {
+    $leaveRequestDayTypeOptionsGroup = [];
+    $leaveRequestDayTypeOptions = self::buildOptions('from_date_type');
+    foreach($leaveRequestDayTypeOptions  as $key => $label) {
+      $name = CRM_Core_Pseudoconstant::getName(self::class, 'from_date_type', $key);
+      $leaveRequestDayTypeOptionsGroup[$key] = [
+        'id' => $key,
+        'value' => $key,
+        'name' => $name
+      ];
+    }
+    return $leaveRequestDayTypeOptionsGroup;
   }
 }

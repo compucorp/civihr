@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
 
@@ -50,4 +51,24 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
     return self::$dayTypes[$typeLabel];
   }
 
+  /**
+   * Creates a new Leave Request without running any validation. That is,
+   * the leave request is created without calling the create() method.
+   *
+   * @param array $params
+   * @param boolean $withBalanceChanges
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   */
+  public static function fabricateWithoutValidation($params = [], $withBalanceChanges = false) {
+    $leaveRequest =  LeaveRequest::create($params, false);
+
+    if ($withBalanceChanges) {
+      foreach ($leaveRequest->getDates() as $date) {
+        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+      }
+    }
+
+    return $leaveRequest;
+  }
 }

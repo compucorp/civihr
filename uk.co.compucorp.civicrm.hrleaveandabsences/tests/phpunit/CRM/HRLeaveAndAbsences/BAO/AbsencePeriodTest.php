@@ -724,4 +724,64 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       [null]
     ];
   }
+
+  public function testGetPeriodContainingDatesReturnsNullWhenDatesOverlappTwoAbsencePeriods() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-06-30'),
+      'weight'    => 1
+    ]);
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-07-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+      'weight' => 2
+    ]);
+
+    $fromDate = new DateTime('2016-06-28');
+    $toDate = new DateTime('2016-07-05');
+    $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+    $this->assertNull($absencePeriod);
+  }
+
+  public function testGetPeriodContainingDatesReturnsAbsencePeriodWhenStartAndEndDateAreContained() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-06-30'),
+      'weight'    => 1
+    ]);
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-07-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+      'weight' => 2
+    ]);
+
+    $fromDate = new DateTime('2016-06-10');
+    $toDate = new DateTime('2016-06-18');
+    $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+    $this->assertInstanceOf(AbsencePeriod::class, $absencePeriod);
+    $this->assertEquals($period1->id, $absencePeriod->id);
+
+    //without an end date
+    $absencePeriod2 = AbsencePeriod::getPeriodContainingDates($fromDate, null);
+    $this->assertInstanceOf(AbsencePeriod::class, $absencePeriod2);
+    $this->assertEquals($period1->id, $absencePeriod->id);
+  }
+
+  public function testGetPeriodContainingDatesReturnsNullWhenStartAndEndDateIsNotInAnyPeriod() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-06-30'),
+      'weight'    => 1
+    ]);
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-07-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+      'weight' => 2
+    ]);
+
+    $fromDate = new DateTime('2015-11-10');
+    $toDate = new DateTime('2015-11-18');
+    $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
+    $this->assertNull($absencePeriod);
+  }
 }

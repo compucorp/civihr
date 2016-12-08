@@ -104,7 +104,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -112,7 +112,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+8 days'),
@@ -120,7 +120,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Waiting Approval']
     ], true);
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+20 days'),
@@ -163,7 +163,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -207,7 +207,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
-    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -215,7 +215,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -258,7 +258,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
-    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -266,7 +266,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),

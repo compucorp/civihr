@@ -14,7 +14,8 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       $leaveRequestDayTypeOptionsGroup[$label] = [
         'id' => $key,
         'value' => $key,
-        'name' => $name
+        'name' => $name,
+        'label' => $label
       ];
     }
     return $leaveRequestDayTypeOptionsGroup;

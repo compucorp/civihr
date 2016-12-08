@@ -3,8 +3,13 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
+
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
   /**
    * This Fabricator is a bit different than the others, because a Public Holiday
@@ -21,5 +26,4 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
     $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService());
     $creationLogic->createForContact($contactID, $publicHoliday);
   }
-
 }
