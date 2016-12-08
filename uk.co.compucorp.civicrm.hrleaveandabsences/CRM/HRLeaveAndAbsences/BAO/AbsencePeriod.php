@@ -543,7 +543,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
-   * Returns the absence period that the contains both the fromdate and todate
+   * Returns the absence period that contains both the fromdate and todate
    * If the fromdate and todate have dates in two absence periods(i.e an overlap),
    * or if no valid absence period is found containing the dates, null is returned.
    *

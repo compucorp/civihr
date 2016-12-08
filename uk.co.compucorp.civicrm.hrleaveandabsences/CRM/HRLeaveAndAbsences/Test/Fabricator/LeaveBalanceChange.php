@@ -38,9 +38,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
   public static function fabricateForPublicHolidayLeaveRequest($leaveRequest) {
     $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
     foreach ($leaveRequest->getDates() as $date) {
-
       $leaveDate = new DateTime($date->date);
-
       $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $leaveDate);
 
       if($leaveBalanceChange) {
