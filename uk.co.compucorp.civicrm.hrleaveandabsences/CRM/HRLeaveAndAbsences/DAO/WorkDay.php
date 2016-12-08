@@ -93,9 +93,9 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
    */
   public $day_of_the_week;
   /**
-   * The type of this day: yes (working day), no (non working day), weekend
+   * The type of this day, according to the values on the Work Day Type Option Group
    *
-   * @var int unsigned
+   * @var string
    */
   public $type;
   /**
@@ -182,10 +182,16 @@ class CRM_HRLeaveAndAbsences_DAO_WorkDay extends CRM_Core_DAO
         ) ,
         'type' => array(
           'name' => 'type',
-          'type' => CRM_Utils_Type::T_INT,
+          'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Type') ,
-          'description' => 'The type of this day: yes (working day), no (non working day), weekend',
+          'description' => 'The type of this day, according to the values on the Work Day Type Option Group',
           'required' => true,
+          'maxlength' => 512,
+          'size' => CRM_Utils_Type::HUGE,
+          'pseudoconstant' => array(
+            'optionGroupName' => 'hrleaveandabsences_work_day_type',
+            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_work_day_type',
+          )
         ) ,
         'time_from' => array(
           'name' => 'time_from',

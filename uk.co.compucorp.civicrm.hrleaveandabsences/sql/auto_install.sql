@@ -195,7 +195,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkDay ID',
      `day_of_the_week` int unsigned NOT NULL   COMMENT 'A number between 1 and 7, following ISO-8601. 1 is Monday and 7 is Sunday',
-     `type` int unsigned NOT NULL   COMMENT 'The type of this day: yes (working day), no (non working day), weekend',
+     `type` varchar(512) NOT NULL   COMMENT 'The type of this day, according to the values on the Work Day Type Option Group',
      `time_from` char(5)    COMMENT 'The start time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `time_to` char(5)    COMMENT 'The end time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `break` decimal(20,2)    COMMENT 'The amount of break time (in hours) allowed for this day. ',
@@ -222,13 +222,13 @@ VALUES(1, 1, 1);
 
 INSERT INTO civicrm_hrleaveandabsences_work_day(week_id, day_of_the_week, type, time_from, time_to, break, leave_days, number_of_hours)
 VALUES
-  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 6, 3, NULL, NULL, NULL, NULL, NULL),
-  (1, 7, 3, NULL, NULL, NULL, NULL, NULL);
+  (1, '1', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '2', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '3', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '4', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '5', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '6', 3, NULL, NULL, NULL, NULL, NULL),
+  (1, '7', 3, NULL, NULL, NULL, NULL, NULL);
 
 -- /*******************************************************
 -- *

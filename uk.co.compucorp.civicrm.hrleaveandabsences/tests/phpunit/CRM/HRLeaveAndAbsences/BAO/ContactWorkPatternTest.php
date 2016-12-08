@@ -359,11 +359,11 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $startDateTime = new DateTime('2016-11-30');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime);
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $dayType);
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $dayType);
 
     $startDateTime2 = new DateTime('2016-11-27');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime2);
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $dayType);
+    $this->assertEquals(WorkDay::getWeekendTypeValue(), $dayType);
   }
 
   public function testGetWorkDayTypeForWorkPatternWithMultipleWeeks() {
@@ -387,14 +387,14 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     //A sunday which is weekend on week 1
     $startDateTime1 = new DateTime('2016-07-31');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime1);
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_WEEKEND, $dayType);
+    $this->assertEquals(WorkDay::getWeekendTypeValue(), $dayType);
 
     // Since the start date is a sunday, the end of the week, the following day
     // (2016-08-01) should be on the second week. Monday of the second week is
     // not a working day
     $startDateTime2 = new DateTime('2016-08-01');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime2);
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_NO, $dayType);
+    $this->assertEquals(WorkDay::getNonWorkingDayTypeValue(), $dayType);
 
     // Now, since we hit sunday, the following day will be on the third week
     // since the start date, but the work pattern only has 2 weeks, so we
@@ -402,7 +402,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     // Monday is a working day on the first week
     $startDateTime3 = new DateTime('2016-08-08');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime3);
-    $this->assertEquals(WorkDay::WORK_DAY_OPTION_YES, $dayType);
+    $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $dayType);
 
   }
 }

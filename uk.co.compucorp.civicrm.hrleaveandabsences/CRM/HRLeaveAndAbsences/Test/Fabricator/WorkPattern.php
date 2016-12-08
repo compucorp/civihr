@@ -43,7 +43,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
     return [[
       'days' => [
         [
-          'type' => WorkDay::WORK_DAY_OPTION_YES,
+          'type' => WorkDay::getWorkingDayTypeValue(),
           'day_of_week' => 1,
           'time_from' => '09:00',
           'time_to' => '18:00',
@@ -51,7 +51,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
           'leave_days' => 1
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_YES,
+          'type' => WorkDay::getWorkingDayTypeValue(),
           'day_of_week' => 2,
           'time_from' => '09:00',
           'time_to' => '18:00',
@@ -59,7 +59,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
           'leave_days' => 1
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_YES,
+          'type' => WorkDay::getWorkingDayTypeValue(),
           'day_of_week' => 3,
           'time_from' => '09:00',
           'time_to' => '18:00',
@@ -67,7 +67,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
           'leave_days' => 1
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_YES,
+          'type' => WorkDay::getWorkingDayTypeValue(),
           'day_of_week' => 4,
           'time_from' => '09:00',
           'time_to' => '18:00',
@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
           'leave_days' => 1
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_YES,
+          'type' => WorkDay::getWorkingDayTypeValue(),
           'day_of_week' => 5,
           'time_from' => '09:00',
           'time_to' => '18:00',
@@ -83,12 +83,12 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
           'leave_days' => 1
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_WEEKEND,
+          'type' => WorkDay::getWeekendTypeValue(),
           'day_of_week' => 6,
           'leave_days' => 0
         ],
         [
-          'type' => WorkDay::WORK_DAY_OPTION_WEEKEND,
+          'type' => WorkDay::getWeekendTypeValue(),
           'day_of_week' => 7,
           'leave_days' => 0
         ],
@@ -107,7 +107,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
       [
         'days' => [
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_YES,
+            'type'            => WorkDay::getWorkingDayTypeValue(),
             'day_of_the_week' => 1,
             'time_from'       => '07:00',
             'time_to'         => '15:30',
@@ -115,11 +115,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'leave_days'      => 1
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_NO,
+            'type'            => WorkDay::getNonWorkingDayTypeValue(),
             'day_of_the_week' => 2,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_YES,
+            'type'            => WorkDay::getWorkingDayTypeValue(),
             'day_of_the_week' => 3,
             'time_from'       => '07:00',
             'time_to'         => '15:30',
@@ -127,11 +127,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'leave_days'      => 1
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_NO,
+            'type'            => WorkDay::getNonWorkingDayTypeValue(),
             'day_of_the_week' => 4,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_YES,
+            'type'            => WorkDay::getWorkingDayTypeValue(),
             'day_of_the_week' => 5,
             'time_from'       => '07:00',
             'time_to'         => '15:30',
@@ -139,11 +139,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'leave_days'      => 1
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'type'            => WorkDay::getWeekendTypeValue(),
             'day_of_the_week' => 6,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'type'            => WorkDay::getWeekendTypeValue(),
             'day_of_the_week' => 7,
           ]
         ]
@@ -151,11 +151,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
       [
         'days' => [
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_NO,
+            'type'            => WorkDay::getNonWorkingDayTypeValue(),
             'day_of_the_week' => 1,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_YES,
+            'type'            => WorkDay::getWorkingDayTypeValue(),
             'day_of_the_week' => 2,
             'time_from'       => '07:00',
             'time_to'         => '12:00',
@@ -163,11 +163,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'leave_days'      => 1
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_NO,
+            'type'            => WorkDay::getNonWorkingDayTypeValue(),
             'day_of_the_week' => 3,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_YES,
+            'type'            => WorkDay::getWorkingDayTypeValue(),
             'day_of_the_week' => 4,
             'time_from'       => '07:00',
             'time_to'         => '12:00',
@@ -175,15 +175,15 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'leave_days'      => 1
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_NO,
+            'type'            => WorkDay::getNonWorkingDayTypeValue(),
             'day_of_the_week' => 5,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'type'            => WorkDay::getWeekendTypeValue(),
             'day_of_the_week' => 6,
           ],
           [
-            'type'            => WorkDay::WORK_DAY_OPTION_WEEKEND,
+            'type'            => WorkDay::getWeekendTypeValue(),
             'day_of_the_week' => 7,
           ]
         ]
