@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+
 class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_WorkPattern {
 
   /**
@@ -337,6 +339,66 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
         return $day;
       }
     }
+  }
+
+  /**
+   * Returns a list of dates between the given start and end date (inclusive),
+   * with details about the date type (working day, non-working day, weekend),
+   * according to this work pattern.
+   *
+   * In order to do the calculation properly, this method also expects the date
+   * when the work pattern is considered to start being effective, which is
+   * given by the $effectiveDate param.
+   *
+   * @param \DateTime $effectiveDate
+   * @param \DateTime $startDate
+   * @param \DateTime $endDate
+   *
+   * @return array
+   *   A list of dates in the following format:
+   *   [
+   *     [
+   *       'date' => '2016-01-01',
+   *       'type' => [
+   *         'value' => 2,
+   *         'name' => 'working_day',
+   *         'label' => 'Working Day'
+   *       ]
+   *     ],
+   *     [
+   *       'date' => '2016-01-02',
+   *       'type' => [
+   *         'value' => 3,
+   *         'name' => 'weekend',
+   *         'label' => 'Weekend'
+   *       ]
+   *     ]
+   *   ]
+   */
+  public function getCalendar(DateTime $effectiveDate, DateTime $startDate, DateTime $endDate) {
+    $datePeriod = new DatePeriod(
+      $startDate,
+      new DateInterval('P1D'),
+      $endDate->modify('+1 day')
+    );
+
+    $workDayTypeLabels = WorkDay::buildOptions('type');
+    $workDayTypeNames = WorkDay::buildOptions('type', 'validate');
+    $calendar = [];
+    foreach($datePeriod as $date) {
+      $workDayType = $this->getWorkDayTypeForDate($date, $effectiveDate);
+
+      $calendar[] = [
+        'date' => $date->format('Y-m-d'),
+        'type' => [
+          'value' => $workDayType,
+          'name' => $workDayTypeNames[$workDayType],
+          'label' => $workDayTypeLabels[$workDayType]
+        ]
+      ];
+    }
+
+    return $calendar;
   }
 
   /**

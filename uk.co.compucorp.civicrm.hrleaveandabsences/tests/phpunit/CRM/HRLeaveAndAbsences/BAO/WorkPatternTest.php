@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
@@ -501,5 +503,145 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertSame(WorkDay::getNonWorkingDayTypeValue(), $pattern->getWorkDayTypeForDate(
       new DateTime('2016-08-15'), $start
     ));
+  }
+
+  public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithASingleWeek() {
+    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $expectedCalendar = [
+      [
+        'date' => '2016-01-01', // friday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-02', // saturday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-03', // sunday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-04', // monday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-05', // tuesday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-06', // wednesday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-07', // thursday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-08', // friday
+        'type' => $workDayTypes['working_day']
+      ],
+    ];
+
+    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    $calendar = $workPattern->getCalendar(
+      new DateTime('2016-01-01'),
+      new DateTime('2016-01-01'),
+      new DateTime('2016-01-08')
+    );
+
+    $this->assertEquals($expectedCalendar, $calendar);
+  }
+
+  public function testGetCalendarCanGenerateTheCalendarForAWorkPatternWithMultipleWeeks() {
+    $workDayTypes = $this->getWorkDayTypeOptionsArray();
+    $expectedCalendar = [
+      [
+        'date' => '2016-01-01', // friday, working day on first week
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-02', // saturday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-03', // sunday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-04', // monday, non working day on second week
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2016-01-05', // tuesday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-06', // wednesday, non working day on second week
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2016-01-07', // thursday
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-08', // friday, non working day on second week
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2016-01-09', // saturday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-10', // sunday
+        'type' => $workDayTypes['weekend']
+      ],
+      [
+        'date' => '2016-01-11', // monday, working day on first week (looped back to the first week)
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-12', // tuesday, non working day on first week
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2016-01-13', // wednesday, working day on first week
+        'type' => $workDayTypes['working_day']
+      ],
+      [
+        'date' => '2016-01-14', // thursday, non working day on first week
+        'type' => $workDayTypes['non_working_day']
+      ],
+      [
+        'date' => '2016-01-15', // friday, working day on first week
+        'type' => $workDayTypes['working_day']
+      ],
+    ];
+
+    $workPattern = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+    $calendar = $workPattern->getCalendar(
+      new DateTime('2016-01-01'),
+      new DateTime('2016-01-01'),
+      new DateTime('2016-01-15')
+    );
+
+    $this->assertEquals($expectedCalendar, $calendar);
+  }
+
+  private function getWorkDayTypeOptionsArray() {
+    $result = $result = civicrm_api3('OptionValue', 'get', array(
+      'sequential' => 1,
+      'option_group_id' => "hrleaveandabsences_work_day_type",
+    ));
+
+    $options = [];
+    foreach($result['values'] as $value) {
+      $options[$value['name']] = [
+        'value' => $value['value'],
+        'name' => $value['name'],
+        'label' => $value['label']
+      ];
+    }
+
+    return $options;
   }
 }
