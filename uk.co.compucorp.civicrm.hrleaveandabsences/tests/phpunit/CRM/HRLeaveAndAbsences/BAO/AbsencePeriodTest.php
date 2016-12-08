@@ -762,7 +762,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertEquals($period1->id, $absencePeriod->id);
 
     //without an end date
-    $absencePeriod2 = AbsencePeriod::getPeriodContainingDates($fromDate, '');
+    $absencePeriod2 = AbsencePeriod::getPeriodContainingDates($fromDate, null);
     $this->assertInstanceOf(AbsencePeriod::class, $absencePeriod2);
     $this->assertEquals($period1->id, $absencePeriod->id);
   }

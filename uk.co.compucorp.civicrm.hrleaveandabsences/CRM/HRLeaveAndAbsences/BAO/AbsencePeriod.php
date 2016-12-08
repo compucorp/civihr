@@ -552,7 +552,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
    */
-  public static function getPeriodContainingDates(DateTime $fromDate, $toDate) {
+  public static function getPeriodContainingDates(DateTime $fromDate, DateTime $toDate = null) {
     $tableName = self::getTableName();
 
     if (!$toDate) {

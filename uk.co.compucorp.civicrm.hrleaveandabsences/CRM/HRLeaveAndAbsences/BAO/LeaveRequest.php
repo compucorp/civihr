@@ -84,7 +84,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateAbsencePeriod($params) {
-    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : '';
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
     $fromDate = new DateTime($params['from_date']);
     $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
 
@@ -136,7 +136,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateBalanceChange($params) {
-    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : '';
+    $toDate = !empty($params['to_date']) ? new DateTime($params['to_date']) : null;
     $fromDate = new DateTime($params['from_date']);
     $absenceType = AbsenceType::findById($params['type_id']);
     $period = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);

@@ -130,7 +130,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday));
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contactID, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
@@ -320,7 +320,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+40 days'));
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
     $publicHolidaysOnly = true;
     $result = LeaveRequest::getBalanceChangeByAbsenceType(
@@ -431,7 +431,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday->date = date('2016-11-14');
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
     $fromDate = date("2016-11-14");
     $toDate = date("2016-11-15");
@@ -813,7 +813,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contactID, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
     $publicHolidayleaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     $fromDate1 = new DateTime('2016-11-02');
@@ -890,7 +890,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contactID, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
     $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     //The start date and end date has dates in both leave request dates in both leaveRequest1,
@@ -954,7 +954,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contactID, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
     $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     //The start date and end date has dates in leave request dates for leaveRequest1, leaveRequest2
@@ -1061,7 +1061,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'pattern_id' => $workPattern->id
     ]);
 
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contactID, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
     $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     //this date overlapps with public holiday and a Rejected status leave request
@@ -1339,7 +1339,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-11-16';
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
 
     //there's a public holiday on the leave request day
     $fromDate = new DateTime("2016-11-16");

@@ -464,7 +464,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($entitlement->contact_id, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday);
 
     // Balance excluding the days deducted from the leave request
     $excludePublicHolidays = true;
@@ -493,11 +493,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday1 = new PublicHoliday();
     $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($entitlement->contact_id, $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
 
     $publicHoliday2 = new PublicHoliday();
     $publicHoliday2->date = date('Y-m-d', strtotime('+47 days'));
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($entitlement->contact_id, $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday2);
 
     // Balance excluding the days deducted from the leave request
     $includePublicHolidaysOnly = true;
@@ -533,7 +533,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday1 = new PublicHoliday();
     $publicHoliday1->date = date('Y-m-d', strtotime('+30 days'));
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($entitlement->contact_id, $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricate($entitlement->contact_id, $publicHoliday1);
 
     // Balance excluding the days deducted from the leave request
     $excludePublicHolidays = true;
@@ -732,7 +732,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = CRM_Utils_Date::processDate('2016-01-01');
-    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($leaveRequest->contact_id, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricate($leaveRequest->contact_id, $publicHoliday);
 
     LeaveBalanceChange::createForLeaveRequest($leaveRequest);
 
