@@ -16,7 +16,7 @@ class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rig
    * @return CRM_Contactaccessrights_DAO_Rights|NULL
    *
    */
-  public function create($params) {
+  public static function create($params) {
     $entityName = 'Rights';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
