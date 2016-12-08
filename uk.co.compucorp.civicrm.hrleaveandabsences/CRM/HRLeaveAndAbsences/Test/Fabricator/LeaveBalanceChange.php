@@ -34,4 +34,28 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange {
       'type_id' => self::getTypeId('Leave')
     ];
   }
+
+  public static function fabricateForPublicHolidayLeaveRequest($leaveRequest) {
+    $leaveBalanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id'));
+    foreach ($leaveRequest->getDates() as $date) {
+
+      $leaveDate = new DateTime($date->date);
+
+      $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $leaveDate);
+
+      if($leaveBalanceChange) {
+        LeaveBalanceChange::create([
+          'id' => $leaveBalanceChange->id,
+          'amount' => 0
+        ]);
+      }
+
+      self::fabricate([
+        'source_id' => $date->id,
+        'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+        'type_id'     => $leaveBalanceChangeTypes['Public Holiday'],
+        'amount'      => -1
+      ]);
+    }
+  }
 }

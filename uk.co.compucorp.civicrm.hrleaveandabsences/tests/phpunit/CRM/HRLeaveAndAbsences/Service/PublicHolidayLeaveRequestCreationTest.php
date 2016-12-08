@@ -74,10 +74,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   public function testItUpdatesTheBalanceChangeForOverlappingLeaveRequestDayToZero() {
     $contactID = 2;
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contactID,
       'type_id' => $this->absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('2016-01-01')
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'status_id' => 1
     ], true);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));

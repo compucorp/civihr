@@ -104,7 +104,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -112,7 +112,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+8 days'),
@@ -120,7 +120,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Waiting Approval']
     ], true);
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+20 days'),
@@ -163,7 +163,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
-    LeaveRequestFabricator::fabricate([
+    LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact['id'],
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -174,7 +174,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+40 days'));
 
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday);
 
     // Passing the public_holiday param, it will sum the balance only for the
     // public holidays
@@ -202,7 +202,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
-    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -210,7 +210,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -220,7 +220,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+10 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation(1, $publicHoliday);
 
     $result = civicrm_api3('LeaveRequest', 'get');
     $this->assertCount(2, $result['values']);
@@ -248,7 +248,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => true]);
 
-    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -256,7 +256,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => $leaveRequestStatuses['Approved']
     ], true);
 
-    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 2,
       'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 day'),
@@ -266,7 +266,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('Y-m-d', strtotime('+10 days'));
-    PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation(1, $publicHoliday);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['public_holiday' => true, 'sequential' => 1]);
     $this->assertCount(1, $result['values']);

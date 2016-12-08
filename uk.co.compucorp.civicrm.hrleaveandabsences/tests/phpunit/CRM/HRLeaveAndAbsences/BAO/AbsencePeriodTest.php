@@ -737,8 +737,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'weight' => 2
     ]);
 
-    $fromDate = '2016-06-28';
-    $toDate = '2016-07-05';
+    $fromDate = new DateTime('2016-06-28');
+    $toDate = new DateTime('2016-07-05');
     $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
     $this->assertNull($absencePeriod);
   }
@@ -755,8 +755,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'weight' => 2
     ]);
 
-    $fromDate = '2016-06-10';
-    $toDate = '2016-06-18';
+    $fromDate = new DateTime('2016-06-10');
+    $toDate = new DateTime('2016-06-18');
     $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
     $this->assertInstanceOf(AbsencePeriod::class, $absencePeriod);
     $this->assertEquals($period1->id, $absencePeriod->id);
@@ -779,8 +779,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'weight' => 2
     ]);
 
-    $fromDate = '2015-11-10';
-    $toDate = '2015-11-18';
+    $fromDate = new DateTime('2015-11-10');
+    $toDate = new DateTime('2015-11-18');
     $absencePeriod = AbsencePeriod::getPeriodContainingDates($fromDate, $toDate);
     $this->assertNull($absencePeriod);
   }

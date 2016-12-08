@@ -71,6 +71,18 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
     }
     $leaveRequest->save();
 
+    self::saveDates($leaveRequest);
+
+    if ($withBalanceChanges) {
+      foreach ($leaveRequest->getDates() as $date) {
+        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
+      }
+    }
+
+    return $leaveRequest;
+  }
+
+  private static function saveDates($leaveRequest) {
     LeaveRequestDate::deleteDatesForLeaveRequest($leaveRequest->id);
     $startDate = new DateTime($leaveRequest->from_date);
 
@@ -93,13 +105,5 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
         'leave_request_id' => $leaveRequest->id
       ]);
     }
-
-    if ($withBalanceChanges) {
-      foreach ($leaveRequest->getDates() as $date) {
-        LeaveBalanceChangeFabricator::fabricateForLeaveRequestDate($date);
-      }
-    }
-
-    return $leaveRequest;
   }
 }

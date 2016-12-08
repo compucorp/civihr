@@ -46,7 +46,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('2016-01-01');
 
-    PublicHolidayLeaveRequestFabricator::fabricate($periodEntitlement->contact_id, $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -65,15 +65,16 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('2016-10-10');
 
-    $leaveRequest = LeaveRequestFabricator::fabricate([
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
       'contact_id' => $this->contract['contact_id'],
-      'type_id' => $this->absenceType->id
+      'type_id' => $this->absenceType->id,
+      'status_id' => 1
     ], true);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
 
-    PublicHolidayLeaveRequestFabricator::fabricate($this->contract['contact_id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($this->contract['contact_id'], $publicHoliday);
 
     $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
 
@@ -110,9 +111,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => CRM_Utils_Date::processDate('+2 years')
     ]);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -153,9 +154,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     // The Fabricator will create the leave request even for public holidays in
     // the past
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -196,9 +197,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     // The Fabricator will create the leave request even for public holidays in
     // the past
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday1);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday2);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday3);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday1);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday2);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday3);
 
     $this->assertEquals(-3, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
@@ -214,7 +215,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $contact = ContactFabricator::fabricate(['first_name' => 'Contact 1']);
 
     $publicHoliday = $this->instantiatePublicHoliday('today');
-    PublicHolidayLeaveRequestFabricator::fabricate($contact['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact['id'], $publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfPublicHolidayBalanceChanges());
 
@@ -242,8 +243,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('+5 days');
 
-    PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact1['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact2['id'], $publicHoliday);
 
     $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
     $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
@@ -274,8 +275,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     $publicHoliday = $this->instantiatePublicHoliday('+1 day');
 
-    PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
-    PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact1['id'], $publicHoliday);
+    PublicHolidayLeaveRequestFabricator::fabricateWithoutValidation($contact2['id'], $publicHoliday);
 
     $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
     $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
