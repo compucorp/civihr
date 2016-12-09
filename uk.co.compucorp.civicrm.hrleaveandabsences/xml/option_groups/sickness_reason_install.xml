@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_sickness_reason</name>
+      <title>Sickness Reasons</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>Accident</label>
+      <value>1</value>
+      <name>accident</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Appointment</label>
+      <value>2</value>
+      <name>appointment</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Backache</label>
+      <value>3</value>
+      <name>backache</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Cold/Flu</label>
+      <value>4</value>
+      <name>cold_or_flu</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Food Poisoning</label>
+      <value>5</value>
+      <name>food_poisoning</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Gastric upset</label>
+      <value>6</value>
+      <name>gastric_upset</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Headache</label>
+      <value>7</value>
+      <name>headache</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Infectious disease</label>
+      <value>8</value>
+      <name>infectious_disease</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Migraine</label>
+      <value>9</value>
+      <name>migraine</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Minor Operation</label>
+      <value>10</value>
+      <name>minor_operation</name>
+      <is_default>0</is_default>
+      <weight>9</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Stress</label>
+      <value>11</value>
+      <name>stress</name>
+      <is_default>0</is_default>
+      <weight>10</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_sickness_reason</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>
