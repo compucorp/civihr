@@ -14,73 +14,119 @@ define([
       $httpBackend = _$httpBackend_;
 
       //when the URL has this pattern
-      //civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement
       //GET /civicrm/ajax/rest?action=get&entity=LeavePeriodEntitlement&json={"sequential":1,"api.LeavePeriodEntitlement.getremainder":{"entitlement_id":"$value.id","include_future":true}}&sequential=1
       $httpBackend.whenGET(/action\=get&entity\=LeavePeriodEntitlement/)
         .respond(function (method, url, data, headers, params) {
-          if ('json' in params) {
-            var jsonFromParams = JSON.parse(params.json);
-            if ('api.LeavePeriodEntitlement.getremainder' in jsonFromParams) {
-
-              return [200, mockData.all({}, true)];
-            }
+          var jsonFromParams = JSON.parse(params.json);
+          //intercept same get call when chaining with withremainder call
+          if ('api.LeavePeriodEntitlement.getremainder' in jsonFromParams) {
+            return [200, mockData.all({}, true)];
           }
-
           return [200, mockData.all()];
         });
 
       ///civicrm/ajax/rest?action=getbreakdown&entity=LeavePeriodEntitlement&json={}&sequential=1
       $httpBackend.whenGET(/action=getbreakdown&entity=LeavePeriodEntitlement/)
         .respond(mockData.breakdown());
-
     }));
 
     it('has expected end points', function () {
       expect(Object.keys(EntitlementAPI)).toEqual(['all', 'breakdown']);
     });
 
-    describe('all() entitlements', function () {
-      var totalEntitlements;
+    describe('all()', function () {
+      var totalEntitlements, entitlementPromise, remainderPromise;
+
       beforeEach(function () {
         totalEntitlements = mockData.totalEntitlements();
+        entitlementPromise = EntitlementAPI.all();
+        remainderPromise = EntitlementAPI.all({}, true);
       });
 
-      it('response contains period id', function () {
-        EntitlementAPI.all().then(function (response) {
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('contains expected entitlement data', function () {
+        entitlementPromise.then(function (response) {
           expect(response.length).toEqual(totalEntitlements);
           var entitlementFirst = response[0];
-          expect(entitlementFirst).toEqual(jasmine.objectContaining({
-            'period_id': '1'
-          }));
+
+          expect(Object.keys(entitlementFirst)).toEqual(['id', 'period_id', 'type_id', 'contact_id', 'overridden']);
         });
-        $httpBackend.flush();
       });
 
-      it('with remainder/balance', function () {
-        EntitlementAPI.all({}, true).then(function (all_entitlements) {
-          var entitlementFirst = all_entitlements[0];
-          expect(entitlementFirst).toEqual(jasmine.objectContaining({
-            'remainder': {
-              'current': 11,
-              'future': 5
-            }
-          }));
+      it('with remainder key available', function () {
+        remainderPromise.then(function (allEntitlements) {
+          var entitlementFirst = allEntitlements[0];
+
+          expect(entitlementFirst.remainder).toBeDefined();
         });
-        $httpBackend.flush();
       });
 
+      it('with remainder containing current details', function () {
+        remainderPromise.then(function (allEntitlements) {
+          var entitlementFirst = allEntitlements[0];
+          var remainder = entitlementFirst.remainder;
+
+          expect(Object.keys(remainder)).toContain('current');
+          expect(remainder.current).toEqual(jasmine.any(Number));
+        });
+      });
+
+      it('with remainder containing future details', function () {
+        remainderPromise.then(function (allEntitlements) {
+          var entitlementFirst = allEntitlements[0];
+          var remainder = entitlementFirst.remainder;
+
+          expect(Object.keys(remainder)).toContain('future');
+          expect(remainder.future).toEqual(jasmine.any(Number));
+        });
+      });
     });
 
-    describe('breakdown() entitlements', function () {
-      it('has remainder amounts of leave', function () {
-        EntitlementAPI.breakdown().then(function (allBreakdowns) {
+    describe('breakdown()', function () {
+      var breakdownPromise;
+
+      beforeEach(function () {
+        breakdownPromise = EntitlementAPI.breakdown();
+      })
+
+      afterEach(function () {
+        $httpBackend.flush();
+      });
+
+      it('returns the breakdown for all entitlements', function () {
+        breakdownPromise.then(function (breakdowns) {
+          expect(breakdowns.length).toEqual(mockData.totalBreakdowns());
+        });
+      })
+
+      it('contains breakdown data', function () {
+        breakdownPromise.then(function (allBreakdowns) {
           var breakdownsFirst = allBreakdowns[0];
-          expect('breakdown' in breakdownsFirst).toBe(true);
+
+          expect(breakdownsFirst.breakdown).toBeDefined();
+        });
+      });
+
+      it('breakdown has expected data', function () {
+        breakdownPromise.then(function (allBreakdowns) {
+          var breakdownsFirst = allBreakdowns[0];
           var breakdown = breakdownsFirst.breakdown[0];
+
+          expect(Object.keys(breakdown)).toEqual(['amount', 'expiry_date', 'type']);
+        });
+      });
+
+      it('breakdown data is populated', function () {
+        breakdownPromise.then(function (allBreakdowns) {
+          var breakdownsFirst = allBreakdowns[0];
+          var breakdown = breakdownsFirst.breakdown[0];
+
           expect(breakdown).toEqual(jasmine.objectContaining({
-            'amount': '20.00'
+            'amount': jasmine.any(String)
           }));
-          $httpBackend.flush();
         });
       });
     });

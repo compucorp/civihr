@@ -12,6 +12,9 @@ define(function () {
     totalEntitlements: function () {
       return this.all_data.values.length;
     },
+    totalBreakdowns: function () {
+      return this.breakdown_data.values.length;
+    },
     all_data: {
       "is_error": 0,
       "version": 3,
@@ -111,9 +114,7 @@ define(function () {
         }]
       }, {
         "id": "2",
-        "breakdown": [
-
-        ]
+        "breakdown": []
       }, {
         "id": "3",
         "breakdown": [{

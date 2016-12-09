@@ -22,9 +22,7 @@ define([
 
           return entitlementAPI.all(params, withBalance)
             .then(function (entitlements) {
-
               return entitlements.map(function (entitlement) {
-
                 return instance.init(entitlement, true);
               });
             });
@@ -35,8 +33,8 @@ define([
          * The return value of the promise changes based on whether an array of `EntitlementInstance`s
          * has been passed to the method or not.
          *
-         * If it hasn't, then it simply return the API response.
-         * If it has, then it loads the breakdown data into each corrispondent entitlement, which then
+         * If it hasn 't, then it returns the entitlements along with breakdown details based on params passed.
+         * If it has, then it loads the breakdown data into each correspondent entitlement, which then
          * are returned back.
          *
          * @param {Object} params matches the api endpoint params (period_id, contact_id, etc)
@@ -44,6 +42,7 @@ define([
          * @return {Promise}
          */
         breakdown: function (params, entitlements) {
+
           return entitlementAPI.breakdown(params)
             .then(function (breakdown) {
               if (entitlements) {
@@ -51,18 +50,16 @@ define([
                   var foundEntitlement = _.find(breakdown, function (element) {
                     return element.id === entitlement.id;
                   });
+
                   if (foundEntitlement) {
                     entitlement['breakdown'] = foundEntitlement['breakdown'];
                   }
-
                   return entitlement;
                 });
-
                 return entitlements;
               }
 
               return breakdown.map(function (entitlement) {
-
                 return instance.init(entitlement, true);
               });
             });

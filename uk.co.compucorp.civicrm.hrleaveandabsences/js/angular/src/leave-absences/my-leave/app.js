@@ -7,18 +7,17 @@ define([
   'leave-absences/my-leave/components/my-leave-report'
 ], function (angular) {
   angular.module('my-leave', [
-    'ngResource',
-    'ui.bootstrap',
-    'ui.router',
-    'my-leave.config',
-    'my-leave.components',
-    'leave-absences.apis',
-    'leave-absences.models',
-    'leave-absences.models.instances',
-  ])
-  .run(['$log', function ($log) {
-    $log.debug('app.run');
-  }]);
+      'ngResource',
+      'ui.router',
+      'my-leave.config',
+      'my-leave.components',
+      'leave-absences.apis',
+      'leave-absences.models',
+      'leave-absences.models.instances',
+    ])
+    .run(['$log', function ($log) {
+      $log.debug('app.run');
+    }]);
 
   return angular;
 });

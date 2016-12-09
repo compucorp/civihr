@@ -44,6 +44,7 @@ define([
                   entitlement['remainder'] = remainderValues[0]['remainder'];
                 }
                 delete entitlement['api.LeavePeriodEntitlement.getremainder'];
+
                 return entitlement;
               });
             }

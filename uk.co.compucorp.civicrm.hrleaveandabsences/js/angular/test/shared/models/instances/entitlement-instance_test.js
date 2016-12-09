@@ -1,19 +1,32 @@
 define([
-  'leave-absences/shared/apis/entitlement-api',
-  'leave-absences/shared/models/entitlement-model',
+  'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/instances/entitlement-instance',
 ], function () {
   'use strict'
 
   describe('EntitlementInstance', function () {
-    var Entitlement, EntitlementInstance, $rootScope, $httpBackend, EntitlementAPIMock;
+    var $provide, EntitlementInstance, $rootScope;
 
-    beforeEach(module('leave-absences.models'));
-
-    beforeEach(inject(function (_Entitlement_, _EntitlementInstance_) {
-      Entitlement = _Entitlement_;
-      EntitlementInstance = _EntitlementInstance_;
+    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', function (_$provide_) {
+      $provide = _$provide_;
     }));
+
+    beforeEach(inject(function (_EntitlementAPIMock_) {
+      //EntitlementAPI is internally used by Model and hence need to be mocked
+      $provide.value('EntitlementAPI', _EntitlementAPIMock_);
+    }));
+
+    beforeEach(inject(function (_EntitlementInstance_, _$rootScope_) {
+      EntitlementInstance = _EntitlementInstance_;
+      $rootScope = _$rootScope_;
+
+      spyOn(EntitlementInstance, 'getBreakdown').and.callThrough();
+    }));
+
+    afterEach(function () {
+      //to excute the promise force an digest
+      $rootScope.$apply();
+    });
 
     describe('defaultCustomData()', function () {
       it('has default values', function () {
@@ -28,15 +41,34 @@ define([
       });
     });
 
-    describe('breakdown()', function () {
-      it('will get breakdown details for given entitlement', function () {
-        Entitlement.all().then(function (response) {
-          var EntitlementInstance = response[0];
-          expect(EntitlementInstance.breakdown).toBeNull();
-          EntitlementInstance.breakdown().then(function (afterBreakdown) {
-            expect(EntitlementInstance.breakdown).toHaveBeenCalled();
-            expect(EntitlementInstance.breakdown).not.toBeNull();
-          });
+    describe('getBreakdown()', function () {
+      var entitlementInstance;;
+
+      beforeEach(function () {
+        var entitlementAttributes = {
+          "id": "1",
+          "period_id": "1",
+          "type_id": "1",
+          "contact_id": "202",
+          "overridden": "0"
+        };
+        entitlementInstance = EntitlementInstance.init(entitlementAttributes, true);
+      });
+
+      it('breakdown is empty before call', function () {
+        expect(entitlementInstance.breakdown).toEqual([]);
+      });
+
+      it('makes the call', function () {
+        entitlementInstance.getBreakdown().then(function (afterBreakdown) {
+          expect(entitlementInstance.getBreakdown).toHaveBeenCalled();
+        });
+
+      });
+
+      it('breakdown is populated post call', function () {
+        entitlementInstance.getBreakdown().then(function (afterBreakdown) {
+          expect(entitlementInstance.breakdown).not.toEqual([]);
         });
       });
     });

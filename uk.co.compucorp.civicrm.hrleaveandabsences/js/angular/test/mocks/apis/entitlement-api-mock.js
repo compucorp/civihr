@@ -10,19 +10,16 @@ define([
 
     return {
       all: function (params, withBalance) {
-        if(withBalance){
-
+        if (withBalance) {
           return $q(function (resolve, reject) {
             resolve(mockData.all({}, true).values);
           });
         }
-
         return $q(function (resolve, reject) {
           resolve(mockData.all().values);
         });
       },
       breakdown: function (params) {
-
         return $q(function (resolve, reject) {
           resolve(mockData.breakdown().values);
         });

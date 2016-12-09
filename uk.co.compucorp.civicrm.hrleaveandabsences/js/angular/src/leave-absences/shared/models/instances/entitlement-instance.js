@@ -4,7 +4,7 @@ define([
 ], function (instances) {
   'use strict';
 
-  instances.factory('EntitlementInstance', ['ModelInstance', function (ModelInstance) {
+  instances.factory('EntitlementInstance', ['ModelInstance', 'EntitlementAPI', function (ModelInstance, EntitlementAPI) {
 
     return ModelInstance.extend({
       /**
@@ -14,7 +14,6 @@ define([
        * @return {object}
        */
       defaultCustomData: function () {
-
         return {
           remainder: {
             current: 0,
@@ -28,11 +27,11 @@ define([
        * Populates the breakdown of the entitlement, by passing to the api
        * the entitlement id.
        *
-       * @return {Promise} with updated entitlement model instance
+       * @return {Promise} with updated entitlement model instance with the side
+       * effect of setting this.breakdown property to newly obtained entitlement breakdown
        */
-      breakdown: function () {
-
-        return entitlementAPI.breakdown({
+      getBreakdown: function () {
+        return EntitlementAPI.breakdown({
             entitlement_id: this.id
           })
           .then(function (breakdown) {
