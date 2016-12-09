@@ -73,7 +73,7 @@
     </OptionValue>
 
     <OptionValue>
-      <label>Gastric upset</label>
+      <label>Gastric Upset</label>
       <value>6</value>
       <name>gastric_upset</name>
       <is_default>0</is_default>
@@ -97,7 +97,7 @@
     </OptionValue>
 
     <OptionValue>
-      <label>Infectious disease</label>
+      <label>Infectious Disease</label>
       <value>8</value>
       <name>infectious_disease</name>
       <is_default>0</is_default>
