@@ -1,17 +1,25 @@
-<div id="report" class="tab-pane fade in active">
+<div class="chr_leave-report">
   <section class="panel panel-default">
-    <div class="panel-heading">
-      <a href="#">
-        <i class="fa fa-download fa-fw" aria-hidden="true"></i>
-        Export CSV
-      </a>
-      <select>
-        <option value="1" selected>Current Period (2016)</option>
-        <option value="2" selected>2017</option>
-        <option value="3" selected>2018</option>
-      </select>
+    <div class="chr_leave-report__heading panel-heading">
+      <div class="row">
+        <div class="col-sm-9">
+          <a href="#" class="chr_leave-report__export-button">
+            <i class="fa fa-download fa-fw" aria-hidden="true"></i>
+            Export CSV
+          </a>
+        </div>
+        <div class="col-sm-3">
+          <div class="chr_custom-select chr_custom-select--full">
+            <select>
+              <option value="1" selected>Current Period (2016)</option>
+              <option value="2" selected>2017</option>
+              <option value="3" selected>2018</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="table-responsive  chr_leave-report__table">
+    <div class="chr_leave-report__table table-responsive">
       <table class="table table-condensed-mixed">
         <thead>
           <tr>
