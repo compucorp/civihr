@@ -2,7 +2,8 @@ define([
   'common/angular',
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
-  'leave-absences/my-leave/components/my-leave'
+  'leave-absences/my-leave/components/my-leave',
+  'leave-absences/my-leave/components/my-leave-report'
 ], function (angular) {
   angular.module('my-leave', [
     'ngResource',
