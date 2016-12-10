@@ -36,8 +36,13 @@
         </thead>
         <tbody>
           <tr>
-            <td class="chr_leave-report__label">
-              <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.entitlement = !report.isOpen.entitlement">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.entitlement, ' fa-chevron-right': !report.isOpen.entitlement }"></i>
               Period Entitlement
             </td>
             <td></td>
@@ -49,7 +54,7 @@
             <td>0</td>
             <td></td>
           </tr>
-          <tr>
+          <tr ng-show="report.isOpen.entitlement">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -117,8 +122,13 @@
             </td>
           </tr>
           <tr>
-            <td class="chr_leave-report__label">
-              <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.holiday = !report.isOpen.holiday">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.holiday, ' fa-chevron-right': !report.isOpen.holiday }"></i>
               Public holidays
             </td>
             <td></td>
@@ -130,7 +140,7 @@
             <td></td>
             <td></td>
           </tr>
-          <tr>
+          <tr ng-show="report.isOpen.holiday">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -288,9 +298,14 @@
               </div>
             </td>
           </tr>
-          <tr class="chr_leave-report__label">
-            <td class="chr_leave-report__label">
-              <i class="fa fa-chevron-down" aria-hidden="true"></i>
+          <tr>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.approved = !report.isOpen.approved">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.approved, ' fa-chevron-right': !report.isOpen.approved }"></i>
               Approved Requests
             </td>
             <td></td>
@@ -302,7 +317,7 @@
             <td>-1</td>
             <td></td>
           </tr>
-          <tr>
+          <tr ng-show="report.isOpen.approved">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -435,8 +450,13 @@
       <table class="table table-condensed-mixed">
         <tbody>
           <tr>
-            <td class="chr_leave-report__label">
-              <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.open = !report.isOpen.open">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.open, ' fa-chevron-right': !report.isOpen.open }"></i>
               Open Requests
             </td>
             <td></td>
@@ -448,7 +468,7 @@
             <td>0</td>
             <td></td>
           </tr>
-          <tr>
+          <tr ng-show="report.isOpen.open">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">
@@ -521,12 +541,18 @@
       <table class="table table-condensed-mixed">
         <tbody>
           <tr>
-            <td class="chr_leave-report__label" colspan="9">
-              <i class="fa fa-chevron-down" aria-hidden="true"></i>
+            <td
+            colspan="9"
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.other = !report.isOpen.other">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.other, ' fa-chevron-right': !report.isOpen.other }"></i>
               Cancelled and Other
             </td>
           </tr>
-          <tr>
+          <tr ng-show="report.isOpen.other">
             <td class="table-nested-cell" colspan="9">
               <div class="table-nested table-responsive">
                 <table class="table table-condensed">

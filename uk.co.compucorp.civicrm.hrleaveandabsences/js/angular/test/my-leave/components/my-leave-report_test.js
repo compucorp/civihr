@@ -8,7 +8,7 @@
     'use strict';
 
     describe('myLeaveReport', function () {
-      var $compile, $log, $rootScope, component;
+      var $compile, $log, $rootScope, component, controller;
 
       beforeEach(module('leave-absences.templates', 'my-leave'));
       beforeEach(inject(function (_$compile_, _$log_, _$rootScope_) {
@@ -25,6 +25,12 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
+      it('has all the sections collapsed', function () {
+        expect(Object.values(controller.isOpen).every(function (status) {
+          return status === false;
+        })).toBe(true);
+      });
+
       it('is contains the expected markup', function () {
         expect(component.find('.chr_leave-report').length).toBe(1);
       });
@@ -36,6 +42,8 @@
         component = angular.element('<my-leave-report contact-id="' + contactId + '"></my-leave-report>');
         $compile(component)($scope);
         $scope.$digest();
+
+        controller = component.controller('myLeaveReport');
       }
     });
   })
