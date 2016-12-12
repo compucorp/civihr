@@ -26,7 +26,7 @@
             })
             .state('my-leave.report', {
               url: '/report',
-              template: '<h3>Report</h3>'
+              template: '<my-leave-report contact-id="$ctrl.contactId"></my-leave-report>'
             })
             .state('my-leave.calendar', {
               url: '/calendar',

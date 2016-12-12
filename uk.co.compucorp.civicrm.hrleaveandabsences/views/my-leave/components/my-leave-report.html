@@ -1,0 +1,807 @@
+<div class="chr_leave-report">
+  <section class="panel panel-default">
+    <div class="chr_leave-report__heading panel-heading">
+      <div class="row">
+        <div class="col-sm-9">
+          <a href="#" class="chr_leave-report__export-button">
+            <i class="fa fa-download fa-fw" aria-hidden="true"></i>
+            Export CSV
+          </a>
+        </div>
+        <div class="col-sm-3">
+          <div class="chr_custom-select chr_custom-select--full">
+            <select>
+              <option value="1" selected>Current Period (2016)</option>
+              <option value="2" selected>2017</option>
+              <option value="3" selected>2018</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chr_leave-report__table table-responsive">
+      <table class="table table-condensed-mixed">
+        <thead>
+          <tr>
+            <th class="chr_leave-report__table__heading--label"></th>
+            <th class="chr_leave-report__table__heading--dates">Dates</th>
+            <th class="chr_leave-report__table__heading--status">Status</th>
+            <th class="chr_leave-report__table__heading--type">Vacation</th>
+            <th class="chr_leave-report__table__heading--type">TOIL</th>
+            <th class="chr_leave-report__table__heading--type">Maternity</th>
+            <th class="chr_leave-report__table__heading--type">Sick</th>
+            <th class="chr_leave-report__table__heading--type">Other</th>
+            <th class="chr_leave-report__table__heading--action"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.entitlement = !report.isOpen.entitlement">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.entitlement, ' fa-chevron-right': !report.isOpen.entitlement }"></i>
+              Period Entitlement
+            </td>
+            <td></td>
+            <td></td>
+            <td>31</td>
+            <td>3</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+          </tr>
+          <tr ng-show="report.isOpen.entitlement">
+            <td class="table-nested-cell" colspan="9">
+              <div class="table-nested table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="chr_leave-report__table__heading--label"></th>
+                      <th class="chr_leave-report__table__heading--dates">Dates</th>
+                      <th class="chr_leave-report__table__heading--status">Status</th>
+                      <th class="chr_leave-report__table__heading--type">Vacation</th>
+                      <th class="chr_leave-report__table__heading--type">TOIL</th>
+                      <th class="chr_leave-report__table__heading--type">Maternity</th>
+                      <th class="chr_leave-report__table__heading--type">Sick</th>
+                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th class="chr_leave-report__table__heading--action"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="chr_leave-report__label">Brought Forward (expires 31/03/2016)</td>
+                      <td></td>
+                      <td></td>
+                      <td>3</td>
+                      <td>3</td>
+                      <td>0</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">&nbsp;</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Leave</td>
+                      <td></td>
+                      <td></td>
+                      <td>20</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holidays</td>
+                      <td></td>
+                      <td></td>
+                      <td>8</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.holiday = !report.isOpen.holiday">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.holiday, ' fa-chevron-right': !report.isOpen.holiday }"></i>
+              Public Holidays
+            </td>
+            <td></td>
+            <td></td>
+            <td>-8</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr ng-show="report.isOpen.holiday">
+            <td class="table-nested-cell" colspan="9">
+              <div class="table-nested table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="chr_leave-report__table__heading--label"></th>
+                      <th class="chr_leave-report__table__heading--dates">Dates</th>
+                      <th class="chr_leave-report__table__heading--status">Status</th>
+                      <th class="chr_leave-report__table__heading--type">Vacation</th>
+                      <th class="chr_leave-report__table__heading--type">TOIL</th>
+                      <th class="chr_leave-report__table__heading--type">Maternity</th>
+                      <th class="chr_leave-report__table__heading--type">Sick</th>
+                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th class="chr_leave-report__table__heading--action"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Public Holiday</td>
+                      <td>31/05/2016</td>
+                      <td>Admin Approved</td>
+                      <td>-1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.approved = !report.isOpen.approved">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.approved, ' fa-chevron-right': !report.isOpen.approved }"></i>
+              Approved Requests
+            </td>
+            <td></td>
+            <td></td>
+            <td>-4</td>
+            <td>-2</td>
+            <td>-21</td>
+            <td>-2</td>
+            <td>-1</td>
+            <td></td>
+          </tr>
+          <tr ng-show="report.isOpen.approved">
+            <td class="table-nested-cell" colspan="9">
+              <div class="table-nested table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="chr_leave-report__table__heading--label"></th>
+                      <th class="chr_leave-report__table__heading--dates">Dates</th>
+                      <th class="chr_leave-report__table__heading--status">Status</th>
+                      <th class="chr_leave-report__table__heading--type">Vacation</th>
+                      <th class="chr_leave-report__table__heading--type">TOIL</th>
+                      <th class="chr_leave-report__table__heading--type">Maternity</th>
+                      <th class="chr_leave-report__table__heading--type">Sick</th>
+                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th class="chr_leave-report__table__heading--action"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="chr_leave-report__label">Vacation</td>
+                      <td>18/01/2015 - 22/01/2015</td>
+                      <td>Approved</td>
+                      <td>-4</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Sick</td>
+                      <td>25/11/2015 - 27/11/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>-2</td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Accrued TOIL (expires 20/03/2015)</td>
+                      <td>18/03/2015 - 20/03/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td>2</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">TOIL</td>
+                      <td>18/04/2015 - 22/04/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td>-2</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Maternity</td>
+                      <td>01/06/2015 - 31/06/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td>-21</td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Other</td>
+                      <td>01/07/2015 - 10/07/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>-1</td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr class="active">
+            <td class="chr_leave-report__label">Balance</td>
+            <td></td>
+            <td></td>
+            <td>19</td>
+            <td>1</td>
+            <td>-21</td>
+            <td>-2</td>
+            <td>-1</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="chr_leave-report__table table-responsive">
+      <table class="table table-condensed-mixed">
+        <tbody>
+          <tr>
+            <td
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.open = !report.isOpen.open">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.open, ' fa-chevron-right': !report.isOpen.open }"></i>
+              Open Requests
+            </td>
+            <td></td>
+            <td></td>
+            <td>-4</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+          </tr>
+          <tr ng-show="report.isOpen.open">
+            <td class="table-nested-cell" colspan="9">
+              <div class="table-nested table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="chr_leave-report__table__heading--label"></th>
+                      <th class="chr_leave-report__table__heading--dates">Dates</th>
+                      <th class="chr_leave-report__table__heading--status">Status</th>
+                      <th class="chr_leave-report__table__heading--type">Vacation</th>
+                      <th class="chr_leave-report__table__heading--type">TOIL</th>
+                      <th class="chr_leave-report__table__heading--type">Maternity</th>
+                      <th class="chr_leave-report__table__heading--type">Sick</th>
+                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th class="chr_leave-report__table__heading--action"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="chr_leave-report__label">Vacation</td>
+                      <td>18/02/2015 - 22/02/2015</td>
+                      <td>Awaiting Approval</td>
+                      <td>-4</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Accrued TOIL (expires 20/03/2015)</td>
+                      <td>17/01/2015</td>
+                      <td>More Information Required</td>
+                      <td></td>
+                      <td>1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <div uib-dropdown dropdown-append-to-body>
+                          <a href class="chr_leave-report__action" uib-dropdown-toggle>
+                            <i class="fa fa-ellipsis-v"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                            <li>
+                              <a href="#">Lorem Ipsum</a>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr class="active">
+            <td class="chr_leave-report__label">Future Balance</td>
+            <td></td>
+            <td></td>
+            <td>15</td>
+            <td>2</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="chr_leave-report__table table-responsive">
+      <table class="table table-condensed-mixed">
+        <tbody>
+          <tr>
+            <td
+            colspan="9"
+              class="chr_leave-report__label chr_leave-report__label--toggle"
+              ng-click="report.isOpen.other = !report.isOpen.other">
+              <i
+                class="fa"
+                aria-hidden="true"
+                ng-class="{ 'fa-chevron-down': report.isOpen.other, ' fa-chevron-right': !report.isOpen.other }"></i>
+              Cancelled and Other
+            </td>
+          </tr>
+          <tr ng-show="report.isOpen.other">
+            <td class="table-nested-cell" colspan="9">
+              <div class="table-nested table-responsive">
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                      <th class="chr_leave-report__table__heading--label"></th>
+                      <th class="chr_leave-report__table__heading--dates">Dates</th>
+                      <th class="chr_leave-report__table__heading--status">Status</th>
+                      <th class="chr_leave-report__table__heading--type">Vacation</th>
+                      <th class="chr_leave-report__table__heading--type">TOIL</th>
+                      <th class="chr_leave-report__table__heading--type">Maternity</th>
+                      <th class="chr_leave-report__table__heading--type">Sick</th>
+                      <th class="chr_leave-report__table__heading--type">Other</th>
+                      <th class="chr_leave-report__table__heading--action"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="chr_leave-report__label">Sick</td>
+                      <td>18/05/2015 - 22/05/2015</td>
+                      <td>Rejected</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Vacation</td>
+                      <td>18/02/2015 - 22/02/2015</td>
+                      <td>Cancelled</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Late</td>
+                      <td>18/01/2015</td>
+                      <td>Approved</td>
+                      <td></td>
+                      <td>2</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Accrued TOIL (expires 20/03/2015)</td>
+                      <td></td>
+                      <td>Expired</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td class="chr_leave-report__label">Brought Forward (expires 31/03/2015)</td>
+                      <td></td>
+                      <td>Expired</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
