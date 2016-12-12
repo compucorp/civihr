@@ -1,5 +1,7 @@
 define([
   'leave-absences/shared/modules/models',
+  'leave-absences/shared/models/instances/entitlement-instance',
+  'leave-absences/shared/apis/entitlement-api',
   'common/models/model'
 ], function (models) {
   'use strict';
@@ -7,6 +9,7 @@ define([
   models.factory('Entitlement', [
     '$log', 'Model', 'EntitlementAPI', 'EntitlementInstance',
     function ($log, Model, entitlementAPI, instance) {
+      $log.debug('Entitlement');
 
       return Model.extend({
         /**
@@ -42,7 +45,6 @@ define([
          * @return {Promise}
          */
         breakdown: function (params, entitlements) {
-
           return entitlementAPI.breakdown(params)
             .then(function (breakdown) {
               if (entitlements) {
@@ -54,8 +56,10 @@ define([
                   if (foundEntitlement) {
                     entitlement['breakdown'] = foundEntitlement['breakdown'];
                   }
+
                   return entitlement;
                 });
+
                 return entitlements;
               }
 

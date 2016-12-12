@@ -1,20 +1,5 @@
 define(function () {
-  return {
-    all: function (params, withBalance) {
-      if (withBalance) {
-        return this.entitlements_chained_with_remainder;
-      }
-      return this.all_data;
-    },
-    breakdown: function () {
-      return this.breakdown_data;
-    },
-    totalEntitlements: function () {
-      return this.all_data.values.length;
-    },
-    totalBreakdowns: function () {
-      return this.breakdown_data.values.length;
-    },
+  var mockData = {
     all_data: {
       "is_error": 0,
       "version": 3,
@@ -247,6 +232,17 @@ define(function () {
           }]
         }
       }]
+    }
+  }
+  return {
+    all: function (params, withBalance) {
+      if (withBalance) {
+        return mockData.entitlements_chained_with_remainder;
+      }
+      return mockData.all_data;
+    },
+    breakdown: function () {
+      return mockData.breakdown_data;
     }
   }
 });

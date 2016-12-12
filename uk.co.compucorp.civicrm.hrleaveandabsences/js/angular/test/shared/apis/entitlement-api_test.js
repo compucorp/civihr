@@ -38,7 +38,7 @@ define([
       var totalEntitlements, entitlementPromise, remainderPromise;
 
       beforeEach(function () {
-        totalEntitlements = mockData.totalEntitlements();
+        totalEntitlements = mockData.all().values.length;
         entitlementPromise = EntitlementAPI.all();
         remainderPromise = EntitlementAPI.all({}, true);
       });
@@ -98,7 +98,7 @@ define([
 
       it('returns the breakdown for all entitlements', function () {
         breakdownPromise.then(function (breakdowns) {
-          expect(breakdowns.length).toEqual(mockData.totalBreakdowns());
+          expect(breakdowns.length).toEqual(mockData.breakdown().values.length);
         });
       })
 

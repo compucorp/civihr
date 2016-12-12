@@ -4,7 +4,8 @@ define([
 ], function (instances) {
   'use strict';
 
-  instances.factory('EntitlementInstance', ['ModelInstance', 'EntitlementAPI', function (ModelInstance, EntitlementAPI) {
+  instances.factory('EntitlementInstance', ['$log', 'ModelInstance', 'EntitlementAPI', function ($log, ModelInstance, EntitlementAPI) {
+    $log.debug('EntitlementInstance');
 
     return ModelInstance.extend({
       /**

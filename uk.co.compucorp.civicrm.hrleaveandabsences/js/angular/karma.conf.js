@@ -33,22 +33,13 @@ module.exports = function (config) {
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
 
       // the application modules
-      {
-        pattern: extPath + 'js/angular/src/leave-absences/**/*.js',
-        included: false
-      },
+      { pattern: extPath + 'js/angular/src/leave-absences/**/*.js', included: false },
 
       // the mocked components files
-      {
-        pattern: extPath + 'js/angular/test/mocks/**/*.js',
-        included: false
-      },
+      { pattern: extPath + 'js/angular/test/mocks/**/*.js', included: false },
 
       // the test files
-      {
-        pattern: extPath + 'js/angular/test/**/*_test.js',
-        included: false
-      },
+      { pattern: extPath + 'js/angular/test/**/*_test.js', included: false },
 
       // angular templates
       extPath + 'views/**/*.html',
