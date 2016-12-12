@@ -1,10 +1,10 @@
 define([
   'common/angular',
-  'common/angularBootstrap',  
+  'common/angularBootstrap',
   'leave-absences/shared/ui-router',
   'leave-absences/my-leave/modules/config',
   'leave-absences/my-leave/components/my-leave',
-  'leave-absences/my-leave/components/my-leave-report'
+  'leave-absences/my-leave/components/my-leave-report',
   'leave-absences/shared/models/entitlement-model',
 ], function (angular) {
   angular.module('my-leave', [
