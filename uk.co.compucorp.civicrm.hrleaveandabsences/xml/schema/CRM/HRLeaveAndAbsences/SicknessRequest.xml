@@ -54,9 +54,6 @@
     <length>10</length>
     <comment>A list of values from the LeaveRequestRequiredDocument option group</comment>
     <add>4.4</add>
-    <pseudoconstant>
-      <optionGroupName>hrleaveandabsences_leave_request_required_document</optionGroupName>
-    </pseudoconstant>
   </field>
 
 </table>
