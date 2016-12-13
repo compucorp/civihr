@@ -1,6 +1,6 @@
 define([
-    'mocks/data/absence-type-data',
-    'leave-absences/shared/apis/absence-type-api',
+  'mocks/data/absence-type-data',
+  'leave-absences/shared/apis/absence-type-api',
   ],
   function (mockData) {
     'use strict'
@@ -66,4 +66,4 @@ define([
         });
       });
     });
-  });
+});
