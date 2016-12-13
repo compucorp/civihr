@@ -1,6 +1,6 @@
 define([
   'mocks/module',
-  'mocks/data/absencetype-data',
+  'mocks/data/absence-type-data',
   'common/angularMocks',
 ], function (mocks, mockData) {
   'use strict';

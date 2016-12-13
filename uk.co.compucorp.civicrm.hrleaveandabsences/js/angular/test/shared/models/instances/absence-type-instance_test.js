@@ -1,6 +1,5 @@
 define([
-  'mocks/apis/absencetype-api-mock',
-  'leave-absences/shared/models/instances/absencetype-instance',
+  'leave-absences/shared/models/instances/absence-type-instance',
 ], function () {
   'use strict'
 

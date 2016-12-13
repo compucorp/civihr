@@ -1,6 +1,6 @@
 define([
-    'mocks/data/absencetype-data',
-    'leave-absences/shared/apis/absencetype-api',
+    'mocks/data/absence-type-data',
+    'leave-absences/shared/apis/absence-type-api',
   ],
   function (mockData) {
     'use strict'

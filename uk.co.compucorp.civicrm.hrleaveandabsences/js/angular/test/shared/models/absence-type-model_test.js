@@ -1,6 +1,6 @@
 define([
-  'leave-absences/shared/models/absencetype-model',
-  'mocks/apis/absencetype-api-mock',
+  'leave-absences/shared/models/absence-type-model',
+  'mocks/apis/absence-type-api-mock',
 ], function () {
   'use strict'
 
@@ -28,10 +28,10 @@ define([
     });
 
     describe('all()', function () {
-      var absencetypePromise;
+      var absenceTypePromise;
 
       beforeEach(function () {
-        absencetypePromise = AbsenceType.all();
+        absenceTypePromise = AbsenceType.all();
       });
 
       afterEach(function () {
@@ -40,13 +40,13 @@ define([
       });
 
       it('calls equivalent API method', function () {
-        absencetypePromise.then(function (response) {
+        absenceTypePromise.then(function (response) {
           expect(AbsenceTypeAPI.all).toHaveBeenCalled();
         });
       });
 
       it('returns model instances', function () {
-        absencetypePromise.then(function (response) {
+        absenceTypePromise.then(function (response) {
           expect(response.every(function (modelInstance) {
             return 'init' in modelInstance;
           })).toBe(true);
