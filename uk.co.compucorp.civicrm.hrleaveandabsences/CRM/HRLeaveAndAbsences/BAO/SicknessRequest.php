@@ -11,11 +11,11 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
    *
    * @return CRM_HRLeaveAndAbsences_BAO_SicknessRequest|NULL
    **/
-  public static function create($params) {
+  public static function create($params, $validate = true) {
     $entityName = 'SicknessRequest';
     $hook = empty($params['id']) ? 'create' : 'edit';
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new self;
+    $instance = new self();
 
     if ($hook == 'edit') {
       $instance->id = $params['id'];
@@ -24,13 +24,13 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequest extends CRM_HRLeaveAndAbsences_
       if ($instance->leave_request_id) {
         $instance->copyValues($params);
         $params['id'] = $instance->leave_request_id;
-        LeaveRequest::create($params);
+        LeaveRequest::create($params, $validate);
         $instance->save();
       }
     }
 
     if ($hook == 'create') {
-      $leaveRequest = LeaveRequest::create($params);
+      $leaveRequest = LeaveRequest::create($params, $validate);
       $instance->copyValues($params);
       $instance->leave_request_id = $leaveRequest->id;
       $instance->save();

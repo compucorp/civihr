@@ -383,14 +383,11 @@ CREATE TABLE `civicrm_hrleaveandabsences_contact_work_pattern` (
 CREATE TABLE `civicrm_hrleaveandabsences_sickness_request` (
 
 
-  `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique SicknessRequest ID',
-  `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
-  `reason` varchar(512) NOT NULL   COMMENT 'One of the values of the Sickness Reason option group',
-  `required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group'
-  ,
-  PRIMARY KEY ( `id` )
-
-
-  ,          CONSTRAINT FK_civicrm_hrleaveandabsences_sickness_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique SicknessRequest ID',
+     `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
+     `reason` varchar(512) NOT NULL   COMMENT 'One of the values of the Sickness Reason option group',
+     `required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group',
+    PRIMARY KEY ( `id` ),
+    CONSTRAINT FK_civicrm_hrleaveandabsences_sickness_request_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 

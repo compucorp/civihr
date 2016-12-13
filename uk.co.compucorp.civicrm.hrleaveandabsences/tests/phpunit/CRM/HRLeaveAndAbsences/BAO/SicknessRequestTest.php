@@ -1,12 +1,5 @@
 <?php
 
-use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
-use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_BAO_SicknessRequest as SicknessRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
@@ -18,7 +11,6 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
-  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_SicknessRequestHelpersTrait;
 
   public function setUp() {
@@ -29,40 +21,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateSicknessRequest() {
-    $contact = ContactFabricator::fabricate();
-    $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
-    ]);
-
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'title' => 'Type 1',
-    ]);
-
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contact['id'],
-      'period_id' => $period->id
-    ]);
-
-    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
-    $periodStartDate = date('2016-01-01');
-    $title = 'Job Title';
-
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-      'period_start_date' => $periodStartDate,
-      'title' => $title
-    ]);
-
-    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id
-    ]);
-
+    $contactID = 1;
     $fromDate = new DateTime("2016-11-14");
     $toDate = new DateTime("2016-11-17");
     $fromType = $this->leaveRequestDayTypes['All Day']['id'];
@@ -72,8 +31,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
 
     $sicknessRequest = SicknessRequest::create([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contact['id'],
+      'type_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => $fromType,
@@ -81,47 +40,24 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'reason' => $sicknessReasons['Appointment'],
       'required_documents' => $this->requiredDocumentOptions['Self certification form required']['value']. ',' . $this->requiredDocumentOptions['Back to work interview required']['value'],
-    ]);
+    ], false);
+
+    $leaveRequest = new LeaveRequest;
+    $leaveRequest->id = $sicknessRequest->leave_request_id;
+    $leaveRequest->find(true);
+    $dates = $leaveRequest->getDates();
+    $this->assertCount(4, $dates);
+    $this->assertEquals('2016-11-14', $dates[0]->date);
+    $this->assertEquals('2016-11-15', $dates[1]->date);
+    $this->assertEquals('2016-11-16', $dates[2]->date);
+    $this->assertEquals('2016-11-17', $dates[3]->date);
 
     $this->assertInstanceOf(SicknessRequest::class, $sicknessRequest);
     $this->assertEquals($sicknessRequest->reason, $sicknessReasons['Appointment']);
   }
 
   public function testUpdateSicknessRequestDoesNotCreateDuplicates() {
-    $contact = ContactFabricator::fabricate();
-    $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
-    ]);
-
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'title' => 'Type 1',
-    ]);
-
-    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contact['id'],
-      'period_id' => $period->id
-    ]);
-
-    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
-    $periodStartDate = date('2016-01-01');
-    $title = 'Job Title';
-
-    HRJobContractFabricator::fabricate([
-      'contact_id' => $contact['id']
-    ],
-    [
-      'period_start_date' => $periodStartDate,
-      'title' => $title
-    ]);
-
-    $workPattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
-    ContactWorkPatternFabricator::fabricate([
-      'contact_id' => $contact['id'],
-      'pattern_id' => $workPattern->id
-    ]);
-
+    $contactID = 1;
     $fromDate1 = new DateTime("2016-11-14");
     $toDate1 = new DateTime("2016-11-17");
     $fromDate2 = new DateTime("2016-11-16");
@@ -134,8 +70,8 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
     $sicknessReasons = array_flip(SicknessRequest::buildOptions('reason'));
 
     $sicknessRequest1 = SicknessRequest::create([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contact['id'],
+      'type_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate1->format('YmdHis'),
       'from_date_type' => $fromType,
@@ -143,13 +79,13 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'reason' => $sicknessReasons['Appointment'],
       'required_documents' => $requiredDocuments1
-    ]);
+    ], false);
 
     //Update the Sickness Request and leave request
     $sicknessRequest2 = SicknessRequest::create([
       'id' => $sicknessRequest1->id,
-      'type_id' => $absenceType->id,
-      'contact_id' => $contact['id'],
+      'type_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 2,
       'from_date' => $fromDate2->format('YmdHis'),
       'from_date_type' => $fromType,
@@ -157,7 +93,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'reason' => $sicknessReasons['Accident'],
       'required_documents' => $requiredDocuments2,
-    ]);
+    ], false);
     $leaveRequestID1 = $sicknessRequest1->leave_request_id;
     $leaveRequestID2 = $sicknessRequest2->leave_request_id;
 
@@ -168,7 +104,7 @@ class CRM_HRLeaveAndAbsences_BAO_SicknessRequestTest extends BaseHeadlessTest {
 
     //confirm that contact has just one leave request in DB
     $leaveRequestObject = new LeaveRequest;
-    $leaveRequestObject->contact_id = $contact['id'];
+    $leaveRequestObject->contact_id = $contactID;
     $leaveRequestObject->find();
     $this->assertEquals(1, $leaveRequestObject->N);
 
