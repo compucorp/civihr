@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>SicknessRequest</class>
+  <name>civicrm_hrleaveandabsences_sickness_request</name>
+  <comment>Sickness Request</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique SicknessRequest ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>leave_request_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to LeaveRequest</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>leave_request_id</name>
+    <table>civicrm_hrleaveandabsences_leave_request</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>reason</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Reason</label>
+    <required>true</required>
+    <comment>One of the values of the Sickness Reason option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_sickness_reason</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>required_documents</name>
+    <type>varchar</type>
+    <length>10</length>
+    <comment>A list of values from the LeaveRequestRequiredDocument option group</comment>
+    <add>4.4</add>
+  </field>
+
+</table>
