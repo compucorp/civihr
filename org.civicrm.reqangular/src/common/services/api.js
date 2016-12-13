@@ -35,10 +35,11 @@ define([
              * @param {object} additionalParams - Additional params to pass to the api
              * @return {Promise} resolves to an object with `list` and `total`
              */
-            getAll: function (entity, filters, pagination, sort, additionalParams) {
+            getAll: function (entity, filters, pagination, sort, additionalParams, action) {
                 $log.debug('api.all');
 
                 filters = filters || {};
+                action = action || 'get';
 
                 return $q.all([
                     (function () {
@@ -51,14 +52,14 @@ define([
                             params.options.limit = pagination.size;
                         }
 
-                        return this.sendGET(entity, 'get', params).then(function (data) {
+                        return this.sendGET(entity, action, params).then(function (data) {
                             return data.values;
                         });
                     }.bind(this))(),
                     (function () {
                         var params = _.assign({}, filters, { 'return': 'id' });
 
-                        return this.sendGET(entity, 'get', params);
+                        return this.sendGET(entity, action, params);
                     }.bind(this))()
                 ]).then(function (results) {
                     return {
