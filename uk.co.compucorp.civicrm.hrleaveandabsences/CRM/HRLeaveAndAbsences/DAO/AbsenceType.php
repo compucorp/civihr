@@ -205,6 +205,12 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
    */
   public $carry_forward_expiration_unit;
   /**
+   * A flag which is used to determine if this Absence Type can be used for a Sickness Request
+   *
+   * @var boolean
+   */
+  public $is_sick;
+  /**
    * class constructor
    *
    * @return civicrm_hrleaveandabsences_absence_type
@@ -357,6 +363,11 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
           'title' => ts('Carry Forward Expiration Unit') ,
           'description' => 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
         ) ,
+        'is_sick' => array(
+          'name' => 'is_sick',
+          'type' => CRM_Utils_Type::T_BOOLEAN,
+          'description' => 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
+        ) ,
       );
     }
     return self::$_fields;
@@ -393,6 +404,7 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO
         'max_number_of_days_to_carry_forward' => 'max_number_of_days_to_carry_forward',
         'carry_forward_expiration_duration' => 'carry_forward_expiration_duration',
         'carry_forward_expiration_unit' => 'carry_forward_expiration_unit',
+        'is_sick' => 'is_sick',
       );
     }
     return self::$_fieldKeys;
