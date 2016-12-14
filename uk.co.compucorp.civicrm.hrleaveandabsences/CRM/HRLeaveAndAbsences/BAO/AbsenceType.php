@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
+use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
 
 class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_AbsenceType {
 
@@ -539,5 +540,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     return null;
+  }
+
+  /**
+   * Returns the date the TOIL will expire based on the date given to the method.
+   *
+   * @param \DateTime $date
+   *   The date to calculate TOIL expiry date
+   *
+   * @return \DateTime|null
+   *   returns null when TOIL never expires for the Absence Type
+   *
+   * @throws CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
+  public function calculateToilExpiryDate(DateTime $date) {
+
+    if (!$this->allow_accruals_request) {
+      throw new InvalidAbsenceTypeException("This Absence Type does not allow Accruals Request");
+    }
+    if ($this->toilNeverExpires()) {
+      return null;
+    }
+
+    if ($this->accrual_expiration_unit == self::EXPIRATION_UNIT_DAYS) {
+      $unit = 'day';
+    }
+    if ($this->accrual_expiration_unit == self::EXPIRATION_UNIT_MONTHS) {
+      $unit = 'month';
+    }
+    $expiryDate = clone $date;
+    $expiryDate->modify('+'.$this->accrual_expiration_duration. ' ' . $unit);
+
+    return $expiryDate;
+  }
+
+  /**
+   * This method determines whether the Absence Type TOIL expires or not
+   *
+   * @return bool
+   */
+  private function toilNeverExpires() {
+    return !$this->accrual_expiration_unit || !$this->accrual_expiration_duration;
   }
 }
