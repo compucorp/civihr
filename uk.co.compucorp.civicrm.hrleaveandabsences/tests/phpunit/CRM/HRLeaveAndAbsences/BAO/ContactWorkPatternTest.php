@@ -1,11 +1,14 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
-use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest
@@ -403,6 +406,66 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $startDateTime3 = new DateTime('2016-08-08');
     $dayType = ContactWorkPattern::getWorkDayType($contact['id'], $startDateTime3);
     $this->assertEquals(WorkDay::getWorkingDayTypeValue(), $dayType);
+  }
 
+  public function getAllForPeriodReturnsAnEmptyArrayIfTheresNoContactWorkPatternForTheGivenPeriod() {
+    $contact = ContactFabricator::fabricate();
+    $workPattern = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    $this->assertEquals([], ContactWorkPattern::getAllForPeriod(
+      $contact['id'],
+      new DateTime('2015-01-01'),
+      new DateTime('2015-01-09')
+    ));
+  }
+
+  public function getAllForPeriodReturnsOnlyTheContactWorkPatternsOverlappingTheGivenPeriod() {
+    $contact = ContactFabricator::fabricate();
+    $workPattern = WorkPatternFabricator::fabricate();
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-10'),
+    ]);
+
+    $contactWorkPattern2 = ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-15'),
+    ]);
+
+    $contactWorkPattern3 = ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-20'),
+    ]);
+
+    ContactWorkPatternFabricator::fabricate([
+      'contact_id' => $contact['id'],
+      'pattern_id' => $workPattern->id,
+      'effective_date' => CRM_Utils_Date::processDate('2015-01-30'),
+    ]);
+
+    $contactWorkPatterns = ContactWorkPattern::getAllForPeriod(
+      $contact['id'],
+      new DateTime('2015-01-16'),
+      new DateTime('2015-01-29')
+    );
+
+    // Only 2 (number 2 and 3) contact work patterns are within the given
+    // period
+    $this->assertCount(2, $contactWorkPatterns);
+    $this->assertInstanceOf(ContactWorkPattern::class, $contactWorkPatterns[0]);
+    $this->assertEquals($contactWorkPattern2->id, $contactWorkPatterns[0]);
+
+    $this->assertInstanceOf(ContactWorkPattern::class, $contactWorkPatterns[1]);
+    $this->assertEquals($contactWorkPattern3->id, $contactWorkPatterns[1]);
   }
 }

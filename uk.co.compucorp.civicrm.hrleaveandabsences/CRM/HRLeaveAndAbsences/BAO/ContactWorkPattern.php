@@ -1,7 +1,9 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
@@ -186,6 +188,40 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
 
     $workDayTypeId = $workPattern->getWorkDayTypeForDate($date, $startDate);
     return $workDayTypeId;
+  }
+
+  /**
+   * Returns a list of ContactWorkPattern instances for the given $contactID,
+   * which overlap the period enclosed by the given $start and $end dates
+   *
+   * @param int $contactID
+   * @param \DateTime $start
+   * @param \DateTime $end
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern[]
+   */
+  public static function getAllForPeriod($contactID, DateTime $start, DateTime $end) {
+    $tableName = self::getTableName();
+
+    $query = "SELECT * FROM {$tableName}
+              WHERE contact_id = %1 AND 
+                    effective_date <= %2 AND 
+                    (effective_end_date >= %3 OR effective_end_date IS NULL)";
+
+    $params = [
+      1 => [$contactID, 'Integer'],
+      2 => [$end->format('Y-m-d'), 'String'],
+      3 => [$start->format('Y-m-d'), 'String']
+    ];
+
+    $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
+
+    $contactWorkPatterns = [];
+    while($result->fetch()) {
+      $contactWorkPatterns[] = clone $result;
+    }
+
+    return $contactWorkPatterns;
   }
 
 }
