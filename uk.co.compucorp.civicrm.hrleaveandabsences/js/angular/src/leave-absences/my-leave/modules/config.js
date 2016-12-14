@@ -30,7 +30,7 @@
             })
             .state('my-leave.calendar', {
               url: '/calendar',
-              template: '<h3>Calendar</h3>'
+              template: '<my-leave-calendar contact-id="$ctrl.contactId"></my-leave-calendar>'
             });
         }
       ]);
